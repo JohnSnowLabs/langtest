@@ -656,7 +656,6 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     sentences
     :param noisy_test_set: list of sentences with perturbations
     :param metric_type: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
-    :param metrics_output_format: 'dictionary' to get a dictionary report, 'dataframe' to get a dataframe report
     :param token_filter_function: function to filter tokens for appropriate comparison when applying perturbations
     which disrupt token match-up between original test set and noisy test set, options are None,
     'remove_context_tokens', 'remove_contraction_tokens', 'remove_punctuation_tokens'
