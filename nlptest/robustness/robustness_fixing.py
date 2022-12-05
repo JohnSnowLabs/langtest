@@ -1,4 +1,5 @@
 """Functions to fix robustness of NER model with different kinds of perturbations in CoNLL data"""
+import re
 import random
 import logging
 import itertools
@@ -345,6 +346,16 @@ def augment_robustness(
     if swap_entities:
         terminology = create_terminology(data, labels)
 
+    if starting_context is None:
+        starting_context = ["Description:", "MEDICAL HISTORY:", "FINDINGS:", "RESULTS: ",
+                            "Report: ", "Conclusion is that "]
+    starting_context = [re.split(regex_pattern, i) for i in starting_context if i != '']
+
+    if ending_context is None:
+        ending_context = ["according to the patient's family", "as stated by the patient",
+                          "due to various circumstances", "confirmed by px"]
+    ending_context = [re.split(regex_pattern, i) for i in ending_context if i != '']
+
     perturbation_dict = {
         "capitalization_upper": capitalization_upper,
         "capitalization_lower": capitalization_lower,
@@ -367,8 +378,8 @@ def augment_robustness(
         "add_punctuation": {},
         "strip_punctuation": {},
         "introduce_typos": {},
-        "american_to_british": {'lang_dict': a2b_dict},
-        "british_to_american": {'lang_dict': b2a_dict},
+        "american_to_british": {'accent_map': a2b_dict},
+        "british_to_american": {'accent_map': b2a_dict},
         "add_context": {
             'ending_context': ending_context,
             'starting_context': starting_context,
