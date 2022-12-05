@@ -1,448 +1,17 @@
 """Functions to test NER model robustness against different kinds of perturbations"""
 import json
 import random
-import numpy as np
+from copy import deepcopy
 import pandas as pd
 from pandas import DataFrame
 
-from ...utils.imports import is_module_importable
+from .utils import _A2B_DICT
+from .perturbations import PERTURB_FUNC_MAP, PERTURB_DESCRIPTIONS, create_terminology
 
-if not is_module_importable('wn'):
-    raise ImportError(f'Please run <pip install wn> to use this module.  ')
-
-import wn
-from .utils import _CONTRACTION_MAP, _A2B_DICT, _TYPO_FREQUENCY
 from pyspark.sql import SparkSession
 from sparknlp.base import PipelineModel
 from typing import Optional, List, Dict, Tuple, Any
 from sklearn.metrics import classification_report
-
-
-def strip_punctuation(list_of_strings: List[str],
-                      keep_numeric_punctuation: bool = True,
-                      noise_prob: float = 0.5) -> List[str]:
-    """Strips punctuation from list of sentences
-
-    :param list_of_strings: list of sentences to process
-    :param keep_numeric_punctuation: whether to keep punctuation related to numeric characters, ie 40,000 or 2.5,
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    defaults to True
-    """
-    outcome_list_of_strings = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        stripped_string = []
-
-        for idx, char in enumerate(string):
-
-            if idx == 0 and keep_numeric_punctuation:
-                if char.isspace() or char.isalnum() or string[idx + 1].isdigit():
-                    stripped_string.append(char)
-
-            elif idx == (len(string) - 1) and keep_numeric_punctuation:
-                if char.isspace() or char.isalnum() or string[idx - 1].isdigit():
-                    stripped_string.append(char)
-
-            elif not keep_numeric_punctuation:
-                if char.isspace() or char.isalnum():
-                    stripped_string.append(char)
-
-            else:
-                if char.isspace() or char.isalnum() or string[idx - 1].isdigit() or string[idx + 1].isdigit():
-                    stripped_string.append(char)
-
-        outcome_list_of_strings.append(''.join(stripped_string).replace('  ', ' '))
-
-    return outcome_list_of_strings
-
-
-def add_punctuation(list_of_strings: List[str],
-                    noise_prob: float = 0.5) -> List[str]:
-    """Adds a special character at the end of strings, if last character is a special character replace it
-
-    :param list_of_strings: list of sentences to process
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-
-    list_of_characters = ['!', '?', ',', '.', '-', ':', ';']
-
-    np.random.seed(7)
-
-    outcome_list_of_strings = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        if string[-1].isalnum():
-            outcome_list_of_strings.append(string + random.choice(list_of_characters))
-
-        else:
-            outcome_list_of_strings.append(string[0:-1] + random.choice(list_of_characters))
-
-    return outcome_list_of_strings
-
-
-def modify_capitalization(list_of_strings: List[str], method: str = 'Combined',
-                          noise_prob: float = 0.5) -> List[str]:
-    """Changes the casing of the input sentences
-
-    :param list_of_strings: list of sentences to process
-    :param method: the casing method to use for modifying the list of sentences, defaults to 'Combined'
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-    np.random.seed(7)
-
-    outcome_list_of_strings = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        if method == 'Uppercase':
-            outcome_list_of_strings.append(string.upper())
-
-        elif method == 'Lowercase':
-            outcome_list_of_strings.append(string.lower())
-
-        elif method == 'Title':
-            outcome_list_of_strings.append(string.title())
-
-        elif method == 'Combined':
-            list_of_possibilities = [string.upper(), string.lower(), string.title()]
-            outcome_list_of_strings.append(random.choice(list_of_possibilities))
-
-    return outcome_list_of_strings
-
-
-def add_typo_to_sentence(
-        sentence: str,
-        frequency: Dict[str, List[int]]
-) -> str:
-
-    if len(sentence) == 1:
-        return sentence
-
-    sentence = list(sentence)
-
-    if random.random() > 0.1:
-
-        indx_list = list(range(len(frequency)))
-        char_list = list(frequency.keys())
-
-        counter = 0
-        indx = -1
-        while counter < 10 and indx == -1:
-            indx = random.randint(0, len(sentence) - 1)
-            char = sentence[indx]
-            if frequency.get(char.lower(), None):
-
-                char_frequency = frequency[char.lower()]
-
-                if sum(char_frequency) > 0:
-                    chosen_char = random.choices(indx_list, weights=char_frequency)
-                    difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
-                    char = chr(ord(char) - difference)
-                    sentence[indx] = char
-
-            else:
-                indx = -1
-                counter += 1
-
-    else:
-        sentence = list(sentence)
-        swap_indx = random.randint(0, len(sentence) - 2)
-        tmp = sentence[swap_indx]
-        sentence[swap_indx] = sentence[swap_indx + 1]
-        sentence[swap_indx + 1] = tmp
-
-    return "".join(sentence)
-
-
-def introduce_typos(list_of_strings: List[str],
-                    noise_prob: float = 0.5) -> List[str]:
-    """Introduces typos in input sentences
-
-    :param list_of_strings: list of sentences to process
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-    outcome_list_of_strings = []
-
-    for string in list_of_strings:
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        outcome_list_of_strings.append(add_typo_to_sentence(string, _TYPO_FREQUENCY))
-
-    return outcome_list_of_strings
-
-
-def add_contractions(list_of_strings: List[str], noise_prob: float = 0.5) -> List[str]:
-    """Adds contractions in input sentences
-
-    :param list_of_strings: list of sentences to process
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-    outcome_list_of_strings = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        for token in _CONTRACTION_MAP:
-            if token in string:
-                string = string.replace(token, _CONTRACTION_MAP[token])
-
-        outcome_list_of_strings.append(string)
-
-    return outcome_list_of_strings
-
-
-def add_context(list_of_strings: List[str], method: str = 'Random',
-                starting_context: Optional[List[str]] = None,
-                ending_context: Optional[List[str]] = None,
-                noise_prob: float = 0.5) -> List[str]:
-    """Adds tokens at the beginning and/or at the end of strings
-
-    :param list_of_strings: list of sentences to process
-    :param method: 'Start' adds context only at the beginning, 'End' adds it at the end, 'Combined' adds context both
-    at the beginning and at the end, 'Random' means method for each string is randomly assigned.
-    :param starting_context: list of terms (context) to input at start of sentences.
-    :param ending_context: list of terms (context) to input at end of sentences.
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-
-    np.random.seed(7)
-
-    outcome_list_of_strings = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        if method == 'Start':
-            outcome_list_of_strings.append(random.choice(starting_context) + ' ' + string)
-
-        elif method == 'End':
-            if string[-1].isalnum():
-                outcome_list_of_strings.append(string + ' ' + random.choice(ending_context))
-
-            else:
-                outcome_list_of_strings.append(string[:-1] + ' ' + random.choice(ending_context))
-
-        elif method == 'Combined':
-            if string[-1].isalnum():
-                outcome_list_of_strings.append(
-                    random.choice(starting_context) + ' ' + string + ' ' + random.choice(ending_context))
-
-            else:
-                outcome_list_of_strings.append(
-                    random.choice(starting_context) + ' ' + string[:-1] + ' ' + random.choice(ending_context))
-
-        elif method == 'Random':
-            if string[-1].isalnum():
-                list_of_possibilities = [(random.choice(starting_context) + ' ' + string),
-                                         (string + ' ' + random.choice(ending_context))]
-                outcome_list_of_strings.append(random.choice(list_of_possibilities))
-
-            else:
-                list_of_possibilities = [(random.choice(starting_context) + ' ' + string),
-                                         (string[:-1] + ' ' + random.choice(ending_context))]
-                outcome_list_of_strings.append(random.choice(list_of_possibilities))
-
-    return outcome_list_of_strings
-
-
-def create_terminology(df: DataFrame) -> Dict[str, List[str]]:
-    """
-    Iterate over the DataFrame to create terminology from the predictions. IOB format converted to the IO.
-
-    :param df: annotation DataFrame got from SparkNLP NER Pipeline.
-    :return: dictionary of entities and corresponding list of words.
-    """
-
-    chunk = None
-    ent_type = None
-
-    terminology = dict()
-    for indx, row in df.iterrows():
-
-        for prediction in row.ner:
-            ent = prediction.result
-
-            if ent.startswith('B'):
-
-                if chunk:
-                    if terminology.get(ent_type, None):
-                        terminology[ent_type].append(" ".join(chunk))
-                    else:
-                        terminology[ent_type] = [" ".join(chunk)]
-
-                chunk = [prediction.metadata['word']]
-                ent_type = ent[2:]  #  drop B-
-
-            elif ent.startswith('I'):
-
-                chunk.append(prediction.metadata['word'])
-
-            else:
-
-                if chunk:
-                    if terminology.get(ent_type, None):
-                        terminology[ent_type].append(" ".join(chunk))
-                    else:
-                        terminology[ent_type] = [" ".join(chunk)]
-
-                chunk = None
-                ent_type = None
-
-    return terminology
-
-
-def swap_named_entities_from_terminology(
-        list_of_strings: List[str],
-        annotations: DataFrame,
-        terminology: dict,
-        noise_prob: float = 0.5
-) -> List[str]:
-    """
-    This function swap named entities with the chosen same entity with same token count from the terminology.
-
-    :param list_of_strings: List of sentences to process
-    :param annotations: Corresponding NER results for given list_of_strings.
-    :param terminology: Dictionary of entities and corresponding list of words.
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    :return:
-    """
-    outcome_list_of_strings = []
-    for indx, string in enumerate(list_of_strings):
-
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
-
-        ner_result = [token.result for token in annotations.iloc[indx].ner]
-        ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in ner_result])
-        ent_indx, = np.where(ent_start_pos == 1)
-
-        #  if there is no entity in the sentence, skip
-        if len(ent_indx) == 0:
-            outcome_list_of_strings.append(string)
-            continue
-
-        replace_indx = np.random.choice(ent_indx)
-        ent_type = ner_result[replace_indx][2:]
-        replace_indxs = [replace_indx]
-
-        if replace_indx < len(ner_result) - 1:
-            for indx, label in enumerate(ner_result[replace_indx + 1:]):
-                if label == f'I-{ent_type}':
-                    replace_indxs.append(indx + replace_indx + 1)
-                else:
-                    break
-
-        token_list = string.split(' ')
-        replace_token = token_list[replace_indx: replace_indx + len(replace_indxs)]
-        replace_token = " ".join(replace_token)
-
-        ent_terminology = []
-        for ent in terminology[ent_type]:
-            if len(ent.split(' ')) == len(replace_indxs):
-                ent_terminology.append(ent)
-
-        if len(ent_terminology) > 0:
-            chosen_ent = random.choice(ent_terminology)
-            string = string.replace(replace_token, chosen_ent)
-            outcome_list_of_strings.append(string)
-
-        else:
-            outcome_list_of_strings.append(string)
-
-    return outcome_list_of_strings
-
-
-def american_to_british(list_of_strings: List[str], lang_dict: Dict[str, str],
-                        noise_prob: float = 0.5) -> List[str]:
-    """Converts input sentences from american english to british english using a conversion dictionary
-
-    :param list_of_strings: list of sentences to process
-    :param lang_dict: dictionary with conversion terms
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-    new_list = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            new_list.append(string)
-            continue
-
-        for american_spelling, british_spelling in lang_dict.items():
-            string = string.replace(american_spelling, british_spelling)
-
-        new_list.append(string)
-
-    return new_list
-
-
-def british_to_american(list_of_strings: List[str], lang_dict: Dict[str, str],
-                        noise_prob: float = 0.5) -> List[str]:
-    """Converts input sentences from british english to american english using a conversion dictionary
-
-    :param list_of_strings: list of sentences to process
-    :param lang_dict: dictionary with conversion terms
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-    new_list = []
-
-    for string in list_of_strings:
-
-        if random.random() > noise_prob:
-            new_list.append(string)
-            continue
-
-        for american_spelling, british_spelling in lang_dict.items():
-            string = string.replace(british_spelling, american_spelling)
-
-        new_list.append(string)
-
-    return new_list
-
-
-def remove_punctuation_tokens(column: List[str]) -> List[str]:
-    """Removes all punctuation tokens from input sentences
-
-    :param column: list of sentences to process
-    """
-    outcome_list = []
-
-    punc_list = ['!', '?', ',', '.', '-', ':', ';']
-
-    for token_list in column:
-
-        lst = []
-
-        for token in token_list:
-            if token.metadata['word'] not in punc_list:
-                lst.append(token)
-
-        outcome_list.append(lst)
-
-    return outcome_list
 
 
 def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
@@ -457,7 +26,7 @@ def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
     def match_starting_context(token_list):
 
         for context_token in starting_context_tokens:
-            length_context = len(context_token.split())
+            length_context = len(context_token)
             token_string = " ".join([token.metadata['word'] for token in token_list[:length_context]])
             if token_string == context_token:
                 return length_context
@@ -467,7 +36,7 @@ def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
     def match_ending_context(token_list):
 
         for context_token in ending_context_tokens:
-            length_context = len(context_token.split())
+            length_context = len(context_token)
             token_string = " ".join([token.metadata['word'] for token in token_list[-length_context:]])
             if token_string == context_token:
                 return len(token_list) - length_context
@@ -504,86 +73,26 @@ def remove_contraction_tokens(list_with_contractions: List[str], list_without_co
         del list_without_contractions[contraction_idx:contraction_idx + 2]
 
 
-def get_cohyponyms_wordnet(word: str) -> str:
-    """Retrieve co-hyponym of the input string using WordNet when a hit is found.
+def remove_punctuation_tokens(column: List[str]) -> List[str]:
+    """Removes all punctuation tokens from input sentences
 
-    :param word: input string to retrieve co-hyponym
+    :param column: list of sentences to process
     """
-    orig_word = word
-    word = word.lower()
-    if len(word.split()) > 0:
-        word = word.replace(" ", "_")
-    syns = wn.synsets(word)
-    if len(syns) == 0:
-        return orig_word
-    else:
-        hypernym = syns[0].hypernyms()
-        if len(hypernym) == 0:
-            return orig_word
-        else:
-            hypos = hypernym[0].hyponyms()
-            hypo_len = len(hypos)
-            if hypo_len == 1:
-                name = hypos[0].lemmas()[0]
-            else:
-                ind = random.sample(range(hypo_len), k=1)[0]
-                name = hypos[ind].lemmas()[0]
-                while name == word:
-                    ind = random.sample(range(hypo_len), k=1)[0]
-                    name = hypos[ind].lemmas()[0]
-            return name.replace("_", " ")
+    outcome_list = []
 
+    punc_list = ['!', '?', ',', '.', '-', ':', ';']
 
-def swap_with_cohyponym(list_of_strings: List[str],
-                        annotations: DataFrame,
-                        noise_prob: float = 0.5
-                        ) -> List[str]:
-    """This function swap named entities with a co-hyponym from the WordNet database when a hit is found.
+    for token_list in column:
 
-    :param list_of_strings: List of sentences to process
-    :param annotations: Corresponding NER results for given list_of_strings.
-    :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-    """
-    #  download WordNet DB
-    print('\nDownloading WordNet database to execute co-hyponym swapping.\n')
-    wn.download('ewn:2020')
-    outcome_list_of_strings = []
-    for indx, string in enumerate(list_of_strings):
+        lst = []
 
-        if random.random() > noise_prob:
-            outcome_list_of_strings.append(string)
-            continue
+        for token in token_list:
+            if token.metadata['word'] not in punc_list:
+                lst.append(token)
 
-        ner_result = [token.result for token in annotations.iloc[indx].ner]
-        ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in ner_result])
-        ent_indx, = np.where(ent_start_pos == 1)
+        outcome_list.append(lst)
 
-        #  if there is no entity in the sentence, skip
-        if len(ent_indx) == 0:
-            outcome_list_of_strings.append(string)
-            continue
-
-        replace_indx = np.random.choice(ent_indx)
-        ent_type = ner_result[replace_indx][2:]
-        replace_indxs = [replace_indx]
-
-        if replace_indx < len(ner_result) - 1:
-            for indx, label in enumerate(ner_result[replace_indx + 1:]):
-                if label == f'I-{ent_type}':
-                    replace_indxs.append(indx + replace_indx + 1)
-                else:
-                    break
-
-        token_list = string.split(' ')
-        replace_token = token_list[replace_indx: replace_indx + len(replace_indxs)]
-        replace_token = " ".join(replace_token)
-
-        #  replace by cohyponym
-        chosen_ent = get_cohyponyms_wordnet(replace_token)
-        string = string.replace(replace_token, chosen_ent)
-        outcome_list_of_strings.append(string)
-
-    return outcome_list_of_strings
+    return outcome_list
 
 
 def calculate_metrics(filtered_df: DataFrame, method: str = 'strict') -> Dict[str, Any]:
@@ -636,8 +145,7 @@ def calculate_metrics(filtered_df: DataFrame, method: str = 'strict') -> Dict[st
 
 def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipeline_model: PipelineModel,
              test_set: List[str], total_amount: int, original_annotations_df: DataFrame, noisy_test_set: List[str],
-             metric_type: str, token_filter_function: Optional[str] = None,
-             starting_context_token_list: Optional[List[str]] = None,
+             metric_type: str, starting_context_token_list: Optional[List[str]] = None,
              ending_context_token_list: Optional[List[str]] = None,
              ) -> Tuple[DataFrame, str, DataFrame]:
     """Runs comparisons between original list of sentences and noisy list of sentences, returning metrics and dataframe
@@ -656,7 +164,6 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     sentences
     :param noisy_test_set: list of sentences with perturbations
     :param metric_type: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
-    :param token_filter_function: function to filter tokens for appropriate comparison when applying perturbations
     which disrupt token match-up between original test set and noisy test set, options are None,
     'remove_context_tokens', 'remove_contraction_tokens', 'remove_punctuation_tokens'
     :param starting_context_token_list: list of starting context tokens to add when applying the 'add_context' noise type
@@ -676,7 +183,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     report_text = report_text + '\nGenerated noise affects ' + str(sum(noisy_lst)) + ' sentences (' + str(
         (round(100 * (sum(noisy_lst) / total_amount), 2))) + '% of the test set).\n'
 
-    if token_filter_function == 'remove_punctuation_tokens':
+    if noise_type == 'add_punctuation' or noise_type == 'strip_punctuation':
 
         noisy_annotations_df['ner'] = remove_punctuation_tokens(column=noisy_annotations_df['ner'])
 
@@ -696,7 +203,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
         joined_df = reduced_original_annotations_df[['token_count', 'ner']].join(
             noisy_annotations_df[['noisy_token_count', 'noisy_ner']])
 
-    elif token_filter_function == 'remove_contraction_tokens':
+    elif noise_type == 'add_contractions':
 
         noisy_annotations_df['token_count'] = noisy_annotations_df['ner'].apply(lambda x: len(x))
 
@@ -714,7 +221,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
 
         joined_df['noisy_token_count'] = joined_df['noisy_ner'].apply(lambda x: len(x))
 
-    elif token_filter_function == 'remove_context_tokens':
+    elif noise_type == 'add_context':
 
         noisy_annotations_df['ner'] = remove_context_tokens(column=noisy_annotations_df['ner'],
                                                             starting_context_tokens=starting_context_token_list,
@@ -839,9 +346,9 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     :param test_file_path: Path to test file to test robustness. Can be .txt or .conll file in CoNLL format or
     .csv file with just one column (text) with series of test samples.
     :param test: type of robustness test implemented by the function, options include
-    'modify_capitalization_upper': capitalization of the test set is turned into uppercase
-    'modify_capitalization_lower': capitalization of the test set is turned into lowercase
-    'modify_capitalization_title': capitalization of the test set is turned into title case
+    'capitalization_upper': capitalization of the test set is turned into uppercase
+    'capitalization_lower': capitalization of the test set is turned into lowercase
+    'capitalization_title': capitalization of the test set is turned into title case
     'add_punctuation': special characters at end of each sentence are replaced by other special characters, if no
     special character at the end, one is added
     'strip_punctuation': special characters are removed from the sentences (except if found in numbers, such as '2.5')
@@ -850,10 +357,8 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     'add_context': tokens are added at the beginning and at the end of the sentences.
     'swap_entities': named entities replaced with same entity type with same token count from terminology.
     'swap_cohyponyms': Named entities replaced with co-hyponym from the WordNet database.
-    'american_to_british': American English will be changed to British English, test_set_language should be set to
-    'American English' (default)
-    'british_to_american': British English will be changed to American English, test_set_language should be set to
-    'British English'
+    'american_to_british': American English will be changed to British English.
+    'british_to_american': British English will be changed to American English.
     :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
     'american_to_british' or 'british_to_american' will be run depending on test_set_language value
     (by default, 'american_to_british')
@@ -870,8 +375,6 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     complete_comparison_df = pd.DataFrame(
         columns=['original_token', 'noisy_token', 'original_label', 'noisy_label', 'test'])
 
-    lang_dict = _A2B_DICT
-
     if test_file_path.endswith('.txt') or test_file_path.endswith('.conll'):
         test_set = conll_sentence_reader(test_file_path)
     elif test_file_path.endswith('.csv'):
@@ -886,11 +389,12 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
             test_set = random.sample(test_set, sample_sentence_count)
         else:
             raise ValueError(
-                f"sample_sentence_count ({sample_sentence_count}) must be greater than test_set length ({len(test_set)}).")
+                f"sample_sentence_count ({sample_sentence_count}) "
+                f"must be greater than test_set length ({len(test_set)}).")
     total_amount = len(test_set)
 
     if test is None:
-        test = ['modify_capitalization_upper', 'modify_capitalization_lower', 'modify_capitalization_title',
+        test = ['capitalization_upper', 'capitalization_lower', 'capitalization_title',
                 'add_punctuation', 'strip_punctuation', 'introduce_typos', 'add_contractions', 'add_context',
                 'american_to_british', 'swap_entities', 'swap_cohyponyms']
 
@@ -901,187 +405,13 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
 
     original_annotations = pipeline_model.transform(test_data)
     original_annotations_df = original_annotations.select('ner').toPandas()
-
     original_annotations_df['token_count'] = original_annotations_df['ner'].apply(lambda x: len(x))
 
-    if 'modify_capitalization_upper' in test:
-        noise_type = 'modify_capitalization_upper'
+    if 'add_context' not in test:
+        starting_context_tokens = None
+        ending_context_tokens = None
 
-        noise_description = 'text capitalization turned into uppercase'
-
-        noisy_test_set = modify_capitalization(list_of_strings=test_set, method='Uppercase', noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(
-            spark=spark, noise_type=noise_type, noise_description=noise_description,
-            pipeline_model=pipeline_model, test_set=test_set,
-            total_amount=total_amount,
-            original_annotations_df=original_annotations_df,
-            noisy_test_set=noisy_test_set, metric_type=metric_type,
-            token_filter_function=None
-        )
-
-        perturb_metrics['modify_capitalization_upper'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'modify_capitalization_lower' in test:
-        noise_type = 'modify_capitalization_lower'
-
-        noise_description = 'text capitalization turned into lowercase'
-
-        noisy_test_set = modify_capitalization(list_of_strings=test_set, method='Lowercase', noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function=None)
-
-        perturb_metrics['modify_capitalization_lower'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'modify_capitalization_title' in test:
-        noise_type = 'modify_capitalization_title'
-
-        noise_description = 'text capitalization turned into title type (first letter capital)'
-
-        noisy_test_set = modify_capitalization(list_of_strings=test_set, method='Title', noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function=None)
-
-        perturb_metrics['modify_capitalization_title'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'add_punctuation' in test:
-        noise_type = 'add_punctuation'
-
-        noise_description = 'special character at the end of the sentence is modified'
-
-        noisy_test_set = add_punctuation(list_of_strings=test_set,
-                                         noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function='remove_punctuation_tokens')
-
-        perturb_metrics['add_punctuation'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if "swap_cohyponyms" in test:
-        noise_type = 'swap_cohyponyms'
-
-        noise_description = 'named entities in the sentences are replaced with same entity type'
-
-        noisy_test_set = swap_with_cohyponym(test_set, original_annotations_df, noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type)
-
-        perturb_metrics['swap_cohyponyms'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if "swap_entities" in test:
-        terminology = create_terminology(original_annotations_df)
-
-        noise_type = 'swap_entities'
-
-        noise_description = 'named entities in the sentences are replaced with same entity type'
-
-        noisy_test_set = swap_named_entities_from_terminology(test_set, original_annotations_df, terminology,
-                                                              noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type)
-
-        perturb_metrics['swap_entities'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'strip_punctuation' in test:
-        noise_type = 'strip_punctuation'
-
-        noise_description = 'special character at the end of the sentence is removed'
-
-        noisy_test_set = strip_punctuation(list_of_strings=test_set,
-                                           keep_numeric_punctuation=True,
-                                           noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function='remove_punctuation_tokens')
-
-        perturb_metrics['strip_punctuation'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'introduce_typos' in test:
-        noise_type = 'introduce_typos'
-
-        noise_description = 'typos introduced in sentences'
-
-        noisy_test_set = introduce_typos(test_set, noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function=None)
-
-        perturb_metrics['introduce_typos'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'add_contractions' in test:
-        noise_type = 'add_contractions'
-
-        noise_description = 'contractions added in sentences'
-
-        noisy_test_set = add_contractions(test_set, noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function='remove_contraction_tokens')
-
-        perturb_metrics['add_contractions'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
-
-    if 'add_context' in test:
-
+    else:
         if starting_context is None:
             starting_context = ["Description:", "MEDICAL HISTORY:", "FINDINGS:", "RESULTS: ",
                                 "Report: ", "Conclusion is that "]
@@ -1096,7 +426,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
 
         starting_context_tokens = []
         for context_token in starting_context_token_list.select('token').collect():
-            starting_context_tokens.append(" ".join([token.result for token in context_token[0]]))
+            starting_context_tokens.append([token.result for token in context_token[0]])
 
         ending_context_token_list = [[i] for i in ending_context]
         ending_context_token_list = spark.createDataFrame(ending_context_token_list).toDF('text')
@@ -1104,66 +434,69 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
 
         ending_context_tokens = []
         for context_token in ending_context_token_list.select('token').collect():
-            ending_context_tokens.append(" ".join([token.result for token in context_token[0]]))
+            ending_context_tokens.append([token.result for token in context_token[0]])
 
-        noise_type = 'add_context'
+    terminology = None
+    labels = None
+    if 'swap_entities' in test:
 
-        noise_description = 'words added at the beginning and end of sentences'
+        labels = []
+        sentences = []
+        for row in original_annotations_df['ner']:
+            sent_tokens = [token.metadata['word'] for token in row]
+            sentences.append(" ".join(sent_tokens))
 
-        noisy_test_set = add_context(test_set, method='Combined', starting_context=starting_context_tokens,
-                                     ending_context=ending_context_tokens,
-                                     noise_prob=noise_prob)
+            sent_labels = [token.result for token in row]
+            labels.append(" ".join(sent_labels))
 
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function='remove_context_tokens',
-                                                     starting_context_token_list=starting_context_tokens,
-                                                     ending_context_token_list=ending_context_tokens
-                                                     )
+        terminology = create_terminology(sentences, labels)
 
-        perturb_metrics['add_context'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
+    a2b_dict = _A2B_DICT
+    b2a_dict = {v: k for k, v in a2b_dict.items()}
 
-    if 'american_to_british' in test:
-        noise_type = 'american_to_british'
+    perturb_args = {
+        "capitalization_upper": {},
+        "capitalization_lower": {},
+        "capitalization_title": {},
+        "add_punctuation": {},
+        "strip_punctuation": {},
+        "introduce_typos": {},
+        "american_to_british": {'accent_map': a2b_dict},
+        "british_to_american": {'accent_map': b2a_dict},
+        "add_context": {
+            'ending_context': ending_context_tokens,
+            'starting_context': starting_context_tokens,
+        },
+        "add_contractions": {},
+        "swap_entities": {'labels': labels, 'terminology': terminology},
+        "swap_cohyponyms": {'labels': labels}
+    }
 
-        noise_description = 'American spelling turned into British spelling'
+    for test_type in test:
 
-        noisy_test_set = american_to_british(test_set, lang_dict, noise_prob=noise_prob)
+        noise_description = PERTURB_DESCRIPTIONS[test_type]
 
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function=None)
+        aug_indx, aug_sent, _, _ = PERTURB_FUNC_MAP[test_type](test_set, noise_prob=noise_prob,
+                                                               **perturb_args[test_type])
+        noisy_test_sent = deepcopy(test_set)
+        for sentence, indx in zip(aug_sent, aug_indx):
+            noisy_test_sent[indx] = sentence
 
-        perturb_metrics['american_to_british'] = test_metrics
-        report_text = report_text + text
-        complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
+        test_metrics, text, comparison_df = run_test(
+            spark=spark,
+            noise_type=test_type,
+            noise_description=noise_description,
+            pipeline_model=pipeline_model,
+            test_set=test_set,
+            total_amount=total_amount,
+            original_annotations_df=original_annotations_df,
+            noisy_test_set=noisy_test_sent,
+            metric_type=metric_type,
+            starting_context_token_list=starting_context_tokens,
+            ending_context_token_list=ending_context_tokens
+        )
 
-    if 'british_to_american' in test:
-        noise_type = 'british_to_american'
-
-        noise_description = 'British spelling turned into American spelling'
-
-        noisy_test_set = british_to_american(test_set, lang_dict, noise_prob=noise_prob)
-
-        test_metrics, text, comparison_df = run_test(spark=spark, noise_type=noise_type,
-                                                     noise_description=noise_description,
-                                                     pipeline_model=pipeline_model, test_set=test_set,
-                                                     total_amount=total_amount,
-                                                     original_annotations_df=original_annotations_df,
-                                                     noisy_test_set=noisy_test_set, metric_type=metric_type,
-                                                     token_filter_function=None)
-
-        perturb_metrics['british_to_american'] = test_metrics
+        perturb_metrics[test_type] = test_metrics
         report_text = report_text + text
         complete_comparison_df = pd.concat([complete_comparison_df, comparison_df]).reset_index(drop=True)
 
@@ -1194,6 +527,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
             print(e)
 
     if metrics_output_format == 'dataframe':
+
         metrics_df = pd.DataFrame(columns=['entity', 'precision', 'recall', 'f1-score', 'support', 'test'])
 
         for perturb_type, metrics in outcome['metrics'].items():
