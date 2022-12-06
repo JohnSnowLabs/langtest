@@ -227,25 +227,29 @@ def strip_punctuation_from_data(
 
 def add_typo_to_sentence(
         sentence: str,
-        frequency: Dict[str, List[int]]
 ) -> str:
+    """
+    Add typo the the single sentence using keyboard typo and swap typo.
+    :param sentence: List of sentences to process.
+    :return: Input sentence with typo added.
+    """
     if len(sentence) == 1:
         return sentence
 
     sentence = list(sentence)
     if random.random() > 0.1:
 
-        indx_list = list(range(len(frequency)))
-        char_list = list(frequency.keys())
+        indx_list = list(range(len(_TYPO_FREQUENCY)))
+        char_list = list(_TYPO_FREQUENCY.keys())
 
         counter = 0
         indx = -1
         while counter < 10 and indx == -1:
             indx = random.randint(0, len(sentence) - 1)
             char = sentence[indx]
-            if frequency.get(char.lower(), None):
+            if _TYPO_FREQUENCY.get(char.lower(), None):
 
-                char_frequency = frequency[char.lower()]
+                char_frequency = _TYPO_FREQUENCY[char.lower()]
 
                 if sum(char_frequency) > 0:
                     chosen_char = random.choices(indx_list, weights=char_frequency)
@@ -296,7 +300,7 @@ def introduce_typos(
                 aug_labels.append(labels[indx])
             continue
 
-        typo_sent = add_typo_to_sentence(sentence, _TYPO_FREQUENCY)
+        typo_sent = add_typo_to_sentence(sentence)
         if len(typo_sent.split()) == len(sentence.split()):
             aug_sent.append(typo_sent)
             aug_indx.append(indx)
