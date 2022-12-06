@@ -444,6 +444,7 @@ def swap_entities_with_terminology(
 def get_cohyponyms_wordnet(word: str) -> str:
     """Retrieve co-hyponym of the input string using WordNet when a hit is found.
     :param word: input string to retrieve co-hyponym
+    :return: Cohyponym of the input word if exist, else original word.
     """
 
     orig_word = word
