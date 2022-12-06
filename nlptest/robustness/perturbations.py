@@ -565,7 +565,7 @@ def convert_accent(
     :param labels: Corresponding labels to make changes according to sentences.
     :param noise_prob: Proportion of value between 0 and 1 to sample from the data.
     :param accent_map: Dictionary with conversion terms.
-     :return: List sample indexes and corresponding augmented sentences, tags and labels if provided.
+    :return: List sample indexes and corresponding augmented sentences, tags and labels if provided.
     """
 
     if accent_map is None:
@@ -619,7 +619,7 @@ def add_context_to_data(
     :param ending_context: list of terms (context) to input at end of sentences.
         Ending context should not be ending with punctuation.
         It will be added if normal sentence is added with punctuation.
-     :return: List sample indexes and corresponding augmented sentences, tags and labels if provided.
+    :return: List sample indexes and corresponding augmented sentences, tags and labels if provided.
     """
 
     aug_sent = []
