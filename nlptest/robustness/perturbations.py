@@ -815,7 +815,7 @@ def add_contractions(
     return aug_indx, aug_sent, aug_tags, aug_labels
 
 
-PERTURB_FUNC_MAP = {
+_PERTURB_FUNC_MAP = {
     "capitalization_upper": modify_capitalization_upper,
     "capitalization_lower": modify_capitalization_lower,
     "capitalization_title": modify_capitalization_title,
@@ -831,7 +831,7 @@ PERTURB_FUNC_MAP = {
 }
 
 
-PERTURB_DESCRIPTIONS = {
+_PERTURB_DESCRIPTIONS = {
     "capitalization_upper": 'text capitalization turned into uppercase',
     "capitalization_lower": 'text capitalization turned into lowercase',
     "capitalization_title": 'text capitalization turned into title type (first letter capital)',
