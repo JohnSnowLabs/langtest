@@ -35,8 +35,7 @@ We appreciate any sort of contributions:
 - feedback
 - documentation
 - bug reports
-- NLP training and testing corpora
-- Development and testing
+- development and testing
 
 Clone the repo and submit your pull-requests! Or directly create issues in this repo.
 
