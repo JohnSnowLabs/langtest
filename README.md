@@ -14,7 +14,18 @@ Take a look at our official page for user documentation and examples: [http://nl
 
 ## Feature Roadmap
 
+The goal of this library is to support NLP model testing for major NLP libraries and NLP tasks.
 
+Library support:
+1. Spark NLP (supported)
+2. HuggingFace Transformers (in progress)
+3. SpaCy (planned)
+
+Task support:
+1. NER (supported)
+2. Text classification (planned)
+
+The detailed roadmap is accessible in the [project board](https://github.com/orgs/JohnSnowLabs/projects/10/views/2).
 
 ## Contributing
 
