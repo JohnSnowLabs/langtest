@@ -477,7 +477,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
         noise_description = _PERTURB_DESCRIPTIONS[test_type]
 
         aug_indx, aug_sent, _, _ = _PERTURB_FUNC_MAP[test_type](test_set, noise_prob=noise_prob,
-                                                               **perturb_args[test_type])
+                                                                **perturb_args[test_type])
         noisy_test_sent = deepcopy(test_set)
         for sentence, indx in zip(aug_sent, aug_indx):
             noisy_test_sent[indx] = sentence

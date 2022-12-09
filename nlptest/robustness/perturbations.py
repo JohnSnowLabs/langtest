@@ -5,12 +5,10 @@ import numpy as np
 from copy import deepcopy
 from typing import Optional, List, Dict, Tuple
 
+import wn
+
 from .utils import _CONTRACTION_MAP, _TYPO_FREQUENCY
 from ..utils import is_module_importable
-
-if not is_module_importable('wn'):
-    raise ImportError(f'Please run <pip install wn> to use this module.  ')
-import wn
 
 
 def modify_capitalization_upper(
