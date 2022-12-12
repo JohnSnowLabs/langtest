@@ -813,7 +813,11 @@ def add_contractions(
     return aug_indx, aug_sent, aug_tags, aug_labels
 
 
-_PERTURB_FUNC_MAP = {
+LIST_OF_PERTURBATIONS = ["capitalization_upper", "capitalization_lower", "capitalization_title", "add_punctuation",
+                          "strip_punctuation", "introduce_typos", "american_to_british", "british_to_american",
+                          "add_context", "add_contractions", "swap_entities", "swap_cohyponyms"]
+
+PERTURB_FUNC_MAP = {
     "capitalization_upper": modify_capitalization_upper,
     "capitalization_lower": modify_capitalization_lower,
     "capitalization_title": modify_capitalization_title,
@@ -828,8 +832,7 @@ _PERTURB_FUNC_MAP = {
     "swap_cohyponyms": swap_with_cohyponym
 }
 
-
-_PERTURB_DESCRIPTIONS = {
+PERTURB_DESCRIPTIONS = {
     "capitalization_upper": 'text capitalization turned into uppercase',
     "capitalization_lower": 'text capitalization turned into lowercase',
     "capitalization_title": 'text capitalization turned into title type (first letter capital)',
