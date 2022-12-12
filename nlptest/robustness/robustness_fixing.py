@@ -10,14 +10,13 @@ from sparknlp.base import PipelineModel
 from pyspark.sql import SparkSession, DataFrame
 
 from .robustness_testing import test_robustness
-from .perturbations import _PERTURB_FUNC_MAP, create_terminology
+from .perturbations import PERTURB_FUNC_MAP, LIST_OF_PERTURBATIONS, create_terminology
 from .utils import (
     _DF_SCHEMA,
     _A2B_DICT,
     suggest_perturbations,
     get_augmentation_proportions
 )
-
 
 def create_dataframe(
         spark: SparkSession,
@@ -209,6 +208,7 @@ def get_sample(k: int, *args: List[Any]) -> List[List[str], ]:
 
 def augment_robustness(
         conll_path: str,
+        entity_perturbation_map: Optional[Dict[str, Dict[str, float]]] = None,
         capitalization_upper: Optional[Dict[str, float]] = None,
         capitalization_lower: Optional[Dict[str, float]] = None,
         capitalization_title: Optional[Dict[str, float]] = None,
@@ -356,6 +356,13 @@ def augment_robustness(
                           "due to various circumstances", "confirmed by px"]
     ending_context = [re.split(regex_pattern, i) for i in ending_context if i != '']
 
+    # check if dict keys are correctly defined by user
+    undefined_perturbations = [k for k in entity_perturbation_map.keys() if k not in LIST_OF_PERTURBATIONS]
+    if len(undefined_perturbations) > 0:
+        for single_undefined_perturbation in undefined_perturbations:
+            print(f"'{single_undefined_perturbation}' is not a valid perturbation. \nPlease pick a perturbation from "
+                  f"the following list:\n{LIST_OF_PERTURBATIONS}")
+
     perturbation_dict = {
         "capitalization_upper": capitalization_upper,
         "capitalization_lower": capitalization_lower,
@@ -457,7 +464,7 @@ def augment_robustness(
                     sample_total += len(sample_indx)
 
                     #  apply transformation to the proportion
-                    aug_indx, aug_data, aug_tags, aug_labels = _PERTURB_FUNC_MAP[perturb_type](
+                    aug_indx, aug_data, aug_tags, aug_labels = PERTURB_FUNC_MAP[perturb_type](
                         sample_data, sample_tags, sample_labels, **perturb_args[perturb_type])
 
                     inplace_data.extend(aug_data)
@@ -537,7 +544,7 @@ def augment_robustness(
                                                                      filtered_data, filtered_tags, filtered_labels)
 
                 #  apply transformation to the proportion
-                _, aug_data, aug_tags, aug_labels = _PERTURB_FUNC_MAP[perturb_type](
+                _, aug_data, aug_tags, aug_labels = PERTURB_FUNC_MAP[perturb_type](
                     sample_data, sample_tags, sample_labels, **perturb_args[perturb_type])
 
                 augmentation_coverage_info = round(len(aug_data) / len(sample_data), 2)
