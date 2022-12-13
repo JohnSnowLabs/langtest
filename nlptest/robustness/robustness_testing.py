@@ -5,7 +5,7 @@ from copy import deepcopy
 import pandas as pd
 from pandas import DataFrame
 
-from .utils import _A2B_DICT
+from .utils import A2B_DICT
 from .perturbations import PERTURB_FUNC_MAP, PERTURB_DESCRIPTIONS, create_terminology
 
 from pyspark.sql import SparkSession
@@ -451,7 +451,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
 
         terminology = create_terminology(sentences, labels)
 
-    a2b_dict = _A2B_DICT
+    a2b_dict = A2B_DICT
     b2a_dict = {v: k for k, v in a2b_dict.items()}
 
     perturb_args = {

@@ -12,8 +12,8 @@ from pyspark.sql import SparkSession, DataFrame
 from .robustness_testing import test_robustness
 from .perturbations import PERTURB_FUNC_MAP, LIST_OF_PERTURBATIONS, create_terminology
 from .utils import (
-    _DF_SCHEMA,
-    _A2B_DICT,
+    DF_SCHEMA,
+    A2B_DICT,
     suggest_perturbations,
     get_augmentation_proportions
 )
@@ -100,7 +100,7 @@ def create_dataframe(
             }
         )
 
-    return spark.createDataFrame(spark_data, _DF_SCHEMA)
+    return spark.createDataFrame(spark_data, DF_SCHEMA)
 
 
 def conll_reader(conll_path: str) -> List[tuple]:
@@ -368,7 +368,7 @@ def augment_robustness(
     else:
         terminology = None
 
-    a2b_dict = _A2B_DICT
+    a2b_dict = A2B_DICT
     b2a_dict = {v: k for k, v in a2b_dict.items()}
 
     if starting_context is None:

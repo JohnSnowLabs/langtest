@@ -4,11 +4,9 @@ import random
 import numpy as np
 from copy import deepcopy
 from typing import Optional, List, Dict, Tuple
-
 import wn
 
-from .utils import _CONTRACTION_MAP, _TYPO_FREQUENCY
-from ..utils import is_module_importable
+from .utils import CONTRACTION_MAP, TYPO_FREQUENCY
 
 
 def modify_capitalization_upper(
@@ -19,6 +17,7 @@ def modify_capitalization_upper(
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
     """
     Convert every sentence in the data by uppercase.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to data.
@@ -62,6 +61,7 @@ def modify_capitalization_lower(
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
     """
     Convert every sentence in the data by lowercase.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to data.
@@ -105,6 +105,7 @@ def modify_capitalization_title(
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
     """
     Convert every sentence in the data by title case.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to data.
@@ -147,6 +148,7 @@ def add_punctuation_to_data(
         noise_prob: float = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
     """Adds a punctuation at the end of strings.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -190,6 +192,7 @@ def strip_punctuation_from_data(
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
     """
     Strips punctuations from the sentences.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -228,6 +231,7 @@ def add_typo_to_sentence(
 ) -> str:
     """
     Add typo the the single sentence using keyboard typo and swap typo.
+
     :param sentence: List of sentences to process.
     :return: Input sentence with typo added.
     """
@@ -237,17 +241,17 @@ def add_typo_to_sentence(
     sentence = list(sentence)
     if random.random() > 0.1:
 
-        indx_list = list(range(len(_TYPO_FREQUENCY)))
-        char_list = list(_TYPO_FREQUENCY.keys())
+        indx_list = list(range(len(TYPO_FREQUENCY)))
+        char_list = list(TYPO_FREQUENCY.keys())
 
         counter = 0
         indx = -1
         while counter < 10 and indx == -1:
             indx = random.randint(0, len(sentence) - 1)
             char = sentence[indx]
-            if _TYPO_FREQUENCY.get(char.lower(), None):
+            if TYPO_FREQUENCY.get(char.lower(), None):
 
-                char_frequency = _TYPO_FREQUENCY[char.lower()]
+                char_frequency = TYPO_FREQUENCY[char.lower()]
 
                 if sum(char_frequency) > 0:
                     chosen_char = random.choices(indx_list, weights=char_frequency)
@@ -275,7 +279,9 @@ def introduce_typos(
         labels: List[str] = None,
         noise_prob: float = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """Introduces typos in input sentences
+    """
+    Introduces typos in input sentences
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -365,7 +371,9 @@ def swap_entities_with_terminology(
         noise_prob: float = None,
         terminology: Optional[Dict[str, List[int]]] = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """This function swap named entities with the new one from the terminology extracted from passed data.
+    """
+    This function swap named entities with the new one from the terminology extracted from passed data.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -440,7 +448,9 @@ def swap_entities_with_terminology(
 
 
 def get_cohyponyms_wordnet(word: str) -> str:
-    """Retrieve co-hyponym of the input string using WordNet when a hit is found.
+    """
+    Retrieve co-hyponym of the input string using WordNet when a hit is found.
+
     :param word: input string to retrieve co-hyponym
     :return: Cohyponym of the input word if exist, else original word.
     """
@@ -476,7 +486,9 @@ def swap_with_cohyponym(
         labels: List[str] = None,
         noise_prob: float = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """This function swap named entities with a co-hyponym from the WordNet database when a hit is found.
+    """
+    This function swap named entities with a co-hyponym from the WordNet database when a hit is found.
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -557,7 +569,9 @@ def convert_accent(
         noise_prob: float = None,
         accent_map: Dict[str, str] = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """Converts input sentences using a conversion dictionary
+    """
+    Converts input sentences using a conversion dictionary
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -608,7 +622,9 @@ def add_context_to_data(
         starting_context: Optional[List[str]] = None,
         ending_context: Optional[List[str]] = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """Adds tokens at the beginning and/or at the end of strings
+    """
+    Adds tokens at the beginning and/or at the end of strings
+
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
     :param labels: Corresponding labels to make changes according to sentences.
@@ -740,7 +756,9 @@ def add_contractions(
         labels: List[str] = None,
         noise_prob: float = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """Adds contractions in input sentences
+    """
+    Adds contractions in input sentences
+
     :param sentences: list of sentences to contract.
     :param tags: corresponding tags of sentences to align with.
     :param labels: corresponding labels of sentences to align with.
@@ -753,7 +771,7 @@ def add_contractions(
           regex replace for contraction.
         """
         token = match.group(0)
-        contracted_token = _CONTRACTION_MAP.get(token, _CONTRACTION_MAP.get(match.lower()))
+        contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(match.lower()))
 
         is_upper_case = token[0]
         expanded_contraction = is_upper_case + contracted_token[1:]
@@ -780,7 +798,7 @@ def add_contractions(
             continue
 
         is_contracted = False
-        for contraction in _CONTRACTION_MAP:
+        for contraction in CONTRACTION_MAP:
 
             if re.search(f'\b({contraction})\b', sentence, flags=re.IGNORECASE | re.DOTALL):
                 is_contracted = True
