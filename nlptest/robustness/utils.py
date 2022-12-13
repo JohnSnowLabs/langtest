@@ -113,17 +113,3 @@ def suggest_perturbations(test_results: dict) -> dict:
         if proportions != {}:
             suggestions.update({test: proportions})
     return suggestions
-
-
-def get_augmentation_proportions(suggestions: dict, key: str) -> dict:
-    """
-    This function returns the augmentation proportions for each test.
-
-    :param suggestions: Dictionary of suggestions containing test name, entity and proportion.
-    :param key: The dictionary key to pull from the suggestions dictionary.
-    """
-    try:
-        props = suggestions[key]
-    except:
-        props = None
-    return props
