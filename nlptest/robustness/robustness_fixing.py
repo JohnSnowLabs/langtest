@@ -361,7 +361,7 @@ def augment_robustness(
         check_undefined_perturbations(utility_perturbation_map=utility_perturbation_map,
                                       perturbation_list=LIST_OF_PERTURBATIONS)
         #   construct perturbation dictionary for use within rest of function
-        # perturbation_dict =
+        perturbation_dict = entity_perturbation_map
 
     if 'swap_entities' in utility_perturbation_map.keys():
         terminology = create_terminology(data, labels)
