@@ -16,7 +16,8 @@ from sklearn.metrics import classification_report
 
 def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
                           ending_context_tokens: List[str]) -> List[str]:
-    """Removes user-defined context tokens from strings
+    """
+    Removes user-defined context tokens from strings
 
     :param column: list of sentences to process
     :param starting_context_tokens: list of starting context tokens to remove
@@ -53,7 +54,8 @@ def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
 
 
 def remove_contraction_tokens(list_with_contractions: List[str], list_without_contractions: List[str]) -> None:
-    """Removes contraction tokens
+    """
+    Removes contraction tokens
 
     :param list_with_contractions: list of sentences with contractions
     :param list_without_contractions: list of sentences without contractions
@@ -74,7 +76,8 @@ def remove_contraction_tokens(list_with_contractions: List[str], list_without_co
 
 
 def remove_punctuation_tokens(column: List[str]) -> List[str]:
-    """Removes all punctuation tokens from input sentences
+    """
+    Removes all punctuation tokens from input sentences
 
     :param column: list of sentences to process
     """
@@ -96,7 +99,8 @@ def remove_punctuation_tokens(column: List[str]) -> List[str]:
 
 
 def calculate_metrics(filtered_df: DataFrame, method: str = 'strict') -> Dict[str, Any]:
-    """Calculates comparison metrics for robustness
+    """
+    Calculates comparison metrics for robustness
 
     :param filtered_df: dataframe created during robustness tests
     :param method: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
@@ -148,8 +152,10 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
              metric_type: str, starting_context_token_list: Optional[List[str]] = None,
              ending_context_token_list: Optional[List[str]] = None,
              ) -> Tuple[DataFrame, str, DataFrame]:
-    """Runs comparisons between original list of sentences and noisy list of sentences, returning metrics and dataframe
+    """
+    Runs comparisons between original list of sentences and noisy list of sentences, returning metrics and dataframe
     for comparison
+
     :param spark: An active Spark Session to create spark DataFrame
     :param noise_type: type of noise to introduce in sentences for running tests on 'modify_capitalization_upper',
     'modify_capitalization_lower', 'modify_capitalization_title', 'add_punctuation', 'strip_punctuation',
@@ -293,6 +299,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
 def conll_sentence_reader(conll_path: str) -> List[str]:
     """
     Read CoNLL file and convert it to the list of sentences.
+
     :param conll_path: CoNLL file path.
     :return: list of sentences in the conll data.
     """
@@ -336,7 +343,8 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
                     test: Optional[List[str]] = None,
                     starting_context: Optional[List[str]] = None,
                     ending_context: Optional[List[str]] = None) -> Dict[str, Any]:
-    """Tests robustness of a NER model by applying different types of noise generating functions to a list of sentences.
+    """
+    Tests robustness of a NER model by applying different types of noise generating functions to a list of sentences.
     Metrics are calculated by comparing model's extractions in the original list of sentences set with the extractions
     done in the noisy list of sentences.
 
