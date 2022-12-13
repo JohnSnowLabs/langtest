@@ -268,8 +268,8 @@ def augment_robustness(
         raise ValueError("conll_save_path or return_spark must be set to return augmented data.")
 
     if perturbation_map is not None and entity_perturbation_map is not None:
-        logger.error('You used `entity_perturbation_map` and `perturbation_map`. Please only use one of these '
-                     'parameters.')
+        raise ValueError('You used `entity_perturbation_map` and `perturbation_map`. Please only use one of these '
+                         'parameters since they accomplish the same task with a different level of detail.')
 
     docs = conll_reader(conll_path)
 
@@ -331,12 +331,12 @@ def augment_robustness(
 
         :param passed_perturbation_map: The perturbation dictionary passed by the user.
         :param perturbation_list: The list of valid perturbations.
-        :return: Logs an error if user passes invalid perturbations
+        :return: Raises an error if user passes invalid perturbations
         """
         undefined_perturbations = [k for k in passed_perturbation_map.keys() if k not in perturbation_list]
         if len(undefined_perturbations) > 0:
             for single_undefined_perturbation in undefined_perturbations:
-                logger.error(
+                raise ValueError(
                     f"'{single_undefined_perturbation}' is not a valid perturbation. \nPlease pick a perturbation from "
                     f"the following list:\n{perturbation_list}")
 
