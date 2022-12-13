@@ -18,6 +18,7 @@ from .utils import (
     get_augmentation_proportions
 )
 
+
 def create_dataframe(
         spark: SparkSession,
         data: List[str],
@@ -174,7 +175,7 @@ def filter_by_entity_type(data: List[str], pos_sync_tag: List[str], labels: List
     return filtered_data, filtered_tags, filtered_labels
 
 
-def get_sample(k: int, *args: List[Any]) -> List[List[str], ]:
+def get_sample(k: int, *args: List[Any]) -> List[List[str],]:
     """
     print(sample_data[0
     print(ent_type, sample_data[0
@@ -208,19 +209,8 @@ def get_sample(k: int, *args: List[Any]) -> List[List[str], ]:
 
 def augment_robustness(
         conll_path: str,
+        perturbation_map: Optional[Dict[str, float]] = None,
         entity_perturbation_map: Optional[Dict[str, Dict[str, float]]] = None,
-        capitalization_upper: Optional[Dict[str, float]] = None,
-        capitalization_lower: Optional[Dict[str, float]] = None,
-        capitalization_title: Optional[Dict[str, float]] = None,
-        add_punctuation: Optional[Dict[str, float]] = None,
-        strip_punctuation: Optional[Dict[str, float]] = None,
-        make_typos: Optional[Dict[str, float]] = None,
-        american_to_british: Optional[Dict[str, float]] = None,
-        british_to_american: Optional[Dict[str, float]] = None,
-        add_context: Optional[Dict[str, float]] = None,
-        contractions: Optional[Dict[str, float]] = None,
-        swap_entities: Optional[Dict[str, float]] = None,
-        swap_cohyponyms: Optional[Dict[str, float]] = None,
         optimized_inplace: bool = False,
         random_state: int = None,
         return_spark: bool = False,
@@ -240,6 +230,10 @@ def augment_robustness(
     :param conll_path: CoNLL file path to augment the dataset with given perturbations
     :param capitalization_upper: A dictionary of entities and desired proportions to augment with upper case.
     All tokens in the sentence will be augmented.
+    :param perturbation_map: A dictionary of perturbation names and desired perturbation proportions.
+    :param entity_perturbation_map: A dictionary of perturbation names and desired perturbation proportions defined
+    for each entity class.
+
     :param capitalization_lower: A dictionary of entities and desired proportions to augment with lower case.
     All tokens in the sentence will be augmented.
     :param capitalization_title: A dictionary of entities and desired proportions to augment with title case.
@@ -258,6 +252,7 @@ def augment_robustness(
     :param contractions: A dictionary of entities and desired proportions to contract sentence.
     :param swap_entities: Named entities replaced with same entity type with same token count from terminology.
     :param swap_cohyponyms: Named entities replaced with co-hyponym from the WordNet database.
+
     :param optimized_inplace: Optimization algorithm to run augmentation inplace. Entities in the sentence are
     distinctly counted, which means same perturbations applied to the entities at the same time.
     :param random_state: A random state to create perturbation in the same samples of data.
@@ -284,6 +279,10 @@ def augment_robustness(
 
     if conll_save_path is None and not return_spark:
         raise ValueError("conll_save_path or return_spark must be set to return augmented data.")
+
+    if perturbation_map is not None and entity_perturbation_map is not None:
+        logger.error('You used `entity_perturbation_map` and `perturbation_map`. Please only use one of these '
+                     'parameters.')
 
     docs = conll_reader(conll_path)
 
@@ -339,12 +338,38 @@ def augment_robustness(
         random.seed(random_state)
         logger.info(f' Random state is set to {random_state}.')
 
+    #   check if dict keys are correctly defined by user
+    def check_undefined_perturbations(utility_perturbation_map, perturbation_list):
+        undefined_perturbations = [k for k in utility_perturbation_map.keys() if k not in perturbation_list]
+        if len(undefined_perturbations) > 0:
+            for single_undefined_perturbation in undefined_perturbations:
+                logger.error(
+                    f"'{single_undefined_perturbation}' is not a valid perturbation. \nPlease pick a perturbation from "
+                    f"the following list:\n{perturbation_list}")
+
+    if perturbation_map is not None:
+        utility_perturbation_map = perturbation_map
+        check_undefined_perturbations(utility_perturbation_map=utility_perturbation_map,
+                                      perturbation_list=LIST_OF_PERTURBATIONS)
+        #   construct perturbation dictionary for use within rest of function
+        perturbation_dict = {key: value for (key, value) in
+                             tuple((x, dict(zip(entities, [perturbation_map[x]] * len(entities)))) for x in
+                                   [i for i in perturbation_map.keys() if i in LIST_OF_PERTURBATIONS])}
+
+    elif entity_perturbation_map is not None:
+        utility_perturbation_map = entity_perturbation_map
+        check_undefined_perturbations(utility_perturbation_map=utility_perturbation_map,
+                                      perturbation_list=LIST_OF_PERTURBATIONS)
+        #   construct perturbation dictionary for use within rest of function
+        # perturbation_dict =
+
+    if 'swap_entities' in utility_perturbation_map.keys():
+        terminology = create_terminology(data, labels)
+    else:
+        terminology = None
+
     a2b_dict = _A2B_DICT
     b2a_dict = {v: k for k, v in a2b_dict.items()}
-
-    terminology = None
-    if swap_entities:
-        terminology = create_terminology(data, labels)
 
     if starting_context is None:
         starting_context = ["Description:", "MEDICAL HISTORY:", "FINDINGS:", "RESULTS: ",
@@ -355,28 +380,6 @@ def augment_robustness(
         ending_context = ["according to the patient's family", "as stated by the patient",
                           "due to various circumstances", "confirmed by px"]
     ending_context = [re.split(regex_pattern, i) for i in ending_context if i != '']
-
-    # check if dict keys are correctly defined by user
-    undefined_perturbations = [k for k in entity_perturbation_map.keys() if k not in LIST_OF_PERTURBATIONS]
-    if len(undefined_perturbations) > 0:
-        for single_undefined_perturbation in undefined_perturbations:
-            print(f"'{single_undefined_perturbation}' is not a valid perturbation. \nPlease pick a perturbation from "
-                  f"the following list:\n{LIST_OF_PERTURBATIONS}")
-
-    perturbation_dict = {
-        "capitalization_upper": capitalization_upper,
-        "capitalization_lower": capitalization_lower,
-        "capitalization_title": capitalization_title,
-        "add_punctuation": add_punctuation,
-        "strip_punctuation": strip_punctuation,
-        "introduce_typos": make_typos,
-        "american_to_british": american_to_british,
-        "british_to_american": british_to_american,
-        "add_context": add_context,
-        "add_contractions": contractions,
-        "swap_entities": swap_entities,
-        "swap_cohyponyms": swap_cohyponyms
-    }
 
     perturb_args = {
         "capitalization_upper": {},
@@ -682,21 +685,7 @@ def test_and_augment_robustness(spark: SparkSession, pipeline_model: PipelineMod
         print("Test metrics have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
 
     else:
-        augment_robustness(
-            conll_path=conll_path_to_augment,
-            capitalization_upper=get_augmentation_proportions(suggestions, 'modify_capitalization_upper'),
-            capitalization_lower=get_augmentation_proportions(suggestions, 'modify_capitalization_lower'),
-            capitalization_title=get_augmentation_proportions(suggestions, 'modify_capitalization_title'),
-            add_punctuation=get_augmentation_proportions(suggestions, 'add_punctuation'),
-            strip_punctuation=get_augmentation_proportions(suggestions, 'strip_punctuation'),
-            make_typos=get_augmentation_proportions(suggestions, 'introduce_typos'),
-            american_to_british=get_augmentation_proportions(suggestions, 'american_to_british'),
-            british_to_american=get_augmentation_proportions(suggestions, 'british_to_american'),
-            add_context=get_augmentation_proportions(suggestions, 'add_context'),
-            contractions=get_augmentation_proportions(suggestions, 'add_contractions'),
-            swap_entities=get_augmentation_proportions(suggestions, 'swap_entities'),
-            swap_cohyponyms=get_augmentation_proportions(suggestions, 'swap_cohyponyms'),
-            random_state=random_state, return_spark=return_spark, ending_context=ending_context,
-            starting_context=starting_context, regex_pattern=regex_pattern, spark=spark,
-            conll_save_path=conll_save_path, print_info=print_info, ignore_warnings=ignore_warnings
-        )
+        augment_robustness(conll_path=conll_path_to_augment, random_state=random_state, return_spark=return_spark,
+                           ending_context=ending_context, starting_context=starting_context,
+                           regex_pattern=regex_pattern, spark=spark, conll_save_path=conll_save_path,
+                           print_info=print_info, ignore_warnings=ignore_warnings)
