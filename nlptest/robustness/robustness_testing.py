@@ -24,30 +24,30 @@ def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
     :param ending_context_tokens: list of ending context tokens to remove
     """
 
-    def match_starting_context(token_list):
+    def match_starting_context(tk_list):
 
         for context_token in starting_context_tokens:
             length_context = len(context_token)
-            token_string = " ".join([token.metadata['word'] for token in token_list[:length_context]])
+            token_string = " ".join([token.metadata['word'] for token in tk_list[:length_context]])
             if token_string == context_token:
                 return length_context
 
         return 0
 
-    def match_ending_context(token_list):
+    def match_ending_context(tk_list):
 
         for context_token in ending_context_tokens:
             length_context = len(context_token)
-            token_string = " ".join([token.metadata['word'] for token in token_list[-length_context:]])
+            token_string = " ".join([token.metadata['word'] for token in tk_list[-length_context:]])
             if token_string == context_token:
-                return len(token_list) - length_context
+                return len(tk_list) - length_context
 
-        return len(token_list)
+        return len(tk_list)
 
     outcome_list = []
     for token_list in column:
-        starting_indx = match_starting_context(token_list)
-        ending_indx = match_ending_context(token_list)
+        starting_indx = match_starting_context(tk_list=token_list)
+        ending_indx = match_ending_context(tk_list=token_list)
         outcome_list.append(token_list[starting_indx:ending_indx])
 
     return outcome_list
@@ -75,7 +75,7 @@ def remove_contraction_tokens(list_with_contractions: List[str], list_without_co
         del list_without_contractions[contraction_idx:contraction_idx + 2]
 
 
-def remove_punctuation_tokens(column: List[str]) -> List[str]:
+def remove_punctuation_tokens(column: List[str]) -> List[List[str]]:
     """
     Removes all punctuation tokens from input sentences
 
@@ -172,7 +172,8 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     :param metric_type: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
     which disrupt token match-up between original test set and noisy test set, options are None,
     'remove_context_tokens', 'remove_contraction_tokens', 'remove_punctuation_tokens'
-    :param starting_context_token_list: list of starting context tokens to add when applying the 'add_context' noise type
+    :param starting_context_token_list: list of starting context tokens to add when applying the 'add_context'
+    noise type
     :param ending_context_token_list: list of ending context tokens to add when applying the 'add_context' noise type
     """
     report_text = '\n\n' + noise_type + '\nGenerated noise: ' + noise_description
@@ -269,8 +270,8 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     filtered_sentences = total_amount - len(filtered_df)
 
     report_text = report_text + '\nA total amount of ' + str(filtered_sentences) + \
-                  " were filtered out due to mismatching tokenization (" + \
-                  str((round(100 * (filtered_sentences / total_amount), 2))) + "% of the test set)."
+        " were filtered out due to mismatching tokenization (" + \
+        str((round(100 * (filtered_sentences / total_amount), 2))) + "% of the test set)."
 
     filtered_df = filtered_df.apply(pd.Series.explode).reset_index()
 
@@ -485,7 +486,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
         noise_description = PERTURB_DESCRIPTIONS[test_type]
 
         aug_indx, aug_sent, _, _ = PERTURB_FUNC_MAP[test_type](test_set, noise_prob=noise_prob,
-                                                                **perturb_args[test_type])
+                                                               **perturb_args[test_type])
         noisy_test_sent = deepcopy(test_set)
         for sentence, indx in zip(aug_sent, aug_indx):
             noisy_test_sent[indx] = sentence
