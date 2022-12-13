@@ -418,9 +418,9 @@ def swap_entities_with_terminology(
         ent_type = sent_labels[replace_indx][2:]
         replace_indxs = [replace_indx]
         if replace_indx < len(sent_labels) - 1:
-            for indx, label in enumerate(sent_labels[replace_indx + 1:]):
+            for i, label in enumerate(sent_labels[replace_indx + 1:]):
                 if label == f'I-{ent_type}':
-                    replace_indxs.append(indx + replace_indx + 1)
+                    replace_indxs.append(i + replace_indx + 1)
                 else:
                     break
 
@@ -833,8 +833,8 @@ def add_contractions(
 
 
 LIST_OF_PERTURBATIONS = ["capitalization_upper", "capitalization_lower", "capitalization_title", "add_punctuation",
-                          "strip_punctuation", "introduce_typos", "american_to_british", "british_to_american",
-                          "add_context", "add_contractions", "swap_entities", "swap_cohyponyms"]
+                         "strip_punctuation", "introduce_typos", "american_to_british", "british_to_american",
+                         "add_context", "add_contractions", "swap_entities", "swap_cohyponyms"]
 
 PERTURB_FUNC_MAP = {
     "capitalization_upper": modify_capitalization_upper,
