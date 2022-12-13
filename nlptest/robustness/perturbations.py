@@ -147,7 +147,8 @@ def add_punctuation_to_data(
         labels: List[str] = None,
         noise_prob: float = None
 ) -> Tuple[List[int], List[str], List[str], List[str]]:
-    """Adds a punctuation at the end of strings.
+    """
+    Adds a punctuation at the end of strings.
 
     :param sentences: List of sentences to process.
     :param tags: Corresponding tags to make changes according to data.
@@ -230,7 +231,7 @@ def add_typo_to_sentence(
         sentence: str,
 ) -> str:
     """
-    Add typo the the single sentence using keyboard typo and swap typo.
+    Add typo to a single sentence using keyboard typo and swap typo.
 
     :param sentence: List of sentences to process.
     :return: Input sentence with typo added.
