@@ -8,15 +8,11 @@ from typing import Optional, List, Dict, Any
 
 from sparknlp.base import PipelineModel
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import Row
 
 from .robustness_testing import test_robustness
-from .perturbations import _PERTURB_FUNC_MAP, create_terminology
-from .utils import (
-    _DF_SCHEMA,
-    _A2B_DICT,
-    suggest_perturbations,
-    get_augmentation_proportions
-)
+from .perturbations import PERTURB_FUNC_MAP, LIST_OF_PERTURBATIONS, create_terminology
+from .utils import DF_SCHEMA, A2B_DICT, suggest_perturbations
 
 
 def create_dataframe(
@@ -27,14 +23,13 @@ def create_dataframe(
 ) -> DataFrame:
     """
     Create Spark Dataframe from given data and labels extracted from the CoNLL file.
+
     :param spark: An active spark session to create the dataframe.
     :param data: List of sentences.
-    :param pos_sync_tags: List of pos and synthetic tags seperated by '-' and whitespace.
+    :param pos_sync_tags: List of pos and synthetic tags separated by '-' and whitespace.
     :param labels: Corresponding NER labels of the data.
     :return: Spark DataFrame consisting of 'text', 'document', 'sentence', 'token', 'label', 'pos' columns.
     """
-    from pyspark.sql.types import Row
-
     spark_data = []
     for sentence, sentence_tags, sentence_label in zip(data, pos_sync_tags, labels):
 
@@ -100,12 +95,13 @@ def create_dataframe(
             }
         )
 
-    return spark.createDataFrame(spark_data, _DF_SCHEMA)
+    return spark.createDataFrame(spark_data, DF_SCHEMA)
 
 
 def conll_reader(conll_path: str) -> List[tuple]:
     """
     Read CoNLL file and convert it to the list of labels and sentences.
+
     :param conll_path: CoNLL file path.
     :return: data and labels which have sentences and labels joined with the single space.
     """
@@ -155,6 +151,7 @@ def filter_by_entity_type(data: List[str], pos_sync_tag: List[str], labels: List
         -> (List[str], List[str], List[str]):
     """
     A function to filter data by the entity type.
+
     :param data: List of sentences to be filtered by the entity type.
     :param pos_sync_tag: List of tags extracted from CoNLL file.
     :param labels: List of labels to be filtered by the entity type.
@@ -177,9 +174,8 @@ def filter_by_entity_type(data: List[str], pos_sync_tag: List[str], labels: List
 
 def get_sample(k: int, *args: List[Any]) -> List[List[str], ]:
     """
-    print(sample_data[0
-    print(ent_type, sample_data[0
     A function to get sample from passed lists.
+
     :param k: Number of sample for each list.
     :param args: List to get sample. Every list passed should be exactly same length.
     :return: Sampled lists.
@@ -209,18 +205,8 @@ def get_sample(k: int, *args: List[Any]) -> List[List[str], ]:
 
 def augment_robustness(
         conll_path: str,
-        capitalization_upper: Optional[Dict[str, float]] = None,
-        capitalization_lower: Optional[Dict[str, float]] = None,
-        capitalization_title: Optional[Dict[str, float]] = None,
-        add_punctuation: Optional[Dict[str, float]] = None,
-        strip_punctuation: Optional[Dict[str, float]] = None,
-        make_typos: Optional[Dict[str, float]] = None,
-        american_to_british: Optional[Dict[str, float]] = None,
-        british_to_american: Optional[Dict[str, float]] = None,
-        add_context: Optional[Dict[str, float]] = None,
-        contractions: Optional[Dict[str, float]] = None,
-        swap_entities: Optional[Dict[str, float]] = None,
-        swap_cohyponyms: Optional[Dict[str, float]] = None,
+        perturbation_map: Optional[Dict[str, float]] = None,
+        entity_perturbation_map: Optional[Dict[str, Dict[str, float]]] = None,
         optimized_inplace: bool = False,
         random_state: int = None,
         return_spark: bool = False,
@@ -238,35 +224,31 @@ def augment_robustness(
     Noise is applied at the beginning of the training, and it can also be applied after each epoch.
 
     :param conll_path: CoNLL file path to augment the dataset with given perturbations
-    :param capitalization_upper: A dictionary of entities and desired proportions to augment with upper case.
-    All tokens in the sentence will be augmented.
-    :param capitalization_lower: A dictionary of entities and desired proportions to augment with lower case.
-    All tokens in the sentence will be augmented.
-    :param capitalization_title: A dictionary of entities and desired proportions to augment with title case.
-    All tokens in the sentence will be augmented.
-    :param add_punctuation: A dictionary of entities and desired proportions
-    to add or replace punctuation at the end of the sentence.
-    :param strip_punctuation: A dictionary of entities and desired proportions
-    to strip punctuation from the sentence.
-    :param make_typos: A dictionary of entities and desired proportions to make typos in the dataset.
-    :param american_to_british: A dictionary of entities and desired proportions
-    to convert data to british spelling from american spelling.
-    :param british_to_american: A dictionary of entities and desired proportions
-    to convert data to american spelling from british spelling.
-    :param add_context: A dictionary of entities and desired proportions
-    to add context at the beginning or end (or both) of the sentences.
-    :param contractions: A dictionary of entities and desired proportions to contract sentence.
-    :param swap_entities: Named entities replaced with same entity type with same token count from terminology.
-    :param swap_cohyponyms: Named entities replaced with co-hyponym from the WordNet database.
-    :param optimized_inplace: Optimization algorithm to run augmentation inplace. Entities in the sentence are
-    distinctly counted, which means same perturbations applied to the entities at the same time.
+    :param perturbation_map: A dictionary of perturbation names and desired perturbation proportions. Options include
+    'modify_capitalization_upper': capitalization of the sentences is turned into uppercase
+    'modify_capitalization_lower': capitalization of the sentences is turned into lowercase
+    'modify_capitalization_title': capitalization of the sentences is turned into title case
+    'add_punctuation': special characters at end of each sentence are replaced by other special characters, if no
+    special character at the end, one is added
+    'strip_punctuation': special characters are removed from the sentences (except if found in numbers, such as '2.5')
+    'introduce_typos': typos are introduced in sentences
+    'add_contractions': contractions are added where possible (e.g. 'do not' contracted into 'don't')
+    'add_context': tokens are added at the beginning and at the end of the sentences.
+    'swap_entities': named entities replaced with same entity type with same token count from terminology.
+    'swap_cohyponyms': Named entities replaced with co-hyponym from the WordNet database.
+    'american_to_british': American English will be changed to British English
+    'british_to_american': British English will be changed to American English
+    :param entity_perturbation_map: A dictionary of perturbation names and desired perturbation proportions defined
+    for each entity class. Options are identical to those passed in `perturbation_map`.
+    :param optimized_inplace: Optimization algorithm to run augmentations inplace. This means the modified CoNLL will
+    contain the same number of sentences as the original CoNLL.
     :param random_state: A random state to create perturbation in the same samples of data.
     :param return_spark: Return Spark DataFrame instead of CoNLL file.
     :param regex_pattern: Regex pattern to tokenize context and contractions by splitting.
     :param spark: An active spark session to create DataFrame.
     :param conll_save_path: A path to save augmented CoNLL file.
     :param ignore_warnings: Ignore warnings about augmentation, default is False.
-    :param print_info: Log informations about augmentation, default is False.
+    :param print_info: Log information about augmentation, default is False.
     :param starting_context: Pass custom starting context for add_context.
     :param ending_context: Pass custom ending context for add_context.
     :return: Augmented CoNLL file or Spark DataFrame.
@@ -284,6 +266,10 @@ def augment_robustness(
 
     if conll_save_path is None and not return_spark:
         raise ValueError("conll_save_path or return_spark must be set to return augmented data.")
+
+    if perturbation_map is not None and entity_perturbation_map is not None:
+        raise ValueError('You used `entity_perturbation_map` and `perturbation_map`. Please only use one of these '
+                         'parameters since they accomplish the same task with a different level of detail.')
 
     docs = conll_reader(conll_path)
 
@@ -339,12 +325,44 @@ def augment_robustness(
         random.seed(random_state)
         logger.info(f' Random state is set to {random_state}.')
 
-    a2b_dict = _A2B_DICT
-    b2a_dict = {v: k for k, v in a2b_dict.items()}
+    def _check_undefined_perturbations(passed_perturbation_map, perturbation_list):
+        """
+        Checks if the user has passed some invalid keys to the perturbation dictionary.
 
-    terminology = None
-    if swap_entities:
+        :param passed_perturbation_map: The perturbation dictionary passed by the user.
+        :param perturbation_list: The list of valid perturbations.
+        :return: Raises an error if user passes invalid perturbations
+        """
+        undefined_perturbations = [k for k in passed_perturbation_map.keys() if k not in perturbation_list]
+        if len(undefined_perturbations) > 0:
+            for single_undefined_perturbation in undefined_perturbations:
+                raise ValueError(
+                    f"'{single_undefined_perturbation}' is not a valid perturbation. \nPlease pick a perturbation from "
+                    f"the following list:\n{perturbation_list}")
+
+    if perturbation_map is not None:
+        utility_perturbation_map = perturbation_map
+        _check_undefined_perturbations(passed_perturbation_map=utility_perturbation_map,
+                                       perturbation_list=LIST_OF_PERTURBATIONS)
+        #   construct perturbation dictionary for use within rest of function
+        perturbation_dict = {key: value for (key, value) in
+                             tuple((x, dict(zip(entities, [perturbation_map[x]] * len(entities)))) for x in
+                                   [i for i in perturbation_map.keys() if i in LIST_OF_PERTURBATIONS])}
+
+    elif entity_perturbation_map is not None:
+        utility_perturbation_map = entity_perturbation_map
+        _check_undefined_perturbations(passed_perturbation_map=utility_perturbation_map,
+                                       perturbation_list=LIST_OF_PERTURBATIONS)
+        #   construct perturbation dictionary for use within rest of function
+        perturbation_dict = entity_perturbation_map
+
+    if 'swap_entities' in utility_perturbation_map.keys():
         terminology = create_terminology(data, labels)
+    else:
+        terminology = None
+
+    a2b_dict = A2B_DICT
+    b2a_dict = {v: k for k, v in a2b_dict.items()}
 
     if starting_context is None:
         starting_context = ["Description:", "MEDICAL HISTORY:", "FINDINGS:", "RESULTS: ",
@@ -355,21 +373,6 @@ def augment_robustness(
         ending_context = ["according to the patient's family", "as stated by the patient",
                           "due to various circumstances", "confirmed by px"]
     ending_context = [re.split(regex_pattern, i) for i in ending_context if i != '']
-
-    perturbation_dict = {
-        "capitalization_upper": capitalization_upper,
-        "capitalization_lower": capitalization_lower,
-        "capitalization_title": capitalization_title,
-        "add_punctuation": add_punctuation,
-        "strip_punctuation": strip_punctuation,
-        "introduce_typos": make_typos,
-        "american_to_british": american_to_british,
-        "british_to_american": british_to_american,
-        "add_context": add_context,
-        "add_contractions": contractions,
-        "swap_entities": swap_entities,
-        "swap_cohyponyms": swap_cohyponyms
-    }
 
     perturb_args = {
         "capitalization_upper": {},
@@ -457,7 +460,7 @@ def augment_robustness(
                     sample_total += len(sample_indx)
 
                     #  apply transformation to the proportion
-                    aug_indx, aug_data, aug_tags, aug_labels = _PERTURB_FUNC_MAP[perturb_type](
+                    aug_indx, aug_data, aug_tags, aug_labels = PERTURB_FUNC_MAP[perturb_type](
                         sample_data, sample_tags, sample_labels, **perturb_args[perturb_type])
 
                     inplace_data.extend(aug_data)
@@ -537,7 +540,7 @@ def augment_robustness(
                                                                      filtered_data, filtered_tags, filtered_labels)
 
                 #  apply transformation to the proportion
-                _, aug_data, aug_tags, aug_labels = _PERTURB_FUNC_MAP[perturb_type](
+                _, aug_data, aug_tags, aug_labels = PERTURB_FUNC_MAP[perturb_type](
                     sample_data, sample_tags, sample_labels, **perturb_args[perturb_type])
 
                 augmentation_coverage_info = round(len(aug_data) / len(sample_data), 2)
@@ -619,15 +622,18 @@ def test_and_augment_robustness(spark: SparkSession, pipeline_model: PipelineMod
                                 metrics_output_format: str = 'dictionary',
                                 log_path: str = 'robustness_test_results.json',
                                 noise_prob: float = 0.5,
+                                sample_sentence_count: int = None,
                                 test: Optional[List[str]] = None,
                                 starting_context: Optional[List[str]] = None,
                                 ending_context: Optional[List[str]] = None,
+                                optimized_inplace: bool = False,
                                 random_state=None,
                                 return_spark: bool = False,
                                 regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])",
                                 print_info: bool = False,
                                 ignore_warnings: bool = False):
-    """One-liner to test and augment CoNLL for robustness.
+    """
+    One-liner to test and augment CoNLL for robustness.
 
     :param spark: An active SparkSession to create Spark DataFrame
     :param pipeline_model: PipelineModel with document assembler, sentence detector, tokenizer, word embeddings if
@@ -640,6 +646,7 @@ def test_and_augment_robustness(spark: SparkSession, pipeline_model: PipelineMod
     :param metrics_output_format: 'dictionary' to get a dictionary report, 'dataframe' to get a dataframe report
     :param log_path: Path to log file, False to avoid saving test results. Default 'robustness_test_results.json'
     :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
+    :param sample_sentence_count: Number of sentence that will be sampled from the test_data.
     :param test: type of robustness test implemented by the function, options include
     'modify_capitalization_upper': capitalization of the test set is turned into uppercase
     'modify_capitalization_lower': capitalization of the test set is turned into lowercase
@@ -652,12 +659,12 @@ def test_and_augment_robustness(spark: SparkSession, pipeline_model: PipelineMod
     'add_context': tokens are added at the beginning and at the end of the sentences.
     'swap_entities': named entities replaced with same entity type with same token count from terminology.
     'swap_cohyponyms': Named entities replaced with co-hyponym from the WordNet database.
-    'american_to_british': American English will be changed to British English, test_set_language should be set to
-    'American English' (default)
-    'british_to_american': British English will be changed to American English, test_set_language should be set to
-    'British English'
+    'american_to_british': American English will be changed to British English
+    'british_to_american': British English will be changed to American English
     :param starting_context: list of context tokens to add to beginning when running the 'add_context' test
     :param ending_context: list of context tokens to add to end when running the 'add_context' test
+    :param optimized_inplace: Optimization algorithm to run augmentations inplace. This means the modified CoNLL will
+    contain the same number of sentences as the original CoNLL.
     :param random_state: A random state to create perturbation in the same samples of data.
     :param return_spark: Return Spark DataFrame instead of CoNLL file.
     :param regex_pattern: Regex pattern to tokenize context and contractions by splitting.
@@ -666,30 +673,18 @@ def test_and_augment_robustness(spark: SparkSession, pipeline_model: PipelineMod
     """
     test_results = test_robustness(spark=spark, pipeline_model=pipeline_model, test_file_path=test_file_path,
                                    metric_type=metric_type, metrics_output_format=metrics_output_format,
-                                   log_path=log_path, noise_prob=noise_prob, test=test,
+                                   log_path=log_path, noise_prob=noise_prob,
+                                   sample_sentence_count=sample_sentence_count, test=test,
                                    starting_context=starting_context, ending_context=ending_context)
 
     suggestions = suggest_perturbations(test_results)
 
     if suggestions == {}:
-        print("Test metrics have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
+        print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
 
     else:
-        augment_robustness(
-            conll_path=conll_path_to_augment,
-            capitalization_upper=get_augmentation_proportions(suggestions, 'modify_capitalization_upper'),
-            capitalization_lower=get_augmentation_proportions(suggestions, 'modify_capitalization_lower'),
-            capitalization_title=get_augmentation_proportions(suggestions, 'modify_capitalization_title'),
-            add_punctuation=get_augmentation_proportions(suggestions, 'add_punctuation'),
-            strip_punctuation=get_augmentation_proportions(suggestions, 'strip_punctuation'),
-            make_typos=get_augmentation_proportions(suggestions, 'introduce_typos'),
-            american_to_british=get_augmentation_proportions(suggestions, 'american_to_british'),
-            british_to_american=get_augmentation_proportions(suggestions, 'british_to_american'),
-            add_context=get_augmentation_proportions(suggestions, 'add_context'),
-            contractions=get_augmentation_proportions(suggestions, 'add_contractions'),
-            swap_entities=get_augmentation_proportions(suggestions, 'swap_entities'),
-            swap_cohyponyms=get_augmentation_proportions(suggestions, 'swap_cohyponyms'),
-            random_state=random_state, return_spark=return_spark, ending_context=ending_context,
-            starting_context=starting_context, regex_pattern=regex_pattern, spark=spark,
-            conll_save_path=conll_save_path, print_info=print_info, ignore_warnings=ignore_warnings
-        )
+        augment_robustness(conll_path=conll_path_to_augment, entity_perturbation_map=suggestions,
+                           optimized_inplace=optimized_inplace, random_state=random_state, return_spark=return_spark,
+                           ending_context=ending_context, starting_context=starting_context,
+                           regex_pattern=regex_pattern, spark=spark, conll_save_path=conll_save_path,
+                           print_info=print_info, ignore_warnings=ignore_warnings)

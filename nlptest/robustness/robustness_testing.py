@@ -5,8 +5,8 @@ from copy import deepcopy
 import pandas as pd
 from pandas import DataFrame
 
-from .utils import _A2B_DICT
-from .perturbations import _PERTURB_FUNC_MAP, _PERTURB_DESCRIPTIONS, create_terminology
+from .utils import A2B_DICT
+from .perturbations import PERTURB_FUNC_MAP, PERTURB_DESCRIPTIONS, create_terminology
 
 from pyspark.sql import SparkSession
 from sparknlp.base import PipelineModel
@@ -16,44 +16,46 @@ from sklearn.metrics import classification_report
 
 def remove_context_tokens(column: List[str], starting_context_tokens: List[str],
                           ending_context_tokens: List[str]) -> List[str]:
-    """Removes user-defined context tokens from strings
+    """
+    Removes user-defined context tokens from strings
 
     :param column: list of sentences to process
     :param starting_context_tokens: list of starting context tokens to remove
     :param ending_context_tokens: list of ending context tokens to remove
     """
 
-    def match_starting_context(token_list):
+    def match_starting_context(tk_list):
 
         for context_token in starting_context_tokens:
             length_context = len(context_token)
-            token_string = " ".join([token.metadata['word'] for token in token_list[:length_context]])
+            token_string = " ".join([token.metadata['word'] for token in tk_list[:length_context]])
             if token_string == context_token:
                 return length_context
 
         return 0
 
-    def match_ending_context(token_list):
+    def match_ending_context(tk_list):
 
         for context_token in ending_context_tokens:
             length_context = len(context_token)
-            token_string = " ".join([token.metadata['word'] for token in token_list[-length_context:]])
+            token_string = " ".join([token.metadata['word'] for token in tk_list[-length_context:]])
             if token_string == context_token:
-                return len(token_list) - length_context
+                return len(tk_list) - length_context
 
-        return len(token_list)
+        return len(tk_list)
 
     outcome_list = []
     for token_list in column:
-        starting_indx = match_starting_context(token_list)
-        ending_indx = match_ending_context(token_list)
+        starting_indx = match_starting_context(tk_list=token_list)
+        ending_indx = match_ending_context(tk_list=token_list)
         outcome_list.append(token_list[starting_indx:ending_indx])
 
     return outcome_list
 
 
 def remove_contraction_tokens(list_with_contractions: List[str], list_without_contractions: List[str]) -> None:
-    """Removes contraction tokens
+    """
+    Removes contraction tokens
 
     :param list_with_contractions: list of sentences with contractions
     :param list_without_contractions: list of sentences without contractions
@@ -73,8 +75,9 @@ def remove_contraction_tokens(list_with_contractions: List[str], list_without_co
         del list_without_contractions[contraction_idx:contraction_idx + 2]
 
 
-def remove_punctuation_tokens(column: List[str]) -> List[str]:
-    """Removes all punctuation tokens from input sentences
+def remove_punctuation_tokens(column: List[str]) -> List[List[str]]:
+    """
+    Removes all punctuation tokens from input sentences
 
     :param column: list of sentences to process
     """
@@ -96,7 +99,8 @@ def remove_punctuation_tokens(column: List[str]) -> List[str]:
 
 
 def calculate_metrics(filtered_df: DataFrame, method: str = 'strict') -> Dict[str, Any]:
-    """Calculates comparison metrics for robustness
+    """
+    Calculates comparison metrics for robustness
 
     :param filtered_df: dataframe created during robustness tests
     :param method: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
@@ -148,8 +152,10 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
              metric_type: str, starting_context_token_list: Optional[List[str]] = None,
              ending_context_token_list: Optional[List[str]] = None,
              ) -> Tuple[DataFrame, str, DataFrame]:
-    """Runs comparisons between original list of sentences and noisy list of sentences, returning metrics and dataframe
+    """
+    Runs comparisons between original list of sentences and noisy list of sentences, returning metrics and dataframe
     for comparison
+
     :param spark: An active Spark Session to create spark DataFrame
     :param noise_type: type of noise to introduce in sentences for running tests on 'modify_capitalization_upper',
     'modify_capitalization_lower', 'modify_capitalization_title', 'add_punctuation', 'strip_punctuation',
@@ -166,7 +172,8 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     :param metric_type: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
     which disrupt token match-up between original test set and noisy test set, options are None,
     'remove_context_tokens', 'remove_contraction_tokens', 'remove_punctuation_tokens'
-    :param starting_context_token_list: list of starting context tokens to add when applying the 'add_context' noise type
+    :param starting_context_token_list: list of starting context tokens to add when applying the 'add_context'
+    noise type
     :param ending_context_token_list: list of ending context tokens to add when applying the 'add_context' noise type
     """
     report_text = '\n\n' + noise_type + '\nGenerated noise: ' + noise_description
@@ -263,8 +270,8 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     filtered_sentences = total_amount - len(filtered_df)
 
     report_text = report_text + '\nA total amount of ' + str(filtered_sentences) + \
-                  " were filtered out due to mismatching tokenization (" + \
-                  str((round(100 * (filtered_sentences / total_amount), 2))) + "% of the test set)."
+        " were filtered out due to mismatching tokenization (" + \
+        str((round(100 * (filtered_sentences / total_amount), 2))) + "% of the test set)."
 
     filtered_df = filtered_df.apply(pd.Series.explode).reset_index()
 
@@ -293,6 +300,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
 def conll_sentence_reader(conll_path: str) -> List[str]:
     """
     Read CoNLL file and convert it to the list of sentences.
+
     :param conll_path: CoNLL file path.
     :return: list of sentences in the conll data.
     """
@@ -336,7 +344,8 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
                     test: Optional[List[str]] = None,
                     starting_context: Optional[List[str]] = None,
                     ending_context: Optional[List[str]] = None) -> Dict[str, Any]:
-    """Tests robustness of a NER model by applying different types of noise generating functions to a list of sentences.
+    """
+    Tests robustness of a NER model by applying different types of noise generating functions to a list of sentences.
     Metrics are calculated by comparing model's extractions in the original list of sentences set with the extractions
     done in the noisy list of sentences.
 
@@ -451,7 +460,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
 
         terminology = create_terminology(sentences, labels)
 
-    a2b_dict = _A2B_DICT
+    a2b_dict = A2B_DICT
     b2a_dict = {v: k for k, v in a2b_dict.items()}
 
     perturb_args = {
@@ -474,10 +483,10 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
 
     for test_type in test:
 
-        noise_description = _PERTURB_DESCRIPTIONS[test_type]
+        noise_description = PERTURB_DESCRIPTIONS[test_type]
 
-        aug_indx, aug_sent, _, _ = _PERTURB_FUNC_MAP[test_type](test_set, noise_prob=noise_prob,
-                                                                **perturb_args[test_type])
+        aug_indx, aug_sent, _, _ = PERTURB_FUNC_MAP[test_type](test_set, noise_prob=noise_prob,
+                                                               **perturb_args[test_type])
         noisy_test_sent = deepcopy(test_set)
         for sentence, indx in zip(aug_sent, aug_indx):
             noisy_test_sent[indx] = sentence
