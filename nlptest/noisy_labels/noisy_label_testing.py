@@ -57,18 +57,18 @@ def get_unique_entities(conll_path: str) -> List[str]:
 
 
 def test_label_errors(spark: SparkSession, training_pipeline: Pipeline,
-                      conll_path: str, k: int = 4, threshold: float = 0.3,
+                      conll_path: str, k_fold: int = 4, threshold: float = 0.3,
                       log_path: str = 'noisy_label_test_results.json') -> pd.DataFrame:
     """
-    This function splits the data in k parts and gets predictions for each part using a model trained in the rest of the
-    parts (k - 1). The process is similar to cross-validation. This function creates an error report that can be used to
+    This function splits the data in k_fold parts and gets predictions for each part using a model trained in the rest of the
+    parts (k_fold - 1). The process is similar to cross-validation. This function creates an error report that can be used to
     identify the most probable labeling errors in the dataset.
 
     :param spark: An active spark session.
     :param training_pipeline: Training pipeline with NerDLApproach to train with each k-folds. Output column of
     NerDLApproach should be `ner` and 'setIncludeConfidenceScores' and 'setIncludeConfidence' is set as True.
     :param conll_path: Path to CoNLL data.
-    :param k:  Amount of parts in which the training data is going to be split for cross-validation. This number 
+    :param k_fold:  Number of folds in which the training data is going to be split for cross-validation. This number
     should be between [3, 10]. The higher the number, the longer it will take to get predictions.
     :param threshold: Threshold to filter noisy label issues. Should be between 0 and 1.
     :param log_path: Path to log file, False to avoid saving test results. Default 'noisy_label_test_results.json'
@@ -97,14 +97,14 @@ def test_label_errors(spark: SparkSession, training_pipeline: Pipeline,
 
     data = data.withColumn("sent_id", row_number().over(Window.orderBy(monotonically_increasing_id())) - 1)
 
-    portion_split = [1 / k] * k
+    portion_split = [1 / k_fold] * k_fold
     data_splits = data.randomSplit(portion_split)
-    assert 2 < k < 11, "Argument 'k' out of range [3, 10]"
+    assert 2 < k_fold < 11, "Argument 'k_fold' out of range [3, 10]"
 
     # global counter to track chunks
     chunk_counter = 0
     prediction_counter = 0
-    for k_trial in range(k):
+    for k_trial in range(k_fold):
 
         test_data = data_splits[k_trial]
         test_ids = test_data.select('sent_id').collect()
@@ -112,7 +112,7 @@ def test_label_errors(spark: SparkSession, training_pipeline: Pipeline,
 
         train_data = data.filter(~data.sent_id.isin(test_ids))
 
-        print(f"Training {k_trial + 1}/{k} is started.")
+        print(f"Training {k_trial + 1}/{k_fold} is started.")
         trained_model = training_pipeline.fit(train_data)
 
         is_model_allowed = False
@@ -124,7 +124,7 @@ def test_label_errors(spark: SparkSession, training_pipeline: Pipeline,
                 is_model_allowed = True
         assert is_model_allowed, 'Pipeline is invalid! Make sure it contains NerDLApproach or MedicalNerApproach.'
 
-        print(f"Training {k_trial + 1}/{k} is completed.")
+        print(f"Training {k_trial + 1}/{k_fold} is completed.")
         ner_results = trained_model.transform(test_data).collect()
 
         labels_all = []
