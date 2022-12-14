@@ -9,6 +9,7 @@ from pandas import DataFrame
 def conll_reader(conll_path: str) -> List[tuple]:
     """
     Read CoNLL file and convert it to the list of labels and sentences.
+
     :param conll_path: CoNLL file path.
     :return: data and labels which have sentences and labels joined with the single space.
     """
@@ -68,6 +69,7 @@ def conll_writer(
 ) -> int:
     """
     Takes sentences_list, tags_list and labels_list and write to CoNLL file, docs can be separated with docs_indx.
+
     :param sentences: List of sentences, tokens are joined with whitespace.
     :param pos_tags: List of pos tags.
     :param chunk_tags: List of chunk tags.
@@ -115,6 +117,7 @@ def update_with_model_predictions(
 ) -> str:
     """
     A method to update CoNLL with label fixes. Takes output dataframe of test_label_errors as input.
+
     :param conll_path: Path to CoNLL data which will be fixed with replacements.
     :param fix_df: test_label_errors output, dataframe consist of sent_indx, token_indx and correct label.
     :param threshold: minimum error score for replacements.
@@ -148,6 +151,7 @@ def update_with_model_predictions(
 def apply_label_fixes(conll_path: str, label_fixes: Dict[Tuple[int, int], str], save_path: str = None) -> int:
     """
     A method to update CoNLL with label fixes. Takes CoNLL data path and dictionary of label fixes as input.
+
     :param conll_path: Path to CoNLL data which will be fixed with replacements.
     :param label_fixes: Dictionary where sentence and token indexes are mapped to replacements. Keys should be passed
     in tuple format, e.g (sent_index, token index) and values should be corresponding entity to be replaced.
@@ -202,6 +206,7 @@ def add_flag_to_conll(
 ) -> str:
     """
     A method to add label flag to CoNLL data. Takes CoNLL data path and dictionary of flag fixes as input.
+
     :param conll_path: Path to CoNLL data.
     :param flag_indexes: List of tuples where each tuple have sent_indx and token_indx, e.g (sent_indx, token_indx)
     :param flag: String that will be replaced with part of speech and syntactic tag in the CoNLL file. Default is *.
@@ -240,7 +245,6 @@ def add_flag_to_conll(
         labels.extend(doc[3])
 
     for sent_indx, token_indx in flag_indexes:
-
         sample_pos_tags = pos_tags[sent_indx].split()
         sample_chunk_tags = chunk_tags[sent_indx].split()
 
@@ -261,13 +265,11 @@ def add_flag_to_conll(
 class InteractiveFix:
     """
     Creates UI in Jupyter Notebook cell for interactive fixing.
-    Parameters
-    ----------
-    result_df: :class:`pandas.DataFrame`
-        Pandas DataFrame returned from `find_label_errors`
-    default_strategy: str, Default strategy to apply each issue in the page. Can be one of 'flag issue', 'prediction',
+
+    :param result_df: Pandas DataFrame returned from `test_label_errors`.
+    :param default_strategy: Default strategy to apply each issue in the page. Can be one of 'flag issue', 'prediction',
     'None'. Default is None.
-    page_size: int, Number of sample displayed in each page.
+    :param page_size: Number of sample displayed in each page.
     """
 
     def __init__(
@@ -319,8 +321,10 @@ class InteractiveFix:
             grid[i:i + 1, 11:14] = self.get_cell_element(self.table['token'][self.curr_indx + i], css_class)
             grid[i:i + 1, 14:17] = self.get_cell_element(self.table['ground_truth'][self.curr_indx + i], css_class)
             grid[i:i + 1, 17:20] = self.get_cell_element(self.table['prediction'][self.curr_indx + i], css_class)
-            grid[i:i + 1, 20:23] = self.get_cell_element('{:.2f}'.format(self.table['prediction_confidence'][self.curr_indx + i]), css_class)
-            grid[i:i + 1, 23:26] = self.get_cell_element('{:.2f}'.format(self.table['score'][self.curr_indx + i]), css_class)
+            grid[i:i + 1, 20:23] = self.get_cell_element(
+                '{:.2f}'.format(self.table['prediction_confidence'][self.curr_indx + i]), css_class)
+            grid[i:i + 1, 23:26] = self.get_cell_element('{:.2f}'.format(self.table['score'][self.curr_indx + i]),
+                                                         css_class)
             grid[i:i + 1, 26:30] = self.get_drop_down(self.curr_indx + i, css_class)
 
     def get_header(self):
