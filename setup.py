@@ -17,7 +17,7 @@ REQUIRED_PKGS = [
     'numpy',
     'pandas',
     'wn',
-    'sparknlp==4.2.4',
+    'spark-nlp==4.2.4',
     'pyspark==3.1.2'
 ]
 
