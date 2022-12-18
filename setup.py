@@ -15,7 +15,8 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 REQUIRED_PKGS = [
     'numpy',
-    'pandas'
+    'pandas',
+    'wn'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
