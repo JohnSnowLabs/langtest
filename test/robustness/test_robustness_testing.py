@@ -1,5 +1,5 @@
 import unittest
-from nlptest import test_robustness
+from nlptest.robustness.robustness_testing import test_robustness
 import sparknlp
 from sparknlp.annotator import *
 from pyspark.ml import Pipeline
