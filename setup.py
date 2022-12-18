@@ -16,7 +16,9 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 REQUIRED_PKGS = [
     'numpy',
     'pandas',
-    'wn'
+    'wn',
+    'sparknlp==4.2.4',
+    'pyspark==3.1.2'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
