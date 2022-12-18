@@ -33,7 +33,7 @@ class TestRobustnessTesting(unittest.TestCase):
         self.pipeline_model = ner_pipeline.fit(self.spark.createDataFrame([[""]]).toDF("text"))
 
         # Set the test file path
-        self.test_file_path = "resources/test.conll"
+        self.test_file_path = "../resources/test.conll"
 
     def test_dict_and_keys(self):
         # Test robustness using default parameters

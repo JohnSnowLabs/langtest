@@ -102,7 +102,7 @@ def calculate_metrics(filtered_df: DataFrame, method: str = 'strict') -> Dict[st
     """
     Calculates comparison metrics for robustness
 
-    :param filtered_df: dataframe created during robustness tests
+    :param filtered_df: dataframe created during robustness test
     :param method: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
     """
     comparison_df = pd.DataFrame()
@@ -157,7 +157,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     for comparison
 
     :param spark: An active Spark Session to create spark DataFrame
-    :param noise_type: type of noise to introduce in sentences for running tests on 'modify_capitalization_upper',
+    :param noise_type: type of noise to introduce in sentences for running test on 'modify_capitalization_upper',
     'modify_capitalization_lower', 'modify_capitalization_title', 'add_punctuation', 'strip_punctuation',
     'introduce_typos', 'add_contractions', 'add_context', 'american_to_british', 'british_to_american',
     'swap_entities', 'swap_cohyponyms'
