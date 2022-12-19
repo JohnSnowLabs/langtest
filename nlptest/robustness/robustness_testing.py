@@ -386,6 +386,7 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     _valid_tests = ['capitalization_upper', 'capitalization_lower', 'capitalization_title', 'add_punctuation',
                     'strip_punctuation', 'introduce_typos', 'add_contractions', 'add_context', 'american_to_british',
                     'swap_entities', 'swap_cohyponyms']
+    _valid_metrics_output_formats = ['dataframe', 'dictionary']
 
     if test_file_path.endswith('.txt') or test_file_path.endswith('.conll'):
         test_set = conll_sentence_reader(test_file_path)
@@ -411,6 +412,10 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
         _invalid_tests = [i for i in test if i not in _valid_tests]
         if len(_invalid_tests) > 0:
             raise ValueError(f"Invalid test types specified: {_invalid_tests}")
+
+    if metrics_output_format not in _valid_metrics_output_formats:
+        raise ValueError(f"Invalid metrics_output_format specified: {metrics_output_format}. Please choose from: "
+                         f"{_valid_metrics_output_formats}")
 
     report_text = 'Test type: ' + ', '.join(test) + '\nTest set size: ' + str(total_amount) + ' sentences\n'
 
