@@ -383,6 +383,9 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     perturb_metrics = dict()
     complete_comparison_df = pd.DataFrame(
         columns=['original_token', 'noisy_token', 'original_label', 'noisy_label', 'test'])
+    _valid_tests = ['capitalization_upper', 'capitalization_lower', 'capitalization_title', 'add_punctuation',
+                    'strip_punctuation', 'introduce_typos', 'add_contractions', 'add_context', 'american_to_british',
+                    'swap_entities', 'swap_cohyponyms']
 
     if test_file_path.endswith('.txt') or test_file_path.endswith('.conll'):
         test_set = conll_sentence_reader(test_file_path)
@@ -403,9 +406,11 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     total_amount = len(test_set)
 
     if test is None:
-        test = ['capitalization_upper', 'capitalization_lower', 'capitalization_title',
-                'add_punctuation', 'strip_punctuation', 'introduce_typos', 'add_contractions', 'add_context',
-                'american_to_british', 'swap_entities', 'swap_cohyponyms']
+        test = _valid_tests
+    else:
+        _invalid_tests = [i for i in test if i not in _valid_tests]
+        if len(_invalid_tests) > 0:
+            raise ValueError(f"Invalid test types specified: {_invalid_tests}")
 
     report_text = 'Test type: ' + ', '.join(test) + '\nTest set size: ' + str(total_amount) + ' sentences\n'
 
