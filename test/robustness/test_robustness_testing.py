@@ -1,4 +1,5 @@
 import unittest
+import os
 from nlptest.robustness.robustness_testing import test_robustness
 import sparknlp
 from sparknlp.annotator import *
@@ -8,6 +9,8 @@ from pyspark.ml import Pipeline
 class TestRobustnessTesting(unittest.TestCase):
 
     def setUp(self):
+        THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+
         # Create a SparkSession object
         self.spark = sparknlp.start()
 
@@ -33,7 +36,7 @@ class TestRobustnessTesting(unittest.TestCase):
         self.pipeline_model = ner_pipeline.fit(self.spark.createDataFrame([[""]]).toDF("text"))
 
         # Set the test file path
-        self.test_file_path = "../resources/test.conll"
+        self.test_file_path = os.path.join(THIS_DIR, os.pardir, 'resources/test.conll')
 
     def test_dict_and_keys(self):
         # Test robustness using default parameters
