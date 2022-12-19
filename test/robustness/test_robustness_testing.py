@@ -58,19 +58,6 @@ class TestRobustnessTesting(unittest.TestCase):
 
             self.assertIn(test_name, robustness_test_results['metrics'])
 
-    # def test_positional_params_typechecking(self):
-    #     # Test that the function raises an error if `spark` is not a SparkSession
-    #     with self.assertRaises(TypeError):
-    #         test_robustness(spark=None, pipeline_model=self.pipeline_model, test_file_path=self.test_file_path)
-    #
-    #     # Test that the function raises an error if `pipeline_model` is not a PipelineModel
-    #     with self.assertRaises(TypeError):
-    #         test_robustness(spark=self.spark, pipeline_model=None, test_file_path=self.test_file_path)
-    #
-    #     # Test that the function raises an error if `test_file_path` is not a string
-    #     with self.assertRaises(TypeError):
-    #         test_robustness(spark=self.spark, pipeline_model=self.pipeline_model, test_file_path=None)
-
     def test_invalid_test_type(self):
         # Test when an invalid test type is specified
         with self.assertRaises(ValueError):
