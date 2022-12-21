@@ -270,6 +270,8 @@ def augment_robustness(
     if perturbation_map is not None and entity_perturbation_map is not None:
         raise ValueError('You used `entity_perturbation_map` and `perturbation_map`. Please only use one of these '
                          'parameters since they accomplish the same task with a different level of detail.')
+    elif perturbation_map is None and entity_perturbation_map is None:
+        raise ValueError('You need to use one of `entity_perturbation_map` or `perturbation_map`.')
 
     docs = conll_reader(conll_path)
 
