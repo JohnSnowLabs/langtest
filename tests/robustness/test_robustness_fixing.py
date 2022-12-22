@@ -88,6 +88,17 @@ class TestRobustnessFixing(unittest.TestCase):
 
         self.assertTrue(os.path.exists(self.augmented_file_path))
 
+    def test_optimized_inplace_works(self):
+        augment_robustness(conll_path=self.test_file_path,
+                           conll_save_path=self.augmented_file_path,
+                           entity_perturbation_map=self.entity_perturbation_map,
+                           optimized_inplace=True,
+                           print_info=False,
+                           ignore_warnings=True,
+                           random_state=0)
+
+        self.assertTrue(os.path.exists(self.augmented_file_path))
+
 
 if __name__ == '__main__':
     unittest.main()
