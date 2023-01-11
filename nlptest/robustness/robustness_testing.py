@@ -102,7 +102,7 @@ def calculate_metrics(filtered_df: DataFrame, method: str = 'strict') -> Dict[st
     """
     Calculates comparison metrics for robustness
 
-    :param filtered_df: dataframe created during robustness tests
+    :param filtered_df: dataframe created during robustness test
     :param method: 'strict' calculates metrics for IOB2 format, 'flex' calculates for IO format
     """
     comparison_df = pd.DataFrame()
@@ -157,7 +157,7 @@ def run_test(spark: SparkSession, noise_type: str, noise_description: str, pipel
     for comparison
 
     :param spark: An active Spark Session to create spark DataFrame
-    :param noise_type: type of noise to introduce in sentences for running tests on 'modify_capitalization_upper',
+    :param noise_type: type of noise to introduce in sentences for running test on 'modify_capitalization_upper',
     'modify_capitalization_lower', 'modify_capitalization_title', 'add_punctuation', 'strip_punctuation',
     'introduce_typos', 'add_contractions', 'add_context', 'american_to_british', 'british_to_american',
     'swap_entities', 'swap_cohyponyms'
@@ -383,6 +383,10 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     perturb_metrics = dict()
     complete_comparison_df = pd.DataFrame(
         columns=['original_token', 'noisy_token', 'original_label', 'noisy_label', 'test'])
+    _valid_tests = ['capitalization_upper', 'capitalization_lower', 'capitalization_title', 'add_punctuation',
+                    'strip_punctuation', 'introduce_typos', 'add_contractions', 'add_context', 'american_to_british',
+                    'swap_entities', 'swap_cohyponyms']
+    _valid_metrics_output_formats = ['dataframe', 'dictionary']
 
     if test_file_path.endswith('.txt') or test_file_path.endswith('.conll'):
         test_set = conll_sentence_reader(test_file_path)
@@ -403,9 +407,15 @@ def test_robustness(spark: SparkSession, pipeline_model: PipelineModel, test_fil
     total_amount = len(test_set)
 
     if test is None:
-        test = ['capitalization_upper', 'capitalization_lower', 'capitalization_title',
-                'add_punctuation', 'strip_punctuation', 'introduce_typos', 'add_contractions', 'add_context',
-                'american_to_british', 'swap_entities', 'swap_cohyponyms']
+        test = _valid_tests
+    else:
+        _invalid_tests = [i for i in test if i not in _valid_tests]
+        if len(_invalid_tests) > 0:
+            raise ValueError(f"Invalid test types specified: {_invalid_tests}")
+
+    if metrics_output_format not in _valid_metrics_output_formats:
+        raise ValueError(f"Invalid metrics_output_format specified: {metrics_output_format}. Please choose from: "
+                         f"{_valid_metrics_output_formats}")
 
     report_text = 'Test type: ' + ', '.join(test) + '\nTest set size: ' + str(total_amount) + ' sentences\n'
 
