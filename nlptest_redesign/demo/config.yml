@@ -1,0 +1,16 @@
+tasks: 
+  - ner
+  - text_classifer
+
+lang:
+  - en
+  - du
+  - it
+tests_types:
+  - uppercase 
+  - lowercase 
+  - add_context:
+      - starting_context: ['Hello', 'Dated: 21/02/2022']
+      - ending_context: ['Bye', 'Reported']
+  # - remove_punc: ['.', '@', ',', '"', "'"]
+
