@@ -18,7 +18,6 @@ class Harness:
             # self.data = data
             if type(data) == str:
                 self.data = DataFactory(data).load()
-                # print(self.data)
             # else:
             #     self.data = DataFactory.load_hf(data)
         if config_path is not None:

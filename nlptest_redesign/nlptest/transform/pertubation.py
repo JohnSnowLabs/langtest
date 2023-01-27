@@ -12,7 +12,7 @@ class PertubationFactory:
         self._data_handler = data_handler
 
     def transform(self):
-        pertubations = ["uppercase", "lowercase"]
+        pertubations = ["uppercase", "lowercase"] #list of perturbations 
         generated_results_df = pd.DataFrame()
         # result > List returned by func
 
@@ -59,16 +59,16 @@ class PertubationFactory:
                                 generated_results_df = pd.concat(
                                     [generated_results_df, tmp_df])
 
-                # return res
-                # print(res)
+
         else:
             for test in pertubations:
                 res = self.__getattribute__(test)(self._data_handler)
-                # if generated_results_df.empty:
-                generated_results_df = res
-                # else:
-                #     generated_results_df = pd.concat(
-                #         [generated_results_df, res])
+                if generated_results_df.empty:
+                    generated_results_df = res
+                else:
+                    generated_results_df = pd.concat(
+                        [generated_results_df, res])
+
         return generated_results_df
 
 
@@ -92,11 +92,7 @@ class PertubationFactory:
         :param ending_context: list of terms (context) to input at end of sentences.
         :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
         # """
-        # if starting_context is not None:
-        #     method="Start"
-        # elif ending_context is not None:
-        #     method="End"
-
+    
         np.random.seed(7)
         outcome_list_of_strings = []
         for string in list_of_strings:
@@ -104,7 +100,6 @@ class PertubationFactory:
                 outcome_list_of_strings.append(string)
                 continue
             if method == 'Start':
-            # if starting_context:
                 outcome_list_of_strings.append(random.choice(starting_context) + ' ' + string)
             if method == 'End':
                 if string[-1].isalnum() or string[-1]=='.' or string[-1]=="'" or string[-1]=='"':
