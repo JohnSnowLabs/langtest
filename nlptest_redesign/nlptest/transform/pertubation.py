@@ -43,13 +43,20 @@ class PerturbationFactory:
 
         return generated_results_df
 
-    def generate_uppercase(self, list_of_strings: List[str]):
+    @staticmethod
+    def generate_uppercase(list_of_strings: List[str]):
         return [i.upper() for i in list_of_strings]
 
-    def generate_lowercase(self, list_of_strings: List[str]):
+    @staticmethod
+    def generate_lowercase(list_of_strings: List[str]):
         return [i.lower() for i in list_of_strings]
 
-    def generate_add_context(self, list_of_strings: List[str],
+    @staticmethod
+    def generate_titlecase(list_of_strings: List[str]):
+        return [i.title() for i in list_of_strings]
+
+    @staticmethod
+    def generate_add_context(list_of_strings: List[str],
                              method: str = "Start",
                              starting_context: Optional[List[str]] = None,
                              ending_context: Optional[List[str]] = None,
