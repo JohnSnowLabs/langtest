@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class HfNEROutput(BaseModel):
+class NEROutput(BaseModel):
     label: str = Field(None, alias="entity_group")
     score: float
     word: str

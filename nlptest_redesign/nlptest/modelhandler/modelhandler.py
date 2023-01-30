@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from transformers import pipeline
 
-from .custom_types import HfNEROutput
+from ..utils.custom_types import NEROutput
 
 
 class _ModelHandler(ABC):
@@ -13,7 +14,7 @@ class _ModelHandler(ABC):
         return NotImplementedError()
 
     @abstractmethod
-    def predict(self, text: str, **kwargs):
+    def predict(self, text: str, *args, **kwargs):
         """"""
         return NotImplementedError()
 
@@ -29,16 +30,22 @@ class ModelFactory:
         self.model_path = model_path
         self.task = task
 
-        self._class_map = {cls.__name__.replace("PretrainedModel", "").lower(): cls for cls in
-                           _ModelHandler.__subclasses__()}
-        self._load()
+        class_map = {
+            cls.__name__.replace("PretrainedModel", "").lower(): cls for cls in _ModelHandler.__subclasses__()
+        }
+        self.model_class = class_map[self.task](self.model_path)
+        self.model_class.load_model()
 
-    def _load(self):
+    def predict(self, text: str, **kwargs) -> List[NEROutput]:
         """"""
-        self._class_map[self.task].load_model()
+        return self.model_class(text=text, **kwargs)
+
+    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+        """Alias of the 'predict' method"""
+        return self.model_class(text=text, **kwargs)
 
 
-class NERHFPretrainedModel(_ModelHandler):
+class NERPretrainedModel(_ModelHandler):
     """"""
 
     def __init__(
@@ -49,20 +56,17 @@ class NERHFPretrainedModel(_ModelHandler):
 
     def load_model(self):
         """"""
-        model = pipeline(model=self.model_path)
-        assert model.task == "token-classifier"
-        self.model = model
+        self.model = pipeline(model=self.model_path, task="ner", ignore_labels=[])
 
-    def predict(self, text: str, **kwargs) -> HfNEROutput:
+    def predict(self, text: str, **kwargs) -> List[NEROutput]:
         """"""
         prediction = self.model(text)
 
-        # depending on how we want the output to be we might want to somehow aggregate the predictions
-        # example here:
-        # if kwargs["group_entities"]:
-        #     prediction = self.model.group_entities(prediction)
-        return prediction
+        if kwargs.get("group_entities"):
+            prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
 
-    def __call__(self, text: str, *args, **kwargs):
-        """"""
-        return self.predict(text, **kwargs)
+        return [NEROutput(**pred) for pred in prediction]
+
+    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)
