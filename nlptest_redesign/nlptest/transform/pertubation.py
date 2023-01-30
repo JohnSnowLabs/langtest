@@ -10,41 +10,33 @@ _DEFAULT_PERTURBATIONS = ["uppercase", "lowercase"]
 class PerturbationFactory:
 
     def __init__(self, data_handler, tests=None) -> None:
-        if tests is None:
+        if tests is []:
             tests = _DEFAULT_PERTURBATIONS
         self._tests = tests
         self._data_handler = data_handler
 
     def transform(self):
-
         generated_results_df = pd.DataFrame()
-        # result > List returned by func
 
-        if len(self._tests) != 0:
-            for test in self._tests:
-                tmp_df = pd.DataFrame()
-
-                if type(test) == str:
-                    res = self.__getattribute__(f"generate_{test}")(self._data_handler)
-                    tmp_df['Orginal'] = self._data_handler[:30]
-                    tmp_df['Test_Case'] = res[:30]
-                    tmp_df['Test_type'] = test  # "Add_Context" or "Uppercase"
-                    if generated_results_df.empty:
-                        generated_results_df = tmp_df
-                    else:
-                        generated_results_df = pd.concat([generated_results_df, tmp_df])
+        for test in self._tests:
+            tmp_df = pd.DataFrame()
+            res = self.__getattribute__(f"generate_{test}")(self._data_handler)
+            tmp_df['Orginal'] = self._data_handler[:30]
+            tmp_df['Test_Case'] = res[:30]
+            tmp_df['Test_type'] = test  # "Add_Context" or "Uppercase"
+            if generated_results_df.empty:
+                generated_results_df = tmp_df
+            else:
+                generated_results_df = pd.concat([generated_results_df, tmp_df])
 
         return generated_results_df
 
-    @staticmethod
     def generate_uppercase(self, list_of_strings: List[str]):
         return [i.upper() for i in list_of_strings]
 
-    @staticmethod
     def generate_lowercase(self, list_of_strings: List[str]):
         return [i.lower() for i in list_of_strings]
 
-    @staticmethod
     def generate_add_context(self, list_of_strings: List[str],
                              method: str = "Start",
                              starting_context: Optional[List[str]] = None,
