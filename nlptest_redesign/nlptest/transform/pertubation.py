@@ -1,9 +1,16 @@
+from abc import ABC, abstractmethod
 from functools import reduce
 from typing import List, Optional
 import numpy as np
 import random
 import pandas as pd
 
+
+class BasePerturbation(ABC):
+
+    @abstractmethod
+    def transform():
+        return NotImplementedError
 
 class PertubationFactory:
 
@@ -123,4 +130,24 @@ class PertubationFactory:
                                             (string[:-1] + ' ' + random.choice(ending_context))]
                     outcome_list_of_strings.append(random.choice(list_of_possibilities))
         return outcome_list_of_strings
+
+"""
+UpperCase Class is a generate of test cases by given strings to uppercases
+:
+"""
+
+class UpperCase(BasePerturbation):
+
+    def transform():
+        pass
+
+
+"""
+LowerCase Class is a generate of test cases by given strings to uppercases
+:
+"""
+class LowerCase(BasePerturbation):
+
+    def transform():
+        pass
 

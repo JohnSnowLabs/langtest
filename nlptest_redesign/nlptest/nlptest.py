@@ -1,7 +1,6 @@
-import abc
 
 import pandas as pd
-from typing import List, Optional
+from typing import List, Optional, Union
 from .transform.pertubation import PertubationFactory
 from .testrunner import TestRunner
 from .datahandler.datasource import DataFactory
@@ -9,7 +8,7 @@ import yaml
 
 class Harness:
 
-    def __init__(self, task: Optional[str], model, data: Optional[str] = None, config_path : Optional[str]=None) :
+    def __init__(self, task: Optional[str], model, data: Optional[str] = None, config : Optional[Union[str, dict]]=None) :
         super().__init__()
         self.task = task
         self.model = model
@@ -20,8 +19,8 @@ class Harness:
                 self.data = DataFactory(data).load()
             # else:
             #     self.data = DataFactory.load_hf(data)
-        if config_path is not None:
-            self._config = self.configure(config_path)
+        if config is not None:
+            self._config = self.configure(config)
 
     def configure(self, config):
         if type(config) == dict:
