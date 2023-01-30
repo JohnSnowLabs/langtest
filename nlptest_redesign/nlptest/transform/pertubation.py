@@ -10,24 +10,36 @@ _DEFAULT_PERTURBATIONS = ["uppercase", "lowercase"]
 class PerturbationFactory:
 
     def __init__(self, data_handler, tests=None) -> None:
+
         if tests is []:
             tests = _DEFAULT_PERTURBATIONS
-        self._tests = tests
+
+        self._tests = dict()
+        for test in tests:
+            if isinstance(test, str):
+                self._tests[test] = dict()
+            elif isinstance(test, dict):
+                test_name = list(test.keys())[0]
+                self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
+            else:
+                raise ValueError(
+                    f'Invalid test configuration! Tests can be '
+                    f'[1] test name as string or '
+                    f'[2] dictionary of test name and corresponding parameters.'
+                )
+
         self._data_handler = data_handler
 
     def transform(self):
-        generated_results_df = pd.DataFrame()
 
-        for test in self._tests:
-            tmp_df = pd.DataFrame()
-            res = self.__getattribute__(f"generate_{test}")(self._data_handler)
-            tmp_df['Orginal'] = self._data_handler[:30]
-            tmp_df['Test_Case'] = res[:30]
-            tmp_df['Test_type'] = test  # "Add_Context" or "Uppercase"
-            if generated_results_df.empty:
-                generated_results_df = tmp_df
-            else:
-                generated_results_df = pd.concat([generated_results_df, tmp_df])
+        generated_results_df = pd.DataFrame()
+        for test_name, params in self._tests.items():
+            res = self.__getattribute__(f"generate_{test_name}")(self._data_handler, **params)
+            result_df = pd.DataFrame()
+            result_df['Original'] = self._data_handler[:30]
+            result_df['Test_Case'] = res[:30]
+            result_df['Test_type'] = test_name
+            generated_results_df = pd.concat([generated_results_df, result_df])
 
         return generated_results_df
 
@@ -44,8 +56,8 @@ class PerturbationFactory:
                              noise_prob: float = 1) -> List:
         """Adds tokens at the beginning and/or at the end of strings
         :param list_of_strings: list of sentences to process
-        :param method: 'Start' adds context only at the beginning, 'End' adds it at the end, 'Combined' adds context both
-        at the beginning and at the end, 'Random' means method for each string is randomly assigned.
+        :param method: 'Start' adds context only at the beginning, 'End' adds it at the end, 'Combined' adds context
+        both at the beginning and at the end, 'Random' means method for each string is randomly assigned.
         :param starting_context: list of terms (context) to input at start of sentences.
         :param ending_context: list of terms (context) to input at end of sentences.
         :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
@@ -80,4 +92,5 @@ class PerturbationFactory:
                     list_of_possibilities = [(random.choice(starting_context) + ' ' + string),
                                              (string[:-1] + ' ' + random.choice(ending_context))]
                     outcome_list_of_strings.append(random.choice(list_of_possibilities))
+
         return outcome_list_of_strings
