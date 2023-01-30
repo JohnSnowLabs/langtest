@@ -2,7 +2,7 @@ import abc
 
 import pandas as pd
 from typing import List, Optional
-from .transform.pertubation import PertubationFactory
+from .transform.pertubation import PerturbationFactory
 from .testrunner import TestRunner
 from .datahandler.datasource import DataFactory
 import yaml
@@ -38,9 +38,9 @@ class Harness:
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
         if len(tests) != 0:
-            self._load_testcases =  PertubationFactory(self.data, tests).transform()
+            self._load_testcases =  PerturbationFactory(self.data, tests).transform()
         else:
-            self._load_testcases = PertubationFactory(self.data).transform()
+            self._load_testcases = PerturbationFactory(self.data).transform()
         return self._load_testcases
     
 

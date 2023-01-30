@@ -5,7 +5,7 @@ import random
 import pandas as pd
 
 
-class PertubationFactory:
+class PerturbationFactory:
 
     def __init__(self, data_handler, tests: List[str] = []) -> None:
         self._tests = tests
