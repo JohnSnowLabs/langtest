@@ -56,6 +56,36 @@ class PerturbationFactory:
         return [i.title() for i in list_of_strings]
 
     @staticmethod
+    def generate_add_punctuation(list_of_strings: List[str], whitelist=None):
+
+        if whitelist is None:
+            whitelist = ['!', '?', ',', '.', '-', ':', ';']
+
+        outcome_list_of_strings = []
+        for string in list_of_strings:
+            if string[-1] in whitelist:
+                outcome_list_of_strings.append(string)
+            else:
+                outcome_list_of_strings.append(string[:-1] + " " + random.choice(whitelist))
+
+        return outcome_list_of_strings
+
+    @staticmethod
+    def generate_strip_punctuation(list_of_strings: List[str], whitelist=None):
+
+        if whitelist is None:
+            whitelist = ['!', '?', ',', '.', '-', ':', ';']
+
+        outcome_list_of_strings = []
+        for string in list_of_strings:
+            if string[-1] in whitelist:
+                outcome_list_of_strings.append(string[:-1])
+            else:
+                outcome_list_of_strings.append(string)
+
+        return outcome_list_of_strings
+
+    @staticmethod
     def generate_add_context(list_of_strings: List[str],
                              method: str = "Start",
                              starting_context: Optional[List[str]] = None,
