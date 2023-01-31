@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 from typing import List, Optional, Union
 from .transform.pertubation import PertubationFactory
 from .testrunner import TestRunner
@@ -54,12 +55,26 @@ class Harness:
     #         self.generate()
 
     def run(self) -> None:
-        self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
+        self._generated_results : pd.DataFrame = TestRunner(self._load_testcases, self.model).evaluate()
         return self._generated_results
 
     def report(self) -> pd.DataFrame:
-        return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
+        # summary = pd.pivot_table()
+        temp_df = pd.concat(
+            [self._generated_results, pd.get_dummies(self._generated_results['is_pass'], prefix='bool')],
+            axis=1
+        )
+        summary = temp_df.pivot_table(
+            values=['bool_True', 'bool_False'],
+            index=['Test_type'],
+            aggfunc=np.sum
+        )
 
+        summary['minmium_pass_rate'] = self._config.get('min_pass_rate', 0)
+        summary['pass_rate'] = summary['bool_True']/(summary['bool_True'] + summary['bool_False'])
+        summary.columns = ['fail count', 'pass count',	'minmium_pass_rate', 'pass_rate']
+        # return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
+        return summary
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv", results: str = "test_results.csv"): 
         with open(config, 'w') as yml:
