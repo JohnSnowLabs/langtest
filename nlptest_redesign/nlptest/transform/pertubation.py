@@ -86,6 +86,46 @@ class PerturbationFactory:
         return outcome_list_of_strings
 
     @staticmethod
+    def helper_add_typo(self, string):
+
+        if len(string) == 1:
+            return string
+
+        char_list = list(string)
+        if random.random() > 0.1:
+
+            indx_list = list(range(len(TYPO_FREQUENCY)))
+            char_list = list(TYPO_FREQUENCY.keys())
+
+            counter = 0
+            indx = -1
+            while counter < 10 and indx == -1:
+                indx = random.randint(0, len(char_list) - 1)
+                char = char_list[indx]
+                if TYPO_FREQUENCY.get(char.lower(), None):
+
+                    char_frequency = TYPO_FREQUENCY[char.lower()]
+
+                    if sum(char_frequency) > 0:
+                        chosen_char = random.choices(indx_list, weights=char_frequency)
+                        difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
+                        char = chr(ord(char) - difference)
+                        char_list[indx] = char
+
+                else:
+                    indx = -1
+                    counter += 1
+
+        else:
+            sentence = list(char_list)
+            swap_indx = random.randint(0, len(sentence) - 2)
+            tmp = sentence[swap_indx]
+            sentence[swap_indx] = sentence[swap_indx + 1]
+            sentence[swap_indx + 1] = tmp
+
+        return "".join(sentence)
+
+    @staticmethod
     def generate_add_context(list_of_strings: List[str],
                              method: str = "Start",
                              starting_context: Optional[List[str]] = None,
