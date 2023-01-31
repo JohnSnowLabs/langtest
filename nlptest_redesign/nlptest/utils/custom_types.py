@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class NEROutput(BaseModel):
-    label: str = Field(None, alias="entity_group")
+    entity: str = Field(None, alias="entity_group")
     score: float
     word: str
     start: int = None
@@ -10,3 +10,4 @@ class NEROutput(BaseModel):
 
     class Config:
         extra = "allow"
+        allow_population_by_field_name = True
