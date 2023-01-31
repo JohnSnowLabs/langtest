@@ -4,7 +4,7 @@ import pandas as pd
 import yaml
 
 from .datahandler.datasource import DataFactory
-from .modelhandler.modelhandler import ModelFactory
+from .modelhandler import ModelFactory
 from .testrunner import TestRunner
 from .transform.pertubation import PertubationFactory
 
@@ -16,7 +16,7 @@ class Harness:
             task: Optional[str],
             model: Union[str, ModelFactory],
             data: Optional[str] = None,
-            config_path: Optional[str] = None
+            config: Optional[Union[str, dict]] = None
     ):
         super().__init__()
         self.task = task
@@ -34,8 +34,8 @@ class Harness:
                 self.data = DataFactory(data).load()
             # else:
             #     self.data = DataFactory.load_hf(data)
-        if config_path is not None:
-            self._config = self.configure(config_path)
+        if config is not None:
+            self._config = self.configure(config)
 
     def configure(self, config):
         if type(config) == dict:
