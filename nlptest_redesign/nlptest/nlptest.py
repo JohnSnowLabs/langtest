@@ -69,11 +69,11 @@ class Harness:
             index=['Test_type'],
             aggfunc=np.sum
         )
-
-        summary['minmium_pass_rate'] = self._config.get('min_pass_rate', 0)
+        
+        summary['minimum_pass_rate'] = self._config.get('min_pass_rate', 0)
         summary['pass_rate'] = summary['bool_True']/(summary['bool_True'] + summary['bool_False'])
         summary['pass'] = summary['minmium_pass_rate'] < summary['pass_rate']
-        summary.columns = ['fail count', 'pass count',	'minmium_pass_rate', 'pass_rate', 'pass']
+        summary.columns = ['fail_count', 'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass']
         # return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
         return summary
 
