@@ -69,13 +69,18 @@ class Harness:
             values=['bool_True', 'bool_False'],
             index=['Test_type'],
             aggfunc=np.sum
-        )
+        ).reset_index()
         
-        summary['minimum_pass_rate'] = self._config.get('min_pass_rate', 0)
+        summary['minimum_pass_rate'] = \
+            summary.apply(
+                lambda x: min_pass_dict[x['Test_type']] \
+                if x['Test_type'] in list(min_pass_dict.keys())\
+                else min_pass_dict['default'], 
+                axis=1)
         summary['pass_rate'] = summary['bool_True']/(summary['bool_True'] + summary['bool_False'])
         summary['pass'] = summary['minmium_pass_rate'] < summary['pass_rate']
-        summary.columns = ['fail_count', 'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass']
-        # return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
+        summary.columns = ['Test_type', 'fail_count', 'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass']
+
         return summary
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv", results: str = "test_results.csv"): 
