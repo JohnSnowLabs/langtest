@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from functools import reduce
 from typing import List, Optional
 import numpy as np
@@ -7,10 +8,17 @@ import pandas as pd
 from .utils import TYPO_FREQUENCY
 _DEFAULT_PERTURBATIONS = ["uppercase", "lowercase"]
 
+class BasePerturbation(ABC):
+
+    @abstractmethod
+    def transform():
+        return NotImplementedError
 
 class PerturbationFactory:
 
     def __init__(self, data_handler, tests=None) -> None:
+
+class PertubationFactory:
 
         if tests is []:
             tests = _DEFAULT_PERTURBATIONS
@@ -175,3 +183,24 @@ class PerturbationFactory:
                     outcome_list_of_strings.append(random.choice(list_of_possibilities))
 
         return outcome_list_of_strings
+
+"""
+UpperCase Class is a generate of test cases by given strings to uppercases
+:
+"""
+
+class UpperCase(BasePerturbation):
+
+    def transform():
+        pass
+
+
+"""
+LowerCase Class is a generate of test cases by given strings to uppercases
+:
+"""
+class LowerCase(BasePerturbation):
+
+    def transform():
+        pass
+

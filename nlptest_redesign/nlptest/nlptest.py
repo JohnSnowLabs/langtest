@@ -1,16 +1,15 @@
 import abc
 
 import pandas as pd
-from typing import List, Optional
+from typing import List, Union, Optional
 from .transform.pertubation import PerturbationFactory
 from .testrunner import TestRunner
 from .datahandler.datasource import DataFactory
 import yaml
 
-
 class Harness:
 
-    def __init__(self, task: Optional[str], model, data: Optional[str] = None, config_path: Optional[str] = None):
+    def __init__(self, task: Optional[str], model, data: Optional[str] = None, config: Optional[Union[str, dict]] = None):
         super().__init__()
         self.task = task
         self.model = model
@@ -21,8 +20,8 @@ class Harness:
                 self.data = DataFactory(data).load()
             # else:
             #     self.data = DataFactory.load_hf(data)
-        if config_path is not None:
-            self._config = self.configure(config_path)
+        if config is not None:
+            self._config = self.configure(config)
 
     def configure(self, config):
         if type(config) == dict:
@@ -39,6 +38,7 @@ class Harness:
         tests = self._config['tests_types']
         self._load_testcases = PerturbationFactory(self.data, tests).transform()
         return self._load_testcases
+    
 
     # def load(self) -> pd.DataFrame:
     #     try:
@@ -57,10 +57,10 @@ class Harness:
     def report(self) -> pd.DataFrame:
         return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
 
-    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
-             results: str = "test_results.csv"):
+
+    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv", results: str = "test_results.csv"):
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
-
+        
         self._load_testcases.to_csv(testcases, index=None)
         self._generated_results.to_csv(results, index=None)
