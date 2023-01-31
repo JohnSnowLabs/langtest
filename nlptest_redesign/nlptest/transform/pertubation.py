@@ -4,6 +4,7 @@ import numpy as np
 import random
 import pandas as pd
 
+from .utils import TYPO_FREQUENCY
 _DEFAULT_PERTURBATIONS = ["uppercase", "lowercase"]
 
 
@@ -86,44 +87,47 @@ class PerturbationFactory:
         return outcome_list_of_strings
 
     @staticmethod
-    def helper_add_typo(self, string):
+    def generate_add_typo(list_of_strings: List[str]):
 
-        if len(string) == 1:
-            return string
+        outcome_list_of_strings = []
+        for string in list_of_strings:
 
-        char_list = list(string)
-        if random.random() > 0.1:
+            if len(string) == 1:
+                return string
 
-            indx_list = list(range(len(TYPO_FREQUENCY)))
-            char_list = list(TYPO_FREQUENCY.keys())
+            char_list = list(string)
+            if random.random() > 0.1:
 
-            counter = 0
-            indx = -1
-            while counter < 10 and indx == -1:
-                indx = random.randint(0, len(char_list) - 1)
-                char = char_list[indx]
-                if TYPO_FREQUENCY.get(char.lower(), None):
+                indx_list = list(range(len(TYPO_FREQUENCY)))
+                char_list = list(TYPO_FREQUENCY.keys())
 
-                    char_frequency = TYPO_FREQUENCY[char.lower()]
+                counter = 0
+                indx = -1
+                while counter < 10 and indx == -1:
+                    indx = random.randint(0, len(char_list) - 1)
+                    char = char_list[indx]
+                    if TYPO_FREQUENCY.get(char.lower(), None):
 
-                    if sum(char_frequency) > 0:
-                        chosen_char = random.choices(indx_list, weights=char_frequency)
-                        difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
-                        char = chr(ord(char) - difference)
-                        char_list[indx] = char
+                        char_frequency = TYPO_FREQUENCY[char.lower()]
 
-                else:
-                    indx = -1
-                    counter += 1
+                        if sum(char_frequency) > 0:
+                            chosen_char = random.choices(indx_list, weights=char_frequency)
+                            difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
+                            char = chr(ord(char) - difference)
+                            char_list[indx] = char
 
-        else:
-            sentence = list(char_list)
-            swap_indx = random.randint(0, len(sentence) - 2)
-            tmp = sentence[swap_indx]
-            sentence[swap_indx] = sentence[swap_indx + 1]
-            sentence[swap_indx + 1] = tmp
+                    else:
+                        indx = -1
+                        counter += 1
 
-        return "".join(sentence)
+            else:
+                sentence = list(char_list)
+                swap_indx = random.randint(0, len(sentence) - 2)
+                tmp = sentence[swap_indx]
+                sentence[swap_indx] = sentence[swap_indx + 1]
+                sentence[swap_indx + 1] = tmp
+
+            return outcome_list_of_strings.append("".join(sentence))
 
     @staticmethod
     def generate_add_context(list_of_strings: List[str],
