@@ -1,4 +1,3 @@
-
 import pandas as pd
 from typing import List, Optional, Union
 from .transform.pertubation import PertubationFactory
@@ -7,8 +6,17 @@ from .datahandler.datasource import DataFactory
 import yaml
 
 class Harness:
+    """ Harness is a testing class for NLP models.
+
+    Harness class evaluates the performance of a given NLP model.
+    Given test data is perturbed and model is tested. A report is
+    generated with test results.
+    """
 
     def __init__(self, task: Optional[str], model, data: Optional[str] = None, config : Optional[Union[str, dict]]=None) :
+        """
+        Initialize the Harness object.
+        """
         super().__init__()
         self.task = task
         self.model = model
@@ -23,16 +31,33 @@ class Harness:
             self._config = self.configure(config)
 
     def configure(self, config):
+        """
+        Configure the Harness with a given configuration.
+
+        Args:
+            config (str or dict): Configuration file path or dictionary
+                for the tests to be performed.
+
+        Returns:
+            dict: Loaded configuration.
+        """
+
         if type(config) == dict:
             self._config =  config
         else:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
-        
+
         return self._config
-            
-       
+
     def generate(self) -> pd.DataFrame:
+        """
+        Generates the testcases to be used when evaluating the model.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the generated testcases.
+        """
+
         # self.data_handler =  DataFactory(data_path).load()
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
@@ -41,7 +66,7 @@ class Harness:
         else:
             self._load_testcases = PertubationFactory(self.data).transform()
         return self._load_testcases
-    
+
 
     # def load(self) -> pd.DataFrame:
     #     try:
@@ -50,27 +75,46 @@ class Harness:
     #             self.load_testcases = self.generate()
     #         # We have to make sure that loaded testcases df are editable in Qgrid
     #         return self.load_testcases
-    #     except: 
+    #     except:
     #         self.generate()
 
     def run(self) -> None:
+        """
+        Run the tests on the model using the generated testcases.
+
+        Returns:
+            None: The evaluations are stored in `_generated_results` attribute.
+        """
         self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
         return self._generated_results
 
     def report(self) -> pd.DataFrame:
+        """
+        Generate a report of the test results.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the results of the tests.
+        """
         return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
 
+    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv", results: str = "test_results.csv"):
+        """
+        Save the configuration, generated testcases, and results
+        of the evaluations as yml and csv files.
 
-    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv", results: str = "test_results.csv"): 
+        Parameters:
+            config (str, optional): Path to the YAML file for the configuration.
+                Default is "test_config.yml".
+            testcases (str, optional): Path to the CSV file for the generated testcases.
+                Default is "test_cases.csv".
+            results (str, optional): Path to the CSV file for the results of the evaluations.
+                Default is "test_results.csv".
+
+        Returns:
+            None
+        """
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
-        
+
         self._load_testcases.to_csv(testcases, index=None)
         self._generated_results.to_csv(results, index=None)
-
-
-        
-
-    
-
-    
