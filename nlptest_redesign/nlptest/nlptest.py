@@ -1,4 +1,5 @@
 
+from functools import reduce
 import pandas as pd
 import numpy as np
 from typing import List, Optional, Union
@@ -60,7 +61,11 @@ class Harness:
 
     def report(self) -> pd.DataFrame:
         # summary = pd.pivot_table()
-        min_pass_dict = self._config['min_pass_rate']
+        if type(self._config['min_pass_rate']) is list:
+            min_pass_dict = reduce(lambda x, y: {**x, **y}, self._config['min_pass_rate'])
+        else:
+            min_pass_dict = self._config['min_pass_rate']
+
         temp_df = pd.concat(
             [self._generated_results, pd.get_dummies(self._generated_results['is_pass'], prefix='bool')],
             axis=1
@@ -89,10 +94,3 @@ class Harness:
         
         self._load_testcases.to_csv(testcases, index=None)
         self._generated_results.to_csv(results, index=None)
-
-
-        
-
-    
-
-    
