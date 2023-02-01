@@ -1,3 +1,85 @@
+from typing import Optional, Union
+
+import pandas as pd
+import yaml
+
+from .datahandler.datasource import DataFactory
+from .modelhandler import ModelFactory
+from .testrunner import TestRunner
+from .transform.pertubation import PertubationFactory
+
+
+class Harness:
+
+    def __init__(
+            self,
+            task: Optional[str],
+            model: Union[str, ModelFactory],
+            data: Optional[str] = None,
+            config: Optional[Union[str, dict]] = None
+    ):
+        super().__init__()
+        self.task = task
+
+        if isinstance(model, ModelFactory):
+            assert model.task == task, \
+                "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
+            self.model = model
+        else:
+            self.model = ModelFactory(task=task, model_path=model)
+
+        if data is not None:
+            # self.data = data
+            if type(data) == str:
+                self.data = DataFactory(data).load()
+            # else:
+            #     self.data = DataFactory.load_hf(data)
+        if config is not None:
+            self._config = self.configure(config)
+
+    def configure(self, config):
+        if type(config) == dict:
+            self._config = config
+        else:
+            with open(config, 'r') as yml:
+                self._config = yaml.safe_load(yml)
+
+        return self._config
+
+    def generate(self) -> pd.DataFrame:
+        # self.data_handler =  DataFactory(data_path).load()
+        # self.data_handler = self.data_handler(file_path = data_path)
+        tests = self._config['tests_types']
+        if len(tests) != 0:
+            self._load_testcases = PertubationFactory(self.data, tests).transform()
+        else:
+            self._load_testcases = PertubationFactory(self.data).transform()
+        return self._load_testcases
+
+    # def load(self) -> pd.DataFrame:
+    #     try:
+    #         self._load_testcases = pd.read_csv('path/to/{self._model_path}_testcases')
+    #         if self.load_testcases.empty:
+    #             self.load_testcases = self.generate()
+    #         # We have to make sure that loaded testcases df are editable in Qgrid
+    #         return self.load_testcases
+    #     except: 
+    #         self.generate()
+
+    def run(self) -> None:
+        self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
+        return self._generated_results
+
+    def report(self) -> pd.DataFrame:
+        return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
+
+    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
+             results: str = "test_results.csv"):
+        with open(config, 'w') as yml:
+            yml.write(yaml.safe_dump(self._config))
+
+        self._load_testcases.to_csv(testcases, index=None)
+        self._generated_results.to_csv(results, index=None)
 
 from functools import reduce
 import pandas as pd
