@@ -74,7 +74,7 @@ class Harness:
 
     def report(self) -> pd.DataFrame:
          # summary = pd.pivot_table()
-        if type(self._config['min_pass_rate']) is list:
+        if isinstance(self._config['min_pass_rate'], list):
             min_pass_dict = reduce(lambda x, y: {**x, **y}, self._config['min_pass_rate'])
         else:
             min_pass_dict = self._config['min_pass_rate']
