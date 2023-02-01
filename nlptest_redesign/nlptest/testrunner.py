@@ -4,29 +4,48 @@ from sparknlp.base import LightPipeline
 
 
 class TestRunner:
-
+    """Base class for running tests on models.
+    """
     def __init__(
         self, 
         load_testcases: pd.DataFrame,
         model_handler,
     ) -> None:
+        """Initialize the TestRunner class.
+
+        Args:
+            load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
+            model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
+        """
         self._load_testcases = load_testcases.copy()
         self._model_handler = model_handler
 
     # @abc.abstractmethod
     def evaluate(self):
+        """Abstract method to evaluate the testcases.
+
+        Returns:
+            DataFrame: DataFrame containing the evaluation results.
+        """
         runner = RobustnessTestRunner(self._load_testcases, self._model_handler)
         return runner.evaluate()
 
 
 class RobustnessTestRunner(TestRunner):
+    """Class for running robustness tests on models.
+    Inherits from TestRunner class.
+    """
 
     def evaluate(self):
+        """Evaluate the testcases and return the evaluation results.
 
+        Returns:
+            pd.DataFrame: DataFrame containing the evaluation results.
+        """
         expected_result=[]
         actual_result=[]
         for i, r in self._load_testcases.iterrows():
-           
+
             if "spacy" in str(type(self._model_handler)):
                 expected_result_dict={}
                 actual_result_dict={}
