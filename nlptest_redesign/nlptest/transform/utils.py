@@ -1,4 +1,21 @@
-TYPO_FREQUENCY = {
+from typing import Dict, List
+import pandas as pd
+
+_DEFAULT_PERTURBATIONS = [
+    "uppercase",
+    "lowercase",
+    "titlecase",
+    "add_punctuation",
+    "strip_punctuation",
+    "add_typo",
+    "american_to_british",
+    "add_context",
+    "add_contractions",
+    "swap_entities",
+    "swap_cohyponyms"
+]
+
+_TYPO_FREQUENCY = {
     "a": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 594, 1, 42401, 1, 1, 1, 10893, 3882, 1, 3062],
     "b": [1, 1, 1, 1, 1, 16112, 21182, 10826, 1, 1, 1, 1, 1, 19375, 1, 1, 1, 1, 1, 1, 1, 6146, 1, 1, 1, 1],
     "c": [1, 1, 1, 19151, 1, 15124, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 37974, 1, 1, 7444, 1, 1, 1, 1],
@@ -26,3 +43,66 @@ TYPO_FREQUENCY = {
     "y": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     "z": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 }
+
+_PERTURB_CLASS_MAP = {
+    "uppercase": 'UpperCase',
+    "lowercase": 'LowerCase',
+    "titlecase": 'TitleCase',
+    "add_punctuation": 'AddPunctuation',
+    "strip_punctuation": 'StripPunctuation',
+    "add_typo": 'AddTypo',
+    "american_to_british": 'ConvertAccent',
+    "british_to_american": 'ConvertAccent',
+    "add_context": 'AddContext',
+    "add_contractions": 'AddContractions',
+    "swap_entities": 'SwapEntities',
+    "swap_cohyponyms": 'SwapCohyponyms'
+}
+
+def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
+    """Iterate over the DataFrame to create terminology from the predictions. IOB format converted to the IO.
+
+    Args:
+        ner_data: Pandas DataFrame that has 2 column, 'text' as string and 'label' as list of labels
+
+    Returns:
+        Dictionary of entities and corresponding list of words.
+    """
+    terminology = {}
+
+    chunk = list()
+    ent_type = None
+    for i, row in ner_data.iterrows():
+
+        sent_labels = row.label
+        for token_indx, label in enumerate(sent_labels):
+
+            if label.startswith('B'):
+
+                if chunk:
+                    if terminology.get(ent_type, None):
+                        terminology[ent_type].append(" ".join(chunk))
+                    else:
+                        terminology[ent_type] = [" ".join(chunk)]
+
+                sent_tokens = row.text.split(' ')
+                chunk = [sent_tokens[token_indx]]
+                ent_type = label[2:]
+
+            elif label.startswith('I'):
+
+                sent_tokens = row.text.split(' ')
+                chunk.append(sent_tokens[token_indx])
+
+            else:
+
+                if chunk:
+                    if terminology.get(ent_type, None):
+                        terminology[ent_type].append(" ".join(chunk))
+                    else:
+                        terminology[ent_type] = [" ".join(chunk)]
+
+                chunk = None
+                ent_type = None
+
+    return terminology

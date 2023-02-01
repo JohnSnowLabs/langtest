@@ -5,18 +5,20 @@ import os
 class _IDataset(ABC):
 
     @abstractmethod
-    def load_data():
+    def load_data(self):
         return NotImplemented
+
 
 class DataFactory:
 
     def __init__(self, file_path) -> None:
         self._file_path = file_path
-        self._class_map = {cls.__name__.replace('Dataset','').lower() : cls for cls in _IDataset.__subclasses__()}
-        _ , self.file_ext = os.path.splitext(self._file_path)
+        self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
+        _, self.file_ext = os.path.splitext(self._file_path)
 
     def load(self):
         return self._class_map[self.file_ext.replace('.', '')](self._file_path).load_data()
+
 
 class ConllDataset(_IDataset):
 
@@ -26,37 +28,40 @@ class ConllDataset(_IDataset):
         
     def load_data(self):
         with open(self._file_path) as f:
-          data = []
-          content = f.read()
-          docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
-          for doc in docs:
 
-              #  file content to sentence split
-              sentences = doc.strip().split('\n\n')
+            data = []
+            content = f.read()
+            docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
+            for doc in docs:
 
-              if sentences == ['']:
-                  data.append(([''], [''], ['']))
-                  continue
+                #  file content to sentence split
+                sentences = doc.strip().split('\n\n')
 
-              for sent in sentences:
-                  sentence_data = []
+                if sentences == ['']:
+                    data.append(('', ['']))
+                    continue
 
-                  #  sentence string to token level split
-                  tokens = sent.strip().split('\n')
+                for sent in sentences:
+                    sentence_data = []
+                    label_data = []
 
-                  # get annotations from token level split
-                  token_list = [t.split() for t in tokens]
+                    # sentence string to token level split
+                    tokens = sent.strip().split('\n')
 
-                  #  get token and labels from the split
-                  for split in token_list:
-                      sentence_data.append(split[0])
+                    # get annotations from token level split
+                    token_list = [t.split() for t in tokens]
 
-                  data.append(" ".join(sentence_data))
+                    #  get token and labels from the split
+                    for split in token_list:
+                        sentence_data.append(split[0])
+                        label_data.append((split[-1]))
+
+                    data.append([" ".join(sentence_data), label_data])
       
-        data_df=pd.DataFrame(data)
-        data_df=data_df.rename(columns={0:"Text"})
+        data_df = pd.DataFrame(data)
+        data_df = data_df.rename(columns={0: "text", 1: "label"})
 
-        return list(data_df["Text"])
+        return data_df
 
 
 class JSONDataset(_IDataset):
