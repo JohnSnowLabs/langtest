@@ -33,7 +33,7 @@ class TestRunner:
 
 class RobustnessTestRunner(TestRunner):
     """Class for running robustness tests on models.
-    Inherits from TestRunner class.
+    Subclass of TestRunner.
     """
 
     def evaluate(self):
