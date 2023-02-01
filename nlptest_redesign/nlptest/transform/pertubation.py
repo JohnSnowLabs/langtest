@@ -8,17 +8,18 @@ import pandas as pd
 from .utils import TYPO_FREQUENCY
 _DEFAULT_PERTURBATIONS = ["uppercase", "lowercase"]
 
+
 class BasePerturbation(ABC):
 
+    @staticmethod
     @abstractmethod
-    def transform():
+    def transform(list_of_strings: List[str]) -> List[str]:
         return NotImplementedError
+
 
 class PerturbationFactory:
 
     def __init__(self, data_handler, tests=None) -> None:
-
-class PertubationFactory:
 
         if tests is []:
             tests = _DEFAULT_PERTURBATIONS
@@ -52,58 +53,88 @@ class PertubationFactory:
 
         return generated_results_df
 
-    @staticmethod
-    def generate_uppercase(list_of_strings: List[str]):
-        return [i.upper() for i in list_of_strings]
 
+class UpperCase(BasePerturbation):
     @staticmethod
-    def generate_lowercase(list_of_strings: List[str]):
-        return [i.lower() for i in list_of_strings]
+    def transform(list_of_strings: List[str]) -> List[str]:
+        """Transform a list of strings with uppercase perturbation"""
+        return [string.upper() for string in list_of_strings]
 
-    @staticmethod
-    def generate_titlecase(list_of_strings: List[str]):
-        return [i.title() for i in list_of_strings]
 
+class LowerCase(BasePerturbation):
     @staticmethod
-    def generate_add_punctuation(list_of_strings: List[str], whitelist=None):
+    def transform(list_of_strings: List[str]) -> List[str]:
+        """Transform a list of strings with lowercase perturbation"""
+        return [string.lower() for string in list_of_strings]
+
+
+class TitleCase(BasePerturbation):
+    @staticmethod
+    def transform(list_of_strings: List[str]) -> List[str]:
+        """Transform a list of strings with titlecase perturbation"""
+        return [string.title() for string in list_of_strings]
+
+
+class Add_Punctuation(BasePerturbation):
+    @staticmethod
+    def transform(list_of_strings: List[str], whitelist: Optional[List[str]] = None) -> List[str]:
+        """Add punctuation at the end of the string, if there is punctuation at the end skip it
+
+        Args:
+            list_of_strings: List of sentences to apply perturbation.
+            whitelist: Whitelist for punctuations to add to sentences.
+        """
 
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
 
-        outcome_list_of_strings = []
+        perturb_list = list()
         for string in list_of_strings:
-            if string[-1] in whitelist:
-                outcome_list_of_strings.append(string)
+
+            if string[-1] not in whitelist:
+                perturb_list.append(string[-1] + random.choice(whitelist))
             else:
-                outcome_list_of_strings.append(string[:-1] + " " + random.choice(whitelist))
+                perturb_list.append(string)
 
-        return outcome_list_of_strings
+        return perturb_list
 
+
+class Strip_Punctuation(BasePerturbation):
     @staticmethod
-    def generate_strip_punctuation(list_of_strings: List[str], whitelist=None):
+    def transform(list_of_strings: List[str], whitelist: Optional[List[str]] = None) -> List[str]:
+        """Add punctuation from the string, if there isn't punctuation at the end skip it
+
+        Args:
+            list_of_strings: List of sentences to apply perturbation.
+            whitelist: Whitelist for punctuations to strip from sentences.
+        """
 
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
 
-        outcome_list_of_strings = []
+        perturb_list = list()
         for string in list_of_strings:
+
             if string[-1] in whitelist:
-                outcome_list_of_strings.append(string[:-1])
+                perturb_list.append(string[-1])
             else:
-                outcome_list_of_strings.append(string)
+                perturb_list.append(string)
 
-        return outcome_list_of_strings
+        return perturb_list
 
+
+class Add_Typo(BasePerturbation):
     @staticmethod
-    def generate_add_typo(list_of_strings: List[str]):
+    def transform(list_of_strings: List[str]) -> List[str]:
+        """"""
 
-        outcome_list_of_strings = []
+        perturb_list = []
         for string in list_of_strings:
 
             if len(string) == 1:
-                return string
+                perturb_list.append(string)
 
-            char_list = list(string)
+            string = list(string)
             if random.random() > 0.1:
 
                 indx_list = list(range(len(TYPO_FREQUENCY)))
@@ -112,8 +143,8 @@ class PertubationFactory:
                 counter = 0
                 indx = -1
                 while counter < 10 and indx == -1:
-                    indx = random.randint(0, len(char_list) - 1)
-                    char = char_list[indx]
+                    indx = random.randint(0, len(string) - 1)
+                    char = string[indx]
                     if TYPO_FREQUENCY.get(char.lower(), None):
 
                         char_frequency = TYPO_FREQUENCY[char.lower()]
@@ -122,85 +153,21 @@ class PertubationFactory:
                             chosen_char = random.choices(indx_list, weights=char_frequency)
                             difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
                             char = chr(ord(char) - difference)
-                            char_list[indx] = char
+                            string[indx] = char
 
                     else:
                         indx = -1
                         counter += 1
 
             else:
-                sentence = list(char_list)
-                swap_indx = random.randint(0, len(sentence) - 2)
-                tmp = sentence[swap_indx]
-                sentence[swap_indx] = sentence[swap_indx + 1]
-                sentence[swap_indx + 1] = tmp
+                string = list(string)
+                swap_indx = random.randint(0, len(string) - 2)
+                tmp = string[swap_indx]
+                string[swap_indx] = string[swap_indx + 1]
+                string[swap_indx + 1] = tmp
 
-            return outcome_list_of_strings.append("".join(sentence))
+            perturb_list.append("".join(string))
 
-    @staticmethod
-    def generate_add_context(list_of_strings: List[str],
-                             method: str = "Start",
-                             starting_context: Optional[List[str]] = None,
-                             ending_context: Optional[List[str]] = None,
-                             noise_prob: float = 1) -> List:
-        """Adds tokens at the beginning and/or at the end of strings
-        :param list_of_strings: list of sentences to process
-        :param method: 'Start' adds context only at the beginning, 'End' adds it at the end, 'Combined' adds context
-        both at the beginning and at the end, 'Random' means method for each string is randomly assigned.
-        :param starting_context: list of terms (context) to input at start of sentences.
-        :param ending_context: list of terms (context) to input at end of sentences.
-        :param noise_prob: Proportion of value between 0 and 1 to sample from test data.
-        # """
+        return perturb_list
 
-        np.random.seed(7)
-        outcome_list_of_strings = []
-        for string in list_of_strings:
-            if random.random() > noise_prob:
-                outcome_list_of_strings.append(string)
-                continue
-            if method == 'Start':
-                outcome_list_of_strings.append(random.choice(starting_context) + ' ' + string)
-            if method == 'End':
-                if string[-1].isalnum() or string[-1] == '.' or string[-1] == "'" or string[-1] == '"':
-                    outcome_list_of_strings.append(string + ' ' + random.choice(ending_context))
-                else:
-                    outcome_list_of_strings.append(string[:-1] + ' ' + random.choice(ending_context))
-            elif method == 'Combined':
-                if string[-1].isalnum() or string[-1] == '.' or string[-1] == "'" or string[-1] == '"':
-                    outcome_list_of_strings.append(
-                        random.choice(starting_context) + ' ' + string + ' ' + random.choice(ending_context))
-                else:
-                    outcome_list_of_strings.append(
-                        random.choice(starting_context) + ' ' + string[:-1] + ' ' + random.choice(ending_context))
-            elif method == 'Random':
-                if string[-1].isalnum():
-                    list_of_possibilities = [(random.choice(starting_context) + ' ' + string),
-                                             (string + ' ' + random.choice(ending_context))]
-                    outcome_list_of_strings.append(random.choice(list_of_possibilities))
-                else:
-                    list_of_possibilities = [(random.choice(starting_context) + ' ' + string),
-                                             (string[:-1] + ' ' + random.choice(ending_context))]
-                    outcome_list_of_strings.append(random.choice(list_of_possibilities))
-
-        return outcome_list_of_strings
-
-"""
-UpperCase Class is a generate of test cases by given strings to uppercases
-:
-"""
-
-class UpperCase(BasePerturbation):
-
-    def transform():
-        pass
-
-
-"""
-LowerCase Class is a generate of test cases by given strings to uppercases
-:
-"""
-class LowerCase(BasePerturbation):
-
-    def transform():
-        pass
 
