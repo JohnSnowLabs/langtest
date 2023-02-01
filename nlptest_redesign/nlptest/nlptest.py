@@ -28,7 +28,7 @@ class Harness:
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (str | ModelFactory): Model to be evaluated.
+            model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
             data (str, optional): Path to the data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
         """
