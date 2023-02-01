@@ -11,9 +11,8 @@ from .transform.pertubation import PertubationFactory
 class Harness:
     """ Harness is a testing class for NLP models.
 
-    Harness class evaluates the performance of a given NLP model.
-    Given test data is perturbed and model is tested. A report is
-    generated with test results.
+    Harness class evaluates the performance of a given NLP model. Given test data is
+    used to test the model. A report is generated with test results.
     """
 
     def __init__(
