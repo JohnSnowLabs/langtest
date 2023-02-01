@@ -8,7 +8,6 @@ from .modelhandler import ModelFactory
 from .testrunner import TestRunner
 from .transform.pertubation import PertubationFactory
 
-
 class Harness:
     """ Harness is a testing class for NLP models.
 
@@ -26,6 +25,12 @@ class Harness:
     ):
         """
         Initialize the Harness object.
+
+        Args:
+            task (str, optional): Task for which the model is to be evaluated.
+            model (str | ModelFactory): Model to be evaluated.
+            data (str, optional): Path to the data to be used for evaluation.
+            config (str | dict, optional): Configuration for the tests to be performed.
         """
 
         super().__init__()
@@ -52,7 +57,7 @@ class Harness:
         Configure the Harness with a given configuration.
 
         Args:
-            config (str or dict): Configuration file path or dictionary
+            config (str | dict): Configuration file path or dictionary
                 for the tests to be performed.
 
         Returns:
