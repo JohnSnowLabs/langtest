@@ -54,7 +54,7 @@ class Harness:
             self._load_testcases = PertubationFactory(self.data, tests).transform()
         else:
             self._load_testcases = PertubationFactory(self.data).transform()
-        return self._load_testcases
+        return self
 
     # def load(self) -> pd.DataFrame:
     #     try:
@@ -68,7 +68,7 @@ class Harness:
 
     def run(self) -> None:
         self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
-        return self._generated_results
+        return self
 
     def report(self) -> pd.DataFrame:
         return self._generated_results.groupby('Test_type')['is_pass'].value_counts()
