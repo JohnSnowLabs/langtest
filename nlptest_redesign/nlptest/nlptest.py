@@ -96,7 +96,7 @@ class Harness:
                 else min_pass_dict['default'], 
                 axis=1)
         summary['pass_rate'] = summary['bool_True']/(summary['bool_True'] + summary['bool_False'])
-        summary['pass'] = summary['minmium_pass_rate'] < summary['pass_rate']
+        summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
         summary.columns = ['Test_type', 'fail_count', 'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass']
 
         return summary
