@@ -2,10 +2,11 @@ from abc import ABC, abstractmethod
 from functools import reduce
 from typing import List, Optional, Dict
 import numpy as np
+import re
 import random
 import pandas as pd
-
-from .utils import _TYPO_FREQUENCY, _PERTURB_CLASS_MAP, _DEFAULT_PERTURBATIONS, create_terminology
+from copy import deepcopy
+from .utils import TYPO_FREQUENCY, PERTURB_CLASS_MAP, DEFAULT_PERTURBATIONS, CONTRACTION_MAP, create_terminology
 
 
 class BasePerturbation(ABC):
@@ -21,7 +22,7 @@ class PerturbationFactory:
     def __init__(self, data_handler, tests=None) -> None:
 
         if tests is []:
-            tests = _DEFAULT_PERTURBATIONS
+            tests = DEFAULT_PERTURBATIONS
 
         self._tests = dict()
         for test in tests:
@@ -36,6 +37,8 @@ class PerturbationFactory:
                     f'[1] test name as string or '
                     f'[2] dictionary of test name and corresponding parameters.'
                 )
+
+
 
         if 'swap_entities' in self._tests:
             self._tests['swap_entities']['terminology'] = create_terminology(data_handler)
@@ -161,17 +164,17 @@ class AddTypo(BasePerturbation):
             string = list(string)
             if random.random() > 0.1:
 
-                indx_list = list(range(len(_TYPO_FREQUENCY)))
-                char_list = list(_TYPO_FREQUENCY.keys())
+                indx_list = list(range(len(TYPO_FREQUENCY)))
+                char_list = list(TYPO_FREQUENCY.keys())
 
                 counter = 0
                 indx = -1
                 while counter < 10 and indx == -1:
                     indx = random.randint(0, len(string) - 1)
                     char = string[indx]
-                    if _TYPO_FREQUENCY.get(char.lower(), None):
+                    if TYPO_FREQUENCY.get(char.lower(), None):
 
-                        char_frequency = _TYPO_FREQUENCY[char.lower()]
+                        char_frequency = TYPO_FREQUENCY[char.lower()]
 
                         if sum(char_frequency) > 0:
                             chosen_char = random.choices(indx_list, weights=char_frequency)
@@ -208,6 +211,8 @@ class SwapEntities(BasePerturbation):
             list_of_strings: List of sentences to process.
             labels: Corresponding labels to make changes according to sentences.
             terminology: Dictionary of entities and corresponding list of words.
+        Returns:
+            List of sentences that entities swapped with the terminology.
         """
 
         if terminology is None:
@@ -257,8 +262,11 @@ class SwapCoyphonyms(BasePerturbation):
     def get_cohyponyms_wordnet(word: str) -> str:
         """
         Retrieve co-hyponym of the input string using WordNet when a hit is found.
-        :param word: input string to retrieve co-hyponym
-        :return: Cohyponym of the input word if exist, else original word.
+
+        Args:
+            word: input string to retrieve co-hyponym
+        Returns:
+            Cohyponym of the input word if exist, else original word.
         """
 
         try:
@@ -304,6 +312,8 @@ class SwapCoyphonyms(BasePerturbation):
             list_of_strings: List of sentences to process.
             labels: Corresponding labels to make changes according to sentences.
             terminology: Dictionary of entities and corresponding list of words.
+        Returns:
+            List sample indexes and corresponding augmented sentences, tags and labels if provided.
         """
 
         if terminology is None:
@@ -336,7 +346,6 @@ class SwapCoyphonyms(BasePerturbation):
                         break
 
             replace_token = sent_tokens[replace_indx: replace_indx + len(replace_indxs)]
-            token_length = len(replace_token)
 
             replace_token = " ".join(replace_token)
             chosen_ent = self.get_cohyponyms_wordnet(replace_token)
@@ -346,3 +355,111 @@ class SwapCoyphonyms(BasePerturbation):
         return perturb_sent
 
 
+class ConvertAccent(BasePerturbation):
+
+    @staticmethod
+    def transform(list_of_strings: List[str], accent_map: Dict[str, str] = None) -> List[str]:
+        """Converts input sentences using a conversion dictionary
+        Args:
+            list_of_strings: List of sentences to process.
+            accent_map: Dictionary with conversion terms.
+        Returns:
+            List of sentences that perturbated with accent conversion.
+        """
+        perturb_sent = []
+        for string in list_of_strings:
+            tokens = string.split(' ')
+            tokens = [accent_map[t] if accent_map.get(t.lower(), None) else t for t in tokens]
+            perturb_sent.append(' '.join(tokens))
+
+        return  perturb_sent
+
+
+class AddContext(BasePerturbation):
+
+    @staticmethod
+    def transform(
+            list_of_strings: List[str],
+            starting_context: Optional[List[str]] = None,
+            ending_context: Optional[List[str]] = None,
+            strategy: List[str] = None,
+    ) -> List[str]:
+        """Converts input sentences using a conversion dictionary
+        Args:
+            list_of_strings: List of sentences to process.
+            strategy: Config method to adjust where will context tokens added. start, end or combined.
+            starting_context: list of terms (context) to input at start of sentences.
+            ending_context: list of terms (context) to input at end of sentences.
+        Returns:
+            List of sentences that context added at to begging, end or both, randomly.
+        """
+
+        possible_methods = ['start', 'end', 'combined']
+        perturb_sent = []
+        for string in list_of_strings:
+
+            if strategy is None:
+                strategy = random.choice(possible_methods)
+            elif strategy not in possible_methods:
+                raise ValueError(
+                    f"Add context strategy must be one of 'start', 'end', 'combined'. Can not be {strategy}."
+                )
+
+            if strategy == "start" or strategy == "combined":
+                add_tokens = random.choice(starting_context)
+
+                #   join tokens
+                add_string = " ".join(add_tokens)
+                string = add_string + ' ' + string
+
+            if strategy == "end" or strategy == "combined":
+                add_tokens = random.choice(ending_context)
+
+                #   join tokens
+                add_string = " ".join(add_tokens)
+
+                if string[-1].isalnum():
+                    string = string + ' ' + add_string
+                else:
+                    string = string[:-1] + add_string + " " + string[-1]
+
+            perturb_sent.append(string)
+
+        return perturb_sent
+
+
+class AddContraction(BasePerturbation):
+
+    @staticmethod
+    def transform(
+            list_of_strings: List[str],
+    ) -> List[str]:
+        """Converts input sentences using a conversion dictionary
+        Args:
+            list_of_strings: List of sentences to process.
+        """
+
+        def custom_replace(match):
+            """
+              regex replace for contraction.
+            """
+            token = match.group(0)
+            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(match.lower()))
+
+            is_upper_case = token[0]
+            expanded_contraction = is_upper_case + contracted_token[1:]
+            return expanded_contraction
+
+        perturb_sent = []
+        for string in list_of_strings:
+
+            for contraction in CONTRACTION_MAP:
+
+                if re.search(f'\b({contraction})\b', string, flags=re.IGNORECASE | re.DOTALL):
+                    is_contracted = True
+
+                    string = re.sub(f'\b({contraction})\b', custom_replace, string, flags=re.IGNORECASE | re.DOTALL)
+
+            perturb_sent.append(string)
+
+        return perturb_sent
