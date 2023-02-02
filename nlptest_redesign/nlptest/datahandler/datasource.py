@@ -25,7 +25,7 @@ class DataFactory:
         """Initializes DataFactory object.
 
         Args:
-            file_path (str): Path to the file.
+            file_path (str): Path to the dataset.
         """
 
         self._file_path = file_path
@@ -57,7 +57,7 @@ class ConllDataset(_IDataset):
         """Loads data from a CoNLL file.
 
         Returns:
-            list: List of sentences in the file.
+            list: List of sentences in the dataset.
         """
         with open(self._file_path) as f:
             data = []
