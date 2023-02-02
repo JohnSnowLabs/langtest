@@ -88,7 +88,7 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
         if self.model is None:
             raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
                           f"the '.load_model' method before running predictions.")
-        prediction = self.model(text)
+        prediction = self.model(text, **kwargs)
 
         if kwargs.get("group_entities"):
             prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
@@ -146,4 +146,4 @@ class NERSpaCyPretrainedModel(_ModelHandler):
 
     def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
         """Alias of the 'predict' method"""
-        return self.predict(text=text, **kwargs)
+        return self.predict(text=text)
