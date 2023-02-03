@@ -41,8 +41,15 @@ class Harness:
             assert model.task == task, \
                 "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
             self.model = model
-        else:
+        elif isinstance(model, str):
             self.model = ModelFactory(task=task, model_path=model)
+
+        else:
+          self.model=model
+          if "sparknlp.pretrained" in str(type(self.model)):
+            self.model.backend="sparknlp.pretrained"
+          else:
+            self.model.backend="spark"
 
         if data is not None:
             # self.data = data
