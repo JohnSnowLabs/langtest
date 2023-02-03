@@ -9,6 +9,7 @@ DEFAULT_PERTURBATIONS = [
     "strip_punctuation",
     "add_typo",
     "american_to_british",
+    "british_to_american"
     "add_context",
     "add_contractions",
     "swap_entities",
@@ -25,7 +26,7 @@ PERTURB_CLASS_MAP = {
     "american_to_british": 'ConvertAccent',
     "british_to_american": 'ConvertAccent',
     "add_context": 'AddContext',
-    "add_contractions": 'AddContractions',
+    "add_contractions": 'AddContraction',
     "swap_entities": 'SwapEntities',
     "swap_cohyponyms": 'SwapCohyponyms'
 }

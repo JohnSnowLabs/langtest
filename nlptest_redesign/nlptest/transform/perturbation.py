@@ -1,12 +1,20 @@
+import numpy as np
+import random
+import re
+import pandas as pd
+
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import List, Optional, Dict
-import numpy as np
-import re
-import random
-import pandas as pd
-from copy import deepcopy
-from .utils import TYPO_FREQUENCY, PERTURB_CLASS_MAP, DEFAULT_PERTURBATIONS, CONTRACTION_MAP, create_terminology
+
+from .utils import (
+    TYPO_FREQUENCY,
+    PERTURB_CLASS_MAP,
+    DEFAULT_PERTURBATIONS,
+    CONTRACTION_MAP,
+    A2B_DICT,
+    create_terminology
+)
 
 
 class BasePerturbation(ABC):
@@ -26,6 +34,10 @@ class PerturbationFactory:
 
         self._tests = dict()
         for test in tests:
+
+            if test not in DEFAULT_PERTURBATIONS:
+                raise ValueError(f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
+
             if isinstance(test, str):
                 self._tests[test] = dict()
             elif isinstance(test, dict):
@@ -38,10 +50,18 @@ class PerturbationFactory:
                     f'[2] dictionary of test name and corresponding parameters.'
                 )
 
-
-
         if 'swap_entities' in self._tests:
             self._tests['swap_entities']['terminology'] = create_terminology(data_handler)
+            self._tests['swap_entities']['labels'] = data_handler.label
+
+        if 'swap_cohyponyms' in self._tests:
+            self._tests['swap_cohyponyms']['labels'] = data_handler.label
+
+        if "american_to_british" in self._tests:
+            self._tests['american_to_british']['accent_map'] = A2B_DICT
+
+        if "british_to_american" in self._tests:
+            self._tests['american_to_british']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         self._data_handler = data_handler
 
@@ -49,12 +69,13 @@ class PerturbationFactory:
 
         generated_results_df = pd.DataFrame()
         for test_name, params in self._tests.items():
-            res = self._class_map[test_name](self._data_handler, **params)
+            print(test_name)
+            res = globals()[PERTURB_CLASS_MAP[test_name]].transform(list(self._data_handler.text), **params)
             result_df = pd.DataFrame()
-            result_df['Original'] = self._data_handler[:30]
-            result_df['Test_Case'] = res[:30]
+            result_df['Original'] = self._data_handler.text
+            result_df['Test_Case'] = res
             result_df['Test_type'] = test_name
-            generated_results_df = pd.concat([generated_results_df, result_df])
+            generated_results_df = pd.concat([generated_results_df, result_df], ignore_index=True)
 
         return generated_results_df
 
@@ -158,8 +179,9 @@ class AddTypo(BasePerturbation):
         perturb_list = []
         for string in list_of_strings:
 
-            if len(string) == 1:
+            if len(string) < 5:
                 perturb_list.append(string)
+                continue
 
             string = list(string)
             if random.random() > 0.1:
@@ -233,6 +255,7 @@ class SwapEntities(BasePerturbation):
             #  no swaps since there is no entity in the sentence
             if len(ent_indx) == 0:
                 perturb_sent.append(string)
+                continue
 
             replace_indx = np.random.choice(ent_indx)
             ent_type = sent_labels[replace_indx][2:]
@@ -256,68 +279,64 @@ class SwapEntities(BasePerturbation):
         return perturb_sent
 
 
-class SwapCoyphonyms(BasePerturbation):
+def get_cohyponyms_wordnet(word: str) -> str:
+    """
+    Retrieve co-hyponym of the input string using WordNet when a hit is found.
 
-    @staticmethod
-    def get_cohyponyms_wordnet(word: str) -> str:
-        """
-        Retrieve co-hyponym of the input string using WordNet when a hit is found.
+    Args:
+        word: input string to retrieve co-hyponym
+    Returns:
+        Cohyponym of the input word if exist, else original word.
+    """
 
-        Args:
-            word: input string to retrieve co-hyponym
-        Returns:
-            Cohyponym of the input word if exist, else original word.
-        """
+    try:
+        import wn
+    except ImportError:
+        raise ImportError("WordNet is not available!\n"
+                          "Please install WordNet via pip install wordnet to use swap_coyphonyms")
 
-        try:
-            import wn
-        except ImportError:
-            raise ImportError("WordNet is not available!\n"
-                              "Please install WordNet via pip install wordnet to use swap_coyphonyms")
+    orig_word = word
+    word = word.lower()
+    if len(word.split()) > 0:
+        word = word.replace(" ", "_")
+    syns = wn.synsets(word)
 
-        orig_word = word
-        word = word.lower()
-        if len(word.split()) > 0:
-            word = word.replace(" ", "_")
-        syns = wn.synsets(word)
-
-        if len(syns) == 0:
+    if len(syns) == 0:
+        return orig_word
+    else:
+        hypernym = syns[0].hypernyms()
+        if len(hypernym) == 0:
             return orig_word
         else:
-            hypernym = syns[0].hypernyms()
-            if len(hypernym) == 0:
-                return orig_word
+            hypos = hypernym[0].hyponyms()
+            hypo_len = len(hypos)
+            if hypo_len == 1:
+                name = hypos[0].lemmas()[0]
             else:
-                hypos = hypernym[0].hyponyms()
-                hypo_len = len(hypos)
-                if hypo_len == 1:
-                    name = hypos[0].lemmas()[0]
-                else:
+                ind = random.sample(range(hypo_len), k=1)[0]
+                name = hypos[ind].lemmas()[0]
+                while name == word:
                     ind = random.sample(range(hypo_len), k=1)[0]
                     name = hypos[ind].lemmas()[0]
-                    while name == word:
-                        ind = random.sample(range(hypo_len), k=1)[0]
-                        name = hypos[ind].lemmas()[0]
-                return name.replace("_", " ")
+            return name.replace("_", " ")
 
+
+class SwapCohyponyms(BasePerturbation):
+
+    @staticmethod
     def transform(
-            self,
             list_of_strings: List[str],
             labels: List[List[str]] = None,
-            terminology: Dict[str, List[str]] = None
     ) -> List[str]:
         """Swaps named entities with the new one from the terminology extracted from passed data.
 
         Args:
             list_of_strings: List of sentences to process.
             labels: Corresponding labels to make changes according to sentences.
-            terminology: Dictionary of entities and corresponding list of words.
+
         Returns:
             List sample indexes and corresponding augmented sentences, tags and labels if provided.
         """
-
-        if terminology is None:
-            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
 
         if labels is None:
             raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
@@ -334,6 +353,7 @@ class SwapCoyphonyms(BasePerturbation):
             #  no swaps since there is no entity in the sentence
             if len(ent_indx) == 0:
                 perturb_sent.append(string)
+                continue
 
             replace_indx = np.random.choice(ent_indx)
             ent_type = sent_labels[replace_indx][2:]
@@ -348,7 +368,7 @@ class SwapCoyphonyms(BasePerturbation):
             replace_token = sent_tokens[replace_indx: replace_indx + len(replace_indxs)]
 
             replace_token = " ".join(replace_token)
-            chosen_ent = self.get_cohyponyms_wordnet(replace_token)
+            chosen_ent = get_cohyponyms_wordnet(replace_token)
             replaced_string = string.replace(replace_token, chosen_ent)
             perturb_sent.append(replaced_string)
 
@@ -364,12 +384,12 @@ class ConvertAccent(BasePerturbation):
             list_of_strings: List of sentences to process.
             accent_map: Dictionary with conversion terms.
         Returns:
-            List of sentences that perturbated with accent conversion.
+            List of sentences that perturbed with accent conversion.
         """
         perturb_sent = []
         for string in list_of_strings:
             tokens = string.split(' ')
-            tokens = [accent_map[t] if accent_map.get(t.lower(), None) else t for t in tokens]
+            tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
             perturb_sent.append(' '.join(tokens))
 
         return  perturb_sent
@@ -456,8 +476,6 @@ class AddContraction(BasePerturbation):
             for contraction in CONTRACTION_MAP:
 
                 if re.search(f'\b({contraction})\b', string, flags=re.IGNORECASE | re.DOTALL):
-                    is_contracted = True
-
                     string = re.sub(f'\b({contraction})\b', custom_replace, string, flags=re.IGNORECASE | re.DOTALL)
 
             perturb_sent.append(string)
