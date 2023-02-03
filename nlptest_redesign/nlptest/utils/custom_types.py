@@ -3,11 +3,11 @@ from pydantic import BaseModel, Field
 
 class NEROutput(BaseModel):
     entity: str = Field(None, alias="entity_group")
-    score: float
     word: str
-    start: int = None
-    end: int = None
+    start: int
+    end: int
+    score: float = None
 
     class Config:
-        extra = "allow"
+        extra = "ignore"
         allow_population_by_field_name = True

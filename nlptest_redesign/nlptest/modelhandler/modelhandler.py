@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+import spacy
 from transformers import pipeline
 
 from ..utils.custom_types import NEROutput
@@ -11,6 +12,7 @@ class _ModelHandler(ABC):
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
+
     @abstractmethod
     def load_model(self):
         """Load the model.
@@ -25,7 +27,8 @@ class _ModelHandler(ABC):
 
 
 class ModelFactory:
-    """A factory class for instantiating models.
+    """
+    A factory class for instantiating models.
     """
     SUPPORTED_TASKS = ["ner"]
 
@@ -34,7 +37,7 @@ class ModelFactory:
             model_path: str,
             task: str
     ):
-        """ Initializes the ModelFactory object.
+        """Initializes the ModelFactory object.
         Args:
             model_path (str): path to model to use
             task (str): task to perform
@@ -51,7 +54,13 @@ class ModelFactory:
         class_map = {
             cls.__name__.replace("PretrainedModel", "").lower(): cls for cls in _ModelHandler.__subclasses__()
         }
-        self.model_class = class_map[self.task](self.model_path)
+        if any([m in model_path for m in ["_core_news_", "_core_web_", "_ent_wiki_"]]):
+            self.backend = "spacy"
+        else:
+            self.backend = "huggingface"
+        model_class_name = task + self.backend
+
+        self.model_class = class_map[model_class_name](self.model_path)
 
     def load_model(self) -> None:
         """Load the model."""
@@ -74,21 +83,24 @@ class ModelFactory:
         return self.model_class(text=text, **kwargs)
 
 
-class NERPretrainedModel(_ModelHandler):
-    """Model handler for pretrained NER models. Subclass of _ModelHandler.
+class NERHuggingFacePretrainedModel(_ModelHandler):
+    """
+    Args:
+        model_path (str):
+            path to model to use
     """
 
     def __init__(
             self,
             model_path: str
     ):
-        """Initializes the NERPretrainedModel object.
-        Args:
-            model_path (str): Path to the pretrained model to use.
 
+        """
         Attributes:
-            model_path (str): Path to the pretrained model to use.
-            model (transformers.pipeline.Pipeline): Loaded NER pipeline for predictions.
+            model_path (str):
+                Path to the pretrained model to use.
+            model (transformers.pipeline.Pipeline):
+                Loaded NER pipeline for predictions.
         """
         self.model_path = model_path
         self.model = None
@@ -117,7 +129,7 @@ class NERPretrainedModel(_ModelHandler):
         if self.model is None:
             raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
                           f"the '.load_model' method before running predictions.")
-        prediction = self.model(text)
+        prediction = self.model(text, **kwargs)
 
         if kwargs.get("group_entities"):
             prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
@@ -127,3 +139,52 @@ class NERPretrainedModel(_ModelHandler):
     def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
+
+
+class NERSpaCyPretrainedModel(_ModelHandler):
+    """
+    Args:
+        model_path (str):
+            path to model to use
+    """
+
+    def __init__(
+            self,
+            model_path: str
+    ):
+        self.model_path = model_path
+        self.model = None
+
+    def load_model(self) -> None:
+        """"""
+        self.model = spacy.load(self.model_path)
+
+    def predict(self, text: str, *args, **kwargs) -> List[NEROutput]:
+        """"""
+        if self.model is None:
+            raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
+                          f"the '.load_model' method before running predictions.")
+        doc = self.model(text)
+
+        if kwargs.get("group_entities"):
+            return [
+                NEROutput(
+                    entity=ent.label_,
+                    word=ent.text,
+                    start=ent.start_char,
+                    end=ent.end_char
+                ) for ent in doc.ents
+            ]
+
+        return [
+            NEROutput(
+                entity=f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_,
+                word=token.text,
+                start=token.idx,
+                end=token.idx + len(token)
+            ) for token in doc
+        ]
+
+    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text)
