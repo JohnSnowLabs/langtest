@@ -117,31 +117,24 @@ class Harness:
         Returns:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
-         # summary = pd.pivot_table()
         if isinstance(self._config['min_pass_rate'], list):
             min_pass_dict = reduce(lambda x, y: {**x, **y}, self._config['min_pass_rate'])
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        temp_df = pd.concat(
-            [self._generated_results, pd.get_dummies(self._generated_results['is_pass'], prefix='bool')],
-            axis=1
-        )
-        summary = temp_df.pivot_table(
-            values=['bool_True', 'bool_False'],
-            index=['Test_type'],
-            aggfunc=np.sum
-        ).reset_index()
-        
-        summary['minimum_pass_rate'] = \
-            summary.apply(
-                lambda x: min_pass_dict[x['Test_type']] \
-                if x['Test_type'] in list(min_pass_dict.keys())\
-                else min_pass_dict['default'], 
-                axis=1)
-        summary['pass_rate'] = summary['bool_True']/(summary['bool_True'] + summary['bool_False'])
+        summary = self._generated_results.groupby('Test_type')['is_pass']
+        summary = summary.agg(
+            fail_count = lambda x: x.count()-x.sum(),
+            pass_count = 'sum',
+            pass_rate = 'mean'
+            )
+        summary = summary.reset_index()
+
+        summary['minimum_pass_rate'] = summary['Test_type'].apply(
+            lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
+            )
+
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
-        summary.columns = ['Test_type', 'fail_count', 'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass']
 
         return summary
 
