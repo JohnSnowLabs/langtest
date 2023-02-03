@@ -73,12 +73,12 @@ class Harness:
 
         return self._config
 
-    def generate(self) -> pd.DataFrame:
+    def generate(self) -> None:
         """
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            pd.DataFrame: DataFrame containing the generated testcases.
+            None: The generated testcases are stored in `_load_testcases` attribute.
         """
 
         # self.data_handler =  DataFactory(data_path).load()
