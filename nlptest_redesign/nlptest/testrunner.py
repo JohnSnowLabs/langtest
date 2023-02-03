@@ -54,6 +54,10 @@ class RobustnessTestRunner(TestRunner):
                 expected_result.append([pred.entity for pred in doc1])
                 actual_result.append([pred.entity for pred in doc2])
 
+            elif "sparknlp.pretrained" in self._model_handler.backend:
+                     expected_result.append((self._model_handler).annotate(r['Orginal'])['ner'])
+                     actual_result.append((self._model_handler).annotate(r['Test_Case'])['ner'])
+
             elif "spark" in self._model_handler.backend:
                 expected_result.append(LightPipeline(self._model_handler).annotate(r['Orginal'])['ner'])
                 actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
