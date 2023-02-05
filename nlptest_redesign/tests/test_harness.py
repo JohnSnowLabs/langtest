@@ -1,5 +1,5 @@
 import unittest
-import sys, os
+import sys
 import pandas as pd
 sys.path.insert(0,"..")
 
@@ -9,7 +9,6 @@ from nlptest.nlptest import Harness
 class HarnessTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        print(os.getcwd())
         self.harness = Harness(
             task='ner',
             model='dslim/bert-base-NER',
@@ -35,4 +34,5 @@ class HarnessTestCase(unittest.TestCase):
         df = self.harness.run() #._load_testcases
         self.assertIsInstance(df, pd.DataFrame)
         #Checking Columns
-        self.assertEqual(df.columns, ['Test_type', 'fail_count', 'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass'])
+        self.assertEqual(df.columns, ['Test_type', 'fail_count',\
+             'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass'])
