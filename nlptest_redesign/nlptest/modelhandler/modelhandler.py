@@ -4,7 +4,7 @@ from typing import List
 import spacy
 from transformers import pipeline
 
-from ..utils.custom_types import NEROutput
+from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 
 class _ModelHandler(ABC):
@@ -58,7 +58,7 @@ class ModelFactory:
             self.backend = "spacy"
         else:
             self.backend = "huggingface"
-        model_class_name = task + self.backend
+        model_class_name = task.replace("-", "") + self.backend
 
         self.model_class = class_map[model_class_name](self.model_path)
 
@@ -188,3 +188,59 @@ class NERSpaCyPretrainedModel(_ModelHandler):
     def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
+
+
+class SequenceClassificationHuggingFacePretrainedModel(_ModelHandler):
+    """
+    Args:
+        model_path (str):
+            path to model to use
+    """
+
+    def __init__(
+            self,
+            model_path: str
+    ):
+        self.model_path = model_path
+        self.model = None
+
+    @property
+    def labels(self):
+        """"""
+        return list(self.model.model.config.id2label.values())
+
+    def load_model(self) -> None:
+        """"""
+        self.model = pipeline(model=self.model_path, task="text-classification")
+
+    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+        """"""
+        if return_all_scores:
+            kwargs["top_k"] = len(self.labels)
+
+        output = self.model(text, **kwargs)
+        return SequenceClassificationOutput(
+            text=text,
+            labels=output
+        )
+
+    def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+        """"""
+        return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
+
+
+class SequenceClassificationSpacyPretrainedModel(_ModelHandler):
+    """
+    Args:
+        model_path (str):
+            path to model to use
+    """
+
+    def __init__(
+            self,
+            model_path: str
+    ):
+        self.model_path = model_path
+        self.model = None
+
+
