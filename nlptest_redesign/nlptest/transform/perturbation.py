@@ -392,7 +392,7 @@ class ConvertAccent(BasePerturbation):
             tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
             perturb_sent.append(' '.join(tokens))
 
-        return  perturb_sent
+        return perturb_sent
 
 
 class AddContext(BasePerturbation):
@@ -464,7 +464,7 @@ class AddContraction(BasePerturbation):
               regex replace for contraction.
             """
             token = match.group(0)
-            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(match.lower()))
+            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(token.lower()))
 
             is_upper_case = token[0]
             expanded_contraction = is_upper_case + contracted_token[1:]
@@ -472,11 +472,9 @@ class AddContraction(BasePerturbation):
 
         perturb_sent = []
         for string in list_of_strings:
-
             for contraction in CONTRACTION_MAP:
-
-                if re.search(f'\b({contraction})\b', string, flags=re.IGNORECASE | re.DOTALL):
-                    string = re.sub(f'\b({contraction})\b', custom_replace, string, flags=re.IGNORECASE | re.DOTALL)
+                if re.search(contraction, string, flags=re.IGNORECASE | re.DOTALL):
+                    string = re.sub(contraction, custom_replace, string, flags=re.IGNORECASE | re.DOTALL)
 
             perturb_sent.append(string)
 
