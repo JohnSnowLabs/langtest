@@ -14,6 +14,7 @@ class _IDataset(ABC):
         """
         return NotImplemented
 
+
 class DataFactory:
     """Data factory for creating Dataset objects.
 
@@ -29,8 +30,8 @@ class DataFactory:
         """
 
         self._file_path = file_path
-        self._class_map = {cls.__name__.replace('Dataset','').lower() : cls for cls in _IDataset.__subclasses__()}
-        _ , self.file_ext = os.path.splitext(self._file_path)
+        self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
+        _, self.file_ext = os.path.splitext(self._file_path)
 
     def load(self):
         """Loads the data for the correct Dataset type.
@@ -40,10 +41,11 @@ class DataFactory:
         """
         return self._class_map[self.file_ext.replace('.', '')](self._file_path).load_data()
 
+
 class ConllDataset(_IDataset):
     """Class to handle Conll files. Subclass of _IDataset.
     """
-    
+
     def __init__(self, file_path) -> None:
         """Initializes ConllDataset object.
 
@@ -60,6 +62,7 @@ class ConllDataset(_IDataset):
             list: List of sentences in the dataset.
         """
         with open(self._file_path) as f:
+
             data = []
             content = f.read()
             docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
@@ -69,13 +72,14 @@ class ConllDataset(_IDataset):
                 sentences = doc.strip().split('\n\n')
 
                 if sentences == ['']:
-                    data.append(([''], [''], ['']))
+                    data.append(([''], ['']))
                     continue
 
                 for sent in sentences:
                     sentence_data = []
+                    label_data = []
 
-                    #  sentence string to token level split
+                    # sentence string to token level split
                     tokens = sent.strip().split('\n')
 
                     # get annotations from token level split
@@ -84,13 +88,14 @@ class ConllDataset(_IDataset):
                     #  get token and labels from the split
                     for split in token_list:
                         sentence_data.append(split[0])
+                        label_data.append((split[-1]))
 
-                    data.append(" ".join(sentence_data))
+                    data.append([" ".join(sentence_data), label_data])
       
-        data_df=pd.DataFrame(data)
-        data_df=data_df.rename(columns={0:"Text"})
+        data_df = pd.DataFrame(data)
+        data_df = data_df.rename(columns={0: "text", 1: "label"})
 
-        return list(data_df["Text"])
+        return data_df
 
 
 class JSONDataset(_IDataset):

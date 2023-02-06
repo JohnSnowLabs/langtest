@@ -7,8 +7,10 @@ import yaml
 
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
+from typing import List, Union, Optional
 from .testrunner import TestRunner
-from .transform.pertubation import PertubationFactory
+from .transform.perturbation import PerturbationFactory
+
 
 class Harness:
     """ Harness is a testing class for NLP models.
@@ -91,11 +93,8 @@ class Harness:
         # self.data_handler =  DataFactory(data_path).load()
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
-        if len(tests) != 0:
-            self._load_testcases = PertubationFactory(self.data, tests).transform()
-        else:
-            self._load_testcases = PertubationFactory(self.data).transform()
-        return self
+        self._load_testcases = PerturbationFactory(self.data, tests).transform()
+        return self._load_testcases
 
     # def load(self) -> pd.DataFrame:
     #     try:
@@ -145,8 +144,11 @@ class Harness:
 
         return summary
 
-    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
-             results: str = "test_results.csv"):
+    def save(
+            self, config: str = "test_config.yml",
+            testcases: str = "test_cases.csv",
+            results: str = "test_results.csv"
+    ):
         """
         Save the configuration, generated testcases, and results
         of the evaluations as yml and csv files.
