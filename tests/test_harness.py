@@ -11,11 +11,13 @@ from nlptest.modelhandler.modelhandler import ModelFactory
 class HarnessTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
+        self.data_path = "./demo/data/test.conll"
+        self.config_path = "./demo/data/config.yml"
         self.harness = Harness(
             task='ner',
             model='dslim/bert-base-NER',
-            data="./demo/data/test.conll",
-            config="./demo/data/config.yml"
+            data= self.data_path,
+            config= self.config_path
         )
 
 
@@ -49,3 +51,13 @@ class HarnessTestCase(unittest.TestCase):
         #Checking Columns
         self.assertEqual(df.columns, ['Test_type', 'fail_count',\
              'pass_count',	'minimum_pass_rate', 'pass_rate', 'pass'])
+
+    def test_duplicate_tasks(self):
+
+        with self.assertRaises(AssertionError):
+            Harness(
+                task="text-classifer",
+                model=ModelFactory("ner", "dslim/bert-base-NER"),
+                data=self.data_path,
+                config=self.config_path
+            )
