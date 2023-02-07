@@ -20,11 +20,6 @@ class TestRunner:
         self._load_testcases = load_testcases.copy()
         self._model_handler = model_handler
 
-        if self._model_handler.backend in ["huggingface","spacy"]:
-            self._model_handler.load_model()
-
-
-
     # @abc.abstractmethod
     def evaluate(self):
         """Abstract method to evaluate the testcases.
