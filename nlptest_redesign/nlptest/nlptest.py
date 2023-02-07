@@ -48,7 +48,7 @@ class Harness:
         elif isinstance(model, str):
             if backend is None:
                 raise ValueError("'backend' must be specified in order load model from the path.")
-            self.model = ModelFactory(task=task, model_path=model, backend=backend)
+            self.model = ModelFactory.load_model(task=task, backend=backend, model_path=model)
 
         else:
           self.model=model
