@@ -23,6 +23,7 @@ class Harness:
             self,
             task: Optional[str],
             model: Union[str, ModelFactory],
+            backend: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
     ):
@@ -32,6 +33,7 @@ class Harness:
         Args:
             task (str, optional): Task for which the model is to be evaluated.
             model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
+            backend (str, optional): model backend to load from the path. Required if path is passed as 'model'.
             data (str, optional): Path to the data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
         """
@@ -44,7 +46,9 @@ class Harness:
                 "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
             self.model = model
         elif isinstance(model, str):
-            self.model = ModelFactory(task=task, model_path=model)
+            if backend is None:
+                raise ValueError("'backend' must be specified in order load model from the path.")
+            self.model = ModelFactory(task=task, model_path=model, backend=backend)
 
         else:
           self.model=model

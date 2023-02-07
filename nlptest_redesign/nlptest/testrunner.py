@@ -1,4 +1,5 @@
 import pandas as pd
+from sparknlp.base import LightPipeline
 
 
 class TestRunner:
@@ -14,10 +15,15 @@ class TestRunner:
 
         Args:
             load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
-            model_handler: Object representing the model handler that wraps SparkNLP, Spacy or HuggingFace model.
+            model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
         """
         self._load_testcases = load_testcases.copy()
         self._model_handler = model_handler
+
+        if self._model_handler.backend in ["huggingface","spacy"]:
+            self._model_handler.load_model()
+
+
 
     # @abc.abstractmethod
     def evaluate(self):
@@ -41,12 +47,31 @@ class RobustnessTestRunner(TestRunner):
         Returns:
             pd.DataFrame: DataFrame containing the evaluation results.
         """
-
         expected_result = []
         actual_result = []
-        for i, r in enumerate(self._load_testcases):
-            expected_result.append(self._model_handler(r['Orginal']))
-            actual_result.append(self._model_handler(r['Test_Case']))
+
+        for i, r in self._load_testcases.iterrows():
+            if "spacy" in self._model_handler.backend:
+                doc1 = self._model_handler(r['Orginal'])
+                doc2 = self._model_handler(r['Test_Case'])
+
+                expected_result.append([pred.entity for pred in doc1])
+                actual_result.append([pred.entity for pred in doc2])
+
+            elif "sparknlp.pretrained" in self._model_handler.backend:
+                     expected_result.append((self._model_handler).annotate(r['Orginal'])['ner'])
+                     actual_result.append((self._model_handler).annotate(r['Test_Case'])['ner'])
+
+            elif "spark" in self._model_handler.backend:
+                expected_result.append(LightPipeline(self._model_handler).annotate(r['Orginal'])['ner'])
+                actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
+
+            elif "huggingface" in self._model_handler.backend:
+                doc1 = self._model_handler(r['Orginal'])
+                doc2 = self._model_handler(r['Test_Case'])
+
+                expected_result.append([pred.entity for pred in doc1])
+                actual_result.append([pred.entity for pred in doc2])
 
         self._load_testcases['expected_result'] = expected_result
         self._load_testcases['actual_result'] = actual_result
