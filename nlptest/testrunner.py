@@ -52,22 +52,22 @@ class RobustnessTestRunner(TestRunner):
 
         for i, r in self._load_testcases.iterrows():
             if "spacy" in self._model_handler.backend:
-                doc1 = self._model_handler(r['Orginal'])
+                doc1 = self._model_handler(r['Original'])
                 doc2 = self._model_handler(r['Test_Case'])
 
                 expected_result.append([pred.entity for pred in doc1])
                 actual_result.append([pred.entity for pred in doc2])
 
             elif "sparknlp.pretrained" in self._model_handler.backend:
-                     expected_result.append((self._model_handler).annotate(r['Orginal'])['ner'])
+                     expected_result.append((self._model_handler).annotate(r['Original'])['ner'])
                      actual_result.append((self._model_handler).annotate(r['Test_Case'])['ner'])
 
             elif "spark" in self._model_handler.backend:
-                expected_result.append(LightPipeline(self._model_handler).annotate(r['Orginal'])['ner'])
+                expected_result.append(LightPipeline(self._model_handler).annotate(r['Original'])['ner'])
                 actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
 
             elif "huggingface" in self._model_handler.backend:
-                doc1 = self._model_handler(r['Orginal'])
+                doc1 = self._model_handler(r['Original'])
                 doc2 = self._model_handler(r['Test_Case'])
 
                 expected_result.append([pred.entity for pred in doc1])
@@ -80,7 +80,7 @@ class RobustnessTestRunner(TestRunner):
         final_perturbed_labels = []
         for i, r in self._load_testcases.iterrows():
             main_list = r['Test_Case'].split(' ')
-            sub_list = r['Orginal'].split(' ')
+            sub_list = r['Original'].split(' ')
 
             org_sentence_labels = list(r['expected_result'])
             perturbed_sentence_labels = list(r['actual_result'])
