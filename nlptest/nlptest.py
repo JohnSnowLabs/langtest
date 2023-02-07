@@ -94,7 +94,7 @@ class Harness:
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
         self._load_testcases = PerturbationFactory(self.data, tests).transform()
-        return self._load_testcases
+        return self #._load_testcases
 
     # def load(self) -> pd.DataFrame:
     #     try:
