@@ -1,9 +1,9 @@
 import unittest
 import sys
 import pandas as pd
-sys.path.insert(0,"..")
+sys.path.insert(0, '..')
 
-from nlptest.nlptest import Harness
+from nlptest import Harness
 from nlptest.datahandler.datasource import DataFactory
 from nlptest.modelhandler.modelhandler import ModelFactory
 
@@ -14,8 +14,8 @@ class HarnessTestCase(unittest.TestCase):
         self.harness = Harness(
             task='ner',
             model='dslim/bert-base-NER',
-            data="./nlptest_redesign/demo/test.conll",
-            config="./nlptest_redesign/demo/config.yml"
+            data="./demo/data/test.conll",
+            config="./demo/data/config.yml"
         )
 
 
