@@ -1,0 +1,472 @@
+---
+layout: page
+header: false
+full_width: true
+toc : true
+aside:
+  toc: true
+article_header:
+  type: overlay
+  align: center
+  height: 80vh
+---
+
+<!-- Do not use auto intent in this file. -->
+<div class="layout--landing">
+  <div class="heros">
+    {%- for _section in page.data.sections -%}
+    {%- include snippets/get-nav-url.html path=_section.background_image.src -%}
+    {%- assign _url = __return -%}
+    {%- if _section.theme == 'light' -%}
+    <section class="hero section-row hero--center hero--light" id="hero-{{ forloop.index }}" {%- elsif _section.theme == 'dark' -%}
+      <section class="hero  section-row hero--center hero--dark" id="hero-{{ forloop.index }}" {%- else -%} <section
+      class="hero section-row hero--center" id="hero-{{ forloop.index }}" {%- endif -%} {%- if _section.background_color -%}
+      style="background-image: url({{ _url }}); background-color: {{ _section.background_color }};">
+      {%- else -%}
+      style="background-image: url({{ _url }});">
+      {%- endif -%}
+
+      <div class="">
+        {%- if _section.install -%}
+
+        <div class="quick_easy">
+          <div class="grid--container">
+            <div class="grid">
+              <div class="cell d_flex cell--12 cell--lg-5 cell--md-5 cell--sm-12 quick_easy_inner">
+                <h3 class="grey h3_title">{{ _section.title }}</h3>
+                {%- if _section.excerpt-%}
+                <div class="descr_quick">{{ _section.excerpt }}</div>
+                {%- endif -%}
+                 {%- if _section.actions -%}
+                  <ul class="menu">
+                    {%- for _action in _section.actions -%}
+                    {%- include snippets/get-nav-url.html path=_action.url -%}
+                    {%- assign _url = __return -%}
+                    {%- assign _type = _action.type | default: 'outline-info' -%}
+                    <li><a class="button button--{{ _type }} button--lg" href="{{ _url }}">{{ _action.text }}</a>
+                    </li>
+                    {%- endfor -%}
+                  </ul>
+                  {%- endif -%}
+              </div>
+              <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
+                <div class="highlight-box">
+  {% highlight bash %}
+# Install NLU from PyPI
+pip install nlu
+
+# Install NLU from Anaconda/Conda
+conda install -c johnsnowlabs nlu
+            {% endhighlight %}
+                  </div>
+              </div>
+            </div>
+          </div>           
+        </div>
+      
+      {%- endif -%}
+        
+
+      {%- if _section.benchmark -%}
+
+        <div class="benchmark-section">
+          <div class="grid--container">
+            <div class="grid">
+              <div class="cell cell--12 cell--lg-5">
+                <div class="benchmark-top">
+                  <h2 class="h2_title grey">Benchmark</h2>
+                  {%- if _section.excerpt-%}
+                  <div class="benchmark-descr">{{ _section.excerpt }}</div>
+                  {%- endif -%}
+                </div>
+                <div class="benchmark-inner">
+                  <h4 class="h4_title blue">Training NER</h4>
+                  <ul class="list1">
+                    <li> State-of-the-art <strong>Deep Learning</strong> algorithms</li>
+                    <li> Achieve high accuracy with <strong>one line of code</strong></li>
+                    <li> <strong>350 +</strong> NLP Models</li>
+                    <li> <strong>176 +</strong> unique NLP models and algorithms</li>
+                    <li> <strong>68 +</strong> unique NLP pipelines consisting of different NLU components</li>
+                    <li> <strong>50 +</strong> languages supported</li>
+                    <li> <strong>14 +</strong>  embeddings  <strong> BERT, ELMO, ALBERT, XLNET, GLOVE, USE, ELECTRA </strong></li>
+                    <li> <strong>50 +</strong>  Pre-trained Classifiers : <strong> Emotion, Sarcasm, Language, Question, E2E, Toxic</strong> </li>
+                    <li> <strong>36 +</strong>  Pre-Trained  <strong> NER (Named Entity Recognition)  </strong> models </li>
+                    <li> <strong>34 +</strong>  Pre-Trained  <strong> POS (Part of Speech)  </strong> models </li>
+                    <li> <strong>3 +</strong>  Pre-Trained  <strong> Lemmatizer  </strong> models </li>
+                    <li> Dependency parsing untyped and typed</li>
+                    <li> Spell Checking</li>
+                    <li> Multi-lingual NER models in <strong>Dutch, English, French, German, Italian, Norwegian, Polish, Portuguese, Russian, Spanish</strong></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="cell cell--12 cell--lg-7" style="text-align: center; padding: 10px">
+                <div class="table-wrapper">
+                    <div class="table-wrapper-inner">
+                      <table class="table2">
+                        <thead>
+                        <tr>
+                          <th>System</th>
+                          <th>Year</th>
+                          <th>Language</th>
+                          <th>Accuracy</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><span style="font-weight:bold">Spark NLP v2.4</span></td>
+                          <td>2020</td>
+                          <td>Python/Scala/Java/R</td>
+                          <td><span style="font-weight:bold">93.3 (test F1) - 95.9 (dev F1)</span></td>
+                        </tr>
+                        <tr>
+                          <td>Spark NLP v2.x</td>
+                          <td>2019</td>
+                          <td>Python/Scala/Java/R</td>
+                          <td><span style="font-weight:bold">93</span></td>
+                        </tr>
+                        <tr>
+                          <td>Spark NLP v1.x</td>
+                          <td>2018</td>
+                          <td>Python/Scala/Java/R</td>
+                          <td>92</td>
+                        </tr>
+                        <tr>
+                          <td>spaCy v2.x</td>
+                          <td>2017<br></td>
+                          <td>Python/Cython</td>
+                          <td>92.6</td>
+                        </tr>
+                        <tr>
+                          <td>spaCy v1.x</td>
+                          <td>2015</td>
+                          <td>Python/Cython</td>
+                          <td>91.8</td>
+                        </tr>
+                        <tr>
+                          <td>ClearNLP</td>
+                          <td>2015</td>
+                          <td>Java</td>
+                          <td>91.7</td>
+                        </tr>
+                        <tr>
+                          <td>CoreNLP</td>
+                          <td>2015</td>
+                          <td>Java</td>
+                          <td>89.6</td>
+                        </tr>
+                        <tr>
+                          <td>MATE</td>
+                          <td>2015</td>
+                          <td>Java</td>
+                          <td>92.5</td>
+                        </tr>
+                        <tr>
+                          <td>Turbo</td>
+                          <td>2015</td>
+                          <td>C++</td>
+                          <td>92.4</td>
+                        </tr>
+                      </tbody>
+                      </table> 
+                    </div>                  
+                </div>                             
+              </div>          
+            </div>
+          </div>
+        </div>        
+        
+        {%- endif -%}
+
+
+        {%- if _section.pandas -%}
+
+        <div class="pandas-section">
+          <div class="grid--container">
+            <div class="grid">
+              <div class="cell cell--12">
+                <div class="pandas-top">
+                  <h2 class="h2_title grey">Right Out of The Box</h2>
+                  {%- if _section.excerpt-%}
+                  <div class="pandas-descr">{{ _section.excerpt }}</div>
+                  {%- endif -%}
+                  <ul class="pandas-menu menu">
+                    <li><a class="button button--active button--lg" href="docs/en/namespace">Models and Pipelines</a></li>
+                    <li><a class="button button--active button--lg" href="#named-entity-recognition-ner">Named Entity Recognition (NER)</a></li>
+                    <li><a class="button button--active button--lg" href="#part-of-speech--pos">Part-of-Speech (POS)</a></li>
+                    <li><a class="button button--active button--lg" href="#twitter-sentiment-classifier">Twitter Sentiment</a></li>
+                    <li><a class="button button--active button--lg" href="#imdb-movie-sentiment-classifier">IMDB Movie sentiment</a></li>
+                    <li><a class="button button--active button--lg" href="#sarcasm-classifier">Sarcasm Classifer</a></li>
+                    <li><a class="button button--active button--lg" href="#cyberbullying-classifier">Cyberbullying Classifier</a></li>
+                    <li><a class="button button--active button--lg" href="#spam-classifier">Spam Classifier</a></li>
+                    <li><a class="button button--active button--lg" href="#toxic-classifier">Toxic Classifier</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#fake-news-classifier">Fake News Classifier</a></li>
+                    <li><a class="button button--active button--lg" href="#question-classifier-6-class">Classify Question (6 class)</a></li>
+                    <li><a class="button button--active button--lg" href="#question-classifier-50-class">Classify Question (50 class)</a></li>
+                    <li><a class="button button--active button--lg" href="#emotion-classifier">Multi Class Emotion detection</a></li>
+                    <li><a class="button button--active button--lg" href="#e2e-classifier">E2E Classifier</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#sentiment-classifier">Sentiment detection</a></li>
+                    <li><a class="button button--active button--lg" href="#spell-checking">Spell checking</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#language-classifier">Language Classification</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#word-embeddings-bert">BERT Word Embeddings</a></li>
+                    <li><a class="button button--active button--lg" href="#word-embeddings-elmo">ELMO Word Embeddings</a></li>
+                    <li><a class="button button--active button--lg" href="#word-embeddings-electra">Electra Word Embeddings</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#word-embeddings-albert">ALBERT Word Embeddings</a></li>
+                    <li><a class="button button--active button--lg" href="#word-embeddings-xlnet">XLNET Word Embeddings</a></li>
+                    <li><a class="button button--active button--lg" href="#word-embeddings-glove">GLOVE Word Embeddings</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#sentence-embeddings-use">USE Sentence Embeddings</a></li>
+                    <li><a class="button button--active button--lg" href="#sentence-embeddings-bert">BERT Sentence Embeddings</a></li>
+                    <li><a class="button button--active button--lg" href="#sentence-embeddings-electra">ELECTRA Sentence Embeddings</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#dependency-parsing-unlabeled">Dependency Parsing Unlabeled</a></li>
+                    <li><a class="button button--active button--lg" href="#dependency-parsing-labeled">Dependency Parsing Labeled</a></li>
+                    <li><a class="button button--active button--lg" href="#lemmatization">Lemmatization</a></li>
+                    <li><a class="button button--active button--lg" href="#normalizers">Normalization</a></li>
+                    <li><a class="button button--active button--lg" href="#stemmer">Stemming</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#ngrams">NGrams</a></li>
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#regex-matching">Regex Matching</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#text-matching">Text Matching</a></li>-->
+                    <li><a class="button button--active button--lg" href="#date-matching">Date Matching</a></li>
+                    <li><a class="button button--active button--lg" href="#chunking">Chunking</a></li>
+                    <li><a class="button button--active button--lg" href="#sentence-detector">Sentence Detection</a></li>
+            
+                    <li><a class="button button--active button--lg" href="#tokenization">Tokenization</a></li>
+                    <li><a class="button button--active button--lg" href="#stopwords-removal">Stopwords removal</a></li>
+          
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#sentence-embeddings-bert">Bert Sentence Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#sentence-embeddings-elmo">Elmo Sentence Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#sentence-embeddings-albert">Albert Sentence Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#sentence-embeddings-xlnet">Xlnet Sentence Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#sentence-embeddings-glove">Glove Sentence Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#chunk-embeddings-bert">Bert Chunk Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#chunk-embeddings-elmo">Elmo Chunk Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#chunk-embeddings-albert">Albert Chunk Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#chunk-embeddings-xlnet">XlnetChunk Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#chunk-embeddings-glove">Glove Chunk Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#document-embeddings-use">USE Document Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#document-embeddings-bert">Bert Document Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#document-embeddings-elmo">Elmo Document Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#document-embeddings-albert">Albert Word Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#document-embeddings-xlnet">Xlnet Document Embeddings</a></li>-->
+                    <!--<li><a class="button button&#45;&#45;outline-info button&#45;&#45;pill button&#45;&#45;lg" href="#document-embeddings-glove">Glove Document Embeddings</a></li>-->          
+                  </ul>
+                </div>
+              </div>          
+            </div>
+          </div>
+        </div>        
+        
+        {%- endif -%}
+
+
+        
+        {%- if _section.children -%}
+        {%- assign _size = _section.children | size  -%}
+        <div class="grid--container">
+          <div class="grid grid--p-3">
+
+            {%- for child in _section.children -%}
+
+            {%- if _size >= 2 -%}
+            {%- assign _cell_sm_col = 12 -%}
+            {%- else -%}
+            {%- assign _cell_sm_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            {%- if _size >= 2 -%}
+            {%- assign _cell_md_col = 4 -%}
+            {%- else -%}
+            {%- assign _cell_md_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            {%- if _size >= 4 -%}
+            {%- assign _cell_lg_col = 3 -%}
+            {%- else -%}
+            {%- assign _cell_lg_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            {%- if _size >= 6 -%}
+            {%- assign _cell_lg_col = 2 -%}
+            {%- else -%}
+            {%- assign _cell_lg_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            <div class="cell cell--12 cell--md-{{ _cell_md_col }} cell--lg-{{ _cell_lg_col }} cell--sm-{{ _cell_sm_col }}">
+
+              <div class="feature-item topthree {{ _section.featureitem }} ">
+                {%- if child.image and child.image.src -%}
+
+                {%- if child.image.url -%}
+                {%- include snippets/get-nav-url.html path=child.image.url -%}
+                {%- assign _item_image_url = __return -%}
+                {%- else -%}
+                {%- assign _item_image_url = nil -%}
+                {%- endif -%}
+
+                {%- include snippets/get-nav-url.html path=child.image.src -%}
+                {%- assign _item_image_src = __return -%}
+
+                {%- if child.image.is_row -%}
+                  {%- endif -%}
+                  <figure class="mx-auto" style="{{ child.image.style }}">
+                    <img src="{{ _item_image_src }}" />
+                  </figure>
+                  {%- if child.image.is_row -%}
+                {%- endif -%}
+                {%- endif -%}
+
+                <h4>{{ child.title }}</h4>
+
+
+                {%- if child.excerpt-%}
+                <p>{{ child.excerpt }}</p>
+                {%- endif -%}
+
+                {%- if child.actions -%}
+                <ul class="menu">
+                  {%- for _action in child.actions -%}
+                  {%- include snippets/get-nav-url.html path=_action.url -%}
+                  {%- assign _url = __return -%}
+                  {%- assign _type = _action.type | default: 'outline-info' -%}
+                  <li><a class="button button--{{ _type }} button--lg"
+                      href="{{ _url }}">{{ _action.text }}</a></li>
+                  {%- endfor -%}
+                </ul>
+                {%- endif -%}
+              </div>              
+
+              {%- if child.content-%}
+              <p>{{ child.content }}</p>
+              {%- endif -%}
+
+            </div>
+            {%- endfor-%}
+
+          </div>
+        </div>
+        {%- endif -%}
+
+        {%- if _section.image.full_width == true -%}
+      </div> {% comment %} end hero__content {% endcomment %}
+      {%- endif -%}
+
+      {%- if _section.image and _section.image.src -%}
+
+      {%- if _section.image.url -%}
+      {%- include snippets/get-nav-url.html path=_section.image.url -%}
+      {%- assign _section_image_url = __return -%}
+      {%- else -%}
+      {%- assign _section_image_url = nil -%}
+      {%- endif -%}
+
+      {%- include snippets/get-nav-url.html path=_section.image.src -%}
+      {%- assign _section_image_src = __return -%}
+
+      {%- if _section.image.is_row -%}
+      <div class="mb-5">
+        {%- endif -%}
+        <div class="mx-auto" style="{{ _section.image.style }}">
+          {%- if _section_image_url -%}
+          <a href="{{ _section_image_url }}">
+            {%- endif -%}
+            {%- if _section.image.full_width == true -%}
+            <img class="hero__cover hero__cover--full-width" src="{{ _section_image_src }}" />
+            {%- else -%}
+            <img class="hero__cover" src="{{ _section_image_src }}" />
+            {%- endif -%}
+            {%- if _section_image_url -%}
+          </a>
+          {%- endif -%}
+        </div>
+        {%- if _section.image.is_row -%}
+      </div>
+      {%- endif -%}
+      {%- endif -%}
+
+      {%- if _section.image.full_width != true -%}
+  </div> {% comment %} end hero__content {% endcomment %}
+  {%- endif -%}
+
+  {%- if _section.content-%}
+  <p>{{ _section.content }}</p>
+  {%- endif -%}
+  </section>
+  {%- endfor -%}
+</div>
+</div>
+
+<div class="toc_div toc_div_invisible">
+  {% include toc/toc.html html=content %}
+</div>
+
+<div class="landing_examples_div">
+
+
+  <div class="content index-content">
+    <div class="grid--container">
+      <div class="row">
+        <div class="col-12">
+          {{ content }}
+        </div>
+      </div>
+    </div>  
+</div>  
+
+
+</div>
+
+
+{%- include markdown-enhancements.html -%}
+{%- include pageview.html -%}
+<div class="layout--page js-page-root">
+
+{%- if page.sidebar -%}
+<div class="page__sidebar d-print-none">
+  {%- include sidebar/toc.html -%}
+</div>
+{%- endif -%}
+
+</div>
+
+
+
+<script>
+{%- include scripts/lib/scroll-to.js -%}
+{%- include scripts/lib/affix.js -%}
+{%- include scripts/lib/toc.js -%}
+{%- include scripts/page.js -%}
+</script>
+
+
+<script>
+
+{%- include scripts/components/sidebar.js -%}
+{%- include scripts/aside/affix.js -%}
+{%- include scripts/aside/toc.js -%}
+
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+<script>
+$( document ).ready(function() {
+
+$(window).scroll(function (event) {
+    var scroll = $(window).scrollTop();
+    if ($(document).scrollTop() >4000 ){
+    $('.toc_div').removeClass('toc_div_invisible')
+
+    } else {
+    $('.toc_div').addClass('toc_div_invisible')
+
+     }
+});
+
+});
+
+</script>
