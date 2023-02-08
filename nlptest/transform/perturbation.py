@@ -154,17 +154,9 @@ class StripPunctuation(BasePerturbation):
         """
 
         if whitelist is None:
-            whitelist = ['!', '?', ',', '.', '-', ':', ';']
+            whitelist = '!?,.-:;'
 
-        perturb_list = list()
-        for string in list_of_strings:
-
-            if string[-1] in whitelist:
-                perturb_list.append(string[-1])
-            else:
-                perturb_list.append(string)
-
-        return perturb_list
+        return [s.strip(whitelist) for s in list_of_strings]
 
 
 class AddTypo(BasePerturbation):
