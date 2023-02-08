@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class NERPrediction(BaseModel):
+    """"""
     entity: str = Field(None, alias="entity_group")
     word: str
     start: int
@@ -22,6 +23,9 @@ class NERPrediction(BaseModel):
 
 
 class NEROutput(BaseModel):
+    """
+    Output model for NER tasks.
+    """
     labels: List[NERPrediction]
 
     def __eq__(self, other):
@@ -39,17 +43,20 @@ class NEROutput(BaseModel):
 
 
 class SequenceLabel(BaseModel):
+    """"""
     label: str
     score: float
 
 
 class SequenceClassificationOutput(BaseModel):
-    text: str
+    """
+    Output model for text classification tasks.
+    """
     labels: List[SequenceLabel]
 
     def __str__(self):
         labels = {elt.label: elt.score for elt in self.labels}
-        return f"SequenceClassificationOutput(text='{self.text}', labels={labels})"
+        return f"SequenceClassificationOutput(labels={labels})"
 
     def __eq__(self, other):
         """"""
@@ -62,10 +69,22 @@ Result = TypeVar("Result", List[NEROutput], SequenceClassificationOutput)
 
 
 class Sample(BaseModel):
-    test_case: str
+    """
+    Helper object storing the original text, the perturbed one and the corresponding
+    predictions for each of them.
+
+    The specificity here is that it is task-agnostic, one only needs to call access the `is_pass`
+    property to assess whether the `expected_results` and the `actual_results` are the same, regardless
+    the downstream task.
+
+    This way, to support a new task one only needs to create a `XXXOutput` model, overload the `__eq__`
+    operator and add the new model to the `Result` type variable.
+    """
     original: str
-    expected_results: Result
-    actual_results: Result
+    test_type: str
+    test_case: str = None
+    expected_results: Result = None
+    actual_results: Result = None
 
     def is_pass(self) -> bool:
         """"""
