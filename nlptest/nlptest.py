@@ -2,12 +2,10 @@ from functools import reduce
 from typing import Optional, Union
 
 import pandas as pd
-import numpy as np
 import yaml
 
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
-from typing import List, Union, Optional
 from .testrunner import TestRunner
 from .transform.perturbation import PerturbationFactory
 
@@ -47,11 +45,11 @@ class Harness:
             self.model = ModelFactory(task=task, model_path=model)
 
         else:
-          self.model=model
-          if "sparknlp.pretrained" in str(type(self.model)):
-            self.model.backend="sparknlp.pretrained"
-          else:
-            self.model.backend="spark"
+            self.model = model
+            if "sparknlp.pretrained" in str(type(self.model)):
+                self.model.backend = "sparknlp.pretrained"
+            else:
+                self.model.backend = "spark"
 
         if data is not None:
             # self.data = data
@@ -106,7 +104,7 @@ class Harness:
     #     except:
     #         self.generate()
 
-    def run(self) -> None:
+    def run(self) -> "Harness":
         """
         Run the tests on the model using the generated testcases.
 
@@ -130,15 +128,15 @@ class Harness:
 
         summary = self._generated_results.groupby('Test_type')['is_pass']
         summary = summary.agg(
-            fail_count = lambda x: x.count()-x.sum(),
-            pass_count = 'sum',
-            pass_rate = 'mean'
-            )
+            fail_count=lambda x: x.count() - x.sum(),
+            pass_count='sum',
+            pass_rate='mean'
+        )
         summary = summary.reset_index()
 
         summary['minimum_pass_rate'] = summary['Test_type'].apply(
             lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
-            )
+        )
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
 
