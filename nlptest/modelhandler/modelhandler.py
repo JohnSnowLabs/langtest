@@ -57,7 +57,7 @@ class ModelFactory:
         if any([m in model_path for m in ["_core_news_", "_core_web_", "_ent_wiki_"]]):
             self.backend = "spacy"
         else:
-            self.backend = "spacy"
+            self.backend = "huggingface"
         model_class_name = task.replace("-", "") + self.backend
 
         self.model_class = class_map[model_class_name](self.model_path)
