@@ -141,7 +141,8 @@ class Harness:
             )
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
-
+        summary['pass_rate'] = summary['pass_rate'].apply(lambda x: "{:.2f}%".format(x*100))
+        summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.2f}%".format(x*100))
         return summary
 
     def save(
