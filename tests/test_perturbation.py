@@ -1,73 +1,114 @@
-from typing import List
 import unittest
 
 from nlptest.transform.perturbation import *
+from nlptest.transform.utils import A2B_DICT
 
 class PerturbationTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.sentences = [
-            "I live in a London since 2019",
-            "I cannot live in USA due to torandos."
+            "I live in London, United Kingdom since 2019",
+            "I cannot live in USA due to torandos caramelized"
+        ]
+        self.british_sentences = [
+            "I live in London, United Kingdom since 2019",
+            "I cannot live in USA due to torandos caramelised"
+        ]
+        self.contraction_sentences = [
+            "I live in London, United Kingdom since 2019",
+            "I can't live in USA due to torandos caramelized"
         ]
 
+        self.labels = [
+            ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "O", "B-DATE"],
+            ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
+        ]
 
-    def test_uppercase(self):
-        upper_test_cases = UpperCase.transform(
-            list_of_strings=self.sentences
-        )
-        self.assertIsInstance(upper_test_cases, list)
-        self.assertIsInstance(upper_test_cases[0], str)
-        self.assertTrue(upper_test_cases[0].isupper())
-        self.assertEqual(len(self.sentences), len(upper_test_cases))
+        self.terminology = {
+            "LOC": ["London"],
+            "COUN": ["United Kingdom", "USA"],
+            "DATE": ["2019"],
+        }
 
+
+    def test_uppercase(self) -> None:
+        test_cases = UpperCase.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for test_case in test_cases:
+            self.assertTrue(test_case.isupper())
+
+    def test_lowercase(self) -> None:
+        test_cases = LowerCase.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for test_case in test_cases:
+            self.assertTrue(test_case.islower())
+
+    def test_titlecase(self) -> None:
+        test_cases = TitleCase.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for test_case in test_cases:
+            self.assertTrue(test_case.istitle())
     
-    def test_lowercase(self):
-        lower_test_cases = LowerCase.transform(
-            list_of_strings = self.sentences
-        )
+    def test_add_punctuation(self) -> None:
+        test_cases = AddPunctuation.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for test_case in test_cases:
+            self.assertFalse(test_case[-1].isalnum())
 
-        self.assertIsInstance(lower_test_cases, list)
-        self.assertGreater(len(lower_test_cases), 0)
-        self.assertTrue(lower_test_cases[0].islower())
-        self.assertEqual(len(self.sentences), len(lower_test_cases))
-        self.assertIsInstance(lower_test_cases[0], str)
-
-    def test_titlecase(self):
-        title_test_cases = TitleCase.transform(
-            list_of_strings = self.sentences
-        )
-
-        self.assertIsInstance(title_test_cases, list)
-        self.assertGreater(len(title_test_cases), 0)
-        self.assertTrue(title_test_cases[0].istitle())
-        self.assertEqual(len(self.sentences), len(title_test_cases))
-        self.assertIsInstance(title_test_cases[0], str)
+    def test_strip_punctuation(self) -> None:
+        test_cases = StripPunctuation.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for test_case in test_cases:
+            self.assertTrue(test_case[-1].isalnum())
     
-
-    def test_add_Punctuation(self):
-        punc_test_cases = AddPunctuation.transform(
-            list_of_strings = self.sentences
-        )
-
-        self.assertIsInstance(punc_test_cases, list)
-        self.assertGreater(len(punc_test_cases), 0)
-        self.assertTrue(punc_test_cases[0][-1].istitle())
-        self.assertEqual(len(self.sentences), len(punc_test_cases))
-        self.assertIsInstance(punc_test_cases[0], str)
+    def test_add_typo(self) -> None:
+        test_cases = AddTypo.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for i, test_case in enumerate(test_cases):
+            self.assertNotEqual(self.sentences[i], test_case)
     
-    def test_add_context(self):
-        start_context = ["Hello"]
-        end_context = ["Bye"]
-        add_context_test_cases = AddContext.transform(
+    def test_swap_entities(self) -> None:
+        test_cases = SwapEntities.transform(
+            list_of_strings = self.sentences,
+            labels = self.labels,
+            terminology = self.terminology
+            )
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+    
+    def test_american_to_british(self) -> None:
+        test_cases = ConvertAccent.transform(
+            list_of_strings = self.sentences,
+            accent_map=A2B_DICT
+            )
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        self.assertListEqual(test_cases, self.british_sentences)
+
+    def test_add_context(self) -> None:
+        start_context = [["Hello"]]
+        end_context = [["Bye"]]
+        test_cases = AddContext.transform(
             list_of_strings=self.sentences,
             starting_context=start_context,
-            ending_context=end_context
+            ending_context=end_context,
+            strategy="combined"
         )
 
-        self.assertIsInstance(add_context_test_cases, list)
-        self.assertGreater(len(add_context_test_cases), 0)
-        self.assertIsInstance(add_context_test_cases[0], str)
-        self.assertTrue(add_context_test_cases[0][
-            0: len(start_context[0])], start_context[0])
-        self.assertEqual(len(self.sentences), len(add_context_test_cases))
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        for test_case in test_cases:
+            self.assertTrue(test_case.startswith(start_context[0][0]))
+            self.assertTrue(test_case.endswith(end_context[0][0]))
+    
+    def test_add_contraction(self) -> None:
+        test_cases = AddContraction.transform(self.sentences)
+        self.assertIsInstance(test_cases, list)
+        self.assertEqual(len(self.sentences), len(test_cases))
+        self.assertListEqual(test_cases, self.contraction_sentences)
