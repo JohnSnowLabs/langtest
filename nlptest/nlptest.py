@@ -130,8 +130,8 @@ class Harness:
 
         summary = self._generated_results.groupby('Test_type')['is_pass']
         summary = summary.agg(
-            fail_count = lambda x: x.count()-x.sum(),
             pass_count = 'sum',
+            fail_count = lambda x: x.count()-x.sum(),
             pass_rate = 'mean'
             )
         summary = summary.reset_index()
@@ -143,6 +143,8 @@ class Harness:
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
         summary['pass_rate'] = summary['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+
+        summary.columns=["test type", "pass count", "fail count", "pass rate", "minimum pass rate", "pass"]
         return summary
 
     def save(
