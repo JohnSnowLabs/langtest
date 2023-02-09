@@ -104,3 +104,30 @@ class RobustnessTestRunner(TestRunner):
         self._load_testcases = self._load_testcases.assign(
             is_pass=self._load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
         return self._load_testcases
+
+        
+    def _eval_add_contraction(self):
+        e_words = [(x.word, x.label) for x in self.expected_result if x.label is not "O"]
+        a_words = [(x.word, x.label) for x in self.actual_result if x.label is not "O"]
+        return e_words == a_words
+
+    # Kalyan: AddPunctuation, AddContraction, ConvertAccent
+    def _eval_add_punctuation(self):
+        a_words = list(map(lambda x: (x.word, x.label), self.actual_result))
+        e_words = list(map(lambda x: (x.word, x.label), self.expected_result))
+
+        if not e_words[-1][0].isalnum():
+            return a_words == e_words[:-1]
+        return a_words == e_words
+
+
+    def _eval_convert_spelling(self):
+        e_words = [(x.word, x.label) for x in self.expected_result if x.label is not "O"]
+        a_words = [(x.word, x.label) for x in self.actual_result if x.label is not "O"]
+        return e_words == a_words
+
+
+
+
+
+
