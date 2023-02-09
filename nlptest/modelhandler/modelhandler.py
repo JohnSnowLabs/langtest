@@ -4,7 +4,7 @@ from typing import List
 import spacy
 from transformers import pipeline
 
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
 
 class _ModelHandler(ABC):
@@ -110,7 +110,7 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
         """
         self.model = pipeline(model=self.model_path, task="ner", ignore_labels=[])
 
-    def predict(self, text: str, **kwargs) -> List[NEROutput]:
+    def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
         Args:
@@ -134,9 +134,9 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
         if kwargs.get("group_entities"):
             prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
 
-        return [NEROutput(**pred) for pred in prediction]
+        return NEROutput(predictions=[NERPrediction(**pred) for pred in prediction])
 
-    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
 
@@ -159,7 +159,7 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         """"""
         self.model = spacy.load(self.model_path)
 
-    def predict(self, text: str, *args, **kwargs) -> List[NEROutput]:
+    def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """"""
         if self.model is None:
             raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
@@ -167,25 +167,29 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         doc = self.model(text)
 
         if kwargs.get("group_entities"):
-            return [
-                NEROutput(
-                    entity=ent.label_,
-                    word=ent.text,
-                    start=ent.start_char,
-                    end=ent.end_char
-                ) for ent in doc.ents
+            return NEROutput(
+                predictions=[
+                    NERPrediction(
+                        entity=ent.label_,
+                        word=ent.text,
+                        start=ent.start_char,
+                        end=ent.end_char
+                    ) for ent in doc.ents
+                ]
+            )
+
+        return NEROutput(
+            predictions=[
+                NERPrediction(
+                    entity=f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_,
+                    word=token.text,
+                    start=token.idx,
+                    end=token.idx + len(token)
+                ) for token in doc
             ]
+        )
 
-        return [
-            NEROutput(
-                entity=f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_,
-                word=token.text,
-                start=token.idx,
-                end=token.idx + len(token)
-            ) for token in doc
-        ]
-
-    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 

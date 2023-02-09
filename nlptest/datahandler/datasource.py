@@ -1,6 +1,11 @@
-from abc import ABC, abstractmethod
 import os
+from abc import ABC, abstractmethod
+from typing import List
+
 import pandas as pd
+
+from ..utils.custom_types import NEROutput, NERPrediction, Sample
+
 
 class _IDataset(ABC):
     """Abstract base class for Dataset.
@@ -10,8 +15,7 @@ class _IDataset(ABC):
 
     @abstractmethod
     def load_data(self):
-        """Load data from the file_path.
-        """
+        """Load data from the file_path."""
         return NotImplemented
 
 
@@ -22,7 +26,10 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    def __init__(self, file_path) -> None:
+    def __init__(
+            self,
+            file_path: str
+    ) -> None:
         """Initializes DataFactory object.
 
         Args:
@@ -54,20 +61,18 @@ class ConllDataset(_IDataset):
         """
         super().__init__()
         self._file_path = file_path
-        
-    def load_data(self):
+
+    def load_data(self) -> List[Sample]:
         """Loads data from a CoNLL file.
 
         Returns:
             list: List of sentences in the dataset.
         """
+        data = []
         with open(self._file_path) as f:
-
-            data = []
             content = f.read()
             docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
-            for doc in docs:
-
+            for doc in docs[:10]:
                 #  file content to sentence split
                 sentences = doc.strip().split('\n\n')
 
@@ -76,9 +81,6 @@ class ConllDataset(_IDataset):
                     continue
 
                 for sent in sentences:
-                    sentence_data = []
-                    label_data = []
-
                     # sentence string to token level split
                     tokens = sent.strip().split('\n')
 
@@ -86,21 +88,31 @@ class ConllDataset(_IDataset):
                     token_list = [t.split() for t in tokens]
 
                     #  get token and labels from the split
+                    ner_labels = []
+                    cursor = 0
                     for split in token_list:
-                        sentence_data.append(split[0])
-                        label_data.append((split[-1]))
+                        ner_labels.append(
+                            NERPrediction(
+                                entity=split[-1],
+                                word=split[0],
+                                start=cursor,
+                                end=cursor + len(split[0])
+                            )
+                        )
+                        cursor += len(split[0]) + 1  # +1 to account for the white space
 
-                    data.append([" ".join(sentence_data), label_data])
-      
-        data_df = pd.DataFrame(data)
-        data_df = data_df.rename(columns={0: "text", 1: "label"})
+                    original = " ".join([label.word for label in ner_labels])
 
-        return data_df
+                    data.append(
+                        Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+                    )
+        return data
 
 
 class JSONDataset(_IDataset):
     """Class to handle JSON dataset files. Subclass of _IDataset.
     """
+
     def __init__(self, file_path) -> None:
         """Initializes JSONDataset object.
 
@@ -134,4 +146,3 @@ class CSVDataset(_IDataset):
             pd.DataFrame: Csv file as a pandas dataframe.
         """
         return pd.read_csv(self._file_path)
-
