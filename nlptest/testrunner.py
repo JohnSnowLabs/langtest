@@ -1,6 +1,6 @@
 import pandas as pd
 from sparknlp.base import LightPipeline
-
+from typing import List
 
 class TestRunner:
     """Base class for running tests on models.
@@ -127,7 +127,29 @@ class RobustnessTestRunner(TestRunner):
         return e_words == a_words
 
 
+    def _IOB_to_IO(self, iob_tokens):
+        return filter(lambda x: x.label[0]!="I", iob_tokens)
 
+    def _eval_title_case(self):
+        e_words = [(x.word, x.label) for x in self.expected_result]
+        a_words = [(x.word, x.label) for x in self.actual_result]
+        return len(e_words) == len(a_words) and e_words == a_words
 
+    def _eval_strip_punc(self):
+        e_words = [(x.word, x.label) for x in self.expected_result if x.label is not "O"]
+        a_words = [(x.word, x.label) for x in self.actual_result if x.label is not "O"]
+        if a_words[-1][0].isalnum():
+            a_words = a_words[:-1]
 
+        return len(e_words) == len(a_words) and e_words == a_words
+
+    def _eval_swap_cohyphonyms(self):
+        a_words = list(map(lambda x: (x.word, x.label), self.actual_result))
+        e_words = list(map(lambda x: (x.word, x.label), self.expected_result))
+
+        a_words = self._IOB_to_IO(a_words)
+        e_words = self._IOB_to_IO(e_words)
+        
+        
+        return len(e_words) == len(a_words) and a_words == e_words
 
