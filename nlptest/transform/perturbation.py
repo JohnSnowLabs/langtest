@@ -35,9 +35,6 @@ class PerturbationFactory:
         self._tests = dict()
         for test in tests:
 
-            if test not in DEFAULT_PERTURBATIONS:
-                raise ValueError(f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
-
             if isinstance(test, str):
                 if test not in DEFAULT_PERTURBATIONS:
                      raise ValueError(f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
