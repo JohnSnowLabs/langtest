@@ -149,17 +149,14 @@ class Harness:
           for label in all_labels:
               y_true = self._generated_result_df['expected_result'].apply(lambda x: label in x).astype(int).values
               y_pred = self._generated_result_df['actual_result'].apply(lambda x: label in x).astype(int).values
-              if metric==f1_score:
-                tmp_dict[label] = metric(y_true, y_pred)
-              else:
-                   tmp_dict[label] = metric(y_true, y_pred)
+              tmp_dict[label] = metric(y_true, y_pred)
 
           scores[metric.__name__] = tmp_dict
 
 
         df_metrics= pd.DataFrame(scores)
 
-        #Idea is to return one summary df, with these new metrics at the bottom of it.
+        #Idea is to return one summary df, with these new metrics at the bottom of it. Also group I and B labels.
      
 
         return summary
