@@ -69,7 +69,6 @@ class PerturbationFactory:
 
         generated_results_df = pd.DataFrame()
         for test_name, params in self._tests.items():
-            print(test_name)
             res = globals()[PERTURB_CLASS_MAP[test_name]].transform(list(self._data_handler.text), **params)
             result_df = pd.DataFrame()
             result_df['Original'] = self._data_handler.text
