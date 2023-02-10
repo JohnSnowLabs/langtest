@@ -129,10 +129,10 @@ class Harness:
 
         summary = self._generated_results.groupby('Test_type')['is_pass']
         summary = summary.agg(
-            fail_count=lambda x: x.count() - x.sum(),
-            pass_count='sum',
-            pass_rate='mean'
-        )
+            pass_count = 'sum',
+            fail_count = lambda x: x.count()-x.sum(),
+            pass_rate = 'mean'
+            )
         summary = summary.reset_index()
 
         all_labels = set([label for sublist in self._generated_results['expected_result'].tolist() + self._generated_results['actual_result'].tolist() for label in sublist])
@@ -163,8 +163,11 @@ class Harness:
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
         
-        return summary.fillna("-")
+        summary['pass_rate'] = summary['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
 
+        summary.columns=["test type", "pass count", "fail count", "pass rate", "minimum pass rate", "pass"]
+        return summary.fillna("-")
 
     def save(
             self, config: str = "test_config.yml",
