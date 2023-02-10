@@ -9,7 +9,7 @@ DEFAULT_PERTURBATIONS = [
     "strip_punctuation",
     "add_typo",
     "american_to_british",
-    "british_to_american"
+    "british_to_american",
     "add_context",
     "add_contractions",
     "swap_entities",
