@@ -47,8 +47,14 @@ class Harness:
             self.model = model
         elif isinstance(model, str):
             if backend is None:
-                raise ValueError("'backend' must be specified in order load model from the path.")
-            self.model = ModelFactory.load_model(task=task, backend=backend, model_path=model)
+                # raise ValueError("'backend' must be specified in order load model from the path.")
+                for prefix in ["spacy/","huggingface/","sparknlp/","johnsnowlabs/"]:
+                    if prefix in model:
+                        model = model.replace(prefix, "")
+                        backend = prefix.split("/")[0]
+                        break
+                    
+            self.model = ModelFactory.load_model(task=task, backend=backend, path=model)
 
         else:
           self.model=model
