@@ -135,31 +135,36 @@ class Harness:
         )
         summary = summary.reset_index()
 
+        all_labels = set([label for sublist in self._generated_results['expected_result'].tolist() + self._generated_results['actual_result'].tolist() for label in sublist])
+        scores = {}
+        eval_metrics = [accuracy_score, recall_score, precision_score, f1_score]
+        for metric in eval_metrics:
+            tmp_dict={}
+            for label in all_labels:
+                y_true = self._generated_results['expected_result'].apply(lambda x: label in x).astype(int).values
+                y_pred = self._generated_results['actual_result'].apply(lambda x: label in x).astype(int).values
+                tmp_dict[label] = metric(y_true, y_pred)
+
+            scores[metric.__name__] = tmp_dict
+
+
+        df_metrics = pd.DataFrame(scores)
+
+        df_metrics = df_metrics.melt(ignore_index=False, var_name='Test_type', value_name='pass_rate')
+        df_metrics["Test_type"] = df_metrics.index + "-" + df_metrics["Test_type"]
+        df_metrics = df_metrics.reset_index(drop=True)
+
+        summary = summary.merge(df_metrics, how="outer")
+
+
         summary['minimum_pass_rate'] = summary['Test_type'].apply(
             lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
         )
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
+        
+        return summary.fillna("-")
 
-        all_labels = set([label for sublist in self._generated_result_df['expected_result'].tolist() + self._generated_result_df['actual_result'].tolist() for label in sublist])
-        scores = {}
-        eval_metrics = [accuracy_score, recall_score, precision_score, f1_score]
-        for metric in eval_metrics:
-          tmp_dict={}
-          for label in all_labels:
-              y_true = self._generated_result_df['expected_result'].apply(lambda x: label in x).astype(int).values
-              y_pred = self._generated_result_df['actual_result'].apply(lambda x: label in x).astype(int).values
-              tmp_dict[label] = metric(y_true, y_pred)
-
-          scores[metric.__name__] = tmp_dict
-
-
-        df_metrics= pd.DataFrame(scores)
-
-        #Idea is to return one summary df, with these new metrics at the bottom of it. Also group I and B labels.
-     
-
-        return summary
 
     def save(
             self, config: str = "test_config.yml",
