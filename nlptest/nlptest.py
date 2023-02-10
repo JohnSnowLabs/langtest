@@ -136,13 +136,14 @@ class Harness:
         summary = summary.reset_index()
 
         all_labels = set([label for sublist in self._generated_results['expected_result'].tolist() + self._generated_results['actual_result'].tolist() for label in sublist])
+        all_labels = set([x.split("-")[-1] for x in all_labels])
         scores = {}
         eval_metrics = [accuracy_score, recall_score, precision_score, f1_score]
         for metric in eval_metrics:
             tmp_dict={}
             for label in all_labels:
-                y_true = self._generated_results['expected_result'].apply(lambda x: label in x).astype(int).values
-                y_pred = self._generated_results['actual_result'].apply(lambda x: label in x).astype(int).values
+                y_true = self._generated_results['expected_result'].apply(lambda x: label in [y.split("-")[-1] for y in x]).astype(int).values
+                y_pred = self._generated_results['actual_result'].apply(lambda x: label in [y.split("-")[-1] for y in x]).astype(int).values
                 tmp_dict[label] = metric(y_true, y_pred)
 
             scores[metric.__name__] = tmp_dict
