@@ -34,15 +34,11 @@ class PerturbationFactory:
 
         self._tests = dict()
         for test in tests:
+
             if isinstance(test, str):
-                if test not in DEFAULT_PERTURBATIONS:
-                     raise ValueError(f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
                 self._tests[test] = dict()
             elif isinstance(test, dict):
                 test_name = list(test.keys())[0]
-                if test_name not in DEFAULT_PERTURBATIONS:
-                     raise ValueError(f'Invalid test specification: {test_name}. Available tests are: {DEFAULT_PERTURBATIONS}')
-
                 self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
             else:
                 raise ValueError(
