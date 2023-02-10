@@ -1,8 +1,10 @@
 from functools import reduce
 from typing import Optional, Union
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
 import pandas as pd
 import yaml
+
 
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
@@ -138,6 +140,27 @@ class Harness:
         )
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
+
+        all_labels = set([label for sublist in self._generated_result_df['expected_result'].tolist() + self._generated_result_df['actual_result'].tolist() for label in sublist])
+        scores = {}
+        eval_metrics = [accuracy_score, recall_score, precision_score, f1_score]
+        for metric in eval_metrics:
+          tmp_dict={}
+          for label in all_labels:
+              y_true = self._generated_result_df['expected_result'].apply(lambda x: label in x).astype(int).values
+              y_pred = self._generated_result_df['actual_result'].apply(lambda x: label in x).astype(int).values
+              if metric==f1_score:
+                tmp_dict[label] = metric(y_true, y_pred)
+              else:
+                   tmp_dict[label] = metric(y_true, y_pred)
+
+          scores[metric.__name__] = tmp_dict
+
+
+        df_metrics= pd.DataFrame(scores)
+
+        #Idea is to return one summary df, with these new metrics at the bottom of it.
+     
 
         return summary
 
