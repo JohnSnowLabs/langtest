@@ -110,8 +110,8 @@ class RobustnessTestRunner(TestRunner):
 
         
     def _eval_add_contraction(self):
-        e_words = [(x.word, x.label) for x in self.expected_result if x.label is not "O"]
-        a_words = [(x.word, x.label) for x in self.actual_result if x.label is not "O"]
+        e_words = [(x.word, x.label) for x in self.expected_result if x.label != "O"]
+        a_words = [(x.word, x.label) for x in self.actual_result if x.label != "O"]
         return e_words == a_words
 
     # Kalyan: AddPunctuation, AddContraction, ConvertAccent
@@ -125,8 +125,8 @@ class RobustnessTestRunner(TestRunner):
 
 
     def _eval_convert_spelling(self):
-        e_words = [(x.word, x.label) for x in self.expected_result if x.label is not "O"]
-        a_words = [(x.word, x.label) for x in self.actual_result if x.label is not "O"]
+        e_words = [(x.word, x.label) for x in self.expected_result if x.label != "O"]
+        a_words = [(x.word, x.label) for x in self.actual_result if x.label != "O"]
         return e_words == a_words
 
 
@@ -139,8 +139,8 @@ class RobustnessTestRunner(TestRunner):
         return len(e_words) == len(a_words) and e_words == a_words
 
     def _eval_strip_punc(self):
-        e_words = [(x.word, x.label) for x in self.expected_result if x.label is not "O"]
-        a_words = [(x.word, x.label) for x in self.actual_result if x.label is not "O"]
+        e_words = [(x.word, x.label) for x in self.expected_result if x.label != "O"]
+        a_words = [(x.word, x.label) for x in self.actual_result if x.label != "O"]
         if a_words[-1][0].isalnum():
             a_words = a_words[:-1]
 

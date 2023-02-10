@@ -88,6 +88,9 @@ class UpperCase(BasePerturbation):
         """
         return [string.upper() for string in list_of_strings]
 
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        return actual_result == expected_result
 
 class LowerCase(BasePerturbation):
     @staticmethod
@@ -100,6 +103,9 @@ class LowerCase(BasePerturbation):
         """
         return [string.lower() for string in list_of_strings]
 
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        return actual_result == expected_result
 
 class TitleCase(BasePerturbation):
     @staticmethod
@@ -112,6 +118,11 @@ class TitleCase(BasePerturbation):
         """
         return [string.title() for string in list_of_strings]
 
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        e_words = [(x.word, x.label) for x in expected_result]
+        a_words = [(x.word, x.label) for x in actual_result]
+        return len(e_words) == len(a_words) and e_words == a_words
 
 class AddPunctuation(BasePerturbation):
     @staticmethod
@@ -137,6 +148,14 @@ class AddPunctuation(BasePerturbation):
 
         return perturb_list
 
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        a_words = list(map(lambda x: (x.word, x.label), actual_result))
+        e_words = list(map(lambda x: (x.word, x.label), expected_result))
+
+        if not e_words[-1][0].isalnum():
+            return a_words == e_words[:-1]
+        return a_words == e_words
 
 class StripPunctuation(BasePerturbation):
     @staticmethod
@@ -155,6 +174,14 @@ class StripPunctuation(BasePerturbation):
 
         return [s.strip(whitelist) for s in list_of_strings]
 
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        a_words = list(map(lambda x: (x.word, x.label), actual_result))
+        e_words = list(map(lambda x: (x.word, x.label), expected_result))
+
+        if not e_words[-1][0].isalnum():
+            return a_words == e_words[:-1]
+        return a_words == e_words
 
 class AddTypo(BasePerturbation):
     @staticmethod
@@ -207,6 +234,11 @@ class AddTypo(BasePerturbation):
             perturb_list.append("".join(string))
 
         return perturb_list
+
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        pass
+
 
 
 class SwapEntities(BasePerturbation):
@@ -266,6 +298,10 @@ class SwapEntities(BasePerturbation):
             perturb_sent.append(replaced_string)
 
         return perturb_sent
+    
+    @staticmethod
+    def analyze(self, actual_result, expected_result):
+        pass
 
 
 def get_cohyponyms_wordnet(word: str) -> str:
@@ -363,6 +399,17 @@ class SwapCohyponyms(BasePerturbation):
 
         return perturb_sent
 
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        a_words = list(map(lambda x: (x.word, x.label), actual_result))
+        e_words = list(map(lambda x: (x.word, x.label), expected_result))
+
+        a_words = filter(lambda x: x.label[0]!="I", a_words)
+        e_words = filter(lambda x: x.label[0]!="I", a_words)
+        
+        
+        return len(e_words) == len(a_words) and a_words == e_words
+
 
 class ConvertAccent(BasePerturbation):
 
@@ -382,6 +429,13 @@ class ConvertAccent(BasePerturbation):
             perturb_sent.append(' '.join(tokens))
 
         return perturb_sent
+
+    @staticmethod
+    def analyze(actual_result, expected_result):
+        e_words = [(x.word, x.label) for x in expected_result if x.label != "O"]
+        a_words = [(x.word, x.label) for x in actual_result if x.label != "O"]
+       
+        return a_words == e_words
 
 
 class AddContext(BasePerturbation):
@@ -436,6 +490,19 @@ class AddContext(BasePerturbation):
 
         return perturb_sent
 
+    @staticmethod
+    def analyze(expected_result, actual_result):
+        a_words = list(map(lambda x: (x.word, x.label), actual_result))
+        e_words = list(map(lambda x: (x.word, x.label), expected_result))
+
+        s_i = a_words.index(e_words[0])
+        e_i = a_words.index(e_words[-1])
+
+        return a_words[s_i:e_i] == e_words
+
+        
+
+
 
 class AddContraction(BasePerturbation):
 
@@ -468,3 +535,9 @@ class AddContraction(BasePerturbation):
             perturb_sent.append(string)
 
         return perturb_sent
+
+    @staticmethod
+    def analyze(expected_result, actual_result):
+        e_words = [(x.word, x.label) for x in expected_result if x.label != "O"]
+        a_words = [(x.word, x.label) for x in actual_result if x.label != "O"]
+        return e_words == a_words
