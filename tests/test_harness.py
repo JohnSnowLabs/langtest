@@ -37,12 +37,12 @@ class HarnessTestCase(unittest.TestCase):
     
     def test_generate_testcases(self):
         df = self.harness.generate() #._load_testcases
-        self.assertIsInstance(df, pd.DataFrame)
+        self.assertIsInstance(df, Harness)
     
     def test_run_testcases(self):
         self.harness.generate()
         df = self.harness.run() #._load_testcases
-        self.assertIsInstance(df, pd.DataFrame)
+        self.assertIsInstance(df, Harness)
         
     def test_report(self):
         self.harness.generate()
