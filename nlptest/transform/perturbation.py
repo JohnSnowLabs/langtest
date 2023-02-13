@@ -90,6 +90,18 @@ class UpperCase(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual result
+        of a named entity recognition task.
+
+        It compares the actual result with the expected result 
+        directly and returns a boolean value indicating their equality.
+
+        Returns:
+        A boolean value indicating whether the actual result is equal 
+        to the expected result.
+        """
+
         return actual_result == expected_result
 
 class LowerCase(BasePerturbation):
@@ -105,6 +117,17 @@ class LowerCase(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual result 
+        of a named entity recognition task.
+
+        It compares the actual result with the expected result 
+        directly and returns a boolean value indicating their equality.
+
+        Returns:
+        A boolean value indicating whether the actual result 
+        is equal to the expected result.
+        """
         return actual_result == expected_result
 
 class TitleCase(BasePerturbation):
@@ -120,6 +143,18 @@ class TitleCase(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual result
+        of a named entity recognition task.
+
+        It maps both expected and actual results into a list of 
+        tuples containing the word and label.
+
+        Returns:
+        A boolean value indicating whether the length of the expected
+        words list is equal to the length of the actual words list, 
+        and whether the expected words list is equal to the actual words list.
+        """
         e_words = [(x.word, x.label) for x in expected_result]
         a_words = [(x.word, x.label) for x in actual_result]
         return len(e_words) == len(a_words) and e_words == a_words
@@ -150,6 +185,22 @@ class AddPunctuation(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual result 
+        of a named entity recognition task.
+
+        It maps both expected and actual results into a list of 
+        tuples containing the word and label. If the last word in 
+        the expected words list is not alphanumeric, it returns 
+        whether the actual words list is equal to the expected words 
+        list excluding the last word. Otherwise, it returns whether
+        the actual words list is equal to the expected words list.
+
+        Returns:
+        A boolean value indicating whether the actual words list
+        is equal to the expected words list (excluding the last word
+        if it's not alphanumeric).
+        """
         a_words = list(map(lambda x: (x.word, x.label), actual_result))
         e_words = list(map(lambda x: (x.word, x.label), expected_result))
 
@@ -176,6 +227,22 @@ class StripPunctuation(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual result 
+        of a named entity recognition task.
+
+        It maps both expected and actual results into a list of 
+        tuples containing the word and label. If the last word in the
+        expected words list is not alphanumeric, it returns whether
+        the actual words list is equal to the expected words list 
+        excluding the last word. Otherwise, it returns whether the 
+        actual words list is equal to the expected words list.
+
+        Returns:
+        A boolean value indicating whether the actual words list 
+        is equal to the expected words list (excluding the last word 
+        if it's not alphanumeric).
+        """
         a_words = list(map(lambda x: (x.word, x.label), actual_result))
         e_words = list(map(lambda x: (x.word, x.label), expected_result))
 
@@ -300,8 +367,22 @@ class SwapEntities(BasePerturbation):
         return perturb_sent
     
     @staticmethod
-    def analyze(self, actual_result, expected_result):
-        pass
+    def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual 
+        result of a named entity recognition task.
+
+        It maps both expected and actual results into a list 
+        of labels, without considering the words.
+
+        Returns:
+        A boolean value indicating whether the actual labels 
+        list is equal to the expected labels list.
+        """
+        e_words = [x.label for x in expected_result]
+        a_words = [x.label for x in actual_result]
+        return e_words == a_words
+       
 
 
 def get_cohyponyms_wordnet(word: str) -> str:
@@ -401,13 +482,19 @@ class SwapCohyponyms(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual result of a named entity recognition task.
+
+        It maps both expected and actual results into a list of tuples containing the word and label, then filters out the words with a label starting with "I".
+
+        Returns:
+        A boolean value indicating whether the filtered actual words list is equal in length and content to the filtered expected words list.
+        """
         a_words = list(map(lambda x: (x.word, x.label), actual_result))
         e_words = list(map(lambda x: (x.word, x.label), expected_result))
-
         a_words = filter(lambda x: x.label[0]!="I", a_words)
         e_words = filter(lambda x: x.label[0]!="I", a_words)
-        
-        
+
         return len(e_words) == len(a_words) and a_words == e_words
 
 
@@ -432,6 +519,18 @@ class ConvertAccent(BasePerturbation):
 
     @staticmethod
     def analyze(actual_result, expected_result):
+        """
+        This function analyzes the expected result and actual 
+        result of a named entity recognition task.
+
+        It maps both expected and actual results into a list 
+        of tuples containing the word and label, but only includes 
+        the words that have a label other than "O".
+
+        Returns:
+        A boolean value indicating whether the actual words list 
+        is equal to the expected words list.
+        """
         e_words = [(x.word, x.label) for x in expected_result if x.label != "O"]
         a_words = [(x.word, x.label) for x in actual_result if x.label != "O"]
        
@@ -492,9 +591,22 @@ class AddContext(BasePerturbation):
 
     @staticmethod
     def analyze(expected_result, actual_result):
+        """
+        This function analyzes the expected result and 
+        actual result of a named entity recognition task.
+
+        It maps both expected and actual results into a
+        list of tuples containing the word and label, 
+        then finds the starting and ending indices of the
+        expected words in the actual words list.
+
+        Returns:
+            A boolean value indicating whether the actual 
+            words list from the starting to ending indices
+            is equal to the expected words list.
+        """
         a_words = list(map(lambda x: (x.word, x.label), actual_result))
         e_words = list(map(lambda x: (x.word, x.label), expected_result))
-
         s_i = a_words.index(e_words[0])
         e_i = a_words.index(e_words[-1])
 
@@ -538,6 +650,18 @@ class AddContraction(BasePerturbation):
 
     @staticmethod
     def analyze(expected_result, actual_result):
+        """
+        This function analyzes the expected result and 
+        actual result of a named entity recognition task.
+
+        It maps both expected and actual results into a 
+        list of tuples containing the word and label, but 
+        only includes the words that have a label other than "O".
+
+        Returns:
+        A boolean value indicating whether the expected words
+        list is equal to the actual words list.
+        """
         e_words = [(x.word, x.label) for x in expected_result if x.label != "O"]
         a_words = [(x.word, x.label) for x in actual_result if x.label != "O"]
         return e_words == a_words
