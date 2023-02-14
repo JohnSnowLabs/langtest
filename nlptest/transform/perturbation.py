@@ -263,9 +263,11 @@ class SwapEntities(BasePerturbation):
             replace_token = sent_tokens[replace_indx: replace_indx + len(replace_indxs)]
             token_length = len(replace_token)
             replace_token = " ".join(replace_token)
+            replace_token = replace_token.replace("-","").replace(".","").replace("\'s","").replace("\'S","")
 
             proper_entities = [ent for ent in terminology[ent_type] if len(ent.split(' ')) == token_length]
             chosen_ent = random.choice(proper_entities)
+            chosen_ent = chosen_ent.replace("-","").replace(".","").replace("\'s","").replace("\'S","")
             replaced_string = string.replace(replace_token, chosen_ent)
             perturb_sent.append(replaced_string)
 
