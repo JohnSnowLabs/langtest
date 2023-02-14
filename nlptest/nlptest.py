@@ -1,5 +1,6 @@
+from collections import defaultdict
 from functools import reduce
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 import yaml
@@ -97,7 +98,7 @@ class Harness:
         self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
         return self
 
-    def report(self) -> pd.DataFrame:
+    def report(self) -> Dict:
         """
         Generate a report of the test results.
 
@@ -109,24 +110,22 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        print(self._generated_results[0].is_pass())
-        import ipdb
-        ipdb.set_trace()
-        summary = self._generated_results.groupby('Test_type')['is_pass']
-        summary = summary.agg(
-            fail_count=lambda x: x.count() - x.sum(),
-            pass_count='sum',
-            pass_rate='mean'
-        )
-        summary = summary.reset_index()
+        summary = defaultdict(lambda: defaultdict(int))
+        for sample in self._generated_results:
+            summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
-        summary['minimum_pass_rate'] = summary['Test_type'].apply(
-            lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
-        )
-
-        summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
-
-        return summary
+        report = {}
+        for test_type, value in summary.items():
+            pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
+            min_pass_rate = min_pass_dict.get(test_type, min_pass_dict["default"])
+            report[test_type] = {
+                "fail_count": summary[test_type]["false"],
+                "pass_count": summary[test_type]["true"],
+                "pass_rate": pass_rate,
+                "minimum_pass_rate": min_pass_rate,
+                "pass": pass_rate >= min_pass_rate
+            }
+        return report
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:

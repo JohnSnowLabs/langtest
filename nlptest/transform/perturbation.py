@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 import numpy as np
 
 from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY)
-from ..utils.custom_types import Sample, Transformation
+from ..utils.custom_types import Sample, Span, Transformation
 
 
 class BasePerturbation(ABC):
@@ -51,6 +51,7 @@ class PerturbationFactory:
                     f'[2] dictionary of test name and corresponding parameters.'
                 )
 
+        # TODO
         # if 'swap_entities' in self._tests:
         #     self._tests['swap_entities']['terminology'] = create_terminology(data_handler)
         #     self._tests['swap_entities']['labels'] = data_handler.label
@@ -416,8 +417,11 @@ class AddContext(BasePerturbation):
                 add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
                 string = add_string + ' ' + sample.original
                 transformations.append(
-                    Transformation(from_start_char=0, to_start_char=0, from_end_char=0, to_end_char=len(add_string) + 1,
-                                   ignore=True)
+                    Transformation(
+                        original_span=Span(start=0, end=0, word=""),
+                        new_span=Span(start=0, end=len(add_string) + 1, word=add_string),
+                        ignore=True
+                    )
                 )
             else:
                 string = sample.original
@@ -430,7 +434,7 @@ class AddContext(BasePerturbation):
                     from_start, from_end = len(string), len(string)
                     to_start = from_start + 1
                     to_end = to_start + len(add_string)
-                    string = string + ' ' + add_string
+                    string = string + " " + add_string
                 else:
                     from_start, from_end = len(string[:-1]), len(string[:-1])
                     to_start = from_start
@@ -438,8 +442,11 @@ class AddContext(BasePerturbation):
                     string = string[:-1] + add_string + " " + string[-1]
 
                 transformations.append(
-                    Transformation(from_start_char=from_start, to_start_char=to_start, from_end_char=from_end,
-                                   to_end_char=to_end, ignore=True)
+                    Transformation(
+                        original_span=Span(start=from_start, end=from_end, word=""),
+                        new_span=Span(start=to_start, end=to_end, word=string[to_start:to_end]),
+                        ignore=True
+                    )
                 )
 
             sample.test_case = string

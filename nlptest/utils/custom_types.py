@@ -1,25 +1,60 @@
-from typing import List, Optional, TypeVar
+from typing import List, Optional, TypeVar, Tuple
 
 from pydantic import BaseModel, Field
+
+
+class Span(BaseModel):
+    start: int
+    end: int
+    word: str
+
+    def __hash__(self):
+        """"""
+        return hash(self.__repr__())
+
+    def __eq__(self, other):
+        """"""
+        return self.start == other.start and \
+               self.end == other.end and \
+               self.word == other.word
+
+    def __repr__(self):
+        """"""
+        return f"<Span(start={self.start}, end={self.end}, word='{self.word}')>"
 
 
 class NERPrediction(BaseModel):
     """"""
     entity: str = Field(None, alias="entity_group")
-    word: str
-    start: int
-    end: int
+    span: Span
     score: Optional[float] = None
-    ignore: bool = False
 
     class Config:
         extra = "ignore"
         allow_population_by_field_name = True
 
+    @classmethod
+    def from_span(cls, entity: str, word: str, start: int, end: int, score: float = None) -> "NERPrediction":
+        """"""
+        return cls(
+            entity=entity,
+            span=Span(start=start, end=end, word=word),
+            score=score
+        )
+
+    def __hash__(self):
+        """"""
+        return hash(self.__repr__())
+
     def __eq__(self, other):
-        return self.entity == other.entity and \
-               self.start == other.score and \
-               self.end == other.end
+        """"""
+        if isinstance(other, NERPrediction):
+            return self.entity == other.entity
+        return False
+
+    def __repr__(self):
+        """"""
+        return f"<NERPrediction(entity='{self.entity}', span={self.span})>"
 
 
 class NEROutput(BaseModel):
@@ -28,18 +63,22 @@ class NEROutput(BaseModel):
     """
     predictions: List[NERPrediction]
 
-    def __eq__(self, other):
+    def __len__(self):
         """"""
-        non_ignored_preds = [pred for pred in self.predictions if not pred.ignore]
-        non_ignored_preds_other = [pred for pred in other.predictions if not pred.ignore]
+        return len(self.predictions)
 
-        if len(non_ignored_preds) != len(non_ignored_preds_other):
-            return SyntaxError(f"Cannot compare NEROutputs as one has {len(non_ignored_preds)} tokens and the other "
-                               f"{len(non_ignored_preds_other)}.")
+    def __getitem__(self, span: Span) -> Optional[NERPrediction]:
+        """"""
+        for pred in self.predictions:
+            if pred.span == span:
+                return pred
+        return None
 
-        predictions = sorted(non_ignored_preds, key=lambda x: x.start)
-        other_predictions = sorted(non_ignored_preds_other, key=lambda x: x.start)
-        return all([label == label_other for label, label_other in zip(predictions, other_predictions)])
+    def __eq__(self, other: "NEROutput"):
+        """"""
+        # NOTE: we need the list of transformations applied to the sample to be able
+        # to align and compare two different NEROutput
+        raise NotImplementedError()
 
 
 class SequenceLabel(BaseModel):
@@ -69,10 +108,8 @@ Result = TypeVar("Result", NEROutput, SequenceClassificationOutput)
 
 
 class Transformation(BaseModel):
-    from_start_char: int
-    to_start_char: int
-    from_end_char: int
-    to_end_char: int
+    original_span: Span
+    new_span: Span
     ignore: bool = False
 
 
@@ -96,21 +133,58 @@ class Sample(BaseModel):
     transformations: List[Transformation] = None
 
     @property
-    def filtered_results(self) -> NEROutput:
+    def relevant_transformations(self):
         """"""
-        filtered_results = []
+        return [transformation for transformation in self.transformations if not transformation.ignore]
 
-        for pred in self.actual_results.predictions:
-            for transfo in self.transformations:
-                if pred.start == transfo.to_start_char and (transfo.to_end_char - pred.end) <= 1 and transfo.ignore:
-                    continue
-                filtered_results.append(pred)
-        return NEROutput(predictions=filtered_results)
+    @property
+    def aligned_spans(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
+        """
+        Returns:
+             List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
+                List of aligned predicted spans from the original sentence to the perturbed one. The
+                tuples are of the form: (perturbed span, original span). The alignment is achieved by
+                using the transformations apply to the original text. If a Span couldn't be aligned
+                with any other the tuple is of the form (Span, None) (or (None, Span)).
+        """
+        aligned_results = []
+        expected_pred_set, actual_pred_set = set(), set()
+
+        # Retrieving and aligning perturbed spans for later comparison
+        for transformation in self.relevant_transformations:
+            expected_pred = self.expected_results[transformation.original_span]
+            actual_pred = self.actual_results[transformation.new_span]
+
+            aligned_results.append((expected_pred, actual_pred))
+            expected_pred_set.add(expected_pred)
+            actual_pred_set.add(actual_pred)
+
+        # Retrieving predictions for spans that were not perturbed
+        for expected_pred in self.expected_results.predictions:
+            if expected_pred in expected_pred_set:
+                continue
+            actual_pred = self.actual_results[expected_pred.span]
+            aligned_results.append((expected_pred, actual_pred))
+            expected_pred_set.add(expected_pred)
+            if actual_pred is not None:
+                actual_pred_set.add(actual_pred)
+
+        for actual_pred in self.actual_results.predictions:
+            if actual_pred in actual_pred_set:
+                continue
+            expected_pred = self.actual_results[actual_pred.span]
+            aligned_results.append((expected_pred, actual_pred))
+            actual_pred_set.add(actual_pred)
+            if expected_pred is not None:
+                expected_pred_set.add(expected_pred)
+
+        return aligned_results
 
     def is_pass(self) -> bool:
         """"""
-        if isinstance(self.actual_results, NEROutput) and len(self.transformations) > 0:
-            filtered_actual_results = self.filtered_results
+        if isinstance(self.actual_results, NEROutput):
+            return all([a == b for (a, b) in self.aligned_spans])
         else:
             filtered_actual_results = self.actual_results
+
         return self.expected_results == filtered_actual_results

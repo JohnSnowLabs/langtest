@@ -94,7 +94,6 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
             self,
             model_path: str
     ):
-
         """
         Attributes:
             model_path (str):
@@ -131,8 +130,7 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
                           f"the '.load_model' method before running predictions.")
         prediction = self.model(text, **kwargs)
 
-        if kwargs.get("group_entities"):
-            prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
+        prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
 
         return NEROutput(predictions=[NERPrediction(**pred) for pred in prediction])
 
@@ -164,12 +162,14 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         if self.model is None:
             raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
                           f"the '.load_model' method before running predictions.")
+        text = text.lower()
+        kwargs["group_entities"] = True
         doc = self.model(text)
 
         if kwargs.get("group_entities"):
             return NEROutput(
                 predictions=[
-                    NERPrediction(
+                    NERPrediction.from_span(
                         entity=ent.label_,
                         word=ent.text,
                         start=ent.start_char,
@@ -177,17 +177,6 @@ class NERSpaCyPretrainedModel(_ModelHandler):
                     ) for ent in doc.ents
                 ]
             )
-
-        return NEROutput(
-            predictions=[
-                NERPrediction(
-                    entity=f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_,
-                    word=token.text,
-                    start=token.idx,
-                    end=token.idx + len(token)
-                ) for token in doc
-            ]
-        )
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""

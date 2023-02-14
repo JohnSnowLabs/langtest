@@ -72,7 +72,7 @@ class ConllDataset(_IDataset):
         with open(self._file_path) as f:
             content = f.read()
             docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
-            for doc in docs[:10]:
+            for doc in docs[:5]:
                 #  file content to sentence split
                 sentences = doc.strip().split('\n\n')
 
@@ -92,7 +92,7 @@ class ConllDataset(_IDataset):
                     cursor = 0
                     for split in token_list:
                         ner_labels.append(
-                            NERPrediction(
+                            NERPrediction.from_span(
                                 entity=split[-1],
                                 word=split[0],
                                 start=cursor,
@@ -101,7 +101,7 @@ class ConllDataset(_IDataset):
                         )
                         cursor += len(split[0]) + 1  # +1 to account for the white space
 
-                    original = " ".join([label.word for label in ner_labels])
+                    original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
                         Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
