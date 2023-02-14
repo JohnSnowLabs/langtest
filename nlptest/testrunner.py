@@ -1,5 +1,5 @@
 import pandas as pd
-from sparknlp.base import LightPipeline
+from .modelhandler import ModelFactory
 
 
 class TestRunner:
@@ -9,7 +9,7 @@ class TestRunner:
     def __init__(
             self,
             load_testcases: pd.DataFrame,
-            model_handler,
+            model_handler: ModelFactory,
     ) -> None:
         """Initialize the TestRunner class.
 
@@ -42,34 +42,10 @@ class RobustnessTestRunner(TestRunner):
         Returns:
             pd.DataFrame: DataFrame containing the evaluation results.
         """
-        expected_result = []
-        actual_result = []
 
-        for i, r in self._load_testcases.iterrows():
-            if "spacy" in self._model_handler.backend:
-                doc1 = self._model_handler(r['Original'])
-                doc2 = self._model_handler(r['Test_Case'])
+        self._load_testcases["expected_result"] = self._load_testcases["Original"].apply(self._model_handler.predict)
+        self._load_testcases["actual_result"] = self._load_testcases["Test_Case"].apply(self._model_handler.predict)
 
-                expected_result.append([pred.entity for pred in doc1])
-                actual_result.append([pred.entity for pred in doc2])
-
-            elif "sparknlp.pretrained" in self._model_handler.backend:
-                     expected_result.append((self._model_handler).annotate(r['Original'])['ner'])
-                     actual_result.append((self._model_handler).annotate(r['Test_Case'])['ner'])
-
-            elif "spark" in self._model_handler.backend:
-                expected_result.append(LightPipeline(self._model_handler).annotate(r['Original'])['ner'])
-                actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
-
-            elif "huggingface" in self._model_handler.backend:
-                doc1 = self._model_handler(r['Original'])
-                doc2 = self._model_handler(r['Test_Case'])
-
-                expected_result.append([pred.entity for pred in doc1])
-                actual_result.append([pred.entity for pred in doc2])
-
-        self._load_testcases['expected_result'] = expected_result
-        self._load_testcases['actual_result'] = actual_result
         # Checking for any token mismatches
 
         final_perturbed_labels = []
