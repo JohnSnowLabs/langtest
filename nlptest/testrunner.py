@@ -51,7 +51,7 @@ class RobustnessTestRunner(TestRunner):
         final_perturbed_labels = []
         for i, r in self._load_testcases.iterrows():
             main_list = r['Test_Case'].split(' ')
-            sub_list = r['Orginal'].split(' ')
+            sub_list = r['Original'].split(' ')
 
             org_sentence_labels = list(r['expected_result'])
             perturbed_sentence_labels = list(r['actual_result'])
