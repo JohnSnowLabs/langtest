@@ -114,7 +114,6 @@ class RobustnessTestRunner(TestRunner):
         a_words = [(x.word, x.label) for x in self.actual_result if x.label != "O"]
         return e_words == a_words
 
-    # Kalyan: AddPunctuation, AddContraction, ConvertAccent
     def _eval_add_punctuation(self):
         a_words = list(map(lambda x: (x.word, x.label), self.actual_result))
         e_words = list(map(lambda x: (x.word, x.label), self.expected_result))
