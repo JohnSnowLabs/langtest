@@ -1,6 +1,5 @@
 from functools import reduce
 from typing import Optional, Union
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
 import pandas as pd
 import yaml
@@ -112,7 +111,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `_generated_results` attribute.
         """
-        self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
+        self._generated_results = TestRunner(self._load_testcases, self.model, self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -135,27 +134,8 @@ class Harness:
             )
         summary = summary.reset_index()
 
-        all_labels = set([label for sublist in self._generated_results['expected_result'].tolist() + self._generated_results['actual_result'].tolist() for label in sublist])
-        all_labels = set([x.split("-")[-1] for x in all_labels])
-        scores = {}
-        eval_metrics = [accuracy_score, recall_score, precision_score, f1_score]
-        for metric in eval_metrics:
-            tmp_dict={}
-            for label in all_labels:
-                y_true = self._generated_results['expected_result'].apply(lambda x: label in [y.split("-")[-1] for y in x]).astype(int).values
-                y_pred = self._generated_results['actual_result'].apply(lambda x: label in [y.split("-")[-1] for y in x]).astype(int).values
-                tmp_dict[label] = metric(y_true, y_pred)
 
-            scores[metric.__name__] = tmp_dict
-
-
-        df_metrics = pd.DataFrame(scores)
-
-        df_metrics = df_metrics.melt(ignore_index=False, var_name='Test_type', value_name='pass_rate')
-        df_metrics["Test_type"] = df_metrics.index + "-" + df_metrics["Test_type"]
-        df_metrics = df_metrics.reset_index(drop=True)
-
-        summary = summary.merge(df_metrics, how="outer")
+        # summary = summary.merge(df_metrics, how="outer")
 
 
         summary['minimum_pass_rate'] = summary['Test_type'].apply(

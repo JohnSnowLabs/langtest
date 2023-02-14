@@ -1,17 +1,23 @@
 import pandas as pd
 from sparknlp.base import LightPipeline
+from sklearn.metrics import classification_report
+
+from nlptest.modelhandler import ModelFactory
 
 
 class TestRunner:
-    """Base class for running tests on models.
+    """
+    Base class for running tests on models.
     """
 
     def __init__(
             self,
             load_testcases: pd.DataFrame,
-            model_handler,
+            model_handler: ModelFactory,
+            data: pd.DataFrame
     ) -> None:
-        """Initialize the TestRunner class.
+        """
+        Initialize the TestRunner class.
 
         Args:
             load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
@@ -19,6 +25,7 @@ class TestRunner:
         """
         self._load_testcases = load_testcases.copy()
         self._model_handler = model_handler
+        self._data = data
 
         if self._model_handler.backend in ["huggingface", "spacy"]:
             self._model_handler.load_model()
@@ -30,17 +37,24 @@ class TestRunner:
         Returns:
             DataFrame: DataFrame containing the evaluation results.
         """
-        runner = RobustnessTestRunner(self._load_testcases, self._model_handler)
-        return runner.evaluate()
+        robustness_runner = RobustnessTestRunner(self._load_testcases, self._model_handler, self._data)
+        accuracy_runner = AccuracyTestRunner(self._load_testcases, self._model_handler, self._data)
+
+        robustness_result = robustness_runner.evaluate()
+        accuracy_result = accuracy_runner.evaluate()
+
+        return robustness_result.merge(accuracy_result, how="outer")
 
 
 class RobustnessTestRunner(TestRunner):
-    """Class for running robustness tests on models.
+    """
+    Class for running robustness tests on models.
     Subclass of TestRunner.
     """
 
-    def evaluate(self):
-        """Evaluate the testcases and return the evaluation results.
+    def evaluate(self) -> pd.DataFrame:
+        """
+        Evaluate the testcases and return the evaluation results.
 
         Returns:
             pd.DataFrame: DataFrame containing the evaluation results.
@@ -107,3 +121,28 @@ class RobustnessTestRunner(TestRunner):
         self._load_testcases = self._load_testcases.assign(
             is_pass=self._load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
         return self._load_testcases
+
+
+class AccuracyTestRunner(TestRunner):
+    """
+    Class for running accuracy related tests on models.
+    Subclass of TestRunner.
+    """
+
+    def evaluate(self) -> pd.DataFrame:
+        """
+        Evaluates the model's accuracy, precision, recall and f1-score per label and
+        macro-f1, micro-f1 and total accuracy. 
+
+        Returns:
+            pd.Dataframe: Dataframe with the results.
+        """
+        
+        y_true = self._data["label"].explode()
+        y_pred = [x.label for x in self._model_handler.predict(self._data["text"])]
+        y_pred = pd.Series(y_pred).explode()
+
+        print(classification_report(y_true, y_pred))
+
+        res = pd.DataFrame()
+        return res
