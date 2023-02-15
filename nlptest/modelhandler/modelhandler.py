@@ -94,7 +94,7 @@ class ModelFactory:
         return self.model_class(text=text, **kwargs)
 
 
-class NERHuggingFacePretrainedModel(_ModelHandler):
+class NERTransformersPretrainedModel(_ModelHandler):
     """
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
@@ -112,7 +112,7 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
         self.model = model
 
     @classmethod
-    def load_model(cls, path) -> 'NERHuggingFacePretrainedModel':
+    def load_model(cls, path) -> 'NERTransformersPretrainedModel':
         """Load the NER model into the `model` attribute.
         """
         return cls(
@@ -194,7 +194,7 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         return self.predict(text=text)
 
 
-class TextClassificationHuggingFacePretrainedModel(_ModelHandler):
+class TextClassificationTransformersPretrainedModel(_ModelHandler):
     """
     Args:
         model_path (str):

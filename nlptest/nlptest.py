@@ -16,7 +16,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_HUBS = ["spacy", "huggingface", "sparknlp", "johnsnowlabs"]
+    SUPPORTED_HUBS = ["spacy", "transformers", "sparknlp", "johnsnowlabs"]
     def __init__(
             self,
             task: Optional[str],
