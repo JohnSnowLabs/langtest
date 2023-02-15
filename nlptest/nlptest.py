@@ -85,13 +85,13 @@ class Harness:
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            None: The generated testcases are stored in `_load_testcases` attribute.
+            None: The generated testcases are stored in `load_testcases` attribute.
         """
 
         # self.data_handler =  DataFactory(data_path).load()
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
-        self._load_testcases = PerturbationFactory(self.data, tests).transform()
+        self.load_testcases = PerturbationFactory(self.data, tests).transform()
         return self
     # def load(self) -> pd.DataFrame:
     #     try:
@@ -110,7 +110,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `_generated_results` attribute.
         """
-        self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
+        self._generated_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -168,5 +168,5 @@ class Harness:
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self._load_testcases.to_csv(testcases, index=None)
+        self.load_testcases.to_csv(testcases, index=None)
         self._generated_results.to_csv(results, index=None)
