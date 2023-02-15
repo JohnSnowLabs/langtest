@@ -132,7 +132,7 @@ class NERTransformersPretrainedModel(_ModelHandler):
 
         prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
         return NEROutput(predictions=[NERPrediction.from_span(
-                        entity=pred['entity_group'],
+                        entity=pred.get('entity_group', pred.get('entity', None)),
                         word=pred['word'],
                         start=pred['start'],
                         end=pred['end']
