@@ -131,8 +131,12 @@ class NERTransformersPretrainedModel(_ModelHandler):
         prediction = self.model(text, **kwargs)
 
         prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
-
-        return NEROutput(predictions=[NERPrediction(**pred) for pred in prediction])
+        return NEROutput(predictions=[NERPrediction.from_span(
+                        entity=pred['entity_group'],
+                        word=pred['word'],
+                        start=pred['start'],
+                        end=pred['end']
+                    ) for pred in prediction])
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
