@@ -17,7 +17,7 @@ class TestRunner:
             load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
             model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
         """
-        self._load_testcases = load_testcases.copy()
+        self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
 
     # @abc.abstractmethod
@@ -27,7 +27,7 @@ class TestRunner:
         Returns:
             DataFrame: DataFrame containing the evaluation results.
         """
-        runner = RobustnessTestRunner(self._load_testcases, self._model_handler)
+        runner = RobustnessTestRunner(self.load_testcases, self._model_handler)
         return runner.evaluate()
 
 
@@ -43,13 +43,13 @@ class RobustnessTestRunner(TestRunner):
             pd.DataFrame: DataFrame containing the evaluation results.
         """
 
-        self._load_testcases["expected_result"] = self._load_testcases["Original"].apply(self._model_handler.predict)
-        self._load_testcases["actual_result"] = self._load_testcases["Test_Case"].apply(self._model_handler.predict)
+        self.load_testcases["expected_result"] = self.load_testcases["Original"].apply(self._model_handler.predict)
+        self.load_testcases["actual_result"] = self.load_testcases["Test_Case"].apply(self._model_handler.predict)
 
         # Checking for any token mismatches
 
         final_perturbed_labels = []
-        for i, r in self._load_testcases.iterrows():
+        for i, r in self.load_testcases.iterrows():
             main_list = r['Test_Case'].split(' ')
             sub_list = r['Original'].split(' ')
 
@@ -72,7 +72,7 @@ class RobustnessTestRunner(TestRunner):
                 if not is_added:
                     final_perturbed_labels.append([])
 
-        self._load_testcases['actual_result'] = final_perturbed_labels
-        self._load_testcases = self._load_testcases.assign(
-            is_pass=self._load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
-        return self._load_testcases
+        self.load_testcases['actual_result'] = final_perturbed_labels
+        self.load_testcases = self.load_testcases.assign(
+            is_pass=self.load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
+        return self.load_testcases
