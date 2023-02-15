@@ -53,19 +53,24 @@ class ModelFactory:
         self.task = task
 
     @classmethod
-    def load_model(cls, task, backend, path) -> 'ModelFactory':
+    def load_model(
+        cls,
+        task: str,
+        hub: str,
+        path: str
+    ) -> 'ModelFactory':
         """Load the model.
 
         Args:
             path (str): path to model to use
             task (str): task to perform
-            backend (optional, str): model backend to load custom model from the path
+            hub (str): model hub to load custom model from the path
         """
 
         class_map = {
             cls.__name__.replace("PretrainedModel", "").lower(): cls for cls in _ModelHandler.__subclasses__()
         }
-        model_class_name = task + backend
+        model_class_name = task + hub
         model_class = class_map[model_class_name].load_model(path)
         return cls(
             model_class,
