@@ -2,12 +2,10 @@ from functools import reduce
 from typing import Optional, Union
 
 import pandas as pd
-import numpy as np
 import yaml
 
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
-from typing import List, Union, Optional
 from .testrunner import TestRunner
 from .transform.perturbation import PerturbationFactory
 
@@ -97,8 +95,7 @@ class Harness:
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
         self._load_testcases = PerturbationFactory(self.data, tests).transform()
-        return self._load_testcases
-
+        return self
     # def load(self) -> pd.DataFrame:
     #     try:
     #         self._load_testcases = pd.read_csv('path/to/{self._model_path}_testcases')
@@ -109,7 +106,7 @@ class Harness:
     #     except:
     #         self.generate()
 
-    def run(self) -> None:
+    def run(self) -> "Harness":
         """
         Run the tests on the model using the generated testcases.
 
@@ -133,18 +130,21 @@ class Harness:
 
         summary = self._generated_results.groupby('Test_type')['is_pass']
         summary = summary.agg(
-            fail_count = lambda x: x.count()-x.sum(),
             pass_count = 'sum',
+            fail_count = lambda x: x.count()-x.sum(),
             pass_rate = 'mean'
             )
         summary = summary.reset_index()
 
         summary['minimum_pass_rate'] = summary['Test_type'].apply(
             lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
-            )
+        )
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
+        summary['pass_rate'] = summary['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
 
+        summary.columns=["test type", "pass count", "fail count", "pass rate", "minimum pass rate", "pass"]
         return summary
 
     def save(

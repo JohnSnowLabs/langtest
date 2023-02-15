@@ -55,6 +55,7 @@ class RobustnessTestRunner(TestRunner):
 
             org_sentence_labels = list(r['expected_result'])
             perturbed_sentence_labels = list(r['actual_result'])
+
             if len(org_sentence_labels) == len(perturbed_sentence_labels):
                 final_perturbed_labels.append(perturbed_sentence_labels)
             else:
