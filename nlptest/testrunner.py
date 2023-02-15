@@ -20,7 +20,7 @@ class TestRunner:
         self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
 
-        if self._model_handler.backend in ["huggingface", "spacy"]:
+        if self._model_handler.backend in ["transformers", "spacy"]:
             self._model_handler.load_model()
 
     # @abc.abstractmethod
@@ -68,7 +68,7 @@ class RobustnessTestRunner(TestRunner):
                     expected_result.append(LightPipeline(self._model_handler).annotate(r['Original'])['ner'])
                     actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
 
-                elif "huggingface" in self._model_handler.backend:
+                elif "transformers" in self._model_handler.backend:
                     doc1 = self._model_handler(r['Original'])
                     doc2 = self._model_handler(r['Test_Case'])
 
