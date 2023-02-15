@@ -18,12 +18,12 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-
+    SUPPORTED_HUBS = ["spacy", "huggingface", "sparknlp", "johnsnowlabs"]
     def __init__(
             self,
             task: Optional[str],
             model: Union[str, ModelFactory],
-            backend: Optional[str] = None,
+            hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
     ):
@@ -36,6 +36,9 @@ class Harness:
             backend (str, optional): model backend to load from the path. Required if path is passed as 'model'.
             data (str, optional): Path to the data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
+
+        Raises:
+            ValueError: Invalid arguments.
         """
 
         super().__init__()
@@ -46,22 +49,12 @@ class Harness:
                 "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
             self.model = model
         elif isinstance(model, str):
-            if backend is None:
-                # raise ValueError("'backend' must be specified in order load model from the path.")
-                for prefix in ["spacy/","huggingface/","sparknlp/","johnsnowlabs/"]:
-                    if prefix in model:
-                        model = model.replace(prefix, "")
-                        backend = prefix.split("/")[0]
-                        break
-                    
-            self.model = ModelFactory.load_model(task=task, backend=backend, path=model)
-
-        else:
-          self.model=model
-          if "sparknlp.pretrained" in str(type(self.model)):
-            self.model.backend="sparknlp.pretrained"
-          else:
-            self.model.backend="spark"
+            if hub is None:
+                raise ValueError("Hub should be specified when loading a model from web.")
+            if hub not in self.SUPPORTED_HUBS:
+                raise ValueError(f"Hub {hub} is not supported or invalid.")
+                
+            self.model = ModelFactory.load_model(task=task, hub=hub, path=model)
 
         if data is not None:
             # self.data = data
