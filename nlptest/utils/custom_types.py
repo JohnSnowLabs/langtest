@@ -1,12 +1,30 @@
-from typing import List, Optional, TypeVar, Tuple
+from typing import List, Optional, Tuple, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 
 class Span(BaseModel):
     start: int
     end: int
     word: str
+
+    @property
+    def length(self):
+        """"""
+        return self.end - self.start
+
+    def shift_start(self, offset: int) -> None:
+        """"""
+        self.start -= offset
+
+    def shift_end(self, offset: int) -> None:
+        """"""
+        self.end -= offset
+
+    def shift(self, offset: int) -> None:
+        """"""
+        self.start -= offset
+        self.end -= offset
 
     def __hash__(self):
         """"""
@@ -49,7 +67,9 @@ class NERPrediction(BaseModel):
     def __eq__(self, other):
         """"""
         if isinstance(other, NERPrediction):
-            return self.entity == other.entity
+            return self.entity == other.entity and \
+                   self.span.start == other.span.start and \
+                   self.span.end == other.span.end
         return False
 
     def __repr__(self):
@@ -62,6 +82,11 @@ class NEROutput(BaseModel):
     Output model for NER tasks.
     """
     predictions: List[NERPrediction]
+
+    @validator("predictions")
+    def sort_by_appearance(cls, v):
+        """"""
+        return sorted(v, key=lambda x: x.span.start)
 
     def __len__(self):
         """"""
@@ -132,10 +157,34 @@ class Sample(BaseModel):
     actual_results: Result = None
     transformations: List[Transformation] = None
 
+    @validator("transformations")
+    def sort_transformations(cls, v):
+        """"""
+        return sorted(v, key=lambda x: x.original_span.start)
+
     @property
     def relevant_transformations(self):
         """"""
         return [transformation for transformation in self.transformations if not transformation.ignore]
+
+    def _get_realigned_spans(self):
+        """"""
+        if len(self.transformations) == 0:
+            return self.actual_results
+
+        realigned_results = []
+        for actual_result in self.actual_results.predictions:
+            for transformation in self.transformations:
+                if transformation.new_span.start < actual_result.span.start:
+                    # the whole span needs to be shifted to the left
+                    actual_result.span.shift((transformation.new_span.start - transformation.original_span.start) + \
+                                             (transformation.new_span.end - transformation.original_span.end))
+                elif transformation.new_span.start == actual_result.span.start:
+                    # only the end of the span needs to be adjusted
+                    actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
+
+            realigned_results.append(actual_result)
+        return realigned_results
 
     @property
     def aligned_spans(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
