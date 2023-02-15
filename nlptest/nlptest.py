@@ -93,9 +93,9 @@ class Harness:
         Run the tests on the model using the generated testcases.
 
         Returns:
-            None: The evaluations are stored in `_generated_results` attribute.
+            None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results = TestRunner(self.load_testcases, self.model).evaluate()
+        self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
     def report(self) -> Dict:
@@ -111,7 +111,7 @@ class Harness:
             min_pass_dict = self._config['min_pass_rate']
 
         summary = defaultdict(lambda: defaultdict(int))
-        for sample in self._generated_results:
+        for sample in self.generated_results:
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -148,4 +148,4 @@ class Harness:
             yml.write(yaml.safe_dump(self._config))
 
         self.load_testcases.to_csv(testcases, index=None)
-        self._generated_results.to_csv(results, index=None)
+        self.generated_results.to_csv(results, index=None)
