@@ -181,11 +181,15 @@ class Sample(BaseModel):
     @property
     def relevant_transformations(self) -> List[Transformation]:
         """"""
+        if not self.transformations:
+            return None
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
     @property
     def irrelevant_transformations(self) -> List[Transformation]:
         """"""
+        if not self.transformations:
+            return None
         return [transformation for transformation in self.transformations if transformation.ignore]
 
     @property
@@ -202,7 +206,7 @@ class Sample(BaseModel):
         """
         if self._realigned_spans is None:
 
-            if len(self.transformations) == 0:
+            if len(self.transformations or '') == 0:
                 return self.actual_results
 
             ignored_predictions = self.ignored_predictions
