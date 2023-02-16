@@ -112,6 +112,17 @@ class PerturbationTestCase(unittest.TestCase):
             self.assertTrue(test_case[-1].isalnum())
     
     def test_add_typo(self) -> None:
+        """
+        Test Case: Verify that the AddTypo Class was transfroms
+        from each senetence into add or remove characters from words
+        in a sentence.
+
+        Test Steps:
+        1. Provide the list of sentence to AddTypo Perturb.
+        2. Check that the length and add or remove characters from words
+            in a sentence.
+        """
+
         test_cases = AddTypo.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
@@ -119,6 +130,17 @@ class PerturbationTestCase(unittest.TestCase):
             self.assertNotEqual(self.sentences[i], test_case)
     
     def test_swap_entities(self) -> None:
+        """
+        Test Case: Verify that the SwapEntities Class was transfroms
+        from any two senetence into changing words based on NER labels
+        in a sentence.
+
+        Test Steps:
+        1. Provide the list of sentence to SwapEntities Perturb.
+        2. Check that the length and changing words according to
+            person, location, date, ... like NER tagged words in a 
+            sentence.
+        """
         test_cases = SwapEntities.transform(
             list_of_strings = self.sentences,
             labels = self.labels,
