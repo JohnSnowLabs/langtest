@@ -1,21 +1,18 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
-
-# TODO: I guess backend imports should not be handled here.
-from sparknlp.pretrained import PretrainedPipeline
-from pyspark.ml import PipelineModel
-from sparknlp.base import LightPipeline
-
+import spacy
 from johnsnowlabs import nlp
 from nlu import NLUPipeline
-
+from pyspark.ml import PipelineModel
 # We need to add more NerDL model
 from sparknlp.annotator import NerDLModel, ClassifierDLModel
-
-import spacy
+from sparknlp.base import LightPipeline
+# TODO: I guess backend imports should not be handled here.
+from sparknlp.pretrained import PretrainedPipeline
 from transformers import pipeline
+
+from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 
 class _ModelHandler(ABC):
