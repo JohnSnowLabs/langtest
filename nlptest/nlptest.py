@@ -2,12 +2,10 @@ from functools import reduce
 from typing import Optional, Union
 
 import pandas as pd
-import numpy as np
 import yaml
 
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
-from typing import List, Union, Optional
 from .testrunner import TestRunner
 from .transform.perturbation import PerturbationFactory
 
@@ -47,11 +45,11 @@ class Harness:
             self.model = ModelFactory(task=task, model_path=model)
 
         else:
-          self.model=model
-          if "sparknlp.pretrained" in str(type(self.model)):
-            self.model.backend="sparknlp.pretrained"
-          else:
-            self.model.backend="spark"
+            self.model = model
+            if "sparknlp.pretrained" in str(type(self.model)):
+                self.model.backend = "sparknlp.pretrained"
+            else:
+                self.model.backend = "spark"
 
         if data is not None:
             # self.data = data
@@ -87,15 +85,14 @@ class Harness:
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            None: The generated testcases are stored in `_load_testcases` attribute.
+            None: The generated testcases are stored in `load_testcases` attribute.
         """
 
         # self.data_handler =  DataFactory(data_path).load()
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
-        self._load_testcases = PerturbationFactory(self.data, tests).transform()
-        return self._load_testcases
-
+        self.load_testcases = PerturbationFactory(self.data, tests).transform()
+        return self
     # def load(self) -> pd.DataFrame:
     #     try:
     #         self._load_testcases = pd.read_csv('path/to/{self._model_path}_testcases')
@@ -106,14 +103,14 @@ class Harness:
     #     except:
     #         self.generate()
 
-    def run(self) -> None:
+    def run(self) -> "Harness":
         """
         Run the tests on the model using the generated testcases.
 
         Returns:
-            None: The evaluations are stored in `_generated_results` attribute.
+            None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
+        self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -128,20 +125,23 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        summary = self._generated_results.groupby('Test_type')['is_pass']
+        summary = self.generated_results.groupby('Test_type')['is_pass']
         summary = summary.agg(
-            fail_count = lambda x: x.count()-x.sum(),
             pass_count = 'sum',
+            fail_count = lambda x: x.count()-x.sum(),
             pass_rate = 'mean'
             )
         summary = summary.reset_index()
 
         summary['minimum_pass_rate'] = summary['Test_type'].apply(
             lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
-            )
+        )
 
         summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
+        summary['pass_rate'] = summary['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
 
+        summary.columns=["test type", "pass count", "fail count", "pass rate", "minimum pass rate", "pass"]
         return summary
 
     def save(
@@ -168,5 +168,5 @@ class Harness:
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self._load_testcases.to_csv(testcases, index=None)
-        self._generated_results.to_csv(results, index=None)
+        self.load_testcases.to_csv(testcases, index=None)
+        self.generated_results.to_csv(results, index=None)

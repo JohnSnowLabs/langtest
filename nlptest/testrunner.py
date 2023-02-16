@@ -17,13 +17,11 @@ class TestRunner:
             load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
             model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
         """
-        self._load_testcases = load_testcases.copy()
+        self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
-        
-        if self._model_handler.backend in ["huggingface","spacy"]:
+
+        if self._model_handler.backend in ["transformers", "spacy"]:
             self._model_handler.load_model()
-
-
 
     # @abc.abstractmethod
     def evaluate(self):
@@ -32,7 +30,7 @@ class TestRunner:
         Returns:
             DataFrame: DataFrame containing the evaluation results.
         """
-        runner = RobustnessTestRunner(self._load_testcases, self._model_handler)
+        runner = RobustnessTestRunner(self.load_testcases, self._model_handler)
         return runner.evaluate()
 
 
@@ -50,40 +48,45 @@ class RobustnessTestRunner(TestRunner):
         expected_result = []
         actual_result = []
 
-        for i, r in self._load_testcases.iterrows():
-            if "spacy" in self._model_handler.backend:
-                doc1 = self._model_handler(r['Orginal'])
-                doc2 = self._model_handler(r['Test_Case'])
+        for i, r in self.load_testcases.iterrows():
+            if self._model_handler.task == "text-classification":
+                expected_result.append(self._model_handler(r["Original"]))
+                actual_result.append(self._model_handler(r["Test_Case"]))
+            else:
+                if "spacy" in self._model_handler.backend:
+                    doc1 = self._model_handler(r['Original'])
+                    doc2 = self._model_handler(r['Test_Case'])
 
-                expected_result.append([pred.entity for pred in doc1])
-                actual_result.append([pred.entity for pred in doc2])
+                    expected_result.append([pred.entity for pred in doc1])
+                    actual_result.append([pred.entity for pred in doc2])
 
-            elif "sparknlp.pretrained" in self._model_handler.backend:
-                     expected_result.append((self._model_handler).annotate(r['Orginal'])['ner'])
-                     actual_result.append((self._model_handler).annotate(r['Test_Case'])['ner'])
+                elif "sparknlp.pretrained" in self._model_handler.backend:
+                    expected_result.append((self._model_handler).annotate(r['Original'])['ner'])
+                    actual_result.append((self._model_handler).annotate(r['Test_Case'])['ner'])
 
-            elif "spark" in self._model_handler.backend:
-                expected_result.append(LightPipeline(self._model_handler).annotate(r['Orginal'])['ner'])
-                actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
+                elif "spark" in self._model_handler.backend:
+                    expected_result.append(LightPipeline(self._model_handler).annotate(r['Original'])['ner'])
+                    actual_result.append(LightPipeline(self._model_handler).annotate(r['Test_Case'])['ner'])
 
-            elif "huggingface" in self._model_handler.backend:
-                doc1 = self._model_handler(r['Orginal'])
-                doc2 = self._model_handler(r['Test_Case'])
+                elif "transformers" in self._model_handler.backend:
+                    doc1 = self._model_handler(r['Original'])
+                    doc2 = self._model_handler(r['Test_Case'])
 
-                expected_result.append([pred.entity for pred in doc1])
-                actual_result.append([pred.entity for pred in doc2])
+                    expected_result.append([pred.entity for pred in doc1])
+                    actual_result.append([pred.entity for pred in doc2])
 
-        self._load_testcases['expected_result'] = expected_result
-        self._load_testcases['actual_result'] = actual_result
+        self.load_testcases['expected_result'] = expected_result
+        self.load_testcases['actual_result'] = actual_result
         # Checking for any token mismatches
 
         final_perturbed_labels = []
-        for i, r in self._load_testcases.iterrows():
+        for i, r in self.load_testcases.iterrows():
             main_list = r['Test_Case'].split(' ')
-            sub_list = r['Orginal'].split(' ')
+            sub_list = r['Original'].split(' ')
 
             org_sentence_labels = list(r['expected_result'])
             perturbed_sentence_labels = list(r['actual_result'])
+
             if len(org_sentence_labels) == len(perturbed_sentence_labels):
                 final_perturbed_labels.append(perturbed_sentence_labels)
             else:
@@ -100,7 +103,7 @@ class RobustnessTestRunner(TestRunner):
                 if not is_added:
                     final_perturbed_labels.append([])
 
-        self._load_testcases['actual_result'] = final_perturbed_labels
-        self._load_testcases = self._load_testcases.assign(
-            is_pass=self._load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
-        return self._load_testcases
+        self.load_testcases['actual_result'] = final_perturbed_labels
+        self.load_testcases = self.load_testcases.assign(
+            is_pass=self.load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
+        return self.load_testcases

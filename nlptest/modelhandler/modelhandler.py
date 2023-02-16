@@ -57,7 +57,7 @@ class ModelFactory:
         if any([m in model_path for m in ["_core_news_", "_core_web_", "_ent_wiki_"]]):
             self.backend = "spacy"
         else:
-            self.backend = "spacy"
+            self.backend = "transformers"
         model_class_name = task.replace("-", "") + self.backend
 
         self.model_class = class_map[model_class_name](self.model_path)
@@ -83,7 +83,7 @@ class ModelFactory:
         return self.model_class(text=text, **kwargs)
 
 
-class NERHuggingFacePretrainedModel(_ModelHandler):
+class NERTransformersPretrainedModel(_ModelHandler):
     """
     Args:
         model_path (str):
@@ -190,7 +190,7 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         return self.predict(text=text)
 
 
-class TextClassificationHuggingFacePretrainedModel(_ModelHandler):
+class TextClassificationTransformersPretrainedModel(_ModelHandler):
     """
     Args:
         model_path (str):
