@@ -8,11 +8,6 @@ class Span(BaseModel):
     end: int
     word: str
 
-    @property
-    def length(self):
-        """"""
-        return self.end - self.start
-
     def shift_start(self, offset: int) -> None:
         """"""
         self.start -= offset
@@ -157,6 +152,7 @@ class Sample(BaseModel):
     actual_results: Result = None
     transformations: List[Transformation] = None
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
+    # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -164,12 +160,12 @@ class Sample(BaseModel):
 
     @validator("transformations")
     def sort_transformations(cls, v):
-        """"""
+        """Validator ensuring that transformations are in correct order"""
         return sorted(v, key=lambda x: x.original_span.start)
 
     @property
     def ignored_predictions(self) -> List[NERPrediction]:
-        """"""
+        """List of predictions that should be ignored because of the perturbations applied"""
         predictions = []
         irrelevant_transformations = self.irrelevant_transformations
         for pred in self.actual_results.predictions:
@@ -190,7 +186,16 @@ class Sample(BaseModel):
 
     @property
     def realigned_spans(self) -> NEROutput:
-        """"""
+        """
+        This function is in charge of shifting the `actual_results` spans according to the perturbations
+        that were applied to the text.
+
+        Note: we ignore predicted spans that were added during a perturbation
+
+        Returns:
+             NEROutput:
+                realigned NER predictions
+        """
         if self._realigned_spans is None:
 
             if len(self.transformations) == 0:
@@ -240,7 +245,7 @@ class Sample(BaseModel):
             expected_pred_set.add(expected_pred)
             actual_pred_set.add(actual_pred)
 
-        # Retrieving predictions for spans that were not perturbed
+        # Retrieving predictions for spans from the original sentence
         for expected_pred in self.expected_results.predictions:
             if expected_pred in expected_pred_set:
                 continue
@@ -250,6 +255,7 @@ class Sample(BaseModel):
             if actual_pred is not None:
                 actual_pred_set.add(actual_pred)
 
+        # Retrieving predictions for spans from the perturbed sentence
         for actual_pred in realigned_spans.predictions:
             if actual_pred in actual_pred_set:
                 continue
