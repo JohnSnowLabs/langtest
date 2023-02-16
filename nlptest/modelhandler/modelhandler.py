@@ -107,7 +107,7 @@ class NERTransformersPretrainedModel(_ModelHandler):
     def load_model(self) -> None:
         """Load the NER model into the `model` attribute.
         """
-        self.model = pipeline(model=self.model_path, task="ner", ignore_labels=[])
+        self.model = pipeline(model=self.model_path, task="ner", ignore_labels=["O"], aggregation_strategy="max")
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -130,13 +130,13 @@ class NERTransformersPretrainedModel(_ModelHandler):
                           f"the '.load_model' method before running predictions.")
         prediction = self.model(text, **kwargs)
 
-        prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
+        # prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
         return NEROutput(predictions=[NERPrediction.from_span(
-                        entity=pred.get('entity_group', pred.get('entity', None)),
-                        word=pred['word'],
-                        start=pred['start'],
-                        end=pred['end']
-                    ) for pred in prediction])
+            entity=pred.get('entity_group', pred.get('entity', None)),
+            word=pred['word'],
+            start=pred['start'],
+            end=pred['end']
+        ) for pred in prediction])
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
