@@ -80,13 +80,14 @@ class PerturbationTestCase(unittest.TestCase):
     def test_add_punctuation(self) -> None:
         """
         Test Case: Verify that the AddPunctuation Class was transfroms
-        from each senetence into add_punctuation of a sentence.
+        from each senetence into adding special characters like [, . !]
+        at the end of a sentence.
 
         Test Steps:
         1. Provide the list of sentence to AddPunctuation Perturb.
-        2. Check that the length and add_punctuation of each sentence
+        2. Check that the length and added punctuation of each sentence
         """
-        
+
         test_cases = AddPunctuation.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
@@ -94,6 +95,16 @@ class PerturbationTestCase(unittest.TestCase):
             self.assertFalse(test_case[-1].isalnum())
 
     def test_strip_punctuation(self) -> None:
+        """
+        Test Case: Verify that the StripPunctuation Class was transfroms
+        from each senetence into removing special characters like [, . !]
+        at the end of a sentence.
+
+        Test Steps:
+        1. Provide the list of sentence to StripPunctuation Perturb.
+        2. Check that the length and removed punctuation of each sentence
+        """
+
         test_cases = StripPunctuation.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
