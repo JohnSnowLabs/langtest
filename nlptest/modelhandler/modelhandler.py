@@ -8,6 +8,9 @@ from sparknlp.pretrained import  PretrainedPipeline
 from pyspark.ml import PipelineModel
 from sparknlp.base import LightPipeline
 
+from johnsnowlabs import nlp
+from nlu import NLUPipeline
+
 # We need to add more NerDL model
 from sparknlp.annotator import NerDLModel
 
@@ -140,6 +143,79 @@ class NERSparkNLPPretrainedModel(_ModelHandler):
         pipeline_model = PipelineModel.load(path)
         return cls(
             model=pipeline_model
+        )
+
+    def predict(self, text: str) -> List[NEROutput]:
+        """Perform predictions with SparkNLP LightPipeline on the input text.
+        Args:
+            text (str): Input text to perform NER on.
+        Returns:
+            NEROutput: A list of named entities recognized in the input text.
+        """
+        prediction = self.model.fullAnnotate(text)[0][self.output_col]
+        return [NEROutput(
+                    entity=pred.result,
+                    word=pred.metadata['word'],
+                    start=pred.begin,
+                    end=pred.end)
+                for pred in prediction]
+
+    def __call__(self, text: str) -> List[NEROutput]:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text)
+
+
+class NERJohnSnowLabsPretrainedModel(_ModelHandler):
+
+    def __init__(
+            self,
+            model: NLUPipeline
+    ):
+
+        """
+        Attributes:
+            model (LightPipeline):
+                Loaded SparkNLP Light Pipeline for inference.
+        """
+
+        if not isinstance(model, NLUPipeline):
+            raise ValueError('Given JohnSnowLabs NLUPipeline is invalid! Make sure you loaded properly.')
+
+        stages = [comp.model for comp in model.components]
+        _pipeline = nlp.Pipeline().setStages(stages)
+        tmp_df = model.spark.createDataFrame([['']]).toDF('text')
+        pipeline_model = _pipeline.fit(tmp_df)
+
+        #   there can be multiple ner model in the pipeline
+        #   but at first I will set first as default one. Later we can adjust Harness to test multiple model
+        ner_model = None
+        for annotator in pipeline_model.stages:
+
+            #   Also Healthcare NER, Legal NER, Finance NER and Transformer based models
+            if isinstance(annotator, NerDLModel):
+                #   there should be easy way to check this
+                ner_model = annotator
+                break
+
+        if ner_model is None:
+            raise ValueError('Invalid PipelineModel! There should be at least one NER component.')
+
+        ner_model.setIncludeConfidence(True)
+        ner_model.setIncludeAllConfidenceScores(True)
+        self.output_col = ner_model.getOutputCol()
+
+        #   in order to overwrite configs, light pipeline should be reinitialzied.
+        self.model = LightPipeline(pipeline_model)
+
+    @classmethod
+    def load_model(cls, path) -> 'NERJohnSnowLabsPretrainedModel':
+        """Load the NER model into the `model` attribute.
+        Args:
+            path (str): Load PipelineModel from given path.
+        """
+        nlu_pipeline = nlp.load(path)
+        return cls(
+            model=nlu_pipeline
         )
 
     def predict(self, text: str) -> List[NEROutput]:
