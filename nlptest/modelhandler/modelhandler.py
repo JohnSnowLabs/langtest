@@ -13,8 +13,9 @@ class _ModelHandler(ABC):
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
 
+    @classmethod
     @abstractmethod
-    def load_model(self):
+    def load_model(cls, path):
         """Load the model.
         """
         return NotImplementedError()
@@ -34,12 +35,12 @@ class ModelFactory:
 
     def __init__(
             self,
-            model_path: str,
-            task: str
+            model,
+            task: str,
     ):
         """Initializes the ModelFactory object.
         Args:
-            model_path (str): path to model to use
+            model: SparkNLP, HuggingFace or Spacy model to test.
             task (str): task to perform
 
         Raises:
@@ -48,23 +49,33 @@ class ModelFactory:
         assert task in self.SUPPORTED_TASKS, \
             ValueError(f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}")
 
-        self.model_path = model_path
+        self.model_class = model
         self.task = task
+
+    @classmethod
+    def load_model(
+        cls,
+        task: str,
+        hub: str,
+        path: str
+    ) -> 'ModelFactory':
+        """Load the model.
+
+        Args:
+            path (str): path to model to use
+            task (str): task to perform
+            hub (str): model hub to load custom model from the path
+        """
 
         class_map = {
             cls.__name__.replace("PretrainedModel", "").lower(): cls for cls in _ModelHandler.__subclasses__()
         }
-        if any([m in model_path for m in ["_core_news_", "_core_web_", "_ent_wiki_"]]):
-            self.backend = "spacy"
-        else:
-            self.backend = "huggingface"
-        model_class_name = task.replace("-", "") + self.backend
-
-        self.model_class = class_map[model_class_name](self.model_path)
-
-    def load_model(self) -> None:
-        """Load the model."""
-        self.model_class.load_model()
+        model_class_name = task + hub
+        model_class = class_map[model_class_name].load_model(path)
+        return cls(
+            model_class,
+            task
+        )
 
     def predict(self, text: str, **kwargs) -> List[NEROutput]:
         """Perform predictions on input text.
@@ -83,32 +94,30 @@ class ModelFactory:
         return self.model_class(text=text, **kwargs)
 
 
-class NERHuggingFacePretrainedModel(_ModelHandler):
+class NERTransformersPretrainedModel(_ModelHandler):
     """
     Args:
-        model_path (str):
-            path to model to use
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
     """
 
     def __init__(
             self,
-            model_path: str
+            model
     ):
-
         """
         Attributes:
-            model_path (str):
-                Path to the pretrained model to use.
             model (transformers.pipeline.Pipeline):
                 Loaded NER pipeline for predictions.
         """
-        self.model_path = model_path
-        self.model = None
+        self.model = model
 
-    def load_model(self) -> None:
+    @classmethod
+    def load_model(cls, path) -> 'NERTransformersPretrainedModel':
         """Load the NER model into the `model` attribute.
         """
-        self.model = pipeline(model=self.model_path, task="ner", ignore_labels=[])
+        return cls(
+            model=pipeline(model=path, task="ner", ignore_labels=[])
+        )
 
     def predict(self, text: str, **kwargs) -> List[NEROutput]:
         """Perform predictions on the input text.
@@ -126,9 +135,6 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
         Raises:
             OSError: If the `model` attribute is None, meaning the model has not been loaded yet.
         """
-        if self.model is None:
-            raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
-                          f"the '.load_model' method before running predictions.")
         prediction = self.model(text, **kwargs)
 
         if kwargs.get("group_entities"):
@@ -144,26 +150,24 @@ class NERHuggingFacePretrainedModel(_ModelHandler):
 class NERSpaCyPretrainedModel(_ModelHandler):
     """
     Args:
-        model_path (str):
-            path to model to use
+        model: Pretrained spacy model.
     """
 
     def __init__(
             self,
-            model_path: str
+            model
     ):
-        self.model_path = model_path
-        self.model = None
+        self.model = model
 
-    def load_model(self) -> None:
+    @classmethod
+    def load_model(cls, path) -> 'NERSpaCyPretrainedModel':
         """"""
-        self.model = spacy.load(self.model_path)
+        return cls(
+            model=spacy.load(path)
+        )
 
     def predict(self, text: str, *args, **kwargs) -> List[NEROutput]:
         """"""
-        if self.model is None:
-            raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
-                          f"the '.load_model' method before running predictions.")
         doc = self.model(text)
 
         if kwargs.get("group_entities"):
@@ -190,7 +194,7 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         return self.predict(text=text)
 
 
-class TextClassificationHuggingFacePretrainedModel(_ModelHandler):
+class TextClassificationTransformersPretrainedModel(_ModelHandler):
     """
     Args:
         model_path (str):

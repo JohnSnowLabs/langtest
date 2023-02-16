@@ -17,11 +17,12 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-
+    SUPPORTED_HUBS = ["spacy", "transformers", "sparknlp", "johnsnowlabs"]
     def __init__(
             self,
             task: Optional[str],
             model: Union[str, ModelFactory],
+            hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
     ):
@@ -31,8 +32,12 @@ class Harness:
         Args:
             task (str, optional): Task for which the model is to be evaluated.
             model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
+            hub (str, optional): model hub to load from the path. Required if path is passed as 'model'.
             data (str, optional): Path to the data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
+
+        Raises:
+            ValueError: Invalid arguments.
         """
 
         super().__init__()
@@ -43,14 +48,12 @@ class Harness:
                 "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
             self.model = model
         elif isinstance(model, str):
-            self.model = ModelFactory(task=task, model_path=model)
-
-        else:
-            self.model = model
-            if "sparknlp.pretrained" in str(type(self.model)):
-                self.model.backend = "sparknlp.pretrained"
-            else:
-                self.model.backend = "spark"
+            if hub is None:
+                raise ValueError("Hub should be specified when loading a model from web.")
+            if hub not in self.SUPPORTED_HUBS:
+                raise ValueError(f"Hub {hub} is not supported or invalid.")
+                
+            self.model = ModelFactory.load_model(task=task, hub=hub, path=model)
 
         if data is not None:
             # self.data = data
@@ -86,13 +89,13 @@ class Harness:
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            None: The generated testcases are stored in `_load_testcases` attribute.
+            None: The generated testcases are stored in `load_testcases` attribute.
         """
 
         # self.data_handler =  DataFactory(data_path).load()
         # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
-        self._load_testcases = PerturbationFactory(self.data, tests).transform()
+        self.load_testcases = PerturbationFactory(self.data, tests).transform()
         return self
     # def load(self) -> pd.DataFrame:
     #     try:
@@ -109,9 +112,9 @@ class Harness:
         Run the tests on the model using the generated testcases.
 
         Returns:
-            None: The evaluations are stored in `_generated_results` attribute.
+            None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results = TestRunner(self._load_testcases, self.model, self.data).evaluate()
+        self.generated_results = TestRunner(self.load_testcases, self.model, self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -126,7 +129,7 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        summary = self._generated_results.groupby('Test_type')['is_pass']
+        summary = self.generated_results.groupby('Test_type')['is_pass']
         summary = summary.agg(
             pass_count = 'sum',
             fail_count = lambda x: x.count()-x.sum(),
@@ -174,5 +177,5 @@ class Harness:
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self._load_testcases.to_csv(testcases, index=None)
-        self._generated_results.to_csv(results, index=None)
+        self.load_testcases.to_csv(testcases, index=None)
+        self.generated_results.to_csv(results, index=None)
