@@ -177,11 +177,15 @@ class Sample(BaseModel):
     @property
     def relevant_transformations(self) -> List[Transformation]:
         """"""
+        if not self.transformations:
+            return None
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
     @property
     def irrelevant_transformations(self) -> List[Transformation]:
         """"""
+        if not self.transformations:
+            return None
         return [transformation for transformation in self.transformations if transformation.ignore]
 
     @property
