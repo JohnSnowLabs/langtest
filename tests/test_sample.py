@@ -23,7 +23,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_add_context_right(self):
         """"""
@@ -46,7 +46,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_add_context_middle(self):
         """"""
@@ -69,7 +69,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_add_two_contexts(self):
         """"""
@@ -97,7 +97,33 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
+
+        sample = Sample(
+            original="Attendance : 3,000",
+            test_type="add_context",
+            test_case="Hello Attendance : 3,000 Bye",
+            transformations=[
+                Transformation(
+                    original_span=Span(start=0, end=0, word=""),
+                    new_span=Span(start=0, end=6, word="Hello "),
+                    ignore=True
+                ),
+                Transformation(
+                    original_span=Span(start=18, end=18, word=""),
+                    new_span=Span(start=18, end=22, word=" Bye"),
+                    ignore=True
+                )
+            ],
+            expected_results=NEROutput(
+                predictions=[NERPrediction(entity="CARDINAL", span=Span(start=13, end=18, word="3,000"))]
+            ),
+            actual_results=NEROutput(
+                predictions=[NERPrediction(entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
+            ),
+        )
+        realigned_actual_results = sample._get_realigned_spans()
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_contraction(self):
         """"""
@@ -120,7 +146,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_entity_swap(self):
         """"""
@@ -132,7 +158,7 @@ class TestSample:
                 Transformation(
                     original_span=Span(start=10, end=13, word="KFC"),
                     new_span=Span(start=10, end=18, word="McDonald"),
-                    ignore=True
+                    ignore=False
                 )
             ],
             expected_results=NEROutput(
@@ -143,7 +169,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
         sample = Sample(
             original="I do love KFC",
@@ -153,7 +179,7 @@ class TestSample:
                 Transformation(
                     original_span=Span(start=10, end=13, word="KFC"),
                     new_span=Span(start=10, end=32, word="Kentucky Fried Chicken"),
-                    ignore=True
+                    ignore=False
                 )
             ],
             expected_results=NEROutput(
@@ -164,7 +190,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
         sample = Sample(
             original="I do love McDonald",
@@ -174,7 +200,7 @@ class TestSample:
                 Transformation(
                     new_span=Span(start=10, end=13, word="KFC"),
                     original_span=Span(start=10, end=18, word="McDonald"),
-                    ignore=True
+                    ignore=False
                 )
             ],
             actual_results=NEROutput(
@@ -185,7 +211,7 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_two_entities_two_contexts(self):
         """"""
@@ -219,4 +245,32 @@ class TestSample:
             ),
         )
         realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results == sample.expected_results.predictions
+        assert realigned_actual_results.predictions == sample.expected_results.predictions
+
+    def test_entity_to_ignore(self):
+        """"""
+        sample = Sample(
+            original="China 1 0 0 1 0 2 0",
+            test_type="add_context",
+            test_case="Dated: 21/02/2022 China 1 0 0 1 0 2 0",
+            transformations=[
+                Transformation(
+                    original_span=Span(start=0, end=0, word=""),
+                    new_span=Span(start=0, end=18, word="Dated: 21/02/2022 "),
+                    ignore=True
+                )
+            ],
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity="GPE", span=Span(start=0, end=5, word="China"))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity="ORDINAL", span=Span(start=0, end=18, word="21/02/2022")),
+                    NERPrediction(entity="GPE", span=Span(start=18, end=23, word="China"))
+                ]
+            ),
+        )
+        realigned_actual_results = sample._get_realigned_spans()
+        assert realigned_actual_results.predictions == sample.expected_results.predictions

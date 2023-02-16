@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple, TypeVar
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, PrivateAttr, validator
 
 
 class Span(BaseModel):
@@ -156,6 +156,11 @@ class Sample(BaseModel):
     expected_results: Result = None
     actual_results: Result = None
     transformations: List[Transformation] = None
+    _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._realigned_spans = None
 
     @validator("transformations")
     def sort_transformations(cls, v):
@@ -163,31 +168,57 @@ class Sample(BaseModel):
         return sorted(v, key=lambda x: x.original_span.start)
 
     @property
-    def relevant_transformations(self):
+    def ignored_predictions(self) -> List[NERPrediction]:
+        """"""
+        predictions = []
+        irrelevant_transformations = self.irrelevant_transformations
+        for pred in self.actual_results.predictions:
+            for transfo in irrelevant_transformations:
+                if transfo.new_span.start <= pred.span.start and transfo.new_span.end >= pred.span.end:
+                    predictions.append(pred)
+        return predictions
+
+    @property
+    def relevant_transformations(self) -> List[Transformation]:
         """"""
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
-    def _get_realigned_spans(self):
+    @property
+    def irrelevant_transformations(self) -> List[Transformation]:
         """"""
-        if len(self.transformations) == 0:
-            return self.actual_results
-
-        realigned_results = []
-        for actual_result in self.actual_results.predictions:
-            for transformation in self.transformations:
-                if transformation.new_span.start < actual_result.span.start:
-                    # the whole span needs to be shifted to the left
-                    actual_result.span.shift((transformation.new_span.start - transformation.original_span.start) + \
-                                             (transformation.new_span.end - transformation.original_span.end))
-                elif transformation.new_span.start == actual_result.span.start:
-                    # only the end of the span needs to be adjusted
-                    actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
-
-            realigned_results.append(actual_result)
-        return realigned_results
+        return [transformation for transformation in self.transformations if transformation.ignore]
 
     @property
-    def aligned_spans(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
+    def realigned_spans(self) -> NEROutput:
+        """"""
+        if self._realigned_spans is None:
+
+            if len(self.transformations) == 0:
+                return self.actual_results
+
+            ignored_predictions = self.ignored_predictions
+
+            realigned_results = []
+            for actual_result in self.actual_results.predictions:
+                if actual_result in ignored_predictions:
+                    continue
+
+                for transformation in self.transformations:
+                    if transformation.new_span.start < actual_result.span.start:
+                        # the whole span needs to be shifted to the left
+                        actual_result.span.shift((transformation.new_span.start - transformation.original_span.start) + \
+                                                 (transformation.new_span.end - transformation.original_span.end))
+                    elif transformation.new_span.start == actual_result.span.start:
+                        # only the end of the span needs to be adjusted
+                        actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
+
+                realigned_results.append(actual_result)
+
+            self._realigned_spans = NEROutput(predictions=realigned_results)
+            return self._realigned_spans
+        return self._realigned_spans
+
+    def get_aligned_span_pairs(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
         """
         Returns:
              List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
@@ -198,11 +229,12 @@ class Sample(BaseModel):
         """
         aligned_results = []
         expected_pred_set, actual_pred_set = set(), set()
+        realigned_spans = self.realigned_spans
 
         # Retrieving and aligning perturbed spans for later comparison
         for transformation in self.relevant_transformations:
             expected_pred = self.expected_results[transformation.original_span]
-            actual_pred = self.actual_results[transformation.new_span]
+            actual_pred = realigned_spans[transformation.new_span]
 
             aligned_results.append((expected_pred, actual_pred))
             expected_pred_set.add(expected_pred)
@@ -212,16 +244,16 @@ class Sample(BaseModel):
         for expected_pred in self.expected_results.predictions:
             if expected_pred in expected_pred_set:
                 continue
-            actual_pred = self.actual_results[expected_pred.span]
+            actual_pred = realigned_spans[expected_pred.span]
             aligned_results.append((expected_pred, actual_pred))
             expected_pred_set.add(expected_pred)
             if actual_pred is not None:
                 actual_pred_set.add(actual_pred)
 
-        for actual_pred in self.actual_results.predictions:
+        for actual_pred in realigned_spans.predictions:
             if actual_pred in actual_pred_set:
                 continue
-            expected_pred = self.actual_results[actual_pred.span]
+            expected_pred = self.expected_results[actual_pred.span]
             aligned_results.append((expected_pred, actual_pred))
             actual_pred_set.add(actual_pred)
             if expected_pred is not None:
@@ -232,7 +264,7 @@ class Sample(BaseModel):
     def is_pass(self) -> bool:
         """"""
         if isinstance(self.actual_results, NEROutput):
-            return all([a == b for (a, b) in self.aligned_spans])
+            return all([a == b for (a, b) in self.get_aligned_span_pairs()])
         else:
             filtered_actual_results = self.actual_results
 

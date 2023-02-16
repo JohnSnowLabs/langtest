@@ -433,12 +433,12 @@ class AddContext(BasePerturbation):
                 if sample.original[-1].isalnum():
                     from_start, from_end = len(string), len(string)
                     to_start = from_start + 1
-                    to_end = to_start + len(add_string)
+                    to_end = to_start + len(add_string) + 1
                     string = string + " " + add_string
                 else:
                     from_start, from_end = len(string[:-1]), len(string[:-1])
                     to_start = from_start
-                    to_end = to_start + len(add_string)
+                    to_end = to_start + len(add_string) + 1
                     string = string[:-1] + add_string + " " + string[-1]
 
                 transformations.append(

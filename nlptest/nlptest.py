@@ -2,7 +2,6 @@ from collections import defaultdict
 from functools import reduce
 from typing import Any, Dict, Optional, Union
 
-import pandas as pd
 import yaml
 
 from .datahandler.datasource import DataFactory
@@ -112,6 +111,14 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
+            print("=============" * 10)
+            print("ORIGINAL: ", sample.original)
+            print("TEST CASE: ", sample.test_case)
+            print("EXPECTED: ", sample.expected_results)
+            print("ACTUAL: ", sample.realigned_spans)
+            print("TRANSFORMATIONS: ", sample.transformations)
+            print("IS PASS: ", sample.is_pass())
+
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
