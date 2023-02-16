@@ -56,8 +56,8 @@ class Harness:
         else:
             self._config = None
 
-        self._load_testcases = None
-        self._generated_results = None
+        self.load_testcases = None
+        self.generated_results = None
 
     def configure(self, config: Union[str, dict]):
         """
@@ -82,10 +82,10 @@ class Harness:
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            None: The generated testcases are stored in `_load_testcases` attribute.
+            None: The generated testcases are stored in `load_testcases` attribute.
         """
         tests = self._config['tests_types']
-        self._load_testcases = PerturbationFactory(self.data, tests).transform()
+        self.load_testcases = PerturbationFactory(self.data, tests).transform()
         return self
 
     def run(self) -> "Harness":
@@ -93,9 +93,9 @@ class Harness:
         Run the tests on the model using the generated testcases.
 
         Returns:
-            None: The evaluations are stored in `_generated_results` attribute.
+            None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results = TestRunner(self._load_testcases, self.model).evaluate()
+        self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
     def report(self) -> Dict:
@@ -111,7 +111,7 @@ class Harness:
             min_pass_dict = self._config['min_pass_rate']
 
         summary = defaultdict(lambda: defaultdict(int))
-        for sample in self._generated_results:
+        for sample in self.generated_results:
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -147,5 +147,5 @@ class Harness:
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self._load_testcases.to_csv(testcases, index=None)
-        self._generated_results.to_csv(results, index=None)
+        self.load_testcases.to_csv(testcases, index=None)
+        self.generated_results.to_csv(results, index=None)

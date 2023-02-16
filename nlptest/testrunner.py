@@ -16,10 +16,10 @@ class TestRunner:
             load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
             model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
         """
-        self._load_testcases = load_testcases.copy()
+        self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
 
-        if self._model_handler.backend in ["huggingface", "spacy"]:
+        if self._model_handler.backend in ["transformers", "spacy"]:
             self._model_handler.load_model()
 
     # @abc.abstractmethod
@@ -29,7 +29,7 @@ class TestRunner:
         Returns:
             DataFrame: DataFrame containing the evaluation results.
         """
-        runner = RobustnessTestRunner(self._load_testcases, self._model_handler)
+        runner = RobustnessTestRunner(self.load_testcases, self._model_handler)
         return runner.evaluate()
 
 
@@ -45,11 +45,11 @@ class RobustnessTestRunner(TestRunner):
             List[Sample]:
                 all containing the predictions for both the original text and the pertubed one
         """
-        for sample in self._load_testcases:
+        for sample in self.load_testcases:
             sample.expected_results = self._model_handler(sample.original)
             sample.actual_results = self._model_handler(sample.test_case)
 
-        return self._load_testcases
+        return self.load_testcases
 
         # self._load_testcases['expected_result'] = expected_result
         # self._load_testcases['actual_result'] = actual_result
