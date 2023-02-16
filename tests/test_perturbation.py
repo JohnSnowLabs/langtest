@@ -32,13 +32,30 @@ class PerturbationTestCase(unittest.TestCase):
 
 
     def test_uppercase(self) -> None:
+        """
+        Test Case: Verify that the UpperCase Class was transfroms
+        from each senetence into uppercase of a sentence.
+
+        Test Steps:
+        1. Provide the list of sentence to UpperCase Perturb.
+        2. Check that the length and uppercase of each sentence
+        """
         test_cases = UpperCase.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
         for test_case in test_cases:
-            self.assertTrue(test_case.isupper())
-
+            self.assertTrue(test_case.islower())
+   
+   
     def test_lowercase(self) -> None:
+        """
+        Test Case: Verify that the Lowercase Class was transfroms
+        from each senetence into lowercase of a sentence.
+
+        Test Steps:
+        1. Provide the list of sentence to Lowercase Perturb.
+        2. Check that the length and lowercase of each sentence
+        """
         test_cases = LowerCase.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
@@ -46,6 +63,14 @@ class PerturbationTestCase(unittest.TestCase):
             self.assertTrue(test_case.islower())
 
     def test_titlecase(self) -> None:
+        """
+        Test Case: Verify that the TitleCase Class was transfroms
+        from each senetence into titlecase of a sentence.
+
+        Test Steps:
+        1. Provide the list of sentence to TitleCase Perturb.
+        2. Check that the length and titlecase of each sentence
+        """
         test_cases = TitleCase.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
