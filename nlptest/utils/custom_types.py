@@ -1,6 +1,5 @@
-from typing import List, Optional, Tuple, TypeVar
-
 from pydantic import BaseModel, Field, PrivateAttr, validator
+from typing import List, Optional, Tuple, TypeVar
 
 
 class Span(BaseModel):
@@ -30,6 +29,10 @@ class Span(BaseModel):
         return self.start == other.start and \
                self.end == other.end and \
                self.word == other.word
+
+    def __str__(self):
+        """"""
+        return f"<Span(start={self.start}, end={self.end}, word='{self.word}')>"
 
     def __repr__(self):
         """"""
@@ -152,6 +155,7 @@ class Sample(BaseModel):
     actual_results: Result = None
     transformations: List[Transformation] = None
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
+
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
 
     def __init__(self, **data):
