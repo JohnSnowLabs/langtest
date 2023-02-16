@@ -245,13 +245,14 @@ class Sample(BaseModel):
         realigned_spans = self.realigned_spans
 
         # Retrieving and aligning perturbed spans for later comparison
-        for transformation in self.relevant_transformations:
-            expected_pred = self.expected_results[transformation.original_span]
-            actual_pred = realigned_spans[transformation.new_span]
+        if self.relevant_transformations:
+            for transformation in self.relevant_transformations:
+                expected_pred = self.expected_results[transformation.original_span]
+                actual_pred = realigned_spans[transformation.new_span]
 
-            aligned_results.append((expected_pred, actual_pred))
-            expected_pred_set.add(expected_pred)
-            actual_pred_set.add(actual_pred)
+                aligned_results.append((expected_pred, actual_pred))
+                expected_pred_set.add(expected_pred)
+                actual_pred_set.add(actual_pred)
 
         # Retrieving predictions for spans from the original sentence
         for expected_pred in self.expected_results.predictions:
