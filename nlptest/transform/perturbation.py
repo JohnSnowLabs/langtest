@@ -78,8 +78,6 @@ class PerturbationFactory:
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-
-        print(len(self._data_handler), len(all_samples))
         return all_samples
 
 
