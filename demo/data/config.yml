@@ -12,7 +12,16 @@ tests_types:
   - add_context:
       - starting_context: ['Hello', 'Dated: 21/02/2022']
       - ending_context: ['Bye', 'Reported']
-  # - remove_punc: ['.', '@', ',', '"', "'"]
+  - titlecase
+  - add_punctuation
+  - strip_punctuation:
+      - whitelist: ['!', '.', "'"]
+  - add_typo
+  # # - american_to_british
+  # # - british_to_american
+  - add_contractions
+  # - swap_entities,
+  # - swap_cohyponyms
 
 min_pass_rate:
   - default : 0.65

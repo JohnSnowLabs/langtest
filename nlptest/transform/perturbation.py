@@ -73,10 +73,13 @@ class PerturbationFactory:
         all_samples = []
         for test_name, params in self._tests.items():
             print(test_name)
-            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(self._data_handler, **params)
+            data_handler_copy = [x.copy() for x in self._data_handler]
+            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
+
+        print(len(self._data_handler), len(all_samples))
         return all_samples
 
 
