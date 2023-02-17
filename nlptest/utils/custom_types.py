@@ -228,7 +228,7 @@ class Sample(BaseModel):
                             # only the end of the span needs to be adjusted
                             actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
 
-                realigned_results.append(actual_result)
+                    realigned_results.append(actual_result)
                 self._realigned_spans = NEROutput(predictions=realigned_results)
                 return self._realigned_spans
             else:
