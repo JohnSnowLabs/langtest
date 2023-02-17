@@ -170,6 +170,8 @@ class Sample(BaseModel):
     @property
     def ignored_predictions(self) -> List[NERPrediction]:
         """List of predictions that should be ignored because of the perturbations applied"""
+        if not hasattr(self.actual_results, 'predictions'):
+            return self.actual_results
         predictions = []
         irrelevant_transformations = self.irrelevant_transformations
         for pred in self.actual_results.predictions:
@@ -212,23 +214,26 @@ class Sample(BaseModel):
             ignored_predictions = self.ignored_predictions
 
             realigned_results = []
-            for actual_result in self.actual_results.predictions:
-                if actual_result in ignored_predictions:
-                    continue
+            if hasattr(self.actual_results, "predictions"):
+                for actual_result in self.actual_results.predictions:
+                    if actual_result in ignored_predictions:
+                        continue
 
-                for transformation in self.transformations:
-                    if transformation.new_span.start < actual_result.span.start:
-                        # the whole span needs to be shifted to the left
-                        actual_result.span.shift((transformation.new_span.start - transformation.original_span.start) + \
-                                                 (transformation.new_span.end - transformation.original_span.end))
-                    elif transformation.new_span.start == actual_result.span.start:
-                        # only the end of the span needs to be adjusted
-                        actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
+                    for transformation in self.transformations:
+                        if transformation.new_span.start < actual_result.span.start:
+                            # the whole span needs to be shifted to the left
+                            actual_result.span.shift((transformation.new_span.start - transformation.original_span.start) + \
+                                                    (transformation.new_span.end - transformation.original_span.end))
+                        elif transformation.new_span.start == actual_result.span.start:
+                            # only the end of the span needs to be adjusted
+                            actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
 
                 realigned_results.append(actual_result)
+                self._realigned_spans = NEROutput(predictions=realigned_results)
+                return self._realigned_spans
+            else:
+                return self.actual_results
 
-            self._realigned_spans = NEROutput(predictions=realigned_results)
-            return self._realigned_spans
         return self._realigned_spans
 
     def get_aligned_span_pairs(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
