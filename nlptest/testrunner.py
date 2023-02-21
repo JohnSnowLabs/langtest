@@ -1,6 +1,7 @@
 import pandas as pd
 from sparknlp.base import LightPipeline
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score
+from functools import reduce
 
 from nlptest.modelhandler import ModelFactory
 
@@ -35,12 +36,12 @@ class TestRunner:
             DataFrame: DataFrame containing the evaluation results.
         """
         robustness_runner = RobustnessTestRunner(self.load_testcases, self._model_handler, self._data)
-        accuracy_runner = AccuracyTestRunner(self.load_testcases, self._model_handler, self._data)
-
         robustness_result = robustness_runner.evaluate()
+
+        accuracy_runner = AccuracyTestRunner(self.load_testcases, self._model_handler, self._data)
         accuracy_result = accuracy_runner.evaluate()
 
-        return robustness_result.merge(accuracy_result, how="outer")
+        return robustness_result, accuracy_result.fillna("")
 
 
 class RobustnessTestRunner(TestRunner):
@@ -86,10 +87,10 @@ class RobustnessTestRunner(TestRunner):
                 if not is_added:
                     final_perturbed_labels.append([])
 
-        self._load_testcases['actual_result'] = final_perturbed_labels
-        self._load_testcases = self._load_testcases.assign(
-            is_pass=self._load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
-        return self._load_testcases
+        self.load_testcases['actual_result'] = final_perturbed_labels
+        self.load_testcases = self.load_testcases.assign(
+            is_pass=self.load_testcases.apply(lambda row: row['expected_result'] == row['actual_result'], axis=1))
+        return self.load_testcases
 
 
 class AccuracyTestRunner(TestRunner):
@@ -107,11 +108,39 @@ class AccuracyTestRunner(TestRunner):
             pd.Dataframe: Dataframe with the results.
         """
         
-        y_true = self._data["label"].explode()
-        y_pred = [x.label for x in self._model_handler.predict(self._data["text"])]
-        y_pred = pd.Series(y_pred).explode()
+        y_true = self._data["label"]
+        y_pred = self._data["text"].apply(self._model_handler.predict)
 
-        print(classification_report(y_true, y_pred))
+        valid_indices = y_true.apply(len) == y_pred.apply(len)
 
-        res = pd.DataFrame()
-        return res
+        y_true = y_true[valid_indices]
+        y_pred = y_pred[valid_indices]
+
+        y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
+        y_pred = y_pred.explode()
+
+        y_pred = [x.entity.split("-")[-1] for x in y_pred.tolist()]
+
+        # if(len(y_pred) != len(y_true)):
+            # raise ValueError("Please use the dataset used to train/test the model. Model and dataset has different tokenizers.")
+
+        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics.pop("accuracy")
+        df_metrics.pop("macro avg")
+        df_metrics.pop("weighted avg")
+        df_metrics = pd.DataFrame(df_metrics).drop("support")
+
+        micro_f1_score = f1_score(y_true, y_pred, average="micro")
+        macro_f1_score = f1_score(y_true, y_pred, average="macro")
+
+        df_melted = pd.melt(df_metrics.reset_index(), id_vars=['index'], var_name='label', value_name='test value')
+        df_melted.columns = ['Test_type', 'Test_Case', 'actual_result']
+
+        other_metrics = {
+            "Test_Case": ["-", "-"],
+            "Test_type": ["micro-f1", "macro-f1"],
+            "actual_result": [micro_f1_score, macro_f1_score],
+        }
+        df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted])
+
+        return df_melted
