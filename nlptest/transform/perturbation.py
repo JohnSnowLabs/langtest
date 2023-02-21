@@ -5,8 +5,9 @@ from functools import reduce
 from typing import Dict, List, Optional
 
 import numpy as np
+import pandas as pd
 
-from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY)
+from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -51,14 +52,21 @@ class PerturbationFactory:
                     f'[2] dictionary of test name and corresponding parameters.'
                 )
 
-        # TODO
-        # if 'swap_entities' in self._tests:
-        #     self._tests['swap_entities']['terminology'] = create_terminology(data_handler)
-        #     self._tests['swap_entities']['labels'] = data_handler.label
-        #
-        # if 'swap_cohyponyms' in self._tests:
-        #     self._tests['swap_cohyponyms']['labels'] = data_handler.label
-
+        if 'swap_entities' in self._tests:
+          final_dict={}
+          for sample in data_handler:
+            labels = []     
+            for i in sample.expected_results.predictions:
+              labels.append(i.entity)
+            final_dict[sample.original] = labels 
+          df = pd.DataFrame(columns=['text', 'label'])
+          for k, v in final_dict.items():
+            row = {'text': k, 'label':v}
+            df = df.append(row, ignore_index=True)
+          
+          self._tests['swap_entities']['terminology'] = create_terminology(df)
+          self._tests['swap_entities']['labels'] = df.label
+        
         if "american_to_british" in self._tests:
             self._tests['american_to_british']['accent_map'] = A2B_DICT
 

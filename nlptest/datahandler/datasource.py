@@ -69,6 +69,7 @@ class ConllDataset(_IDataset):
             list: List of sentences in the dataset.
         """
         data = []
+        sent_list=[]
         with open(self._file_path) as f:
             content = f.read()
             docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
@@ -103,9 +104,14 @@ class ConllDataset(_IDataset):
 
                     original = " ".join([label.span.word for label in ner_labels])
 
-                    data.append(
-                        Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
-                    )
+                    if original not in sent_list:
+                      
+                      sent_list.append(original)
+
+                      data.append(
+                            Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+                        )
+
         return data
 
 
