@@ -284,7 +284,10 @@ class Sample(BaseModel):
     def is_pass(self) -> bool:
         """"""
         if isinstance(self.actual_results, NEROutput):
-            return all([a == b for (a, b) in self.get_aligned_span_pairs()])
+           actual_preds = [i.entity for i in self.actual_results.predictions]
+           expected_preds = [j.entity for j in self.expected_results.predictions]
+           return actual_preds == expected_preds
+        
         else:
             filtered_actual_results = self.actual_results
 
