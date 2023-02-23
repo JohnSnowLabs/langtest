@@ -58,13 +58,19 @@ class PerturbationFactory:
                              for sample in data_handler]})
             self._tests['swap_entities']['terminology'] = create_terminology(df)
             self._tests['swap_entities']['labels'] = df.label.tolist()
-         
-        
+
+
         if "american_to_british" in self._tests:
             self._tests['american_to_british']['accent_map'] = A2B_DICT
 
         if "british_to_american" in self._tests:
             self._tests['american_to_british']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
+
+        if 'swap_cohyponyms' in self._tests:
+            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
+                   'label': [[i.entity for i in sample.expected_results.predictions] 
+                         for sample in data_handler]})
+            self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
         self._data_handler = data_handler
 
