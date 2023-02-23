@@ -287,7 +287,7 @@ def get_cohyponyms_wordnet(word: str) -> str:
     """
 
     try:
-        import wn
+        from nltk.corpus import wordnet as wn 
     except ImportError:
         raise ImportError("WordNet is not available!\n"
                           "Please install WordNet via pip install wordnet to use swap_cohyponyms")
