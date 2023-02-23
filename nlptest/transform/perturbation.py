@@ -65,7 +65,7 @@ class PerturbationFactory:
             self._tests['american_to_british']['accent_map'] = A2B_DICT
 
         if "british_to_american" in self._tests:
-            self._tests['american_to_british']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
+            self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self._tests:
             nltk.download('omw-1.4') 
@@ -384,13 +384,12 @@ class ConvertAccent(BasePerturbation):
         Returns:
             List of sentences that perturbed with accent conversion.
         """
-        perturb_sent = []
         for sample in sample_list:
             tokens = sample.original.split(' ')
             tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
             sample.test_case = ' '.join(tokens)
 
-        return perturb_sent
+        return sample_list
 
 
 class AddContext(BasePerturbation):
