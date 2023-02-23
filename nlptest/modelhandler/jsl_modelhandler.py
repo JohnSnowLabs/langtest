@@ -1,3 +1,4 @@
+import os
 from typing import List, Union
 
 from .modelhandler import _ModelHandler
@@ -9,7 +10,7 @@ if try_import_lib('pyspark'):
 
 if try_import_lib('johnsnowlabs'):
     from johnsnowlabs import nlp
-    from johnsnowlabs.nlp.nlu import NLUPipeline
+    from nlu import NLUPipeline
 
 SUPPORTED_SPARKNLP_NER_MODELS = []
 if try_import_lib("sparknlp"):
@@ -100,12 +101,19 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
     def load_model(cls, path) -> 'NERJohnSnowLabsPretrainedModel':
         """Load the NER model into the `model` attribute.
         Args:
-            path (str): Load PipelineModel from given path.
+            path (str): Path to pretrained local or NLP Models Hub SparkNLP model
         """
-        if try_import_lib('johnsnowlabs'):
-            loaded_model = nlp.load(path)
+        if os.path.exists(path):
+            if try_import_lib('johnsnowlabs'):
+                loaded_model = nlp.load(path=path)
+            else:
+                loaded_model = PipelineModel.load(path)
         else:
-            loaded_model = PipelineModel.load(path)
+            if try_import_lib('johnsnowlabs'):
+                loaded_model = nlp.load(path)
+            else:
+                raise ValueError(f'johnsnowlabs is not installed. '
+                                 f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
 
         return cls(
             model=loaded_model
@@ -123,7 +131,9 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
             entity=pred.result,
             word=pred.metadata['word'],
             start=pred.begin,
-            end=pred.end)
+            end=pred.end,
+            score=pred.metadata[pred.result]
+        )
             for pred in prediction]
 
     def __call__(self, text: str) -> List[NEROutput]:
