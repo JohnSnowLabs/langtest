@@ -13,6 +13,7 @@ if try_import_lib('johnsnowlabs'):
     from nlu import NLUPipeline
 
 SUPPORTED_SPARKNLP_NER_MODELS = []
+SUPPORTED_SPARKNLP_CLASSIFERS = []
 if try_import_lib("sparknlp"):
     from sparknlp.annotator import *
     from sparknlp.base import LightPipeline
@@ -31,16 +32,39 @@ if try_import_lib("sparknlp"):
         NerDLModel
     ])
 
+    SUPPORTED_SPARKNLP_CLASSIFERS.extend([
+        ClassifierDLModel,
+        AlbertForSequenceClassification,
+        BertForSequenceClassification,
+        DeBertaForSequenceClassification,
+        DistilBertForSequenceClassification,
+        LongformerForSequenceClassification,
+        RoBertaForSequenceClassification,
+        XlmRoBertaForSequenceClassification,
+        XlnetForSequenceClassification,
+    ])
+
 if try_import_lib("sparknlp_jsl"):
 
-    from sparknlp_jsl.legal import LegalBertForTokenClassification, LegalNerModel
-    from sparknlp_jsl.finance import FinanceBertForTokenClassification, FinanceNerModel
-    from sparknlp_jsl.annotator import MedicalBertForTokenClassifier, MedicalNerModel
+    from sparknlp_jsl.legal import (LegalBertForTokenClassification, LegalNerModel,
+                                    LegalBertForSequenceClassification, LegalClassifierDLModel)
+
+    from sparknlp_jsl.finance import (FinanceBertForTokenClassification, FinanceNerModel,
+                                      FinanceBertForSequenceClassification, FinanceClassifierDLModel)
+
+    from sparknlp_jsl.annotator import (MedicalBertForTokenClassifier, MedicalNerModel,
+                                        MedicalBertForSequenceClassification, MedicalDistilBertForSequenceClassification)
 
     SUPPORTED_SPARKNLP_NER_MODELS.extend([
         LegalBertForTokenClassification, LegalNerModel,
         FinanceBertForTokenClassification, FinanceNerModel,
         MedicalBertForTokenClassifier, MedicalNerModel
+    ])
+
+    SUPPORTED_SPARKNLP_CLASSIFERS.extend([
+        LegalBertForSequenceClassification, LegalClassifierDLModel,
+        FinanceBertForSequenceClassification, FinanceClassifierDLModel,
+        MedicalBertForSequenceClassification, MedicalDistilBertForSequenceClassification
     ])
 
 
@@ -53,7 +77,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
         """
         Attributes:
             model (LightPipeline):
-                Loaded SparkNLP Light Pipeline for inference.
+                Loaded SparkNLP LightPipeline for inference.
         """
 
         if isinstance(model, PipelineModel):
@@ -145,6 +169,106 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
     def is_instance_supported(model_instance) -> bool:
         """Check ner model instance is supported by nlptest"""
         for model in SUPPORTED_SPARKNLP_NER_MODELS:
+            if isinstance(model_instance, model):
+                return True
+        return False
+
+
+class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
+
+    def __init__(
+            self,
+            model: Union[NLUPipeline, PretrainedPipeline, LightPipeline, PipelineModel]
+    ):
+        """
+        Attributes:
+            model (LightPipeline):
+                Loaded SparkNLP LightPipeline for inference.
+        """
+
+        if isinstance(model, PipelineModel):
+            model = model
+
+        elif isinstance(model, LightPipeline):
+            model = model.pipeline_model
+
+        elif isinstance(model, PretrainedPipeline):
+            model = model.model
+
+        elif isinstance(model, NLUPipeline):
+            stages = [comp.model for comp in model.components]
+            _pipeline = nlp.Pipeline().setStages(stages)
+            tmp_df = model.spark.createDataFrame([['']]).toDF('text')
+            model = _pipeline.fit(tmp_df)
+
+        else:
+            raise ValueError(f'Invalid SparkNLP model object: {type(model)}. '
+                             f'John Snow Labs model handler accepts: '
+                             f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
+
+        classifier = None
+        for annotator in model.stages:
+            if self.is_instance_supported(annotator):
+                classifier = annotator
+                break
+
+        if classifier is None:
+            raise ValueError('Invalid PipelineModel! There should be at least one classifier component.')
+
+        #    this line is to set pipeline to add confidence score in predictions
+        #    even though they are useful information, not used yet.
+        classifier.setIncludeConfidence(True)
+        classifier.setIncludeAllConfidenceScores(True)
+
+        self.output_col = classifier.getOutputCol()
+
+        #   in order to overwrite configs, light pipeline should be reinitialized.
+        self.model = LightPipeline(model)
+
+    @classmethod
+    def load_model(cls, path) -> 'TextClassificationJohnSnowLabsPretrainedModel':
+        """Load the NER model into the `model` attribute.
+        Args:
+            path (str): Path to pretrained local or NLP Models Hub SparkNLP model
+        """
+        if os.path.exists(path):
+            if try_import_lib('johnsnowlabs'):
+                loaded_model = nlp.load(path=path)
+            else:
+                loaded_model = PipelineModel.load(path)
+        else:
+            if try_import_lib('johnsnowlabs'):
+                loaded_model = nlp.load(path)
+            else:
+                raise ValueError(f'johnsnowlabs is not installed. '
+                                 f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
+
+        return cls(
+            model=loaded_model
+        )
+
+    def predict(self, text: str) -> SequenceClassificationOutput:
+        """Perform predictions with SparkNLP LightPipeline on the input text.
+        Args:
+            text (str): Input text to perform NER on.
+        Returns:
+            SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
+        """
+        prediction = self.model.fullAnnotate(text)[0][self.output_col]
+        return SequenceClassificationOutput(
+            text=text,
+            labels=prediction[0]['class'][0].result
+        )
+
+    def __call__(self, text: str) -> List[NEROutput]:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text)
+
+    #   helpers
+    @staticmethod
+    def is_instance_supported(model_instance) -> bool:
+        """Check ner model instance is supported by nlptest"""
+        for model in SUPPORTED_SPARKNLP_CLASSIFERS:
             if isinstance(model_instance, model):
                 return True
         return False
