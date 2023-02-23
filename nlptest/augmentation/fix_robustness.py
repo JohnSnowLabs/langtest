@@ -3,6 +3,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+from nlptest.datahandler.datasource import DataFactory
+
 
 class BaseAugmentaion(ABC):
 
@@ -15,8 +17,9 @@ class BaseAugmentaion(ABC):
 class AugmentRobustness(BaseAugmentaion):
 
     def fix(
-        dataset:str,
+        data_path:str,
         model,
+        h_report,
         random_state:int,
         nosie_prob:float = 0.5,
         test: Optional[List[str]] = None,
@@ -25,24 +28,21 @@ class AugmentRobustness(BaseAugmentaion):
         optimized_inplace: bool = False,
         
     ):
-
-        augmentation_report = dict()
-        #   Save entity coverage to the augmentation_report
-        augmentation_report['entity_coverage'] = dict()
-        augmentation_report['augmentation_coverage'] = dict()
-
+        data = DataFactory(data_path).load()
+        entites = set(j.split("-")[-1] for i in data['label'] for j in i)
+        suggest = AugmentRobustness.suggestions(h_report)
+        
    
         
     def suggestions(self, report):
 
-            if report['pass_rate']/report['min_pass_rate'] > 1:
+            if report['pass rate']/report['min pass rate'] > 1:
                 return None
-
-            elif report['pass_rate']/report['min_pass_rate'] > 0.9:
+            elif report['pass rate']/report['min pass rate'] > 0.9:
                 return 0.05
-            elif report['pass_rate']/report['min_pass_rate'] > 0.8:
+            elif report['pass rate']/report['min pass rate'] > 0.8:
                 return 0.1
-            elif report['pass_rate']/report['min_pass_rate'] > 0.7:
+            elif report['pass rate']/report['min pass rate'] > 0.7:
                 return 0.2
             else:
                 return 0.3
