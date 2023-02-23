@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
+import nltk
 
 from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology)
 from ..utils.custom_types import Sample, Span, Transformation
@@ -308,14 +309,14 @@ def get_cohyponyms_wordnet(word: str) -> str:
             hypos = hypernym[0].hyponyms()
             hypo_len = len(hypos)
             if hypo_len == 1:
-                name = hypos[0].lemmas()[0]
+                name = str(hypos[0].lemmas()[0])
             else:
                 ind = random.sample(range(hypo_len), k=1)[0]
-                name = hypos[ind].lemmas()[0]
+                name = str(hypos[ind].lemmas()[0])
                 while name == word:
                     ind = random.sample(range(hypo_len), k=1)[0]
-                    name = hypos[ind].lemmas()[0]
-            return name.replace("_", " ")
+                    name = str(hypos[ind].lemmas()[0])
+            return name.replace("_", " ").split(".")[0][7:]
 
 
 class SwapCohyponyms(BasePerturbation):
