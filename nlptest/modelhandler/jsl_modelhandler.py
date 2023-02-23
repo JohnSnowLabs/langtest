@@ -2,8 +2,8 @@ import os
 from typing import List, Union
 
 from .modelhandler import _ModelHandler
-from ..utils.lib_manager import try_import_lib
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+from ..utils.lib_manager import try_import_lib
 
 if try_import_lib('pyspark'):
     from pyspark.ml import PipelineModel
@@ -45,7 +45,6 @@ if try_import_lib("sparknlp"):
     ])
 
 if try_import_lib("sparknlp_jsl"):
-
     from sparknlp_jsl.legal import (LegalBertForTokenClassification, LegalNerModel,
                                     LegalBertForSequenceClassification, LegalClassifierDLModel)
 
@@ -53,7 +52,8 @@ if try_import_lib("sparknlp_jsl"):
                                       FinanceBertForSequenceClassification, FinanceClassifierDLModel)
 
     from sparknlp_jsl.annotator import (MedicalBertForTokenClassifier, MedicalNerModel,
-                                        MedicalBertForSequenceClassification, MedicalDistilBertForSequenceClassification)
+                                        MedicalBertForSequenceClassification,
+                                        MedicalDistilBertForSequenceClassification)
 
     SUPPORTED_SPARKNLP_NER_MODELS.extend([
         LegalBertForTokenClassification, LegalNerModel,
