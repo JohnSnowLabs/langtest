@@ -19,8 +19,8 @@ tests_types:
   - add_typo
   - add_contractions
   - swap_entities
-  # # - american_to_british
-  # # - british_to_american
+  - american_to_british
+  - british_to_american
  
 min_pass_rate:
   - default : 0.65
