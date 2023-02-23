@@ -35,14 +35,15 @@ class AugmentRobustness(BaseAugmentaion):
    
         
     def suggestions(self, report):
-
-            if report['pass rate']/report['min pass rate'] > 1:
-                return None
-            elif report['pass rate']/report['min pass rate'] > 0.9:
-                return 0.05
-            elif report['pass rate']/report['min pass rate'] > 0.8:
-                return 0.1
-            elif report['pass rate']/report['min pass rate'] > 0.7:
-                return 0.2
-            else:
-                return 0.3
+        
+        default_proportion_dict = {
+            0.9: None,
+            0.75: 0.05,
+            0.6: 0.1,
+            0.4: 0.2
+        }
+        report['ratio'] = report['pass rate']/ report['min pass rate']
+        report['proportion_increase'] = report['ratio'].apply(
+                                            lambda x: default_proportion_dict.get(x, 0.3)
+                                        )
+        return report[['test type', 'ratio', 'proportion_increase']]
