@@ -33,3 +33,16 @@ class AugmentRobustness(BaseAugmentaion):
 
    
         
+    def suggestions(self, report):
+
+            if report['pass_rate']/report['min_pass_rate'] > 1:
+                return None
+
+            elif report['pass_rate']/report['min_pass_rate'] > 0.9:
+                return 0.05
+            elif report['pass_rate']/report['min_pass_rate'] > 0.8:
+                return 0.1
+            elif report['pass_rate']/report['min_pass_rate'] > 0.7:
+                return 0.2
+            else:
+                return 0.3
