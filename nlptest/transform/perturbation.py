@@ -339,7 +339,6 @@ class SwapCohyponyms(BasePerturbation):
         if labels is None:
             raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
 
-        perturb_sent = []
         for idx, sample in enumerate(sample_list):
             sent_tokens = sample.original.split(' ')
             sent_labels = labels[idx]
@@ -367,7 +366,7 @@ class SwapCohyponyms(BasePerturbation):
             replace_token = " ".join(replace_token)
             chosen_ent = get_cohyponyms_wordnet(replace_token)
             replaced_string = sample.original.replace(replace_token, chosen_ent)
-            perturb_sent.append(replaced_string)
+            sample.test_case = replaced_string
 
         return sample_list
 
