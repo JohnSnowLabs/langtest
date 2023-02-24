@@ -210,17 +210,17 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
                              f'John Snow Labs model handler accepts: '
                              f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
 
-        classifier = None
+        _classifier = None
         for annotator in model.stages:
             if self.is_instance_supported(annotator):
-                classifier = annotator
+                _classifier = annotator
                 break
 
-        if classifier is None:
+        if _classifier is None:
             raise ValueError('Invalid PipelineModel! There should be at least one classifier component.')
 
-        self.output_col = classifier.getOutputCol()
-        self.classes = classifier.getClasses()
+        self.output_col = _classifier.getOutputCol()
+        self.classes = _classifier.getClasses()
 
         #   in order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
