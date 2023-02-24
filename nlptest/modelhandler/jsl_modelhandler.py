@@ -2,7 +2,7 @@ import os
 from typing import List, Union
 
 from .modelhandler import _ModelHandler
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
 
 if try_import_lib('pyspark'):
@@ -143,7 +143,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
             model=loaded_model
         )
 
-    def predict(self, text: str) -> List[NEROutput]:
+    def predict(self, text: str) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
         Args:
             text (str): Input text to perform NER on.
@@ -151,16 +151,19 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
             NEROutput: A list of named entities recognized in the input text.
         """
         prediction = self.model.fullAnnotate(text)[0][self.output_col]
-        return [NEROutput(
-            entity=pred.result,
-            word=pred.metadata['word'],
-            start=pred.begin,
-            end=pred.end,
-            score=pred.metadata[pred.result]
-        )
-            for pred in prediction]
+        return NEROutput(
+                predictions=[
+                    NERPrediction.from_span(
+                        entity=ent.result,
+                        word=ent.metadata['word'],
+                        start=ent.begin,
+                        end=ent.pred.end,
+                        score=ent.metadata[ent.result]
+                    ) for ent in prediction
+                ]
+            )
 
-    def __call__(self, text: str) -> List[NEROutput]:
+    def __call__(self, text: str) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 
