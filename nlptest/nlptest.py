@@ -98,7 +98,7 @@ class Harness:
         self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model, self.data).evaluate()
         return self
 
-    def report(self) -> Dict:
+    def report(self) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
