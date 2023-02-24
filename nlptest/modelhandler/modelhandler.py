@@ -4,7 +4,7 @@ from typing import List
 import spacy
 from transformers import pipeline
 
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
 
 class _ModelHandler(ABC):
@@ -119,7 +119,7 @@ class NERTransformersPretrainedModel(_ModelHandler):
             model=pipeline(model=path, task="ner", ignore_labels=[])
         )
 
-    def predict(self, text: str, **kwargs) -> List[NEROutput]:
+    def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
         Args:
@@ -137,12 +137,15 @@ class NERTransformersPretrainedModel(_ModelHandler):
         """
         prediction = self.model(text, **kwargs)
 
-        if kwargs.get("group_entities"):
-            prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
+        # prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
+        return NEROutput(predictions=[NERPrediction.from_span(
+            entity=pred.get('entity_group', pred.get('entity', None)),
+            word=pred['word'],
+            start=pred['start'],
+            end=pred['end']
+        ) for pred in prediction])
 
-        return [NEROutput(**pred) for pred in prediction]
-
-    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
 
@@ -166,30 +169,23 @@ class NERSpaCyPretrainedModel(_ModelHandler):
             model=spacy.load(path)
         )
 
-    def predict(self, text: str, *args, **kwargs) -> List[NEROutput]:
+    def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """"""
         doc = self.model(text)
 
         if kwargs.get("group_entities"):
-            return [
-                NEROutput(
-                    entity=ent.label_,
-                    word=ent.text,
-                    start=ent.start_char,
-                    end=ent.end_char
-                ) for ent in doc.ents
-            ]
+            return NEROutput(
+                predictions=[
+                    NERPrediction.from_span(
+                        entity=ent.label_,
+                        word=ent.text,
+                        start=ent.start_char,
+                        end=ent.end_char
+                    ) for ent in doc.ents
+                ]
+            )
 
-        return [
-            NEROutput(
-                entity=f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_,
-                word=token.text,
-                start=token.idx,
-                end=token.idx + len(token)
-            ) for token in doc
-        ]
-
-    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
+    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 

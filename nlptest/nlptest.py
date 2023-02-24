@@ -1,7 +1,7 @@
+from collections import defaultdict
 from functools import reduce
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 
-import pandas as pd
 import yaml
 
 from .datahandler.datasource import DataFactory
@@ -47,23 +47,29 @@ class Harness:
                 "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
             self.model = model
         elif isinstance(model, str):
+            self.model = ModelFactory(task=task, model_path=model)
+        else:
+            self.model = model
             if hub is None:
                 raise ValueError("Hub should be specified when loading a model from web.")
             if hub not in self.SUPPORTED_HUBS:
                 raise ValueError(f"Hub {hub} is not supported or invalid.")
-                
+
             self.model = ModelFactory.load_model(task=task, hub=hub, path=model)
 
         if data is not None:
-            # self.data = data
             if type(data) == str:
                 self.data = DataFactory(data).load()
-            # else:
-            #     self.data = DataFactory.load_hf(data)
+
         if config is not None:
             self._config = self.configure(config)
+        else:
+            self._config = None
 
-    def configure(self, config):
+        self.load_testcases = None
+        self.generated_results = None
+
+    def configure(self, config: Union[str, dict]):
         """
         Configure the Harness with a given configuration.
 
@@ -74,37 +80,23 @@ class Harness:
         Returns:
             dict: Loaded configuration.
         """
-
         if type(config) == dict:
             self._config = config
         else:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
-
         return self._config
 
-    def generate(self) -> None:
+    def generate(self) -> "Harness":
         """
         Generates the testcases to be used when evaluating the model.
 
         Returns:
             None: The generated testcases are stored in `load_testcases` attribute.
         """
-
-        # self.data_handler =  DataFactory(data_path).load()
-        # self.data_handler = self.data_handler(file_path = data_path)
         tests = self._config['tests_types']
         self.load_testcases = PerturbationFactory(self.data, tests).transform()
         return self
-    # def load(self) -> pd.DataFrame:
-    #     try:
-    #         self._load_testcases = pd.read_csv('path/to/{self._model_path}_testcases')
-    #         if self.load_testcases.empty:
-    #             self.load_testcases = self.generate()
-    #         # We have to make sure that loaded testcases df are editable in Qgrid
-    #         return self.load_testcases
-    #     except:
-    #         self.generate()
 
     def run(self) -> "Harness":
         """
@@ -116,7 +108,7 @@ class Harness:
         self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
-    def report(self) -> pd.DataFrame:
+    def report(self) -> Dict:
         """
         Generate a report of the test results.
 
@@ -128,30 +120,33 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        summary = self.generated_results.groupby('Test_type')['is_pass']
-        summary = summary.agg(
-            pass_count = 'sum',
-            fail_count = lambda x: x.count()-x.sum(),
-            pass_rate = 'mean'
-            )
-        summary = summary.reset_index()
+        summary = defaultdict(lambda: defaultdict(int))
+        for sample in self.generated_results:
+            print("=============" * 10)
+            print("TEST TYPE: ", sample.test_type)
+            print("ORIGINAL: ", sample.original)
+            print("TEST CASE: ", sample.test_case)
+            print("EXPECTED: ", sample.expected_results)
+            print("ACTUAL: ", sample.realigned_spans)
+            print("TRANSFORMATIONS: ", sample.transformations)
+            print("IS PASS: ", sample.is_pass())
+            summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
-        summary['minimum_pass_rate'] = summary['Test_type'].apply(
-            lambda x: min_pass_dict.get(x, min_pass_dict.get('default', 0))
-        )
+        report = {}
+        for test_type, value in summary.items():
+            pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
+            min_pass_rate = min_pass_dict.get(test_type, min_pass_dict["default"])
+            report[test_type] = {
+                "fail_count": summary[test_type]["false"],
+                "pass_count": summary[test_type]["true"],
+                "pass_rate": pass_rate,
+                "minimum_pass_rate": min_pass_rate,
+                "pass": pass_rate >= min_pass_rate
+            }
+        return report
 
-        summary['pass'] = summary['minimum_pass_rate'] < summary['pass_rate']
-        summary['pass_rate'] = summary['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
-        summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
-
-        summary.columns=["test type", "pass count", "fail count", "pass rate", "minimum pass rate", "pass"]
-        return summary
-
-    def save(
-            self, config: str = "test_config.yml",
-            testcases: str = "test_cases.csv",
-            results: str = "test_results.csv"
-    ):
+    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
+             results: str = "test_results.csv") -> None:
         """
         Save the configuration, generated testcases, and results
         of the evaluations as yml and csv files.
@@ -167,7 +162,6 @@ class Harness:
         Returns:
             None
         """
-
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 

@@ -40,8 +40,13 @@ class RobustnessTestRunner(TestRunner):
         """Evaluate the testcases and return the evaluation results.
 
         Returns:
-            pd.DataFrame: DataFrame containing the evaluation results.
+            List[Sample]:
+                all containing the predictions for both the original text and the pertubed one
         """
+        for sample in self.load_testcases:
+            sample.expected_results = self._model_handler(sample.original)
+            sample.actual_results = self._model_handler(sample.test_case)
+
 
         self.load_testcases["expected_result"] = self.load_testcases["Original"].apply(self._model_handler.predict)
         self.load_testcases["actual_result"] = self.load_testcases["Test_Case"].apply(self._model_handler.predict)

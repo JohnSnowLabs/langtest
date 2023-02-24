@@ -1,19 +1,26 @@
 tasks: 
   - ner
-  - text_classifer
+  - text_classification
 
 lang:
   - en
-  - du
-  - it
+
 tests_types:
   - uppercase 
   - lowercase 
   - add_context:
       - starting_context: ['Hello', 'Dated: 21/02/2022']
       - ending_context: ['Bye', 'Reported']
-  # - remove_punc: ['.', '@', ',', '"', "'"]
-
+  - titlecase
+  - add_punctuation
+  - swap_cohyponyms
+  - strip_punctuation
+  - add_typo
+  - add_contractions
+  - swap_entities
+  - american_to_british
+  - british_to_american
+ 
 min_pass_rate:
   - default : 0.65
   - uppercase : 0.65
