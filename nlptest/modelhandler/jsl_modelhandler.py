@@ -68,7 +68,7 @@ if try_import_lib("sparknlp_jsl"):
     ])
 
 
-class NERJohnSnowLabsPretrainedModel(_ModelHandler):
+class PretrainedModelForNER(_ModelHandler):
 
     def __init__(
             self,
@@ -158,7 +158,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
                         entity=ent.result,
                         word=ent.metadata['word'],
                         start=ent.begin,
-                        end=ent.pred.end,
+                        end=ent.end,
                         score=ent.metadata[ent.result]
                     ) for ent in prediction
                 ]
@@ -178,7 +178,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
         return False
 
 
-class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
+class PretrainedModelForTextClassification(_ModelHandler):
 
     def __init__(
             self,
