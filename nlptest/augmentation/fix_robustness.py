@@ -1,6 +1,6 @@
 
 
-from abc import ABC, abstractmethod
+from abc import ABC, abstractstaticmethod
 import random
 import re
 import pandas as pd
@@ -12,8 +12,7 @@ from nlptest.transform.perturbation import PerturbationFactory
 
 class BaseAugmentaion(ABC):
 
-    @abstractmethod
-    @staticmethod
+    @abstractstaticmethod
     def fix():
         return NotImplementedError
 
