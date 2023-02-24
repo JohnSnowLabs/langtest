@@ -97,7 +97,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
+        self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
