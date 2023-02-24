@@ -104,7 +104,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
         #   but at first I will set first as default one. Later we can adjust Harness to test multiple model
         ner_model = None
         for annotator in model.stages:
-            if self.is_instance_supported(annotator):
+            if self.is_ner_annotator(annotator):
                 ner_model = annotator
                 break
 
@@ -170,7 +170,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
 
     #   helpers
     @staticmethod
-    def is_instance_supported(model_instance) -> bool:
+    def is_ner_annotator(model_instance) -> bool:
         """Check ner model instance is supported by nlptest"""
         for model in SUPPORTED_SPARKNLP_NER_MODELS:
             if isinstance(model_instance, model):
@@ -212,7 +212,7 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
 
         _classifier = None
         for annotator in model.stages:
-            if self.is_instance_supported(annotator):
+            if self.is_classifier(annotator):
                 _classifier = annotator
                 break
 
@@ -271,7 +271,7 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
 
     #   helpers
     @staticmethod
-    def is_instance_supported(model_instance) -> bool:
+    def is_classifier(model_instance) -> bool:
         """Check classifier model instance is supported by nlptest"""
         for model in SUPPORTED_SPARKNLP_CLASSIFERS:
             if isinstance(model_instance, model):
