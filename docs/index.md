@@ -1,6 +1,6 @@
 ---
 layout: landing
-title: 'NLUTest: <span>A library for testing NLP models</span>'
+title: 'NLPTest: <span>A library for testing NLP models</span>'
 excerpt:  <br> Evaluate the Bias and Robustness of NER and Text Classification Models
 permalink: /
 header: true
