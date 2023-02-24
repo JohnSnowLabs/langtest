@@ -485,11 +485,10 @@ class AddContraction(BasePerturbation):
             expanded_contraction = is_upper_case + contracted_token[1:]
             return expanded_contraction
 
-        perturb_sent = []
         for sample in sample_list:
             string = sample.original
             for contraction in CONTRACTION_MAP:
                 if re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL):
                     string = re.sub(contraction, custom_replace, sample.original, flags=re.IGNORECASE | re.DOTALL)
             sample.test_case = string
-        return perturb_sent
+        return sample_list
