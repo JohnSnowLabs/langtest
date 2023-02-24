@@ -2,15 +2,81 @@ header:
   - title: Home
     url: /
   - title: Docs
-    url: https://nlp.johnsnowlabs.com/docs
+    url: /docs/en/install
     key: docs
-  - title: Examples
-    url:    /docs/en/examples
-    key: docs-nlu-for-healthcare
+  - title: Tutorials
+    url: /docs/tutorials/tutorials
+    key: docs-tutorials
   - title: Tests
-    url:    /docs/en/tests
-    key: tests
+    url: /docs/en_test/test
+    key: docs-tests
   - title: '<span style="color: #FF8A00;"><i class="fab fa-github fa-2x"></i></span>'
     url: https://github.com/JohnSnowLabs/nlu
   - title: '<span style="color: #FF8A00;"><i class="fab fa-slack-hash fa-2x"></i></span>'
     url: https://join.slack.com/t/spark-nlp/shared_invite/zt-lutct9gm-kuUazcyFKhuGY3_0AMkxqA
+
+
+docs-en:
+  - title:
+    children:
+      - title:  Installation
+        url:    /docs/en/install
+      - title:  Quick Start
+        url:    /docs/en/quick_start
+  - title: Harness
+    children:
+      - title:  Harness
+        url:    /docs/en/harness
+      - title:  generate()
+        url:    /docs/en/generate
+      - title:  run()
+        url:    /docs/en/run
+      - title:  report()
+        url:    /docs/en/report
+      - title: save()
+        url: /docs/en/save
+      - title:  load()
+        url:    /docs/en/load
+  - title: Augmentation
+    children:
+      - title:  Augmentation
+        url:    /docs/en/augmentation
+      - title: generate()
+        url: /docs/en/generate_augmentation
+      - title: save()
+        url: /docs/en/save_augmentation
+
+tutorials:
+  - title:
+    children:
+      - title:  Casing tests with johnsnowlabs
+        url:    /docs/tutorials/tutorials
+      - title:  Bias tests with transformers
+        url:    /docs/tutorials/bias_tests
+      - title:  Testing and fixing workflow with spacy
+        url:    /docs/tutorials/workflow_spacy
+
+
+tests:
+  - title:
+    children:
+      - title: Robustness
+        url: /docs/en_test/robustness
+      - title: Uppercase
+        url: /docs/en_test/uppercase
+      - title: Lowercase
+        url: /docs/en_test/lowercase
+      - title: Titlecase
+        url: /docs/en_test/titlecase
+      - title: Add Context
+        url: /docs/en_test/add_context
+      - title: Swap Entities
+        url: /docs/en_test/swap_entities
+      - title: Bias
+        url: /docs/en_test/bias
+      - title: Gender
+        url: /docs/en_test/gender
+      - title: Representation
+        url: /docs/en_test/representation
+      - title: Age Bias
+        url: /docs/en_test/age_bias

@@ -2,9 +2,14 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Tests
+title: Age Bias
 key: notebooks
-permalink: /docs/en/tests
+permalink: /docs/en_test/age_bias
+aside:
+    toc: true
+sidebar:
+    nav: tests
+show_edit_on_github: true
 modify_date: "2019-05-16"
 ---
 
