@@ -170,6 +170,9 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         kwargs["group_entities"] = True
         doc = self.model(text)
 
+        if kwargs.get("predict_str", False):
+            return [f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_ for token in doc]
+        
         if kwargs.get("group_entities"):
             return NEROutput(
                 predictions=[
@@ -184,7 +187,7 @@ class NERSpaCyPretrainedModel(_ModelHandler):
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
-        return self.predict(text=text)
+        return self.predict(text=text, **kwargs)
 
 
 class TextClassificationTransformersPretrainedModel(_ModelHandler):
