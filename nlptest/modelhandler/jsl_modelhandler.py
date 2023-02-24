@@ -72,7 +72,7 @@ class PretrainedModelForNER(_ModelHandler):
 
     def __init__(
             self,
-            model: Union[NLUPipeline, PretrainedPipeline, LightPipeline, PipelineModel]
+            model: Union['NLUPipeline', 'PretrainedPipeline', 'LightPipeline', 'PipelineModel']
     ):
         """
         Attributes:
@@ -80,16 +80,16 @@ class PretrainedModelForNER(_ModelHandler):
                 Loaded SparkNLP LightPipeline for inference.
         """
 
-        if isinstance(model, PipelineModel):
+        if model.__class__.__name__ == 'PipelineModel':
             model = model
 
-        elif isinstance(model, LightPipeline):
+        elif model.__class__.__name__ == 'LightPipeline':
             model = model.pipeline_model
 
-        elif isinstance(model, PretrainedPipeline):
+        elif model.__class__.__name__ == 'PretrainedPipeline':
             model = model.model
 
-        elif isinstance(model, NLUPipeline):
+        elif model.__class__.__name__ == 'NLUPipeline':
             stages = [comp.model for comp in model.components]
             _pipeline = nlp.Pipeline().setStages(stages)
             tmp_df = model.spark.createDataFrame([['']]).toDF('text')
@@ -190,16 +190,17 @@ class PretrainedModelForTextClassification(_ModelHandler):
                 Loaded SparkNLP LightPipeline for inference.
         """
 
-        if isinstance(model, PipelineModel):
+        if model.__class__.__name__ == 'PipelineModel':
+            print(model.__class__.__name__)
             model = model
 
-        elif isinstance(model, LightPipeline):
+        elif model.__class__.__name__ == 'LightPipeline':
             model = model.pipeline_model
 
-        elif isinstance(model, PretrainedPipeline):
+        elif model.__class__.__name__ == 'PretrainedPipeline':
             model = model.model
 
-        elif isinstance(model, NLUPipeline):
+        elif model.__class__.__name__ == 'NLUPipeline':
             stages = [comp.model for comp in model.components]
             _pipeline = nlp.Pipeline().setStages(stages)
             tmp_df = model.spark.createDataFrame([['']]).toDF('text')
