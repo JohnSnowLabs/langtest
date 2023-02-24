@@ -6,10 +6,10 @@ header:
     key: docs
   - title: Tutorials
     url: /docs/tutorials/tutorials
-    key: docs-tutorials
+    key: tutorials
   - title: Tests
     url: /docs/en_test/test
-    key: docs-tests
+    key: tests
   - title: '<span style="color: #FF8A00;"><i class="fab fa-github fa-2x"></i></span>'
     url: https://github.com/JohnSnowLabs/nlu
   - title: '<span style="color: #FF8A00;"><i class="fab fa-slack-hash fa-2x"></i></span>'
@@ -49,12 +49,14 @@ docs-en:
 tutorials:
   - title:
     children:
-      - title:  Casing tests with johnsnowlabs
-        url:    /docs/tutorials/tutorials
-      - title:  Bias tests with transformers
-        url:    /docs/tutorials/bias_tests
-      - title:  Testing and fixing workflow with spacy
-        url:    /docs/tutorials/workflow_spacy
+      - title: Casing tests with johnsnowlabs
+        url: /docs/tutorials/tutorials
+      - title: Bias tests with transformers
+        url: /docs/tutorials/bias_tests
+        key: tutorials
+      - title: Testing and fixing workflow with spacy
+        url: /docs/tutorials/workflow_spacy
+        key: tutorials
 
 
 tests:
@@ -62,21 +64,31 @@ tests:
     children:
       - title: Robustness
         url: /docs/en_test/robustness
+        key: tests
       - title: Uppercase
         url: /docs/en_test/uppercase
+        key: tests
       - title: Lowercase
         url: /docs/en_test/lowercase
+        key: tests
       - title: Titlecase
         url: /docs/en_test/titlecase
+        key: tests
       - title: Add Context
         url: /docs/en_test/add_context
+        key: tests
       - title: Swap Entities
         url: /docs/en_test/swap_entities
+        key: tests
       - title: Bias
         url: /docs/en_test/bias
+        key: tests
       - title: Gender
         url: /docs/en_test/gender
+        key: tests
       - title: Representation
         url: /docs/en_test/representation
+        key: tests
       - title: Age Bias
         url: /docs/en_test/age_bias
+        key: tests

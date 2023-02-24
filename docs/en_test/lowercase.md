@@ -3,13 +3,14 @@ layout: docs
 header: true
 seotitle: NLU | John Snow Labs
 title: Lowercase
-key: notebooks
+key: tests
 permalink: /docs/en_test/lowercase
 aside:
     toc: true
 sidebar:
     nav: tests
 show_edit_on_github: true
+nav_key: tests
 modify_date: "2019-05-16"
 ---
 

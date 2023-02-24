@@ -3,13 +3,14 @@ layout: docs
 header: true
 seotitle: NLU | John Snow Labs
 title: Bias tests with transformers
-key: docs-tutorials
+key: tutorials
 permalink: /docs/tutorials/bias_tests
 sidebar:
     nav: tutorials
 aside:
     toc: true
 show_edit_on_github: true
+nav_key: tutorials
 modify_date: "2019-05-16"
 ---
 
