@@ -100,10 +100,9 @@ class Harness:
         self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
         return self
 
-    def report(self) -> Dict:
+    def report(self) -> pd.DataFrame:
         """
         Generate a report of the test results.
-
         Returns:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
@@ -112,44 +111,23 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        temp_df = pd.concat([
-            pd.DataFrame({
-                "TEST TYPE":sample.test_type,
-                "ORIGINAL":sample.original,
-                "TEST CASE":sample.test_case,
-                "EXPECTED":sample.expected_results,
-                "ACTUAL":sample.realigned_spans,
-                "TRANSFORMATIONS":sample.transformations,
-                "IS PASS":sample.is_pass(),
-            }) for sample in self.generated_results
-        ], axis=1)
-
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
-            print("=============" * 10)
-            print("TEST TYPE: ", sample.test_type)
-            print("ORIGINAL: ", sample.original)
-            print("TEST CASE: ", sample.test_case)
-            print("EXPECTED: ", sample.expected_results)
-            print("ACTUAL: ", sample.realigned_spans)
-            print("TRANSFORMATIONS: ", sample.transformations)
-            print("IS PASS: ", sample.is_pass())
+            # print("=============" * 10)
+            # print("TEST TYPE: ", sample.test_type)
+            # print("ORIGINAL: ", sample.original)
+            # print("TEST CASE: ", sample.test_case)
+            # print("EXPECTED: ", sample.expected_results)
+            # print("ACTUAL: ", sample.realigned_spans)
+            # print("TRANSFORMATIONS: ", sample.transformations)
+            # print("IS PASS: ", sample.is_pass())
+
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
-        self.sumss = []
         for test_type, value in summary.items():
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = min_pass_dict.get(test_type, min_pass_dict["default"])
-            sums = pd.DataFrame({
-                "test_type": test_type,
-                "fail_count": summary[test_type]["false"],
-                "pass_count": summary[test_type]["true"],
-                "pass_rate": pass_rate,
-                "minimum_pass_rate": min_pass_rate,
-                "pass": pass_rate >= min_pass_rate
-            })
-            self.sumss.append(sums)
             report[test_type] = {
                 "fail_count": summary[test_type]["false"],
                 "pass_count": summary[test_type]["true"],
@@ -157,12 +135,49 @@ class Harness:
                 "minimum_pass_rate": min_pass_rate,
                 "pass": pass_rate >= min_pass_rate
             }
+
+        df_report = pd.DataFrame.from_dict(report, orient="index")
+        df_report = df_report.reset_index(names="test_type")
+
+        df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        
+        df_accuracy = self.accuracy_report().iloc[:2].drop("Test_Case", axis=1)
+        df_accuracy = df_accuracy.rename({"actual_result":"pass_rate", "expected_result":"minimum_pass_rate", "Test_type":"test_type"}, axis=1)
+        df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
+        df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+
+
+        df_report = df_report.merge(df_accuracy, how="outer")
+        self.report = df_report
+
+        return df_report.fillna("-")
     
-        self.report = pd.concat(self.sumss, axis=1)
-        return report
+    def accuracy_report(self) -> pd.DataFrame:
+        """
+        Generate a report of the accuracy results.
+        Returns:
+            pd.DataFrame: DataFrame containing the accuracy, f1, precision, recall scores.
+        """
+
+        if isinstance(self._config['min_pass_rate'], list):
+            min_pass_dict = reduce(lambda x, y: {**x, **y}, self._config['min_pass_rate'])
+        else:
+            min_pass_dict = self._config['min_pass_rate']
+        acc_report = self.accuracy_results.copy()
+        acc_report["expected_result"] = acc_report.apply(
+            lambda x: min_pass_dict.get(x["Test_Case"]+x["Test_type"], min_pass_dict.get('default', 0)), axis=1
+        )
+        acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
+        self.accuracy_report = acc_report
+        return acc_report
 
     def augment(self, data_path):
-        pass
+        aug = AugmentRobustness(
+            data_path,
+            self.report,
+        )
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
