@@ -112,6 +112,7 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
+<<<<<<< HEAD
             # print("=============" * 10)
             # print("TEST TYPE: ", sample.test_type)
             # print("ORIGINAL: ", sample.original)
@@ -121,6 +122,16 @@ class Harness:
             # print("TRANSFORMATIONS: ", sample.transformations)
             # print("IS PASS: ", sample.is_pass())
 
+=======
+            print("=============" * 10)
+            print("TEST TYPE: ", sample.test_type)
+            print("ORIGINAL: ", sample.original)
+            print("TEST CASE: ", sample.test_case)
+            print("EXPECTED: ", sample.expected_results)
+            print("ACTUAL: ", sample.realigned_spans)
+            print("TRANSFORMATIONS: ", sample.transformations)
+            print("IS PASS: ", sample.is_pass())
+>>>>>>> release/0.0.4
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
