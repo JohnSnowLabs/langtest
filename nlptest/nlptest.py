@@ -3,6 +3,7 @@ from functools import reduce
 from typing import Any, Dict, Optional, Union
 import pandas as pd
 
+import pandas as pd
 import yaml
 
 from nlptest.augmentation.fix_robustness import AugmentRobustness
@@ -97,7 +98,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model).evaluate()
+        self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model, self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -150,9 +151,9 @@ class Harness:
 
 
         df_report = df_report.merge(df_accuracy, how="outer")
-        self.report = df_report
+        self.report = df_report.fillna("-")
 
-        return df_report.fillna("-")
+        return self.report
     
     def accuracy_report(self) -> pd.DataFrame:
         """
@@ -170,13 +171,13 @@ class Harness:
             lambda x: min_pass_dict.get(x["Test_Case"]+x["Test_type"], min_pass_dict.get('default', 0)), axis=1
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
-        self.accuracy_report = acc_report
         return acc_report
 
-    def augment(self, data_path):
-        aug = AugmentRobustness(
+    def augment(self, data_path, save_path):
+        aug_data = AugmentRobustness(
             data_path,
             self.report,
+            save_path
         )
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",

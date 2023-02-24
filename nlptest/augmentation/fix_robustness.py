@@ -22,6 +22,7 @@ class AugmentRobustness(BaseAugmentaion):
     def fix(
         data_path:str,
         h_report,
+        save_path,
         random_state:int,
         nosie_prob:float = 0.5,
         test: Optional[List[str]] = None,
@@ -59,6 +60,8 @@ class AugmentRobustness(BaseAugmentaion):
                 aug_data = PerturbationFactory(sample_data, [proportion['test_type']]).transform()
                 fianl_aug_data.extend(aug_data)
    
+        AugmentRobustness.save(fianl_aug_data, save_path)
+        return fianl_aug_data
         
     def suggestions(self, report):
         
@@ -80,4 +83,6 @@ class AugmentRobustness(BaseAugmentaion):
                                         )
         return report[['test_type', 'ratio', 'proportion_increase']]
 
-    
+    def save(self, data, save_path):
+        with open(save_path+"augmenated_train.conll", "w") as fw:
+            fw.write(data)
