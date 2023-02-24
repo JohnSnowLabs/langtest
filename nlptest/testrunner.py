@@ -81,11 +81,8 @@ class AccuracyTestRunner(TestRunner):
             pd.Dataframe: Dataframe with the results.
         """
         y_true = pd.Series(self._data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
-        print(y_true)
         X_test = pd.Series(self._data).apply(lambda x: x.original)
-        print(X_test)
         y_pred = X_test.apply(lambda x: self._model_handler.predict(x, predict_str=True))
-        print(y_pred)
 
         valid_indices = y_true.apply(len) == y_pred.apply(len)
 
