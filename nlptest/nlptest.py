@@ -119,7 +119,6 @@ class Harness:
             print("ACTUAL: ", sample.realigned_spans)
             print("TRANSFORMATIONS: ", sample.transformations)
             print("IS PASS: ", sample.is_pass())
-
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
