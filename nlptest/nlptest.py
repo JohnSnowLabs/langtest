@@ -4,6 +4,8 @@ from typing import Optional, Union
 import pandas as pd
 import yaml
 
+from nlptest.augmentation.fix_robustness import AugmentRobustness
+
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import TestRunner
@@ -142,7 +144,15 @@ class Harness:
         summary['minimum_pass_rate'] = summary['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
 
         summary.columns=["test type", "pass count", "fail count", "pass rate", "minimum pass rate", "pass"]
+        self.report = summary
         return summary
+
+    def augment(self, data_path):
+        AugmentRobustness.fix(
+            data_path,
+            self.report
+        )
+
 
     def save(
             self, config: str = "test_config.yml",
