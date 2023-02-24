@@ -1,6 +1,7 @@
 from collections import defaultdict
 from functools import reduce
 from typing import Any, Dict, Optional, Union
+import pandas as pd
 
 import yaml
 
@@ -111,6 +112,18 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
+        temp_df = pd.concat([
+            pd.DataFrame({
+                "TEST TYPE":sample.test_type,
+                "ORIGINAL":sample.original,
+                "TEST CASE":sample.test_case,
+                "EXPECTED":sample.expected_results,
+                "ACTUAL":sample.realigned_spans,
+                "TRANSFORMATIONS":sample.transformations,
+                "IS PASS":sample.is_pass(),
+            }) for sample in self.generated_results
+        ], axis=1)
+
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
             print("=============" * 10)
@@ -124,9 +137,19 @@ class Harness:
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
+        self.sumss = []
         for test_type, value in summary.items():
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = min_pass_dict.get(test_type, min_pass_dict["default"])
+            sums = pd.DataFrame({
+                "test_type": test_type,
+                "fail_count": summary[test_type]["false"],
+                "pass_count": summary[test_type]["true"],
+                "pass_rate": pass_rate,
+                "minimum_pass_rate": min_pass_rate,
+                "pass": pass_rate >= min_pass_rate
+            })
+            self.sumss.append(sums)
             report[test_type] = {
                 "fail_count": summary[test_type]["false"],
                 "pass_count": summary[test_type]["true"],
@@ -134,7 +157,12 @@ class Harness:
                 "minimum_pass_rate": min_pass_rate,
                 "pass": pass_rate >= min_pass_rate
             }
+    
+        self.report = pd.concat(self.sumss, axis=1)
         return report
+
+    def augment(self, data_path):
+        pass
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:

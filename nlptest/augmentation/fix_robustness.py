@@ -56,7 +56,7 @@ class AugmentRobustness(BaseAugmentaion):
             else:
                 sample_length = len(data) * proportion['proportion_increase']
                 sample_data = random.choices(data, k=int(sample_length))
-                aug_data = PerturbationFactory(sample_data, [proportion['test type']]).transform()
+                aug_data = PerturbationFactory(sample_data, [proportion['test_type']]).transform()
                 fianl_aug_data.extend(aug_data)
    
         
@@ -74,10 +74,10 @@ class AugmentRobustness(BaseAugmentaion):
             else:
                 return 0.3
         
-        report['ratio'] = report['pass rate']/ report['min pass rate']
+        report['ratio'] = report['pass_rate']/ report['minimum_pass_rate']
         report['proportion_increase'] = report['ratio'].apply(
                                             lambda x: proportion_values(x)
                                         )
-        return report[['test type', 'ratio', 'proportion_increase']]
+        return report[['test_type', 'ratio', 'proportion_increase']]
 
     
