@@ -64,8 +64,8 @@ class RobustnessTestRunner(TestRunner):
             sample.expected_results = self._model_handler(sample.original)
             sample.actual_results = self._model_handler(sample.test_case)
 
-<<<<<<< HEAD
         return self.load_testcases
+    
 class AccuracyTestRunner(TestRunner):
     """
     Class for running accuracy related tests on models.
@@ -120,6 +120,3 @@ class AccuracyTestRunner(TestRunner):
         df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted])
 
         return df_melted
-=======
-        return self.load_testcases
->>>>>>> release/0.0.4
