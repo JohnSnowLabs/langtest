@@ -22,6 +22,7 @@ REQUIRED_PKGS = [
     'spark-nlp==4.2.6',
     'pyspark==3.1.2',
     'transformers',
+    'nltk',
     'torch',
     'protobuf<=3.20.0',
     'sentencepiece'
