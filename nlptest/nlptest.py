@@ -123,9 +123,9 @@ class Harness:
             isp = sample.is_pass()
 
             da = pd.DataFrame({
-                "test type": [ttype if ttype else None],
+                "test_type": [ttype if ttype else None],
                 "original": [ori if ori else None],
-                "test case": [tes if tes else None],
+                "test_case": [tes if tes else None],
                 "expected_results": [str(exp) if exp else None],
                 "actual_results": [str(act) if act else None],
                 "transformations": [str(tran) if tran else None],
@@ -134,7 +134,7 @@ class Harness:
             
             results_df = pd.concat([results_df, da], axis=0)
 
-        df_report =  results_df.groupby('test type')['is_pass']
+        df_report =  results_df.groupby('test_type')['is_pass']
         df_report = df_report.agg(
             pass_count = 'sum',
             fail_count = lambda x: x.count()-x.sum(),
@@ -158,7 +158,7 @@ class Harness:
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         
-        df_accuracy = self.accuracy_report().iloc[:2].drop("Test_Case", axis=1)
+        df_accuracy = self.accuracy_report().iloc[:2].drop("test_case", axis=1)
         df_accuracy = df_accuracy.rename({"actual_result":"pass_rate", "expected_result":"minimum_pass_rate", "Test_type":"test_type"}, axis=1)
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
