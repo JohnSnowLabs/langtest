@@ -23,32 +23,19 @@ class AugmentRobustness(BaseAugmentaion):
         data_path:str,
         h_report,
         save_path,
-        random_state:int,
+        config= None,
         nosie_prob:float = 0.5,
         test: Optional[List[str]] = None,
-        starting_context: Optional[List[str]] = None,
-        ending_context: Optional[List[str]] = None,
         optimized_inplace: bool = False,
         regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])"
     ):
         data = DataFactory(data_path).load()
         data['pos_tag'] = data['label'].apply(lambda x: ["NN NN"] * len(x))
-        # data['pos_'] = data['label'].apply(lambda x: ["NN"] * len(x))
-        entites = set(j.split("-")[-1] for i in data['label'] for j in i)
+        # entites = set(j.split("-")[-1] for i in data['label'] for j in i)
         suggest = AugmentRobustness.suggestions(h_report)
         
         if suggest.shape[0] <= 0:
             print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
-
-        if starting_context is None:
-            starting_context = ["Description:", "MEDICAL HISTORY:", "FINDINGS:", "RESULTS: ",
-                            "Report: ", "Conclusion is that "]
-        starting_context = [re.split(regex_pattern, i) for i in starting_context if i != '']
-
-        if ending_context is None:
-            ending_context = ["according to the patient's family", "as stated by the patient",
-                            "due to various circumstances", "confirmed by px"]
-        ending_context = [re.split(regex_pattern, i) for i in ending_context if i != '']
 
         fianl_aug_data = []
         for proportion in suggest.iterrows():
@@ -62,17 +49,17 @@ class AugmentRobustness(BaseAugmentaion):
    
         AugmentRobustness.save(fianl_aug_data, save_path)
         return fianl_aug_data
-        
+
     def suggestions(self, report):
         
         def proportion_values(x):
-            if x > 0.9:
+            if x >= 1:
                 return None
-            elif x > 0.75:
+            elif x > 0.9:
                 return 0.05
-            elif x > 0.6:
+            elif x > 0.8:
                 return 0.1
-            elif x > 0.4:
+            elif x > 0.7:
                 return 0.2
             else:
                 return 0.3

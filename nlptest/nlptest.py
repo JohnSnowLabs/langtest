@@ -167,9 +167,9 @@ class Harness:
 
 
         # df_report = df_report.merge(df_accuracy, how="outer")
-        self.report = df_report.fillna("-")
+        self.report_df = df_report.fillna("-")
 
-        return self.report
+        return self.report_df
     
     def accuracy_report(self) -> pd.DataFrame:
         """
@@ -192,9 +192,12 @@ class Harness:
     def augment(self, data_path, save_path):
         aug_data = AugmentRobustness(
             data_path,
-            self.report,
-            save_path
+            self.report_df,
+            save_path,
+            self._config
+
         )
+        return aug_data
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
