@@ -190,7 +190,7 @@ class Harness:
         return acc_report
 
     def augment(self, data_path, save_path):
-        aug_data = AugmentRobustness(
+        aug_data = AugmentRobustness.fix(
             data_path,
             self.report_df,
             save_path,
