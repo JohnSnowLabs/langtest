@@ -182,7 +182,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     def __init__(
             self,
-            model: Union[NLUPipeline, PretrainedPipeline, LightPipeline, PipelineModel]
+            model: Union['NLUPipeline', 'PretrainedPipeline', 'LightPipeline', 'PipelineModel']
     ):
         """
         Attributes:
