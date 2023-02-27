@@ -112,32 +112,47 @@ class Harness:
         else:
             min_pass_dict = self._config['min_pass_rate']
 
-        summary = defaultdict(lambda: defaultdict(int))
+        results_df = pd.DataFrame()
         for sample in self.generated_results:
-            # print("=============" * 10)
-            # print("TEST TYPE: ", sample.test_type)
-            # print("ORIGINAL: ", sample.original)
-            # print("TEST CASE: ", sample.test_case)
-            # print("EXPECTED: ", sample.expected_results)
-            # print("ACTUAL: ", sample.realigned_spans)
-            # print("TRANSFORMATIONS: ", sample.transformations)
-            # print("IS PASS: ", sample.is_pass())
+            ttype = sample.test_type
+            ori = sample.original
+            tes = sample.test_case
+            exp = sample.expected_results
+            act = sample.actual_results
+            tran = sample.transformations
+            isp = sample.is_pass()
 
-            summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+            da = pd.DataFrame({
+                "test type": [ttype if ttype else None],
+                "original": [ori if ori else None],
+                "test case": [tes if tes else None],
+                "expected_results": [str(exp) if exp else None],
+                "actual_results": [str(act) if act else None],
+                "transformations": [str(tran) if tran else None],
+                "is_pass":[isp if isp else None]
+            })
+            
+            results_df = pd.concat([results_df, da], axis=0)
 
-        report = {}
-        for test_type, value in summary.items():
-            pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
-            min_pass_rate = min_pass_dict.get(test_type, min_pass_dict["default"])
-            report[test_type] = {
-                "fail_count": summary[test_type]["false"],
-                "pass_count": summary[test_type]["true"],
-                "pass_rate": pass_rate,
-                "minimum_pass_rate": min_pass_rate,
-                "pass": pass_rate >= min_pass_rate
-            }
+        df_report =  results_df.groupby('test type')['is_pass']
+        df_report = df_report.agg(
+            pass_count = 'sum',
+            fail_count = lambda x: x.count()-x.sum(),
+            pass_rate = 'mean'
+            )
+        # report = {}
+        # for test_type, value in summary.items():
+        #     pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
+        #     min_pass_rate = min_pass_dict.get(test_type, min_pass_dict["default"])
+        #     report[test_type] = {
+        #         "fail_count": summary[test_type]["false"],
+        #         "pass_count": summary[test_type]["true"],
+        #         "pass_rate": pass_rate,
+        #         "minimum_pass_rate": min_pass_rate,
+        #         "pass": pass_rate >= min_pass_rate
+        #     }
 
-        df_report = pd.DataFrame.from_dict(report, orient="index")
+        # df_report = pd.DataFrame.from_dict(report, orient="index")
         df_report = df_report.reset_index(names="test_type")
 
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
