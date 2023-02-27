@@ -184,7 +184,7 @@ class Harness:
             min_pass_dict = self._config['min_pass_rate']
         acc_report = self.accuracy_results.copy()
         acc_report["expected_result"] = acc_report.apply(
-            lambda x: min_pass_dict.get(x["Test_Case"]+x["Test_type"], min_pass_dict.get('default', 0)), axis=1
+            lambda x: min_pass_dict.get(x["test_case"]+x["test_type"], min_pass_dict.get('default', 0)), axis=1
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
