@@ -21,7 +21,7 @@ class Harness:
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str, ModelFactory],
+            model: Union[str],
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None

@@ -29,7 +29,7 @@ class ModelFactory:
     A factory class for instantiating models.
     """
     SUPPORTED_TASKS = ["ner", "text-classification"]
-    SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'sparknlp_jsl', 'nlu', 'transformers', 'spacy']
+    SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy']
 
     def __init__(
             self,
@@ -52,11 +52,11 @@ class ModelFactory:
             ValueError(f"Module '{module_name}' is not supported. "
                        f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}")
 
-        if module_name in ['pyspark', 'sparknlp', 'sparknlp_jsl', 'nlu']:
-            model_handler = importlib.import_module('nlptest.nlptest.modelhandler.jsl_modelhandler')
+        if module_name in ['pyspark', 'sparknlp', 'nlu']:
+            model_handler = importlib.import_module(f'nlptest.modelhandler.jsl_modelhandler')
 
         else:
-            model_handler = importlib.import_module(f'nlptest.nlptest.modelhandler.{module_name}_modelhandler')
+            model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 
         if task is 'ner':
             self.model_class = model_handler.PretrainedModelForNER(model)
