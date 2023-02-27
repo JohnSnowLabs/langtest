@@ -153,7 +153,7 @@ class Harness:
         #     }
 
         # df_report = pd.DataFrame.from_dict(report, orient="index")
-        df_report = df_report.reset_index(names="test_type")
+        df_report = df_report.reset_index()
 
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
