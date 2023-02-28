@@ -77,17 +77,14 @@ class PerturbationFactory:
 
         if 'replace_to_male_pronouns' in self._tests:
           self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_male_pronouns']['chosen_replacing_pronouns'] = [item for sublist in list(male_pronouns.values()) for item in sublist]
           self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
         
         if 'replace_to_female_pronouns' in self._tests:
           self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_female_pronouns']['chosen_replacing_pronouns'] = [item for sublist in list(female_pronouns.values()) for item in sublist]
           self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self._tests:
           self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_neutral_pronouns']['chosen_replacing_pronouns'] = [item for sublist in list(neutral_pronouns.values()) for item in sublist]
           self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
 
 
@@ -338,7 +335,7 @@ def get_cohyponyms_wordnet(word: str) -> str:
 
 class GenderPronounBias(BasePerturbation):
     @staticmethod
-    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], chosen_replacing_pronouns: List[str], pronoun_type:str) -> List[Sample]:
+    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type:str) -> List[Sample]:
         """Replace pronouns to check the gender bias
 
         Args:
