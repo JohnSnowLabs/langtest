@@ -76,16 +76,20 @@ class PerturbationFactory:
             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
         if 'replace_to_male_pronouns' in self._tests:
-          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = female_pronouns + neutral_pronouns
-          self._tests['replace_to_male_pronouns']['chosen_replacing_pronouns'] = male_pronouns 
+          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
+          self._tests['replace_to_male_pronouns']['chosen_replacing_pronouns'] = [item for sublist in list(male_pronouns.values()) for item in sublist]
+          self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
         
         if 'replace_to_female_pronouns' in self._tests:
-          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = male_pronouns + neutral_pronouns
-          self._tests['replace_to_female_pronouns']['chosen_replacing_pronouns'] = female_pronouns
+          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
+          self._tests['replace_to_female_pronouns']['chosen_replacing_pronouns'] = [item for sublist in list(female_pronouns.values()) for item in sublist]
+          self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self._tests:
-          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = male_pronouns + female_pronouns
-          self._tests['replace_to_neutral_pronouns']['chosen_replacing_pronouns'] = neutral_pronouns
+          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
+          self._tests['replace_to_neutral_pronouns']['chosen_replacing_pronouns'] = [item for sublist in list(neutral_pronouns.values()) for item in sublist]
+          self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
+
 
         self._data_handler = data_handler
 
