@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import nltk
 
-from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology)
+from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -74,6 +74,18 @@ class PerturbationFactory:
                    'label': [[i.entity for i in sample.expected_results.predictions] 
                          for sample in data_handler]})
             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
+
+        if 'replace_to_male_pronouns' in self._tests:
+          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = female_pronouns + neutral_pronouns
+          self._tests['replace_to_male_pronouns']['chosen_replacing_pronouns'] = male_pronouns 
+        
+        if 'replace_to_female_pronouns' in self._tests:
+          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = male_pronouns + neutral_pronouns
+          self._tests['replace_to_female_pronouns']['chosen_replacing_pronouns'] = female_pronouns
+
+        if 'replace_to_neutral_pronouns' in self._tests:
+          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = male_pronouns + female_pronouns
+          self._tests['replace_to_neutral_pronouns']['chosen_replacing_pronouns'] = neutral_pronouns
 
         self._data_handler = data_handler
 
