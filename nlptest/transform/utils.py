@@ -608,8 +608,8 @@ CONTRACTION_MAP = {
 }
 
 # Dicts of respective gender pronouns
-female_pronouns = {'subjective_pronouns':['she'],'objective_pronouns':['her'],'reflexive_pronouns':['herself'],'possessive_pronouns':['her']}
-male_pronouns = {'subjective_pronouns':['he'],'objective_pronouns':['him'],'reflexive_pronouns':['himself'],'possessive_pronouns':['him']}
+female_pronouns = {'subjective_pronouns':['she'],'objective_pronouns':['her'],'reflexive_pronouns':['herself'],'possessive_pronouns':['her','hers']}
+male_pronouns = {'subjective_pronouns':['he'],'objective_pronouns':['him'],'reflexive_pronouns':['himself'],'possessive_pronouns':['his']}
 neutral_pronouns = {'subjective_pronouns':['per','they','ve','xe','ze','zie','ey','tey'],'objective_pronouns':['them','ver','xem','hir','em','ter'],'reflexive_pronouns':['themself','themselves','eirself','perself','verself','hirself','xemself','emself','terself'], 'possessive_pronouns':['their','theirs','pers','vis','xyr','hirs','xyrs','eir','eirs','tem','ters']}
 
 
