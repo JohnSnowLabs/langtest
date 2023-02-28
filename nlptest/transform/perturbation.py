@@ -338,13 +338,14 @@ def get_cohyponyms_wordnet(word: str) -> str:
 
 class GenderPronounBias(BasePerturbation):
     @staticmethod
-    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], chosen_replacing_pronouns: List[str] ) -> List[Sample]:
+    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], chosen_replacing_pronouns: List[str], pronoun_type:str) -> List[Sample]:
         """Replace pronouns to check the gender bias
 
         Args:
             sample_list: List of sentences to apply perturbation.
             pronouns_to_substitute: list of pronouns that need to be substituted.
             chosen_replacing_pronouns: List of pronouns to replace with.
+            pronoun_type: replacing pronoun type ('male', 'female' or 'neutral')
 
         Returns:
             List of sentences with replaced pronouns
@@ -356,10 +357,25 @@ class GenderPronounBias(BasePerturbation):
             tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in pronouns_to_substitute]
           
             if len(tokens_to_substitute)!=0:
-              replace_token = random.choice(tokens_to_substitute)
-              chosen_token= random.choice(chosen_replacing_pronouns) 
-              replaced_string = sample.original.replace(replace_token, chosen_token)
-              sample.test_case = replaced_string
+                replace_token = random.choice(tokens_to_substitute)
+                if pronoun_type =="female":
+                  combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
+                  chosen_dict = female_pronouns
+                elif pronoun_type =="male":
+                  combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}  
+                  chosen_dict = male_pronouns      
+                elif pronoun_type =="neutral":
+                  combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
+                  chosen_dict = neutral_pronouns  
+
+                for key, value in combined_dict.items() :
+                      if replace_token in value:
+                        type_of_pronoun = str(key)
+                        break
+
+                chosen_token= random.choice(chosen_dict[type_of_pronoun])
+                replaced_string = sample.original.replace(replace_token, chosen_token)
+                sample.test_case = replaced_string
             else:
               sample.test_case = sample.original
       
