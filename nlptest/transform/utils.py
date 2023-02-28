@@ -31,7 +31,10 @@ PERTURB_CLASS_MAP = {
     "add_context": 'AddContext',
     "add_contractions": 'AddContraction',
     "swap_entities": 'SwapEntities',
-    "swap_cohyponyms": 'SwapCohyponyms'
+    "swap_cohyponyms": 'SwapCohyponyms',
+    "replace_to_male_pronouns":"GenderPronounBias",
+    "replace_to_female_pronouns":"GenderPronounBias",
+    "replace_to_neutral_pronouns":"GenderPronounBias"
 }
 
 # @formatter:off
