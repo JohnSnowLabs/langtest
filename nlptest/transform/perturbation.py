@@ -332,6 +332,35 @@ def get_cohyponyms_wordnet(word: str) -> str:
                     name = str(hypos[ind].lemmas()[0])
             return name.replace("_", " ").split(".")[0][7:]
 
+class GenderPronounBias(BasePerturbation):
+    @staticmethod
+    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], chosen_replacing_pronouns: List[str] ) -> List[Sample]:
+        """Replace pronouns to check the gender bias
+
+        Args:
+            sample_list: List of sentences to apply perturbation.
+            pronouns_to_substitute: list of pronouns that need to be substituted.
+            chosen_replacing_pronouns: List of pronouns to replace with.
+
+        Returns:
+            List of sentences with replaced pronouns
+        """
+
+
+        for sample in sample_list:
+          
+            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in pronouns_to_substitute]
+          
+            if len(tokens_to_substitute)!=0:
+              replace_token = random.choice(tokens_to_substitute)
+              chosen_token= random.choice(chosen_replacing_pronouns) 
+              replaced_string = sample.original.replace(replace_token, chosen_token)
+              sample.test_case = replaced_string
+            else:
+              sample.test_case = sample.original
+      
+        return sample_list
+
 
 class SwapCohyponyms(BasePerturbation):
 
