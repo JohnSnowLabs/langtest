@@ -1,7 +1,7 @@
-from nlptest.datahandler.datasource import DataFactory
-from nlptest.modelhandler.modelhandler import ModelFactory
-from nlptest.nlptest import Harness
-from nlptest.transform.perturbation import PerturbationFactory
+from .datahandler.datasource import DataFactory
+from .modelhandler.modelhandler import ModelFactory
+from .nlptest import Harness
+from .transform.perturbation import PerturbationFactory
 
 
 """
