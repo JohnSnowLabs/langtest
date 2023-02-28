@@ -341,8 +341,7 @@ class GenderPronounBias(BasePerturbation):
         Args:
             sample_list: List of sentences to apply perturbation.
             pronouns_to_substitute: list of pronouns that need to be substituted.
-            chosen_replacing_pronouns: List of pronouns to replace with.
-            pronoun_type: replacing pronoun type ('male', 'female' or 'neutral')
+            pronoun_type: replacing pronoun type string ('male', 'female' or 'neutral')
 
         Returns:
             List of sentences with replaced pronouns
