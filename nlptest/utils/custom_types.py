@@ -70,7 +70,10 @@ class NERPrediction(BaseModel):
                    self.span.end == other.span.end
         return False
 
-    def __repr__(self):
+    def __str__(self) -> str:
+        return self.entity
+
+    def __repr__(self) -> str:
         """"""
         return f"<NERPrediction(entity='{self.entity}', span={self.span})>"
 
@@ -96,6 +99,12 @@ class NEROutput(BaseModel):
             if pred.span == span:
                 return pred
         return None
+
+    def __repr__(self) -> str:
+        return self.predictions.__repr__()
+    
+    def __str__(self) -> str:
+        return [str(x) for x in self.predictions].__repr__()
 
     def __eq__(self, other: "NEROutput"):
         """"""
@@ -161,6 +170,18 @@ class Sample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         self._realigned_spans = None
+    
+    def to_dict(self):
+        """Returns the dict version of sample."""
+        res = {
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case': self.test_case,
+            'expected_results': self.expected_results.predictions,
+            'actual_results': self.actual_results.predictions,
+            'iss_pass': self.is_pass(),
+        }
+        return res
 
     @validator("transformations")
     def sort_transformations(cls, v):

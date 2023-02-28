@@ -61,6 +61,7 @@ class Harness:
 
         self.load_testcases = None
         self.generated_results = None
+        self.accuracy_results = None
 
     def configure(self, config: Union[str, dict]):
         """
@@ -171,6 +172,9 @@ class Harness:
 
         return self.report_df
     
+    def detail_report(self) -> pd.DataFrame:
+        return pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+
     def accuracy_report(self) -> pd.DataFrame:
         """
         Generate a report of the accuracy results.
@@ -190,6 +194,7 @@ class Harness:
         return acc_report
 
     def augment(self, data_path, save_path):
+        
         aug_data = AugmentRobustness.fix(
             data_path,
             self.report_df,
