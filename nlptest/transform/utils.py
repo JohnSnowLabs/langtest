@@ -607,6 +607,12 @@ CONTRACTION_MAP = {
     " you'd ", ' you will ': " you'll ", ' you are ': " you're "
 }
 
+# Lists of respective gender pronouns
+male_pronouns = ['he', 'him', 'his', 'himself']
+female_pronouns = ['she', 'her', 'hers', 'herself']
+neutral_pronouns = ['they', 'them', 'their', 'theirs', 'themself', 'themselves', 'ze', 'hir', 'xe', 'per', 'thon', 've', 'ey', 'sie', 'zie', 'sie', 'ou', 'yo', 'ne', 'en', 'hu', 'peh', 'xe', 'ze', 'zhe']
+
+
 
 def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
     """Iterate over the DataFrame to create terminology from the predictions. IOB format converted to the IO.
