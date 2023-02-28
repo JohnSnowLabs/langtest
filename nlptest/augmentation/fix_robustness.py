@@ -30,7 +30,8 @@ class AugmentRobustness(BaseAugmentaion):
         regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])"
     ):
         data = DataFactory(data_path).load()
-        data['pos_tag'] = data['label'].apply(lambda x: ["NN NN"] * len(x))
+        config = {list(i.keys())[0] if type(i) == dict else i: i  for i in config['tests_types']}
+        # data['pos_tag'] = data['label'].apply(lambda x: ["NN NN"] * len(x))
         # entites = set(j.split("-")[-1] for i in data['label'] for j in i)
         suggest = AugmentRobustness.suggestions(h_report)
         
@@ -39,18 +40,20 @@ class AugmentRobustness(BaseAugmentaion):
 
         fianl_aug_data = []
         for proportion in suggest.iterrows():
+            test_type = [config.get(proportion[-1]['test_type'])]
             if optimized_inplace:
                 continue
             else:
-                sample_length = len(data) * proportion['proportion_increase']
+                sample_length = len(data) * proportion[-1]['proportion_increase']
                 sample_data = random.choices(data, k=int(sample_length))
-                aug_data = PerturbationFactory(sample_data, [proportion['test_type']]).transform()
+                aug_data = PerturbationFactory(sample_data, test_type).transform()
                 fianl_aug_data.extend(aug_data)
    
+        # data.extend(fianl_aug_data)
         AugmentRobustness.save(fianl_aug_data, save_path)
         return fianl_aug_data
 
-    def suggestions(self, report):
+    def suggestions(report):
         
         def proportion_values(x):
             if x >= 1:
@@ -68,8 +71,10 @@ class AugmentRobustness(BaseAugmentaion):
         report['proportion_increase'] = report['ratio'].apply(
                                             lambda x: proportion_values(x)
                                         )
-        return report[['test_type', 'ratio', 'proportion_increase']]
+        return report[~report['proportion_increase'].isna()][['test_type', 'ratio', 'proportion_increase']]
 
-    def save(self, data, save_path):
+    def save(data, save_path):
         with open(save_path+"augmenated_train.conll", "w") as fw:
-            fw.write(data)
+            words = [i.test_case.split() if i.test_case else "" for i in data ]
+            
+            fw.write("\n\n".join('\n'.join(ew) for ew in words))
