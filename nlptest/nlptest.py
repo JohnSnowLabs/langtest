@@ -58,6 +58,7 @@ class Harness:
 
         self.load_testcases = None
         self.generated_results = None
+        self.accuracy_results = None
 
     def configure(self, config: Union[str, dict]):
         """
@@ -152,6 +153,9 @@ class Harness:
 
         return df_report.fillna("-")
     
+    def detail_report(self) -> pd.DataFrame:
+        return pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+
     def accuracy_report(self) -> pd.DataFrame:
         """
         Generate a report of the accuracy results.
@@ -169,7 +173,6 @@ class Harness:
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
-
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
