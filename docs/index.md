@@ -1,6 +1,6 @@
 ---
 layout: landing
-title: 'NLPTest: <span>A library for testing NLP models</span>'
+title: 'NLP Test <span>A library for testing NLP models</span>'
 excerpt:  <br> Evaluate the Bias and Robustness of NER and Text Classification Models
 permalink: /
 header: true
@@ -30,11 +30,11 @@ data:
        - title: High Customization
          image: 
             src: /assets/images/elegant_python.svg
-         excerpt: Underlying code will remain open source forever  
+         excerpt: Highly configurable testing and fixing strategies 
        - title: 100% Open Source
          image: 
             src: /assets/images/open_source.svg
-         excerpt: Including pre-trained models & pipelines
+         excerpt: Underlying code will remain open source forever  
 
    - title: 'Get Started Now'
      install: yes
