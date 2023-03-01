@@ -1,5 +1,5 @@
 import os
-from typing import List, Union
+from typing import Union
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
@@ -141,7 +141,7 @@ class PretrainedModelForNER(_ModelHandler):
 
         return loaded_model
 
-    def predict(self, text: str) -> NEROutput:
+    def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
         Args:
             text (str): Input text to perform NER on.
@@ -241,10 +241,12 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
         return loaded_model
 
-    def predict(self, text: str, return_all_scores: bool = False) -> SequenceClassificationOutput:
+    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
         Args:
             text (str): Input text to perform NER on.
+            return_all_scores (bool): Option to return score for all labels.
+
         Returns:
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
@@ -259,7 +261,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
             labels=prediction
         )
 
-    def __call__(self, text: str) -> List[NEROutput]:
+    def __call__(self, text: str) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 

@@ -23,7 +23,7 @@ class PretrainedModelForNER(_ModelHandler):
         self.model = model
 
     def load_model(self, path):
-        """Load the SpaCy pipeline into the `model` attribute."""
+        """Load and return SpaCy pipeline"""
         return spacy.load(path)
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
@@ -37,7 +37,7 @@ class PretrainedModelForNER(_ModelHandler):
             group_entities (bool): Option to group entities.
 
         Returns:
-            List[NEROutput]: A list of named entities recognized in the input text.
+            NEROutput: A list of named entities recognized in the input text.
         """
         doc = self.model(text)
 
@@ -61,13 +61,11 @@ class PretrainedModelForNER(_ModelHandler):
 class PretrainedModelForTextClassification(_ModelHandler):
     """
     Args:
-        model_path (str):
-            path to model to use
+        model: Pretrained SpaCy pipeline.
     """
-
     def __init__(
             self,
-            model: str
+            model
     ):
         annotation = getattr(model, '__call__').__annotations__
         assert (annotation.get('return') and annotation['return'] is Doc), \
@@ -78,15 +76,23 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     @property
     def labels(self):
-        """"""
+        """Return classification labels of SpaCy model."""
         return self.model.get_pipe("textcat").labels
 
     def load_model(self, path):
-        """"""
+        """Load and return SpaCy pipeline"""
         return spacy.load(path)
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
-        """"""
+        """Perform text classication predictions on the input text.
+
+        Args:
+            text (str): Input text to classify.
+            return_all_scores (bool): Option to return score for all labels.
+
+        Returns:
+            SequenceClassificationOutput: Text classification predictions from the input text.
+        """
         output = self.model(text).cats
         if not return_all_scores:
             output = max(output, key=output.get)
@@ -97,5 +103,5 @@ class PretrainedModelForTextClassification(_ModelHandler):
         )
 
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
-        """"""
+        """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)

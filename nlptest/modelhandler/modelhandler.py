@@ -42,6 +42,7 @@ class ModelFactory:
 
         Raises:
             ValueError: If the task specified is not supported.
+            ValueError: If the given model is not supported.
         """
         assert task in self.SUPPORTED_TASKS, \
             ValueError(f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}")
@@ -104,8 +105,7 @@ class ModelFactory:
             text (str): Input text to perform predictions on.
 
         Returns:
-            List[NEROutput]:
-                List of NEROutput objects representing the entities and their corresponding labels.
+            NEROutput or SequenceClassificationOutput
         """
         return self.model_class(text=text, **kwargs)
 

@@ -39,7 +39,7 @@ class PretrainedModelForNER(_ModelHandler):
             group_entities (bool): Option to group entities.
 
         Returns:
-            List[NEROutput]: A list of named entities recognized in the input text.
+            NEROutput: A list of named entities recognized in the input text.
         """
         prediction = self.model(text, **kwargs)
 
@@ -58,29 +58,40 @@ class PretrainedModelForNER(_ModelHandler):
 
 class PretrainedModelForTextClassification(_ModelHandler):
     """
-    Args:
-        model_path (str):
-            path to model to use
+    Attributes:
+        model (transformers.pipeline.Pipeline):
+            Loaded Text Classification pipeline for predictions.
     """
 
     def __init__(
             self,
-            model_path: str
+            model,
     ):
-        self.model_path = model_path
-        self.model = None
+        assert isinstance(model, Pipeline), \
+            ValueError(f"Invalid transformers pipeline! "
+                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
+        self.model = model
 
     @property
     def labels(self):
-        """"""
+        """Return classification labels of pipeline model."""
         return list(self.model.model.config.id2label.values())
 
     def load_model(self, path) -> None:
-        """"""
+        """Load and return text classification transformers pipeline"""
         self.model = pipeline(model=path, task="text-classification")
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
-        """"""
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform NER on.
+            return_all_scores (bool): Option to group entities.
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            SequenceClassificationOutput: text classification from the input text.
+        """
         if return_all_scores:
             kwargs["top_k"] = len(self.labels)
 
@@ -91,6 +102,6 @@ class PretrainedModelForTextClassification(_ModelHandler):
         )
 
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
-        """"""
+        """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
