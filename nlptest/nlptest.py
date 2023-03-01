@@ -142,16 +142,16 @@ class Harness:
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         
-        df_accuracy = self.accuracy_report().iloc[:2].drop("Test_Case", axis=1)
-        df_accuracy = df_accuracy.rename({"actual_result":"pass_rate", "expected_result":"minimum_pass_rate", "Test_type":"test_type"}, axis=1)
+        df_accuracy = self.accuracy_report().iloc[:2].drop("test_case", axis=1)
+        df_accuracy = df_accuracy.rename({"actual_result":"pass_rate", "expected_result":"minimum_pass_rate"}, axis=1)
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
 
+        df_final = pd.concat([df_report, df_accuracy])
 
-        df_report = df_report.merge(df_accuracy, how="outer")
 
-        return df_report.fillna("-")
+        return df_final.fillna("-")
     
     def detail_report(self) -> pd.DataFrame:
         return pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
@@ -169,7 +169,7 @@ class Harness:
             min_pass_dict = self._config['min_pass_rate']
         acc_report = self.accuracy_results.copy()
         acc_report["expected_result"] = acc_report.apply(
-            lambda x: min_pass_dict.get(x["Test_Case"]+x["Test_type"], min_pass_dict.get('default', 0)), axis=1
+            lambda x: min_pass_dict.get(x["test_case"]+x["test_type"], min_pass_dict.get('default', 0)), axis=1
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report

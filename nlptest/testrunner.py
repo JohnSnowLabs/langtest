@@ -109,11 +109,11 @@ class AccuracyTestRunner(TestRunner):
         macro_f1_score = f1_score(y_true, y_pred, average="macro")
 
         df_melted = pd.melt(df_metrics.reset_index(), id_vars=['index'], var_name='label', value_name='test value')
-        df_melted.columns = ['Test_type', 'Test_Case', 'actual_result']
+        df_melted.columns = ['test_type', 'test_case', 'actual_result']
 
         other_metrics = {
-            "Test_Case": ["-", "-"],
-            "Test_type": ["micro-f1", "macro-f1"],
+            "test_case": ["-", "-"],
+            "test_type": ["micro-f1", "macro-f1"],
             "actual_result": [micro_f1_score, macro_f1_score],
         }
         df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted])
