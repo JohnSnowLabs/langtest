@@ -164,6 +164,15 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
                 ]
             )
 
+    def predict_raw(self, text: str) -> List[str]:
+        """Perform predictions with SparkNLP LightPipeline on the input text.
+        Args:
+            text (str): Input text to perform NER on.
+        Returns:
+            List[str]: Predicted labels.
+        """
+        return self.model.annotate(text)[self.output_col]
+
     def __call__(self, text: str) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)

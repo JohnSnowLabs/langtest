@@ -82,10 +82,12 @@ class AccuracyTestRunner(TestRunner):
         """
         y_true = pd.Series(self._data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
         X_test = pd.Series(self._data).apply(lambda x: x.original)
-        y_pred = X_test.apply(lambda x: self._model_handler.predict(x, predict_str=True))
+        y_pred = X_test.apply(self._model_handler.predict_raw)
 
         valid_indices = y_true.apply(len) == y_pred.apply(len)
-
+        length_mismatch = valid_indices.count()-valid_indices.sum()
+        if length_mismatch > 0:
+            print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.")
         y_true = y_true[valid_indices]
         y_pred = y_pred[valid_indices]
 
