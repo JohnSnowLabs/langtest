@@ -1,4 +1,4 @@
-from transformers import pipeline
+from transformers import pipeline, Pipeline
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
@@ -18,15 +18,15 @@ class PretrainedModelForNER(_ModelHandler):
             model (transformers.pipeline.Pipeline):
                 Loaded NER pipeline for predictions.
         """
+
+        assert isinstance(model, Pipeline), \
+            ValueError(f"Invalid transformers pipeline! "
+                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
         self.model = model
 
-    @classmethod
-    def load_model(cls, path) -> 'NERTransformersPretrainedModel':
-        """Load the NER model into the `model` attribute.
-        """
-        return cls(
-            model=pipeline(model=path, task="ner", ignore_labels=[])
-        )
+    def load_model(self, path) -> 'Pipeline':
+        """Load the NER model into the `model` attribute."""
+        return pipeline(model=path, task="ner", ignore_labels=[])
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -40,9 +40,6 @@ class PretrainedModelForNER(_ModelHandler):
 
         Returns:
             List[NEROutput]: A list of named entities recognized in the input text.
-
-        Raises:
-            OSError: If the `model` attribute is None, meaning the model has not been loaded yet.
         """
         prediction = self.model(text, **kwargs)
 
@@ -78,9 +75,9 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """"""
         return list(self.model.model.config.id2label.values())
 
-    def load_model(self) -> None:
+    def load_model(self, path) -> None:
         """"""
-        self.model = pipeline(model=self.model_path, task="text-classification")
+        self.model = pipeline(model=path, task="text-classification")
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """"""

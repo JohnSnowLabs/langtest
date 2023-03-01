@@ -122,8 +122,7 @@ class PretrainedModelForNER(_ModelHandler):
         #   in order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
 
-    @classmethod
-    def load_model(cls, path) -> 'NERJohnSnowLabsPretrainedModel':
+    def load_model(self, path) -> 'NLUPipeline':
         """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
@@ -140,9 +139,7 @@ class PretrainedModelForNER(_ModelHandler):
                 raise ValueError(f'johnsnowlabs is not installed. '
                                  f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
 
-        return cls(
-            model=loaded_model
-        )
+        return loaded_model
 
     def predict(self, text: str) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
@@ -191,7 +188,6 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """
 
         if model.__class__.__name__ == 'PipelineModel':
-            print(model.__class__.__name__)
             model = model
 
         elif model.__class__.__name__ == 'LightPipeline':
@@ -226,8 +222,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         #   in order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
 
-    @classmethod
-    def load_model(cls, path) -> 'TextClassificationJohnSnowLabsPretrainedModel':
+    def load_model(self, path) -> 'NLUPipeline':
         """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
@@ -244,9 +239,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
                 raise ValueError(f'johnsnowlabs is not installed. '
                                  f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
 
-        return cls(
-            model=loaded_model
-        )
+        return loaded_model
 
     def predict(self, text: str, return_all_scores: bool = False) -> SequenceClassificationOutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.

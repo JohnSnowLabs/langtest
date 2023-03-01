@@ -1,4 +1,6 @@
 import spacy
+from spacy.tokens import Doc
+
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
@@ -6,24 +8,37 @@ from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificatio
 class PretrainedModelForNER(_ModelHandler):
     """
     Args:
-        model: Pretrained spacy model.
+        model: Pretrained SpaCy pipeline.
     """
 
     def __init__(
             self,
             model
     ):
+        annotation = getattr(model, '__call__').__annotations__
+        assert (annotation.get('return') and annotation['return'] is Doc), \
+            ValueError(f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
+                       f"but pipeline returns: {annotation.get('return', None)}")
+
         self.model = model
 
-    @classmethod
-    def load_model(cls, path) -> 'NERSpaCyPretrainedModel':
-        """"""
-        return cls(
-            model=spacy.load(path)
-        )
+    def load_model(self, path):
+        """Load the SpaCy pipeline into the `model` attribute."""
+        return spacy.load(path)
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
-        """"""
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform NER on.
+            kwargs: Additional keyword arguments.
+
+        Keyword Args:
+            group_entities (bool): Option to group entities.
+
+        Returns:
+            List[NEROutput]: A list of named entities recognized in the input text.
+        """
         doc = self.model(text)
 
         if kwargs.get("group_entities"):
@@ -52,19 +67,23 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     def __init__(
             self,
-            model_path: str
+            model: str
     ):
-        self.model_path = model_path
-        self.model = None
+        annotation = getattr(model, '__call__').__annotations__
+        assert (annotation.get('return') and annotation['return'] is Doc), \
+            ValueError(f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
+                       f"but pipeline returns: {annotation.get('return', None)}")
+
+        self.model = model
 
     @property
     def labels(self):
         """"""
         return self.model.get_pipe("textcat").labels
 
-    def load_model(self) -> None:
+    def load_model(self, path):
         """"""
-        self.model = spacy.load(self.model_path)
+        return spacy.load(path)
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """"""

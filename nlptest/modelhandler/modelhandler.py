@@ -9,8 +9,6 @@ class _ModelHandler(ABC):
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
-
-    @classmethod
     @abstractmethod
     def load_model(cls, path):
         """Load the model.
@@ -30,6 +28,7 @@ class ModelFactory:
     """
     SUPPORTED_TASKS = ["ner", "text-classification"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy']
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'transformers']
 
     def __init__(
             self,
@@ -54,7 +53,6 @@ class ModelFactory:
 
         if module_name in ['pyspark', 'sparknlp', 'nlu']:
             model_handler = importlib.import_module(f'nlptest.modelhandler.jsl_modelhandler')
-
         else:
             model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 
@@ -62,7 +60,6 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForNER(model)
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
-
 
     @classmethod
     def load_model(
@@ -76,15 +73,25 @@ class ModelFactory:
         Args:
             path (str): path to model to use
             task (str): task to perform
-            hub (str): model hub to load custom model from the path
+            hub (str): model hub to load custom model from the path, either to hub or local disk.
         """
 
-        model_class_name = task + hub
-        class_map = {
-            cls.__name__.replace("PretrainedModel", "").lower(): cls for cls in _ModelHandler.__subclasses__()
-        }
+        assert task in cls.SUPPORTED_TASKS, \
+            ValueError(f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}")
 
-        model_class = class_map[model_class_name].load_model(path)
+        assert hub in cls.SUPPORTED_HUBS, \
+            ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
+
+        if hub is 'johnsnowlabs':
+            modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
+        else:
+            modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
+
+        if task is 'ner':
+            model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
+        else:
+            model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(path)
+
         return cls(
             model_class,
             task
