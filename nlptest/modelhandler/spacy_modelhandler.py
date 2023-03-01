@@ -63,6 +63,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
     Args:
         model: Pretrained SpaCy pipeline.
     """
+
     def __init__(
             self,
             model

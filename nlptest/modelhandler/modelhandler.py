@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
 import importlib
+from abc import ABC, abstractmethod
 from typing import List, Union
+
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 
@@ -9,6 +10,7 @@ class _ModelHandler(ABC):
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
+
     @abstractmethod
     def load_model(cls, path):
         """Load the model.
@@ -64,10 +66,10 @@ class ModelFactory:
 
     @classmethod
     def load_model(
-        cls,
-        task: str,
-        hub: str,
-        path: str
+            cls,
+            task: str,
+            hub: str,
+            path: str
     ) -> 'ModelFactory':
         """Load the model.
 

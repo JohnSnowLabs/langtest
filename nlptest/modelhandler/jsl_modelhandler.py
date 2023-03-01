@@ -150,16 +150,16 @@ class PretrainedModelForNER(_ModelHandler):
         """
         prediction = self.model.fullAnnotate(text)[0][self.output_col]
         return NEROutput(
-                predictions=[
-                    NERPrediction.from_span(
-                        entity=ent.result,
-                        word=ent.metadata['word'],
-                        start=ent.begin,
-                        end=ent.end,
-                        score=ent.metadata[ent.result]
-                    ) for ent in prediction
-                ]
-            )
+            predictions=[
+                NERPrediction.from_span(
+                    entity=ent.result,
+                    word=ent.metadata['word'],
+                    start=ent.begin,
+                    end=ent.end,
+                    score=ent.metadata[ent.result]
+                ) for ent in prediction
+            ]
+        )
 
     def __call__(self, text: str) -> NEROutput:
         """Alias of the 'predict' method"""

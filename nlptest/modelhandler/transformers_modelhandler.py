@@ -1,4 +1,5 @@
 from transformers import pipeline, Pipeline
+
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
@@ -104,4 +105,3 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
-
