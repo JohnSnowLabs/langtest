@@ -179,7 +179,7 @@ class Sample(BaseModel):
             'test_case': self.test_case,
             'expected_results': self.expected_results.predictions,
             'actual_results': self.actual_results.predictions,
-            'iss_pass': self.is_pass(),
+            'is_pass': self.is_pass(),
         }
         return res
 
