@@ -154,7 +154,10 @@ class Harness:
         return df_final.fillna("-")
     
     def detail_report(self) -> pd.DataFrame:
-        return pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+        accuracy_df = self.accuracy_report()
+
+        return pd.concat([generated_results_df,accuracy_df]).fillna("-")
 
     def accuracy_report(self) -> pd.DataFrame:
         """
