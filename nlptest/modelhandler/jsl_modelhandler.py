@@ -158,7 +158,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
                         entity=ent.result,
                         word=ent.metadata['word'],
                         start=ent.begin,
-                        end=ent.pred.end,
+                        end=ent.end,
                         score=ent.metadata[ent.result]
                     ) for ent in prediction
                 ]
