@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List
 
 import spacy
 from transformers import pipeline
@@ -78,6 +78,9 @@ class ModelFactory:
         """
         return self.model_class(text=text, **kwargs)
 
+    def predict_raw(self, text) -> List[str]:
+        return self.model_class.predict_raw(text)
+
     def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
         """Alias of the 'predict' method"""
         return self.model_class(text=text, **kwargs)
@@ -107,21 +110,21 @@ class NERTransformersPretrainedModel(_ModelHandler):
     def load_model(self) -> None:
         """Load the NER model into the `model` attribute.
         """
-        self.model = pipeline(model=self.model_path, task="ner", ignore_labels=[], aggregation_strategy="max")
+        self.model = pipeline(model=self.model_path, task="ner", ignore_labels=["O"], aggregation_strategy="max")
+        self._raw_model = pipeline(model=self.model_path, task="ner", ignore_labels=[])
 
-    def predict(self, text: str, predict_str: bool = False, *args, **kwargs) -> Union[NEROutput, List[str]]:
+    def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
         Args:
             text (str): Input text to perform NER on.
-            predict_str (bool): Predict string labels instead of NERPrediction.
             kwargs: Additional keyword arguments.
 
         Keyword Args:
             group_entities (bool): Option to group entities.
 
         Returns:
-            NEROutput | List[str]: The list of named entities recognized in the input text.
+            List[NEROutput]: A list of named entities recognized in the input text.
 
         Raises:
             OSError: If the `model` attribute is None, meaning the model has not been loaded yet.
@@ -132,10 +135,6 @@ class NERTransformersPretrainedModel(_ModelHandler):
         prediction = self.model(text, **kwargs)
 
         # prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
-
-        if predict_str:
-            return [pred.get('entity_group', pred.get('entity', None)) for pred in prediction]
-
         return NEROutput(predictions=[NERPrediction.from_span(
             entity=pred.get('entity_group', pred.get('entity', None)),
             word=pred['word'],
@@ -143,6 +142,18 @@ class NERTransformersPretrainedModel(_ModelHandler):
             end=pred['end']
         ) for pred in prediction])
 
+    def predict_raw(self, text: str) -> List[str]:
+        """
+        Predict a list of labels.
+
+        Args:
+            text (str): Input text to perform NER on.
+
+        Returns:
+            List[str]: A list of named entities recognized in the input text.
+        """
+        prediction = self._raw_model(text)
+        return [x["entity"] for x in prediction]
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
@@ -167,11 +178,8 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         """"""
         self.model = spacy.load(self.model_path)
 
-    def predict(self, text: str, predict_str: bool = False, *args, **kwargs) -> NEROutput:
-        """
-            predict_str (bool): Predict string labels instead of NERPrediction.
-
-        """
+    def predict(self, text: str, *args, **kwargs) -> NEROutput:
+        """"""
         if self.model is None:
             raise OSError(f"The model '{self.model_path}' has not been loaded yet. Please call "
                           f"the '.load_model' method before running predictions.")
@@ -179,9 +187,6 @@ class NERSpaCyPretrainedModel(_ModelHandler):
         kwargs["group_entities"] = True
         doc = self.model(text)
 
-        if predict_str:
-            return [f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_ for token in doc]
-        
         if kwargs.get("group_entities"):
             return NEROutput(
                 predictions=[
@@ -194,9 +199,23 @@ class NERSpaCyPretrainedModel(_ModelHandler):
                 ]
             )
 
+    def predict_raw(self, text: str) -> List[str]:
+        """
+        Predict a list of labels in form of strings.
+
+        Args:
+            text (str): Input text to perform NER on.
+
+        Returns:
+            List[str]: A list of named entities recognized in the input text.
+        """
+        
+        doc = self.model(text)
+        return [f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_ for token in doc]
+
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
-        return self.predict(text=text, **kwargs)
+        return self.predict(text=text)
 
 
 class TextClassificationTransformersPretrainedModel(_ModelHandler):
