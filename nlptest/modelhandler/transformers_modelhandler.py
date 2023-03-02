@@ -78,10 +78,11 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def labels(self):
         """Return classification labels of pipeline model."""
         return list(self.model.model.config.id2label.values())
-
-    def load_model(self, path) -> None:
+    
+    @classmethod
+    def load_model(cls, path) -> None:
         """Load and return text classification transformers pipeline"""
-        self.model = pipeline(model=path, task="text-classification")
+        return pipeline(model=path, task="text-classification")
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Perform predictions on the input text.
