@@ -55,9 +55,9 @@ class ModelFactory:
                        f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}")
 
         if module_name in ['pyspark', 'sparknlp', 'nlu']:
-            model_handler = importlib.import_module(f'nlptest.nlptest.modelhandler.jsl_modelhandler')
+            model_handler = importlib.import_module(f'nlptest.modelhandler.jsl_modelhandler')
         else:
-            model_handler = importlib.import_module(f'nlptest.nlptest.modelhandler.{module_name}_modelhandler')
+            model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 
         if task is 'ner':
             self.model_class = model_handler.PretrainedModelForNER(model)
@@ -86,9 +86,9 @@ class ModelFactory:
             ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
 
         if hub is 'johnsnowlabs':
-            modelhandler_module = importlib.import_module('nlptest.nlptest.modelhandler.jsl_modelhandler')
+            modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
         else:
-            modelhandler_module = importlib.import_module(f'nlptest.nlptest.modelhandler.{hub}_modelhandler')
+            modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
 
         if task is 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
