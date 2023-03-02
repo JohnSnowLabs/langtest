@@ -1,5 +1,5 @@
 import os
-from typing import List, Union
+from typing import Union
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
@@ -68,11 +68,11 @@ if try_import_lib("sparknlp_jsl"):
     ])
 
 
-class NERJohnSnowLabsPretrainedModel(_ModelHandler):
+class PretrainedModelForNER(_ModelHandler):
 
     def __init__(
             self,
-            model: Union[NLUPipeline, PretrainedPipeline, LightPipeline, PipelineModel]
+            model: Union['NLUPipeline', 'PretrainedPipeline', 'LightPipeline', 'PipelineModel']
     ):
         """
         Attributes:
@@ -80,16 +80,16 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
                 Loaded SparkNLP LightPipeline for inference.
         """
 
-        if isinstance(model, PipelineModel):
+        if model.__class__.__name__ == 'PipelineModel':
             model = model
 
-        elif isinstance(model, LightPipeline):
+        elif model.__class__.__name__ == 'LightPipeline':
             model = model.pipeline_model
 
-        elif isinstance(model, PretrainedPipeline):
+        elif model.__class__.__name__ == 'PretrainedPipeline':
             model = model.model
 
-        elif isinstance(model, NLUPipeline):
+        elif model.__class__.__name__ == 'NLUPipeline':
             stages = [comp.model for comp in model.components]
             _pipeline = nlp.Pipeline().setStages(stages)
             tmp_df = model.spark.createDataFrame([['']]).toDF('text')
@@ -123,7 +123,7 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
         self.model = LightPipeline(model)
 
     @classmethod
-    def load_model(cls, path) -> 'NERJohnSnowLabsPretrainedModel':
+    def load_model(cls, path) -> 'NLUPipeline':
         """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
@@ -140,11 +140,9 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
                 raise ValueError(f'johnsnowlabs is not installed. '
                                  f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
 
-        return cls(
-            model=loaded_model
-        )
+        return loaded_model
 
-    def predict(self, text: str) -> NEROutput:
+    def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
         Args:
             text (str): Input text to perform NER on.
@@ -153,16 +151,16 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
         """
         prediction = self.model.fullAnnotate(text)[0][self.output_col]
         return NEROutput(
-                predictions=[
-                    NERPrediction.from_span(
-                        entity=ent.result,
-                        word=ent.metadata['word'],
-                        start=ent.begin,
-                        end=ent.pred.end,
-                        score=ent.metadata[ent.result]
-                    ) for ent in prediction
-                ]
-            )
+            predictions=[
+                NERPrediction.from_span(
+                    entity=ent.result,
+                    word=ent.metadata['word'],
+                    start=ent.begin,
+                    end=ent.end,
+                    score=ent.metadata[ent.result]
+                ) for ent in prediction
+            ]
+        )
 
     def __call__(self, text: str) -> NEROutput:
         """Alias of the 'predict' method"""
@@ -178,11 +176,11 @@ class NERJohnSnowLabsPretrainedModel(_ModelHandler):
         return False
 
 
-class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
+class PretrainedModelForTextClassification(_ModelHandler):
 
     def __init__(
             self,
-            model: Union[NLUPipeline, PretrainedPipeline, LightPipeline, PipelineModel]
+            model: Union['NLUPipeline', 'PretrainedPipeline', 'LightPipeline', 'PipelineModel']
     ):
         """
         Attributes:
@@ -190,16 +188,16 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
                 Loaded SparkNLP LightPipeline for inference.
         """
 
-        if isinstance(model, PipelineModel):
+        if model.__class__.__name__ == 'PipelineModel':
             model = model
 
-        elif isinstance(model, LightPipeline):
+        elif model.__class__.__name__ == 'LightPipeline':
             model = model.pipeline_model
 
-        elif isinstance(model, PretrainedPipeline):
+        elif model.__class__.__name__ == 'PretrainedPipeline':
             model = model.model
 
-        elif isinstance(model, NLUPipeline):
+        elif model.__class__.__name__ == 'NLUPipeline':
             stages = [comp.model for comp in model.components]
             _pipeline = nlp.Pipeline().setStages(stages)
             tmp_df = model.spark.createDataFrame([['']]).toDF('text')
@@ -225,8 +223,7 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
         #   in order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
 
-    @classmethod
-    def load_model(cls, path) -> 'TextClassificationJohnSnowLabsPretrainedModel':
+    def load_model(self, path) -> 'NLUPipeline':
         """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
@@ -243,14 +240,14 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
                 raise ValueError(f'johnsnowlabs is not installed. '
                                  f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
 
-        return cls(
-            model=loaded_model
-        )
+        return loaded_model
 
-    def predict(self, text: str, return_all_scores: bool = False) -> SequenceClassificationOutput:
+    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
         Args:
             text (str): Input text to perform NER on.
+            return_all_scores (bool): Option to return score for all labels.
+
         Returns:
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
@@ -265,7 +262,7 @@ class TextClassificationJohnSnowLabsPretrainedModel(_ModelHandler):
             labels=prediction
         )
 
-    def __call__(self, text: str) -> List[NEROutput]:
+    def __call__(self, text: str) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 

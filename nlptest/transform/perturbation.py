@@ -55,7 +55,7 @@ class PerturbationFactory:
 
         if 'swap_entities' in self._tests:
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions] 
+                   'label': [[i.entity for i in sample.expected_results.predictions]
                              for sample in data_handler]})
             self._tests['swap_entities']['terminology'] = create_terminology(df)
             self._tests['swap_entities']['labels'] = df.label.tolist()
@@ -68,10 +68,10 @@ class PerturbationFactory:
             self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self._tests:
-            nltk.download('omw-1.4') 
+            nltk.download('omw-1.4')
             nltk.download('wordnet')
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions] 
+                   'label': [[i.entity for i in sample.expected_results.predictions]
                          for sample in data_handler]})
             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
@@ -290,7 +290,7 @@ def get_cohyponyms_wordnet(word: str) -> str:
     """
 
     try:
-        from nltk.corpus import wordnet as wn 
+        from nltk.corpus import wordnet as wn
     except ImportError:
         raise ImportError("WordNet is not available!\n"
                           "Please install WordNet via pip install wordnet to use swap_cohyponyms")

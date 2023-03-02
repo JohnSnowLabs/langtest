@@ -1,4 +1,5 @@
 import pandas as pd
+from .modelhandler import ModelFactory
 
 
 class TestRunner:
@@ -8,7 +9,7 @@ class TestRunner:
     def __init__(
             self,
             load_testcases: pd.DataFrame,
-            model_handler,
+            model_handler: ModelFactory,
     ) -> None:
         """Initialize the TestRunner class.
 
@@ -18,9 +19,6 @@ class TestRunner:
         """
         self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
-
-        if self._model_handler.backend in ["transformers", "spacy"]:
-            self._model_handler.load_model()
 
     # @abc.abstractmethod
     def evaluate(self):

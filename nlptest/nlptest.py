@@ -1,6 +1,6 @@
 from collections import defaultdict
 from functools import reduce
-from typing import Any, Dict, Optional, Union
+from typing import Dict, Optional, Union
 
 import yaml
 
@@ -16,11 +16,13 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
+    SUPPORTED_HUBS = ["spacy", "transformers", "johnsnowlabs"]
 
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str, ModelFactory, Any],
+            model: Union[str],
+            hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
     ):
@@ -30,21 +32,21 @@ class Harness:
         Args:
             task (str, optional): Task for which the model is to be evaluated.
             model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
+            hub (str, optional): model hub to load from the path. Required if path is passed as 'model'.
             data (str, optional): Path to the data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
+
+        Raises:
+            ValueError: Invalid arguments.
         """
 
         super().__init__()
         self.task = task
 
-        if isinstance(model, ModelFactory):
-            assert model.task == task, \
-                "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
-            self.model = model
-        elif isinstance(model, str):
-            self.model = ModelFactory(task=task, model_path=model)
+        if isinstance(model, str):
+            self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
         else:
-            self.model = model
+            self.model = ModelFactory(task=task, model=model)
 
         if data is not None:
             if type(data) == str:
