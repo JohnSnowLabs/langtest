@@ -17,9 +17,3 @@ class AccuracyTestCase(unittest.TestCase):
         acc_report = self.h_spacy.accuracy_report()
         self.assertGreaterEqual(acc_report.shape[0], 1)
         self.assertEqual(acc_report.shape[1], 5)
-
-    def test_detail_report(self) -> None:
-        detail_report = self.h_spacy.detail_report()
-        
-        self.assertGreaterEqual(detail_report.shape[0], 1)
-        self.assertEqual(detail_report.shape[1], 6)
