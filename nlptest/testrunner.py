@@ -75,7 +75,7 @@ class AccuracyTestRunner(TestRunner):
     def evaluate(self) -> pd.DataFrame:
         """
         Evaluates the model's accuracy, precision, recall and f1-score per label and
-        macro-f1, micro-f1 and total accuracy. 
+        general macro and micro f1 scores. 
 
         Returns:
             pd.Dataframe: Dataframe with the results.
@@ -87,7 +87,7 @@ class AccuracyTestRunner(TestRunner):
         valid_indices = y_true.apply(len) == y_pred.apply(len)
         length_mismatch = valid_indices.count()-valid_indices.sum()
         if length_mismatch > 0:
-            print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.")
+            print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.\nPlease make sure dataset and model uses same tokenizer.")
         y_true = y_true[valid_indices]
         y_pred = y_pred[valid_indices]
 
