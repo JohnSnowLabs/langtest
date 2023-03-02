@@ -185,6 +185,7 @@ class Harness:
         return acc_report
 
     def load_testcases_df(self) -> pd.DataFrame:
+        """Testcases after .generate() is called"""
         return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore", axis=1)
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
