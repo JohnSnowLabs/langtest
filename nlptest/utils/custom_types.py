@@ -174,37 +174,26 @@ class Sample(BaseModel):
     def to_dict(self):
         """Returns the dict version of sample."""
         try:
-            if(self.actual_results):
-                return {
-                    'test_type': self.test_type,
-                    'original': self.original,
-                    'test_case': self.test_case,
-                    'expected_result': self.expected_results.predictions,
-                    'actual_result': self.actual_results.predictions,
-                    'pass': self.is_pass(),
-                }
-            return {
-                'test_type': self.test_type,
-                'original': self.original,
-                'test_case': self.test_case,
-                'expected_result': self.expected_results.predictions,
-            }
+            expected_result = self.expected_results.predictions
+            actual_result = self.actual_results.predictions if self.actual_results else None
         except:
-           if(self.actual_results):
-              return {
-                  'test_type': self.test_type,
-                  'original': self.original,
-                  'test_case': self.test_case,
-                  'expected_result': self.expected_results.labels,
-                  'actual_result': self.actual_results.labels,
-                  'pass': self.is_pass(),
-              }
-           return {
-              'test_type': self.test_type,
-              'original': self.original,
-              'test_case': self.test_case,
-              'expected_result': self.expected_results.labels,
-          }
+            expected_result = self.expected_results.labels
+            actual_result = self.actual_results.labels if self.actual_results else None
+
+        result = {
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case': self.test_case,
+            'expected_result': expected_result,
+        }
+
+        if actual_result is not None:
+            result.update({
+                'actual_result': actual_result,
+                'pass': self.is_pass()
+            })
+
+        return result
             
 
 
