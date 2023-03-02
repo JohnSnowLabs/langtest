@@ -153,7 +153,7 @@ class Harness:
 
         return df_final.fillna("-")
     
-    def detail_report(self) -> pd.DataFrame:
+    def generated_results_df(self) -> pd.DataFrame:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
