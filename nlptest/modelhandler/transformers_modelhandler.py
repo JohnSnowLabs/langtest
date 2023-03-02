@@ -1,4 +1,5 @@
 from transformers import pipeline, Pipeline
+from typing import List
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
@@ -53,6 +54,17 @@ class PretrainedModelForNER(_ModelHandler):
             end=pred['end']
         ) for pred in prediction])
 
+    def predict_raw(self, text: str) -> List[str]:
+        """
+        Predict a list of labels.
+        Args:
+            text (str): Input text to perform NER on.
+        Returns:
+            List[str]: A list of named entities recognized in the input text.
+        """
+        prediction = self.model(text)
+        return [x["entity"] for x in prediction]
+    
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
@@ -103,6 +115,18 @@ class PretrainedModelForTextClassification(_ModelHandler):
             text=text,
             labels=output
         )
+
+    def predict_raw(self, text: str) -> List[str]:
+        """Perform predictions on the input text.
+        
+        Args:
+            text (str): Input text to perform NER on.
+
+        
+        Returns:
+            List[str]: Predictions as a list of strings.
+        """
+        return [pred["label"] for pred in self.model(text)]
 
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
