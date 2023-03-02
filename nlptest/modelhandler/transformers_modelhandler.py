@@ -54,6 +54,17 @@ class PretrainedModelForNER(_ModelHandler):
             end=pred['end']
         ) for pred in prediction])
 
+    def predict_raw(self, text: str) -> List[str]:
+        """
+        Predict a list of labels.
+        Args:
+            text (str): Input text to perform NER on.
+        Returns:
+            List[str]: A list of named entities recognized in the input text.
+        """
+        prediction = self.model(text)
+        return [x["entity"] for x in prediction]
+    
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)

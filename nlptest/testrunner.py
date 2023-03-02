@@ -37,7 +37,7 @@ class TestRunner:
         Returns:
             DataFrame: DataFrame containing the evaluation results.
         """
-        self._model_handler.load_model()
+        # self._model_handler.load_model()
 
         robustness_runner = RobustnessTestRunner(self.load_testcases, self._model_handler, self._data)
         robustness_result = robustness_runner.evaluate()
@@ -116,6 +116,6 @@ class AccuracyTestRunner(TestRunner):
             "test_type": ["micro-f1", "macro-f1"],
             "actual_result": [micro_f1_score, macro_f1_score],
         }
-        df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted])
+        df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted], ignore_index=True)
 
         return df_melted

@@ -43,17 +43,17 @@ class PretrainedModelForNER(_ModelHandler):
         """
         doc = self.model(text)
 
-        if kwargs.get("group_entities"):
-            return NEROutput(
-                predictions=[
-                    NERPrediction.from_span(
-                        entity=ent.label_,
-                        word=ent.text,
-                        start=ent.start_char,
-                        end=ent.end_char
-                    ) for ent in doc.ents
-                ]
-            )
+        # if kwargs.get("group_entities"):
+        return NEROutput(
+            predictions=[
+                NERPrediction.from_span(
+                    entity=ent.label_,
+                    word=ent.text,
+                    start=ent.start_char,
+                    end=ent.end_char
+                ) for ent in doc.ents
+            ]
+        )
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
