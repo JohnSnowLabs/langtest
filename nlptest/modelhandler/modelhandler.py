@@ -59,7 +59,7 @@ class ModelFactory:
         else:
             model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 
-        if task is 'ner':
+        if task == 'ner':
             self.model_class = model_handler.PretrainedModelForNER(model)
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -85,12 +85,12 @@ class ModelFactory:
         assert hub in cls.SUPPORTED_HUBS, \
             ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
 
-        if hub is 'johnsnowlabs':
+        if hub == 'johnsnowlabs':
             modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
         else:
             modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
 
-        if task is 'ner':
+        if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
         else:
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(path)
