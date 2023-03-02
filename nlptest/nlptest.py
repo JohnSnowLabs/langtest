@@ -168,7 +168,7 @@ class Harness:
     def accuracy_report(self) -> pd.DataFrame:
         """
         Generate a report of the accuracy results.
-        
+
         Returns:
             pd.DataFrame: DataFrame containing the accuracy, f1, precision, recall scores.
         """
@@ -183,6 +183,9 @@ class Harness:
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
+
+    def load_testcases_df(self) -> pd.DataFrame:
+        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore", axis=1)
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:

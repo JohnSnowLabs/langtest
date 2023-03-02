@@ -173,15 +173,21 @@ class Sample(BaseModel):
     
     def to_dict(self):
         """Returns the dict version of sample."""
-        res = {
+        if(self.actual_results):
+            return {
+                'test_type': self.test_type,
+                'original': self.original,
+                'test_case': self.test_case,
+                'expected_result': self.expected_results.predictions,
+                'actual_result': self.actual_results.predictions,
+                'pass': self.is_pass(),
+            }
+        return {
             'test_type': self.test_type,
             'original': self.original,
             'test_case': self.test_case,
             'expected_result': self.expected_results.predictions,
-            'actual_result': self.actual_results.predictions,
-            'pass': self.is_pass(),
         }
-        return res
 
     @validator("transformations")
     def sort_transformations(cls, v):
