@@ -15,7 +15,7 @@ class TestRunner:
 
     def __init__(
             self,
-            load_testcases: pd.DataFrame,
+            load_testcases: List[Sample],
             model_handler: ModelFactory,
             data: List[Sample]
     ) -> None:
@@ -23,8 +23,8 @@ class TestRunner:
         Initialize the TestRunner class.
 
         Args:
-            load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
-            model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
+            load_testcases (List): List containing the testcases to be evaluated.
+            model_handler (spark, spacy, transformer): Object representing the model handler, either spaCy, SparkNLP or transformer.
         """
         self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
