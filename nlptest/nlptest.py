@@ -181,9 +181,11 @@ class Harness:
         return acc_report
 
     def augment(self, data_path, save_path):
-        
-        self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
-        self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
+        dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
+            lambda x: x.str).values.tolist()
+        if dtypes != ['<i4'] *2:
+            self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
+            self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
         aug_data = AugmentRobustness.fix(
             data_path,
             self.df_report,
