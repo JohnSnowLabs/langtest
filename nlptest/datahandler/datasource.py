@@ -17,6 +17,10 @@ class _IDataset(ABC):
     def load_data(self):
         """Load data from the file_path."""
         return NotImplemented
+    
+    @abstractmethod
+    def export_data(self):
+        return NotImplemented
 
 
 class DataFactory:
@@ -46,7 +50,11 @@ class DataFactory:
         Returns:
             list[str]: Loaded text data.
         """
-        return self._class_map[self.file_ext.replace('.', '')](self._file_path).load_data()
+        self.init_cls = self._class_map[self.file_ext.replace('.', '')](self._file_path)
+        return self.init_cls.load_data()
+
+    def export(self, data: List[Sample], output_path:str):
+        return self.init_cls.export_data(data, output_path)
 
 
 class ConllDataset(_IDataset):
@@ -109,6 +117,8 @@ class ConllDataset(_IDataset):
 
         return data
 
+    def export_data(self, data: List[Sample], output_path: str):
+        pass
 
 class JSONDataset(_IDataset):
     """Class to handle JSON dataset files. Subclass of _IDataset.
@@ -124,6 +134,9 @@ class JSONDataset(_IDataset):
         self._file_path = file_path
 
     def load_data(self):
+        pass
+
+    def export(self):
         pass
 
 
@@ -147,3 +160,6 @@ class CSVDataset(_IDataset):
             pd.DataFrame: Csv file as a pandas dataframe.
         """
         return pd.read_csv(self._file_path)
+    
+    def export(self):
+        pass
