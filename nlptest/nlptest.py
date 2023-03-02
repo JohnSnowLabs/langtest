@@ -154,6 +154,12 @@ class Harness:
         return df_final.fillna("-")
     
     def detail_report(self) -> pd.DataFrame:
+        """
+        Generates an overall report with every textcase and labelwise metrics.
+
+        Returns:
+            pd.DataFrame: Generated dataframe.
+        """
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
         accuracy_df = self.accuracy_report()
 
@@ -162,6 +168,7 @@ class Harness:
     def accuracy_report(self) -> pd.DataFrame:
         """
         Generate a report of the accuracy results.
+        
         Returns:
             pd.DataFrame: DataFrame containing the accuracy, f1, precision, recall scores.
         """
