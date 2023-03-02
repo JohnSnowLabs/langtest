@@ -24,7 +24,7 @@ class AugmentRobustness(BaseAugmentaion):
         h_report,
         save_path,
         config= None,
-        nosie_prob:float = 0.5,
+        max_prop:float = 0.5,
         test: Optional[List[str]] = None,
         optimized_inplace: bool = False,
         regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])"
@@ -34,7 +34,7 @@ class AugmentRobustness(BaseAugmentaion):
         # data['pos_tag'] = data['label'].apply(lambda x: ["NN NN"] * len(x))
         # entites = set(j.split("-")[-1] for i in data['label'] for j in i)
         suggest = AugmentRobustness.suggestions(h_report)
-        
+        sum_propotion = suggest['proportion_increase'].sum()
         if suggest.shape[0] <= 0:
             print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
 
@@ -44,7 +44,7 @@ class AugmentRobustness(BaseAugmentaion):
             if optimized_inplace:
                 continue
             else:
-                sample_length = len(data) * proportion[-1]['proportion_increase']
+                sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
                 sample_data = random.choices(data, k=int(sample_length))
                 aug_data = PerturbationFactory(sample_data, test_type).transform()
                 fianl_aug_data.extend(aug_data)
