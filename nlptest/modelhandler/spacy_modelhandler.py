@@ -22,7 +22,8 @@ class PretrainedModelForNER(_ModelHandler):
 
         self.model = model
 
-    def load_model(self, path):
+    @classmethod
+    def load_model(cls, path):
         """Load and return SpaCy pipeline"""
         return spacy.load(path)
 

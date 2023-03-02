@@ -25,7 +25,8 @@ class PretrainedModelForNER(_ModelHandler):
                        f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
         self.model = model
 
-    def load_model(self, path) -> 'Pipeline':
+    @classmethod
+    def load_model(cls, path) -> 'Pipeline':
         """Load the NER model into the `model` attribute."""
         return pipeline(model=path, task="ner", ignore_labels=[])
 

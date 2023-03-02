@@ -122,7 +122,8 @@ class PretrainedModelForNER(_ModelHandler):
         #   in order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
 
-    def load_model(self, path) -> 'NLUPipeline':
+    @classmethod
+    def load_model(cls, path) -> 'NLUPipeline':
         """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
