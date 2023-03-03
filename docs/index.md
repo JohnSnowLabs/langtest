@@ -1,6 +1,6 @@
 ---
 layout: landing
-title: 'NLP Test <span>A library for testing NLP models</span>'
+title: 'NLP Test <span>Beyond Accuracy: Stress-Test and Bullet-Proof Your Models</span>'
 excerpt:  <br> Evaluate the Bias and Robustness of NER and Text Classification Models
 permalink: /
 header: true
