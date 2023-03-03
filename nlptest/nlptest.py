@@ -1,7 +1,8 @@
 from collections import defaultdict
 from functools import reduce
-from typing import Any, Dict, Optional, Union
+from typing import Dict, Optional, Union
 
+import pandas as pd
 import yaml
 
 from .datahandler.datasource import DataFactory
@@ -16,11 +17,13 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
+    SUPPORTED_HUBS = ["spacy", "transformers", "johnsnowlabs"]
 
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str, ModelFactory, Any],
+            model: Union[str],
+            hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
     ):
@@ -30,21 +33,21 @@ class Harness:
         Args:
             task (str, optional): Task for which the model is to be evaluated.
             model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
+            hub (str, optional): model hub to load from the path. Required if path is passed as 'model'.
             data (str, optional): Path to the data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
+
+        Raises:
+            ValueError: Invalid arguments.
         """
 
         super().__init__()
         self.task = task
 
-        if isinstance(model, ModelFactory):
-            assert model.task == task, \
-                "The 'task' passed as argument as the 'task' with which the model has been initialized are different."
-            self.model = model
-        elif isinstance(model, str):
-            self.model = ModelFactory(task=task, model_path=model)
+        if isinstance(model, str):
+            self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
         else:
-            self.model = model
+            self.model = ModelFactory(task=task, model=model)
 
         if data is not None:
             if type(data) == str:
@@ -57,6 +60,7 @@ class Harness:
 
         self.load_testcases = None
         self.generated_results = None
+        self.accuracy_results = None
 
     def configure(self, config: Union[str, dict]):
         """
@@ -94,10 +98,10 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self.generated_results = TestRunner(self.load_testcases, self.model).evaluate()
+        self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model, self.data).evaluate()
         return self
 
-    def report(self) -> Dict:
+    def report(self) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -111,14 +115,6 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
-            print("=============" * 10)
-            print("TEST TYPE: ", sample.test_type)
-            print("ORIGINAL: ", sample.original)
-            print("TEST CASE: ", sample.test_case)
-            print("EXPECTED: ", sample.expected_results)
-            print("ACTUAL: ", sample.realigned_spans)
-            print("TRANSFORMATIONS: ", sample.transformations)
-            print("IS PASS: ", sample.is_pass())
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -132,7 +128,58 @@ class Harness:
                 "minimum_pass_rate": min_pass_rate,
                 "pass": pass_rate >= min_pass_rate
             }
-        return report
+
+        df_report = pd.DataFrame.from_dict(report, orient="index")
+        df_report = df_report.reset_index(names="test_type")
+
+        df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        
+        df_accuracy = self.accuracy_report().iloc[:2].drop("test_case", axis=1)
+        df_accuracy = df_accuracy.rename({"actual_result":"pass_rate", "expected_result":"minimum_pass_rate"}, axis=1)
+        df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
+        df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+        df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
+
+        df_final = pd.concat([df_report, df_accuracy])
+
+
+        return df_final.fillna("-")
+    
+    def generated_results_df(self) -> pd.DataFrame:
+        """
+        Generates an overall report with every textcase and labelwise metrics.
+
+        Returns:
+            pd.DataFrame: Generated dataframe.
+        """
+        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+        accuracy_df = self.accuracy_report()
+
+        return pd.concat([generated_results_df,accuracy_df]).fillna("-")
+
+    def accuracy_report(self) -> pd.DataFrame:
+        """
+        Generate a report of the accuracy results.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the accuracy, f1, precision, recall scores.
+        """
+
+        if isinstance(self._config['min_pass_rate'], list):
+            min_pass_dict = reduce(lambda x, y: {**x, **y}, self._config['min_pass_rate'])
+        else:
+            min_pass_dict = self._config['min_pass_rate']
+        acc_report = self.accuracy_results.copy()
+        acc_report["expected_result"] = acc_report.apply(
+            lambda x: min_pass_dict.get(x["test_case"]+x["test_type"], min_pass_dict.get('default', 0)), axis=1
+        )
+        acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
+        return acc_report
+
+    def load_testcases_df(self) -> pd.DataFrame:
+        """Testcases after .generate() is called"""
+        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore", axis=1)
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
