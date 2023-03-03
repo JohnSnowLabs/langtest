@@ -13,7 +13,10 @@ DEFAULT_PERTURBATIONS = [
     "add_context",
     "add_contractions",
     "swap_entities",
-    "swap_cohyponyms"
+    "swap_cohyponyms",
+    "replace_to_male_pronouns",
+    "replace_to_female_pronouns",
+    "replace_to_neutral_pronouns"
 ]
 
 PERTURB_CLASS_MAP = {
@@ -28,7 +31,10 @@ PERTURB_CLASS_MAP = {
     "add_context": 'AddContext',
     "add_contractions": 'AddContraction',
     "swap_entities": 'SwapEntities',
-    "swap_cohyponyms": 'SwapCohyponyms'
+    "swap_cohyponyms": 'SwapCohyponyms',
+    "replace_to_male_pronouns":"GenderPronounBias",
+    "replace_to_female_pronouns":"GenderPronounBias",
+    "replace_to_neutral_pronouns":"GenderPronounBias"
 }
 
 # @formatter:off
@@ -600,6 +606,12 @@ CONTRACTION_MAP = {
     " why's ", ' will not ': " won't ", ' would not ': " wouldn't ", ' you would ':
     " you'd ", ' you will ': " you'll ", ' you are ': " you're "
 }
+
+# Dicts of respective gender pronouns
+female_pronouns = {'subjective_pronouns':['she'],'objective_pronouns':['her'],'reflexive_pronouns':['herself'],'possessive_pronouns':['her','hers']}
+male_pronouns = {'subjective_pronouns':['he'],'objective_pronouns':['him'],'reflexive_pronouns':['himself'],'possessive_pronouns':['his']}
+neutral_pronouns = {'subjective_pronouns':['per','they','ve','xe','ze','zie','ey','tey'],'objective_pronouns':['them','ver','xem','hir','em','ter'],'reflexive_pronouns':['themself','themselves','eirself','perself','verself','hirself','xemself','emself','terself'], 'possessive_pronouns':['their','theirs','pers','vis','xyr','hirs','xyrs','eir','eirs','tem','ters']}
+
 
 
 def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
