@@ -23,10 +23,10 @@ data:
  sections:
    - title:
      children:
-       - title: Powerful One-Liners
+       - title: Simple
          image: 
             src: /assets/images/powerfull_one.svg
-         excerpt: Over 30 different tests to run for the most popular NLP libraries in just one line of code
+         excerpt: Generate & run over 30 test types on the most popular NLP libraries & tasks with 1 line of code
        - title: High Customization
          image: 
             src: /assets/images/elegant_python.svg
