@@ -1,8 +1,8 @@
 ---
 layout: docs
 seotitle: NLU | John Snow Labs
-title: save()
-permalink: /docs/en/save
+title: Harness
+permalink: /docs/pages/docs/harness
 key: docs-install
 modify_date: "2020-05-26"
 header: true
@@ -40,6 +40,6 @@ nlp.to_nlu_pipe(pipe).predict('That was easy')
 ```
 
 
-for alternative installation options see [Custom Installation](/docs/en/install_advanced)
+for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
 
 </div></div>

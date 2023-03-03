@@ -2,13 +2,13 @@ header:
   - title: Home
     url: /
   - title: Docs
-    url: /docs/en/install
+    url: /docs/pages/docs/install
     key: docs
   - title: Tutorials
-    url: /docs/tutorials/tutorials
+    url: /docs/pages/tutorials/tutorials
     key: tutorials
   - title: Tests
-    url: /docs/en_test/test
+    url: /docs/pages/tests/test
     key: tests
   - title: '<span style="color: #FF8A00;"><i class="fab fa-github fa-2x"></i></span>'
     url: https://github.com/JohnSnowLabs/nlu
@@ -16,46 +16,46 @@ header:
     url: https://join.slack.com/t/spark-nlp/shared_invite/zt-lutct9gm-kuUazcyFKhuGY3_0AMkxqA
 
 
-docs-en:
+docs-menu:
   - title:
     children:
       - title:  Installation
-        url:    /docs/en/install
+        url:    /docs/pages/docs/install
       - title:  Quick Start
-        url:    /docs/en/quick_start
+        url:    /docs/pages/docs/quick_start
   - title: Harness
     children:
       - title:  Harness
-        url:    /docs/en/harness
+        url:    /docs/pages/docs/harness
       - title:  generate()
-        url:    /docs/en/generate
+        url:    /docs/pages/docs/generate
       - title:  run()
-        url:    /docs/en/run
+        url:    /docs/pages/docs/run
       - title:  report()
-        url:    /docs/en/report
+        url:    /docs/pages/docs/report
       - title: save()
-        url: /docs/en/save
+        url: /docs/pages/docs/save
       - title:  load()
-        url:    /docs/en/load
+        url:    /docs/pages/docs/load
   - title: Augmentation
     children:
       - title:  Augmentation
-        url:    /docs/en/augmentation
+        url:    /docs/pages/docs/augmentation
       - title: generate()
-        url: /docs/en/generate_augmentation
+        url: /docs/pages/docs/generate_augmentation
       - title: save()
-        url: /docs/en/save_augmentation
+        url: /docs/pages/docs/save_augmentation
 
 tutorials:
   - title:
     children:
       - title: Casing tests with johnsnowlabs
-        url: /docs/tutorials/tutorials
+        url: /docs/pages/tutorials/tutorials
       - title: Bias tests with transformers
-        url: /docs/tutorials/bias_tests
+        url: /docs/pages/tutorials/bias_tests
         key: tutorials
       - title: Testing and fixing workflow with spacy
-        url: /docs/tutorials/workflow_spacy
+        url: /docs/pages/tutorials/workflow_spacy
         key: tutorials
 
 
@@ -63,32 +63,32 @@ tests:
   - title:
     children:
       - title: Robustness
-        url: /docs/en_test/robustness
+        url: /docs/pages/tests/robustness
         key: tests
       - title: Uppercase
-        url: /docs/en_test/uppercase
+        url: /docs/pages/tests/uppercase
         key: tests
       - title: Lowercase
-        url: /docs/en_test/lowercase
+        url: /docs/pages/tests/lowercase
         key: tests
       - title: Titlecase
-        url: /docs/en_test/titlecase
+        url: /docs/pages/tests/titlecase
         key: tests
       - title: Add Context
-        url: /docs/en_test/add_context
+        url: /docs/pages/tests/add_context
         key: tests
       - title: Swap Entities
-        url: /docs/en_test/swap_entities
+        url: /docs/pages/tests/swap_entities
         key: tests
       - title: Bias
-        url: /docs/en_test/bias
+        url: /docs/pages/tests/bias
         key: tests
       - title: Gender
-        url: /docs/en_test/gender
+        url: /docs/pages/tests/gender
         key: tests
       - title: Representation
-        url: /docs/en_test/representation
+        url: /docs/pages/tests/representation
         key: tests
       - title: Age Bias
-        url: /docs/en_test/age_bias
+        url: /docs/pages/tests/age_bias
         key: tests

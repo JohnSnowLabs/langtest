@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Bias tests with transformers
+title: Testing and fixing workflow with spacy
 key: tutorials
-permalink: /docs/tutorials/bias_tests
+permalink: /docs/pages/tutorials/workflow_spacy
 sidebar:
     nav: tutorials
 aside:

@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Representation
+title: Gender
 key: tests
-permalink: /docs/en_test/representation
+permalink: /docs/pages/tests/gender
 aside:
     toc: true
 sidebar:

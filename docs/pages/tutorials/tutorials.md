@@ -2,19 +2,27 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Augmentation save()
-key: docs-examples
-permalink: /docs/en/save_augmentation
+title: 1-liners reference
+key: docs-tutorials
+permalink: /docs/pages/tutorials/tutorials
+sidebar:
+    nav: tutorials
+aside:
+    toc: true
+nav_key: tutorials
+show_edit_on_github: true
 modify_date: "2019-05-16"
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
 To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
 
 ```shell 
 pip install johnsnowlabs
 ```
+
+## Test h2
+
 
 To quickly test the installation, you can run in your **Shell**:
 
@@ -26,20 +34,4 @@ or in **Python**:
 from  johnsnowlabs import nlp
 nlp.load('emotion').predict('Wow that easy!')
 ```
-
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
-
-
-for alternative installation options see [Custom Installation](/docs/en/install_advanced)
-
 </div></div>

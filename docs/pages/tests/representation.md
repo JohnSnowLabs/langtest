@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Tests
-key: notebooks
-permalink: /docs/en_test/test
+title: Representation
+key: tests
+permalink: /docs/pages/tests/representation
 aside:
     toc: true
 sidebar:

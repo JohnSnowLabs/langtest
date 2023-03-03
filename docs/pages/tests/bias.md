@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Add Context
+title: Bias
 key: tests
-permalink: /docs/en_test/add_context
+permalink: /docs/pages/tests/bias
 aside:
     toc: true
 sidebar:

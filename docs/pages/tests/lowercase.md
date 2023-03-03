@@ -4,7 +4,7 @@ header: true
 seotitle: NLU | John Snow Labs
 title: Lowercase
 key: tests
-permalink: /docs/en_test/lowercase
+permalink: /docs/pages/tests/lowercase
 aside:
     toc: true
 sidebar:

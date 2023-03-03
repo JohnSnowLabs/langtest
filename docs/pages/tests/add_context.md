@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Gender
+title: Add Context
 key: tests
-permalink: /docs/en_test/gender
+permalink: /docs/pages/tests/add_context
 aside:
     toc: true
 sidebar:

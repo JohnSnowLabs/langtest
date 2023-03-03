@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Robustness
-key: tests
-permalink: /docs/en_test/robustness
+title: Tests
+key: notebooks
+permalink: /docs/pages/tests/test
 aside:
     toc: true
 sidebar:

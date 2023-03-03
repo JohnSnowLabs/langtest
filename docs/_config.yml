@@ -204,12 +204,12 @@ exclude:
 defaults:
   ## docs
   - scope:
-      path: "en"
+      path: "pages"
     values:    
       layout: article
       nav_key: docs
       sidebar:
-        nav: docs-en
+        nav: docs-menu
       aside:
         toc: true  
       license: false

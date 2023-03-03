@@ -1,20 +1,15 @@
 ---
 layout: docs
-header: true
 seotitle: NLU | John Snow Labs
-title: Testing and fixing workflow with spacy
-key: tutorials
-permalink: /docs/tutorials/workflow_spacy
-sidebar:
-    nav: tutorials
-aside:
-    toc: true
-show_edit_on_github: true
-nav_key: tutorials
-modify_date: "2019-05-16"
+title: load()
+permalink: /docs/pages/docs/load
+key: docs-install
+modify_date: "2020-05-26"
+header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
+
 To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
 
 ```shell 
@@ -31,4 +26,20 @@ or in **Python**:
 from  johnsnowlabs import nlp
 nlp.load('emotion').predict('Wow that easy!')
 ```
+
+when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
+```python
+from johnsnowlabs import nlp
+nlp.start()
+pipe = nlp.Pipeline(stages=
+[
+    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
+    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
+])
+nlp.to_nlu_pipe(pipe).predict('That was easy')
+```
+
+
+for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+
 </div></div>

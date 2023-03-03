@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLU | John Snow Labs
-title: Swap Entities
+title: Robustness
 key: tests
-permalink: /docs/en_test/swap_entities
+permalink: /docs/pages/tests/robustness
 aside:
     toc: true
 sidebar:
