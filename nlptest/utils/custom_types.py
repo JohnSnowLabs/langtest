@@ -44,18 +44,34 @@ class NERPrediction(BaseModel):
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
+    doc_id: Optional[int] = None
+    pos_tag: Optional[str] = None
+    chunk_tag: Optional[str] = None
 
     class Config:
         extra = "ignore"
         allow_population_by_field_name = True
 
     @classmethod
-    def from_span(cls, entity: str, word: str, start: int, end: int, score: float = None) -> "NERPrediction":
+    def from_span(
+        cls, 
+        entity: str, 
+        word: str, 
+        start: int, 
+        end: int, 
+        score: float = None,
+        doc_id: int = None,
+        pos_tag: str = None,
+        chunk_tag: str = None
+    ) -> "NERPrediction":
         """"""
         return cls(
             entity=entity,
             span=Span(start=start, end=end, word=word),
-            score=score
+            score=score,
+            doc_id=doc_id,
+            pos_tag=pos_tag,
+            chunk_tag=chunk_tag
         )
 
     def __hash__(self):
