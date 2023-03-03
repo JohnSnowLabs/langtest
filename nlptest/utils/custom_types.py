@@ -173,15 +173,29 @@ class Sample(BaseModel):
     
     def to_dict(self):
         """Returns the dict version of sample."""
-        res = {
+        try:
+            expected_result = self.expected_results.predictions
+            actual_result = self.actual_results.predictions if self.actual_results else None
+        except:
+            expected_result = self.expected_results.labels
+            actual_result = self.actual_results.labels if self.actual_results else None
+
+        result = {
             'test_type': self.test_type,
             'original': self.original,
             'test_case': self.test_case,
-            'expected_results': self.expected_results.predictions,
-            'actual_results': self.actual_results.predictions,
-            'iss_pass': self.is_pass(),
+            'expected_result': expected_result,
         }
-        return res
+
+        if actual_result is not None:
+            result.update({
+                'actual_result': actual_result,
+                'pass': self.is_pass()
+            })
+
+        return result
+            
+
 
     @validator("transformations")
     def sort_transformations(cls, v):

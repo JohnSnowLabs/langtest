@@ -55,11 +55,11 @@ class ModelFactory:
                        f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}")
 
         if module_name in ['pyspark', 'sparknlp', 'nlu']:
-            model_handler = importlib.import_module(f'nlptest.nlptest.modelhandler.jsl_modelhandler')
+            model_handler = importlib.import_module(f'nlptest.modelhandler.jsl_modelhandler')
         else:
-            model_handler = importlib.import_module(f'nlptest.nlptest.modelhandler.{module_name}_modelhandler')
+            model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 
-        if task is 'ner':
+        if task == 'ner':
             self.model_class = model_handler.PretrainedModelForNER(model)
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -85,12 +85,12 @@ class ModelFactory:
         assert hub in cls.SUPPORTED_HUBS, \
             ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
 
-        if hub is 'johnsnowlabs':
-            modelhandler_module = importlib.import_module('nlptest.nlptest.modelhandler.jsl_modelhandler')
+        if hub == 'johnsnowlabs':
+            modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
         else:
-            modelhandler_module = importlib.import_module(f'nlptest.nlptest.modelhandler.{hub}_modelhandler')
+            modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
 
-        if task is 'ner':
+        if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
         else:
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(path)
@@ -110,6 +110,17 @@ class ModelFactory:
             NEROutput or SequenceClassificationOutput
         """
         return self.model_class(text=text, **kwargs)
+
+    def predict_raw(self, text) -> List[str]:
+        """Perform predictions on input text.
+
+        Args:
+            text (str): Input text to perform predictions on.
+
+        Returns:
+            List[str]: Predictions.
+        """
+        return self.model_class.predict_raw(text)
 
     def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
         """Alias of the 'predict' method"""

@@ -115,15 +115,6 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
-            # print("=============" * 10)
-            # print("TEST TYPE: ", sample.test_type)
-            # print("ORIGINAL: ", sample.original)
-            # print("TEST CASE: ", sample.test_case)
-            # print("EXPECTED: ", sample.expected_results)
-            # print("ACTUAL: ", sample.realigned_spans)
-            # print("TRANSFORMATIONS: ", sample.transformations)
-            # print("IS PASS: ", sample.is_pass())
-
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -149,13 +140,22 @@ class Harness:
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
-
-
         df_report = df_report.merge(df_accuracy, how="outer")
 
         self.df_report = df_report.fillna("-")
 
         return self.df_report
+
+    def generated_results_df(self) -> pd.DataFrame:
+        """
+        Generates an overall report with every textcase and labelwise metrics.
+
+        Returns:
+            pd.DataFrame: Generated dataframe.
+        """
+        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+        accuracy_df = self.accuracy_report()
+        return pd.concat([generated_results_df, accuracy_df]).fillna("-")
 
     def detail_report(self) -> pd.DataFrame:
         return pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
@@ -163,6 +163,7 @@ class Harness:
     def accuracy_report(self) -> pd.DataFrame:
         """
         Generate a report of the accuracy results.
+
         Returns:
             pd.DataFrame: DataFrame containing the accuracy, f1, precision, recall scores.
         """
@@ -177,6 +178,10 @@ class Harness:
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
+
+    def load_testcases_df(self) -> pd.DataFrame:
+        """Testcases after .generate() is called"""
+        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore", axis=1)
 
     def augment(self, data_path, save_path):
         dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
