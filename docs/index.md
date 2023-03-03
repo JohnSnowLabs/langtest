@@ -27,10 +27,10 @@ data:
          image: 
             src: /assets/images/powerfull_one.svg
          excerpt: Generate & run over 30 test types on the most popular NLP libraries & tasks with 1 line of code
-       - title: High Customization
+       - title: Comprehensive
          image: 
             src: /assets/images/elegant_python.svg
-         excerpt: Highly configurable testing and fixing strategies 
+         excerpt: Test all aspects of model quality before going to production, and easily extend and configure test suites 
        - title: 100% Open Source
          image: 
             src: /assets/images/open_source.svg
