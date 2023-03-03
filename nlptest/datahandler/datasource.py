@@ -136,7 +136,7 @@ class JSONDataset(_IDataset):
     def load_data(self):
         pass
 
-    def export(self):
+    def export_data(self):
         pass
 
 
@@ -161,5 +161,5 @@ class CSVDataset(_IDataset):
         """
         return pd.read_csv(self._file_path)
     
-    def export(self):
+    def export_data(self):
         pass

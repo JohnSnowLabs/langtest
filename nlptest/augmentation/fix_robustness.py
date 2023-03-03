@@ -8,6 +8,7 @@ from typing import List, Optional
 
 from nlptest.datahandler.datasource import DataFactory
 from nlptest.transform.perturbation import PerturbationFactory
+from nlptest.transform.utils import DEFAULT_PERTURBATIONS
 
 
 class BaseAugmentaion(ABC):
@@ -41,13 +42,14 @@ class AugmentRobustness(BaseAugmentaion):
         fianl_aug_data = []
         for proportion in suggest.iterrows():
             test_type = [config.get(proportion[-1]['test_type'])]
-            if optimized_inplace:
-                continue
-            else:
-                sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
-                sample_data = random.choices(data, k=int(sample_length))
-                aug_data = PerturbationFactory(sample_data, test_type).transform()
-                fianl_aug_data.extend(aug_data)
+            if proportion[-1]['test_type'] in DEFAULT_PERTURBATIONS:
+                if optimized_inplace:
+                    continue
+                else:
+                    sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
+                    sample_data = random.choices(data, k=int(sample_length))
+                    aug_data = PerturbationFactory(sample_data, test_type).transform()
+                    fianl_aug_data.extend(aug_data)
    
         # data.extend(fianl_aug_data)
         AugmentRobustness.save(fianl_aug_data, save_path)
@@ -76,5 +78,5 @@ class AugmentRobustness(BaseAugmentaion):
     def save(data, save_path):
         with open(save_path+"augmenated_train.conll", "w") as fw:
             words = [i.test_case.split() if i.test_case else "" for i in data ]
-            
-            fw.write("\n\n".join('\n'.join(ew) for ew in words))
+            print(words)
+            fw.write("\n\n".join('-X- -X- \n'.join(ew) for ew in words))
