@@ -15,7 +15,7 @@ class TestRunner:
 
     def __init__(
             self,
-            load_testcases: pd.DataFrame,
+            load_testcases: List[Sample],
             model_handler: ModelFactory,
             data: List[Sample]
     ) -> None:
@@ -23,8 +23,8 @@ class TestRunner:
         Initialize the TestRunner class.
 
         Args:
-            load_testcases (pd.DataFrame): DataFrame containing the testcases to be evaluated.
-            model_handler (spark or spacy model): Object representing the model handler, either spaCy or SparkNLP.
+            load_testcases (List): List containing the testcases to be evaluated.
+            model_handler (spark, spacy, transformer): Object representing the model handler, either spaCy, SparkNLP or transformer.
         """
         self.load_testcases = load_testcases.copy()
         self._model_handler = model_handler
@@ -37,7 +37,7 @@ class TestRunner:
         Returns:
             DataFrame: DataFrame containing the evaluation results.
         """
-        self._model_handler.load_model()
+        # self._model_handler.load_model()
 
         robustness_runner = RobustnessTestRunner(self.load_testcases, self._model_handler, self._data)
         robustness_result = robustness_runner.evaluate()
@@ -75,17 +75,19 @@ class AccuracyTestRunner(TestRunner):
     def evaluate(self) -> pd.DataFrame:
         """
         Evaluates the model's accuracy, precision, recall and f1-score per label and
-        macro-f1, micro-f1 and total accuracy. 
+        general macro and micro f1 scores. 
 
         Returns:
             pd.Dataframe: Dataframe with the results.
         """
         y_true = pd.Series(self._data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
         X_test = pd.Series(self._data).apply(lambda x: x.original)
-        y_pred = X_test.apply(lambda x: self._model_handler.predict(x, predict_str=True))
+        y_pred = X_test.apply(self._model_handler.predict_raw)
 
         valid_indices = y_true.apply(len) == y_pred.apply(len)
-
+        length_mismatch = valid_indices.count()-valid_indices.sum()
+        if length_mismatch > 0:
+            print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.\nPlease make sure dataset and model uses same tokenizer.")
         y_true = y_true[valid_indices]
         y_pred = y_pred[valid_indices]
 
@@ -114,6 +116,6 @@ class AccuracyTestRunner(TestRunner):
             "test_type": ["micro-f1", "macro-f1"],
             "actual_result": [micro_f1_score, macro_f1_score],
         }
-        df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted])
+        df_melted = pd.concat([pd.DataFrame(other_metrics), df_melted], ignore_index=True)
 
         return df_melted

@@ -40,8 +40,10 @@ class AugmentRobustness(BaseAugmentaion):
             print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
 
         fianl_aug_data = []
+        # DEFAULT_PERTURBATIONS.remove('swap_entities')
         for proportion in suggest.iterrows():
             test_type = [config.get(proportion[-1]['test_type'])]
+
             if proportion[-1]['test_type'] in DEFAULT_PERTURBATIONS:
                 if optimized_inplace:
                     continue
@@ -78,5 +80,4 @@ class AugmentRobustness(BaseAugmentaion):
     def save(data, save_path):
         with open(save_path+"augmenated_train.conll", "w") as fw:
             words = [i.test_case.split() if i.test_case else "" for i in data ]
-            print(words)
             fw.write("\n\n".join('-X- -X- \n'.join(ew) for ew in words))
