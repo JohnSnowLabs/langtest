@@ -1,10 +1,3 @@
-tasks: 
-  - ner
-  - text_classification
-
-lang:
-  - en
-
 tests_types:
   - uppercase 
   - lowercase 
@@ -20,6 +13,8 @@ tests_types:
   - swap_entities
   - american_to_british
   - british_to_american
+  - replace_to_neutral_pronouns
+  - replace_to_female_pronouns
  
 min_pass_rate:
   - default : 0.65
