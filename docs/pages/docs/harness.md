@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: Harness
 permalink: /docs/pages/docs/harness
 key: docs-install

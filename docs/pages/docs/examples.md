@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: 1-liners reference
 key: docs-examples
 permalink: /docs/pages/docs/examples

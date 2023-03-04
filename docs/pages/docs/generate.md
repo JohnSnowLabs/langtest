@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: generate()
 permalink: /docs/pages/docs/generate
 key: docs-install

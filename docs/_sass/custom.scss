@@ -311,18 +311,25 @@ header {
 				margin: 0 0 10px;
 			}
 			.toc-h1 {
-				font-weight: 500;
-				padding: 10px 0 0;
-				font-size: 18px;
-				line-height: 22px;
-				border: none;
-				font-family: 'Montserrat', sans-serif;
-				color: #5334AE;
-				border: none;
-				letter-spacing: -0.5px;
+					border: none;
+					padding: 10px 0 0;
+				a {
+					font-weight: 500;
+					font-size: 18px;
+					line-height: 22px;
+					font-family: 'Montserrat', sans-serif;
+					color: #5334AE;
+					border: none;
+					letter-spacing: -0.5px;
+					margin: 0 !important;
+				}	
+				&.active a,							
+				&:hover a {
+					color: $color-blue;
+				}
 			}
 			.toc-h2 {
-				padding-left: 5px;
+				padding-left: 12px;
 				a {
 					font-size: 14px;
 					line-height: 16px;

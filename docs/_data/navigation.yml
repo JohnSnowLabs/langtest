@@ -17,16 +17,14 @@ header:
 
 
 docs-menu:
-  - title:
+  - title: Installation
+    url: /docs/pages/docs/install
     children:
-      - title:  Installation
-        url:    /docs/pages/docs/install
       - title:  Quick Start
         url:    /docs/pages/docs/quick_start
   - title: Harness
+    url: /docs/pages/docs/harness
     children:
-      - title:  Harness
-        url:    /docs/pages/docs/harness
       - title:  generate()
         url:    /docs/pages/docs/generate
       - title:  run()
@@ -38,19 +36,19 @@ docs-menu:
       - title:  load()
         url:    /docs/pages/docs/load
   - title: Augmentation
+    url:    /docs/pages/docs/augmentation
     children:
-      - title:  Augmentation
-        url:    /docs/pages/docs/augmentation
       - title: generate()
         url: /docs/pages/docs/generate_augmentation
       - title: save()
         url: /docs/pages/docs/save_augmentation
 
 tutorials:
-  - title:
+  - title: Tutorials
+    url: /docs/pages/tutorials/tutorials
     children:
       - title: Casing tests with johnsnowlabs
-        url: /docs/pages/tutorials/tutorials
+        url: /docs/pages/tutorials/casing_tests
       - title: Bias tests with transformers
         url: /docs/pages/tutorials/bias_tests
         key: tutorials
@@ -60,7 +58,8 @@ tutorials:
 
 
 tests:
-  - title:
+  - title: Tests
+    url: /docs/pages/tests/test
     children:
       - title: Robustness
         url: /docs/pages/tests/robustness

@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: NLU | John Snow Labs
-title: 1-liners reference
+seotitle: NLP Tutorials | John Snow Labs
+title: Tutorials
 key: docs-tutorials
 permalink: /docs/pages/tutorials/tutorials
 sidebar:

@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: Augmentation generate()
 key: docs-examples
 permalink: /docs/pages/docs/generate_augmentation

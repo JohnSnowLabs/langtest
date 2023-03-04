@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: run()
 permalink: /docs/pages/docs/run
 key: docs-install

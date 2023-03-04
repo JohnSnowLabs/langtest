@@ -2,15 +2,15 @@
 layout: docs
 header: true
 seotitle: NLP Tutorials | John Snow Labs
-title: Bias tests with transformers
-key: tutorials
-permalink: /docs/pages/tutorials/bias_tests
+title: Casing tests with johnsnowlabs
+key: docs-tutorials
+permalink: /docs/pages/tutorials/casing_tests
 sidebar:
     nav: tutorials
 aside:
     toc: true
-show_edit_on_github: true
 nav_key: tutorials
+show_edit_on_github: true
 modify_date: "2019-05-16"
 ---
 
@@ -20,6 +20,9 @@ To install the **johnsnowlabs Python library** and all of John Snow Labs open **
 ```shell 
 pip install johnsnowlabs
 ```
+
+## Test h2
+
 
 To quickly test the installation, you can run in your **Shell**:
 

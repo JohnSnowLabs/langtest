@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLU | John Snow Labs
+seotitle: NLP Tutorials | John Snow Labs
 title: Testing and fixing workflow with spacy
 key: tutorials
 permalink: /docs/pages/tutorials/workflow_spacy

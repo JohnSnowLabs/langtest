@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: Quick Start
 permalink: /docs/pages/docs/quick_start
 key: docs-install

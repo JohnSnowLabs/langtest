@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: Augmentation
 permalink: /docs/pages/docs/augmentation
 key: docs-install
