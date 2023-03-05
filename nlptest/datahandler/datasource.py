@@ -1,4 +1,5 @@
 import os
+import re
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -71,7 +72,7 @@ class ConllDataset(_IDataset):
         data = []
         with open(self._file_path) as f:
             content = f.read()
-            docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
+            docs = [i.strip() for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
             for d_id, doc in enumerate(docs[:5]):
                 #  file content to sentence split
                 sentences = doc.strip().split('\n\n')
