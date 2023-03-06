@@ -44,7 +44,7 @@ class NERPrediction(BaseModel):
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
-    doc_id: Optional[int] = None
+    doc_id: Optional[str] = None
     pos_tag: Optional[str] = None
     chunk_tag: Optional[str] = None
 
@@ -60,7 +60,7 @@ class NERPrediction(BaseModel):
         start: int, 
         end: int, 
         score: float = None,
-        doc_id: int = None,
+        doc_id: str = None,
         pos_tag: str = None,
         chunk_tag: str = None
     ) -> "NERPrediction":

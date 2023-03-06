@@ -72,6 +72,7 @@ class ConllDataset(_IDataset):
         data = []
         with open(self._file_path) as f:
             content = f.read()
+            docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
             docs = [i.strip() for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
             for d_id, doc in enumerate(docs[:5]):
                 #  file content to sentence split
@@ -98,7 +99,7 @@ class ConllDataset(_IDataset):
                                 word=split[0],
                                 start=cursor,
                                 end=cursor + len(split[0]),
-                                doc_id=d_id,
+                                doc_id=(docs_strings[d_id] if len(docs_strings) > 0 else ''),
                                 pos_tag=split[1],
                                 chunk_tag=split[2]
                             )
