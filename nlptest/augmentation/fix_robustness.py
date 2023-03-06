@@ -21,8 +21,9 @@ class AugmentRobustness(BaseAugmentaion):
     def fix(
             data_path: str,
             h_report,
-            save_path,
             config=None,
+            max_prop: float = 0.5,
+            inplace: bool = False,
     ):
         data = DataFactory(data_path).load()
         config = {list(i.keys())[0] if type(i) == dict else i: i for i in config['tests_types']}
@@ -39,7 +40,7 @@ class AugmentRobustness(BaseAugmentaion):
             test_type = [config.get(proportion[-1]['test_type'])]
 
             if proportion[-1]['test_type'] in DEFAULT_PERTURBATIONS:
-                if optimized_inplace:
+                if inplace:
                     continue
                 else:
                     sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase'] / sum_propotion)

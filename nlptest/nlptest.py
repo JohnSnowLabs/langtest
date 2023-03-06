@@ -62,6 +62,7 @@ class Harness:
         self.load_testcases = None
         self.generated_results = None
         self.accuracy_results = None
+        self.aug_data = None
 
     def configure(self, config: Union[str, dict]):
         """
@@ -178,6 +179,7 @@ class Harness:
     def augment(self, input_path, output_path, inplace=False):
         dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
             lambda x: x.str).values.tolist()
+
         if dtypes != ['<i4'] * 2:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
@@ -185,7 +187,6 @@ class Harness:
         self.aug_data = AugmentRobustness.fix(
             input_path,
             self.df_report,
-            output_path,
             self._config
         )
 
@@ -218,3 +219,27 @@ class Harness:
 
         self.load_testcases.to_csv(testcases, index=None)
         self.generated_results.to_csv(results, index=None)
+
+    def to_conll(self, path: str):
+        """
+        Save augmentation data to given path according to CoNLL-2003 NER format.
+
+        Parameters:
+            path (str): Path to save data.
+
+        Returns:
+            None
+        """
+        pass
+
+    def to_csv(self, path: str):
+        """
+        Save augmentation data to csv file.
+
+        Parameters:
+            path (str): Path to save data.
+
+        Returns:
+            None
+        """
+        pass
