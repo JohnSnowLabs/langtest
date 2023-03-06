@@ -1,4 +1,5 @@
 import os
+import re
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -71,8 +72,9 @@ class ConllDataset(_IDataset):
         data = []
         with open(self._file_path) as f:
             content = f.read()
-            docs = [i.strip() for i in content.strip().split('-DOCSTART- -X- -X- O') if i != '']
-            for doc in docs[:5]:
+            docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
+            docs = [i.strip() for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
+            for d_id, doc in enumerate(docs[:5]):
                 #  file content to sentence split
                 sentences = doc.strip().split('\n\n')
 
@@ -96,7 +98,10 @@ class ConllDataset(_IDataset):
                                 entity=split[-1],
                                 word=split[0],
                                 start=cursor,
-                                end=cursor + len(split[0])
+                                end=cursor + len(split[0]),
+                                doc_id=(docs_strings[d_id] if len(docs_strings) > 0 else ''),
+                                pos_tag=split[1],
+                                chunk_tag=split[2]
                             )
                         )
                         cursor += len(split[0]) + 1  # +1 to account for the white space
