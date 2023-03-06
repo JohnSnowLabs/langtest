@@ -1,12 +1,11 @@
 from collections import defaultdict
 from functools import reduce
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 import pandas as pd
 import yaml
 
-from nlptest.augmentation.fix_robustness import AugmentRobustness
-
+from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import TestRunner
@@ -141,15 +140,9 @@ class Harness:
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x*100))
-
         df_final = pd.concat([df_report, df_accuracy])
-
-
-        self.df_report = df_report.fillna("-")
-
+        self.df_report = df_final.fillna("-")
         return self.df_report
-
-        # return self.report_df
     
     def generated_results_df(self) -> pd.DataFrame:
         """
@@ -161,7 +154,7 @@ class Harness:
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
         accuracy_df = self.accuracy_report()
 
-        return pd.concat([generated_results_df,accuracy_df]).fillna("-")
+        return pd.concat([generated_results_df, accuracy_df]).fillna("-")
 
     def accuracy_report(self) -> pd.DataFrame:
         """
@@ -185,7 +178,7 @@ class Harness:
     def augment(self, input_path, output_path, inplace=False):
         dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
             lambda x: x.str).values.tolist()
-        if dtypes != ['<i4'] *2:
+        if dtypes != ['<i4'] * 2:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
         aug_data = AugmentRobustness.fix(
