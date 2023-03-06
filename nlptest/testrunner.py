@@ -1,5 +1,4 @@
 import pandas as pd
-from sparknlp.base import LightPipeline
 from sklearn.metrics import classification_report, f1_score
 from functools import reduce
 
