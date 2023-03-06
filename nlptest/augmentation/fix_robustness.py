@@ -23,10 +23,6 @@ class AugmentRobustness(BaseAugmentaion):
             h_report,
             save_path,
             config=None,
-            max_prop: float = 0.5,
-            test: Optional[List[str]] = None,
-            optimized_inplace: bool = False,
-            regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])"
     ):
         data = DataFactory(data_path).load()
         config = {list(i.keys())[0] if type(i) == dict else i: i for i in config['tests_types']}
@@ -52,7 +48,7 @@ class AugmentRobustness(BaseAugmentaion):
                     final_aug_data.extend(aug_data)
 
         # data.extend(final_aug_data)
-        AugmentRobustness.save(final_aug_data, save_path)
+        # AugmentRobustness.save(final_aug_data, save_path)
         return final_aug_data
 
     @staticmethod

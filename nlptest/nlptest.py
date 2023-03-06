@@ -181,17 +181,20 @@ class Harness:
         if dtypes != ['<i4'] * 2:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
-        aug_data = AugmentRobustness.fix(
+
+        self.aug_data = AugmentRobustness.fix(
             input_path,
             self.df_report,
             output_path,
             self._config
         )
+
         return self
 
     def load_testcases_df(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
-        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore", axis=1)
+        return pd.DataFrame([x.to_dict() for x in self.load_testcases])\
+            .drop(["pass", "actual_result"], errors="ignore", axis=1)
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
