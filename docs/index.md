@@ -8,10 +8,7 @@ article_header:
  actions:
    - text: Getting Started
      type: active
-     url: /docs/en/install   
-   - text: '<i class="fab fa-github"></i>Start on GitHub'
-     type: trans
-     url: https://github.com/JohnSnowLabs/nlu 
+     url: /docs/en/install 
    - text: '<i class="fab fa-slack-hash"></i> Slack'
      type: trans
      url: https://app.slack.com/client/T9BRVC9AT/C0196BQCDPY   

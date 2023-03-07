@@ -23,7 +23,6 @@ pip install johnsnowlabs
 
 ## Test h2
 
-
 To quickly test the installation, you can run in your **Shell**:
 
 ```shell

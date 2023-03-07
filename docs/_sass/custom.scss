@@ -285,6 +285,10 @@ header {
 	left: auto !important;
 }
 
+.f_inner span {
+	display: flex;
+}
+
 .page__sidebar {
 	position: fixed;
 	left: 0;
