@@ -10,10 +10,6 @@ header:
   - title: Tests
     url: /docs/pages/tests/test
     key: tests
-  - title: '<span style="color: #FF8A00;"><i class="fab fa-github fa-2x"></i></span>'
-    url: https://github.com/JohnSnowLabs/nlu
-  - title: '<span style="color: #FF8A00;"><i class="fab fa-slack-hash fa-2x"></i></span>'
-    url: https://join.slack.com/t/spark-nlp/shared_invite/zt-lutct9gm-kuUazcyFKhuGY3_0AMkxqA
 
 
 docs-menu:

@@ -429,6 +429,20 @@ header {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	&.button--full_white {
+		background: #fff;
+		border-color: #fff;
+		color: #000 !important;
+		&:hover {
+			color: $color-blue !important;
+			i {
+				color: $color-blue !important;
+			}
+		}
+		i {
+			color: #000;
+		}
+	}
 	&.button--primary,
 	&.button--info {
 		background: $color-orange;

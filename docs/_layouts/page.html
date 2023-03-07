@@ -158,8 +158,7 @@ layout: base
                           {%- assign _url = __return -%}
                           {%- assign _type = _action.type | default: 'info' -%}
                           <li><a class="button button--{{ _type }} button--rounded button--xl" href="{{ _url }}">{{ _action.text }}</a></li>
-                        {%- endfor -%}
-                          <li class="f_inner"><a class="github-button" href="https://github.com/JohnSnowLabs/nlptest" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" data-show-count="true" aria-label="Star JohnSnowLabs/nlptest on GitHub">Start on GitHub</a></li>
+                        {%- endfor -%}                          
                       </ul>
                     {%- endif -%}
                   {%- if _full_width == false -%}

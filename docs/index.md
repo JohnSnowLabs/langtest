@@ -7,8 +7,11 @@ header: true
 article_header:
  actions:
    - text: Getting Started
-     type: active
-     url: /docs/en/install 
+     type: trans
+     url: /docs/en/install   
+   - text: '<i class="fab fa-github"></i>Star on GitHub'
+     type: full_white
+     url: https://github.com/JohnSnowLabs/nlptest 
    - text: '<i class="fab fa-slack-hash"></i> Slack'
      type: trans
      url: https://app.slack.com/client/T9BRVC9AT/C0196BQCDPY   
