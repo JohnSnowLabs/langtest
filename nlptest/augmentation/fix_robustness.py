@@ -1,6 +1,6 @@
 
 
-from abc import ABC, abstractstaticmethod
+from abc import ABC, abstractmethod, abstractstaticmethod
 import random
 import re
 import pandas as pd
@@ -13,28 +13,28 @@ from nlptest.transform.utils import DEFAULT_PERTURBATIONS
 
 class BaseAugmentaion(ABC):
 
-    @abstractstaticmethod
-    def fix():
+    @abstractmethod
+    def fix(self):
         return NotImplementedError
 
 
 class AugmentRobustness(BaseAugmentaion):
 
     def fix(
-        data_path:str,
+        self,
+        input_path:str,
+        output_path,
         h_report,
-        save_path,
-        config= None,
+        inplace: bool = False,
         max_prop:float = 0.5,
-        test: Optional[List[str]] = None,
-        optimized_inplace: bool = False,
+        config= None,
         regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])"
     ):
-        data = DataFactory(data_path).load()
+        data = DataFactory(input_path).load()
         config = {list(i.keys())[0] if type(i) == dict else i: i  for i in config['tests_types']}
         # data['pos_tag'] = data['label'].apply(lambda x: ["NN NN"] * len(x))
         # entites = set(j.split("-")[-1] for i in data['label'] for j in i)
-        suggest = AugmentRobustness.suggestions(h_report)
+        suggest = self.suggestions(h_report)
         sum_propotion = suggest['proportion_increase'].sum()
         if suggest.shape[0] <= 0:
             print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
@@ -45,19 +45,23 @@ class AugmentRobustness(BaseAugmentaion):
             test_type = [config.get(proportion[-1]['test_type'])]
 
             if proportion[-1]['test_type'] in DEFAULT_PERTURBATIONS:
-                if optimized_inplace:
-                    continue
+                sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
+                if inplace:
+                    hash_map = {k: v for k, v in enumerate(data)}
+                    sample_indices = random.sample(range(0, len(data)), int(sample_length))
+                    for each in sample_indices:
+                        hash_map[each] = PerturbationFactory([hash_map[each]], test_type).transform()[0]
+                    fianl_aug_data.extend(list(hash_map.values()))
                 else:
-                    sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
                     sample_data = random.choices(data, k=int(sample_length))
                     aug_data = PerturbationFactory(sample_data, test_type).transform()
                     fianl_aug_data.extend(aug_data)
    
         # data.extend(fianl_aug_data)
-        AugmentRobustness.save(fianl_aug_data, save_path)
+        self.save(fianl_aug_data, output_path)
         return fianl_aug_data
 
-    def suggestions(report):
+    def suggestions(self, report):
         
         def proportion_values(x):
             if x >= 1:
@@ -77,7 +81,7 @@ class AugmentRobustness(BaseAugmentaion):
                                         )
         return report[~report['proportion_increase'].isna()][['test_type', 'ratio', 'proportion_increase']]
 
-    def save(data, save_path):
+    def save(self, data, save_path):
         with open(save_path+"augmenated_train.conll", "w") as fw:
             words = [i.test_case.split() if i.test_case else "" for i in data ]
             fw.write("\n\n".join('-X- -X- \n'.join(ew) for ew in words))
