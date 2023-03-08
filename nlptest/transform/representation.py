@@ -8,14 +8,13 @@ from nlptest.utils.custom_types import Sample
 
 class BaseRepresentation(ABC):
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def transform(self):
         return NotImplementedError
 
 
 class GenderReprestation(BaseRepresentation):
 
-    @staticmethod
     def transform(data: List[Sample]):
         return super().transform()
