@@ -31,7 +31,7 @@ class TestFactory:
 class ITests(ABC):
 
     @abstractmethod
-    def transform(self):
+    def transform():
         return NotImplementedError
 
 
