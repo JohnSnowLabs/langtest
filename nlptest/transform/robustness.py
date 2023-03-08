@@ -22,88 +22,88 @@ class BaseRobustness(ABC):
         return NotImplementedError()
 
 
-class Robustness(ITests):
-    """"""
+# class Robustness(ITests):
+#     """"""
 
-    def __init__(
-            self,
-            data_handler: List[Sample],
-            tests=None
-    ) -> None:
+#     def __init__(
+#             self,
+#             data_handler: List[Sample],
+#             tests=None
+#     ) -> None:
 
-        if tests is []:
-            tests = DEFAULT_PERTURBATIONS
+#         if tests is []:
+#             tests = DEFAULT_PERTURBATIONS
 
-        self._tests = dict()
-        for test in tests:
+#         self._tests = dict()
+#         for test in tests:
 
-            if isinstance(test, str):
-                if test not in DEFAULT_PERTURBATIONS:
-                    raise ValueError(
-                        f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
-                self._tests[test] = dict()
-            elif isinstance(test, dict):
-                test_name = list(test.keys())[0]
-                if test_name not in DEFAULT_PERTURBATIONS:
-                    raise ValueError(
-                        f'Invalid test specification: {test_name}. Available tests are: {DEFAULT_PERTURBATIONS}')
-                self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
-            else:
-                raise ValueError(
-                    f'Invalid test configuration! Tests can be '
-                    f'[1] test name as string or '
-                    f'[2] dictionary of test name and corresponding parameters.'
-                )
+#             if isinstance(test, str):
+#                 if test not in DEFAULT_PERTURBATIONS:
+#                     raise ValueError(
+#                         f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
+#                 self._tests[test] = dict()
+#             elif isinstance(test, dict):
+#                 test_name = list(test.keys())[0]
+#                 if test_name not in DEFAULT_PERTURBATIONS:
+#                     raise ValueError(
+#                         f'Invalid test specification: {test_name}. Available tests are: {DEFAULT_PERTURBATIONS}')
+#                 self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
+#             else:
+#                 raise ValueError(
+#                     f'Invalid test configuration! Tests can be '
+#                     f'[1] test name as string or '
+#                     f'[2] dictionary of test name and corresponding parameters.'
+#                 )
 
-        if 'swap_entities' in self._tests:
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                             for sample in data_handler]})
-            self._tests['swap_entities']['terminology'] = create_terminology(df)
-            self._tests['swap_entities']['labels'] = df.label.tolist()
+#         if 'swap_entities' in self._tests:
+#             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
+#                    'label': [[i.entity for i in sample.expected_results.predictions]
+#                              for sample in data_handler]})
+#             self._tests['swap_entities']['terminology'] = create_terminology(df)
+#             self._tests['swap_entities']['labels'] = df.label.tolist()
 
 
-        if "american_to_british" in self._tests:
-            self._tests['american_to_british']['accent_map'] = A2B_DICT
+#         if "american_to_british" in self._tests:
+#             self._tests['american_to_british']['accent_map'] = A2B_DICT
 
-        if "british_to_american" in self._tests:
-            self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
+#         if "british_to_american" in self._tests:
+#             self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
-        if 'swap_cohyponyms' in self._tests:
-            nltk.download('omw-1.4')
-            nltk.download('wordnet')
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                         for sample in data_handler]})
-            self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
+#         if 'swap_cohyponyms' in self._tests:
+#             nltk.download('omw-1.4')
+#             nltk.download('wordnet')
+#             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
+#                    'label': [[i.entity for i in sample.expected_results.predictions]
+#                          for sample in data_handler]})
+#             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
-        if 'replace_to_male_pronouns' in self._tests:
-          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
+#         if 'replace_to_male_pronouns' in self._tests:
+#           self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
+#           self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
         
-        if 'replace_to_female_pronouns' in self._tests:
-          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
+#         if 'replace_to_female_pronouns' in self._tests:
+#           self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
+#           self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
 
-        if 'replace_to_neutral_pronouns' in self._tests:
-          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
+#         if 'replace_to_neutral_pronouns' in self._tests:
+#           self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
+#           self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
 
 
-        self._data_handler = data_handler
+#         self._data_handler = data_handler
 
-    def transform(self) -> List[Sample]:
-        """"""
-        # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
-        all_samples = []
-        for test_name, params in self._tests.items():
-            print(test_name)
-            data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
-            for sample in transformed_samples:
-                sample.test_type = test_name
-            all_samples.extend(transformed_samples)
-        return all_samples
+#     def transform(self) -> List[Sample]:
+#         """"""
+#         # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
+#         all_samples = []
+#         for test_name, params in self._tests.items():
+#             print(test_name)
+#             data_handler_copy = [x.copy() for x in self._data_handler]
+#             transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
+#             for sample in transformed_samples:
+#                 sample.test_type = test_name
+#             all_samples.extend(transformed_samples)
+#         return all_samples
 
 
 class UpperCase(BaseRobustness):
