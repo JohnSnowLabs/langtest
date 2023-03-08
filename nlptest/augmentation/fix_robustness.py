@@ -20,6 +20,7 @@ class AugmentRobustness(BaseAugmentaion):
     @staticmethod
     def fix(
             data_path: str,
+            output_path: str,
             h_report,
             config=None,
             max_prop: float = 0.5,
@@ -48,9 +49,7 @@ class AugmentRobustness(BaseAugmentaion):
                     aug_data = PerturbationFactory(sample_data, test_type).transform()
                     final_aug_data.extend(aug_data)
 
-        # data.extend(final_aug_data)
-        # AugmentRobustness.save(final_aug_data, save_path)
-        return final_aug_data
+        data.export(output_path)
 
     @staticmethod
     def suggestions(report):

@@ -1,9 +1,10 @@
 import os
+import csv
 import re
 from abc import ABC, abstractmethod
 from typing import List
 
-import pandas as pd
+
 
 from ..utils.custom_types import NEROutput, NERPrediction, Sample
 
@@ -33,7 +34,8 @@ class DataFactory:
 
     def __init__(
             self,
-            file_path: str
+            file_path: str,
+            task: str,
     ) -> None:
         """Initializes DataFactory object.
 
@@ -44,6 +46,7 @@ class DataFactory:
         self._file_path = file_path
         self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
         _, self.file_ext = os.path.splitext(self._file_path)
+        self.task = task
 
     def load(self):
         """Loads the data for the correct Dataset type.
@@ -51,10 +54,10 @@ class DataFactory:
         Returns:
             list[str]: Loaded text data.
         """
-        self.init_cls = self._class_map[self.file_ext.replace('.', '')](self._file_path)
+        self.init_cls = self._class_map[self.file_ext.replace('.', '')](self._file_path, task=self.task)
         return self.init_cls.load_data()
 
-    def export(self, data: List[Sample], output_path:str):
+    def export(self, data: List[Sample], output_path: str):
         return self.init_cls.export_data(data, output_path)
 
 
@@ -62,7 +65,7 @@ class ConllDataset(_IDataset):
     """Class to handle Conll files. Subclass of _IDataset.
     """
 
-    def __init__(self, file_path) -> None:
+    def __init__(self, file_path:str, task:str) -> None:
         """Initializes ConllDataset object.
 
         Args:
@@ -70,6 +73,10 @@ class ConllDataset(_IDataset):
         """
         super().__init__()
         self._file_path = file_path
+
+        if task != 'ner':
+            raise OSError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
+        self.task = task
 
     def load_data(self) -> List[Sample]:
         """Loads data from a CoNLL file.
@@ -125,6 +132,7 @@ class ConllDataset(_IDataset):
     def export_data(self, data: List[Sample], output_path: str):
         pass
 
+
 class JSONDataset(_IDataset):
     """Class to handle JSON dataset files. Subclass of _IDataset.
     """
@@ -149,7 +157,7 @@ class CSVDataset(_IDataset):
     """Class to handle CSV files dataset. Subclass of _IDataset.
     """
 
-    def __init__(self, file_path) -> None:
+    def __init__(self, file_path: str, task: str) -> None:
         """Initializes CSVDataset object.
 
         Args:
@@ -157,6 +165,7 @@ class CSVDataset(_IDataset):
         """
         super().__init__()
         self._file_path = file_path
+        self.task = task
 
     def load_data(self) -> pd.DataFrame:
         """Loads data from a csv file.

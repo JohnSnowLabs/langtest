@@ -52,7 +52,7 @@ class Harness:
 
         if data is not None:
             if type(data) == str:
-                self.data = DataFactory(data).load()
+                self.data = DataFactory(data, task=self.task).load()
 
         if config is not None:
             self._config = self.configure(config)
@@ -184,8 +184,9 @@ class Harness:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
 
-        self.aug_data = AugmentRobustness.fix(
+        AugmentRobustness.fix(
             input_path,
+            output_path,
             self.df_report,
             self._config
         )
