@@ -8,7 +8,7 @@ import yaml
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import TestRunner
-from .transform.perturbation import PerturbationFactory
+from .transform import TestFactory
 
 
 class Harness:
@@ -17,7 +17,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_HUBS = ["spacy", "transformers", "johnsnowlabs"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
 
     def __init__(
             self,
@@ -88,7 +88,7 @@ class Harness:
             None: The generated testcases are stored in `load_testcases` attribute.
         """
         tests = self._config['tests_types']
-        self.load_testcases = PerturbationFactory(self.data, tests).transform()
+        self.load_testcases = TestFactory.transform(self.data, tests)
         return self
 
     def run(self) -> "Harness":
