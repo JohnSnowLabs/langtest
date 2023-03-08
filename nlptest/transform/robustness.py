@@ -3,7 +3,6 @@ import re
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
-from ..transform import ITests
 
 import numpy as np
 import pandas as pd
