@@ -9,9 +9,6 @@ class BaseBias(ABC):
     def transform(self):
         pass
 
-    @property
-    def tests():
-        return BaseBias.__subclasses__()
     
 
 class Geneder(BaseBias):
