@@ -1,3 +1,5 @@
+import os
+import pickle
 from collections import defaultdict
 from functools import reduce
 from typing import Optional, Union
@@ -52,14 +54,8 @@ class Harness:
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        if data is not None:
-            if type(data) == str:
-                self.data = DataFactory(data).load()
-
-        if config is not None:
-            self._config = self.configure(config)
-        else:
-            self._config = None
+        self.data = DataFactory(data).load() if data is not None else None
+        self._config = self.configure(config) if config is not None else None
 
         self.load_testcases = None
         self.generated_results = None
@@ -181,29 +177,70 @@ class Harness:
         return acc_report
 
     def load_testcases_df(self) -> pd.DataFrame:
-        """Testcases after .generate() is called"""
-        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore",
-                                                                             axis=1)
-
-    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
-             results: str = "test_results.csv") -> None:
         """
-        Save the configuration, generated testcases, and results
-        of the evaluations as yml and csv files.
+        Testcases after .generate() is called
+        """
+        return pd.DataFrame([x.to_dict() for x in self.load_testcases]) \
+            .drop(["pass", "actual_result"], errors="ignore", axis=1)
 
-        Parameters:
-            config (str, optional): Path to the YAML file for the configuration.
-                Default is "test_config.yml".
-            testcases (str, optional): Path to the CSV file for the generated testcases.
-                Default is "test_cases.csv".
-            results (str, optional): Path to the CSV file for the results of the evaluations.
-                Default is "test_results.csv".
+    def save(self, save_dir: str) -> None:
+        """
+        Save the configuration, generated testcases and the `DataFactory` to be reused later.
 
+        Args:
+            save_dir (str): path to folder to save the different files
         Returns:
-            None
+
         """
-        with open(config, 'w') as yml:
+        if self._config is None:
+            raise ValueError("The current Harness has not been configured yet. Please use the `.configure` method "
+                             "before calling the `.save` method.")
+
+        if self.load_testcases is None:
+            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+                             "calling the `.save` method.")
+
+        if not os.path.isdir(save_dir):
+            os.mkdir(save_dir)
+
+        with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self.load_testcases.to_csv(testcases, index=None)
-        self.generated_results.to_csv(results, index=None)
+        with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
+            pickle.dump(self.load_testcases, writer)
+
+        with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
+            pickle.dump(self.data, writer)
+
+    @classmethod
+    def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
+        """
+        Loads a previously saved `Harness` from a given configuration and dataset
+
+        Args:
+            save_dir (str):
+                path to folder containing all the needed files to load an saved `Harness`
+            task (str):
+                task for which the model is to be evaluated.
+            model (str | ModelFactory):
+                ModelFactory object or path to the model to be evaluated.
+            hub (str, optional):
+                model hub to load from the path. Required if path is passed as 'model'.
+        Returns:
+            Harness:
+                `Harness` loaded from from a previous configuration along with the new model to evaluate
+        """
+        for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
+            if not os.path.exists(os.path.join(save_dir, filename)):
+                raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
+
+        harness = Harness(task=task, model=model, hub=hub)
+        harness.configure(os.path.join(save_dir, "config.yaml"))
+
+        with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
+            harness.load_testcases = pickle.load(reader)
+
+        with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
+            harness.data = pickle.load(reader)
+
+        return harness

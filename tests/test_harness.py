@@ -1,3 +1,4 @@
+import os
 import sys
 import unittest
 
@@ -68,3 +69,28 @@ class HarnessTestCase(unittest.TestCase):
                 data=self.data_path,
                 config=self.config_path
             )
+
+    def test_save(self):
+        """"""
+        save_dir = "/tmp/saved_harness_test"
+        self.harness.generate()
+        self.harness.save(save_dir)
+
+        self.assertCountEqual(os.listdir(save_dir), ['config.yaml', 'test_cases.pkl', 'data.pkl'])
+
+    def test_load(self):
+        """"""
+        save_dir = "/tmp/saved_harness_test"
+        self.harness.generate()
+        self.harness.save(save_dir)
+
+        loaded_harness = Harness.load(
+            save_dir=save_dir,
+            task="ner",
+            model="bert-base-cased",
+            hub="transformers"
+        )
+        self.assertEqual(self.harness.load_testcases, loaded_harness.load_testcases)
+        self.assertEqual(self.harness._config, loaded_harness._config)
+        self.assertEqual(self.harness.data, loaded_harness.data)
+        self.assertNotEqual(self.harness.model, loaded_harness.model)
