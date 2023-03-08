@@ -1,5 +1,7 @@
 import random
 import re
+import logging
+
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
@@ -99,12 +101,13 @@ class PerturbationFactory:
             transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
             for sample in transformed_samples:
                 sample.test_type = test_name
-            transformed_samples = [x for x in transformed_samples if x.original != x.test_case]
 
+            # Check for number of perturbed sentences
+            transformed_samples = [x for x in transformed_samples if x.original != x.test_case]
             if len(transformed_samples) == 0:
-                print(test_name, "did not create any test cases. Test will be removed from results.")
+                logging.warning("%s did not create any test cases. Test will be removed from results.", test_name)
             elif len(transformed_samples) < 10:
-                print(test_name, "has perturbed", len(transformed_samples), "sample(s). Results may not be reliable.")
+                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name, len(transformed_samples))
 
             all_samples.extend(transformed_samples)
         return all_samples
