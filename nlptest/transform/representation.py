@@ -7,9 +7,8 @@ from nlptest.utils.custom_types import Sample
 
 
 class BaseRepresentation(ABC):
-
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def transform(self):
         return NotImplementedError
 
