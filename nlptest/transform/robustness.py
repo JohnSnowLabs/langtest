@@ -3,10 +3,12 @@ import re
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
+from ..transform import ITests
 
 import numpy as np
 import pandas as pd
 import nltk
+
 
 from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
 from ..utils.custom_types import Sample, Span, Transformation
@@ -20,7 +22,7 @@ class BaseRobustness(ABC):
         return NotImplementedError()
 
 
-class RobustnessFactory:
+class Robustness(ITests):
     """"""
 
     def __init__(

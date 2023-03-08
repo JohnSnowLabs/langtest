@@ -35,21 +35,21 @@ class ITests(ABC):
         return NotImplementedError
 
 
-class Robustness(ITests):
+# class Robustness(ITests):
 
-    @staticmethod
-    def transform(data: List[Sample], test_types: dict):
-        all_results = []
-        all_tests = Robustness.get_tests()
-        for each in list(test_types.keys()):
-            values = test_types[each]
-            all_results.append(
-                all_tests[each]().transform(data)
-            )
+#     @staticmethod
+#     def transform(data: List[Sample], test_types: dict):
+#         all_results = []
+#         all_tests = Robustness.get_tests()
+#         for each in list(test_types.keys()):
+#             values = test_types[each]
+#             all_results.append(
+#                 all_tests[each]().transform(data)
+#             )
 
-    @staticmethod
-    def get_tests() -> dict:
-        return {cls.__name__.lower(): cls for cls in BaseRobustness.__subclasses__()}
+#     @staticmethod
+#     def get_tests() -> dict:
+#         return {cls.__name__.lower(): cls for cls in BaseRobustness.__subclasses__()}
 
 class Bias(ITests):
 
