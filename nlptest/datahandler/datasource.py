@@ -192,8 +192,8 @@ class CSVDataset(_IDataset):
             sent_indx = 0
             samples = []
             for row in csv_reader:
-                if not column_map:
-                    column_map = self.match_column_names(list(row.keys()))
+                if not self.column_map:
+                    self.column_map = self.match_column_names(list(row.keys()))
 
                 if self.task == 'ner':
                     samples.append(
@@ -269,10 +269,9 @@ class CSVDataset(_IDataset):
 
         not_referenced_columns = {k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
         if not_referenced_columns:
-            proper_column_names = {}
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
                 f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
-                f"You can use following namespaces:\n{proper_column_names}"
+                f"You can use following namespaces:\n{not_referenced_columns}"
             )
         return column_map
