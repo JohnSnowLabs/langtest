@@ -261,14 +261,15 @@ class CSVDataset(_IDataset):
         return Sample(original=original, expected_results=SequenceClassificationOutput(labels=[label]))
 
     def match_column_names(self, column_names: List[str]):
+        print(column_names)
         column_map = {k: None for k in self.COLUMN_NAMES}
         for c in column_names:
             for key, reference_columns in self.COLUMN_NAMES.items():
-                if c in reference_columns:
+                if c.lower() in reference_columns:
                     column_map[key] = c
 
         not_referenced_columns = {k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
-        if not not_referenced_columns:
+        if not_referenced_columns:
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
                 f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
