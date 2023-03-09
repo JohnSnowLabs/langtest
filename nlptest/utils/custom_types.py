@@ -134,7 +134,6 @@ class SequenceLabel(BaseModel):
     label: str
     score: float
 
-
 class SequenceClassificationOutput(BaseModel):
     """
     Output model for text classification tasks.
@@ -210,8 +209,6 @@ class Sample(BaseModel):
             })
 
         return result
-            
-
 
     @validator("transformations")
     def sort_transformations(cls, v):

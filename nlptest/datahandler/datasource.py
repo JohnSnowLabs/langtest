@@ -4,7 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List, Dict
 
-from ..utils.custom_types import NEROutput, NERPrediction, Sample
+from ..utils.custom_types import NEROutput, SequenceClassificationOutput, NERPrediction, SequenceLabel, Sample
 
 
 class _IDataset(ABC):
@@ -202,11 +202,12 @@ class CSVDataset(_IDataset):
 
                 elif self.task == 'text-classification':
                     samples.append(
-                        self.row_to_seq_classification_sample(row, sent_indx)
+                        self.row_to_seq_classification_sample(row)
                     )
 
                 sent_indx += 1
 
+        return samples
 
     def export_data(self):
         pass
@@ -251,6 +252,13 @@ class CSVDataset(_IDataset):
 
         return Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
 
+    def row_to_seq_classification_sample(self, row: Dict[str, str]) -> Sample:
+
+        original = row[self.column_map['text']]
+        #   label score should be 1 since it is ground truth, required for __eq__
+        label = SequenceLabel(label=row[self.column_map['label']], score=1)
+
+        return Sample(original=original, expected_results=SequenceClassificationOutput(labels=[label]))
 
     def match_column_names(self, column_names: List[str]):
         column_map = {k: None for k in self.COLUMN_NAMES}
