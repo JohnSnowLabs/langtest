@@ -2,9 +2,7 @@ import os
 import csv
 import re
 from abc import ABC, abstractmethod
-from typing import List
-
-
+from typing import List, Dict
 
 from ..utils.custom_types import NEROutput, NERPrediction, Sample
 
@@ -156,6 +154,18 @@ class JSONDataset(_IDataset):
 class CSVDataset(_IDataset):
     """Class to handle CSV files dataset. Subclass of _IDataset.
     """
+    COLUMN_NAMES = {
+        'text-classification': {
+            'text': ['text', 'sentences', 'sentence', 'sample'],
+            'label': ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity']
+        },
+        'ner': {
+            'text': ['text', 'sentences', 'sentence', 'sample'],
+            'ner': ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'],
+            'pos': ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'],
+            'chunk': ['chunk_tags', 'chunk_tag']
+        }
+    }
 
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes CSVDataset object.
@@ -166,14 +176,95 @@ class CSVDataset(_IDataset):
         super().__init__()
         self._file_path = file_path
         self.task = task
+        self.delimiter = self.find_delimiter(file_path)
+        self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
+        self.column_map = None
 
-    def load_data(self) -> pd.DataFrame:
+    def load_data(self) -> List[Sample]:
         """Loads data from a csv file.
 
         Returns:
-            pd.DataFrame: Csv file as a pandas dataframe.
+
         """
-        return pd.read_csv(self._file_path)
-    
+        with open(self._file_path, newline='') as csv_file:
+            csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
+
+            sent_indx = 0
+            samples = []
+            for row in csv_reader:
+                if not column_map:
+                    column_map = self.match_column_names(list(row.keys()))
+
+                if self.task == 'ner':
+                    samples.append(
+                        self.row_to_ner_sample(row, sent_indx)
+                    )
+
+                elif self.task == 'text-classification':
+                    samples.append(
+                        self.row_to_seq_classification_sample(row, sent_indx)
+                    )
+
+                sent_indx += 1
+
+
     def export_data(self):
         pass
+
+    #   helpers
+    @staticmethod
+    def find_delimiter(file_path):
+        sniffer = csv.Sniffer()
+        with open(file_path) as fp:
+            first_line = fp.readline()
+            delimiter = sniffer.sniff(first_line).delimiter
+        return delimiter
+
+    def row_to_ner_sample(self, row: Dict[str, List[str]], sent_indx: int) -> Sample:
+        assert all(isinstance(value, list) for value in row.values()),\
+            ValueError(f"Column ({sent_indx}th) values should be list that contains tokens or labels. "
+                       "Given CSV file has invalid values")
+
+        token_num = len(row['text'])
+        assert all(len(value) == token_num for value in row.values()), \
+            ValueError(f"Column ({sent_indx}th) values should have same length with number of token in text, "
+                       f"which is {token_num}")
+
+        original = " ".join(row['text'])
+        ner_labels = list()
+        cursor = 0
+        for token_indx in range(len(row['text'])):
+            token = row[self.column_map['text']][token_indx]
+            ner_labels.append(
+                NERPrediction.from_span(
+                    entity=row[self.column_map['ner']][token_indx],
+                    word=token,
+                    start=cursor,
+                    end=cursor + len(token),
+                    pos_tag=row[self.column_map['pos']][token_indx]
+                    if row.get(self.column_map['pos'], None) else None,
+                    chunk_tag=row[self.column_map['chunk']][token_indx]
+                    if row.get(self.column_map['chunk'], None) else None,
+                )
+            )
+            cursor += len(token) + 1  # +1 to account for the white space
+
+        return Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+
+
+    def match_column_names(self, column_names: List[str]):
+        column_map = {k: None for k in self.COLUMN_NAMES}
+        for c in column_names:
+            for key, reference_columns in self.COLUMN_NAMES.items():
+                if c in reference_columns:
+                    column_map[key] = c
+
+        not_referenced_columns = {k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
+        if not_referenced_columns:
+            proper_column_names = {}
+            raise OSError(
+                f"CSV file is invalid. CSV handler works with template column names!\n"
+                f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
+                f"You can use following namespaces:\n{proper_column_names}"
+            )
+        return column_map
