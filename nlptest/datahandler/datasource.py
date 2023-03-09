@@ -1,5 +1,5 @@
-import os
 import csv
+import os
 import re
 from abc import ABC, abstractmethod
 from typing import List, Dict
@@ -17,7 +17,7 @@ class _IDataset(ABC):
     def load_data(self):
         """Load data from the file_path."""
         return NotImplemented
-    
+
     @abstractmethod
     def export_data(self):
         return NotImplemented
@@ -63,7 +63,7 @@ class ConllDataset(_IDataset):
     """Class to handle Conll files. Subclass of _IDataset.
     """
 
-    def __init__(self, file_path:str, task:str) -> None:
+    def __init__(self, file_path: str, task: str) -> None:
         """Initializes ConllDataset object.
 
         Args:
@@ -122,8 +122,8 @@ class ConllDataset(_IDataset):
                     original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                            Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
-                        )
+                        Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+                    )
 
         return data
 
@@ -222,7 +222,7 @@ class CSVDataset(_IDataset):
         return delimiter
 
     def row_to_ner_sample(self, row: Dict[str, List[str]], sent_indx: int) -> Sample:
-        assert all(isinstance(value, list) for value in row.values()),\
+        assert all(isinstance(value, list) for value in row.values()), \
             ValueError(f"Column ({sent_indx}th) values should be list that contains tokens or labels. "
                        "Given CSV file has invalid values")
 
@@ -261,7 +261,6 @@ class CSVDataset(_IDataset):
         return Sample(original=original, expected_results=SequenceClassificationOutput(labels=[label]))
 
     def match_column_names(self, column_names: List[str]):
-        print(column_names)
         column_map = {k: None for k in self.COLUMN_NAMES}
         for c in column_names:
             for key, reference_columns in self.COLUMN_NAMES.items():
