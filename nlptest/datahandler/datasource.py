@@ -157,7 +157,7 @@ class CSVDataset(_IDataset):
     COLUMN_NAMES = {
         'text-classification': {
             'text': ['text', 'sentences', 'sentence', 'sample'],
-            'label': ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity']
+            'label': ['label', 'labels ', 'class', 'classes']
         },
         'ner': {
             'text': ['text', 'sentences', 'sentence', 'sample'],
