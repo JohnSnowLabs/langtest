@@ -19,6 +19,8 @@ class BaseRobustness(ABC):
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         return NotImplementedError()
+    
+    alias_name = None
 
 
 # class Robustness(ITests):
@@ -106,6 +108,8 @@ class BaseRobustness(ABC):
 
 
 class UpperCase(BaseRobustness):
+    alias_name = "uppercase"
+    
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Transform a list of strings with uppercase perturbation
@@ -120,6 +124,8 @@ class UpperCase(BaseRobustness):
 
 
 class LowerCase(BaseRobustness):
+    alias_name = "lowercase"
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Transform a list of strings with lowercase perturbation
@@ -134,6 +140,8 @@ class LowerCase(BaseRobustness):
 
 
 class TitleCase(BaseRobustness):
+    alias_name = 'titlecase'
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Transform a list of strings with titlecase perturbation
@@ -148,6 +156,9 @@ class TitleCase(BaseRobustness):
 
 
 class AddPunctuation(BaseRobustness):
+
+    alias_name = 'add_punctuation'
+
     @staticmethod
     def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
@@ -170,6 +181,9 @@ class AddPunctuation(BaseRobustness):
 
 
 class StripPunctuation(BaseRobustness):
+
+    alias_name = "strip_punctuation"
+
     @staticmethod
     def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation from the string, if there isn't punctuation at the end skip it
@@ -193,6 +207,9 @@ class StripPunctuation(BaseRobustness):
 
 
 class AddTypo(BaseRobustness):
+
+    alias_name = 'add_typo'
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Add typo to the sentences using keyboard typo and swap typo.
@@ -238,6 +255,9 @@ class AddTypo(BaseRobustness):
 
 
 class SwapEntities(BaseRobustness):
+
+    alias_name = 'swap_entites'
+
     @staticmethod
     def transform(
             sample_list: List[Sample],
@@ -335,6 +355,9 @@ def get_cohyponyms_wordnet(word: str) -> str:
             return name.replace("_", " ").split(".")[0][7:]
 
 class GenderPronounBias(BaseRobustness):
+
+    alias_name = "gender_pronoun_bias"
+
     @staticmethod
     def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type:str) -> List[Sample]:
         """Replace pronouns to check the gender bias
@@ -380,6 +403,8 @@ class GenderPronounBias(BaseRobustness):
 
 
 class SwapCohyponyms(BaseRobustness):
+
+    alias_name = "swap_cohyponyms"
 
     @staticmethod
     def transform(
@@ -433,6 +458,8 @@ class SwapCohyponyms(BaseRobustness):
 
 class ConvertAccent(BaseRobustness):
 
+    alias_name = ["american_to_british", "british_to_american"]
+
     @staticmethod
     def transform(sample_list: List[Sample], accent_map: Dict[str, str] = None) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
@@ -451,6 +478,8 @@ class ConvertAccent(BaseRobustness):
 
 
 class AddContext(BaseRobustness):
+
+    alias_name = 'add_context'
 
     @staticmethod
     def transform(
@@ -522,6 +551,8 @@ class AddContext(BaseRobustness):
 
 
 class AddContraction(BaseRobustness):
+
+    alias_name = 'add_contraction'
 
     @staticmethod
     def transform(

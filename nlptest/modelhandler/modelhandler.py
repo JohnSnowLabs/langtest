@@ -29,7 +29,7 @@ class ModelFactory:
     A factory class for instantiating models.
     """
     SUPPORTED_TASKS = ["ner", "text-classification"]
-    SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'huggingface', 'spacy']
+    SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy']
     SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
 
     def __init__(
@@ -87,6 +87,8 @@ class ModelFactory:
 
         if hub == 'johnsnowlabs':
             modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
+        elif hub == 'huggingface':
+            modelhandler_module = importlib.import_module('nlptest.modelhandler.transformers_modelhandler')
         else:
             modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
 

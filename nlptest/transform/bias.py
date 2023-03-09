@@ -7,11 +7,15 @@ class BaseBias(ABC):
 
     @abstractmethod
     def transform(self):
-        pass
+        return NotImplementedError
+
+    alias_name = None
 
     
 
-class Geneder(BaseBias):
+class GenderBias(BaseBias):
+
+    alias_name = "gender_bias"
 
     def transform(self):
         return super().transform()

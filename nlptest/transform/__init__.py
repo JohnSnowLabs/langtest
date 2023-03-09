@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractclassmethod, abstractmethod
 from typing import List
 from functools import reduce
 from typing import Dict, List, Optional
@@ -24,22 +24,31 @@ class TestFactory:
     def transform(data: List[Sample], test_types: dict):
         all_results = []
         all_categories = TestFactory.test_catgories()
-        process = []
+        # process = []
         for each in list(test_types.keys()):
             values = test_types[each]
-            all_results.append(
-                all_categories[each]().transform(data, values)
+            all_results.extend(
+                all_categories[each](data, values).transform()
             )
+        return all_results
 
-    @staticmethod
-    def test_catgories():
+    @classmethod
+    def test_catgories(cls):
         return {cls.__name__.lower(): cls for cls in ITests.__subclasses__()}
+    
+    @classmethod
+    def test_scenarios(cls):
+        return {cls.__name__.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
 
 
 class ITests(ABC):
 
     @abstractmethod
-    def transform():
+    def transform(self):
+        return NotImplementedError
+    
+    @abstractclassmethod
+    def available_tests(cls):
         return NotImplementedError
 
 
@@ -66,23 +75,25 @@ class Robustness(ITests):
             data_handler: List[Sample],
             tests=None
     ) -> None:
+        
+        self.supported_tests = self.available_tests()
 
         if tests is []:
-            tests = DEFAULT_PERTURBATIONS
+            tests = self.supported_tests
 
         self._tests = dict()
         for test in tests:
 
             if isinstance(test, str):
-                if test not in DEFAULT_PERTURBATIONS:
+                if test not in self.supported_tests:
                     raise ValueError(
-                        f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
+                        f'Invalid test specification: {test}. Available tests are: {self.supported_tests}')
                 self._tests[test] = dict()
             elif isinstance(test, dict):
                 test_name = list(test.keys())[0]
-                if test_name not in DEFAULT_PERTURBATIONS:
+                if test_name not in self.supported_tests:
                     raise ValueError(
-                        f'Invalid test specification: {test_name}. Available tests are: {DEFAULT_PERTURBATIONS}')
+                        f'Invalid test specification: {test_name}. Available tests are: {self.supported_tests}')
                 self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
             else:
                 raise ValueError(
@@ -113,19 +124,6 @@ class Robustness(ITests):
                          for sample in data_handler]})
             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
-        if 'replace_to_male_pronouns' in self._tests:
-          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
-        
-        if 'replace_to_female_pronouns' in self._tests:
-          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
-
-        if 'replace_to_neutral_pronouns' in self._tests:
-          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
-
-
         self._data_handler = data_handler
 
     def transform(self) -> List[Sample]:
@@ -135,16 +133,23 @@ class Robustness(ITests):
         for test_name, params in self._tests.items():
             print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
         return all_samples
+    
+    @classmethod
+    def available_tests(cls) -> dict:
+        tests = {
+            j: i for i in BaseRobustness.__subclasses__() 
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+            }
+        return tests
 
 class Bias(ITests):
 
-    @staticmethod
-    def transform(data: List[Sample], test_types: dict):
+    def transform(self, data: List[Sample], test_types: dict):
         all_results = []
         all_tests = Bias.get_tests()
         for each in list(test_types.keys()):
@@ -154,15 +159,19 @@ class Bias(ITests):
             )
         return all_results
     
-    @staticmethod
-    def get_tests(self) -> dict:
-        return {cls.__name__.lower(): cls for cls in BaseBias.__subclasses__()}
+    @classmethod
+    def available_tests(cls) -> dict:
+        tests = {
+            j: i for i in BaseBias.__subclasses__() 
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+            }
+        return tests
     
 
 class Representation(ITests):
 
-    @staticmethod
-    def transform(data: List[Sample], test_types: dict):
+    
+    def transform(self, data: List[Sample], test_types: dict):
         all_results = []
         all_tests = Representation.get_tests()
         for each in list(test_types.keys()):
@@ -173,6 +182,11 @@ class Representation(ITests):
         return all_results
     
 
-    def get_tests(self) -> dict:
-        return {cls.__name__.lower(): cls for cls in BaseRepresentation.__subclasses__()}
+    @classmethod
+    def available_tests(cls) -> dict:
+        tests = {
+            j: i for i in BaseRepresentation.__subclasses__() 
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+            }
+        return tests
 
