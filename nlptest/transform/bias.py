@@ -1,5 +1,3 @@
-
-
 from abc import ABC, abstractmethod
 import random
 from typing import List
@@ -17,15 +15,6 @@ class BaseBias(ABC):
     alias_name = None
 
     
-
-# class GenderBias(BaseBias):
-
-#     alias_name = ["gender_bias"]
-
-#     def transform(self):
-#         return super().transform()
-
-
 class GenderPronounBias(BaseBias):
     alias_name = [
         "replace_to_male_pronouns",
