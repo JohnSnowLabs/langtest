@@ -149,15 +149,63 @@ class Robustness(ITests):
 
 class Bias(ITests):
 
-    def transform(self, data: List[Sample], test_types: dict):
-        all_results = []
-        all_tests = Bias.get_tests()
-        for each in list(test_types.keys()):
-            values = test_types[each]
-            all_results.extend(
-                all_tests[each]().transform(data, values)
-            )
-        return all_results
+    def __init__(
+            self,
+            data_handler: List[Sample],
+            tests=None
+     ) -> None:
+        
+        self.supported_tests = self.available_tests()
+
+        if tests is []:
+            tests = self.supported_tests
+
+        self._tests = dict()
+        for test in tests:
+
+            if isinstance(test, str):
+                if test not in self.supported_tests:
+                    raise ValueError(
+                        f'Invalid test specification: {test}. Available tests are: {self.supported_tests}')
+                self._tests[test] = dict()
+            elif isinstance(test, dict):
+                test_name = list(test.keys())[0]
+                if test_name not in self.supported_tests:
+                    raise ValueError(
+                        f'Invalid test specification: {test_name}. Available tests are: {self.supported_tests}')
+                self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
+            else:
+                raise ValueError(
+                    f'Invalid test configuration! Tests can be '
+                    f'[1] test name as string or '
+                    f'[2] dictionary of test name and corresponding parameters.'
+                )
+
+
+        if 'replace_to_male_pronouns' in self._tests:
+          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
+          self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
+        
+        if 'replace_to_female_pronouns' in self._tests:
+          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
+          self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
+
+        if 'replace_to_neutral_pronouns' in self._tests:
+          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
+          self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
+
+        self._data_handler = data_handler
+
+    def transform(self):
+        all_samples = []
+        for test_name, params in self._tests.items():
+            print(test_name)
+            data_handler_copy = [x.copy() for x in self._data_handler]
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params)
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+        return all_samples
     
     @classmethod
     def available_tests(cls) -> dict:
@@ -170,16 +218,53 @@ class Bias(ITests):
 
 class Representation(ITests):
 
+    def __init__(
+        self,
+        data_handler: List[Sample],
+        tests=None
+    ) -> None:
     
-    def transform(self, data: List[Sample], test_types: dict):
-        all_results = []
-        all_tests = Representation.get_tests()
-        for each in list(test_types.keys()):
-            values = test_types[each]
-            all_results.extend(
-                all_tests[each]().transform(data, values)
-            )
-        return all_results
+        self.supported_tests = self.available_tests()
+
+        if tests is []:
+            tests = self.supported_tests
+
+        self._tests = dict()
+        for test in tests:
+
+            if isinstance(test, str):
+                if test not in self.supported_tests:
+                    raise ValueError(
+                        f'Invalid test specification: {test}. Available tests are: {self.supported_tests}')
+                self._tests[test] = dict()
+            elif isinstance(test, dict):
+                test_name = list(test.keys())[0]
+                if test_name not in self.supported_tests:
+                    raise ValueError(
+                        f'Invalid test specification: {test_name}. Available tests are: {self.supported_tests}')
+                self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
+            else:
+                raise ValueError(
+                    f'Invalid test configuration! Tests can be '
+                    f'[1] test name as string or '
+                    f'[2] dictionary of test name and corresponding parameters.'
+                )
+
+
+        self._data_handler = data_handler
+
+
+    
+    def transform(self):
+        all_samples = []
+        for test_name, params in self._tests.items():
+            print(test_name)
+            data_handler_copy = [x.copy() for x in self._data_handler]
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params)
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+        return all_samples
     
 
     @classmethod
