@@ -268,7 +268,7 @@ class CSVDataset(_IDataset):
                     column_map[key] = c
 
         not_referenced_columns = {k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
-        if not_referenced_columns:
+        if not not_referenced_columns:
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
                 f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
