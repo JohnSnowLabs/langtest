@@ -61,8 +61,8 @@ class Harness:
         else:
             self._config = None
 
-        self.load_testcases = None
-        self.generated_results = None
+        self._testcases = None
+        self._generated_results = None
         self.accuracy_results = None
 
     def configure(self, config: Union[str, dict]):
@@ -88,10 +88,10 @@ class Harness:
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            None: The generated testcases are stored in `load_testcases` attribute.
+            None: The generated testcases are stored in `_testcases` attribute.
         """
         tests = self._config['tests_types']
-        self.load_testcases = PerturbationFactory(self.data, tests).transform()
+        self._testcases = PerturbationFactory(self.data, tests).transform()
         return self
 
     def run(self) -> "Harness":
@@ -101,7 +101,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model,
+        self._generated_results, self.accuracy_results = TestRunner(self._testcases, self.model,
                                                                    self.data).evaluate()
         return self
 
@@ -118,7 +118,7 @@ class Harness:
             min_pass_dict = self._config['min_pass_rate']
 
         summary = defaultdict(lambda: defaultdict(int))
-        for sample in self.generated_results:
+        for sample in self._generated_results:
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -149,14 +149,14 @@ class Harness:
 
         return df_final.fillna("-")
 
-    def generated_results_df(self) -> pd.DataFrame:
+    def generated_results(self) -> pd.DataFrame:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
         Returns:
             pd.DataFrame: Generated dataframe.
         """
-        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
         accuracy_df = self.accuracy_report()
 
         return pd.concat([generated_results_df, accuracy_df]).fillna("-")
@@ -180,9 +180,9 @@ class Harness:
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
 
-    def load_testcases_df(self) -> pd.DataFrame:
+    def testcases(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
-        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore",
+        return pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
@@ -205,5 +205,5 @@ class Harness:
         with open(config, 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self.load_testcases.to_csv(testcases, index=None)
-        self.generated_results.to_csv(results, index=None)
+        self._testcases.to_csv(testcases, index=None)
+        self._generated_results.to_csv(results, index=None)
