@@ -211,10 +211,14 @@ class Sample(BaseModel):
     
     def to_dict(self):
         """Returns the dict version of sample."""
-
-        expected_result = self.expected_results.to_str_list()
-        actual_result = self.actual_results.to_str_list() if self.actual_results else None
         
+        try:
+            expected_result = self.expected_results.predictions
+            actual_result = self.actual_results.predictions if self.actual_results else None
+        except:
+            expected_result = self.expected_results.labels
+            actual_result = self.actual_results.labels if self.actual_results else None
+
         result = {
             'category':self.category,
             'test_type': self.test_type,
