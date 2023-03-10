@@ -91,7 +91,7 @@ class Harness:
             None: The generated testcases are stored in `_testcases` attribute.
         """
         tests = self._config['tests']
-        self.load_testcases = TestFactory.transform(self.data, tests)
+        self._testcases = TestFactory.transform(self.data, tests)
         return self
 
     def run(self) -> "Harness":
