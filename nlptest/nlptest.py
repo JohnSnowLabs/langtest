@@ -187,7 +187,7 @@ class Harness:
 
     def testcases(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
-        return pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
+        final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
         
         final_df = final_df.reset_index(drop=True)
