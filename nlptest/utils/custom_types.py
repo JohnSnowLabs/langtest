@@ -143,6 +143,10 @@ class SequenceLabel(BaseModel):
     label: str
     score: float
 
+    def __str__(self):
+        return f"{self.label}"
+
+
 
 class SequenceClassificationOutput(BaseModel):
     """
@@ -210,7 +214,7 @@ class Sample(BaseModel):
 
         expected_result = self.expected_results.to_str_list()
         actual_result = self.actual_results.to_str_list() if self.actual_results else None
-
+        
         result = {
             'category':self.category,
             'test_type': self.test_type,
