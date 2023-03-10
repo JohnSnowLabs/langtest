@@ -180,6 +180,7 @@ class Sample(BaseModel):
     actual_results: Result = None
     transformations: List[Transformation] = None
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
+    category: str = None
 
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
 
@@ -197,6 +198,7 @@ class Sample(BaseModel):
             actual_result = self.actual_results.labels if self.actual_results else None
 
         result = {
+            'category':self.category,
             'test_type': self.test_type,
             'original': self.original,
             'test_case': self.test_case,
