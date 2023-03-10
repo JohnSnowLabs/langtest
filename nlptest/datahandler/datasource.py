@@ -109,8 +109,8 @@ class ConllDataset(_IDataset):
                     original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                            Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
-                        )
+                        Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+                    )
 
         return data
 
