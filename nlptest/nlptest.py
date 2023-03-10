@@ -146,11 +146,13 @@ class Harness:
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
+        df_accuracy['category'] = 'Accuracy' #Temporary fix
 
         df_final = pd.concat([df_report, df_accuracy])
         col_to_move = 'category'
         first_column = df_final.pop('category')
         df_final.insert(0, col_to_move, first_column)
+        df_final = df_final.reset_index()
 
         return df_final.fillna("-")
 
