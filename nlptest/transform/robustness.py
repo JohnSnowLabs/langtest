@@ -3,13 +3,9 @@ import re
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
-
 import numpy as np
-import pandas as pd
-import nltk
 
-
-from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -171,7 +167,7 @@ class AddTypo(BaseRobustness):
 
 class SwapEntities(BaseRobustness):
 
-    alias_name = 'swap_entites'
+    alias_name = 'swap_entities'
 
     @staticmethod
     def transform(
