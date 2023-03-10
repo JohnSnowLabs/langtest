@@ -8,11 +8,31 @@ from .utils import male_pronouns, female_pronouns, neutral_pronouns
 
 class BaseBias(ABC):
 
+    """
+    Abstract base class for implementing bias measures.
+
+    Attributes:
+        alias_name (str): A name or list of names that identify the bias measure.
+
+    Methods:
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented bias measure.
+    """
+    alias_name = None
+
+
     @abstractmethod
     def transform(self):
+        """
+        Abstract method that implements the bias measure.
+
+        Args:
+            data (List[Sample]): The input data to be transformed.
+
+        Returns:
+            Any: The transformed data based on the implemented bias measure.
+        """
         return NotImplementedError
 
-    alias_name = None
 
     
 class GenderPronounBias(BaseBias):
@@ -21,7 +41,7 @@ class GenderPronounBias(BaseBias):
         "replace_to_female_pronouns",
         "replace_to_neutral_pronouns"
     ]
-    
+
     @staticmethod
     def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type:str) -> List[Sample]:
         """Replace pronouns to check the gender bias

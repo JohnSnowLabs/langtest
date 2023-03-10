@@ -18,8 +18,42 @@ from ..utils.custom_types import Sample, Span, Transformation
 
 class TestFactory:
 
+    """
+    A factory class for creating and running different types of tests on data.
+
+    ...
+
+    Methods
+    -------
+    transform(data: List[Sample], test_types: dict) -> List[Results]:
+        Runs the specified tests on the given data and returns a list of results.
+
+    test_categories() -> dict:
+        Returns a dictionary mapping test category names to the corresponding test classes.
+
+    test_scenarios() -> dict:
+        Returns a dictionary mapping test class names to the available test scenarios for each class.
+    """
+
     @staticmethod
     def transform(data: List[Sample], test_types: dict):
+
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Parameters
+        ----------
+        data : List[Sample]
+            The data to be tested.
+        test_types : dict
+            A dictionary mapping test category names to lists of test scenario names.
+
+        Returns
+        -------
+        List[Results]
+            A list of results from running the specified tests on the data.
+        """
+
         all_results = []
         all_categories = TestFactory.test_catgories()
         # process = []
@@ -32,26 +66,102 @@ class TestFactory:
 
     @classmethod
     def test_catgories(cls):
+
+        """
+        Returns a dictionary mapping test category names to the corresponding test classes.
+
+        Returns
+        -------
+        dict
+            A dictionary mapping test category names to the corresponding test classes.
+        """
+         
         return {cls.__name__.lower(): cls for cls in ITests.__subclasses__()}
     
     @classmethod
     def test_scenarios(cls):
+
+        """
+        Returns a dictionary mapping test class names to the available test scenarios for each class.
+
+        Returns
+        -------
+        dict
+            A dictionary mapping test class names to the available test scenarios for each class.
+        """
+
         return {cls.__name__.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
 
 
 class ITests(ABC):
 
+    """
+    An abstract base class for defining different types of tests.
+
+    ...
+
+    Methods
+    -------
+    transform() -> List[Results]:
+        Runs the test and returns the results.
+
+    available_tests() -> List[str]:
+        Returns a list of available test scenarios for the test class.
+    """
+
     @abstractmethod
     def transform(self):
+
+        """
+        Runs the test and returns the results.
+
+        Returns
+        -------
+        List[Results]
+            A list of results from running the test.
+        """
+
         return NotImplementedError
     
     @abstractclassmethod
     def available_tests(cls):
+
+        """
+        Returns a list of available test scenarios for the test class.
+
+        Returns
+        -------
+        List[str]
+            A list of available test scenarios for the test class.
+        """
+
         return NotImplementedError
 
 
 class Robustness(ITests):
-    """"""
+
+    """
+    A class for performing robustness tests on a given dataset.
+
+    ...
+
+    Attributes
+    ----------
+    supported_tests : dict
+        A dictionary of supported robustness test scenarios.
+    tests : dict
+        A dictionary of test names and corresponding parameters.
+    _data_handler : List[Sample]
+        A list of `Sample` objects representing the input dataset.
+
+    Methods
+    -------
+    transform() -> List[Sample]:
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+    available_tests() -> dict:
+        Returns a dictionary of available test scenarios for the `Robustness` class.
+    """
 
     def __init__(
             self,
@@ -59,6 +169,17 @@ class Robustness(ITests):
             tests=None
     ) -> None:
         
+        """
+        Initializes a new instance of the `Robustness` class.
+
+        Parameters
+        ----------
+        data_handler : List[Sample]
+            A list of `Sample` objects representing the input dataset.
+        tests : dict, optional
+            A dictionary of test names and corresponding parameters (default is None).
+        """
+
         self.supported_tests = self.available_tests()
         self.tests = tests
         
@@ -105,7 +226,14 @@ class Robustness(ITests):
         self._data_handler = data_handler
 
     def transform(self) -> List[Sample]:
-        """"""
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns
+        -------
+        List[Sample]
+            A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
         # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
         all_samples = []
         for test_name, params in self.tests.items():
@@ -119,6 +247,15 @@ class Robustness(ITests):
     
     @classmethod
     def available_tests(cls) -> dict:
+
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+
+        """
+
         tests = {
             j: i for i in BaseRobustness.__subclasses__() 
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
@@ -126,6 +263,30 @@ class Robustness(ITests):
         return tests
 
 class Bias(ITests):
+
+    """
+    A class for performing bias tests on a given dataset.
+
+    ...
+
+    Attributes
+    ----------
+    supported_tests : dict
+        A dictionary of supported bias test scenarios.
+    tests : dict
+        A dictionary of test names and corresponding parameters.
+    _data_handler : List[Sample]
+        A list of `Sample` objects representing the input dataset.
+
+    Methods
+    -------
+    transform() -> List[Sample]:
+        Runs the bias test and returns the resulting `Sample` objects.
+
+    available_tests() -> dict:
+        Returns a dictionary of available test scenarios for the `bias` class.
+    """
+
 
     def __init__(
             self,
@@ -169,6 +330,16 @@ class Bias(ITests):
    
 
     def transform(self):
+
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns
+        -------
+        List[Sample]
+            A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
+
         all_samples = []
         for test_name, params in self.tests.items():
             print(test_name)
@@ -181,6 +352,15 @@ class Bias(ITests):
     
     @classmethod
     def available_tests(cls) -> dict:
+
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+
+        """
+
         tests = {
             j: i for i in BaseBias.__subclasses__() 
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
@@ -190,6 +370,30 @@ class Bias(ITests):
 
 class Representation(ITests):
 
+    """
+    A class for performing representation tests on a given dataset.
+
+    ...
+
+    Attributes
+    ----------
+    supported_tests : dict
+        A dictionary of supported representation test scenarios.
+    tests : dict
+        A dictionary of test names and corresponding parameters.
+    _data_handler : List[Sample]
+        A list of `Sample` objects representing the input dataset.
+
+    Methods
+    -------
+    transform() -> List[Sample]:
+        Runs the representation test and returns the resulting `Sample` objects.
+
+    available_tests() -> dict:
+        Returns a dictionary of available test scenarios for the `representation` class.
+    """
+
+
     def __init__(
         self,
         data_handler: List[Sample],
@@ -215,6 +419,16 @@ class Representation(ITests):
     
 
     def transform(self):
+
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns
+        -------
+        List[Sample]
+            A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
+
         all_samples = []
         for test_name, params in self.tests.items():
             print(test_name)
@@ -227,6 +441,15 @@ class Representation(ITests):
     
     @classmethod
     def available_tests(cls) -> dict:
+
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+
+        """
+
         tests = {
             j: i for i in BaseRepresentation.__subclasses__() 
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
@@ -236,6 +459,29 @@ class Representation(ITests):
 
 class Accuracy(ITests):
 
+    """
+    A class for performing accuracy tests on a given dataset.
+
+    ...
+
+    Attributes
+    ----------
+    supported_tests : dict
+        A dictionary of supported accuracy test scenarios.
+    tests : dict
+        A dictionary of test names and corresponding parameters.
+    _data_handler : List[Sample]
+        A list of `Sample` objects representing the input dataset.
+
+    Methods
+    -------
+    transform() -> List[Sample]:
+        Runs the accuracy test and returns the resulting `Sample` objects.
+
+    available_tests() -> dict:
+        Returns a dictionary of available test scenarios for the `accuracy` class.
+    """
+
     def __init__(
         self,
         data_handler: List[Sample],
@@ -261,6 +507,16 @@ class Accuracy(ITests):
     
 
     def transform(self):
+
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns
+        -------
+        List[Sample]
+            A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
+        
         all_samples = []
         for test_name, params in self.tests.items():
             print(test_name)
@@ -273,6 +529,15 @@ class Accuracy(ITests):
     
     @classmethod
     def available_tests(cls) -> dict:
+
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+
+        """
+
         tests = {
             j: i for i in BaseAccuracy.__subclasses__() 
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])

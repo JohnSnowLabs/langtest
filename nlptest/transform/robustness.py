@@ -11,9 +11,30 @@ from ..utils.custom_types import Sample, Span, Transformation
 
 class BaseRobustness(ABC):
 
+    """
+    Abstract base class for implementing robustness measures.
+
+    Attributes:
+        alias_name (str): A name or list of names that identify the robustness measure.
+
+    Methods:
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
+    """
+
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
+
+        """
+        Abstract method that implements the robustness measure.
+
+        Args:
+            data (List[Sample]): The input data to be transformed.
+
+        Returns:
+            Any: The transformed data based on the implemented robustness measure.
+        """
+
         return NotImplementedError()
     
     alias_name = None
@@ -23,11 +44,11 @@ class UpperCase(BaseRobustness):
     
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with uppercase perturbation
+        """Transform a list of strings with uppercase robustness
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
-            List of sentences that uppercase perturbation is applied.
+            List of sentences that uppercase robustness is applied.
         """
         for sample in sample_list:
             sample.test_case = sample.original.upper()
@@ -39,11 +60,11 @@ class LowerCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with lowercase perturbation
+        """Transform a list of strings with lowercase robustness
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
-            List of sentences that lowercase perturbation is applied.
+            List of sentences that lowercase robustness is applied.
         """
         for sample in sample_list:
             sample.test_case = sample.original.lower()
@@ -55,11 +76,11 @@ class TitleCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with titlecase perturbation
+        """Transform a list of strings with titlecase robustness
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
-            List of sentences that titlecase perturbation is applied.
+            List of sentences that titlecase robustness is applied.
         """
         for sample in sample_list:
             sample.test_case = sample.original.title()
@@ -74,7 +95,7 @@ class AddPunctuation(BaseRobustness):
     def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
             whitelist: Whitelist for punctuations to add to sentences.
         Returns:
             List of sentences that have punctuation at the end.
@@ -100,7 +121,7 @@ class StripPunctuation(BaseRobustness):
         """Add punctuation from the string, if there isn't punctuation at the end skip it
 
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
             whitelist: Whitelist for punctuations to strip from sentences.
         Returns:
             List of sentences that punctuation is stripped.
@@ -125,7 +146,7 @@ class AddTypo(BaseRobustness):
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Add typo to the sentences using keyboard typo and swap typo.
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
             List of sentences that typo introduced.
         """
