@@ -152,7 +152,7 @@ class Harness:
         col_to_move = 'category'
         first_column = df_final.pop('category')
         df_final.insert(0, col_to_move, first_column)
-        df_final = df_final.reset_index()
+        df_final.reset_index(inplace=True)
 
         return df_final.fillna("-")
 
