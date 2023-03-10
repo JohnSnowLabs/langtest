@@ -228,10 +228,10 @@ class CSVDataset(_IDataset):
             ValueError(f"Column ({sent_indx}th) values should have same length with number of token in text, "
                        f"which is {token_num}")
 
-        original = " ".join(row['text'])
+        original = " ".join(self.column_map['text'])
         ner_labels = list()
         cursor = 0
-        for token_indx in range(len(row['text'])):
+        for token_indx in range(len(self.column_map['text'])):
             token = row[self.column_map['text']][token_indx]
             ner_labels.append(
                 NERPrediction.from_span(
