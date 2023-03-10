@@ -119,6 +119,7 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
+            summary[sample.test_type]['category'] = sample.category
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -126,6 +127,7 @@ class Harness:
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
             report[test_type] = {
+                "category": summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
                 "pass_count": summary[test_type]["true"],
                 "pass_rate": pass_rate,
@@ -144,8 +146,13 @@ class Harness:
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
+        df_accuracy['category'] = 'Accuracy' #Temporary fix
 
         df_final = pd.concat([df_report, df_accuracy])
+        col_to_move = 'category'
+        first_column = df_final.pop('category')
+        df_final.insert(0, col_to_move, first_column)
+        df_final = df_final.reset_index(drop=True)
 
         return df_final.fillna("-")
 
@@ -158,8 +165,10 @@ class Harness:
         """
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
         accuracy_df = self.accuracy_report()
+        final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        final_df = final_df.reset_index(drop=True)
 
-        return pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        return final_df
 
     def accuracy_report(self) -> pd.DataFrame:
         """
@@ -178,8 +187,11 @@ class Harness:
 
     def load_testcases_df(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
-        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore",
+        final_df = pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
+        
+        final_df = final_df.reset_index(drop=True)
+        return final_df
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
