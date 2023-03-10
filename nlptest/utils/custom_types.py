@@ -115,12 +115,21 @@ class NEROutput(BaseModel):
             if pred.span == span:
                 return pred
         return None
+    
+    def to_str_list(self) -> List[str]:
+        """Convert the ouput into list of strings.
+        
+        Returns:
+            List[str]: predictions in form of a list of strings.
+        """
+        return [x.entity for x in self.predictions]
 
     def __repr__(self) -> str:
         return self.predictions.__repr__()
     
     def __str__(self) -> str:
         return [str(x) for x in self.predictions].__repr__()
+    
 
     def __eq__(self, other: "NEROutput"):
         """"""
@@ -140,6 +149,14 @@ class SequenceClassificationOutput(BaseModel):
     Output model for text classification tasks.
     """
     labels: List[SequenceLabel]
+
+    def to_str_list(self) -> List[str]:
+        """Convert the ouput into list of strings.
+        
+        Returns:
+            List[str]: predictions in form of a list of strings.
+        """
+        return [x.label for x in self.predictions]
 
     def __str__(self):
         labels = {elt.label: elt.score for elt in self.labels}
@@ -190,12 +207,9 @@ class Sample(BaseModel):
     
     def to_dict(self):
         """Returns the dict version of sample."""
-        try:
-            expected_result = self.expected_results.predictions
-            actual_result = self.actual_results.predictions if self.actual_results else None
-        except:
-            expected_result = self.expected_results.labels
-            actual_result = self.actual_results.labels if self.actual_results else None
+
+        expected_result = self.expected_results.to_str_list()
+        actual_result = self.actual_results.to_str_list() if self.actual_results else None
 
         result = {
             'category':self.category,
