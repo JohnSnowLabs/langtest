@@ -127,7 +127,7 @@ class Harness:
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
             report[test_type] = {
-                "category":summary[test_type]['category'],
+                "category": summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
                 "pass_count": summary[test_type]["true"],
                 "pass_rate": pass_rate,
@@ -151,7 +151,7 @@ class Harness:
         col_to_move = 'category'
         first_column = df_final.pop('category')
         df_final.insert(0, col_to_move, first_column)
-        
+
         return df_final.fillna("-")
 
     def generated_results_df(self) -> pd.DataFrame:
