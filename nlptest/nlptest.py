@@ -165,8 +165,10 @@ class Harness:
         """
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
         accuracy_df = self.accuracy_report()
+        final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        final_df = final_df.reset_index(drop=True)
 
-        return pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        return final_df
 
     def accuracy_report(self) -> pd.DataFrame:
         """
@@ -185,8 +187,11 @@ class Harness:
 
     def load_testcases_df(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
-        return pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore",
+        final_df = pd.DataFrame([x.to_dict() for x in self.load_testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
+        
+        final_df = final_df.reset_index(drop=True)
+        return final_df
 
     def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
              results: str = "test_results.csv") -> None:
