@@ -119,6 +119,7 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self.generated_results:
+            summary[sample.test_type]['category'] = sample.category
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -126,6 +127,7 @@ class Harness:
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
             report[test_type] = {
+                "category":summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
                 "pass_count": summary[test_type]["true"],
                 "pass_rate": pass_rate,
