@@ -25,7 +25,8 @@ REQUIRED_PKGS = [
     'nltk',
     'torch',
     'protobuf<=3.20.0',
-    'sentencepiece'
+    'sentencepiece',
+    'logging'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.

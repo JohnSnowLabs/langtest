@@ -3,9 +3,10 @@ from sklearn.metrics import classification_report, f1_score
 from functools import reduce
 
 from nlptest.modelhandler import ModelFactory
-from typing import List
+from typing import List, Tuple
 
 from nlptest.utils.custom_types import Sample
+
 
 class TestRunner:
     """
@@ -30,11 +31,11 @@ class TestRunner:
         self._data = data
 
     # @abc.abstractmethod
-    def evaluate(self):
+    def evaluate(self) -> Tuple[List[Sample], pd.DataFrame]:
         """Abstract method to evaluate the testcases.
 
         Returns:
-            DataFrame: DataFrame containing the evaluation results.
+            Tuple[List[Sample], pd.DataFrame]
         """
         # self._model_handler.load_model()
 
@@ -64,7 +65,8 @@ class RobustnessTestRunner(TestRunner):
             sample.actual_results = self._model_handler(sample.test_case)
 
         return self.load_testcases
-    
+
+
 class AccuracyTestRunner(TestRunner):
     """
     Class for running accuracy related tests on models.
@@ -84,9 +86,10 @@ class AccuracyTestRunner(TestRunner):
         y_pred = X_test.apply(self._model_handler.predict_raw)
 
         valid_indices = y_true.apply(len) == y_pred.apply(len)
-        length_mismatch = valid_indices.count()-valid_indices.sum()
+        length_mismatch = valid_indices.count() - valid_indices.sum()
         if length_mismatch > 0:
-            print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.\nPlease make sure dataset and model uses same tokenizer.")
+            print(
+                f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.\nPlease make sure dataset and model uses same tokenizer.")
         y_true = y_true[valid_indices]
         y_pred = y_pred[valid_indices]
 
@@ -96,7 +99,7 @@ class AccuracyTestRunner(TestRunner):
         y_pred = [x.split("-")[-1] for x in y_pred.tolist()]
 
         # if(len(y_pred) != len(y_true)):
-            # raise ValueError("Please use the dataset used to train/test the model. Model and dataset has different tokenizers.")
+        # raise ValueError("Please use the dataset used to train/test the model. Model and dataset has different tokenizers.")
 
         df_metrics = classification_report(y_true, y_pred, output_dict=True)
         df_metrics.pop("accuracy")
