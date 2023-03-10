@@ -1,5 +1,7 @@
 import random
 import re
+import logging
+
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
@@ -68,8 +70,8 @@ class PerturbationFactory:
             self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self._tests:
-            nltk.download('omw-1.4')
-            nltk.download('wordnet')
+            nltk.download('omw-1.4', quiet=True)
+            nltk.download('wordnet', quiet=True)
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
                    'label': [[i.entity for i in sample.expected_results.predictions]
                          for sample in data_handler]})
@@ -95,11 +97,18 @@ class PerturbationFactory:
         # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
         all_samples = []
         for test_name, params in self._tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
             for sample in transformed_samples:
                 sample.test_type = test_name
+
+            # Check for number of perturbed sentences
+            transformed_samples = [x for x in transformed_samples if x.original != x.test_case]
+            if len(transformed_samples) == 0:
+                logging.warning("%s did not create any test cases. Test will be removed from results.", test_name)
+            elif len(transformed_samples) < 10:
+                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name, len(transformed_samples))
+
             all_samples.extend(transformed_samples)
         return all_samples
 
