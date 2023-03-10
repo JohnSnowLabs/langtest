@@ -189,9 +189,8 @@ class CSVDataset(_IDataset):
         with open(self._file_path, newline='') as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
-            sent_indx = 0
             samples = []
-            for row in csv_reader:
+            for sent_indx, row in enumerate(csv_reader):
                 if not self.column_map:
                     self.column_map = self.match_column_names(list(row.keys()))
 
@@ -204,8 +203,6 @@ class CSVDataset(_IDataset):
                     samples.append(
                         self.row_to_seq_classification_sample(row)
                     )
-
-                sent_indx += 1
 
         return samples
 
