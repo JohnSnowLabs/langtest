@@ -62,6 +62,8 @@ class GenderPronounBias(BaseBias):
                 sample.test_case = replaced_string
             else:
               sample.test_case = sample.original
+            
+            sample.category="Bias"
       
         return sample_list
 
