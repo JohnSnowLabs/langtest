@@ -261,7 +261,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
-        prediction = [{'label': c, 'score': float(prediction_metadata[c])} for c in self.classes]
+        prediction = [{"label":x, "score":y} for x,y in prediction_metadata.items()]
 
         if not return_all_scores:
             prediction = [max(prediction, key=lambda x: x['score'])]
@@ -273,7 +273,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     def predict_raw(self, text: str) -> List[str]:
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
-        prediction = [{'label': c, 'score': float(prediction_metadata[c])} for c in self.classes]
+        prediction = [{"label":x, "score":y} for x,y in prediction_metadata.items()]
         prediction = [max(prediction, key=lambda x: x['score'])]
         return [x["label"] for x in prediction]
 
