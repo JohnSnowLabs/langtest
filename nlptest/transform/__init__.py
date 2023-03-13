@@ -68,8 +68,7 @@ class TestFactory:
         dict
             A dictionary mapping test category names to the corresponding test classes.
         """
-
-        return {cls.__name__.lower(): cls for cls in ITests.__subclasses__()}
+        return {cls.alias_name.lower(): cls for cls in ITests.__subclasses__()}
 
     @classmethod
     def test_scenarios(cls):
@@ -82,7 +81,7 @@ class TestFactory:
             A dictionary mapping test class names to the available test scenarios for each class.
         """
 
-        return {cls.__name__.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
+        return {cls.alias_name.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
 
 
 class ITests(ABC):
@@ -127,7 +126,9 @@ class ITests(ABC):
         return NotImplementedError
 
 
-class Robustness(ITests):
+class RobustnessTestFactory(ITests):
+    alias_name = "robustness"
+
     """
     A class for performing robustness tests on a given dataset.
 
@@ -250,7 +251,8 @@ class Robustness(ITests):
         return tests
 
 
-class Bias(ITests):
+class BiasTestFactory(ITests):
+    alias_name = "bias"
     """
     A class for performing bias tests on a given dataset.
 
@@ -370,7 +372,9 @@ class Bias(ITests):
         return tests
 
 
-class Representation(ITests):
+class RepresentationTestFactory(ITests):
+    alias_name = "representation"
+
     """
     A class for performing representation tests on a given dataset.
 
@@ -457,7 +461,8 @@ class Representation(ITests):
         return tests
 
 
-class Accuracy(ITests):
+class AccuracyTestFactory(ITests):
+    alias_name = "accuracy"
     """
     A class for performing accuracy tests on a given dataset.
 

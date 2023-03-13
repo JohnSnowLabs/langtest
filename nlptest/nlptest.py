@@ -1,12 +1,12 @@
 import os
 import pickle
 from collections import defaultdict
-from functools import reduce
 from typing import Optional, Union
 
 import pandas as pd
 import yaml
 
+from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import TestRunner
@@ -24,7 +24,7 @@ class Harness:
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str, ModelFactory],
+            model: Union[str],
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -54,11 +54,11 @@ class Harness:
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        self.data = DataFactory(data).load() if data is not None else None
+        self.data = DataFactory(data, task=self.task).load() if data is not None else None
         self._config = self.configure(config) if config is not None else None
 
-        self.load_testcases = None
-        self.generated_results = None
+        self._testcases = None
+        self._generated_results = None
         self.accuracy_results = None
 
     def configure(self, config: Union[str, dict]):
@@ -84,10 +84,10 @@ class Harness:
         Generates the testcases to be used when evaluating the model.
 
         Returns:
-            None: The generated testcases are stored in `load_testcases` attribute.
+            None: The generated testcases are stored in `_testcases` attribute.
         """
         tests = self._config['tests']
-        self.load_testcases = TestFactory.transform(self.data, tests)
+        self._testcases = TestFactory.transform(self.data, tests)
         return self
 
     def run(self) -> "Harness":
@@ -97,24 +97,24 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self.generated_results, self.accuracy_results = TestRunner(self.load_testcases, self.model,
-                                                                   self.data).evaluate()
+        self._generated_results, self.accuracy_results = TestRunner(self._testcases, self.model,
+                                                                    self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
         """
         Generate a report of the test results.
-
         Returns:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
         if isinstance(self._config, dict):
             self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
-                             self._config['tests'].items() for j, k in v.items()}
+                                  self._config['tests'].items() for j, k in v.items()}
         self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
 
         summary = defaultdict(lambda: defaultdict(int))
-        for sample in self.generated_results:
+        for sample in self._generated_results:
+            summary[sample.test_type]['category'] = sample.category
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
         report = {}
@@ -122,6 +122,7 @@ class Harness:
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
             report[test_type] = {
+                "category": summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
                 "pass_count": summary[test_type]["true"],
                 "pass_rate": pass_rate,
@@ -140,22 +141,29 @@ class Harness:
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-
+        df_accuracy['category'] = 'Accuracy'  # Temporary fix
         df_final = pd.concat([df_report, df_accuracy])
+
+        col_to_move = 'category'
+        first_column = df_final.pop('category')
+        df_final.insert(0, col_to_move, first_column)
+        df_final = df_final.reset_index(drop=True)
 
         return df_final.fillna("-")
 
-    def generated_results_df(self) -> pd.DataFrame:
+    def generated_results(self) -> pd.DataFrame:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
         Returns:
             pd.DataFrame: Generated dataframe.
         """
-        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self.generated_results])
+        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
         accuracy_df = self.accuracy_report()
+        final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        final_df = final_df.reset_index(drop=True)
 
-        return pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        return final_df
 
     def accuracy_report(self) -> pd.DataFrame:
         """
@@ -167,17 +175,35 @@ class Harness:
 
         acc_report = self.accuracy_results.copy()
         acc_report["expected_result"] = acc_report.apply(
-            lambda x: self.min_pass_dict.get(x["test_case"]+x["test_type"], self.min_pass_dict.get('default', 0)), axis=1
+            lambda x: self.min_pass_dict.get(x["test_case"] + x["test_type"], self.min_pass_dict.get('default', 0)),
+            axis=1
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
 
+    def augment(self, input_path, output_path, inplace=False):
+        dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
+            lambda x: x.str).values.tolist()
+
+        if dtypes != ['<i4'] * 2:
+            self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
+            self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
+
+        AugmentRobustness.fix(
+            input_path,
+            output_path,
+            self.df_report,
+            self._config
+        )
+
+        return self
+
     def load_testcases_df(self) -> pd.DataFrame:
-        """
-        Testcases after .generate() is called
-        """
-        return pd.DataFrame([x.to_dict() for x in self.load_testcases]) \
-            .drop(["pass", "actual_result"], errors="ignore", axis=1)
+        """Testcases after .generate() is called"""
+        final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
+                                                                             axis=1)
+        final_df = final_df.reset_index(drop=True)
+        return final_df
 
     def save(self, save_dir: str) -> None:
         """
@@ -192,7 +218,7 @@ class Harness:
             raise ValueError("The current Harness has not been configured yet. Please use the `.configure` method "
                              "before calling the `.save` method.")
 
-        if self.load_testcases is None:
+        if self._testcases is None:
             raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
                              "calling the `.save` method.")
 
@@ -203,7 +229,7 @@ class Harness:
             yml.write(yaml.safe_dump(self._config))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
-            pickle.dump(self.load_testcases, writer)
+            pickle.dump(self._testcases, writer)
 
         with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
@@ -234,7 +260,7 @@ class Harness:
         harness.configure(os.path.join(save_dir, "config.yaml"))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
-            harness.load_testcases = pickle.load(reader)
+            harness._testcases = pickle.load(reader)
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             harness.data = pickle.load(reader)
