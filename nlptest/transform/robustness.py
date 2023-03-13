@@ -1,166 +1,104 @@
 import random
 import re
-import logging
-
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
-
 import numpy as np
-import pandas as pd
-import nltk
 
-from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
-class BasePerturbation(ABC):
+class BaseRobustness(ABC):
+
+    """
+    Abstract base class for implementing robustness measures.
+
+    Attributes:
+        alias_name (str): A name or list of names that identify the robustness measure.
+
+    Methods:
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
+    """
 
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
+
+        """
+        Abstract method that implements the robustness measure.
+
+        Args:
+            data (List[Sample]): The input data to be transformed.
+
+        Returns:
+            Any: The transformed data based on the implemented robustness measure.
+        """
+
         return NotImplementedError()
+    
+    alias_name = None
 
-
-class PerturbationFactory:
-    """"""
-
-    def __init__(
-            self,
-            data_handler: List[Sample],
-            tests=None
-    ) -> None:
-
-        if tests is []:
-            tests = DEFAULT_PERTURBATIONS
-
-        self._tests = dict()
-        for test in tests:
-
-            if isinstance(test, str):
-                if test not in DEFAULT_PERTURBATIONS:
-                    raise ValueError(
-                        f'Invalid test specification: {test}. Available tests are: {DEFAULT_PERTURBATIONS}')
-                self._tests[test] = dict()
-            elif isinstance(test, dict):
-                test_name = list(test.keys())[0]
-                if test_name not in DEFAULT_PERTURBATIONS:
-                    raise ValueError(
-                        f'Invalid test specification: {test_name}. Available tests are: {DEFAULT_PERTURBATIONS}')
-                self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
-            else:
-                raise ValueError(
-                    f'Invalid test configuration! Tests can be '
-                    f'[1] test name as string or '
-                    f'[2] dictionary of test name and corresponding parameters.'
-                )
-
-        if 'swap_entities' in self._tests:
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                             for sample in data_handler]})
-            self._tests['swap_entities']['terminology'] = create_terminology(df)
-            self._tests['swap_entities']['labels'] = df.label.tolist()
-
-
-        if "american_to_british" in self._tests:
-            self._tests['american_to_british']['accent_map'] = A2B_DICT
-
-        if "british_to_american" in self._tests:
-            self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
-
-        if 'swap_cohyponyms' in self._tests:
-            nltk.download('omw-1.4', quiet=True)
-            nltk.download('wordnet', quiet=True)
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                         for sample in data_handler]})
-            self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
-
-        if 'replace_to_male_pronouns' in self._tests:
-          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
-        
-        if 'replace_to_female_pronouns' in self._tests:
-          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
-
-        if 'replace_to_neutral_pronouns' in self._tests:
-          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
-
-
-        self._data_handler = data_handler
-
-    def transform(self) -> List[Sample]:
-        """"""
-        # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
-        all_samples = []
-        for test_name, params in self._tests.items():
-            data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
-            for sample in transformed_samples:
-                sample.test_type = test_name
-
-            # Check for number of perturbed sentences
-            transformed_samples = [x for x in transformed_samples if x.original != x.test_case]
-            if len(transformed_samples) == 0:
-                logging.warning("%s did not create any test cases. Test will be removed from results.", test_name)
-            elif len(transformed_samples) < 10:
-                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name, len(transformed_samples))
-
-            all_samples.extend(transformed_samples)
-        return all_samples
-
-
-class UpperCase(BasePerturbation):
+class UpperCase(BaseRobustness):
+    alias_name = "uppercase"
+    
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with uppercase perturbation
+        """Transform a list of strings with uppercase robustness
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
-            List of sentences that uppercase perturbation is applied.
+            List of sentences that uppercase robustness is applied.
         """
         for sample in sample_list:
             sample.test_case = sample.original.upper()
+            sample.category = "Robustness"
         return sample_list
 
 
-class LowerCase(BasePerturbation):
+class LowerCase(BaseRobustness):
+    alias_name = "lowercase"
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with lowercase perturbation
+        """Transform a list of strings with lowercase robustness
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
-            List of sentences that lowercase perturbation is applied.
+            List of sentences that lowercase robustness is applied.
         """
         for sample in sample_list:
             sample.test_case = sample.original.lower()
+            sample.category = "Robustness"
         return sample_list
 
 
-class TitleCase(BasePerturbation):
+class TitleCase(BaseRobustness):
+    alias_name = 'titlecase'
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with titlecase perturbation
+        """Transform a list of strings with titlecase robustness
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
-            List of sentences that titlecase perturbation is applied.
+            List of sentences that titlecase robustness is applied.
         """
         for sample in sample_list:
             sample.test_case = sample.original.title()
+            sample.category = "Robustness"
         return sample_list
 
 
-class AddPunctuation(BasePerturbation):
+class AddPunctuation(BaseRobustness):
+
+    alias_name = 'add_punctuation'
+
     @staticmethod
     def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
             whitelist: Whitelist for punctuations to add to sentences.
         Returns:
             List of sentences that have punctuation at the end.
@@ -174,16 +112,20 @@ class AddPunctuation(BasePerturbation):
                 sample.test_case = sample.original[:-1] + random.choice(whitelist)
             else:
                 sample.test_case = sample.original
+            sample.category = "Robustness"
         return sample_list
 
 
-class StripPunctuation(BasePerturbation):
+class StripPunctuation(BaseRobustness):
+
+    alias_name = "strip_punctuation"
+
     @staticmethod
     def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation from the string, if there isn't punctuation at the end skip it
 
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
             whitelist: Whitelist for punctuations to strip from sentences.
         Returns:
             List of sentences that punctuation is stripped.
@@ -197,15 +139,19 @@ class StripPunctuation(BasePerturbation):
                 sample.test_case = sample.original[:-1]
             else:
                 sample.test_case = sample.original
+            sample.category = "Robustness"
         return sample_list
 
 
-class AddTypo(BasePerturbation):
+class AddTypo(BaseRobustness):
+
+    alias_name = 'add_typo'
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Add typo to the sentences using keyboard typo and swap typo.
         Args:
-            sample_list: List of sentences to apply perturbation.
+            sample_list: List of sentences to apply robustness.
         Returns:
             List of sentences that typo introduced.
         """
@@ -242,10 +188,14 @@ class AddTypo(BasePerturbation):
                 string[swap_idx + 1] = tmp
 
             sample.test_case = "".join(string)
+            sample.category = "Robustness"
         return sample_list
 
 
-class SwapEntities(BasePerturbation):
+class SwapEntities(BaseRobustness):
+
+    alias_name = 'swap_entities'
+
     @staticmethod
     def transform(
             sample_list: List[Sample],
@@ -298,6 +248,7 @@ class SwapEntities(BasePerturbation):
             chosen_ent = random.choice(proper_entities)
             replaced_string = sample.original.replace(replace_token, chosen_ent)
             sample.test_case = replaced_string
+            sample.category = "Robustness"
         return sample_list
 
 
@@ -342,52 +293,10 @@ def get_cohyponyms_wordnet(word: str) -> str:
                     name = str(hypos[ind].lemmas()[0])
             return name.replace("_", " ").split(".")[0][7:]
 
-class GenderPronounBias(BasePerturbation):
-    @staticmethod
-    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type:str) -> List[Sample]:
-        """Replace pronouns to check the gender bias
 
-        Args:
-            sample_list: List of sentences to apply perturbation.
-            pronouns_to_substitute: list of pronouns that need to be substituted.
-            pronoun_type: replacing pronoun type string ('male', 'female' or 'neutral')
+class SwapCohyponyms(BaseRobustness):
 
-        Returns:
-            List of sentences with replaced pronouns
-        """
-
-
-        for sample in sample_list:
-          
-            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in pronouns_to_substitute]
-          
-            if len(tokens_to_substitute)!=0:
-                replace_token = random.choice(tokens_to_substitute)
-                if pronoun_type =="female":
-                  combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
-                  chosen_dict = female_pronouns
-                elif pronoun_type =="male":
-                  combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}  
-                  chosen_dict = male_pronouns      
-                elif pronoun_type =="neutral":
-                  combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
-                  chosen_dict = neutral_pronouns  
-
-                for key, value in combined_dict.items() :
-                      if replace_token in value:
-                        type_of_pronoun = str(key)
-                        break
-
-                chosen_token= random.choice(chosen_dict[type_of_pronoun])
-                replaced_string = sample.original.replace(replace_token, chosen_token)
-                sample.test_case = replaced_string
-            else:
-              sample.test_case = sample.original
-      
-        return sample_list
-
-
-class SwapCohyponyms(BasePerturbation):
+    alias_name = "swap_cohyponyms"
 
     @staticmethod
     def transform(
@@ -435,11 +344,14 @@ class SwapCohyponyms(BasePerturbation):
             chosen_ent = get_cohyponyms_wordnet(replace_token)
             replaced_string = sample.original.replace(replace_token, chosen_ent)
             sample.test_case = replaced_string
+            sample.category = "Robustness"
 
         return sample_list
 
 
-class ConvertAccent(BasePerturbation):
+class ConvertAccent(BaseRobustness):
+
+    alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
     def transform(sample_list: List[Sample], accent_map: Dict[str, str] = None) -> List[Sample]:
@@ -454,11 +366,14 @@ class ConvertAccent(BasePerturbation):
             tokens = sample.original.split(' ')
             tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
             sample.test_case = ' '.join(tokens)
+            sample.category = "Robustness"
 
         return sample_list
 
 
-class AddContext(BasePerturbation):
+class AddContext(BaseRobustness):
+
+    alias_name = 'add_context'
 
     @staticmethod
     def transform(
@@ -526,10 +441,13 @@ class AddContext(BasePerturbation):
 
             sample.test_case = string
             sample.transformations = transformations
+            sample.category = "Robustness"
         return sample_list
 
 
-class AddContraction(BasePerturbation):
+class AddContraction(BaseRobustness):
+
+    alias_name = 'add_contraction'
 
     @staticmethod
     def transform(
@@ -557,4 +475,5 @@ class AddContraction(BasePerturbation):
                 if re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL):
                     string = re.sub(contraction, custom_replace, sample.original, flags=re.IGNORECASE | re.DOTALL)
             sample.test_case = string
+            sample.category = "Robustness"
         return sample_list
