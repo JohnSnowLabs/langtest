@@ -200,8 +200,8 @@ class Harness:
             input_path,
             output_path,
             self.df_report,
-            inplace,
             config=self._config,
+            inplace=inplace
         )
         return self
 

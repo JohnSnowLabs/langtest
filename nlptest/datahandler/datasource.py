@@ -107,7 +107,8 @@ class ConllDataset(_IDataset):
                                 word=split[0],
                                 start=cursor,
                                 end=cursor + len(split[0]),
-                                doc_id=(docs_strings[d_id] if len(docs_strings) > 0 else ''),
+                                doc_id=d_id,
+                                doc_name=(docs_strings[d_id] if len(docs_strings) > 0 else '') ,
                                 pos_tag=split[1],
                                 chunk_tag=split[2]
                             )
@@ -123,7 +124,42 @@ class ConllDataset(_IDataset):
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
-        pass
+        temp_id = None
+        text = ""
+        for i in data:
+            test_case = i.test_case
+            original = i.original
+            if test_case:
+                test_case_items = test_case.split()
+                # original_items = original.split()
+                norm_test_case_items = test_case.lower().split()
+                norm_original_items = original.lower().split()
+                # if len(test_case_items) == len(original_items):
+                for jdx, item in enumerate(norm_test_case_items):
+                    # print(item, norm_original_items)
+                    if item in norm_original_items:
+                        j = i.expected_results.predictions[norm_original_items.index(item)]
+                        if temp_id != j.doc_id:
+                            text += f"{j.doc_name}\n\n"
+                            temp_id = j.doc_id
+                        else:
+                                text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                    else:
+                        text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} O\n"
+                text+="\n"
+               
+            else:
+                for j in i.expected_results.predictions:
+                    if temp_id != j.doc_id:
+                        text += f"{j.doc_name}\n\n"
+                        temp_id = j.doc_id
+                    else:
+                        text+=f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                text+="\n"
+        with open(output_path, "wb") as fwriter:
+            fwriter.write(bytes(text, encoding="utf-8"))
+
+
 
 class JSONDataset(_IDataset):
     """Class to handle JSON dataset files. Subclass of _IDataset.

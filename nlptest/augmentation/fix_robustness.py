@@ -7,8 +7,7 @@ import pandas as pd
 from typing import List, Optional
 
 from nlptest.datahandler.datasource import DataFactory
-from nlptest.transform.perturbation import PerturbationFactory
-from nlptest.transform.utils import DEFAULT_PERTURBATIONS
+from nlptest.transform import TestFactory
 
 
 class BaseAugmentaion(ABC):
@@ -25,13 +24,14 @@ class AugmentRobustness(BaseAugmentaion):
         input_path:str,
         output_path,
         h_report,
+        config,
         inplace: bool = False,
-        max_prop:float = 0.5,
-        config= None,
-        regex_pattern: str = "\\s+|(?=[-.:;*+,$&%\\[\\]])|(?<=[-.:;*+,$&%\\[\\]])"
+        max_prop:float = 0.5
     ):
-        data = DataFactory(input_path).load()
-        config = {list(i.keys())[0] if type(i) == dict else i: i  for i in config['tests_types']}
+        self.df = DataFactory(input_path)
+        data = self.df.load()
+        supported_tests = TestFactory.test_scenarios()
+        self.config = config
         # data['pos_tag'] = data['label'].apply(lambda x: ["NN NN"] * len(x))
         # entites = set(j.split("-")[-1] for i in data['label'] for j in i)
         suggest = self.suggestions(h_report)
@@ -40,30 +40,45 @@ class AugmentRobustness(BaseAugmentaion):
             print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
 
         fianl_aug_data = []
-        # DEFAULT_PERTURBATIONS.remove('swap_entities')
+        
         for proportion in suggest.iterrows():
-            test_type = [config.get(proportion[-1]['test_type'])]
-
-            if proportion[-1]['test_type'] in DEFAULT_PERTURBATIONS:
+            cat = proportion[-1]['category'].lower()
+            test = proportion[-1]['test_type'].lower()
+            test_type = {
+                cat: {
+                test: self.config.get('tests').get(cat).get(test)
+                }
+            }
+            if proportion[-1]['test_type'] in supported_tests[cat]:
                 sample_length = len(data) * max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
                 if inplace:
                     hash_map = {k: v for k, v in enumerate(data)}
                     sample_indices = random.sample(range(0, len(data)), int(sample_length))
                     for each in sample_indices:
-                        hash_map[each] = PerturbationFactory([hash_map[each]], test_type).transform()[0]
+                        hash_map[each] = TestFactory.transform([hash_map[each]], test_type)[0]
                     fianl_aug_data.extend(list(hash_map.values()))
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
-                    aug_data = PerturbationFactory(sample_data, test_type).transform()
+                    aug_data = TestFactory.transform(sample_data, test_type)
                     fianl_aug_data.extend(aug_data)
    
-        # data.extend(fianl_aug_data)
-        self.save(fianl_aug_data, output_path)
+        data.extend(fianl_aug_data)
+        self.to_export(data, output_path)
         return fianl_aug_data
 
     def suggestions(self, report):
         
-        def proportion_values(x):
+        report['ratio'] = report['pass_rate']/ report['minimum_pass_rate']
+        report['proportion_increase'] = report['ratio'].apply(
+                                            lambda x: self._proportion_values(x)
+                                        )
+        return report[~report['proportion_increase'].isna()][['category','test_type', 'ratio', 'proportion_increase']]
+
+    def to_export(self, data, output_path):
+        self.df.export(data, output_path)
+        
+
+    def _proportion_values(self, x):
             if x >= 1:
                 return None
             elif x > 0.9:
@@ -74,14 +89,3 @@ class AugmentRobustness(BaseAugmentaion):
                 return 0.2
             else:
                 return 0.3
-        
-        report['ratio'] = report['pass_rate']/ report['minimum_pass_rate']
-        report['proportion_increase'] = report['ratio'].apply(
-                                            lambda x: proportion_values(x)
-                                        )
-        return report[~report['proportion_increase'].isna()][['test_type', 'ratio', 'proportion_increase']]
-
-    def save(self, data, save_path):
-        with open(save_path+"augmenated_train.conll", "w") as fw:
-            words = [i.test_case.split() if i.test_case else "" for i in data ]
-            fw.write("\n\n".join('-X- -X- \n'.join(ew) for ew in words))
