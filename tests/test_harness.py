@@ -14,7 +14,7 @@ class HarnessTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """"""
         self.data_path = "tests/fixtures/test.conll"
-        self.config_path = "tests/fixtures/config.yaml"
+        self.config_path = "tests/fixtures/config_ner.yaml"
         self.harness = Harness(
             task='ner',
             model='dslim/bert-base-NER',
@@ -94,26 +94,26 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(self.harness.data, loaded_harness.data)
         self.assertNotEqual(self.harness.model, loaded_harness.model)
 
-    # def test_load_text_classification(self):
-    #     """"""
-    #     save_dir = "/tmp/saved_text_classification_harness_test"
-    #     tc_harness = Harness(
-    #         task='text-classification',
-    #         model='bert-base-cased',
-    #         data="tests/fixtures/text_classification.csv",
-    #         config="tests/fixtures/config.yaml",
-    #         hub="huggingface"
-    #     )
-    #     tc_harness.generate()
-    #     tc_harness.save(save_dir)
-    #
-    #     loaded_tc_harness = Harness.load(
-    #         save_dir=save_dir,
-    #         task="text-classification",
-    #         model="bert-base-uncased",
-    #         hub="huggingface"
-    #     )
-    #     self.assertEqual(tc_harness._testcases, loaded_tc_harness._testcases)
-    #     self.assertEqual(tc_harness._config, loaded_tc_harness._config)
-    #     self.assertEqual(tc_harness.data, loaded_tc_harness.data)
-    #     self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+    def test_load_text_classification(self):
+        """"""
+        save_dir = "/tmp/saved_text_classification_harness_test"
+        tc_harness = Harness(
+            task='text-classification',
+            model='bert-base-cased',
+            data="tests/fixtures/text_classification.csv",
+            config="tests/fixtures/config_text_classification.yaml",
+            hub="huggingface"
+        )
+        tc_harness.generate()
+        tc_harness.save(save_dir)
+
+        loaded_tc_harness = Harness.load(
+            save_dir=save_dir,
+            task="text-classification",
+            model="bert-base-uncased",
+            hub="huggingface"
+        )
+        self.assertEqual(tc_harness._testcases, loaded_tc_harness._testcases)
+        self.assertEqual(tc_harness._config, loaded_tc_harness._config)
+        self.assertEqual(tc_harness.data, loaded_tc_harness.data)
+        self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
