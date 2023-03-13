@@ -14,13 +14,13 @@ class HarnessTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """"""
         self.data_path = "tests/fixtures/test.conll"
-        self.config_path = "tests/fixtures/config.yml"
+        self.config_path = "tests/fixtures/config.yaml"
         self.harness = Harness(
             task='ner',
             model='dslim/bert-base-NER',
             data=self.data_path,
             config=self.config_path,
-            hub="transformers"
+            hub="huggingface"
         )
 
     def test_Harness(self):
@@ -88,7 +88,7 @@ class HarnessTestCase(unittest.TestCase):
             save_dir=save_dir,
             task="ner",
             model="bert-base-cased",
-            hub="transformers"
+            hub="huggingface"
         )
         self.assertEqual(self.harness.load_testcases, loaded_harness.load_testcases)
         self.assertEqual(self.harness._config, loaded_harness._config)
@@ -103,7 +103,7 @@ class HarnessTestCase(unittest.TestCase):
             model='bert-base-cased',
             data="tests/fixtures/text_classification.csv",
             config="tests/fixtures/config.yaml",
-            hub="transformers"
+            hub="huggingface"
         )
         tc_harness.generate()
         tc_harness.save(save_dir)
@@ -112,7 +112,7 @@ class HarnessTestCase(unittest.TestCase):
             save_dir=save_dir,
             task="text-classification",
             model="bert-base-uncased",
-            hub="transformers"
+            hub="huggingface"
         )
         self.assertEqual(tc_harness.load_testcases, loaded_tc_harness.load_testcases)
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
