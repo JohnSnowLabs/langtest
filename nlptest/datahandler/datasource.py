@@ -139,7 +139,7 @@ class ConllDataset(_IDataset):
                     # print(item, norm_original_items)
                     if item in norm_original_items:
                         j = i.expected_results.predictions[norm_original_items.index(item)]
-                        if temp_id != j.doc_id:
+                        if temp_id != j.doc_id and jdx == 0:
                             text += f"{j.doc_name}\n\n"
                             temp_id = j.doc_id
                         else:
