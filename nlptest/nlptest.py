@@ -185,7 +185,6 @@ class Harness:
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
 
-    def testcases(self) -> pd.DataFrame:
     def augment(self, input_path, output_path, inplace=False):
         dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
             lambda x: x.str).values.tolist()
