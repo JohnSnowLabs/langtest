@@ -1,5 +1,5 @@
 import os
-from typing import Union, List
+from typing import List, Union
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
@@ -261,19 +261,19 @@ class PretrainedModelForTextClassification(_ModelHandler):
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
-        prediction = [{"label":x, "score":y} for x,y in prediction_metadata.items()]
+        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
 
         if not return_all_scores:
             prediction = [max(prediction, key=lambda x: x['score'])]
 
         return SequenceClassificationOutput(
             text=text,
-            labels=prediction
+            predictions=prediction
         )
 
     def predict_raw(self, text: str) -> List[str]:
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
-        prediction = [{"label":x, "score":y} for x,y in prediction_metadata.items()]
+        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
         prediction = [max(prediction, key=lambda x: x['score'])]
         return [x["label"] for x in prediction]
 

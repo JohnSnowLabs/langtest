@@ -1,10 +1,11 @@
+from typing import List
+
 import spacy
 from spacy.tokens import Doc
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
-from typing import List
 
 class PretrainedModelForNER(_ModelHandler):
     """
@@ -69,7 +70,7 @@ class PretrainedModelForNER(_ModelHandler):
         Returns:
             List[str]: A list of named entities recognized in the input text.
         """
-        
+
         doc = self.model(text)
         return [f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_ for token in doc]
 
@@ -101,7 +102,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         return spacy.load(path)
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
-        """Perform text classication predictions on the input text.
+        """Perform text classification predictions on the input text.
 
         Args:
             text (str): Input text to classify.
@@ -116,7 +117,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
         return SequenceClassificationOutput(
             text=text,
-            labels=output
+            predictions=output
         )
 
     def predict_raw(self, text: str) -> List[str]:

@@ -168,6 +168,7 @@ poetry.toml
 
 
 # Extras
+.idea/
 /.idea/shelf/Changes/shelved.patch
 /.idea/shelf/Changes.xml
 /.idea/shelf/Changes1.xml
