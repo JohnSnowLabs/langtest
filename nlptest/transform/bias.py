@@ -139,6 +139,8 @@ class CountryEconomicBias(BaseBias):
               
             else:
               sample.test_case = sample.original
+              
+            sample.category="Bias"
       
 
         return sample_list
