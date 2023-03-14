@@ -144,6 +144,48 @@ class CountryEconomicBias(BaseBias):
       
 
         return sample_list
+    
+class EthnicityNameBias(BaseBias):
+    @staticmethod
+    def transform(sample_list: List[Sample], names_to_substitute: List[str], chosen_ethnicity_names: List[str]) -> List[Sample]:
+        """Replace names to check the ethnicity bias
+        Ethnicity Dataset Curated from the United States Census Bureau surveys
+
+        Args:
+            sample_list: List of sentences to apply perturbation.
+            pronouns_to_substitute: list of names that need to be substituted.
+            chosen_ethnicity_names: list of ethnicity names to replace with.
+
+        Returns:
+            List of sentences with replaced names
+        """
+
+
+        for sample in sample_list:
+          
+            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in [name.lower() for name in names_to_substitute]]
+  
+            if len(tokens_to_substitute)!=0:
+                replaced_string = None
+                for replace_token in tokens_to_substitute:  
+                  chosen_token= random.choice(chosen_ethnicity_names)
+                  if not replaced_string:
+                    replaced_string = sample.original.replace(replace_token, chosen_token)    
+                  else:
+                    replaced_string = replaced_string.replace(replace_token, chosen_token)
+
+                  sample.test_case = replaced_string
+                
+              
+                replaced_string = sample.original.replace(replace_token, chosen_token)
+                sample.test_case = replaced_string
+             
+            else:
+              sample.test_case = sample.original
+
+            sample.category="Bias"
+      
+        return sample_list
 
 
    
