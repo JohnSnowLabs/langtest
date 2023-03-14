@@ -209,9 +209,10 @@ class Harness:
             >>> harness.augment("train.conll", "augmented_train.conll")
         """
 
-        dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
-            lambda x: x.str).values.tolist()
-        if dtypes != ['<i4'] * 2:
+        dtypes = list(map(
+            lambda x: str(x), 
+            self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
+        if dtypes not in [['int64']*2, ['int32']*2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
         _ = AugmentRobustness(

@@ -151,7 +151,7 @@ class ConllDataset(_IDataset):
                         norm_original_items.pop(oitem_index)
                         temp_len += 1
                     else:
-                        text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} O\n"
+                        text+=f"{test_case_items[jdx]} O O O\n"
                 text+="\n"
                
             else:
