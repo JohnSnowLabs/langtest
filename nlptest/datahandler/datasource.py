@@ -138,12 +138,14 @@ class ConllDataset(_IDataset):
                 for jdx, item in enumerate(norm_test_case_items):
                     # print(item, norm_original_items)
                     if item in norm_original_items:
-                        j = i.expected_results.predictions[norm_original_items.index(item)]
+                        oitem_index = norm_original_items.index(item)
+                        j = i.expected_results.predictions[oitem_index]
                         if temp_id != j.doc_id and jdx == 0:
                             text += f"{j.doc_name}\n\n"
                             temp_id = j.doc_id
                         else:
-                                text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                            text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                        norm_original_items.pop(oitem_index)
                     else:
                         text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} O\n"
                 text+="\n"
