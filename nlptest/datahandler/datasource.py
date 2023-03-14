@@ -136,13 +136,10 @@ class ConllDataset(_IDataset):
             original = i.original
             if test_case:
                 test_case_items = test_case.split()
-                # original_items = original.split()
                 norm_test_case_items = test_case.lower().split()
                 norm_original_items = original.lower().split()
-                # if len(test_case_items) == len(original_items):
                 temp_len = 0
                 for jdx, item in enumerate(norm_test_case_items):
-                    # print(item, norm_original_items)
                     if item in norm_original_items and jdx >= norm_original_items.index(item):
                         oitem_index = norm_original_items.index(item)
                         j = i.expected_results.predictions[oitem_index+temp_len]
