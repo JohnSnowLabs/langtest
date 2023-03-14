@@ -613,6 +613,18 @@ country_economic_dict = {"High-income": ["Aruba", "Andorra", "United Arab Emirat
                          "Lower-middle-income": ["Angola", "Benin", "Bangladesh", "Bolivia", "Bhutan", "C\u00f4te d\u2019Ivoire", "Cameroon", "Congo, Rep.", "Comoros", "Cabo Verde", "Djibouti", "Algeria", "Egypt, Arab Rep.", "Micronesia, Fed. Sts.", "Ghana", "Honduras", "Haiti", "Indonesia", "India", "Iran, Islamic Rep.", "Kenya", "Kyrgyz Republic", "Cambodia", "Kiribati", "Lao PDR", "Lebanon", "Sri Lanka", "Lesotho", "Morocco", "Myanmar", "Mongolia", "Mauritania", "Nigeria", "Nicaragua", "Nepal", "Pakistan", "Philippines", "Papua New Guinea", "West Bank and Gaza", "Senegal", "Solomon Islands", "El Salvador", "S\u00e3o Tom\u00e9 and Pr\u00edncipe", "Eswatini", "Tajikistan", "Timor-Leste", "Tunisia", "Tanzania", "Ukraine", "Uzbekistan", "Vietnam", "Vanuatu", "Samoa", "Zimbabwe"],
                          "Upper-middle-income": ["Albania", "Argentina", "Armenia", "American Samoa", "Azerbaijan", "Bulgaria", "Bosnia and Herzegovina", "Belarus", "Belize", "Brazil", "Botswana", "China", "Colombia", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon", "Georgia", "Equatorial Guinea", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Libya", "St. Lucia", "Moldova", "Maldives", "Mexico", "Marshall Islands", "North Macedonia", "Montenegro", "Mauritius", "Malaysia", "Namibia", "Peru", "Palau", "Paraguay", "Russian Federation", "Serbia", "Suriname", "Thailand", "Turkmenistan", "Tonga", "T\u00fcrkiye", "Tuvalu", "St. Vincent and the Grenadines", "Kosovo", "South Africa"]}
 
+
+country_economic_labels = ['High-income','Low-income','Lower-middle-income', 'Upper-middle-income']
+
+
+def get_country_substitution_names_on_income(testname):
+    chosen_economic_condition = testname.replace("replace_to_","").replace("_country","").replace("_","-").capitalize()
+    substitution_names = []
+    for key, value in country_economic_dict.items():
+        if key != chosen_economic_condition:
+                substitution_names+=value
+    return substitution_names
+
 # Dicts of respective gender pronouns
 female_pronouns = {'subjective_pronouns':['she'],'objective_pronouns':['her'],'reflexive_pronouns':['herself'],'possessive_pronouns':['her','hers']}
 male_pronouns = {'subjective_pronouns':['he'],'objective_pronouns':['him'],'reflexive_pronouns':['himself'],'possessive_pronouns':['his']}
