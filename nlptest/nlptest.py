@@ -1,12 +1,12 @@
+import os
+import pickle
 from collections import defaultdict
-from functools import reduce
 from typing import Optional, Union
 
 import pandas as pd
 import yaml
 
-from nlptest.augmentation.fix_robustness import AugmentRobustness
-
+from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import TestRunner
@@ -24,7 +24,7 @@ class Harness:
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str, ModelFactory],
+            model: Union[str],
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -54,14 +54,8 @@ class Harness:
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        if data is not None:
-            if type(data) == str:
-                self.data = DataFactory(data).load()
-
-        if config is not None:
-            self._config = self.configure(config)
-        else:
-            self._config = None
+        self.data = DataFactory(data, task=self.task).load() if data is not None else None
+        self._config = self.configure(config) if config is not None else None
 
         self._testcases = None
         self._generated_results = None
@@ -104,7 +98,7 @@ class Harness:
             None: The evaluations are stored in `generated_results` attribute.
         """
         self._generated_results, self.accuracy_results = TestRunner(self._testcases, self.model,
-                                                                   self.data).evaluate()
+                                                                    self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -115,7 +109,7 @@ class Harness:
         """
         if isinstance(self._config, dict):
             self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
-                             self._config['tests'].items() for j, k in v.items()}
+                                  self._config['tests'].items() for j, k in v.items()}
         self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
 
         summary = defaultdict(lambda: defaultdict(int))
@@ -147,9 +141,9 @@ class Harness:
         df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
         df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-        df_accuracy['category'] = 'Accuracy' #Temporary fix
-
+        df_accuracy['category'] = 'Accuracy'  # Temporary fix
         df_final = pd.concat([df_report, df_accuracy])
+
         col_to_move = 'category'
         first_column = df_final.pop('category')
         df_final.insert(0, col_to_move, first_column)
@@ -185,7 +179,8 @@ class Harness:
 
         acc_report = self.accuracy_results.copy()
         acc_report["expected_result"] = acc_report.apply(
-            lambda x: self.min_pass_dict.get(x["test_case"]+x["test_type"], self.min_pass_dict.get('default', 0)), axis=1
+            lambda x: self.min_pass_dict.get(x["test_case"] + x["test_type"], self.min_pass_dict.get('default', 0)),
+            axis=1
         )
         acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
         return acc_report
@@ -193,45 +188,85 @@ class Harness:
     def augment(self, input_path, output_path, inplace=False):
         dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
             lambda x: x.str).values.tolist()
-        if dtypes != ['<i4'] *2:
+        if dtypes != ['<i4'] * 2:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
-        aug_data = AugmentRobustness().fix(
-            input_path,
-            output_path,
-            self.df_report,
+        _ = AugmentRobustness().fix(
+            task=self.task,
+            input_path=input_path,
+            output_path=output_path,
+            h_report=self.df_report,
             config=self._config,
             inplace=inplace
         )
+
         return self
 
-    def testcases(self) -> pd.DataFrame:
+    def load_testcases_df(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
-        
         final_df = final_df.reset_index(drop=True)
         return final_df
 
-    def save(self, config: str = "test_config.yml", testcases: str = "test_cases.csv",
-             results: str = "test_results.csv") -> None:
+    def save(self, save_dir: str) -> None:
         """
-        Save the configuration, generated testcases, and results
-        of the evaluations as yml and csv files.
+        Save the configuration, generated testcases and the `DataFactory` to be reused later.
 
-        Parameters:
-            config (str, optional): Path to the YAML file for the configuration.
-                Default is "test_config.yml".
-            testcases (str, optional): Path to the CSV file for the generated testcases.
-                Default is "test_cases.csv".
-            results (str, optional): Path to the CSV file for the results of the evaluations.
-                Default is "test_results.csv".
-
+        Args:
+            save_dir (str): path to folder to save the different files
         Returns:
-            None
+
         """
-        with open(config, 'w') as yml:
+        if self._config is None:
+            raise ValueError("The current Harness has not been configured yet. Please use the `.configure` method "
+                             "before calling the `.save` method.")
+
+        if self._testcases is None:
+            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+                             "calling the `.save` method.")
+
+        if not os.path.isdir(save_dir):
+            os.mkdir(save_dir)
+
+        with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
             yml.write(yaml.safe_dump(self._config))
 
-        self._testcases.to_csv(testcases, index=None)
-        self._generated_results.to_csv(results, index=None)
+        with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
+            pickle.dump(self._testcases, writer)
+
+        with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
+            pickle.dump(self.data, writer)
+
+    @classmethod
+    def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
+        """
+        Loads a previously saved `Harness` from a given configuration and dataset
+
+        Args:
+            save_dir (str):
+                path to folder containing all the needed files to load an saved `Harness`
+            task (str):
+                task for which the model is to be evaluated.
+            model (str | ModelFactory):
+                ModelFactory object or path to the model to be evaluated.
+            hub (str, optional):
+                model hub to load from the path. Required if path is passed as 'model'.
+        Returns:
+            Harness:
+                `Harness` loaded from from a previous configuration along with the new model to evaluate
+        """
+        for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
+            if not os.path.exists(os.path.join(save_dir, filename)):
+                raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
+
+        harness = Harness(task=task, model=model, hub=hub)
+        harness.configure(os.path.join(save_dir, "config.yaml"))
+
+        with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
+            harness._testcases = pickle.load(reader)
+
+        with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
+            harness.data = pickle.load(reader)
+
+        return harness

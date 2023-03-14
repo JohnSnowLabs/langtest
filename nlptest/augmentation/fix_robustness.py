@@ -1,9 +1,7 @@
 
-
 from abc import ABC, abstractmethod, abstractstaticmethod
 import random
-import re
-import pandas as pd
+from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from nlptest.datahandler.datasource import DataFactory
@@ -21,6 +19,7 @@ class AugmentRobustness(BaseAugmentaion):
 
     def fix(
         self,
+        task,
         input_path:str,
         output_path,
         h_report,
@@ -28,7 +27,7 @@ class AugmentRobustness(BaseAugmentaion):
         inplace: bool = False,
         max_prop:float = 0.5
     ):
-        self.df = DataFactory(input_path)
+        self.df = DataFactory(input_path, task)
         data = self.df.load()
         supported_tests = TestFactory.test_scenarios()
         self.config = config
