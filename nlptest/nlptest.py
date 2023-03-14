@@ -191,12 +191,13 @@ class Harness:
         if dtypes != ['<i4'] * 2:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
-        _ = AugmentRobustness().fix(
+        _ = AugmentRobustness(
             task=self.task,
+            config=self._config,
+            h_report=self.df_report
+        ).fix(
             input_path=input_path,
             output_path=output_path,
-            h_report=self.df_report,
-            config=self._config,
             inplace=inplace
         )
 
