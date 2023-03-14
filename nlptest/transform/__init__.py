@@ -8,7 +8,7 @@ from nlptest.transform.accuracy import BaseAccuracy
 from .bias import BaseBias
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
-from .utils import (A2B_DICT, create_terminology, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict)
+from .utils import (A2B_DICT, create_terminology, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names)
 from ..utils.custom_types import Sample, Span, Transformation
 
 class TestFactory:
