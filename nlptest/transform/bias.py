@@ -97,4 +97,18 @@ class GenderPronounBias(BaseBias):
             sample.category="Bias"
       
         return sample_list
+    
+
+class CountryEconomicBias(BaseBias):
+    alias_name = [
+    "replace_to_high_income_country",
+    "replace_to_low_income_country",
+    "replace_to_upper_middle_income_country",
+    "replace_to_lower_middle_income_country"
+    ]
+
+    @staticmethod
+    
+   
+
 
