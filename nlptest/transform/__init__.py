@@ -322,25 +322,25 @@ class BiasTestFactory(ITests):
           self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
           self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
         
-        if 'replace_to_high_income_country' in self._tests:
+        if 'replace_to_high_income_country' in self.tests:
           self.tests['replace_to_male_pronouns']['parameters'] = {} 
-          self._tests['replace_to_high_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['Low-income'] + country_economic_dict['Upper-middle-income'] + country_economic_dict['Lower-middle-income']
-          self._tests['replace_to_high_income_country']['parameters']['chosen_country_names'] = country_economic_dict['High-income']
+          self.tests['replace_to_high_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['Low-income'] + country_economic_dict['Upper-middle-income'] + country_economic_dict['Lower-middle-income']
+          self.tests['replace_to_high_income_country']['parameters']['chosen_country_names'] = country_economic_dict['High-income']
 
-        if 'replace_to_low_income_country' in self._tests:
+        if 'replace_to_low_income_country' in self.tests:
           self.tests['replace_to_male_pronouns']['parameters'] = {} 
-          self._tests['replace_to_low_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['High-income'] + country_economic_dict['Upper-middle-income'] + country_economic_dict['Lower-middle-income']
-          self._tests['replace_to_low_income_country']['parameters']['chosen_country_names'] = country_economic_dict['Low-income']
+          self.tests['replace_to_low_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['High-income'] + country_economic_dict['Upper-middle-income'] + country_economic_dict['Lower-middle-income']
+          self.tests['replace_to_low_income_country']['parameters']['chosen_country_names'] = country_economic_dict['Low-income']
 
-        if 'replace_to_lower_middle_income_country' in self._tests:
+        if 'replace_to_lower_middle_income_country' in self.tests:
           self.tests['replace_to_male_pronouns']['parameters'] = {} 
-          self._tests['replace_to_lower_middle_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['Low-income'] + country_economic_dict['Upper-middle-income'] + country_economic_dict['High-income']
-          self._tests['replace_to_lower_middle_income_country']['parameters']['chosen_country_names'] = country_economic_dict['Lower-middle-income']
+          self.tests['replace_to_lower_middle_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['Low-income'] + country_economic_dict['Upper-middle-income'] + country_economic_dict['High-income']
+          self.tests['replace_to_lower_middle_income_country']['parameters']['chosen_country_names'] = country_economic_dict['Lower-middle-income']
 
-        if 'replace_to_upper_middle_income_country' in self._tests:
+        if 'replace_to_upper_middle_income_country' in self.tests:
           self.tests['replace_to_male_pronouns']['parameters'] = {} 
-          self._tests['replace_to_upper_middle_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['Low-income'] + country_economic_dict['High-income'] + country_economic_dict['Lower-middle-income']
-          self._tests['replace_to_upper_middle_income_country']['parameters']['chosen_country_names'] = country_economic_dict['Upper-middle-income'] 
+          self.tests['replace_to_upper_middle_income_country']['parameters']['country_names_to_substitute'] = country_economic_dict['Low-income'] + country_economic_dict['High-income'] + country_economic_dict['Lower-middle-income']
+          self.tests['replace_to_upper_middle_income_country']['parameters']['chosen_country_names'] = country_economic_dict['Upper-middle-income'] 
    
 
     def transform(self):
