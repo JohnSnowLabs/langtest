@@ -146,6 +146,19 @@ class CountryEconomicBias(BaseBias):
         return sample_list
     
 class EthnicityNameBias(BaseBias):
+    alias_name = [
+    "replace_to_white_firstnames",
+    "replace_to_black_firstnames",
+    "replace_to_hispanic_firstnames",
+    "replace_to_asian_firstnames",
+    "replace_to_white_lastnames",
+    "replace_to_black_lastnames",
+    "replace_to_hispanic_lastnames",
+    "replace_to_asian_lastnames",
+    "replace_to_native_american_lastnames",
+    "replace_to_inter_racial_lastnames",
+    ]
+
     @staticmethod
     def transform(sample_list: List[Sample], names_to_substitute: List[str], chosen_ethnicity_names: List[str]) -> List[Sample]:
         """Replace names to check the ethnicity bias
