@@ -54,15 +54,15 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-        cls, 
-        entity: str, 
-        word: str, 
-        start: int, 
-        end: int, 
-        score: float = None,
-        doc_id: str = None,
-        pos_tag: str = None,
-        chunk_tag: str = None
+            cls,
+            entity: str,
+            word: str,
+            start: int,
+            end: int,
+            score: float = None,
+            doc_id: str = None,
+            pos_tag: str = None,
+            chunk_tag: str = None
     ) -> "NERPrediction":
         """"""
         return cls(
@@ -116,9 +116,17 @@ class NEROutput(BaseModel):
                 return pred
         return None
 
+    def to_str_list(self) -> List[str]:
+        """Convert the ouput into list of strings.
+
+        Returns:
+            List[str]: predictions in form of a list of strings.
+        """
+        return [x.entity for x in self.predictions]
+
     def __repr__(self) -> str:
         return self.predictions.__repr__()
-    
+
     def __str__(self) -> str:
         return [str(x) for x in self.predictions].__repr__()
 
@@ -134,21 +142,32 @@ class SequenceLabel(BaseModel):
     label: str
     score: float
 
+    def __str__(self):
+        return f"{self.label}"
+
 
 class SequenceClassificationOutput(BaseModel):
     """
     Output model for text classification tasks.
     """
-    labels: List[SequenceLabel]
+    predictions: List[SequenceLabel]
+
+    def to_str_list(self) -> List[str]:
+        """Convert the ouput into list of strings.
+
+        Returns:
+            List[str]: predictions in form of a list of strings.
+        """
+        return [x.label for x in self.predictions]
 
     def __str__(self):
-        labels = {elt.label: elt.score for elt in self.labels}
-        return f"SequenceClassificationOutput(labels={labels})"
+        labels = {elt.label: elt.score for elt in self.predictions}
+        return f"SequenceClassificationOutput(predictions={labels})"
 
     def __eq__(self, other):
         """"""
-        top_class = max(self.labels, key=lambda x: x.score).label
-        other_top_class = max(other.labels, key=lambda x: x.score).label
+        top_class = max(self.predictions, key=lambda x: x.score).label
+        other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
 
 
@@ -187,18 +206,14 @@ class Sample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
         self._realigned_spans = None
-    
+
     def to_dict(self):
         """Returns the dict version of sample."""
-        try:
-            expected_result = self.expected_results.predictions
-            actual_result = self.actual_results.predictions if self.actual_results else None
-        except:
-            expected_result = self.expected_results.labels
-            actual_result = self.actual_results.labels if self.actual_results else None
+        expected_result = self.expected_results.predictions
+        actual_result = self.actual_results.predictions if self.actual_results else None
 
         result = {
-            'category':self.category,
+            'category': self.category,
             'test_type': self.test_type,
             'original': self.original,
             'test_case': self.test_case,
@@ -212,8 +227,6 @@ class Sample(BaseModel):
             })
 
         return result
-            
-
 
     @validator("transformations")
     def sort_transformations(cls, v):
@@ -275,8 +288,9 @@ class Sample(BaseModel):
                     for transformation in self.transformations:
                         if transformation.new_span.start < actual_result.span.start:
                             # the whole span needs to be shifted to the left
-                            actual_result.span.shift((transformation.new_span.start - transformation.original_span.start) + \
-                                                    (transformation.new_span.end - transformation.original_span.end))
+                            actual_result.span.shift(
+                                (transformation.new_span.start - transformation.original_span.start) + \
+                                (transformation.new_span.end - transformation.original_span.end))
                         elif transformation.new_span.start == actual_result.span.start:
                             # only the end of the span needs to be adjusted
                             actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
@@ -337,10 +351,10 @@ class Sample(BaseModel):
     def is_pass(self) -> bool:
         """"""
         if isinstance(self.actual_results, NEROutput):
-           actual_preds = [i.entity for i in self.actual_results.predictions]
-           expected_preds = [j.entity for j in self.expected_results.predictions]
-           return actual_preds == expected_preds
-        
+            actual_preds = [i.entity for i in self.actual_results.predictions]
+            expected_preds = [j.entity for j in self.expected_results.predictions]
+            return actual_preds == expected_preds
+
         else:
             filtered_actual_results = self.actual_results
 

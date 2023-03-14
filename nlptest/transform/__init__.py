@@ -1,23 +1,17 @@
 from abc import ABC, abstractclassmethod, abstractmethod
 from typing import List
-from functools import reduce
-from typing import Dict, List, Optional
-import pandas as pd
+
 import nltk
+import pandas as pd
 
 from nlptest.transform.accuracy import BaseAccuracy
-
 from .bias import BaseBias
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
-from ..utils.custom_types import Sample
-from multiprocessing import Pool
-
 from .utils import (A2B_DICT, create_terminology, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict)
 from ..utils.custom_types import Sample, Span, Transformation
 
 class TestFactory:
-
     """
     A factory class for creating and running different types of tests on data.
 
@@ -37,7 +31,6 @@ class TestFactory:
 
     @staticmethod
     def transform(data: List[Sample], test_types: dict):
-
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -66,7 +59,6 @@ class TestFactory:
 
     @classmethod
     def test_catgories(cls):
-
         """
         Returns a dictionary mapping test category names to the corresponding test classes.
 
@@ -75,12 +67,10 @@ class TestFactory:
         dict
             A dictionary mapping test category names to the corresponding test classes.
         """
-         
-        return {cls.__name__.lower(): cls for cls in ITests.__subclasses__()}
-    
+        return {cls.alias_name.lower(): cls for cls in ITests.__subclasses__()}
+
     @classmethod
     def test_scenarios(cls):
-
         """
         Returns a dictionary mapping test class names to the available test scenarios for each class.
 
@@ -90,11 +80,10 @@ class TestFactory:
             A dictionary mapping test class names to the available test scenarios for each class.
         """
 
-        return {cls.__name__.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
+        return {cls.alias_name.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
 
 
 class ITests(ABC):
-
     """
     An abstract base class for defining different types of tests.
 
@@ -111,7 +100,6 @@ class ITests(ABC):
 
     @abstractmethod
     def transform(self):
-
         """
         Runs the test and returns the results.
 
@@ -122,10 +110,9 @@ class ITests(ABC):
         """
 
         return NotImplementedError
-    
+
     @abstractclassmethod
     def available_tests(cls):
-
         """
         Returns a list of available test scenarios for the test class.
 
@@ -138,7 +125,8 @@ class ITests(ABC):
         return NotImplementedError
 
 
-class Robustness(ITests):
+class RobustnessTestFactory(ITests):
+    alias_name = "robustness"
 
     """
     A class for performing robustness tests on a given dataset.
@@ -168,7 +156,7 @@ class Robustness(ITests):
             data_handler: List[Sample],
             tests=None
     ) -> None:
-        
+
         """
         Initializes a new instance of the `Robustness` class.
 
@@ -182,7 +170,7 @@ class Robustness(ITests):
 
         self.supported_tests = self.available_tests()
         self.tests = tests
-        
+
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -196,16 +184,14 @@ class Robustness(ITests):
         if len(not_supported_tests) > 0:
             raise ValueError(
                 f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
-        
 
         if 'swap_entities' in self.tests:
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                             for sample in data_handler]})
+                               'label': [[i.entity for i in sample.expected_results.predictions]
+                                         for sample in data_handler]})
             self.tests['swap_entities']['parameters'] = {}
             self.tests['swap_entities']['parameters']['terminology'] = create_terminology(df)
             self.tests['swap_entities']['parameters']['labels'] = df.label.tolist()
-
 
         if "american_to_british" in self.tests:
             self.tests['american_to_british']['parameters'] = {}
@@ -215,11 +201,11 @@ class Robustness(ITests):
             self.tests['british_to_american']['parameters']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self.tests:
-            nltk.download('omw-1.4',quiet=True)
+            nltk.download('omw-1.4', quiet=True)
             nltk.download('wordnet', quiet=True)
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                         for sample in data_handler]})
+                               'label': [[i.entity for i in sample.expected_results.predictions]
+                                         for sample in data_handler]})
             self.tests['swap_cohyponyms']['parameters'] = {}
             self.tests['swap_cohyponyms']['parameters']['labels'] = df.label.tolist()
 
@@ -239,12 +225,13 @@ class Robustness(ITests):
         for test_name, params in self.tests.items():
             print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+                                                                            **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
         return all_samples
-    
+
     @classmethod
     def available_tests(cls) -> dict:
 
@@ -257,13 +244,14 @@ class Robustness(ITests):
         """
 
         tests = {
-            j: i for i in BaseRobustness.__subclasses__() 
+            j: i for i in BaseRobustness.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-            }
+        }
         return tests
 
-class Bias(ITests):
 
+class BiasTestFactory(ITests):
+    alias_name = "bias"
     """
     A class for performing bias tests on a given dataset.
 
@@ -287,12 +275,11 @@ class Bias(ITests):
         Returns a dictionary of available test scenarios for the `bias` class.
     """
 
-
     def __init__(
             self,
             data_handler: List[Sample],
             tests=None
-     ) -> None:
+    ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
@@ -310,18 +297,25 @@ class Bias(ITests):
         if len(not_supported_tests) > 0:
             raise ValueError(
                 f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
-        
-        
 
         if 'replace_to_male_pronouns' in self.tests:
-          self.tests['replace_to_male_pronouns']['parameters'] = {} 
-          self.tests['replace_to_male_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self.tests['replace_to_male_pronouns']['parameters']['pronoun_type'] = 'male'
-        
+            self.tests['replace_to_male_pronouns']['parameters'] = {}
+            self.tests['replace_to_male_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in list(
+                female_pronouns.values()) for item in sublist] + [item for sublist in list(neutral_pronouns.values())
+                                                                  for item in sublist]
+            self.tests['replace_to_male_pronouns']['parameters']['pronoun_type'] = 'male'
+
         if 'replace_to_female_pronouns' in self.tests:
-          self.tests['replace_to_female_pronouns']['parameters'] = {} 
-          self.tests['replace_to_female_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self.tests['replace_to_female_pronouns']['parameters']['pronoun_type'] = 'female'
+            self.tests['replace_to_female_pronouns']['parameters'] = {}
+            self.tests['replace_to_female_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in
+                                                                                                list(
+                                                                                                    male_pronouns.values())
+                                                                                                for item in sublist] + [
+                                                                                                   item for sublist in
+                                                                                                   list(
+                                                                                                       neutral_pronouns.values())
+                                                                                                   for item in sublist]
+            self.tests['replace_to_female_pronouns']['parameters']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self.tests:
           self.tests['replace_to_neutral_pronouns']['parameters'] = {} 
@@ -364,12 +358,13 @@ class Bias(ITests):
         for test_name, params in self.tests.items():
             print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+                                                                            **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
         return all_samples
-    
+
     @classmethod
     def available_tests(cls) -> dict:
 
@@ -382,13 +377,14 @@ class Bias(ITests):
         """
 
         tests = {
-            j: i for i in BaseBias.__subclasses__() 
+            j: i for i in BaseBias.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-            }
+        }
         return tests
-    
 
-class Representation(ITests):
+
+class RepresentationTestFactory(ITests):
+    alias_name = "representation"
 
     """
     A class for performing representation tests on a given dataset.
@@ -413,11 +409,10 @@ class Representation(ITests):
         Returns a dictionary of available test scenarios for the `representation` class.
     """
 
-
     def __init__(
-        self,
-        data_handler: List[Sample],
-        tests=None
+            self,
+            data_handler: List[Sample],
+            tests=None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -435,8 +430,7 @@ class Representation(ITests):
         not_supported_tests = (set(self.tests) - set(self.supported_tests))
         if len(not_supported_tests) > 0:
             raise ValueError(
-                    f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
-    
+                f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
 
     def transform(self):
 
@@ -453,12 +447,13 @@ class Representation(ITests):
         for test_name, params in self.tests.items():
             print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+                                                                            **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
         return all_samples
-    
+
     @classmethod
     def available_tests(cls) -> dict:
 
@@ -471,14 +466,14 @@ class Representation(ITests):
         """
 
         tests = {
-            j: i for i in BaseRepresentation.__subclasses__() 
+            j: i for i in BaseRepresentation.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-            }
+        }
         return tests
 
 
-class Accuracy(ITests):
-
+class AccuracyTestFactory(ITests):
+    alias_name = "accuracy"
     """
     A class for performing accuracy tests on a given dataset.
 
@@ -503,9 +498,9 @@ class Accuracy(ITests):
     """
 
     def __init__(
-        self,
-        data_handler: List[Sample],
-        tests=None
+            self,
+            data_handler: List[Sample],
+            tests=None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -523,8 +518,7 @@ class Accuracy(ITests):
         not_supported_tests = (set(self.tests) - set(self.supported_tests))
         if len(not_supported_tests) > 0:
             raise ValueError(
-                    f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
-    
+                f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
 
     def transform(self):
 
@@ -536,17 +530,18 @@ class Accuracy(ITests):
         List[Sample]
             A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
-        
+
         all_samples = []
         for test_name, params in self.tests.items():
             print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+                                                                            **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
         return all_samples
-    
+
     @classmethod
     def available_tests(cls) -> dict:
 
@@ -559,8 +554,7 @@ class Accuracy(ITests):
         """
 
         tests = {
-            j: i for i in BaseAccuracy.__subclasses__() 
+            j: i for i in BaseAccuracy.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-            }
+        }
         return tests
-
