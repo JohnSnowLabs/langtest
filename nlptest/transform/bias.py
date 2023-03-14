@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import random
+import re
 from typing import List
 
 from ..utils.custom_types import Sample
@@ -61,25 +62,35 @@ class GenderPronounBias(BaseBias):
             tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in pronouns_to_substitute]
           
             if len(tokens_to_substitute)!=0:
-                replace_token = random.choice(tokens_to_substitute)
-                if pronoun_type =="female":
-                  combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
-                  chosen_dict = female_pronouns
-                elif pronoun_type =="male":
-                  combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}  
-                  chosen_dict = male_pronouns      
-                elif pronoun_type =="neutral":
-                  combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
-                  chosen_dict = neutral_pronouns  
+                replaced_string = None
+                for replace_token in tokens_to_substitute:
+                  if pronoun_type =="female":
+                    combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
+                    chosen_dict = female_pronouns
+                  elif pronoun_type =="male":
+                    combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}  
+                    chosen_dict = male_pronouns      
+                  elif pronoun_type =="neutral":
+                    combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
+                    chosen_dict = neutral_pronouns  
 
-                for key, value in combined_dict.items() :
-                      if replace_token in value:
-                        type_of_pronoun = str(key)
-                        break
+                  for key, value in combined_dict.items() :
+                        if replace_token.lower() in value:
+                          type_of_pronoun = str(key)
+                          break
+                  
+                  chosen_token= random.choice(chosen_dict[type_of_pronoun])
 
-                chosen_token= random.choice(chosen_dict[type_of_pronoun])
-                replaced_string = sample.original.replace(replace_token, chosen_token)
-                sample.test_case = replaced_string
+                  if not replaced_string:
+                    regex = r'\b{}\b'.format(replace_token)
+                    replaced_string = re.sub(regex, chosen_token, sample.original)
+              
+                  else:
+                    regex = r'\b{}\b'.format(replace_token)
+                    replaced_string = re.sub(regex, chosen_token, replaced_string)
+
+                  sample.test_case = replaced_string
+
             else:
               sample.test_case = sample.original
             
