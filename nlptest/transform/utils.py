@@ -1,42 +1,6 @@
 from typing import Dict, List
 import pandas as pd
 
-DEFAULT_PERTURBATIONS = [
-    "uppercase",
-    "lowercase",
-    "titlecase",
-    "add_punctuation",
-    "strip_punctuation",
-    "add_typo",
-    "american_to_british",
-    "british_to_american",
-    "add_context",
-    "add_contractions",
-    "swap_entities",
-    "swap_cohyponyms",
-    "replace_to_male_pronouns",
-    "replace_to_female_pronouns",
-    "replace_to_neutral_pronouns"
-]
-
-PERTURB_CLASS_MAP = {
-    "uppercase": 'UpperCase',
-    "lowercase": 'LowerCase',
-    "titlecase": 'TitleCase',
-    "add_punctuation": 'AddPunctuation',
-    "strip_punctuation": 'StripPunctuation',
-    "add_typo": 'AddTypo',
-    "american_to_british": 'ConvertAccent',
-    "british_to_american": 'ConvertAccent',
-    "add_context": 'AddContext',
-    "add_contractions": 'AddContraction',
-    "swap_entities": 'SwapEntities',
-    "swap_cohyponyms": 'SwapCohyponyms',
-    "replace_to_male_pronouns":"GenderPronounBias",
-    "replace_to_female_pronouns":"GenderPronounBias",
-    "replace_to_neutral_pronouns":"GenderPronounBias"
-}
-
 # @formatter:off
 A2B_DICT = {"accessorize": "accessorise", "accessorized": "accessorised", "accessorizes": "accessorises",
             "accessorizing": "accessorising", "acclimatization": "acclimatisation", "acclimatize": "acclimatise",
