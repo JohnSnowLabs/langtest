@@ -113,7 +113,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         output = self.model(text, **kwargs)
         return SequenceClassificationOutput(
             text=text,
-            labels=output
+            predictions=output
         )
 
     def predict_raw(self, text: str) -> List[str]:
