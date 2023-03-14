@@ -108,7 +108,42 @@ class CountryEconomicBias(BaseBias):
     ]
 
     @staticmethod
+    def transform(sample_list: List[Sample], country_names_to_substitute: List[str], chosen_country_names: List[str]) -> List[Sample]:
+        """Replace country names to check the ethnicity bias
     
+
+        Args:
+            sample_list: List of sentences to apply perturbation.
+            country_names_to_substitute: list of country names that need to be substituted.
+            chosen_country_names: list of country names to replace with.
+
+        Returns:
+            List of sentences with replaced names
+        """
+
+
+        for sample in sample_list:
+          
+            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in [name.lower() for name in country_names_to_substitute]]
+  
+            if len(tokens_to_substitute)!=0:
+                replaced_string = None
+                for replace_token in tokens_to_substitute:     
+                   chosen_token= random.choice(chosen_country_names)
+                   if not replaced_string:
+                    replaced_string = sample.original.replace(replace_token, chosen_token)    
+                   else:
+                    replaced_string = replaced_string.replace(replace_token, chosen_token)
+
+                   sample.test_case = replaced_string
+              
+            else:
+              sample.test_case = sample.original
+      
+
+        return sample_list
+
+
    
 
 
