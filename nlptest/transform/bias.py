@@ -183,9 +183,12 @@ class EthnicityNameBias(BaseBias):
                 for replace_token in tokens_to_substitute:  
                   chosen_token= random.choice(chosen_ethnicity_names)
                   if not replaced_string:
-                    replaced_string = sample.original.replace(replace_token, chosen_token)    
+                    regex = r'\b{}\b'.format(replace_token)
+                    replaced_string = re.sub(regex, chosen_token, sample.original)
+              
                   else:
-                    replaced_string = replaced_string.replace(replace_token, chosen_token)
+                    regex = r'\b{}\b'.format(replace_token)
+                    replaced_string = re.sub(regex, chosen_token, replaced_string)
 
                   sample.test_case = replaced_string
                 
