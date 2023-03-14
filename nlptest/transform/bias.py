@@ -156,7 +156,7 @@ class EthnicityNameBias(BaseBias):
     "replace_to_hispanic_lastnames",
     "replace_to_asian_lastnames",
     "replace_to_native_american_lastnames",
-    "replace_to_inter_racial_lastnames",
+    "replace_to_inter_racial_lastnames"
     ]
 
     @staticmethod

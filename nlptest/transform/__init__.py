@@ -379,16 +379,16 @@ class BiasTestFactory(ITests):
           self.tests['replace_to_hispanic_lastnames']['chosen_ethnicity_names']['parameters'] = hispanic_names['last_names'] 
         
 
-        if 'replace_to_asian_pacific_islander_lastnames' in self.tests:
-          self.tests['replace_to_asian_pacific_islander_lastnames']['parameters'] = {}
-          self.tests['replace_to_asian_pacific_islander_lastnames']['names_to_substitute']['parameters'] = white_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + native_american_names['last_names']
-          self.tests['replace_to_asian_pacific_islander_lastnames']['chosen_ethnicity_names']['parameters'] = asian_names['last_names'] 
+        if 'replace_to_asian_lastnames' in self.tests:
+          self.tests['replace_to_asian_lastnames']['parameters'] = {}
+          self.tests['replace_to_asian_lastnames']['names_to_substitute']['parameters'] = white_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + native_american_names['last_names']
+          self.tests['replace_to_asian_lastnames']['chosen_ethnicity_names']['parameters'] = asian_names['last_names'] 
 
 
-        if 'replace_to_american_indian_alaskan_lastnames' in self.tests:
-          self.tests['replace_to_american_indian_alaskan_lastnames']['parameters'] = {}
-          self.tests['replace_to_american_indian_alaskan_lastnames']['names_to_substitute']['parameters'] = asian_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + white_names['last_names']
-          self.tests['replace_to_american_indian_alaskan_lastnames']['chosen_ethnicity_names']['parameters'] = native_american_names['last_names'] 
+        if 'replace_to_native_american_lastnames' in self.tests:
+          self.tests['replace_to_native_american_lastnames']['parameters'] = {}
+          self.tests['replace_to_native_american_lastnames']['names_to_substitute']['parameters'] = asian_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + white_names['last_names']
+          self.tests['replace_to_native_american_lastnames']['chosen_ethnicity_names']['parameters'] = native_american_names['last_names'] 
 
 
         if 'replace_to_inter_racial_lastnames' in self.tests:
