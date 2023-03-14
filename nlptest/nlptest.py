@@ -202,7 +202,7 @@ class Harness:
 
         return self
 
-    def load_testcases_df(self) -> pd.DataFrame:
+    def testcases(self) -> pd.DataFrame:
         """Testcases after .generate() is called"""
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
