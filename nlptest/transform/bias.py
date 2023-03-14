@@ -166,7 +166,7 @@ class EthnicityNameBias(BaseBias):
 
         Args:
             sample_list: List of sentences to apply perturbation.
-            pronouns_to_substitute: list of names that need to be substituted.
+            names_to_substitute: list of names that need to be substituted.
             chosen_ethnicity_names: list of ethnicity names to replace with.
 
         Returns:
@@ -192,15 +192,64 @@ class EthnicityNameBias(BaseBias):
 
                   sample.test_case = replaced_string
                 
-              
-                replaced_string = sample.original.replace(replace_token, chosen_token)
-                sample.test_case = replaced_string
-             
             else:
               sample.test_case = sample.original
 
             sample.category="Bias"
       
+        return sample_list
+    
+       
+class ReligionBias(BaseBias):
+    alias_name = [
+    "replace_to_muslim_names",
+    "replace_to_hindu_names",
+    "replace_to_christian_names",
+    "replace_to_sikh_names",
+    "replace_to_jain_names",
+    "replace_to_parsi_names",
+    "replace_to_buddhist_names"
+    ]
+    
+    @staticmethod
+    def transform(sample_list: List[Sample], names_to_substitute: List[str], chosen_names: List[str]) -> List[Sample]:
+        """Replace  names to check the religion bias
+    
+
+        Args:
+            sample_list: List of sentences to apply perturbation.
+            names_to_substitute: list of names that need to be substituted.
+            chosen_names: list of names to replace with.
+
+        Returns:
+            List of sentences with replaced names
+        """
+
+
+        for sample in sample_list:
+          
+            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in [name.lower() for name in names_to_substitute]]
+  
+            if len(tokens_to_substitute)!=0:
+                replaced_string = None
+                for replace_token in tokens_to_substitute:  
+                  chosen_token= random.choice(chosen_names)
+                  if not replaced_string:
+                    regex = r'\b{}\b'.format(replace_token)
+                    replaced_string = re.sub(regex, chosen_token, sample.original)
+              
+                  else:
+                    regex = r'\b{}\b'.format(replace_token)
+                    replaced_string = re.sub(regex, chosen_token, replaced_string)
+
+                  sample.test_case = replaced_string
+                
+            else:
+              sample.test_case = sample.original
+
+            sample.category="Bias"
+      
+
         return sample_list
 
 
