@@ -186,6 +186,29 @@ class Harness:
         return acc_report
 
     def augment(self, input_path, output_path, inplace=False):
+
+        """
+        Augments the data in the input file located at `input_path` and saves the result to `output_path`.
+
+        Args:
+            input_path (str): Path to the input file.
+            output_path (str): Path to save the augmented data.
+            inplace (bool, optional): Whether to modify the input file directly. Defaults to False.
+
+        Returns:
+            Harness: The instance of the class calling this method.
+
+        Raises:
+            ValueError: If the `pass_rate` or `minimum_pass_rate` columns have an unexpected data type.
+
+        Note:
+            This method uses an instance of `AugmentRobustness` to perform the augmentation.
+
+        Example:
+            >>> harness = Harness(...)
+            >>> harness.augment("train.conll", "augmented_train.conll")
+        """
+
         dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
             lambda x: x.str).values.tolist()
         if dtypes != ['<i4'] * 2:
