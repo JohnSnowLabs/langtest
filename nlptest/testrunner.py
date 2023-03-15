@@ -81,7 +81,7 @@ class AccuracyTestRunner(TestRunner):
         Returns:
             pd.Dataframe: Dataframe with the results.
         """
-        y_true = pd.Series(self._data).apply(lambda x: x.expected_results.predictions.to_str_list())
+        y_true = pd.Series(self._data).apply(lambda x: x.expected_results.to_str_list())
         X_test = pd.Series(self._data).apply(lambda x: x.original)
         y_pred = X_test.apply(self._model_handler.predict_raw)
 
