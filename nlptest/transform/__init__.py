@@ -327,8 +327,8 @@ class BiasTestFactory(ITests):
             if f'replace_to_{economic_level}_country' in self.tests:
                 countries_to_exclude = [v for k, v in country_economic_dict.items() if k != income_level]
                 self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {}
-                self.tests[f"replace_to_{economic_level}_country"]['country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
-                self.tests[f"replace_to_{economic_level}_country"]['chosen_country_names'] = country_economic_dict[income_level]
+                self.tests[f"replace_to_{economic_level}_country"]['parameters']['country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
+                self.tests[f"replace_to_{economic_level}_country"]['parameters']['chosen_country_names'] = country_economic_dict[income_level]
                 
         for religion in religion_wise_names.keys():
             if f"replace_to_{religion.lower()}_names" in self.tests:
