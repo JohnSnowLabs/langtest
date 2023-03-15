@@ -4,6 +4,8 @@ import random
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+import yaml
+
 from nlptest.datahandler.datasource import DataFactory
 from nlptest.transform import TestFactory
 
@@ -89,6 +91,9 @@ class AugmentRobustness(BaseAugmentaion):
         self.h_report = h_report
         self.max_prop = max_prop
 
+        if isinstance(self.config, str):
+            with open(self.config) as fread:
+                self.config = yaml.safe_load(fread)
 
     def fix(
         self,
