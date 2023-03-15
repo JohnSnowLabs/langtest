@@ -173,10 +173,9 @@ class EthnicityNameBias(BaseBias):
             List of sentences with replaced names
         """
 
-
+        print(names_to_substitute)
         for sample in sample_list:
             
-            print(names_to_substitute)
             tokens_to_substitute = [token for token in sample.original.split(' ') if any(name.lower() == token.lower() for name in names_to_substitute)]
             print(tokens_to_substitute)
   
