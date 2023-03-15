@@ -4889,6 +4889,14 @@ country_economic_dict = {"High-income": ["Aruba", "Andorra", "U.A.E", "U.S.", "U
 
 
 def get_substitution_names(values_list):
+   """ Helper function to get list of substitution names 
+
+   Args:
+        values_list : list of substitution lists.
+
+   Returns:
+        List of substitution names
+   """
    substitution_names = []
    for lst in values_list:
     substitution_names.extend(lst)

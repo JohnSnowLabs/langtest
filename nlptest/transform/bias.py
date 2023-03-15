@@ -166,7 +166,7 @@ class EthnicityNameBias(BaseBias):
 
         Args:
             sample_list: List of sentences to apply perturbation.
-            names_to_substitute: list of names that need to be substituted.
+            names_to_substitute: list of ethnicity names that need to be substituted.
             chosen_ethnicity_names: list of ethnicity names to replace with.
 
         Returns:
