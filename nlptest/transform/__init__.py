@@ -9,7 +9,7 @@ from .bias import BaseBias
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .utils import (A2B_DICT, create_terminology, female_pronouns, male_pronouns, neutral_pronouns)
-from ..utils.custom_types import Sample
+from ..utils.custom_types import Sample, Result
 
 
 class TestFactory:
@@ -31,7 +31,7 @@ class TestFactory:
     """
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict):
+    def transform(data: List[Sample], test_types: dict) -> List[Result]:
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -44,12 +44,12 @@ class TestFactory:
 
         Returns
         -------
-        List[Results]
+        List[Result]
             A list of results from running the specified tests on the data.
         """
 
         all_results = []
-        all_categories = TestFactory.test_catgories()
+        all_categories = TestFactory.test_categories()
         # process = []
         for each in list(test_types.keys()):
             values = test_types[each]
@@ -59,7 +59,7 @@ class TestFactory:
         return all_results
 
     @classmethod
-    def test_catgories(cls):
+    def test_categories(cls):
         """
         Returns a dictionary mapping test category names to the corresponding test classes.
 

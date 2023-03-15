@@ -2,7 +2,7 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Optional, Union
-
+import logging
 import pandas as pd
 import yaml
 
@@ -11,6 +11,7 @@ from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import TestRunner
 from .transform import TestFactory
+from .utils.custom_types import Sample
 
 
 class Harness:
@@ -234,6 +235,21 @@ class Harness:
         with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
 
+    def save_testcases(self, filename: str) -> None:
+        """
+        Save the test cases to csv for editing.
+
+        Args:
+            filename:
+                path to save the test cases to
+        Returns:
+
+        """
+        dict_tests = [result.to_dict() for result in self._testcases]
+        df_tests = pd.DataFrame.from_records(dict_tests)
+        df_tests.to_csv(filename, index=False)
+        logging.info(f"Test cases successfully saved to '{filename}'.")
+
     @classmethod
     def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
         """
@@ -266,3 +282,17 @@ class Harness:
             harness.data = pickle.load(reader)
 
         return harness
+
+    def load_testcases(self, filename: str) -> None:
+        """
+        Load test cases from a csv file
+        Args:
+            filename:
+                path to load the file from
+        Returns:
+
+        """
+        df = pd.read_csv(filename)
+        records = df.to_dict(orient="records")
+        self._testcases = [Sample.parse_obj(record) for record in records]
+        logging.info(f"Test cases successfully loaded from '{filename}.")

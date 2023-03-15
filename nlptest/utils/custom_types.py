@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, PrivateAttr, validator
 from typing import List, Optional, Tuple, TypeVar
+
+from pydantic import BaseModel, Field, PrivateAttr, validator
 
 
 class Span(BaseModel):
@@ -209,20 +210,20 @@ class Sample(BaseModel):
 
     def to_dict(self):
         """Returns the dict version of sample."""
-        expected_result = self.expected_results.predictions
-        actual_result = self.actual_results.predictions if self.actual_results else None
+        expected_results = self.expected_results.predictions
+        actual_results = self.actual_results.predictions if self.actual_results else None
 
         result = {
             'category': self.category,
             'test_type': self.test_type,
             'original': self.original,
             'test_case': self.test_case,
-            'expected_result': expected_result,
+            'expected_result': [expected_result.dict() for expected_result in expected_results],
         }
 
-        if actual_result is not None:
+        if actual_results is not None:
             result.update({
-                'actual_result': actual_result,
+                'actual_result': [actual_result.dict() for actual_result in actual_results],
                 'pass': self.is_pass()
             })
 
