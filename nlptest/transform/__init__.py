@@ -356,63 +356,7 @@ class BiasTestFactory(ITests):
                     'names_to_substitute': sum([ethnicity_last_names[e] for e in ethnicity_last_names if e != ethnicity], []),
                     'chosen_ethnicity_names': ethnicity_last_names[ethnicity]
                 }
-
-         
-        # if 'replace_to_white_firstnames' in self.tests:
-        #   self.tests['replace_to_white_firstnames']['parameters'] = {}
-        #   self.tests['replace_to_white_firstnames']['parameters']['names_to_substitute'] = black_names['first_names'] + hispanic_names['first_names'] + asian_names['first_names']
-        #   self.tests['replace_to_white_firstnames']['parameters']['chosen_ethnicity_names'] = white_names['first_names']
-        
-        # if 'replace_to_black_firstnames' in self.tests:
-        #   self.tests['replace_to_black_firstnames']['parameters'] = {}
-        #   self.tests['replace_to_black_firstnames']['parameters']['names_to_substitute'] = white_names['first_names'] + hispanic_names['first_names'] + asian_names['first_names']
-        #   self.tests['replace_to_black_firstnames']['parameters']['chosen_ethnicity_names'] = black_names['first_names']
-        
-        # if 'replace_to_hispanic_firstnames' in self.tests:
-        #   self.tests['replace_to_hispanic_firstnames']['parameters'] = {}
-        #   self.tests['replace_to_hispanic_firstnames']['parameters']['names_to_substitute'] = white_names['first_names'] + black_names['first_names'] + asian_names['first_names']
-        #   self.tests['replace_to_hispanic_firstnames']['parameters']['chosen_ethnicity_names'] = hispanic_names['first_names']
-        
-        # if 'replace_to_asian_firstnames' in self.tests:
-        #   self.tests['replace_to_asian_firstnames']['parameters'] = {}
-        #   self.tests['replace_to_asian_firstnames']['parameters']['names_to_substitute'] = white_names['first_names'] + black_names['first_names'] + hispanic_names['first_names']
-        #   self.tests['replace_to_asian_firstnames']['parameters']['chosen_ethnicity_names'] = asian_names['first_names']
-
-        # if 'replace_to_white_lastnames' in self.tests:
-        #   self.tests['replace_to_white_lastnames']['parameters'] = {}
-        #   self.tests['replace_to_white_lastnames']['parameters']['names_to_substitute'] = asian_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + native_american_names['last_names']
-        #   self.tests['replace_to_white_lastnames']['parameters']['chosen_ethnicity_names'] = white_names['last_names'] 
-        
-        # if 'replace_to_black_lastnames' in self.tests:
-        #   self.tests['replace_to_black_lastnames']['parameters'] = {}
-        #   self.tests['replace_to_black_lastnames']['parameters']['names_to_substitute'] = asian_names['last_names'] + white_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + native_american_names['last_names']
-        #   self.tests['replace_to_black_lastnames']['parameters']['chosen_ethnicity_names'] = black_names['last_names'] 
-
-
-        # if 'replace_to_hispanic_lastnames' in self.tests:
-        #   self.tests['replace_to_hispanic_lastnames']['parameters'] = {}
-        #   self.tests['replace_to_hispanic_lastnames']['parameters']['names_to_substitute'] = asian_names['last_names'] + black_names['last_names'] + white_names['last_names'] + inter_racial_names['last_names'] + native_american_names['last_names']
-        #   self.tests['replace_to_hispanic_lastnames']['parameters']['chosen_ethnicity_names'] = hispanic_names['last_names'] 
-        
-
-        # if 'replace_to_asian_lastnames' in self.tests:
-        #   self.tests['replace_to_asian_lastnames']['parameters'] = {}
-        #   self.tests['replace_to_asian_lastnames']['parameters']['names_to_substitute'] = white_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + native_american_names['last_names']
-        #   self.tests['replace_to_asian_lastnames']['parameters']['chosen_ethnicity_names'] = asian_names['last_names'] 
-
-
-        # if 'replace_to_native_american_lastnames' in self.tests:
-        #   self.tests['replace_to_native_american_lastnames']['parameters'] = {}
-        #   self.tests['replace_to_native_american_lastnames']['parameters']['names_to_substitute'] = asian_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + inter_racial_names['last_names'] + white_names['last_names']
-        #   self.tests['replace_to_native_american_lastnames']['parameters']['chosen_ethnicity_names'] = native_american_names['last_names'] 
-
-
-        # if 'replace_to_inter_racial_lastnames' in self.tests:
-        #   self.tests['replace_to_inter_racial_lastnames']['parameters'] = {}
-        #   self.tests['replace_to_inter_racial_lastnames']['parameters']['names_to_substitute'] = asian_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + white_names['last_names'] + native_american_names['last_names']
-        #   self.tests['replace_to_inter_racial_lastnames']['parameters']['chosen_ethnicity_names'] = inter_racial_names['last_names']
-          
-        
+ 
         
     def transform(self):
 
