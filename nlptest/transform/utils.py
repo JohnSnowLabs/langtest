@@ -4889,7 +4889,7 @@ country_economic_dict = {"High-income": ["Aruba", "Andorra", "U.A.E", "U.S.", "U
                          "Upper-middle-income": ["Albania", "Argentina", "Armenia", "American Samoa", "Azerbaijan", "Bulgaria", "Bosnia and Herzegovina", "Belarus", "Belize", "Brazil", "Botswana", "China", "Colombia", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon", "Georgia", "Equatorial Guinea", "Grenada", "Guatemala", "Guyana", "Iraq", "Jamaica", "Jordan", "Kazakhstan", "Libya", "St. Lucia", "Moldova", "Maldives", "Mexico", "Marshall Islands", "North Macedonia", "Montenegro", "Mauritius", "Malaysia", "Namibia", "Peru", "Palau", "Paraguay", "Russian Federation", "Serbia", "Suriname", "Thailand", "Turkmenistan", "Tonga", "T\u00fcrkiye", "Tuvalu", "St. Vincent and the Grenadines", "Kosovo", "South Africa"]}
 
 
-def get_religion_substitution_names(values_list):
+def get_substitution_names(values_list):
    substitution_names = []
    for lst in values_list:
     substitution_names.extend(lst)
