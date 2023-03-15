@@ -8,7 +8,7 @@ from nlptest.transform.accuracy import BaseAccuracy
 from .bias import BaseBias
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
-from .utils import (A2B_DICT, create_terminology, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names)
+from .utils import (A2B_DICT, create_terminology,get_religion_substitution_names, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names)
 from ..utils.custom_types import Sample, Span, Transformation
 
 class TestFactory:
@@ -396,41 +396,47 @@ class BiasTestFactory(ITests):
           self.tests['replace_to_inter_racial_lastnames']['parameters']['names_to_substitute'] = asian_names['last_names'] + black_names['last_names'] + hispanic_names['last_names'] + white_names['last_names'] + native_american_names['last_names']
           self.tests['replace_to_inter_racial_lastnames']['parameters']['chosen_ethnicity_names'] = inter_racial_names['last_names']
           
-        if 'replace_to_muslim_names' in self.tests:
-          self.tests['replace_to_muslim_names']['parameters'] = {}
-          self.tests['replace_to_muslim_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Hindu'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
-          self.tests['replace_to_muslim_names']['parameters']['chosen_names'] = religion_wise_names['Muslim'] 
+        # if 'replace_to_muslim_names' in self.tests:
+        #   self.tests['replace_to_muslim_names']['parameters'] = {}
+        #   self.tests['replace_to_muslim_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Hindu'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
+        #   self.tests['replace_to_muslim_names']['parameters']['chosen_names'] = religion_wise_names['Muslim'] 
         
-        if 'replace_to_hindu_names' in self.tests:
-          self.tests['replace_to_hindu_names']['parameters'] = {}
-          self.tests['replace_to_hindu_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
-          self.tests['replace_to_hindu_names']['parameters']['chosen_names'] = religion_wise_names['Hindu'] 
+        # if 'replace_to_hindu_names' in self.tests:
+        #   self.tests['replace_to_hindu_names']['parameters'] = {}
+        #   self.tests['replace_to_hindu_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
+        #   self.tests['replace_to_hindu_names']['parameters']['chosen_names'] = religion_wise_names['Hindu'] 
 
-        if 'replace_to_christian_names' in self.tests:
-          self.tests['replace_to_christian_names']['parameters'] = {}
-          self.tests['replace_to_christian_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Hindu'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
-          self.tests['replace_to_christian_names']['parameters']['chosen_names'] = religion_wise_names['Christian'] 
+        # if 'replace_to_christian_names' in self.tests:
+        #   self.tests['replace_to_christian_names']['parameters'] = {}
+        #   self.tests['replace_to_christian_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Hindu'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
+        #   self.tests['replace_to_christian_names']['parameters']['chosen_names'] = religion_wise_names['Christian'] 
 
-        if 'replace_to_jain_names' in self.tests:
-          self.tests['replace_to_jain_names']['parameters'] = {}
-          self.tests['replace_to_jain_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Hindu'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist'] 
-          self.tests['replace_to_jain_names']['parameters']['chosen_names'] = religion_wise_names['Jain'] 
+        # if 'replace_to_jain_names' in self.tests:
+        #   self.tests['replace_to_jain_names']['parameters'] = {}
+        #   self.tests['replace_to_jain_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Hindu'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist'] 
+        #   self.tests['replace_to_jain_names']['parameters']['chosen_names'] = religion_wise_names['Jain'] 
 
-        if 'replace_to_sikh_names' in self.tests:
-          self.tests['replace_to_sikh_names']['parameters'] = {}
-          self.tests['replace_to_sikh_names']['parameters']['names_to_substitute'] = religion_wise_names['Hindu'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
-          self.tests['replace_to_sikh_names']['parameters']['chosen_names'] = religion_wise_names['Sikh'] 
+        # if 'replace_to_sikh_names' in self.tests:
+        #   self.tests['replace_to_sikh_names']['parameters'] = {}
+        #   self.tests['replace_to_sikh_names']['parameters']['names_to_substitute'] = religion_wise_names['Hindu'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Buddhist']
+        #   self.tests['replace_to_sikh_names']['parameters']['chosen_names'] = religion_wise_names['Sikh'] 
         
-        if 'replace_to_parsi_names' in self.tests:
-          self.tests['replace_to_parsi_names']['parameters'] = {}
-          self.tests['replace_to_parsi_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Hindu'] + religion_wise_names['Buddhist']
-          self.tests['replace_to_parsi_names']['parameters']['chosen_names'] = religion_wise_names['Parsi'] 
+        # if 'replace_to_parsi_names' in self.tests:
+        #   self.tests['replace_to_parsi_names']['parameters'] = {}
+        #   self.tests['replace_to_parsi_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Hindu'] + religion_wise_names['Buddhist']
+        #   self.tests['replace_to_parsi_names']['parameters']['chosen_names'] = religion_wise_names['Parsi'] 
 
-        if 'replace_to_buddhist_names' in self.tests:
-          self.tests['replace_to_buddhist_names']['parameters'] = {}
-          self.tests['replace_to_buddhist_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Hindu']
-          self.tests['replace_to_buddhist_names']['parameters']['chosen_names'] = religion_wise_names['Buddhist']
-   
+        # if 'replace_to_buddhist_names' in self.tests:
+        #   self.tests['replace_to_buddhist_names']['parameters'] = {}
+        #   self.tests['replace_to_buddhist_names']['parameters']['names_to_substitute'] = religion_wise_names['Sikh'] + religion_wise_names['Muslim'] + religion_wise_names['Christian'] +  religion_wise_names['Jain'] + religion_wise_names['Parsi'] + religion_wise_names['Hindu']
+        #   self.tests['replace_to_buddhist_names']['parameters']['chosen_names'] = religion_wise_names['Buddhist']
+        
+        for religion in religion_wise_names.keys():
+            if f"replace_to_{religion.lower()}_names" in self.tests:
+                religion_to_exclude = [v for k, v in religion_wise_names.items() if k != religion]
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {}
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['names_to_substitute'] = get_religion_substitution_names(religion_to_exclude)
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['chosen_names'] = religion_wise_names[religion]
 
     def transform(self):
 
