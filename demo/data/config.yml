@@ -10,10 +10,14 @@ tests:
   bias:
     replace_to_female_pronouns:
       min_pass_rate: 0.65
-    replace_to_male_pronouns:
-      min_pass_rate: 0.65
     replace_to_low_income_country:
       min_pass_rate: 0.70
+    replace_to_white_lastnames:
+      min_pass_rate: 0.70
+    replace_to_hindu_names:
+      min_pass_rate: 0.66
+
+
 
   robustness:
     lowercase:
