@@ -175,7 +175,8 @@ class EthnicityNameBias(BaseBias):
 
 
         for sample in sample_list:
-          
+            
+            print(names_to_substitute)
             tokens_to_substitute = [token for token in sample.original.split(' ') if any(name.lower() == token.lower() for name in names_to_substitute)]
             print(tokens_to_substitute)
   
