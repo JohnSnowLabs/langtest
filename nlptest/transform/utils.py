@@ -666,3 +666,5 @@ def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
 default_representation = {'O': 0, 'LOC': 0, 'PER': 0, 'MISC': 0, 'ORG': 0}
 
 default_ehtnicity_representation = {'black': 0, 'asian': 0, 'white': 0, 'native_american': 0, 'hispanic': 0, 'inter_racial': 0}
+
+default_religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}

@@ -2,9 +2,9 @@
 
 from abc import ABC, abstractmethod
 from typing import List
-
+import pandas as pd
 from nlptest.utils.custom_types import Sample
-from .utils import default_representation ,default_ehtnicity_representation, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names
+from .utils import default_representation ,default_ehtnicity_representation, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names, default_religion_representation
 
 class BaseRepresentation(ABC):
 
@@ -59,15 +59,7 @@ class EthnicityRepresentation(BaseRepresentation):
             dataset: List[Sample],
             min_count: dict = default_ehtnicity_representation
     ) -> pd.DataFrame():
-        """Converts input sentences using a conversion dictionary
-        Args:
-            sample_list: List of sentences to process.
-            strategy: Config method to adjust where will context tokens added. start, end or combined.
-            starting_context: list of terms (context) to input at start of sentences.
-            ending_context: list of terms (context) to input at end of sentences.
-        Returns:
-            List of sentences that context added at to begging, end or both, randomly.
-        """
+     
         # define a function to check if a word belongs to any of the given name lists
         def check_name(word, name_lists):
             return any(word.lower() in [name.lower() for name in name_list] for name_list in name_lists)
@@ -151,8 +143,46 @@ class ReligionRepresentation(BaseRepresentation):
         "min_religion_name_representation_proportion"
     ]
 
-    def transform(data: List[Sample]):
-        return super().transform()
+    def transform(
+            dataset: List[Sample],
+            min_count: dict = default_religion_representation
+    ) -> pd.DataFrame():
+   
+        def check_name(word, name_lists):
+            return any(word.lower() in [name.lower() for name in name_list] for name_list in name_lists)
+
+        religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}
+        representation_dict = min_count
+        
+        # iterate over the samples in the dataset
+        for sample in dataset:
+            for i in sample.expected_results.predictions:
+                if check_name(i.span.word, [religion_wise_names['Muslim']]):
+                    religion_representation["muslim"] += 1
+                if check_name(i.span.word, [religion_wise_names['Hindu']]):
+                    religion_representation["hindu"] += 1
+                if check_name(i.span.word, [religion_wise_names['Sikh']]):
+                    religion_representation["sikh"] += 1
+                if check_name(i.span.word, [religion_wise_names['Parsi']]):
+                    religion_representation["parsi"] += 1
+                if check_name(i.span.word, [religion_wise_names['Christian']]):
+                    religion_representation["christian"] += 1
+                if check_name(i.span.word, [religion_wise_names['Buddhist']]):
+                    religion_representation["buddhist"] += 1
+                if check_name(i.span.word, [religion_wise_names['Jain']]):
+                    religion_representation["jain"] += 1
+
+        expected_representation = {**default_religion_representation, **representation_dict}
+        actual_representation = {**default_religion_representation, **religion_representation}
+    
+        try:
+            religion_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"religion_representation","Original":"-","Test_Case":[label for label in religion_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+                                          "actual_result":[value for value in actual_representation.values()]})
+         
+        except:
+              raise ValueError(f"Check your labels. By default, we use these labels only : 'muslim', 'hindu', 'sikh', 'christian', 'jain', 'parsi' and 'buddhist' \n You provided : {representation_dict.keys()}")
+        religion_representation_df = religion_representation_df.assign(is_pass=religion_representation_df.apply(lambda row: row['actual_result'] >= row['expected_result'], axis=1))
+        return religion_representation_df
 
 class CountryEconomicRepresentation(BaseRepresentation):
     
