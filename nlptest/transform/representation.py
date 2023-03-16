@@ -39,7 +39,50 @@ class BaseRepresentation(ABC):
 
 class GenderRepresentation(BaseRepresentation):
 
-    alias_name = "gender_representation"
+    alias_name = [
+        "min_gender_representation_count",
+        "min_gender_representation_proportion"
+    ]
+    
+    def transform(data: List[Sample]):
+        return super().transform()
+
+class EthnicityRepresentation(BaseRepresentation):
+    
+    alias_name = [
+        "min_ethnicity_name_representation_count",
+        "min_ethnicity_name_representation_proportion"
+    ]
+
+    def transform(data: List[Sample]):
+        return super().transform()
+
+class LabelRepresentation(BaseRepresentation):
+    
+    alias_name = [
+        "min_label_representation_count",
+        "min_label_representation_proportion"
+    ]
+
+    def transform(data: List[Sample]):
+        return super().transform()
+
+class ReligionRepresentation(BaseRepresentation):
+    
+    alias_name = [
+        "min_religion_name_representation_count",
+        "min_religion_name_representation_proportion"
+    ]
+
+    def transform(data: List[Sample]):
+        return super().transform()
+
+class CountryEconomicRepresentation(BaseRepresentation):
+    
+    alias_name = [
+        "min_country_economic_representation_count",
+        "min_country_economic_representation_proportion"
+    ]
 
     def transform(data: List[Sample]):
         return super().transform()
