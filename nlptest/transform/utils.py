@@ -661,3 +661,8 @@ def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
                 ent_type = None
 
     return terminology
+
+
+default_representation = {'O': 0, 'LOC': 0, 'PER': 0, 'MISC': 0, 'ORG': 0}
+
+default_ehtnicity_representation = {'black': 0, 'asian': 0, 'white': 0, 'native_american': 0, 'hispanic': 0, 'inter_racial': 0}
