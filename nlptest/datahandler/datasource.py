@@ -4,6 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List, Dict
 
+from .format import Formatter
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput, NERPrediction, SequenceLabel, Sample
 
 
@@ -130,40 +131,13 @@ class ConllDataset(_IDataset):
 
     def export_data(self, data: List[Sample], output_path: str):
         temp_id = None
-        text = ""
+        otext = ""
         for i in data:
-            test_case = i.test_case
-            original = i.original
-            if test_case:
-                test_case_items = test_case.split()
-                norm_test_case_items = test_case.lower().split()
-                norm_original_items = original.lower().split()
-                temp_len = 0
-                for jdx, item in enumerate(norm_test_case_items):
-                    if item in norm_original_items and jdx >= norm_original_items.index(item):
-                        oitem_index = norm_original_items.index(item)
-                        j = i.expected_results.predictions[oitem_index+temp_len]
-                        if temp_id != j.doc_id and jdx == 0:
-                            text += f"{j.doc_name}\n\n"
-                            temp_id = j.doc_id
-                        else:
-                            text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
-                        norm_original_items.pop(oitem_index)
-                        temp_len += 1
-                    else:
-                        text+=f"{test_case_items[jdx]} O O O\n"
-                text+="\n"
-               
-            else:
-                for j in i.expected_results.predictions:
-                    if temp_id != j.doc_id:
-                        text += f"{j.doc_name}\n\n"
-                        temp_id = j.doc_id
-                    else:
-                        text+=f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
-                text+="\n"
+            text, temp_id = Formatter.process(i, format='conll', temp_id=temp_id)
+            otext += text
+
         with open(output_path, "wb") as fwriter:
-            fwriter.write(bytes(text, encoding="utf-8"))
+            fwriter.write(bytes(otext, encoding="utf-8"))
 
 
 
@@ -243,8 +217,19 @@ class CSVDataset(_IDataset):
 
         return samples
 
-    def export_data(self):
-        pass
+    def export_data(self, data: List[Sample], output_path: str):
+        temp_id = None
+        otext = ""
+        for i in data:
+            if isinstance(i, NEROutput):
+                text, temp_id = Formatter.process(i, format='csv', temp_id=temp_id)
+            else:
+                text = Formatter.process(i, format='csv')
+            otext += text
+
+        with open(output_path, "wb") as fwriter:
+            fwriter.write(bytes(otext, encoding="utf-8"))
+
 
     #   helpers
     @staticmethod

@@ -121,7 +121,7 @@ class AugmentRobustness(BaseAugmentaion):
         suggest = self.suggestions(self.h_report)
         sum_propotion = suggest['proportion_increase'].sum()
         if suggest.shape[0] <= 0:
-            print("Test metrics all have over 0.9 f1-score for all perturbations. Perturbations will not be applied.")
+            return "Test metrics all have over 0.9 f1-score."
 
         fianl_aug_data = []
         
