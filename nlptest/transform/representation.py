@@ -91,7 +91,7 @@ class EthnicityRepresentation(BaseRepresentation):
         actual_representation = {**default_ehtnicity_representation, **ethnicity_representation}
     
         try:
-            ethnicity_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"ethnicity_representation","Original":"-","Test_Case":[label for label in ethnicity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+            ethnicity_representation_df = pd.DataFrame({"category":"Representation","Test_type":"ethnicity_representation","Original":"-","Test_Case":[label for label in ethnicity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
                                           "actual_result":[value for value in actual_representation.values()]})
          
         except:
@@ -128,7 +128,7 @@ class LabelRepresentation(BaseRepresentation):
         expected_representation = {**default_representation, **representation_dict}
         actual_representation = {**default_representation, **entity_representation}
         try:
-            label_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"label_representation","Original":"-","Test_Case":[label for label in entity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+            label_representation_df = pd.DataFrame({"category":"representation","Test_type":"min_label_representation_count","Original":"-","Test_Case":[label for label in entity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
                                           "actual_result":[value for value in actual_representation.values()]})
          
         except:
@@ -176,7 +176,7 @@ class ReligionRepresentation(BaseRepresentation):
         actual_representation = {**default_religion_representation, **religion_representation}
     
         try:
-            religion_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"religion_representation","Original":"-","Test_Case":[label for label in religion_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+            religion_representation_df = pd.DataFrame({"category":"representation","Test_type":"min_religion_name_representation_count","Original":"-","Test_Case":[label for label in religion_representation.keys()],"expected_result":[value for value in expected_representation.values()],
                                           "actual_result":[value for value in actual_representation.values()]})
          
         except:
@@ -219,7 +219,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
         actual_representation = {**default_economic_country_representation, **country_economic_representation}
     
         try:
-            country_economic_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"country_economic_representation","Original":"-","Test_Case":[label for label in country_economic_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+            country_economic_representation_df = pd.DataFrame({"category":"representation","Test_type":"min_country_economic_representation_count","Original":"-","Test_Case":[label for label in country_economic_representation.keys()],"expected_result":[value for value in expected_representation.values()],
                                           "actual_result":[value for value in actual_representation.values()]})
          
         except:
