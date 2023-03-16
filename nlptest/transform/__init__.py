@@ -224,7 +224,6 @@ class RobustnessTestFactory(ITests):
         # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
         all_samples = []
         for test_name, params in self.tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
@@ -345,7 +344,6 @@ class BiasTestFactory(ITests):
 
         all_samples = []
         for test_name, params in self.tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
@@ -406,7 +404,6 @@ class RepresentationTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -434,7 +431,6 @@ class RepresentationTestFactory(ITests):
 
         all_samples = []
         for test_name, params in self.tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
@@ -521,8 +517,7 @@ class AccuracyTestFactory(ITests):
         """
 
         all_samples = []
-        for test_name, params in self.tests.items():
-            print(test_name)
+        for test_name, params in self.tests.items():            
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
