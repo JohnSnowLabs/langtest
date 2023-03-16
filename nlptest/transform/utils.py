@@ -670,3 +670,4 @@ default_ehtnicity_representation = {'black': 0, 'asian': 0, 'white': 0, 'native_
 default_religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}
 
 default_economic_country_representation = {'high_income':0 , 'low_income':0, 'lower_middle_income':0, 'upper_middle_income':0} 
+default_representation_proportion =  {'O': 0, 'LOC': 0, 'PER': 0, 'MISC': 0, 'ORG': 0}

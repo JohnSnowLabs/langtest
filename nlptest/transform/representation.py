@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample
-from .utils import default_representation ,default_ehtnicity_representation,default_economic_country_representation, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names, default_religion_representation
+from .utils import default_representation ,default_ehtnicity_representation,default_economic_country_representation, default_representation_proportion, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names, default_religion_representation
 
 class BaseRepresentation(ABC):
 
@@ -107,13 +107,21 @@ class LabelRepresentation(BaseRepresentation):
         "min_label_representation_count",
         "min_label_representation_proportion"
     ]
-
-    def transform(data: List[Sample], min_count: dict = default_representation):
-        representation_dict = min_count
+    
+    def transform(data: List[Sample], min_count: dict = default_representation, min_proportion: dict = None):
+        representation_dict = min_proportion
+        if not representation_dict:
+            representation_dict = {'O': 0.16, 'LOC': 0.16, 'PER': 0.16, 'MISC': 0.16, 'ORG': 0.16}
+ 
+        if sum(representation_dict.values()) > 1:
+            print(f"\nSum of proportions cannot be greater than 1. So running for default proportions \n")
+            raise ValueError()
+           
         entity_representation={}
      
         for sample in data:
             for i in sample.expected_results.predictions:
+              
               if i.entity=='O':
                 if  i.entity not in entity_representation:
                   entity_representation[i.entity]=1
@@ -125,15 +133,27 @@ class LabelRepresentation(BaseRepresentation):
                   entity_representation[i.entity.split("-")[1]]=1
                 else:
                   entity_representation[i.entity.split("-")[1]]+=1
-        expected_representation = {**default_representation, **representation_dict}
-        actual_representation = {**default_representation, **entity_representation}
+                  
+        total_entities = sum(entity_representation.values())
+        entity_representation_proportion={}
+        for k,v in entity_representation.items():
+            entity_representation_proportion[k] = v/total_entities
+            
+  
+        expected_representation = {**default_representation_proportion, **representation_dict} if min_proportion else {**default_representation, **min_count}
+        actual_representation = {**default_representation_proportion, **entity_representation_proportion} if min_proportion else {**default_representation, **entity_representation}
+    
         try:
-            label_representation_df = pd.DataFrame({"category":"representation","Test_type":"min_label_representation_count","Original":"-","Test_Case":[label for label in entity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+            label_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"label_representation","Original":"-","Test_Case":[label for label in entity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
                                           "actual_result":[value for value in actual_representation.values()]})
          
         except:
               raise ValueError(f"Check your labels. By default, we use these labels only : 'O', 'LOC', 'PER', 'MISC', 'ORG' \n You provided : {representation_dict.keys()}")
+              
         label_representation_df = label_representation_df.assign(is_pass=label_representation_df.apply(lambda row: row['actual_result'] >= row['expected_result'], axis=1))
+        label_representation_df.drop(label_representation_df[label_representation_df['expected_result'] == 0].index, inplace=True)
+      
+        print(label_representation_df.head())
         return label_representation_df
 
 class ReligionRepresentation(BaseRepresentation):
