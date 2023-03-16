@@ -37,9 +37,9 @@ class BaseRepresentation(ABC):
     alias_name = None
 
 
-class GenderReprestation(BaseRepresentation):
+class GenderRepresentation(BaseRepresentation):
 
-    alias_name = "gender_represtation"
+    alias_name = "gender_representation"
 
     def transform(data: List[Sample]):
         return super().transform()
