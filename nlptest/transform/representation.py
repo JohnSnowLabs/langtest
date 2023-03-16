@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample
-from .utils import default_representation ,default_ehtnicity_representation, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names, default_religion_representation
+from .utils import default_representation ,default_ehtnicity_representation,default_economic_country_representation, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names, default_religion_representation
 
 class BaseRepresentation(ABC):
 
@@ -191,5 +191,39 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_proportion"
     ]
 
-    def transform(data: List[Sample]):
-        return super().transform()
+    def transform(
+            dataset: List[Sample],
+            min_count: dict = default_economic_country_representation
+    ) -> pd.DataFrame():
+
+
+        def check_name(word, name_lists):
+            return any(word.lower() in [name.lower() for name in name_list] for name_list in name_lists)
+
+        country_economic_representation = {'high_income':0 , 'low_income':0, 'lower_middle_income':0, 'upper_middle_income':0} 
+        representation_dict = min_count
+        
+        # iterate over the samples in the dataset
+        for sample in dataset:
+            for i in sample.expected_results.predictions:
+                if check_name(i.span.word, [country_economic_dict['High-income']]):
+                    country_economic_representation["high_income"] += 1
+                if check_name(i.span.word, [country_economic_dict['Low-income']]):
+                    country_economic_representation["low_income"] += 1
+                if check_name(i.span.word, [country_economic_dict['Lower-middle-income']]):
+                    country_economic_representation["lower_middle_income"] += 1
+                if check_name(i.span.word, [country_economic_dict['Upper-middle-income']]):
+                    country_economic_representation["upper_middle_income"] += 1
+          
+        expected_representation = {**default_economic_country_representation, **representation_dict}
+        actual_representation = {**default_economic_country_representation, **country_economic_representation}
+    
+        try:
+            country_economic_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"country_economic_representation","Original":"-","Test_Case":[label for label in country_economic_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+                                          "actual_result":[value for value in actual_representation.values()]})
+         
+        except:
+              raise ValueError(f"Check your labels. By default, we use these labels only : 'high_income', 'low_income', 'lower_middle_income' and 'upper_middle_income' \n You provided : {representation_dict.keys()}")
+        country_economic_representation_df = country_economic_representation_df.assign(is_pass=country_economic_representation_df.apply(lambda row: row['actual_result'] >= row['expected_result'], axis=1))
+        print(country_economic_representation_df.head())
+        return country_economic_representation_df
