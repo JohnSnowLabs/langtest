@@ -225,5 +225,5 @@ class CountryEconomicRepresentation(BaseRepresentation):
         except:
               raise ValueError(f"Check your labels. By default, we use these labels only : 'high_income', 'low_income', 'lower_middle_income' and 'upper_middle_income' \n You provided : {representation_dict.keys()}")
         country_economic_representation_df = country_economic_representation_df.assign(is_pass=country_economic_representation_df.apply(lambda row: row['actual_result'] >= row['expected_result'], axis=1))
-        print(country_economic_representation_df.head())
+
         return country_economic_representation_df
