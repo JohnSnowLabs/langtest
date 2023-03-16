@@ -116,8 +116,33 @@ class LabelRepresentation(BaseRepresentation):
         "min_label_representation_proportion"
     ]
 
-    def transform(data: List[Sample]):
-        return super().transform()
+    def transform(data: List[Sample], min_count: dict = default_representation):
+        representation_dict = min_count
+        entity_representation={}
+     
+        for sample in data:
+            for i in sample.expected_results.predictions:
+              if i.entity=='O':
+                if  i.entity not in entity_representation:
+                  entity_representation[i.entity]=1
+                else:
+                  entity_representation[i.entity]+=1
+             
+              elif i.entity in ['B-LOC','I-LOC','B-PER','I-PER','B-MISC','I-MISC','B-ORG','I-ORG']:
+                if  i.entity.split("-")[1] not in entity_representation :
+                  entity_representation[i.entity.split("-")[1]]=1
+                else:
+                  entity_representation[i.entity.split("-")[1]]+=1
+        expected_representation = {**default_representation, **representation_dict}
+        actual_representation = {**default_representation, **entity_representation}
+        try:
+            label_representation_df = pd.DataFrame({"Category":"Representation","Test_type":"label_representation","Original":"-","Test_Case":[label for label in entity_representation.keys()],"expected_result":[value for value in expected_representation.values()],
+                                          "actual_result":[value for value in actual_representation.values()]})
+         
+        except:
+              raise ValueError(f"Check your labels. By default, we use these labels only : 'O', 'LOC', 'PER', 'MISC', 'ORG' \n You provided : {representation_dict.keys()}")
+        label_representation_df = label_representation_df.assign(is_pass=label_representation_df.apply(lambda row: row['actual_result'] >= row['expected_result'], axis=1))
+        return label_representation_df
 
 class ReligionRepresentation(BaseRepresentation):
     
