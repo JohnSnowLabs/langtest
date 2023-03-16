@@ -1,8 +1,8 @@
 import random
 import re
 from abc import ABC, abstractmethod
-from functools import reduce
 from typing import Dict, List, Optional
+
 import numpy as np
 
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
@@ -10,7 +10,6 @@ from ..utils.custom_types import Sample, Span, Transformation
 
 
 class BaseRobustness(ABC):
-
     """
     Abstract base class for implementing robustness measures.
 
@@ -24,7 +23,6 @@ class BaseRobustness(ABC):
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-
         """
         Abstract method that implements the robustness measure.
 
@@ -36,12 +34,13 @@ class BaseRobustness(ABC):
         """
 
         return NotImplementedError()
-    
+
     alias_name = None
+
 
 class UpperCase(BaseRobustness):
     alias_name = "uppercase"
-    
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Transform a list of strings with uppercase robustness
@@ -91,7 +90,6 @@ class TitleCase(BaseRobustness):
 
 
 class AddPunctuation(BaseRobustness):
-
     alias_name = 'add_punctuation'
 
     @staticmethod
@@ -117,7 +115,6 @@ class AddPunctuation(BaseRobustness):
 
 
 class StripPunctuation(BaseRobustness):
-
     alias_name = "strip_punctuation"
 
     @staticmethod
@@ -144,7 +141,6 @@ class StripPunctuation(BaseRobustness):
 
 
 class AddTypo(BaseRobustness):
-
     alias_name = 'add_typo'
 
     @staticmethod
@@ -193,7 +189,6 @@ class AddTypo(BaseRobustness):
 
 
 class SwapEntities(BaseRobustness):
-
     alias_name = 'swap_entities'
 
     @staticmethod
@@ -219,6 +214,8 @@ class SwapEntities(BaseRobustness):
             raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
 
         for idx, sample in enumerate(sample_list):
+            sample.category = "Robustness"
+
             sent_tokens = sample.original.split(' ')
             sent_labels = labels[idx]
 
@@ -248,7 +245,6 @@ class SwapEntities(BaseRobustness):
             chosen_ent = random.choice(proper_entities)
             replaced_string = sample.original.replace(replace_token, chosen_ent)
             sample.test_case = replaced_string
-            sample.category = "Robustness"
         return sample_list
 
 
@@ -295,7 +291,6 @@ def get_cohyponyms_wordnet(word: str) -> str:
 
 
 class SwapCohyponyms(BaseRobustness):
-
     alias_name = "swap_cohyponyms"
 
     @staticmethod
@@ -350,7 +345,6 @@ class SwapCohyponyms(BaseRobustness):
 
 
 class ConvertAccent(BaseRobustness):
-
     alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
@@ -372,7 +366,6 @@ class ConvertAccent(BaseRobustness):
 
 
 class AddContext(BaseRobustness):
-
     alias_name = 'add_context'
 
     @staticmethod
@@ -446,7 +439,6 @@ class AddContext(BaseRobustness):
 
 
 class AddContraction(BaseRobustness):
-
     alias_name = 'add_contraction'
 
     @staticmethod
