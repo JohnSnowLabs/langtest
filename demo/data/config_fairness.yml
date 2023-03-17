@@ -1,0 +1,10 @@
+defaults:
+  min_pass_rate: 0.65
+  min_representation: 50
+tests:
+  fairness:
+    min_gender_f1_score:
+      min_score:
+        male: 0.75
+        female: 0.75
+        unknown: 0.75
