@@ -27,8 +27,8 @@ class Span(BaseModel):
     def __eq__(self, other):
         """"""
         return self.start == other.start and \
-               self.end == other.end and \
-               self.word == other.word
+            self.end == other.end and \
+            self.word == other.word
 
     def __str__(self):
         """"""
@@ -55,11 +55,11 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-        cls, 
-        entity: str, 
-        word: str, 
-        start: int, 
-        end: int, 
+        cls,
+        entity: str,
+        word: str,
+        start: int,
+        end: int,
         score: float = None,
         doc_id: int = None,
         doc_name: str = None,
@@ -85,8 +85,8 @@ class NERPrediction(BaseModel):
         """"""
         if isinstance(other, NERPrediction):
             return self.entity == other.entity and \
-                   self.span.start == other.span.start and \
-                   self.span.end == other.span.end
+                self.span.start == other.span.start and \
+                self.span.end == other.span.end
         return False
 
     def __str__(self) -> str:
@@ -292,14 +292,16 @@ class Sample(BaseModel):
                         if transformation.new_span.start < actual_result.span.start:
                             # the whole span needs to be shifted to the left
                             actual_result.span.shift(
-                                (transformation.new_span.start - transformation.original_span.start) + \
+                                (transformation.new_span.start - transformation.original_span.start) +
                                 (transformation.new_span.end - transformation.original_span.end))
                         elif transformation.new_span.start == actual_result.span.start:
                             # only the end of the span needs to be adjusted
-                            actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
+                            actual_result.span.shift_end(
+                                transformation.new_span.end - transformation.original_span.end)
 
                     realigned_results.append(actual_result)
-                self._realigned_spans = NEROutput(predictions=realigned_results)
+                self._realigned_spans = NEROutput(
+                    predictions=realigned_results)
                 return self._realigned_spans
             else:
                 return self.actual_results
@@ -355,7 +357,8 @@ class Sample(BaseModel):
         """"""
         if isinstance(self.actual_results, NEROutput):
             actual_preds = [i.entity for i in self.actual_results.predictions]
-            expected_preds = [j.entity for j in self.expected_results.predictions]
+            expected_preds = [
+                j.entity for j in self.expected_results.predictions]
             return actual_preds == expected_preds
 
         else:

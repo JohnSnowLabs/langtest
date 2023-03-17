@@ -15,13 +15,13 @@ class BaseRepresentation(ABC):
         alias_name (str): A name or list of names that identify the representation measure.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented representation measure.
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output 
+        based on the implemented representation measure.
     """
 
     @staticmethod
     @abstractmethod
     def transform(self):
-
         """
         Abstract method that implements the representation measure.
 
@@ -33,7 +33,7 @@ class BaseRepresentation(ABC):
         """
 
         return NotImplementedError
-    
+
     alias_name = None
 
 
