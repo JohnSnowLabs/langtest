@@ -554,7 +554,7 @@ class FairnessTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, self._model_handler,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
