@@ -152,9 +152,13 @@ class Harness:
         df_final.insert(0, col_to_move, first_column)
         df_final = df_final.reset_index(drop=True)
 
-        return df_final.fillna("-")
+        self.df_report = df_report.fillna("-")
 
-    def generated_results(self) -> pd.DataFrame:
+        return self.df_report
+
+        # return self.report_df
+    
+    def generated_results_df(self) -> pd.DataFrame:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
@@ -185,18 +189,43 @@ class Harness:
         return acc_report
 
     def augment(self, input_path, output_path, inplace=False):
-        dtypes = self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.apply(
-            lambda x: x.str).values.tolist()
 
-        if dtypes != ['<i4'] * 2:
+        """
+        Augments the data in the input file located at `input_path` and saves the result to `output_path`.
+
+        Args:
+            input_path (str): Path to the input file.
+            output_path (str): Path to save the augmented data.
+            inplace (bool, optional): Whether to modify the input file directly. Defaults to False.
+
+        Returns:
+            Harness: The instance of the class calling this method.
+
+        Raises:
+            ValueError: If the `pass_rate` or `minimum_pass_rate` columns have an unexpected data type.
+
+        Note:
+            This method uses an instance of `AugmentRobustness` to perform the augmentation.
+
+        Example:
+            >>> harness = Harness(...)
+            >>> harness.augment("train.conll", "augmented_train.conll")
+        """
+
+        dtypes = list(map(
+            lambda x: str(x), 
+            self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
+        if dtypes not in [['int64']*2, ['int32']*2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
-
-        AugmentRobustness.fix(
-            input_path,
-            output_path,
-            self.df_report,
-            self._config
+        _ = AugmentRobustness(
+            task=self.task,
+            config=self._config,
+            h_report=self.df_report
+        ).fix(
+            input_path=input_path,
+            output_path=output_path,
+            inplace=inplace
         )
 
         return self

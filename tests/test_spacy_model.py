@@ -12,7 +12,8 @@ class SpacyTestCase(unittest.TestCase):
             "task": 'ner',
             "model": "en_core_web_sm",
             "data": "demo/data/test.conll",
-            "config": "demo/data/config.yml"
+            "config": "demo/data/config.yml",
+            "hub": "spacy"
         }
         
     def test_Harness(self):

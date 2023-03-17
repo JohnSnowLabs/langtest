@@ -45,7 +45,8 @@ class NERPrediction(BaseModel):
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
-    doc_id: Optional[str] = None
+    doc_id: Optional[int] = None
+    doc_name: Optional[str] = None
     pos_tag: Optional[str] = None
     chunk_tag: Optional[str] = None
 
@@ -55,15 +56,16 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-            cls,
-            entity: str,
-            word: str,
-            start: int,
-            end: int,
-            score: float = None,
-            doc_id: str = None,
-            pos_tag: str = None,
-            chunk_tag: str = None
+        cls, 
+        entity: str, 
+        word: str, 
+        start: int, 
+        end: int, 
+        score: float = None,
+        doc_id: int = None,
+        doc_name: str = None,
+        pos_tag: str = None,
+        chunk_tag: str = None
     ) -> "NERPrediction":
         """"""
         return cls(
@@ -71,6 +73,7 @@ class NERPrediction(BaseModel):
             span=Span(start=start, end=end, word=word),
             score=score,
             doc_id=doc_id,
+            doc_name=doc_name,
             pos_tag=pos_tag,
             chunk_tag=chunk_tag
         )
