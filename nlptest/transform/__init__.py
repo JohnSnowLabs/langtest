@@ -1,21 +1,29 @@
-from abc import ABC, abstractclassmethod, abstractmethod
-from typing import List
-
 import nltk
 import pandas as pd
-
-from nlptest.transform.accuracy import BaseAccuracy
+from typing import List
 from .bias import BaseBias
-from .representation import BaseRepresentation
 from .robustness import BaseRobustness
-from .utils import (A2B_DICT, create_terminology,get_substitution_names, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names)
-from ..utils.custom_types import Sample, Span, Transformation
+from ..utils.custom_types import Sample
+from .representation import BaseRepresentation
+from nlptest.transform.accuracy import BaseAccuracy
+from abc import ABC, abstractclassmethod, abstractmethod
+from .utils import (A2B_DICT,
+                    create_terminology,
+                    get_substitution_names,
+                    male_pronouns,
+                    female_pronouns,
+                    neutral_pronouns,
+                    country_economic_dict,
+                    white_names, black_names,
+                    hispanic_names, asian_names,
+                    # native_american_names,
+                    # inter_racial_names,
+                    religion_wise_names)
+
 
 class TestFactory:
     """
     A factory class for creating and running different types of tests on data.
-
-    ...
 
     Methods
     -------
@@ -67,7 +75,7 @@ class TestFactory:
         dict
             A dictionary mapping test category names to the corresponding test classes.
         """
-        return {cls.alias_name.lower(): cls for cls in ITests.__subclasses__()}
+        return {cls.alias_name.lower(): cls for cls in BaseTests.__subclasses__()}
 
     @classmethod
     def test_scenarios(cls):
@@ -80,14 +88,12 @@ class TestFactory:
             A dictionary mapping test class names to the available test scenarios for each class.
         """
 
-        return {cls.alias_name.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
+        return {cls.alias_name.lower(): cls.available_tests() for cls in BaseTests.__subclasses__()}
 
 
-class ITests(ABC):
+class BaseTests(ABC):
     """
     An abstract base class for defining different types of tests.
-
-    ...
 
     Methods
     -------
@@ -125,13 +131,11 @@ class ITests(ABC):
         return NotImplementedError
 
 
-class RobustnessTestFactory(ITests):
+class RobustnessTestFactory(BaseTests):
     alias_name = "robustness"
 
     """
     A class for performing robustness tests on a given dataset.
-
-    ...
 
     Attributes
     ----------
@@ -173,8 +177,8 @@ class RobustnessTestFactory(ITests):
 
         if not isinstance(self.tests, dict):
             raise ValueError(
-                f'Invalid test configuration! Tests can be '
-                f'[1] dictionary of test name and corresponding parameters.'
+                '''Invalid test configuration! Tests can be
+                dictionary of test name and corresponding parameters.'''
             )
 
         if len(self.tests) == 0:
@@ -183,7 +187,8 @@ class RobustnessTestFactory(ITests):
         not_supported_tests = (set(self.tests) - set(self.supported_tests))
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
+                f'''Invalid test specification: {not_supported_tests}.
+                Available tests are: {list(self.supported_tests.keys())}''')
 
         if 'swap_entities' in self.tests:
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
@@ -249,12 +254,10 @@ class RobustnessTestFactory(ITests):
         return tests
 
 
-class BiasTestFactory(ITests):
+class BiasTestFactory(BaseTests):
     alias_name = "bias"
     """
     A class for performing bias tests on a given dataset.
-
-    ...
 
     Attributes
     ----------
@@ -285,8 +288,8 @@ class BiasTestFactory(ITests):
 
         if not isinstance(self.tests, dict):
             raise ValueError(
-                f'Invalid test configuration! Tests can be '
-                f'[1] dictionary of test name and corresponding parameters.'
+                '''Invalid test configuration! Tests can be
+                [1] dictionary of test name and corresponding parameters.'''
             )
 
         if len(self.tests) == 0:
@@ -305,49 +308,67 @@ class BiasTestFactory(ITests):
             self.tests['replace_to_male_pronouns']['parameters']['pronoun_type'] = 'male'
 
         if 'replace_to_female_pronouns' in self.tests:
+            male_pronouns_values = list(male_pronouns.values())
+            neutral_pronouns_values = list(neutral_pronouns.values())
+            pronouns_to_substitute = [item for sublist in male_pronouns_values for item in sublist]
+            pronouns_to_substitute += [item for sublist in neutral_pronouns_values for item in sublist]
+
             self.tests['replace_to_female_pronouns']['parameters'] = {}
-            self.tests['replace_to_female_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in
-                                                                                                list(
-                                                                                                    male_pronouns.values())
-                                                                                                for item in sublist] + [
-                                                                                                   item for sublist in
-                                                                                                   list(
-                                                                                                       neutral_pronouns.values())
-                                                                                                   for item in sublist]
+            self.tests['replace_to_female_pronouns']['parameters']['pronouns_to_substitute'] = pronouns_to_substitute
             self.tests['replace_to_female_pronouns']['parameters']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self.tests:
-          self.tests['replace_to_neutral_pronouns']['parameters'] = {} 
-          self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
-          self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
-          
+            female_pronouns_values = list(female_pronouns.values())
+            male_pronouns_values = list(male_pronouns.values())
+            pronouns_to_substitute = [item for sublist in female_pronouns_values for item in sublist]
+            pronouns_to_substitute += [item for sublist in male_pronouns_values for item in sublist]
+            self.tests['replace_to_neutral_pronouns']['parameters'] = {}
+            self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = pronouns_to_substitute
+            self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
+
         for income_level in ['Low-income', 'Lower-middle-income', 'Upper-middle-income', 'High-income']:
-            economic_level = income_level.replace("-","_").lower()
+            economic_level = income_level.replace("-", "_").lower()
             if f'replace_to_{economic_level}_country' in self.tests:
+                test_name = f"replace_to_{economic_level}_country"
+                params = 'parameters'
                 countries_to_exclude = [v for k, v in country_economic_dict.items() if k != income_level]
-                self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {}
-                self.tests[f"replace_to_{economic_level}_country"]['parameters']['country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
-                self.tests[f"replace_to_{economic_level}_country"]['parameters']['chosen_country_names'] = country_economic_dict[income_level]
-                
+                self.tests[test_name][params] = {}
+                self.tests[test_name][params]['country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
+                self.tests[test_name][params]['chosen_country_names'] = country_economic_dict[income_level]
+
         for religion in religion_wise_names.keys():
-            if f"replace_to_{religion.lower()}_names" in self.tests:
+            test_name = f"replace_to_{religion.lower()}_names"
+            if test_name in self.tests:
                 religion_to_exclude = [v for k, v in religion_wise_names.items() if k != religion]
-                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {}
-                self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['names_to_substitute'] = get_substitution_names(religion_to_exclude)
-                self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['chosen_names'] = religion_wise_names[religion]
-        
-        ethnicity_first_names = {'white': white_names['first_names'], 'black': black_names['first_names'], 'hispanic': hispanic_names['first_names'], 'asian': asian_names['first_names']}
-        for ethnicity in ['white', 'black', 'hispanic','asian']:
+                self.tests[test_name]['parameters'] = {}
+                self.tests[test_name]['parameters']['names_to_substitute'] = get_substitution_names(religion_to_exclude)
+                self.tests[test_name]['parameters']['chosen_names'] = religion_wise_names[religion]
+
+        ethnicity_first_names = {
+            'white': white_names['first_names'],
+            'black': black_names['first_names'],
+            'hispanic': hispanic_names['first_names'],
+            'asian': asian_names['first_names']
+            }
+        for ethnicity in ['white', 'black', 'hispanic', 'asian']:
             test_key = f'replace_to_{ethnicity}_firstnames'
             if test_key in self.tests:
                 self.tests[test_key]['parameters'] = {}
                 self.tests[test_key]['parameters'] = {
-                    'names_to_substitute': sum([ethnicity_first_names[e] for e in ethnicity_first_names if e != ethnicity], []),
+                    'names_to_substitute': sum([ethnicity_first_names[e]
+                                                for e in ethnicity_first_names
+                                                if e != ethnicity], []),
                     'chosen_ethnicity_names': ethnicity_first_names[ethnicity]
                 }
-        
-        ethnicity_last_names = {'white': white_names['last_names'], 'black': black_names['last_names'], 'hispanic': hispanic_names['last_names'], 'asian': asian_names['last_names']}
-        for ethnicity in ['white', 'black', 'hispanic','asian','native_american','inter_racial']:
+
+        ethnicity_last_names = {
+            'white': white_names['last_names'],
+            'black': black_names['last_names'],
+            'hispanic': hispanic_names['last_names'],
+            'asian': asian_names['last_names']
+            }
+        list_ethnicity = ['white', 'black', 'hispanic', 'asian', 'native_american', 'inter_racial']
+        for ethnicity in list_ethnicity:
             test_key = f'replace_to_{ethnicity}_lastnames'
             if test_key in self.tests:
                 self.tests[test_key]['parameters'] = {}
@@ -355,8 +376,7 @@ class BiasTestFactory(ITests):
                     'names_to_substitute': sum([ethnicity_last_names[e] for e in ethnicity_last_names if e != ethnicity], []),
                     'chosen_ethnicity_names': ethnicity_last_names[ethnicity]
                 }
- 
-        
+
     def transform(self):
 
         """
@@ -371,8 +391,7 @@ class BiasTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
-                                                                            **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -396,13 +415,11 @@ class BiasTestFactory(ITests):
         return tests
 
 
-class RepresentationTestFactory(ITests):
+class RepresentationTestFactory(BaseTests):
     alias_name = "representation"
 
     """
     A class for performing representation tests on a given dataset.
-
-    ...
 
     Attributes
     ----------
@@ -432,8 +449,8 @@ class RepresentationTestFactory(ITests):
         self.tests = tests
         if not isinstance(self.tests, dict):
             raise ValueError(
-                f'Invalid test configuration! Tests can be '
-                f'[1] dictionary of test name and corresponding parameters.'
+                '''Invalid test configuration! Tests can be
+                [1] dictionary of test name and corresponding parameters.'''
             )
 
         if len(self.tests) == 0:
@@ -483,7 +500,7 @@ class RepresentationTestFactory(ITests):
         return tests
 
 
-class AccuracyTestFactory(ITests):
+class AccuracyTestFactory(BaseTests):
     alias_name = "accuracy"
     """
     A class for performing accuracy tests on a given dataset.
@@ -519,8 +536,8 @@ class AccuracyTestFactory(ITests):
 
         if not isinstance(self.tests, dict):
             raise ValueError(
-                f'Invalid test configuration! Tests can be '
-                f'[1] dictionary of test name and corresponding parameters.'
+                '''Invalid test configuration! Tests can be
+                [1] dictionary of test name and corresponding parameters.'''
             )
 
         if len(self.tests) == 0:
@@ -543,7 +560,7 @@ class AccuracyTestFactory(ITests):
         """
 
         all_samples = []
-        for test_name, params in self.tests.items():            
+        for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))

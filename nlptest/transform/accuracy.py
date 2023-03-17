@@ -1,12 +1,13 @@
 
-from abc import ABC, abstractmethod
 from typing import List
+from abc import ABC, abstractmethod
 
 from nlptest.utils.custom_types import Sample
 
 
 class BaseAccuracy(ABC):
 
+    alias_name = None
     """
     Abstract base class for implementing accuracy measures.
 
@@ -14,7 +15,8 @@ class BaseAccuracy(ABC):
         alias_name (str): A name or list of names that identify the accuracy measure.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output
+        based on the implemented accuracy measure.
     """
 
     @staticmethod
@@ -32,8 +34,7 @@ class BaseAccuracy(ABC):
         """
 
         return NotImplementedError
-    
-    alias_name = None
+
 
 
 class Minimum_F1(BaseAccuracy):
@@ -60,5 +61,5 @@ class Minimum_F1(BaseAccuracy):
         Returns:
             Any: The transformed data based on the minimum F1 score.
         """
-        
+
         return super().transform()

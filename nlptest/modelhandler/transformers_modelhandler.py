@@ -64,7 +64,7 @@ class PretrainedModelForNER(_ModelHandler):
         """
         prediction = self.model(text)
         return [x["entity"] for x in prediction]
-    
+
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
@@ -90,7 +90,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def labels(self):
         """Return classification labels of pipeline model."""
         return list(self.model.model.config.id2label.values())
-    
+
     @classmethod
     def load_model(cls, path) -> None:
         """Load and return text classification transformers pipeline"""
@@ -118,11 +118,10 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     def predict_raw(self, text: str) -> List[str]:
         """Perform predictions on the input text.
-        
+
         Args:
             text (str): Input text to perform NER on.
 
-        
         Returns:
             List[str]: Predictions as a list of strings.
         """

@@ -3,12 +3,11 @@ import os
 import re
 from abc import ABC, abstractmethod
 from typing import List, Dict
-
 from .format import Formatter
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput, NERPrediction, SequenceLabel, Sample
 
 
-class _IDataset(ABC):
+class BaseDataset(ABC):
     """Abstract base class for Dataset.
 
     Defines the load_data method that all subclasses must implement.
@@ -43,7 +42,7 @@ class DataFactory:
         """
 
         self._file_path = file_path
-        self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
+        self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in BaseDataset.__subclasses__()}
         _, self.file_ext = os.path.splitext(self._file_path)
         self.task = task
 
@@ -60,8 +59,8 @@ class DataFactory:
         return self.init_cls.export_data(data, output_path)
 
 
-class ConllDataset(_IDataset):
-    """Class to handle Conll files. Subclass of _IDataset.
+class ConllDataset(BaseDataset):
+    """Class to handle Conll files. Subclass of BaseDataset.
     """
 
     def __init__(self, file_path: str, task: str) -> None:
@@ -114,7 +113,7 @@ class ConllDataset(_IDataset):
                                 start=cursor,
                                 end=cursor + len(split[0]),
                                 doc_id=d_id,
-                                doc_name=(docs_strings[d_id] if len(docs_strings) > 0 else '') ,
+                                doc_name=(docs_strings[d_id] if len(docs_strings) > 0 else ''),
                                 pos_tag=split[1],
                                 chunk_tag=split[2]
                             )
@@ -140,10 +139,8 @@ class ConllDataset(_IDataset):
             fwriter.write(bytes(otext, encoding="utf-8"))
 
 
-
-
-class JSONDataset(_IDataset):
-    """Class to handle JSON dataset files. Subclass of _IDataset.
+class JSONDataset(BaseDataset):
+    """Class to handle JSON dataset files. Subclass of BaseDataset.
     """
 
     def __init__(self, file_path) -> None:
@@ -162,8 +159,8 @@ class JSONDataset(_IDataset):
         pass
 
 
-class CSVDataset(_IDataset):
-    """Class to handle CSV files dataset. Subclass of _IDataset.
+class CSVDataset(BaseDataset):
+    """Class to handle CSV files dataset. Subclass of BaseDataset.
     """
     COLUMN_NAMES = {
         'text-classification': {
@@ -230,8 +227,6 @@ class CSVDataset(_IDataset):
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
 
-
-    #   helpers
     @staticmethod
     def find_delimiter(file_path):
         sniffer = csv.Sniffer()

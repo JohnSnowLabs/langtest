@@ -1,6 +1,5 @@
 import os
 from typing import List, Union
-
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
@@ -15,7 +14,27 @@ if try_import_lib('johnsnowlabs'):
 SUPPORTED_SPARKNLP_NER_MODELS = []
 SUPPORTED_SPARKNLP_CLASSIFERS = []
 if try_import_lib("sparknlp"):
-    from sparknlp.annotator import *
+    from sparknlp.annotator import (
+        AlbertForTokenClassification,
+        BertForTokenClassification,
+        CamemBertForTokenClassification,
+        DeBertaForTokenClassification,
+        DistilBertForTokenClassification,
+        LongformerForTokenClassification,
+        RoBertaForTokenClassification,
+        XlmRoBertaForTokenClassification,
+        XlnetForTokenClassification,
+        NerDLModel,
+        ClassifierDLModel,
+        AlbertForSequenceClassification,
+        BertForSequenceClassification,
+        DeBertaForSequenceClassification,
+        DistilBertForSequenceClassification,
+        LongformerForSequenceClassification,
+        RoBertaForSequenceClassification,
+        XlmRoBertaForSequenceClassification,
+        XlnetForSequenceClassification
+    )
     from sparknlp.base import LightPipeline
     from sparknlp.pretrained import PretrainedPipeline
 
@@ -137,8 +156,8 @@ class PretrainedModelForNER(_ModelHandler):
             if try_import_lib('johnsnowlabs'):
                 loaded_model = nlp.load(path)
             else:
-                raise ValueError(f'johnsnowlabs is not installed. '
-                                 f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
+                raise ValueError('''johnsnowlabs is not installed.\n
+                                  In order to use NLP Models Hub, johnsnowlabs should be installed!''')
 
         return loaded_model
 
@@ -213,9 +232,9 @@ class PretrainedModelForTextClassification(_ModelHandler):
             model = _pipeline.fit(tmp_df)
 
         else:
-            raise ValueError(f'Invalid SparkNLP model object: {type(model)}. '
-                             f'John Snow Labs model handler accepts: '
-                             f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
+            raise ValueError(f'''Invalid SparkNLP model object: {type(model)}.
+                             John Snow Labs model handler accepts:
+                             [NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]''')
 
         _classifier = None
         for annotator in model.stages:
@@ -229,7 +248,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
 
-        #   in order to overwrite configs, light pipeline should be reinitialized.
+        # In order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
 
     def load_model(self, path) -> 'NLUPipeline':
@@ -246,8 +265,8 @@ class PretrainedModelForTextClassification(_ModelHandler):
             if try_import_lib('johnsnowlabs'):
                 loaded_model = nlp.load(path)
             else:
-                raise ValueError(f'johnsnowlabs is not installed. '
-                                 f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
+                raise ValueError('''johnsnowlabs is not installed.
+                                  In order to use NLP Models Hub, johnsnowlabs should be installed!''')
 
         return loaded_model
 
@@ -281,7 +300,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 
-    #   helpers
+    #   Helpers
     @staticmethod
     def is_classifier(model_instance) -> bool:
         """Check classifier model instance is supported by nlptest"""

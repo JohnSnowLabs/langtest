@@ -55,7 +55,7 @@ class ModelFactory:
                        f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}")
 
         if module_name in ['pyspark', 'sparknlp', 'nlu']:
-            model_handler = importlib.import_module(f'nlptest.modelhandler.jsl_modelhandler')
+            model_handler = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
         else:
             model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 

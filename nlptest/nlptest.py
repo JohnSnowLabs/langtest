@@ -1,7 +1,7 @@
 import os
 import pickle
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
 import yaml
@@ -24,7 +24,7 @@ class Harness:
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str],
+            model: Union[str, Any],
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -48,7 +48,7 @@ class Harness:
 
         if isinstance(model, str):
             if hub is None:
-                raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
+                raise OSError("You need to pass the 'hub' parameter when passing a string as 'model'.")
 
             self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
         else:
@@ -108,7 +108,7 @@ class Harness:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
         if isinstance(self._config, dict):
-            self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
+            self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in
                                   self._config['tests'].items() for j, k in v.items()}
         self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
 
@@ -148,13 +148,9 @@ class Harness:
         first_column = df_final.pop('category')
         df_final.insert(0, col_to_move, first_column)
         df_final = df_final.reset_index(drop=True)
-
         self.df_report = df_report.fillna("-")
-
         return self.df_report
 
-        # return self.report_df
-    
     def generated_results_df(self) -> pd.DataFrame:
         """
         Generates an overall report with every textcase and labelwise metrics.
@@ -210,7 +206,7 @@ class Harness:
         """
 
         dtypes = list(map(
-            lambda x: str(x), 
+            lambda x: str(x),
             self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
         if dtypes not in [['int64']*2, ['int32']*2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
