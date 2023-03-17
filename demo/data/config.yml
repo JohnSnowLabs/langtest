@@ -2,11 +2,19 @@ defaults:
   min_pass_rate: 0.65
   min_representation: 50
 tests:
-  # accuracy:
-  #   macro_f1:
-  #     PER: 0.3
-  #   min_f1:
-  #     O: 0.8
+  accuracy:
+    min_precision_score:
+      O: 0.5
+    min_recall_score:
+      O: 0.5
+    min_f1_score:
+      O: 0.5
+    min_micro_f1_score:
+      O: 0.5
+    min_macro_f1_score:
+      O: 0.5
+    min_weighted_f1_score:
+      O: 0.5
   bias:
     replace_to_female_pronouns:
       min_pass_rate: 0.65
