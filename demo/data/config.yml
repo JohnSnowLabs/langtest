@@ -15,6 +15,11 @@ tests:
       O: 0.5
     min_f1_score:
       O: 0.5
+  fairness:
+    min_gender_f1_score:
+      min_score: 0.5
+    max_gender_f1_score:
+      max_score: 0.99
   bias:
     replace_to_female_pronouns:
       min_pass_rate: 0.65
