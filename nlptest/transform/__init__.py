@@ -9,9 +9,8 @@ from nlptest.transform.accuracy import BaseAccuracy
 from .bias import BaseBias
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
-from .utils import (A2B_DICT, create_terminology, female_pronouns, male_pronouns, neutral_pronouns)
-from ..utils.custom_types import Sample
-
+from .utils import (A2B_DICT, create_terminology,get_substitution_names, male_pronouns, female_pronouns, neutral_pronouns, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names)
+from ..utils.custom_types import Sample, Span, Transformation
 
 class TestFactory:
     """
@@ -227,7 +226,6 @@ class RobustnessTestFactory(ITests):
         # NOTE: I don't know if we need to work with a dataframe of if we can keep it as a List[Sample]
         all_samples = []
         for test_name, params in self.tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
@@ -322,19 +320,46 @@ class BiasTestFactory(ITests):
             self.tests['replace_to_female_pronouns']['parameters']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self.tests:
-            self.tests['replace_to_neutral_pronouns']['parameters'] = {}
-            self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in
-                                                                                                 list(
-                                                                                                     female_pronouns.values())
-                                                                                                 for item in
-                                                                                                 sublist] + [item for
-                                                                                                             sublist in
-                                                                                                             list(
-                                                                                                                 male_pronouns.values())
-                                                                                                             for item in
-                                                                                                             sublist]
-            self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
-
+          self.tests['replace_to_neutral_pronouns']['parameters'] = {} 
+          self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
+          self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
+          
+        for income_level in ['Low-income', 'Lower-middle-income', 'Upper-middle-income', 'High-income']:
+            economic_level = income_level.replace("-","_").lower()
+            if f'replace_to_{economic_level}_country' in self.tests:
+                countries_to_exclude = [v for k, v in country_economic_dict.items() if k != income_level]
+                self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {}
+                self.tests[f"replace_to_{economic_level}_country"]['parameters']['country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
+                self.tests[f"replace_to_{economic_level}_country"]['parameters']['chosen_country_names'] = country_economic_dict[income_level]
+                
+        for religion in religion_wise_names.keys():
+            if f"replace_to_{religion.lower()}_names" in self.tests:
+                religion_to_exclude = [v for k, v in religion_wise_names.items() if k != religion]
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {}
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['names_to_substitute'] = get_substitution_names(religion_to_exclude)
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['chosen_names'] = religion_wise_names[religion]
+        
+        ethnicity_first_names = {'white': white_names['first_names'], 'black': black_names['first_names'], 'hispanic': hispanic_names['first_names'], 'asian': asian_names['first_names']}
+        for ethnicity in ['white', 'black', 'hispanic','asian']:
+            test_key = f'replace_to_{ethnicity}_firstnames'
+            if test_key in self.tests:
+                self.tests[test_key]['parameters'] = {}
+                self.tests[test_key]['parameters'] = {
+                    'names_to_substitute': sum([ethnicity_first_names[e] for e in ethnicity_first_names if e != ethnicity], []),
+                    'chosen_ethnicity_names': ethnicity_first_names[ethnicity]
+                }
+        
+        ethnicity_last_names = {'white': white_names['last_names'], 'black': black_names['last_names'], 'hispanic': hispanic_names['last_names'], 'asian': asian_names['last_names']}
+        for ethnicity in ['white', 'black', 'hispanic','asian','native_american','inter_racial']:
+            test_key = f'replace_to_{ethnicity}_lastnames'
+            if test_key in self.tests:
+                self.tests[test_key]['parameters'] = {}
+                self.tests[test_key]['parameters'] = {
+                    'names_to_substitute': sum([ethnicity_last_names[e] for e in ethnicity_last_names if e != ethnicity], []),
+                    'chosen_ethnicity_names': ethnicity_last_names[ethnicity]
+                }
+ 
+        
     def transform(self):
 
         """
@@ -348,7 +373,6 @@ class BiasTestFactory(ITests):
 
         all_samples = []
         for test_name, params in self.tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
@@ -409,7 +433,6 @@ class RepresentationTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -437,7 +460,6 @@ class RepresentationTestFactory(ITests):
 
         all_samples = []
         for test_name, params in self.tests.items():
-            print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
@@ -526,8 +548,7 @@ class AccuracyTestFactory(ITests):
         """
 
         all_samples = []
-        for test_name, params in self.tests.items():
-            print(test_name)
+        for test_name, params in self.tests.items():            
             data_handler_copy = [x.copy() for x in self._data_handler]
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, self._model_handler,
                                                                             **params.get('parameters', {}))

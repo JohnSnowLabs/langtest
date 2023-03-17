@@ -30,7 +30,7 @@ class HarnessTestCase(unittest.TestCase):
     def test_missing_parameter(self):
         """"""
         with self.assertRaises(OSError) as _:
-            Harness(task='ner', model='dslim/bert-base-NER', data=self.data_path, config=self.config_path)
+            Harness(task='ner', model='dslim/bert-base-NER', data=self.data_path, config=self.config_path, hub="huggingface")
 
     def test_attributes(self):
         """
@@ -66,7 +66,8 @@ class HarnessTestCase(unittest.TestCase):
                 task="text-classifer",
                 model=ModelFactory("ner", "dslim/bert-base-NER"),
                 data=self.data_path,
-                config=self.config_path
+                config=self.config_path,
+                hub="huggingface"
             )
 
     def test_save(self):
