@@ -4,6 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List, Dict
 
+from .format import Formatter
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput, NERPrediction, SequenceLabel, Sample
 
 
@@ -112,7 +113,8 @@ class ConllDataset(_IDataset):
                                 word=split[0],
                                 start=cursor,
                                 end=cursor + len(split[0]),
-                                doc_id=(docs_strings[d_id] if len(docs_strings) > 0 else ''),
+                                doc_id=d_id,
+                                doc_name=(docs_strings[d_id] if len(docs_strings) > 0 else '') ,
                                 pos_tag=split[1],
                                 chunk_tag=split[2]
                             )
@@ -128,7 +130,16 @@ class ConllDataset(_IDataset):
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
-        pass
+        temp_id = None
+        otext = ""
+        for i in data:
+            text, temp_id = Formatter.process(i, format='conll', temp_id=temp_id)
+            otext += text
+
+        with open(output_path, "wb") as fwriter:
+            fwriter.write(bytes(otext, encoding="utf-8"))
+
+
 
 
 class JSONDataset(_IDataset):
@@ -206,8 +217,19 @@ class CSVDataset(_IDataset):
 
         return samples
 
-    def export_data(self):
-        pass
+    def export_data(self, data: List[Sample], output_path: str):
+        temp_id = None
+        otext = ""
+        for i in data:
+            if isinstance(i, NEROutput):
+                text, temp_id = Formatter.process(i, format='csv', temp_id=temp_id)
+            else:
+                text = Formatter.process(i, format='csv')
+            otext += text
+
+        with open(output_path, "wb") as fwriter:
+            fwriter.write(bytes(otext, encoding="utf-8"))
+
 
     #   helpers
     @staticmethod
