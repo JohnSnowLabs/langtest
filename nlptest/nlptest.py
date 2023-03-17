@@ -1,8 +1,10 @@
+import logging
 import os
 import pickle
 from collections import defaultdict
 from typing import Optional, Union
-import logging
+
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -292,7 +294,15 @@ class Harness:
         Returns:
 
         """
-        df = pd.read_csv(filename)
+        df = pd.read_csv(filename).replace({np.nan: None})
         records = df.to_dict(orient="records")
+
+        # hack to parse a string into a list as a list isn't json serializable
+        for record in records:
+            if record["transformations"] is not None:
+                record["transformations"] = eval(record["transformations"])
+            else:
+                del record["transformations"]
+
         self._testcases = [Sample.parse_obj(record) for record in records]
         logging.info(f"Test cases successfully loaded from '{filename}.")

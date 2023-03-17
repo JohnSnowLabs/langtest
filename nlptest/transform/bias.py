@@ -7,7 +7,6 @@ from .utils import male_pronouns, female_pronouns, neutral_pronouns
 
 
 class BaseBias(ABC):
-
     """
     Abstract base class for implementing bias measures.
 
@@ -18,7 +17,6 @@ class BaseBias(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented bias measure.
     """
     alias_name = None
-
 
     @abstractmethod
     def transform(self):
@@ -34,7 +32,6 @@ class BaseBias(ABC):
         return NotImplementedError
 
 
-    
 class GenderPronounBias(BaseBias):
     alias_name = [
         "replace_to_male_pronouns",
@@ -43,7 +40,7 @@ class GenderPronounBias(BaseBias):
     ]
 
     @staticmethod
-    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type:str) -> List[Sample]:
+    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type: str) -> List[Sample]:
         """Replace pronouns to check the gender bias
 
         Args:
@@ -55,35 +52,34 @@ class GenderPronounBias(BaseBias):
             List of sentences with replaced pronouns
         """
 
-
         for sample in sample_list:
-          
-            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in pronouns_to_substitute]
-          
-            if len(tokens_to_substitute)!=0:
-                replace_token = random.choice(tokens_to_substitute)
-                if pronoun_type =="female":
-                  combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
-                  chosen_dict = female_pronouns
-                elif pronoun_type =="male":
-                  combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}  
-                  chosen_dict = male_pronouns      
-                elif pronoun_type =="neutral":
-                  combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
-                  chosen_dict = neutral_pronouns  
 
-                for key, value in combined_dict.items() :
-                      if replace_token in value:
+            tokens_to_substitute = [token for token in sample.original.split(' ') if
+                                    token.lower() in pronouns_to_substitute]
+
+            if len(tokens_to_substitute) != 0:
+                replace_token = random.choice(tokens_to_substitute)
+                if pronoun_type == "female":
+                    combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
+                    chosen_dict = female_pronouns
+                elif pronoun_type == "male":
+                    combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}
+                    chosen_dict = male_pronouns
+                elif pronoun_type == "neutral":
+                    combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
+                    chosen_dict = neutral_pronouns
+
+                for key, value in combined_dict.items():
+                    if replace_token in value:
                         type_of_pronoun = str(key)
                         break
 
-                chosen_token= random.choice(chosen_dict[type_of_pronoun])
+                chosen_token = random.choice(chosen_dict[type_of_pronoun])
                 replaced_string = sample.original.replace(replace_token, chosen_token)
                 sample.test_case = replaced_string
             else:
-              sample.test_case = sample.original
-            
-            sample.category="Bias"
-      
-        return sample_list
+                sample.test_case = sample.original
 
+            sample.category = "Bias"
+
+        return sample_list

@@ -154,7 +154,7 @@ class SequenceClassificationOutput(BaseModel):
     predictions: List[SequenceLabel]
 
     def to_str_list(self) -> List[str]:
-        """Convert the ouput into list of strings.
+        """Convert the output into list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -208,31 +208,17 @@ class Sample(BaseModel):
         super().__init__(**data)
         self._realigned_spans = None
 
-    def to_dict(self):
-        """Returns the dict version of sample."""
-        expected_results = self.expected_results.predictions
-        actual_results = self.actual_results.predictions if self.actual_results else None
-
-        result = {
-            'category': self.category,
-            'test_type': self.test_type,
-            'original': self.original,
-            'test_case': self.test_case,
-            'expected_result': [expected_result.dict() for expected_result in expected_results],
-        }
-
-        if actual_results is not None:
-            result.update({
-                'actual_result': [actual_result.dict() for actual_result in actual_results],
-                'pass': self.is_pass()
-            })
-
-        return result
-
     @validator("transformations")
     def sort_transformations(cls, v):
         """Validator ensuring that transformations are in correct order"""
         return sorted(v, key=lambda x: x.original_span.start)
+
+    @validator("expected_results", pre=True)
+    def parse_string(cls, v):
+        """"""
+        if isinstance(v, str):
+            return eval(v)
+        return v
 
     @property
     def ignored_predictions(self) -> List[NERPrediction]:
@@ -248,14 +234,14 @@ class Sample(BaseModel):
         return predictions
 
     @property
-    def relevant_transformations(self) -> List[Transformation]:
+    def relevant_transformations(self) -> Optional[List[Transformation]]:
         """"""
         if not self.transformations:
             return None
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
     @property
-    def irrelevant_transformations(self) -> List[Transformation]:
+    def irrelevant_transformations(self) -> Optional[List[Transformation]]:
         """"""
         if not self.transformations:
             return None
@@ -303,6 +289,36 @@ class Sample(BaseModel):
                 return self.actual_results
 
         return self._realigned_spans
+
+    def to_dict(self):
+        """Returns the dict version of sample."""
+        expected_results = self.expected_results.predictions
+        actual_results = self.actual_results.predictions if self.actual_results else None
+
+        result = {
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case': self.test_case,
+            'expected_results': {
+                'predictions': [expected_result.dict(exclude_none=True) for expected_result in expected_results]
+            }
+        }
+        if self.category is not None:
+            result.update({
+                'category': self.category
+            })
+        if self.transformations is not None:
+            result.update({
+                'transformations': [transformation.dict(exclude_none=True) for transformation in self.transformations]
+            })
+        if actual_results is not None:
+            result.update({
+                'actual_results': {
+                    'predictions': [actual_result.dict(exclude_none=True) for actual_result in actual_results]
+                },
+                'pass': self.is_pass()
+            })
+        return result
 
     def get_aligned_span_pairs(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
         """

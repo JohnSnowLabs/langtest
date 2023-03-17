@@ -1,6 +1,7 @@
 import os
-import sys
 import unittest
+
+import sys
 
 sys.path.insert(0, '..')
 
@@ -117,3 +118,14 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+
+    def test_save_load_testcases(self):
+        """"""
+        self.harness.generate()
+        testcases = self.harness._testcases
+
+        self.harness.save_testcases("/tmp/saved_testcases.csv")
+        self.harness.load_testcases("/tmp/saved_testcases.csv")
+
+        for a, b in zip(testcases, self.harness._testcases):
+            self.assertEqual(a, b)
