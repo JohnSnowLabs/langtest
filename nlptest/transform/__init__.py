@@ -6,6 +6,7 @@ import pandas as pd
 from nlptest.modelhandler import ModelFactory
 
 from nlptest.transform.accuracy import BaseAccuracy
+from nlptest.transform.fairness import BaseFairness
 from .bias import BaseBias
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
@@ -488,6 +489,94 @@ class RepresentationTestFactory(ITests):
         }
         return tests
 
+
+class FairnessTestFactory(ITests):
+    alias_name = "fairness"
+    """
+    A class for performing fairness tests on a given dataset.
+
+    ...
+
+    Attributes
+    ----------
+    supported_tests : dict
+        A dictionary of supported fairness test scenarios.
+    tests : dict
+        A dictionary of test names and corresponding parameters.
+    _data_handler : List[Sample]
+        A list of `Sample` objects representing the input dataset.
+
+    Methods
+    -------
+    transform() -> List[Sample]:
+        Runs the fairness test and returns the resulting `Sample` objects.
+
+    available_tests() -> dict:
+        Returns a dictionary of available test scenarios for the `fairness` class.
+    """
+
+    def __init__(
+            self,
+            data_handler: List[Sample],
+            tests,
+            model: ModelFactory
+    ) -> None:
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self._model_handler = model
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(
+                f'Invalid test configuration! Tests can be '
+                f'[1] dictionary of test name and corresponding parameters.'
+            )
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = (set(self.tests) - set(self.supported_tests))
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
+
+    def transform(self):
+
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns
+        -------
+        List[Sample]
+            A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
+
+        all_samples = []
+        for test_name, params in self.tests.items():
+            data_handler_copy = [x.copy() for x in self._data_handler]
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+                                                                            **params.get('parameters', {}))
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @classmethod
+    def available_tests(cls) -> dict:
+
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+
+        """
+
+        tests = {
+            j: i for i in BaseFairness.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
 
 class AccuracyTestFactory(ITests):
     alias_name = "accuracy"
