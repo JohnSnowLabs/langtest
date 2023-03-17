@@ -157,7 +157,8 @@ class RobustnessTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests=None,
+            model: ModelFactory = None
     ) -> None:
 
         """
@@ -280,7 +281,8 @@ class BiasTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests=None,
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -428,7 +430,8 @@ class RepresentationTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests=None,
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -550,7 +553,19 @@ class AccuracyTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():            
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, self._model_handler,
+
+            y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
+            y_pred = X_test.apply(self._model_handler.predict_raw)
+
+            valid_indices = y_true.apply(len) == y_pred.apply(len)
+            y_true = y_true[valid_indices]
+            y_pred = y_pred[valid_indices]
+
+            y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
+            y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+
+            transformed_samples = self.supported_tests[test_name].transform(y_true, y_pred,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
