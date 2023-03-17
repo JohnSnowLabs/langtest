@@ -8,3 +8,8 @@ tests:
         male: 0.75
         female: 0.75
         unknown: 0.75
+    max_gender_f1_score:
+      max_score:
+        male: 0.75
+        female: 0.75
+        unknown: 0.75
