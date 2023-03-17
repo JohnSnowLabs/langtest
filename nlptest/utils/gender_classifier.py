@@ -13,8 +13,8 @@ class GenderClassifier():
     def predict(self, text: str):
         pred = self.pipe(text)[0]["label"]
         if pred == "LABEL_0":
-            return "F"
+            return "female"
         if pred == "LABEL_1":
-            return "M"
-        
-        return "N" 
+            return "male"
+
+        return "unknown" 
