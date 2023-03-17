@@ -3,6 +3,7 @@ from typing import List
 
 import nltk
 import pandas as pd
+from nlptest.modelhandler import ModelFactory
 
 from nlptest.transform.accuracy import BaseAccuracy
 from .bias import BaseBias
@@ -31,7 +32,7 @@ class TestFactory:
     """
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict):
+    def transform(data: List[Sample], test_types: dict, model: ModelFactory):
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -41,6 +42,8 @@ class TestFactory:
             The data to be tested.
         test_types : dict
             A dictionary mapping test category names to lists of test scenario names.
+        model: ModelFactory
+            Model to be tested.
 
         Returns
         -------
@@ -54,7 +57,7 @@ class TestFactory:
         for each in list(test_types.keys()):
             values = test_types[each]
             all_results.extend(
-                all_categories[each](data, values).transform()
+                all_categories[each](data, values, model).transform()
             )
         return all_results
 
@@ -489,11 +492,13 @@ class AccuracyTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests,
+            model: ModelFactory
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -524,7 +529,7 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             print(test_name)
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, self._model_handler,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name

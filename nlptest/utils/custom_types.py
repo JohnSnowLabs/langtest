@@ -170,15 +170,25 @@ class SequenceClassificationOutput(BaseModel):
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
 
+class AccuracyOutput(BaseModel):
+    """Output for accuracy tests."""
+    score: float
 
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput)
+    def to_str_list(self) -> float:
+        return self.score
+    
+    def __repr__(self) -> str:
+        return f"{self.score}"
+    def __str__(self) -> str:
+        return f"{self.score}"
 
+
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, AccuracyOutput)
 
 class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
-
 
 class Sample(BaseModel):
     """
@@ -200,6 +210,7 @@ class Sample(BaseModel):
     transformations: List[Transformation] = None
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
     category: str = None
+    state: str = None
 
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
 

@@ -87,7 +87,7 @@ class Harness:
             None: The generated testcases are stored in `_testcases` attribute.
         """
         tests = self._config['tests']
-        self._testcases = TestFactory.transform(self.data, tests)
+        self._testcases = TestFactory.transform(self.data, tests, self.model)
         return self
 
     def run(self) -> "Harness":
@@ -97,7 +97,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results, self.accuracy_results = TestRunner(self._testcases, self.model,
+        self._generated_results = TestRunner(self._testcases, self.model,
                                                                     self.data).evaluate()
         return self
 
@@ -159,11 +159,11 @@ class Harness:
             pd.DataFrame: Generated dataframe.
         """
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
-        accuracy_df = self.accuracy_report()
-        final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
-        final_df = final_df.reset_index(drop=True)
+        # accuracy_df = self.accuracy_report()
+        # final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        # final_df = final_df.reset_index(drop=True)
 
-        return final_df
+        return generated_results_df
 
     def accuracy_report(self) -> pd.DataFrame:
         """
