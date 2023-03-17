@@ -42,10 +42,10 @@ class TestRunner:
         robustness_runner = RobustnessTestRunner(self.load_testcases, self._model_handler, self._data)
         robustness_result = robustness_runner.evaluate()
 
-        accuracy_runner = AccuracyTestRunner(self.load_testcases, self._model_handler, self._data)
-        accuracy_result = accuracy_runner.evaluate()
+        # accuracy_runner = AccuracyTestRunner(self.load_testcases, self._model_handler, self._data)
+        # accuracy_result = accuracy_runner.evaluate()
 
-        return robustness_result, accuracy_result.fillna("")
+        return robustness_result
 
 
 class RobustnessTestRunner(TestRunner):
@@ -61,8 +61,10 @@ class RobustnessTestRunner(TestRunner):
                 all containing the predictions for both the original text and the pertubed one
         """
         for sample in self.load_testcases:
-            sample.expected_results = self._model_handler(sample.original)
-            sample.actual_results = self._model_handler(sample.test_case)
+            if sample.state != "done":
+                sample.expected_results = self._model_handler(sample.original)
+                sample.actual_results = self._model_handler(sample.test_case)
+                sample.state = "done"
 
         return self.load_testcases
 

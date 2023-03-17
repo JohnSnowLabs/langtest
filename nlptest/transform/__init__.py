@@ -3,6 +3,7 @@ from typing import List
 
 import nltk
 import pandas as pd
+from nlptest.modelhandler import ModelFactory
 
 from nlptest.transform.accuracy import BaseAccuracy
 from .bias import BaseBias
@@ -30,7 +31,7 @@ class TestFactory:
     """
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict):
+    def transform(data: List[Sample], test_types: dict, model: ModelFactory):
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -40,6 +41,8 @@ class TestFactory:
             The data to be tested.
         test_types : dict
             A dictionary mapping test category names to lists of test scenario names.
+        model: ModelFactory
+            Model to be tested.
 
         Returns
         -------
@@ -53,7 +56,7 @@ class TestFactory:
         for each in list(test_types.keys()):
             values = test_types[each]
             all_results.extend(
-                all_categories[each](data, values).transform()
+                all_categories[each](data, values, model).transform()
             )
         return all_results
 
@@ -154,7 +157,8 @@ class RobustnessTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests=None,
+            model: ModelFactory = None
     ) -> None:
 
         """
@@ -277,7 +281,8 @@ class BiasTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests=None,
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -425,7 +430,8 @@ class RepresentationTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests=None,
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -511,11 +517,13 @@ class AccuracyTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests=None
+            tests,
+            model: ModelFactory
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -545,7 +553,19 @@ class AccuracyTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():            
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
+
+            y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
+            y_pred = X_test.apply(self._model_handler.predict_raw)
+
+            valid_indices = y_true.apply(len) == y_pred.apply(len)
+            y_true = y_true[valid_indices]
+            y_pred = y_pred[valid_indices]
+
+            y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
+            y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+
+            transformed_samples = self.supported_tests[test_name].transform(y_true, y_pred,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name

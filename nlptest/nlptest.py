@@ -87,7 +87,7 @@ class Harness:
             None: The generated testcases are stored in `_testcases` attribute.
         """
         tests = self._config['tests']
-        self._testcases = TestFactory.transform(self.data, tests)
+        self._testcases = TestFactory.transform(self.data, tests, self.model)
         return self
 
     def run(self) -> "Harness":
@@ -97,7 +97,7 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results, self.accuracy_results = TestRunner(self._testcases, self.model,
+        self._generated_results = TestRunner(self._testcases, self.model,
                                                                     self.data).evaluate()
         return self
 
@@ -121,6 +121,8 @@ class Harness:
         for test_type, value in summary.items():
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
+            if summary[test_type]['category'] == "Accuracy":
+                min_pass_rate = 1
             report[test_type] = {
                 "category": summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
@@ -136,54 +138,32 @@ class Harness:
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
 
-        df_accuracy = self.accuracy_report().iloc[:2].drop("test_case", axis=1)
-        df_accuracy = df_accuracy.rename({"actual_result": "pass_rate", "expected_result": "minimum_pass_rate"}, axis=1)
-        df_accuracy["pass"] = df_accuracy["pass_rate"] >= df_accuracy["minimum_pass_rate"]
-        df_accuracy['pass_rate'] = df_accuracy['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-        df_accuracy['minimum_pass_rate'] = df_accuracy['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-        df_accuracy['category'] = 'Accuracy'  # Temporary fix
-        df_final = pd.concat([df_report, df_accuracy])
 
         col_to_move = 'category'
-        first_column = df_final.pop('category')
-        df_final.insert(0, col_to_move, first_column)
-        df_final = df_final.reset_index(drop=True)
+        first_column = df_report.pop('category')
+        df_report.insert(0, col_to_move, first_column)
+        df_report = df_report.reset_index(drop=True)
 
         self.df_report = df_report.fillna("-")
 
         return self.df_report
 
-        # return self.report_df
-    
-    def generated_results_df(self) -> pd.DataFrame:
+    def generated_results(self) -> pd.DataFrame:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
         Returns:
             pd.DataFrame: Generated dataframe.
         """
+        if self._generated_results is None:
+            print("Please run Harness.run() first.")
+            return
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
-        accuracy_df = self.accuracy_report()
-        final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
-        final_df = final_df.reset_index(drop=True)
+        # accuracy_df = self.accuracy_report()
+        # final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
+        # final_df = final_df.reset_index(drop=True)
 
-        return final_df
-
-    def accuracy_report(self) -> pd.DataFrame:
-        """
-        Generate a report of the accuracy results.
-
-        Returns:
-            pd.DataFrame: DataFrame containing the accuracy, f1, precision, recall scores.
-        """
-
-        acc_report = self.accuracy_results.copy()
-        acc_report["expected_result"] = acc_report.apply(
-            lambda x: self.min_pass_dict.get(x["test_case"] + x["test_type"], self.min_pass_dict.get('default', 0)),
-            axis=1
-        )
-        acc_report["pass"] = acc_report["actual_result"] >= acc_report["expected_result"]
-        return acc_report
+        return generated_results_df
 
     def augment(self, input_path, output_path, inplace=False):
 
