@@ -1,10 +1,10 @@
 ---
 layout: docs
 header: true
-seotitle: NLU | John Snow Labs
+seotitle: NLP Docs | John Snow Labs
 title: 1-liners reference
 key: docs-examples
-permalink: /docs/en/examples
+permalink: /docs/pages/docs/examples
 modify_date: "2019-05-16"
 ---
 
@@ -15,7 +15,7 @@ The following examples demonstrate how to use nlu's load api accompanied by the 
 It enables loading any model or pipeline in one line          
 You need to pass one NLU reference to the load method.      
 You can also pass multiple whitespace separated references.      
-[You can find all NLU references here](https://nlu.johnsnowlabs.com/docs/en/namespace)
+[You can find all NLU references here](https://nlu.johnsnowlabs.com/docs/pages/docs/namespace)
 
 </div><div class="h3-box" markdown="1">
 
@@ -974,7 +974,7 @@ nlp.load('match.datetime').predict('In the years 2000/01/01 to 2010/01/01 a lot 
 </div></div></div><div class="h3-box" markdown="1">
 
 ## Entity Chunking    
-Checkout [see here](https://nlp.johnsnowlabs.com/docs/en/examples#part-of-speech--pos) for all possible POS labels or        
+Checkout [see here](https://nlp.johnsnowlabs.com/docs/pages/docs/examples#part-of-speech--pos) for all possible POS labels or        
 Splits text into rows based on matched grammatical entities.     
 
 [Entity Chunking Example](https://colab.research.google.com/drive/1svpqtC3cY6JnRGeJngIPl2raqxdowpyi?usp=sharing)
