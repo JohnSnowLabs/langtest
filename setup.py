@@ -4,9 +4,10 @@ https://packaging.python.org/guides/distributing-packages-using-setuptools/
 https://github.com/pypa/sampleproject
 """
 
-# Always prefer setuptools over distutils
-from setuptools import setup, find_packages
 import pathlib
+
+# Always prefer setuptools over distutils
+from setuptools import find_packages, setup
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -15,7 +16,17 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 REQUIRED_PKGS = [
     'numpy',
-    'pandas'
+    'pandas',
+    'wn',
+    'scikit-learn',
+    'spark-nlp==4.2.6',
+    'pyspark==3.1.2',
+    'transformers',
+    'nltk',
+    'torch',
+    'protobuf<=3.20.0',
+    'sentencepiece',
+    'logging'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -33,7 +44,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="nlptest",  # Required
+    name="nlptestt",  # Required
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
@@ -44,7 +55,8 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="John Snow Labs provides a library for testing robustness, bias and noisy labels in NLP models.",  # Optional
+    description="John Snow Labs provides a library for testing robustness, bias and noisy labels in NLP models.",
+    # Optional
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #

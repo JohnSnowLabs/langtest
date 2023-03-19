@@ -1,0 +1,201 @@
+from abc import ABC, abstractmethod
+from typing import List, Union
+from ..utils.custom_types import Sample, SequenceClassificationOutput
+
+
+class BaseFormatter(ABC):
+
+    """
+    Abstract base class for defining formatter classes.
+    Subclasses should implement the static methods `to_csv` and `to_conll`.
+    """
+
+    @staticmethod
+    @abstractmethod
+    def to_csv(custom_type):
+
+        """
+        Converts a custom type to a CSV string.
+
+        Args:
+            custom_type: The custom type to convert.
+
+        Returns:
+            The CSV string representation of the custom type.
+
+        Raises:
+            NotImplementedError: This method should be implemented by the subclass.
+        """
+         
+        return NotImplementedError
+    
+    @staticmethod
+    @abstractmethod
+    def to_conll(custom_type):
+
+        """
+        Converts a custom type to a CoNLL string.
+
+        Args:
+            custom_type: The custom type to convert.
+
+        Returns:
+            The CoNLL string representation of the custom type.
+
+        Raises:
+            NotImplementedError: This method should be implemented by the subclass.
+        """
+
+        return NotImplementedError
+    
+class Formatter:
+
+    """
+    Formatter class for converting between custom types and different output formats.
+
+    This class uses the `to_csv` and `to_conll` methods of subclasses of `BaseFormatter`
+    to perform the conversions. The appropriate subclass is selected based on the
+    type of the expected results in the `sample` argument.
+
+    Args:
+        sample: The input sample to convert.
+        format: The output format to convert to, either "csv" or "conll".
+        *args: Optional positional arguments to pass to the `to_csv` or `to_conll` methods.
+        **kwargs: Optional keyword arguments to pass to the `to_csv` or `to_conll` methods.
+
+    Returns:
+        The output string in the specified format.
+
+    Raises:
+        NameError: If no formatter subclass is defined for the type of the expected results in the sample.
+    """
+
+    @staticmethod
+    def process(sample: Sample, format: str, *args, **kwargs):
+        formats = {cls.__name__: cls for cls in BaseFormatter.__subclasses__()}
+        class_name = type(sample.expected_results).__name__
+        try:
+            return getattr(formats[f"{class_name}Formatter"], f"to_{format}")(sample, *args, **kwargs)
+        except KeyError:
+            raise NameError(f"Class '{class_name}Formatter' not yet implemented.")
+
+
+
+class SequenceClassificationOutputFormatter(BaseFormatter):
+
+    """
+    Formatter class for converting `SequenceClassificationOutput` objects to CSV.
+
+    The `to_csv` method returns a CSV string representing the `SequenceClassificationOutput`
+    object in the sample argument.
+
+    Args:
+        sample: The input sample containing the `SequenceClassificationOutput` object to convert.
+        delimiter: The delimiter character to use in the CSV string.
+
+    Returns:
+        The CSV string representation of the `SequenceClassificationOutput` object.
+
+    Raises:
+        None.
+    """
+
+    def to_csv(sample: Sample, delimiter=","):
+        original = sample.original
+        test_case = sample.test_case
+        if test_case:
+            return f"{test_case}{delimiter}{sample.expected_results.to_str_list()[0]}\n"
+        else:
+            return f"{original}{delimiter}{sample.expected_results.to_str_list()[0]}\n"
+    
+    
+
+class NEROutputFormatter(BaseFormatter):
+
+    """
+    Formatter class for converting `NEROutput` objects to CSV and CoNLL.
+
+    The `to_csv` method returns a CSV string representing the `NEROutput` object in the sample
+    argument. The `to_conll` method returns a CoNLL string representing the `NEROutput` object.
+
+    Args:
+        sample: The input sample containing the `NEROutput` object to convert.
+        delimiter: The delimiter character to use in the CSV string.
+        temp_id: A temporary ID to use for grouping entities by document.
+
+    Returns:
+        The CSV or CoNLL string representation of the `NEROutput` object.
+
+    Raises:
+        None.
+    """
+
+    def to_csv(sample: Sample, delimiter=",", temp_id=None):
+        text = ""
+        test_case = sample.test_case
+        original = sample.original
+        if test_case:
+            test_case_items = test_case.split()
+            norm_test_case_items = test_case.lower().split()
+            norm_original_items = original.lower().split()
+            temp_len = 0
+            for jdx, item in enumerate(norm_test_case_items):
+                if item in norm_original_items and jdx >= norm_original_items.index(item):
+                    oitem_index = norm_original_items.index(item)
+                    j = sample.expected_results.predictions[oitem_index+temp_len]
+                    if temp_id != j.doc_id and jdx == 0:
+                        text += f"{j.doc_name}\n\n"
+                        temp_id = j.doc_id
+                    else:
+                        text+=f"{test_case_items[jdx]}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
+                    norm_original_items.pop(oitem_index)
+                    temp_len += 1
+                else:
+                    text+=f"{test_case_items[jdx]}{delimiter}O{delimiter}O{delimiter}O\n"
+            text+="\n"
+            
+        else:
+            for j in sample.expected_results.predictions:
+                if temp_id != j.doc_id:
+                    text += f"{j.doc_name}\n\n"
+                    temp_id = j.doc_id
+                else:
+                    text+=f"{j.span.word}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
+            text+="\n"
+        return text, temp_id
+
+    def to_conll(sample: Sample, temp_id = None):
+        text = ""
+        test_case = sample.test_case
+        original = sample.original
+        if test_case:
+            test_case_items = test_case.split()
+            norm_test_case_items = test_case.lower().split()
+            norm_original_items = original.lower().split()
+            temp_len = 0
+            for jdx, item in enumerate(norm_test_case_items):
+                if item in norm_original_items and jdx >= norm_original_items.index(item):
+                    oitem_index = norm_original_items.index(item)
+                    j = sample.expected_results.predictions[oitem_index+temp_len]
+                    if temp_id != j.doc_id and jdx == 0:
+                        text += f"{j.doc_name}\n\n"
+                        temp_id = j.doc_id
+                    else:
+                        text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                    norm_original_items.pop(oitem_index)
+                    temp_len += 1
+                else:
+                    text+=f"{test_case_items[jdx]} O O O\n"
+            text+="\n"
+            
+        else:
+            for j in sample.expected_results.predictions:
+                if temp_id != j.doc_id:
+                    text += f"{j.doc_name}\n\n"
+                    temp_id = j.doc_id
+                else:
+                    text+=f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+            text+="\n"
+        return text, temp_id
+
+

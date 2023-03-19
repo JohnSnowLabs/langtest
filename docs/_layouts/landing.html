@@ -1,0 +1,299 @@
+---
+layout: page
+header: false
+full_width: true
+toc : true
+aside:
+  toc: true
+article_header:
+  type: overlay
+  align: center
+  height: 80vh
+---
+
+<!-- Do not use auto intent in this file. -->
+<div class="layout--landing">
+  <div class="heros">
+    {%- for _section in page.data.sections -%}
+    {%- include snippets/get-nav-url.html path=_section.background_image.src -%}
+    {%- assign _url = __return -%}
+    {%- if _section.theme == 'light' -%}
+    <section class="hero section-row hero--center hero--light" id="hero-{{ forloop.index }}" {%- elsif _section.theme == 'dark' -%}
+      <section class="hero  section-row hero--center hero--dark" id="hero-{{ forloop.index }}" {%- else -%} <section
+      class="hero section-row hero--center" id="hero-{{ forloop.index }}" {%- endif -%} {%- if _section.background_color -%}
+      style="background-image: url({{ _url }}); background-color: {{ _section.background_color }};">
+      {%- else -%}
+      style="background-image: url({{ _url }});">
+      {%- endif -%}
+
+      <div class="">
+        {%- if _section.install -%}
+
+        <div class="quick_easy">
+          <div class="grid--container">
+            <div class="grid">
+              <div class="cell d_flex cell--12 cell--lg-5 cell--md-5 cell--sm-12 quick_easy_inner">
+                <h3 class="grey h3_title">{{ _section.title }}</h3>
+                {%- if _section.excerpt-%}
+                <div class="descr_quick">{{ _section.excerpt }}</div>
+                {%- endif -%}
+                 {%- if _section.actions -%}
+                  <ul class="menu">
+                    {%- for _action in _section.actions -%}
+                    {%- include snippets/get-nav-url.html path=_action.url -%}
+                    {%- assign _url = __return -%}
+                    {%- assign _type = _action.type | default: 'outline-info' -%}
+                    <li><a class="button button--{{ _type }} button--lg" href="{{ _url }}">{{ _action.text }}</a>
+                    </li>
+                    {%- endfor -%}
+                  </ul>
+                  {%- endif -%}
+              </div>
+              <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
+                <div class="highlight-box">
+  {% highlight bash %}
+# Install nlptest from PyPI
+pip install nlptest
+
+# Install nlptest from Anaconda/Conda
+conda install nlptest
+            {% endhighlight %}
+                  </div>
+              </div>
+            </div>
+          </div>           
+        </div>
+      
+      {%- endif -%}
+        
+
+      {%- if _section.oneline -%}
+        <div class="grid--container">
+          <div class="grid jcc">
+            <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
+              <h3 class="grey h3_title">{{ _section.title }}</h3>     
+              <div class="highlight-box">
+                {% highlight bash %}
+from nlptest import Harness
+
+# Create a Harness object
+h = Harness('ner', model='dslim/bert-base-NER', hub='transformers', data=\"test.conll\")
+
+# Generate and run your test cases
+h.generate().run()
+
+# View a report
+h.report()
+                {% endhighlight %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+
+        
+        {%- if _section.children -%}
+        {%- assign _size = _section.children | size  -%}
+        <div class="grid--container">
+          <div class="grid grid--p-3">
+
+            {%- for child in _section.children -%}
+
+            {%- if _size >= 2 -%}
+            {%- assign _cell_sm_col = 12 -%}
+            {%- else -%}
+            {%- assign _cell_sm_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            {%- if _size >= 2 -%}
+            {%- assign _cell_md_col = 4 -%}
+            {%- else -%}
+            {%- assign _cell_md_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            {%- if _size >= 4 -%}
+            {%- assign _cell_lg_col = 3 -%}
+            {%- else -%}
+            {%- assign _cell_lg_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            {%- if _size >= 6 -%}
+            {%- assign _cell_lg_col = 2 -%}
+            {%- else -%}
+            {%- assign _cell_lg_col = 12 | divided_by: _size -%}
+            {%- endif -%}
+
+            <div class="cell cell--12 cell--md-{{ _cell_md_col }} cell--lg-{{ _cell_lg_col }} cell--sm-{{ _cell_sm_col }}">
+
+              <div class="feature-item topthree {{ _section.featureitem }} ">
+                {%- if child.image and child.image.src -%}
+
+                {%- if child.image.url -%}
+                {%- include snippets/get-nav-url.html path=child.image.url -%}
+                {%- assign _item_image_url = __return -%}
+                {%- else -%}
+                {%- assign _item_image_url = nil -%}
+                {%- endif -%}
+
+                {%- include snippets/get-nav-url.html path=child.image.src -%}
+                {%- assign _item_image_src = __return -%}
+
+                {%- if child.image.is_row -%}
+                  {%- endif -%}
+                  <figure class="mx-auto" style="{{ child.image.style }}">
+                    <img src="{{ _item_image_src }}" />
+                  </figure>
+                  {%- if child.image.is_row -%}
+                {%- endif -%}
+                {%- endif -%}
+
+                <h4>{{ child.title }}</h4>
+
+
+                {%- if child.excerpt-%}
+                <p>{{ child.excerpt }}</p>
+                {%- endif -%}
+
+                {%- if child.actions -%}
+                <ul class="menu">
+                  {%- for _action in child.actions -%}
+                  {%- include snippets/get-nav-url.html path=_action.url -%}
+                  {%- assign _url = __return -%}
+                  {%- assign _type = _action.type | default: 'outline-info' -%}
+                  <li><a class="button button--{{ _type }} button--lg"
+                      href="{{ _url }}">{{ _action.text }}</a></li>
+                  {%- endfor -%}
+                </ul>
+                {%- endif -%}
+              </div>              
+
+              {%- if child.content-%}
+              <p>{{ child.content }}</p>
+              {%- endif -%}
+
+            </div>
+            {%- endfor-%}
+
+          </div>
+        </div>
+        {%- endif -%}
+
+        {%- if _section.image.full_width == true -%}
+      </div> {% comment %} end hero__content {% endcomment %}
+      {%- endif -%}
+
+      {%- if _section.image and _section.image.src -%}
+
+      {%- if _section.image.url -%}
+      {%- include snippets/get-nav-url.html path=_section.image.url -%}
+      {%- assign _section_image_url = __return -%}
+      {%- else -%}
+      {%- assign _section_image_url = nil -%}
+      {%- endif -%}
+
+      {%- include snippets/get-nav-url.html path=_section.image.src -%}
+      {%- assign _section_image_src = __return -%}
+
+      {%- if _section.image.is_row -%}
+      <div class="mb-5">
+        {%- endif -%}
+        <div class="mx-auto" style="{{ _section.image.style }}">
+          {%- if _section_image_url -%}
+          <a href="{{ _section_image_url }}">
+            {%- endif -%}
+            {%- if _section.image.full_width == true -%}
+            <img class="hero__cover hero__cover--full-width" src="{{ _section_image_src }}" />
+            {%- else -%}
+            <img class="hero__cover" src="{{ _section_image_src }}" />
+            {%- endif -%}
+            {%- if _section_image_url -%}
+          </a>
+          {%- endif -%}
+        </div>
+        {%- if _section.image.is_row -%}
+      </div>
+      {%- endif -%}
+      {%- endif -%}
+
+      {%- if _section.image.full_width != true -%}
+  </div> {% comment %} end hero__content {% endcomment %}
+  {%- endif -%}
+
+  {%- if _section.content-%}
+  <p>{{ _section.content }}</p>
+  {%- endif -%}
+  </section>
+  {%- endfor -%}
+</div>
+</div>
+
+<div class="toc_div toc_div_invisible">
+  {% include toc/toc.html html=content %}
+</div>
+
+<div class="landing_examples_div">
+
+
+  <div class="content index-content">
+    <div class="grid--container">
+      <div class="row">
+        <div class="col-12">
+          {{ content }}
+        </div>
+      </div>
+    </div>  
+</div>  
+
+
+</div>
+
+
+{%- include markdown-enhancements.html -%}
+{%- include pageview.html -%}
+<div class="layout--page js-page-root">
+
+{%- if page.sidebar -%}
+<div class="page__sidebar d-print-none">
+  {%- include sidebar/toc.html -%}
+</div>
+{%- endif -%}
+
+</div>
+
+
+
+<script>
+{%- include scripts/lib/scroll-to.js -%}
+{%- include scripts/lib/affix.js -%}
+{%- include scripts/lib/toc.js -%}
+{%- include scripts/page.js -%}
+</script>
+
+
+<script>
+
+{%- include scripts/components/sidebar.js -%}
+{%- include scripts/aside/affix.js -%}
+{%- include scripts/aside/toc.js -%}
+
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+<script>
+$( document ).ready(function() {
+
+$(window).scroll(function (event) {
+    var scroll = $(window).scrollTop();
+    if ($(document).scrollTop() >4000 ){
+    $('.toc_div').removeClass('toc_div_invisible')
+
+    } else {
+    $('.toc_div').addClass('toc_div_invisible')
+
+     }
+});
+
+});
+
+</script>
