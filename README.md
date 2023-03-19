@@ -22,7 +22,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/images/nlptest_flow_graphic.png)
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/nlptest/nlptest_flow_graphic.png)
 
 ## Project's Website
 
