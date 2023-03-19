@@ -2,15 +2,88 @@ header:
   - title: Home
     url: /
   - title: Docs
-    url: https://nlp.johnsnowlabs.com/docs
+    url: /docs/pages/docs/install
     key: docs
-  - title: Examples
-    url:    /docs/en/examples
-    key: docs-nlu-for-healthcare
+  - title: Tutorials
+    url: /docs/pages/tutorials/tutorials
+    key: tutorials
   - title: Tests
-    url:    /docs/en/tests
+    url: /docs/pages/tests/test
     key: tests
-  - title: '<span style="color: #FF8A00;"><i class="fab fa-github fa-2x"></i></span>'
-    url: https://github.com/JohnSnowLabs/nlu
-  - title: '<span style="color: #FF8A00;"><i class="fab fa-slack-hash fa-2x"></i></span>'
-    url: https://join.slack.com/t/spark-nlp/shared_invite/zt-lutct9gm-kuUazcyFKhuGY3_0AMkxqA
+
+
+docs-menu:
+  - title: Installation
+    url: /docs/pages/docs/install
+    children:
+      - title:  Quick Start
+        url:    /docs/pages/docs/quick_start
+  - title: Harness
+    url: /docs/pages/docs/harness
+    children:
+      - title:  generate()
+        url:    /docs/pages/docs/generate
+      - title:  run()
+        url:    /docs/pages/docs/run
+      - title:  report()
+        url:    /docs/pages/docs/report
+      - title: save()
+        url: /docs/pages/docs/save
+      - title:  load()
+        url:    /docs/pages/docs/load
+  - title: Augmentation
+    url:    /docs/pages/docs/augmentation
+    children:
+      - title: generate()
+        url: /docs/pages/docs/generate_augmentation
+      - title: save()
+        url: /docs/pages/docs/save_augmentation
+
+tutorials:
+  - title: Tutorials
+    url: /docs/pages/tutorials/tutorials
+    children:
+      - title: Casing tests with johnsnowlabs
+        url: /docs/pages/tutorials/casing_tests
+      - title: Bias tests with transformers
+        url: /docs/pages/tutorials/bias_tests
+        key: tutorials
+      - title: Testing and fixing workflow with spacy
+        url: /docs/pages/tutorials/workflow_spacy
+        key: tutorials
+
+
+tests:
+  - title: Tests
+    url: /docs/pages/tests/test
+    children:
+      - title: Robustness
+        url: /docs/pages/tests/robustness
+        key: tests
+      - title: Uppercase
+        url: /docs/pages/tests/uppercase
+        key: tests
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+      - title: Titlecase
+        url: /docs/pages/tests/titlecase
+        key: tests
+      - title: Add Context
+        url: /docs/pages/tests/add_context
+        key: tests
+      - title: Swap Entities
+        url: /docs/pages/tests/swap_entities
+        key: tests
+      - title: Bias
+        url: /docs/pages/tests/bias
+        key: tests
+      - title: Gender
+        url: /docs/pages/tests/gender
+        key: tests
+      - title: Representation
+        url: /docs/pages/tests/representation
+        key: tests
+      - title: Age Bias
+        url: /docs/pages/tests/age_bias
+        key: tests
