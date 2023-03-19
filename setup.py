@@ -19,14 +19,13 @@ REQUIRED_PKGS = [
     'pandas',
     'wn',
     'scikit-learn',
-    'spark-nlp==4.2.6',
+    'spark-nlp==4.3.2',
     'pyspark==3.1.2',
     'transformers',
     'nltk',
     'torch',
     'protobuf<=3.20.0',
     'sentencepiece',
-    'logging'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
