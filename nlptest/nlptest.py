@@ -133,7 +133,7 @@ class Harness:
             }
 
         df_report = pd.DataFrame.from_dict(report, orient="index")
-        df_report = df_report.reset_index(names="test_type")
+        df_report = df_report.reset_index().rename(columns={'index': 'test_type'})
 
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
@@ -190,9 +190,9 @@ class Harness:
         """
 
         dtypes = list(map(
-            lambda x: str(x), 
+            lambda x: str(x),
             self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
-        if dtypes not in [['int64']*2, ['int32']*2]:
+        if dtypes not in [['int64'] * 2, ['int32'] * 2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
         _ = AugmentRobustness(
@@ -243,6 +243,23 @@ class Harness:
         with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
 
+    def save_testcases(self, path_to_file: str) -> None:
+        """
+        Save the generated testcases into a pickle file.
+
+        Args:
+            path_to_file (str):
+                location to save the pickle file to
+        Returns:
+
+        """
+        if self._testcases is None:
+            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+                             "calling the `.save` method.")
+
+        with open(path_to_file, "wb") as writer:
+            pickle.dump(self._testcases, writer)
+
     @classmethod
     def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
         """
@@ -275,3 +292,16 @@ class Harness:
             harness.data = pickle.load(reader)
 
         return harness
+
+    def load_testcases(self, path_to_file: str) -> None:
+        """
+        Loads the testcases from a pickle file
+
+        Args:
+            path_to_file (str):
+                location to load the test cases from
+        Returns:
+
+        """
+        with open(path_to_file, "rb") as reader:
+            self._testcases = pickle.load(reader)

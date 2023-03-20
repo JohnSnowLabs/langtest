@@ -16,17 +16,16 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 REQUIRED_PKGS = [
     'numpy',
-    'pandas==1.5.0',
+    'pandas',
     'wn',
     'scikit-learn',
-    'spark-nlp==4.2.6',
+    'spark-nlp==4.3.2',
     'pyspark==3.1.2',
     'transformers',
     'nltk',
     'torch',
     'protobuf<=3.20.0',
     'sentencepiece',
-    'logging'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -44,18 +43,18 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="nlptestt",  # Required
+    name="nlptest",  # Required
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="0.0.1",  # Required
+    version="1.0.0-beta.2",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="John Snow Labs provides a library for testing robustness, bias and noisy labels in NLP models.",
+    description="John Snow Labs provides a library for delivering safe & effective NLP models.",
     # Optional
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
@@ -81,13 +80,13 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url="https://www.johnsnowlabs.com",  # Optional
+    url="https://www.nlptest.org",  # Optional
     # This should be your name or the name of the organization which owns the
     # project.
     author="John Snow Labs",  # Optional
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email="author@johnsnowlabs.com",  # Optional
+    author_email="support@johnsnowlabs.com",  # Optional
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
@@ -96,7 +95,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         # Indicate who your project is intended for
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
@@ -118,7 +117,7 @@ setup(
     # Note that this is a list of additional keywords, separated
     # by commas, to be used to assist searching for the distribution in a
     # larger catalog.
-    keywords="NLP robustness bias noisy labels testing NLU",  # Optional
+    keywords="NLP testing robustness bias fairness representation accuracy",  # Optional
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
     # package_dir={"": "src"},  # Optional
