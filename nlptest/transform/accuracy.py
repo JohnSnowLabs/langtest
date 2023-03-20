@@ -56,7 +56,7 @@ class MinPrecisionScore(BaseAccuracy):
     alias_name = "min_precision_score"
 
     @staticmethod
-    def transform(y_true, y_pred):
+    def transform(y_true, y_pred, params):
         """
         Computes the minimum F1 score for the given data.
 
@@ -67,8 +67,10 @@ class MinPrecisionScore(BaseAccuracy):
         Returns:
             List[Sample]: Precision test results.
         """
-
+        labels = set(y_true).union(set(y_pred))
         
+        if isinstance(params[""], dict):
+            min_scores = params[""]
 
         df_metrics = classification_report(y_true, y_pred, output_dict=True)
         df_metrics.pop("accuracy")
@@ -104,7 +106,7 @@ class MinRecallScore(BaseAccuracy):
     alias_name = "min_recall_score"
 
     @staticmethod
-    def transform(y_true, y_pred):
+    def transform(y_true, y_pred, params):
         """
         Computes the minimum recall score for the given data.
 
@@ -151,7 +153,7 @@ class MinF1Score(BaseAccuracy):
     alias_name = "min_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred):
+    def transform(y_true, y_pred, params):
         """
         Computes the minimum F1 score for the given data.
 
@@ -197,7 +199,7 @@ class MinMicroF1Score(BaseAccuracy):
     alias_name = "min_micro_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred):
+    def transform(y_true, y_pred, params):
         """
         Computes the minimum F1 score for the given data.
 
@@ -237,7 +239,7 @@ class MinMacroF1Score(BaseAccuracy):
     alias_name = "min_macro_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred):
+    def transform(y_true, y_pred, params):
         """
         Computes the minimum F1 score for the given data.
 
@@ -277,7 +279,7 @@ class MinWeightedF1Score(BaseAccuracy):
     alias_name = "min_weighted_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred):
+    def transform(y_true, y_pred, params):
         """
         Computes the minimum weighted F1 score for the given data.
 
