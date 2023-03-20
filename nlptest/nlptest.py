@@ -24,7 +24,8 @@ class Harness:
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
-        ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll"
+        ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
+        ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
     }
 
     def __init__(
