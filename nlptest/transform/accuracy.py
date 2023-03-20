@@ -69,8 +69,12 @@ class MinPrecisionScore(BaseAccuracy):
         """
         labels = set(y_true).union(set(y_pred))
         
-        if isinstance(params[""], dict):
-            min_scores = params[""]
+        if isinstance(params["min_score"], dict):
+            min_scores = params["min_score"]
+        elif isinstance(params["min_score"], float):
+            min_scores = {
+                label:params["min_score"] for label in labels
+            }
 
         df_metrics = classification_report(y_true, y_pred, output_dict=True)
         df_metrics.pop("accuracy")
@@ -84,7 +88,7 @@ class MinPrecisionScore(BaseAccuracy):
                 category = "Accuracy",
                 test_type = "min_precision_score",
                 test_case = k,
-                expected_results = AccuracyOutput(score=0.5),
+                expected_results = AccuracyOutput(score=[min_scores[k]]),
                 actual_results = AccuracyOutput(score=v["precision"]),
                 state = "done"
             )
