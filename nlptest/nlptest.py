@@ -70,7 +70,11 @@ class Harness:
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
-        self._config = self.configure(config) if config is not None else None
+        if config is not None:
+            self._config = self.configure(config)
+        else:
+            logging.info(f"No configuration file was provided, loading default config.")
+            self._config = self.configure(resource_filename("nlptest", "data/config.yml"))
 
         self._testcases = None
         self._generated_results = None
