@@ -152,13 +152,13 @@ layout: base
                       <p class="overlay__excerpt">{{ page.excerpt | strip_html | strip_newlines | strip | truncate: _article_header_excerpt_truncate }}</p>
                     {%- endif -%}
                     {%- if page.article_header.actions -%}
-                      <ul class="menu">
+                      <ul class="menu">                        
                         {%- for _action in page.article_header.actions -%}
                           {%- include snippets/get-nav-url.html path=_action.url -%}
                           {%- assign _url = __return -%}
                           {%- assign _type = _action.type | default: 'info' -%}
                           <li><a class="button button--{{ _type }} button--rounded button--xl" href="{{ _url }}">{{ _action.text }}</a></li>
-                        {%- endfor -%}
+                        {%- endfor -%}                          
                       </ul>
                     {%- endif -%}
                   {%- if _full_width == false -%}
@@ -253,6 +253,8 @@ layout: base
   {%- endif -%}
   {%- include scripts/page.js -%}
 </script>
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 
 {%- if page.sidebar -%}
 <script>{%- include scripts/components/sidebar.js -%}</script>
