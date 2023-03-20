@@ -1,3 +1,4 @@
+import logging
 import os
 import pickle
 from collections import defaultdict
@@ -5,6 +6,7 @@ from typing import Optional, Union
 
 import pandas as pd
 import yaml
+from pkg_resources import resource_filename
 
 from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
@@ -20,6 +22,9 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
+    DEFAULTS_DATASET = {
+        ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll"
+    }
 
     def __init__(
             self,
@@ -54,7 +59,15 @@ class Harness:
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        self.data = DataFactory(data, task=self.task).load() if data is not None else None
+        if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
+            data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
+            data = resource_filename("nlptest", data_path)
+
+            self.data = DataFactory(data, task=self.task).load()
+            logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+        else:
+            self.data = DataFactory(data, task=self.task).load() if data is not None else None
+
         self._config = self.configure(config) if config is not None else None
 
         self._testcases = None
