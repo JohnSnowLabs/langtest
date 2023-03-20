@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 import pandas as pd
+import numpy as np
 from sklearn.metrics import f1_score
 
 from nlptest.utils.custom_types import Sample, MinScoreOutput, MaxScoreOutput
@@ -20,7 +21,7 @@ class BaseFairness(ABC):
 
     @staticmethod
     @abstractmethod
-    def transform(data, model):
+    def transform(data, model, params):
 
         """
         Abstract method that implements the accuracy measure.
@@ -53,7 +54,7 @@ class MinGenderF1Score(BaseFairness):
 
 
     @staticmethod
-    def transform(data: List[Sample], model):
+    def transform(data: List[Sample], model, params):
         """
         Computes the minimum F1 score for the given data.
 
@@ -63,7 +64,15 @@ class MinGenderF1Score(BaseFairness):
         Returns:
             Any: The transformed data based on the minimum F1 score.
         """
-        
+        if isinstance(params["min_score"], dict):
+            min_scores = params["min_score"]
+        elif isinstance(params["min_score"], float):
+            min_scores = {
+                "male": params["min_score"],
+                "female": params["min_score"],
+                "unknown": params["min_score"]
+            }
+
         gendered_data = get_gendered_data(data)
 
         samples = []
@@ -84,13 +93,15 @@ class MinGenderF1Score(BaseFairness):
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
             macro_f1_score = f1_score(y_true, y_pred, average="macro")
+            if np.isnan(macro_f1_score):
+                macro_f1_score = 1
 
             sample = Sample(
                 original = "-",
                 category = "fairness",
                 test_type = "min_gender_f1_score",
                 test_case = key,
-                expected_results = MinScoreOutput(score=0.5),
+                expected_results = MinScoreOutput(score=min_scores[key]),
                 actual_results = MinScoreOutput(score=macro_f1_score),
                 state = "done"
             )
@@ -114,7 +125,7 @@ class MaxGenderF1Score(BaseFairness):
 
 
     @staticmethod
-    def transform(data: List[Sample], model):
+    def transform(data: List[Sample], model, params):
         """
         Computes the gendered max F1 score tests for the given data.
 
@@ -124,6 +135,14 @@ class MaxGenderF1Score(BaseFairness):
         Returns:
             List[Sample]: The transformed samples.
         """
+        if isinstance(params["max_score"], dict):
+            max_scores = params["max_score"]
+        elif isinstance(params["max_score"], float):
+            max_scores = {
+                "male": params["max_score"],
+                "female": params["max_score"],
+                "unknown": params["max_score"]
+            }
         
         gendered_data = get_gendered_data(data)
 
@@ -146,12 +165,15 @@ class MaxGenderF1Score(BaseFairness):
 
             macro_f1_score = f1_score(y_true, y_pred, average="macro")
 
+            if np.isnan(macro_f1_score):
+                macro_f1_score = 0
+            
             sample = Sample(
                 original = "-",
                 category = "fairness",
                 test_type = "min_gender_f1_score",
                 test_case = key,
-                expected_results = MaxScoreOutput(score=0.5),
+                expected_results = MaxScoreOutput(score=max_scores[key]),
                 actual_results = MaxScoreOutput(score=macro_f1_score),
                 state = "done"
             )
