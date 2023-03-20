@@ -1,7 +1,6 @@
 import random
 import re
 from abc import ABC, abstractmethod
-from functools import reduce
 from typing import Dict, List, Optional
 import numpy as np
 
