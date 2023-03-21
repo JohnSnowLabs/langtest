@@ -1,0 +1,98 @@
+:orphan:
+
+.. INDEX
+
+:py:mod:`nlptest.utils.custom_types`
+====================================
+
+.. py:module:: nlptest.utils.custom_types
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   nlptest.utils.custom_types.NEROutput
+   nlptest.utils.custom_types.SequenceClassificationOutput
+   nlptest.utils.custom_types.AccuracyOutput
+   nlptest.utils.custom_types.Sample
+
+
+
+
+.. py:class:: NEROutput
+
+
+
+   Output model for NER tasks.
+
+   .. py:method:: to_str_list() -> List[str]
+
+      Convert the ouput into list of strings.
+
+      Returns:
+          List[str]: predictions in form of a list of strings.
+
+
+
+.. py:class:: SequenceClassificationOutput
+
+
+
+   Output model for text classification tasks.
+
+   .. py:method:: to_str_list() -> List[str]
+
+      Convert the ouput into list of strings.
+
+      Returns:
+          List[str]: predictions in form of a list of strings.
+
+
+
+.. py:class:: AccuracyOutput
+
+
+
+   Output for accuracy tests.
+
+
+.. py:class:: Sample(**data)
+
+
+
+   Helper object storing the original text, the perturbed one and the corresponding
+   predictions for each of them.
+
+   The specificity here is that it is task-agnostic, one only needs to call access the `is_pass`
+   property to assess whether the `expected_results` and the `actual_results` are the same, regardless
+   the downstream task.nlptest/utils/custom_types.py
+
+   This way, to support a new task one only needs to create a `XXXOutput` model, overload the `__eq__`
+   operator and add the new model to the `Result` type variable.
+
+   .. py:method:: to_dict()
+
+      Returns the dict version of sample.
+
+
+   .. py:method:: sort_transformations(v)
+
+      Validator ensuring that transformations are in correct order
+
+
+   .. py:method:: get_aligned_span_pairs() -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]
+
+      Returns:
+           List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
+              List of aligned predicted spans from the original sentence to the perturbed one. The
+              tuples are of the form: (perturbed span, original span). The alignment is achieved by
+              using the transformations apply to the original text. If a Span couldn't be aligned
+              with any other the tuple is of the form (Span, None) (or (None, Span)).
+
+
+
