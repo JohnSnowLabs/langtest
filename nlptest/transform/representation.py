@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample, MinScoreOutput
-from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict, get_country_economic_representation_dict
+from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict, get_country_economic_representation_dict, get_religion_name_representation_dict
 
 class BaseRepresentation(ABC):
 
@@ -197,51 +197,74 @@ class ReligionRepresentation(BaseRepresentation):
     ]
     
 
-    def transform(test,
-            min_count: dict = None,
-            min_proportion: dict = None
-    ) -> pd.DataFrame():
-        
+    def transform(test,data,params):
         sample_list = []
+        
         if test=="min_religion_name_representation_count":
-            if not min_count:
-                min_count = {'muslim': 10, 'hindu': 10, 'sikh':10, 'christian':10, 'jain':10, 'buddhist':10, 'parsi':10}
-              
+            if not params:
+                expected_representation = {'muslim': 5, 'hindu':5, 'sikh':5, 'christian':5, 'jain':5, 'buddhist':5, 'parsi':5}
+                
+            else:
+                if isinstance(params['min_count'], dict):
+                        expected_representation = params['min_count']
+
+                elif isinstance(params['min_count'], int):
+                       expected_representation = {key: params['min_count'] for key in default_religion_representation}
+            
              
-            expected_representation = {**default_religion_representation, **min_count}
+            entity_representation= get_religion_name_representation_dict(data)
+               
+            actual_representation = {**default_religion_representation, **entity_representation}
+
+       
             for key, value in expected_representation.items():
                 sample = Sample(
                     original = "-",
                     category = "representation",
                     test_type = "min_religion_name_representation_count",
                     test_case = key,
-                    expected_results = MinScoreOutput(score=value)  
+                    expected_results = MinScoreOutput(score=value) ,
+                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    state = "done"
                 )
                 sample_list.append(sample)
                 
         if test=="min_religion_name_representation_proportion": 
-              if not min_proportion:
-                    min_proportion = {'muslim': 0.11, 'hindu':0.11, 'sikh':0.11, 'christian':0.11, 'jain':0.11, 'buddhist':0.11, 'parsi':0.11}
-                    
-              
-              if sum(min_proportion.values()) > 1:
-                    print(f"\nSum of proportions cannot be greater than 1. So min_religion_name_representation_proportion test run for default proportions\n")
-                    raise ValueError()
-                    
+              if not params:
+                    expected_representation = {'muslim': 0.11, 'hindu':0.11, 'sikh':0.11, 'christian':0.11, 'jain':0.11, 'buddhist':0.11, 'parsi':0.11}
               
               else:
-              
-                  expected_representation = {**default_religion_representation, **min_proportion}
+                    if isinstance(params['min_proportion'], dict):
+                        expected_representation = params['min_proportion']
+                        
+                        if sum(expected_representation.values()) > 1:
+                            print(f"\nSum of proportions cannot be greater than 1. So min_religion_name_representation_proportion test cannot run \n")
+                            raise ValueError()
+                   
+                    elif isinstance(params['min_proportion'], float):
+                       expected_representation = {key: params['min_proportion'] for key in default_religion_representation} 
+                       if sum(expected_representation.values()) > 1:
+                            print(f"\nSum of proportions cannot be greater than 1. So min_religion_name_representation_proportion test cannot run \n")
+                            raise ValueError()
 
+              
+              entity_representation= get_religion_name_representation_dict(data)
+              total_entities = sum(entity_representation.values())
+              entity_representation_proportion={}
+              for k,v in entity_representation.items():
+                  entity_representation_proportion[k] = v/total_entities
                   
-                  for key, value in expected_representation.items():
+              actual_representation = {**default_religion_representation, **entity_representation_proportion}
+              for key, value in expected_representation.items():
 
                     sample = Sample(
                         original = "-",
                         category = "representation",
                         test_type = "min_religion_name_representation_proportion",
                         test_case = key,
-                        expected_results = MinScoreOutput(score=value)              
+                        expected_results = MinScoreOutput(score=value),
+                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        state = "done"
                     )
                     sample_list.append(sample)
                 

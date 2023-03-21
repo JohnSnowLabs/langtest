@@ -4953,7 +4953,7 @@ default_religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian'
 default_economic_country_representation = {'high_income':0 , 'low_income':0, 'lower_middle_income':0, 'upper_middle_income':0} 
 
 
-def get_entity_representation_dict(data):
+def get_label_representation_dict(data):
     
     entity_representation={}
     for sample in data:
@@ -4995,4 +4995,26 @@ def get_country_economic_representation_dict(data):
                     country_economic_representation["upper_middle_income"] += 1
     
      return country_economic_representation
+ 
+def get_religion_name_representation_dict(data):
+    religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}
+        
+    for sample in data:
+        for i in sample.expected_results.predictions:
+             if check_name(i.span.word, [religion_wise_names['Muslim']]):
+                    religion_representation["muslim"] += 1
+             if check_name(i.span.word, [religion_wise_names['Hindu']]):
+                    religion_representation["hindu"] += 1
+             if check_name(i.span.word, [religion_wise_names['Sikh']]):
+                    religion_representation["sikh"] += 1
+             if check_name(i.span.word, [religion_wise_names['Parsi']]):
+                    religion_representation["parsi"] += 1
+             if check_name(i.span.word, [religion_wise_names['Christian']]):
+                    religion_representation["christian"] += 1
+             if check_name(i.span.word, [religion_wise_names['Buddhist']]):
+                    religion_representation["buddhist"] += 1
+             if check_name(i.span.word, [religion_wise_names['Jain']]):
+                    religion_representation["jain"] += 1
+                    
+    return religion_representation
     
