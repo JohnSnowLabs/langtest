@@ -671,3 +671,24 @@ default_religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian'
 
 default_economic_country_representation = {'high_income':0 , 'low_income':0, 'lower_middle_income':0, 'upper_middle_income':0} 
 
+
+def get_entity_representation_dict(data):
+    
+    entity_representation={}
+    for sample in data:
+            for i in sample.expected_results.predictions:
+                              if i.entity=='O':
+                                if  i.entity not in entity_representation:
+                                  entity_representation[i.entity]=1
+                                else:
+                                  entity_representation[i.entity]+=1
+
+                              
+                              elif i.entity in ['B-LOC','I-LOC','B-PER','I-PER','B-MISC','I-MISC','B-ORG','I-ORG']:
+                                if  i.entity.split("-")[1] not in entity_representation :
+                                  entity_representation[i.entity.split("-")[1]]=1
+                                else:
+                                  entity_representation[i.entity.split("-")[1]]+=1
+                                 
+    return entity_representation
+
