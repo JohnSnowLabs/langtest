@@ -10,8 +10,13 @@ tests:
     min_weighted_f1_score:
       min_score: 0.5
     min_precision_score:
-      O: 0.5
+      min_score:
+        O: 0.5
+        PER: 0.8
+        LOC: 0.7
+        MISC: 0.6
+        ORG: 0.7
     min_recall_score:
-      O: 0.5
+      min_score: 0.5
     min_f1_score:
-      O: 0.5
+      min_score: 0.5
