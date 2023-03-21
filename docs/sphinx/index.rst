@@ -6,18 +6,15 @@
 Welcome to nlptest's documentation!
 ===================================
 
+*******
+Content
+*******
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
 
     getting_started/index
     user_guide/index
     third_party/index
     reference/index
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
