@@ -140,7 +140,8 @@ class LabelRepresentation(BaseRepresentation):
                     test_type = "min_label_representation_count",
                     test_case = key,
                     expected_results = MinScoreOutput(score=value) ,
-                    actual_results = MinScoreOutput(score=actual_representation[key])
+                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    state = "done"
                 )
                 sample_list.append(sample)
                 
@@ -180,7 +181,8 @@ class LabelRepresentation(BaseRepresentation):
                         test_type = "min_label_representation_proportion",
                         test_case = key,
                         expected_results = MinScoreOutput(score=value),
-                        actual_results = MinScoreOutput(score=actual_representation[key])
+                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        state = "done"
                     )
                     sample_list.append(sample)
                 

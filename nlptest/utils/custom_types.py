@@ -223,6 +223,7 @@ class Sample(BaseModel):
     transformations: List[Transformation] = None
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
     category: str = None
+    state: str = None
 
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
 

@@ -61,8 +61,10 @@ class RobustnessTestRunner(TestRunner):
                 all containing the predictions for both the original text and the pertubed one
         """
         for sample in self.load_testcases:
-            sample.expected_results = self._model_handler(sample.original)
-            sample.actual_results = self._model_handler(sample.test_case)
+            if sample.state != "done":
+                sample.expected_results = self._model_handler(sample.original)
+                sample.actual_results = self._model_handler(sample.test_case)
+                sample.state = "done"
 
         return self.load_testcases
 
