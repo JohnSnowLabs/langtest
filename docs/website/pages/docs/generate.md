@@ -40,6 +40,6 @@ nlp.to_nlu_pipe(pipe).predict('That was easy')
 ```
 
 
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+for alternative installation options see [Custom Installation](/docs/website/pages/docs/install_advanced)
 
 </div></div>

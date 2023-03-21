@@ -193,8 +193,8 @@ python/src/
 python/tensorflow/bert/models/**
 **/.DS_Store
 **/tmp_*
-docs/_site/**
-docs/.sass-cache/**
+docs/website/_site/**
+docs/website/.sass-cache/**
 
 tst_shortcut_sd/
 src/*/resources/*.classes
