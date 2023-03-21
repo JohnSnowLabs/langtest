@@ -107,7 +107,7 @@ class EthnicityRepresentation(BaseRepresentation):
                             raise ValueError()
                     
               
-              entity_representation= get_ethnicity_representation_dict(data)
+              entity_representation = get_ethnicity_representation_dict(data)
               entity_representation_proportion = get_entity_representation_proportions(entity_representation)
               actual_representation = {**default_ehtnicity_representation, **entity_representation_proportion}
               for key, value in expected_representation.items():
@@ -304,7 +304,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                 elif isinstance(params['min_count'], int):
                        expected_representation = {key: params['min_count'] for key in default_economic_country_representation}
                         
-            entity_representation= get_country_economic_representation_dict(data)
+            entity_representation = get_country_economic_representation_dict(data)
                
             actual_representation = {**default_economic_country_representation, **entity_representation}
 
@@ -339,9 +339,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                             print(f"\nSum of proportions cannot be greater than 1. So min_country_economic_representation_proportion test cannot run \n")
                             raise ValueError()
                 
-
-        
-              entity_representation= get_country_economic_representation_dict(data)
+              entity_representation = get_country_economic_representation_dict(data)
               entity_representation_proportion = get_entity_representation_proportions(entity_representation)
               actual_representation = {**default_economic_country_representation, **entity_representation_proportion}
               for key, value in expected_representation.items():
