@@ -6,7 +6,7 @@ name: Python package
 on:
   push:
     branches:
-      - '^release/.*$'
+      - 'release/*'
       - 'issue-*'
   pull_request:
     branches:
