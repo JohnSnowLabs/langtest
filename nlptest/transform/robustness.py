@@ -17,7 +17,7 @@ class BaseRobustness(ABC):
         alias_name (str): A name or list of names that identify the robustness measure.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an output 
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output
         based on the implemented robustness measure.
     """
 

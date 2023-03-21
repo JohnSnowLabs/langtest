@@ -1,7 +1,7 @@
 import unittest
-
 from nlptest.transform.perturbation import *
 from nlptest.transform.utils import A2B_DICT
+
 
 class PerturbationTestCase(unittest.TestCase):
 
@@ -30,7 +30,6 @@ class PerturbationTestCase(unittest.TestCase):
             "DATE": ["2019"],
         }
 
-
     def test_uppercase(self) -> None:
         test_cases = UpperCase.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
@@ -51,7 +50,7 @@ class PerturbationTestCase(unittest.TestCase):
         self.assertEqual(len(self.sentences), len(test_cases))
         for test_case in test_cases:
             self.assertTrue(test_case.istitle())
-    
+
     def test_add_punctuation(self) -> None:
         test_cases = AddPunctuation.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
@@ -65,28 +64,28 @@ class PerturbationTestCase(unittest.TestCase):
         self.assertEqual(len(self.sentences), len(test_cases))
         for test_case in test_cases:
             self.assertTrue(test_case[-1].isalnum())
-    
+
     def test_add_typo(self) -> None:
         test_cases = AddTypo.transform(self.sentences)
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
         for i, test_case in enumerate(test_cases):
             self.assertNotEqual(self.sentences[i], test_case)
-    
+
     def test_swap_entities(self) -> None:
         test_cases = SwapEntities.transform(
-            list_of_strings = self.sentences,
-            labels = self.labels,
-            terminology = self.terminology
-            )
+            list_of_strings=self.sentences,
+            labels=self.labels,
+            terminology=self.terminology
+        )
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
-    
+
     def test_american_to_british(self) -> None:
         test_cases = ConvertAccent.transform(
-            list_of_strings = self.sentences,
+            list_of_strings=self.sentences,
             accent_map=A2B_DICT
-            )
+        )
         self.assertIsInstance(test_cases, list)
         self.assertEqual(len(self.sentences), len(test_cases))
         self.assertListEqual(test_cases, self.british_sentences)
@@ -106,7 +105,7 @@ class PerturbationTestCase(unittest.TestCase):
         for test_case in test_cases:
             self.assertTrue(test_case.startswith(start_context[0][0]))
             self.assertTrue(test_case.endswith(end_context[0][0]))
-    
+
     def test_add_contraction(self) -> None:
         test_cases = AddContraction.transform(self.sentences)
         self.assertIsInstance(test_cases, list)

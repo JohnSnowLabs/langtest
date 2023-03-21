@@ -1,12 +1,8 @@
 import os
-import sys
 import unittest
-
-sys.path.insert(0, '..')
-
 from nlptest import Harness
-from nlptest.modelhandler.modelhandler import ModelFactory
 from nlptest.utils.custom_types import Sample
+from nlptest.modelhandler.modelhandler import ModelFactory
 
 
 class HarnessTestCase(unittest.TestCase):
@@ -30,7 +26,8 @@ class HarnessTestCase(unittest.TestCase):
     def test_missing_parameter(self):
         """"""
         with self.assertRaises(OSError) as _:
-            Harness(task='ner', model='dslim/bert-base-NER', data=self.data_path, config=self.config_path, hub="huggingface")
+            Harness(task='ner', model='dslim/bert-base-NER',
+                    data=self.data_path, config=self.config_path, hub="huggingface")
 
     def test_attributes(self):
         """
@@ -57,7 +54,8 @@ class HarnessTestCase(unittest.TestCase):
         """"""
         self.harness.generate()
         df = self.harness.run().accuracy_results
-        self.assertCountEqual(df.columns.tolist(), ['test_type', 'test_case', 'actual_result'])
+        self.assertCountEqual(df.columns.tolist(), [
+                              'test_type', 'test_case', 'actual_result'])
 
     def test_duplicate_tasks(self):
         """"""
@@ -76,7 +74,8 @@ class HarnessTestCase(unittest.TestCase):
         self.harness.generate()
         self.harness.save(save_dir)
 
-        self.assertCountEqual(os.listdir(save_dir), ['config.yaml', 'test_cases.pkl', 'data.pkl'])
+        self.assertCountEqual(os.listdir(save_dir), [
+                              'config.yaml', 'test_cases.pkl', 'data.pkl'])
 
     def test_load_ner(self):
         """"""

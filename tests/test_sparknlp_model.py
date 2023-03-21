@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from ..nlptest import Harness
-from ..nlptest.modelhandler import ModelFactory
+from nlptest import Harness
+from nlptest.modelhandler import ModelFactory
 
 
 class SparkNLPTestCase(unittest.TestCase):
@@ -36,4 +36,5 @@ class SparkNLPTestCase(unittest.TestCase):
         Testing Attributes of Harness Class
         """
         harness = Harness(**self.params)
-        self.assertIsInstance(harness.model.model.getIncludeAllConfidence(), bool)
+        self.assertIsInstance(
+            harness.model.model.getIncludeAllConfidence(), bool)

@@ -1,6 +1,4 @@
 import unittest
-
-
 from nlptest.modelhandler import ModelFactory
 
 
@@ -19,9 +17,7 @@ class HuggingFaceTestCase(unittest.TestCase):
         model = ModelFactory(self.models[0], self.tasks[0])
         self.assertIsInstance(model, ModelFactory)
 
-
     def test_unsupported_task(self):
-        # Raises with unsupported task to model Factory 
+        # Raises with unsupported task to model Factory
         with self.assertRaises(AssertionError):
             ModelFactory(self.models[0], self.tasks[1])
-       

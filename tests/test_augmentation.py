@@ -1,9 +1,6 @@
-import os
 import unittest
-import pandas as pd 
+import pandas as pd
 import pathlib as pl
-
-import yaml 
 
 from nlptest.augmentation.fix_robustness import AugmentRobustness
 from nlptest.nlptest import Harness
@@ -13,21 +10,21 @@ class AugmentRobustnessTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.params = {
-            "spacy_ner":{
+            "spacy_ner": {
                 "task": 'ner',
                 "model": "en_core_web_sm",
                 "data": "demo/data/test.conll",
                 "config": "demo/data/config.yml",
                 "hub": "spacy"
             },
-            "huggingface_ner":{
+            "huggingface_ner": {
                 "task": 'ner',
                 "model": "dslim/bert-base-NER",
                 "data": "demo/data/test.conll",
                 "config": "demo/data/config.yml",
                 "hub": "huggingface"
             },
-            "huggingface_textclassification":{
+            "huggingface_textclassification": {
                 "task": 'text-classification',
                 "model": "distilbert-base-uncased",
                 "data": "demo/data/test.conll",
@@ -35,7 +32,7 @@ class AugmentRobustnessTestCase(unittest.TestCase):
                 "hub": "huggingface"
             }
         }
-    
+
     def test_augmentrobustness(self):
         temp_df = pd.DataFrame({
             'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'swap_entities', 'uppercase', 'add_context'],
@@ -52,13 +49,14 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             h_report=temp_df,
             config='tests/fixtures/config_ner.yaml'
         )
-        augment.fix('tests/fixtures/train.conll', 'tests/fixtures/augmentated_train.conll')
+        augment.fix('tests/fixtures/train.conll',
+                    'tests/fixtures/augmentated_train.conll')
         self.assertIsInstance(augment, AugmentRobustness)
         self.assertIsInstance(augment.suggestions(temp_df), pd.DataFrame)
 
-        is_file_exist = pl.Path('tests/fixtures/augmentated_train.conll').is_file()
+        is_file_exist = pl.Path(
+            'tests/fixtures/augmentated_train.conll').is_file()
         self.assertTrue(is_file_exist)
-        
 
     def test_hf_ner_augmentation(self):
         harness = Harness(**self.params['huggingface_ner'])
@@ -66,8 +64,10 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         report = harness.generate().run().report()
         self.assertIsInstance(report, pd.DataFrame)
 
-        harness.augment('tests/fixtures/train.conll', 'tests/fixtures/augmentated_train.conll', inplace=True)
-        is_file_exist = pl.Path('tests/fixtures/augmentated_train.conll').is_file()
+        harness.augment('tests/fixtures/train.conll',
+                        'tests/fixtures/augmentated_train.conll', inplace=True)
+        is_file_exist = pl.Path(
+            'tests/fixtures/augmentated_train.conll').is_file()
         self.assertTrue(is_file_exist)
 
     def test_spacy_ner_augmentation(self):
@@ -76,6 +76,8 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         report = harness.generate().run().report()
         self.assertIsInstance(report, pd.DataFrame)
 
-        harness.augment('tests/fixtures/train.conll', 'tests/fixtures/augmentated_train.conll', inplace=True)
-        is_file_exist = pl.Path('tests/fixtures/augmentated_train.conll').is_file()
+        harness.augment('tests/fixtures/train.conll',
+                        'tests/fixtures/augmentated_train.conll', inplace=True)
+        is_file_exist = pl.Path(
+            'tests/fixtures/augmentated_train.conll').is_file()
         self.assertTrue(is_file_exist)
