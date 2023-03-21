@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample, MinScoreOutput
-from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_entity_representation_dict
+from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict
 
 class BaseRepresentation(ABC):
 
@@ -129,7 +129,7 @@ class LabelRepresentation(BaseRepresentation):
                        expected_representation = {key: params['min_count'] for key in default_label_representation}
            
             
-            entity_representation= get_entity_representation_dict(data)
+            entity_representation= get_label_representation_dict(data)
                
             actual_representation = {**default_label_representation, **entity_representation}
 
@@ -165,7 +165,7 @@ class LabelRepresentation(BaseRepresentation):
                             raise ValueError()
               
 
-              entity_representation= get_entity_representation_dict(data)
+              entity_representation= get_label_representation_dict(data)
 
               total_entities = sum(entity_representation.values())
               entity_representation_proportion={}

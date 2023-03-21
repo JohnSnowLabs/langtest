@@ -672,7 +672,7 @@ default_religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian'
 default_economic_country_representation = {'high_income':0 , 'low_income':0, 'lower_middle_income':0, 'upper_middle_income':0} 
 
 
-def get_entity_representation_dict(data):
+def get_label_representation_dict(data):
     
     entity_representation={}
     for sample in data:
