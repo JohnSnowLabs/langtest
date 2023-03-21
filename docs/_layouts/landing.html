@@ -52,7 +52,6 @@ article_header:
               <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
                 <div class="highlight-box">
   {% highlight bash %}
-# Install nlptest from PyPI
 pip install nlptest
             {% endhighlight %}
                   </div>
@@ -74,7 +73,7 @@ pip install nlptest
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='dslim/bert-base-NER', hub='transformers', data="test.conll")
+h = Harness('ner', model='dslim/bert-base-NER', hub='transformers')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
