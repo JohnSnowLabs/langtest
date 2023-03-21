@@ -1,7 +1,7 @@
 ---
 layout: landing
-title: 'NLP Test <span>Beyond Accuracy: Stress-Test Your Models</span>'
-excerpt:  <br> Evaluate the Bias and Robustness of NER and Text Classification Models
+title: 'NLP Test <span>Deliver Safe & Effective Models</span>'
+excerpt:  <br> 50+ Tests Evaluating NER and Text Classification Models
 permalink: /
 header: true
 article_header:
