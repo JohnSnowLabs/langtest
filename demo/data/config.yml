@@ -1,26 +1,63 @@
 defaults:
   min_pass_rate: 0.65
   min_representation: 50
+  
 tests:
-  # accuracy:
-  #   macro_f1:
-  #     PER: 0.3
-  #   min_f1:
-  #     O: 0.8
-  bias:
-    replace_to_female_pronouns:
-      min_pass_rate: 0.65
-    replace_to_male_pronouns:
-      min_pass_rate: 0.65
-  robustness:
-    lowercase:
-      min_pass_rate: 0.65
-    swap_entities:
-      min_pass_rate: 0.65
-    uppercase:
-      min_pass_rate: 0.65
-    add_context:
-      min_pass_rate: 0.65
-      parameters:
-        ending_context: ['Bye', 'Reported']
-        starting_context: ['Hi', 'Good morning', 'Hello']
+    representation:
+        min_label_representation_count:
+            parameters:
+               min_count: 
+                   'O' : 50
+                   'PER': 10
+                   'LOC': 40
+                   
+        min_ethnicity_name_representation_count:
+            parameters:
+               min_count: 
+                   'white' : 50
+                   'black': 10
+                   'asian': 40
+                   'hispanic': 30
+        
+        min_ethnicity_name_representation_proportion:
+            parameters:
+               min_proportion: 
+                   'white' : 0.20
+                   'black': 0.36
+        
+                   
+        min_religion_name_representation_count:
+              parameters:
+                   min_count: 
+                       'muslim' : 10
+                       'hindu': 10
+                       'parsi': 40
+                       'sikh': 10
+        
+ 
+        min_religion_name_representation_proportion:
+               parameters:
+                   min_proportion: 
+                       'muslim' : 0.4
+                       'hindu': 0.5
+               
+      
+        min_country_economic_representation_count:
+              parameters:
+               min_count: 
+                   'high_income' : 10
+                   'low_income': 10
+
+
+        min_label_representation_proportion:
+               parameters:
+                   min_proportion: 
+                       'O' : 0.8
+                       'PER': 0.1
+
+        
+        min_country_economic_representation_proportion:
+               parameters:
+                   min_proportion: 
+                       'high_income' : 0.6
+                       'low_income': 0.6
