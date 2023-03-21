@@ -654,8 +654,7 @@ class AccuracyTestFactory(ITests):
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
-            transformed_samples = self.supported_tests[test_name].transform(y_true, y_pred,
-                                                                            **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(y_true, y_pred, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
