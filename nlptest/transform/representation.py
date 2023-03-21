@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample, MinScoreOutput
-from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict
+from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict, get_country_economic_representation_dict
 
 class BaseRepresentation(ABC):
 
@@ -255,51 +255,74 @@ class CountryEconomicRepresentation(BaseRepresentation):
     ]
     
 
-    def transform(test,
-            min_count: dict = None,
-            min_proportion: dict = None
-    ) -> pd.DataFrame():
-        
+    def transform(test,data,params):
         sample_list = []
         
         if test=="min_country_economic_representation_count":
-            if not min_count:
-                min_count = {'high_income': 10,'low_income': 10,'lower_middle_income': 10,'upper_middle_income': 10}
-              
-             
-            expected_representation = {**default_economic_country_representation, **min_count}
+            if not params:
+                expected_representation = {'high_income': 10,'low_income': 10,'lower_middle_income': 10,'upper_middle_income': 10}
+            
+            else:
+                if isinstance(params['min_count'], dict):
+                        expected_representation = params['min_count']
+
+                elif isinstance(params['min_count'], int):
+                       expected_representation = {key: params['min_count'] for key in default_economic_country_representation}
+                        
+            entity_representation= get_country_economic_representation_dict(data)
+               
+            actual_representation = {**default_economic_country_representation, **entity_representation}
+
             for key, value in expected_representation.items():
                 sample = Sample(
                     original = "-",
                     category = "representation",
                     test_type = "min_country_economic_representation_count",
                     test_case = key,
-                    expected_results = MinScoreOutput(score=value)  
+                    expected_results = MinScoreOutput(score=value) ,
+                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    state = "done"
                 )
                 sample_list.append(sample)
                 
+                
         if test=="min_country_economic_representation_proportion": 
-              if not min_proportion:
-                    min_proportion = {'high_income': 0.20,'low_income': 0.20,'lower_middle_income': 0.20,'upper_middle_income': 0.20}
-                    
-              
-              if sum(min_proportion.values()) > 1:
-                    print(f"\nSum of proportions cannot be greater than 1. So min_country_economic_representation_proportion test run for default proportions\n")
-                    raise ValueError()
-                    
+              if not params:
+                    expected_representation = {'high_income': 0.20,'low_income': 0.20,'lower_middle_income': 0.20,'upper_middle_income': 0.20}        
               
               else:
-              
-                  expected_representation = {**default_economic_country_representation, **min_proportion}
+                    if isinstance(params['min_proportion'], dict):
+                        expected_representation = params['min_proportion']
+                        
+                        if sum(expected_representation.values()) > 1:
+                            print(f"\nSum of proportions cannot be greater than 1. So min_country_economic_representation_proportion test cannot run \n")
+                            raise ValueError()
+                   
+                    elif isinstance(params['min_proportion'], float):
+                       expected_representation = {key: params['min_proportion'] for key in default_economic_country_representation} 
+                       if sum(expected_representation.values()) > 1:
+                            print(f"\nSum of proportions cannot be greater than 1. So min_country_economic_representation_proportion test cannot run \n")
+                            raise ValueError()
+                
+
+        
+              entity_representation= get_country_economic_representation_dict(data)
+              total_entities = sum(entity_representation.values())
+              entity_representation_proportion={}
+              for k,v in entity_representation.items():
+                  entity_representation_proportion[k] = v/total_entities
                   
-                  for key, value in expected_representation.items():
+              actual_representation = {**default_economic_country_representation, **entity_representation_proportion}
+              for key, value in expected_representation.items():
 
                     sample = Sample(
                         original = "-",
                         category = "representation",
                         test_type = "min_country_economic_representation_proportion",
                         test_case = key,
-                        expected_results = MinScoreOutput(score=value)              
+                        expected_results = MinScoreOutput(score=value),
+                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        state = "done"
                     )
                     sample_list.append(sample)
                 
