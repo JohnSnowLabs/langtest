@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample, MinScoreOutput
-from .utils import default_representation ,default_ehtnicity_representation,default_economic_country_representation, default_representation_proportion, country_economic_dict, white_names, black_names, hispanic_names, asian_names, native_american_names, inter_racial_names, religion_wise_names, default_religion_representation
+from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation
 
 class BaseRepresentation(ABC):
 
@@ -122,7 +122,7 @@ class LabelRepresentation(BaseRepresentation):
                 min_count = {'O': 10, 'LOC': 10, 'PER': 10, 'MISC': 10, 'ORG': 10}
               
              
-            expected_representation = {**default_representation, **min_count}
+            expected_representation = {**default_label_representation, **min_count}
             for key, value in expected_representation.items():
                 sample = Sample(
                     original = "-",
@@ -144,7 +144,7 @@ class LabelRepresentation(BaseRepresentation):
               
               else:
               
-                  expected_representation = {**default_representation, **min_proportion}
+                  expected_representation = {**default_label_representation, **min_proportion}
 
 
                   for key, value in expected_representation.items():
