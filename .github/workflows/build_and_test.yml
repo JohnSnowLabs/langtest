@@ -10,7 +10,7 @@ on:
       - 'issue-*'
   pull_request:
     branches:
-      - [[^release/.*$]]
+      - 'release/*'
 
 jobs:
   build:
