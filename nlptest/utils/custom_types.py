@@ -199,6 +199,8 @@ class MaxScoreOutput(BaseModel):
 
 Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput)
 
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, AccuracyOutput)
+
 class Transformation(BaseModel):
     original_span: Span
     new_span: Span

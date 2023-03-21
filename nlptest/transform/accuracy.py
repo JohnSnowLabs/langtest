@@ -244,6 +244,7 @@ class MinMicroF1Score(BaseAccuracy):
             test_case = "micro",
             expected_results = MinScoreOutput(score=min_score),
             actual_results = MinScoreOutput(score=f1),
+
             state = "done"
         )
 
