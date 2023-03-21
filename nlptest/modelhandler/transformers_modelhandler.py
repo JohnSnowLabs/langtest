@@ -64,7 +64,7 @@ class PretrainedModelForNER(_ModelHandler):
         """
         prediction = self.model(text)
         return [x["entity"] for x in prediction]
-    
+
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
@@ -90,9 +90,9 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def labels(self):
         """Return classification labels of pipeline model."""
         return list(self.model.model.config.id2label.values())
-    
+
     @classmethod
-    def load_model(cls, path) -> None:
+    def load_model(cls, path) -> "Pipeline":
         """Load and return text classification transformers pipeline"""
         return pipeline(model=path, task="text-classification")
 
@@ -130,4 +130,4 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
-        return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
+        return self.predict(text=text, return_all_scores=return_all_scores, truncation="longest_first", **kwargs)
