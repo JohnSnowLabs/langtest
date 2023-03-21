@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample, MinScoreOutput
-from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict, get_country_economic_representation_dict, get_religion_name_representation_dict, get_ethnicity_representation_dict
+from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict, get_country_economic_representation_dict, get_religion_name_representation_dict, get_ethnicity_representation_dict, get_entity_representation_proportions
 
 class BaseRepresentation(ABC):
 
@@ -108,11 +108,7 @@ class EthnicityRepresentation(BaseRepresentation):
                     
               
               entity_representation= get_ethnicity_representation_dict(data)
-              total_entities = sum(entity_representation.values())
-              entity_representation_proportion={}
-              for k,v in entity_representation.items():
-                  entity_representation_proportion[k] = v/total_entities
-              
+              entity_representation_proportion = get_entity_representation_proportions(entity_representation)
               actual_representation = {**default_ehtnicity_representation, **entity_representation_proportion}
               for key, value in expected_representation.items():
 
@@ -191,11 +187,7 @@ class LabelRepresentation(BaseRepresentation):
 
               entity_representation= get_label_representation_dict(data)
 
-              total_entities = sum(entity_representation.values())
-              entity_representation_proportion={}
-              for k,v in entity_representation.items():
-                  entity_representation_proportion[k] = v/total_entities
-            
+              entity_representation_proportion = get_entity_representation_proportions(entity_representation)
               actual_representation = {**default_label_representation, **entity_representation_proportion}
               for key, value in expected_representation.items():
 
@@ -273,11 +265,7 @@ class ReligionRepresentation(BaseRepresentation):
 
               
               entity_representation= get_religion_name_representation_dict(data)
-              total_entities = sum(entity_representation.values())
-              entity_representation_proportion={}
-              for k,v in entity_representation.items():
-                  entity_representation_proportion[k] = v/total_entities
-                  
+              entity_representation_proportion = get_entity_representation_proportions(entity_representation)       
               actual_representation = {**default_religion_representation, **entity_representation_proportion}
               for key, value in expected_representation.items():
 
@@ -354,11 +342,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
 
         
               entity_representation= get_country_economic_representation_dict(data)
-              total_entities = sum(entity_representation.values())
-              entity_representation_proportion={}
-              for k,v in entity_representation.items():
-                  entity_representation_proportion[k] = v/total_entities
-                  
+              entity_representation_proportion = get_entity_representation_proportions(entity_representation)
               actual_representation = {**default_economic_country_representation, **entity_representation_proportion}
               for key, value in expected_representation.items():
 

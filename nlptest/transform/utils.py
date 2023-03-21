@@ -5039,4 +5039,14 @@ def get_ethnicity_representation_dict(data):
                     ethnicity_representation["native_american"] += 1
                     
     return ethnicity_representation
+
+
+def get_entity_representation_proportions(entity_representation):
+    
+     total_entities = sum(entity_representation.values())
+     entity_representation_proportion={}
+     for k,v in entity_representation.items():
+        entity_representation_proportion[k] = v/total_entities
+     
+     return entity_representation_proportion
     
