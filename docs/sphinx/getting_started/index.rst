@@ -30,6 +30,15 @@ The following can be used as a quick reference on how to get up and running with
     # Install Spark NLP from PyPI
     pip install nlptest==|release|
 
+.. code-block:: python
+
+    from nlptest import Harness
+
+    # Create a Harness object
+    h = Harness('ner', model='dslim/bert-base-NER', hub='transformers')
+
+    # Generate, run and get a report on your test cases
+    h.generate().run().report()
 
 Installation
 ================

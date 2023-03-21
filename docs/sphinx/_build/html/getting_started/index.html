@@ -42,6 +42,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'getting_started/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Welcome to nlptest’s documentation!" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -123,6 +124,12 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Getting Started
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
       
@@ -200,6 +207,12 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Getting Started
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
         
@@ -275,36 +288,39 @@ document.write(`
                   
   <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
-<section id="nlp-test-cheat-sheet">
-<h2>NLP Test Cheat Sheet<a class="headerlink" href="#nlp-test-cheat-sheet" title="Permalink to this heading">#</a></h2>
-<p>This cheat sheet can be used as a quick reference on how to set up your environment:</p>
+<section id="nlp-test-quick-start">
+<h2>NLP Test Quick Start<a class="headerlink" href="#nlp-test-quick-start" title="Permalink to this heading">#</a></h2>
+<p>The following can be used as a quick reference on how to get up and running with <code class="docutils literal notranslate"><span class="pre">nlptest</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install Spark NLP from PyPI</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="nv">nlptest</span><span class="o">==</span><span class="p">|</span>release<span class="p">|</span>
 </pre></div>
 </div>
-</section>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nlptest</span> <span class="kn">import</span> <span class="n">Harness</span>
+
+<span class="c1"># Create a Harness object</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">(</span><span class="s1">&#39;ner&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dslim/bert-base-NER&#39;</span><span class="p">,</span> <span class="n">hub</span><span class="o">=</span><span class="s1">&#39;transformers&#39;</span><span class="p">)</span>
+
+<span class="c1"># Generate, run and get a report on your test cases</span>
+<span class="n">h</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span><span class="o">.</span><span class="n">report</span><span class="p">()</span>
+</pre></div>
+</div>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
-<section id="using-conda">
-<h3>Using Conda<a class="headerlink" href="#using-conda" title="Permalink to this heading">#</a></h3>
-<p>Let’s create a new <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/index.html">conda</a> environment to manage all the dependencies there.</p>
-<p>Then we can create a new environment <code class="docutils literal notranslate"><span class="pre">nlptest</span></code> and install the <code class="docutils literal notranslate"><span class="pre">nlptest</span></code> package with pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>nlptest<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8<span class="w"> </span>-y
-conda<span class="w"> </span>activate<span class="w"> </span>nlptest
-conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span><span class="nv">nlptest</span><span class="o">==</span><span class="p">|</span>release<span class="p">|</span><span class="w"> </span>jupyter
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h3>
+<p>We can create a Python <a class="reference external" href="https://virtualenv.pypa.io/en/latest/">Virtualenv</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv<span class="w"> </span>nlptest<span class="w"> </span>--python<span class="o">=</span>python3.8
+<span class="nb">source</span><span class="w"> </span>nlptest/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">nlptest</span><span class="o">==</span><span class="p">|</span>release<span class="p">|</span><span class="w"> </span>jupyter
 </pre></div>
 </div>
 <p>Now you should be ready to create a jupyter notebook with NLP Test running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter<span class="w"> </span>notebook
 </pre></div>
 </div>
-</section>
-<section id="using-virtualenv">
-<h3>Using Virtualenv<a class="headerlink" href="#using-virtualenv" title="Permalink to this heading">#</a></h3>
-<p>We can also create a Python <a class="reference external" href="https://virtualenv.pypa.io/en/latest/">Virtualenv</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv<span class="w"> </span>nlptest<span class="w"> </span>--python<span class="o">=</span>python3.8
-<span class="nb">source</span><span class="w"> </span>nlptest/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="nv">nlptest</span><span class="o">==</span><span class="p">|</span>release<span class="p">|</span><span class="w"> </span>jupyter
+<p>We can also use conda and create a new <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/index.html">conda</a> environment to manage all the dependencies there.</p>
+<p>Then we can create a new environment <code class="docutils literal notranslate"><span class="pre">nlptest</span></code> and install the <code class="docutils literal notranslate"><span class="pre">nlptest</span></code> package with pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>nlptest<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8<span class="w"> </span>-y
+conda<span class="w"> </span>activate<span class="w"> </span>nlptest
+conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span><span class="nv">nlptest</span><span class="o">==</span><span class="p">|</span>release<span class="p">|</span><span class="w"> </span>jupyter
 </pre></div>
 </div>
 <p>Now you should be ready to create a jupyter notebook with NLP Test running:</p>
@@ -323,6 +339,15 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="nv">nlpte
                 <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to nlptest’s documentation!</p>
+      </div>
+    </a>
 </div>
                 </footer>
               
@@ -338,10 +363,8 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="nv">nlpte
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlp-test-cheat-sheet">NLP Test Cheat Sheet</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-conda">Using Conda</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-virtualenv">Using Virtualenv</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlp-test-quick-start">NLP Test Quick Start</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 </ul>
 </li>
 </ul>
