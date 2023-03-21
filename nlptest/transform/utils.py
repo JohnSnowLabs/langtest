@@ -5017,4 +5017,26 @@ def get_religion_name_representation_dict(data):
                     religion_representation["jain"] += 1
                     
     return religion_representation
+
+
+def get_ethnicity_representation_dict(data):
+    
+    ethnicity_representation = {"black": 0, "asian": 0, "white": 0, "native_american": 0, "hispanic": 0, "inter_racial": 0}
+        
+    for sample in data:
+        for i in sample.expected_results.predictions:
+            if check_name(i.span.word, [white_names['first_names'], white_names['last_names']]):
+                    ethnicity_representation["white"] += 1
+            if check_name(i.span.word, [black_names['first_names'], black_names['last_names']]):
+                    ethnicity_representation["black"] += 1
+            if check_name(i.span.word, [hispanic_names['first_names'], hispanic_names['last_names']]):
+                    ethnicity_representation["hispanic"] += 1
+            if check_name(i.span.word, [asian_names['first_names'], asian_names['last_names']]):
+                    ethnicity_representation["asian"] += 1
+            if check_name(i.span.word, [inter_racial_names['last_names']]):
+                    ethnicity_representation["inter_racial"] += 1
+            if check_name(i.span.word, [native_american_names['last_names']]):
+                    ethnicity_representation["native_american"] += 1
+                    
+    return ethnicity_representation
     
