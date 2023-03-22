@@ -4954,25 +4954,30 @@ default_economic_country_representation = {'high_income':0 , 'low_income':0, 'lo
 
 
 def get_label_representation_dict(data):
+    """
+    Args:
+        data (List[Sample]): The input data to be evaluated for representation test.
+
+    Returns:
+        dict: a dictionary containing label representation information.
+    """ 
     
     entity_representation={}
     for sample in data:
-            for i in sample.expected_results.predictions:
-                              if i.entity=='O':
-                                if  i.entity not in entity_representation:
-                                  entity_representation[i.entity]=1
-                                else:
-                                  entity_representation[i.entity]+=1
-
-                              
-                              elif i.entity in ['B-LOC','I-LOC','B-PER','I-PER','B-MISC','I-MISC','B-ORG','I-ORG']:
-                                if  i.entity.split("-")[1] not in entity_representation :
-                                  entity_representation[i.entity.split("-")[1]]=1
-                                else:
-                                  entity_representation[i.entity.split("-")[1]]+=1
+        for i in sample.expected_results.predictions:
+            if i.entity=='O':
+                if  i.entity not in entity_representation:
+                    entity_representation[i.entity]=1
+                else:
+                    entity_representation[i.entity]+=1
+                    
+            elif i.entity in ['B-LOC','I-LOC','B-PER','I-PER','B-MISC','I-MISC','B-ORG','I-ORG']:
+                if  i.entity.split("-")[1] not in entity_representation :
+                    entity_representation[i.entity.split("-")[1]]=1
+                else:
+                    entity_representation[i.entity.split("-")[1]]+=1
                                 
 
-    
     return entity_representation
 
 
@@ -4980,6 +4985,13 @@ def check_name(word, name_lists):
             return any(word.lower() in [name.lower() for name in name_list] for name_list in name_lists)
 
 def get_country_economic_representation_dict(data):
+     """
+     Args:
+        data (List[Sample]): The input data to be evaluated for representation test.
+
+     Returns:
+        dict: a dictionary containing country economic representation information.
+     """ 
     
      country_economic_representation={"high_income":0, "low_income":0, "lower_middle_income":0,  "upper_middle_income":0}
         
@@ -4997,6 +5009,15 @@ def get_country_economic_representation_dict(data):
      return country_economic_representation
  
 def get_religion_name_representation_dict(data):
+    
+    """
+    Args:
+        data (List[Sample]): The input data to be evaluated for representation test.
+
+    Returns:
+        dict: a dictionary containing religion representation information.
+    """ 
+    
     religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}
         
     for sample in data:
@@ -5020,7 +5041,14 @@ def get_religion_name_representation_dict(data):
 
 
 def get_ethnicity_representation_dict(data):
-    
+
+    """
+    Args:
+        data (List[Sample]): The input data to be evaluated for representation test.
+
+    Returns:
+        dict: a dictionary containing ethnicity representation information.
+    """  
     ethnicity_representation = {"black": 0, "asian": 0, "white": 0, "native_american": 0, "hispanic": 0, "inter_racial": 0}
         
     for sample in data:
@@ -5042,6 +5070,13 @@ def get_ethnicity_representation_dict(data):
 
 
 def get_entity_representation_proportions(entity_representation):
+     """
+     Args:
+        entity_representation (dict): a dictionary containing representation information.
+
+     Returns:
+        dict: a dictionary with proportions of each entity.
+     """     
     
      total_entities = sum(entity_representation.values())
      entity_representation_proportion={}
