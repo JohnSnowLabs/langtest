@@ -171,7 +171,7 @@ class SequenceClassificationOutput(BaseModel):
         return top_class == other_top_class
     
 class MinScoreOutput(BaseModel):
-    """Output for accuracy tests."""
+    """Output for accuracy/representation tests."""
     score: float
 
     def to_str_list(self) -> float:
@@ -183,7 +183,7 @@ class MinScoreOutput(BaseModel):
         return f"{self.score}"
 
 class MaxScoreOutput(BaseModel):
-    """Output for accuracy tests."""
+    """Output for accuracy/representation tests."""
     score: float
 
     def to_str_list(self) -> float:
