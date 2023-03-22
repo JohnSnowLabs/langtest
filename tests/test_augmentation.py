@@ -13,35 +13,35 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             "spacy_ner": {
                 "task": 'ner',
                 "model": "en_core_web_sm",
-                "data": "demo/data/test.conll",
-                "config": "demo/data/config.yml",
+                "data": "tests/fixtures/test.conll",
+                "config": "tests/fixtures/config_ner.yaml",
                 "hub": "spacy"
             },
             "huggingface_ner": {
                 "task": 'ner',
                 "model": "dslim/bert-base-NER",
-                "data": "demo/data/test.conll",
-                "config": "demo/data/config.yml",
+                "data": "tests/fixtures/test.conll",
+                "config": "tests/fixtures/config_ner.yaml",
                 "hub": "huggingface"
             },
             "huggingface_textclassification": {
                 "task": 'text-classification',
                 "model": "distilbert-base-uncased",
-                "data": "demo/data/test.conll",
-                "config": "demo/data/config.yml",
+                "data": "tests/fixtures/test.conll",
+                "config": "tests/fixtures/config_ner.yaml",
                 "hub": "huggingface"
             }
         }
 
     def test_augmentrobustness(self):
         temp_df = pd.DataFrame({
-            'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'swap_entities', 'uppercase', 'add_context'],
-            'category': ['Bias', 'Bias', 'Robustness', 'Robustness', 'Robustness', 'Robustness'],
-            'fail_count': [3, 0, 82, 43, 84, 91],
-            'pass_count': [88, 91, 9, 48, 7, 0],
-            'pass_rate': [97, 100, 10, 53, 8, 0],
-            'minimum_pass_rate': [65, 65, 65, 65, 65, 65],
-            'pass': [True, True, False, False, False, False]
+            'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase', 'add_context'],
+            'category': ['Bias', 'Bias', 'Robustness', 'Robustness', 'Robustness'],
+            'fail_count': [3, 0, 82, 43, 91],
+            'pass_count': [88, 91, 9, 48, 0],
+            'pass_rate': [97, 100, 10, 53, 0],
+            'minimum_pass_rate': [65, 65, 65, 65, 65],
+            'pass': [True, True, False, False, False]
         })
 
         augment = AugmentRobustness(

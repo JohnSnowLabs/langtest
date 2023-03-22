@@ -24,7 +24,7 @@ class TestSample:
                     entity="PROD", span=Span(start=16, end=19, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_add_context_right(self):
@@ -49,7 +49,7 @@ class TestSample:
                     entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_add_context_middle(self):
@@ -74,7 +74,7 @@ class TestSample:
                     entity="PROD", span=Span(start=17, end=20, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_add_two_contexts(self):
@@ -104,7 +104,7 @@ class TestSample:
                     entity="PROD", span=Span(start=23, end=26, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
         sample = Sample(
@@ -132,7 +132,7 @@ class TestSample:
                     entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_contraction(self):
@@ -157,7 +157,7 @@ class TestSample:
                     entity="PROD", span=Span(start=12, end=15, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_entity_swap(self):
@@ -182,7 +182,7 @@ class TestSample:
                     start=10, end=18, word="McDonald"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
         sample = Sample(
@@ -206,7 +206,7 @@ class TestSample:
                     start=10, end=32, word="Kentucky Fried Chicken"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
         sample = Sample(
@@ -229,7 +229,7 @@ class TestSample:
                     start=10, end=18, word="McDonald"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_two_entities_two_contexts(self):
@@ -267,7 +267,7 @@ class TestSample:
                 ]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
 
     def test_entity_to_ignore(self):
@@ -298,5 +298,5 @@ class TestSample:
                 ]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
+        realigned_actual_results = sample.realigned_spans
         assert realigned_actual_results.predictions == sample.expected_results.predictions
