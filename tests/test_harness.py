@@ -27,7 +27,7 @@ class HarnessTestCase(unittest.TestCase):
         """"""
         with self.assertRaises(OSError) as _:
             Harness(task='ner', model='dslim/bert-base-NER',
-                    data=self.data_path, config=self.config_path, hub="huggingface")
+                    data=self.data_path, config=self.config_path)
 
     def test_attributes(self):
         """
