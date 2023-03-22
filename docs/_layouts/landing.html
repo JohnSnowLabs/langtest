@@ -52,11 +52,7 @@ article_header:
               <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
                 <div class="highlight-box">
   {% highlight bash %}
-# Install nlptest from PyPI
 pip install nlptest
-
-# Install nlptest from Anaconda/Conda
-conda install nlptest
             {% endhighlight %}
                   </div>
               </div>
@@ -77,13 +73,10 @@ conda install nlptest
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='dslim/bert-base-NER', hub='transformers', data=\"test.conll\")
+h = Harness('ner', model='dslim/bert-base-NER', hub='transformers')
 
-# Generate and run your test cases
-h.generate().run()
-
-# View a report
-h.report()
+# Generate, run and get a report on your test cases
+h.generate().run().report()
                 {% endhighlight %}
               </div>
             </div>
