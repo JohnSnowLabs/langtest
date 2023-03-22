@@ -18,7 +18,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/
 lib64/
 parts/
 sdist/
@@ -179,3 +179,22 @@ poetry.toml
 /.idea/shelf/Uncommitted_changes_before_Checkout_at_19_12_2022__14_25__Changes_.xml
 /.idea/shelf/Uncommitted_changes_before_Checkout_at_19_12_2022,_14_25_[Changes]/shelved.patch
 /.idea/shelf/Uncommitted_changes_before_Checkout_at_19_12_2022,_14_25_[Changes]1/shelved.patch
+
+### Local ###
+tmp_pipeline/
+tmp_symspell/
+test-output-tmp/
+spark-warehouse/
+/python/python.iml
+test_crf_pipeline/
+test_*_pipeline/
+*metastore_db*
+python/src/
+python/tensorflow/bert/models/**
+**/.DS_Store
+**/tmp_*
+docs/_site/**
+docs/.sass-cache/**
+
+tst_shortcut_sd/
+src/*/resources/*.classes

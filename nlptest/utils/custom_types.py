@@ -44,7 +44,8 @@ class NERPrediction(BaseModel):
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
-    doc_id: Optional[str] = None
+    doc_id: Optional[int] = None
+    doc_name: Optional[str] = None
     pos_tag: Optional[str] = None
     chunk_tag: Optional[str] = None
 
@@ -54,15 +55,16 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-            cls,
-            entity: str,
-            word: str,
-            start: int,
-            end: int,
-            score: float = None,
-            doc_id: str = None,
-            pos_tag: str = None,
-            chunk_tag: str = None
+        cls, 
+        entity: str, 
+        word: str, 
+        start: int, 
+        end: int, 
+        score: float = None,
+        doc_id: int = None,
+        doc_name: str = None,
+        pos_tag: str = None,
+        chunk_tag: str = None
     ) -> "NERPrediction":
         """"""
         return cls(
@@ -70,6 +72,7 @@ class NERPrediction(BaseModel):
             span=Span(start=start, end=end, word=word),
             score=score,
             doc_id=doc_id,
+            doc_name=doc_name,
             pos_tag=pos_tag,
             chunk_tag=chunk_tag
         )
@@ -194,6 +197,9 @@ class MaxScoreOutput(BaseModel):
     def __str__(self) -> str:
         return f"{self.score}"
 
+class AccuracyOutput(BaseModel):
+    """Output for accuracy tests."""
+    score: float
 
 Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput)
 
@@ -201,7 +207,6 @@ class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
-
 
 class Sample(BaseModel):
     """
@@ -233,8 +238,8 @@ class Sample(BaseModel):
 
     def to_dict(self):
         """Returns the dict version of sample."""
-        expected_result = self.expected_results.predictions
-        actual_result = self.actual_results.predictions if self.actual_results else None
+        expected_result = self.expected_results.to_str_list()
+        actual_result = self.actual_results.to_str_list() if self.actual_results is not None else None
 
         result = {
             'category': self.category,
@@ -378,6 +383,10 @@ class Sample(BaseModel):
             actual_preds = [i.entity for i in self.actual_results.predictions]
             expected_preds = [j.entity for j in self.expected_results.predictions]
             return actual_preds == expected_preds
+        elif isinstance(self.actual_results, MinScoreOutput):
+            return self.actual_results.score >= self.expected_results.score
+        elif isinstance(self.actual_results, MaxScoreOutput):
+            return self.actual_results.score <= self.expected_results.score
 
         else:
             filtered_actual_results = self.actual_results

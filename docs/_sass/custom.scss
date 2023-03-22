@@ -26,6 +26,10 @@ body {
 	}
 }
 
+.jcc {
+	justify-content: center;
+}
+
 .mb0 {
 	margin-bottom: 0 !important;
 }
@@ -281,6 +285,10 @@ header {
 	left: auto !important;
 }
 
+.f_inner span {
+	display: flex;
+}
+
 .page__sidebar {
 	position: fixed;
 	left: 0;
@@ -307,18 +315,25 @@ header {
 				margin: 0 0 10px;
 			}
 			.toc-h1 {
-				font-weight: 500;
-				padding: 10px 0 0;
-				font-size: 18px;
-				line-height: 22px;
-				border: none;
-				font-family: 'Montserrat', sans-serif;
-				color: #5334AE;
-				border: none;
-				letter-spacing: -0.5px;
+					border: none;
+					padding: 10px 0 0;
+				a {
+					font-weight: 500;
+					font-size: 18px;
+					line-height: 22px;
+					font-family: 'Montserrat', sans-serif;
+					color: #5334AE;
+					border: none;
+					letter-spacing: -0.5px;
+					margin: 0 !important;
+				}	
+				&.active a,							
+				&:hover a {
+					color: $color-blue;
+				}
 			}
 			.toc-h2 {
-				padding-left: 5px;
+				padding-left: 12px;
 				a {
 					font-size: 14px;
 					line-height: 16px;
@@ -414,6 +429,20 @@ header {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	&.button--full_white {
+		background: #fff;
+		border-color: #fff;
+		color: #000 !important;
+		&:hover {
+			color: $color-blue !important;
+			i {
+				color: $color-blue !important;
+			}
+		}
+		i {
+			color: #000;
+		}
+	}
 	&.button--primary,
 	&.button--info {
 		background: $color-orange;
