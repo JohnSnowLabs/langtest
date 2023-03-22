@@ -26,7 +26,7 @@ class BaseRepresentation(ABC):
         Abstract method that implements the representation measure.
 
         Args:
-            data (List[Sample]): The input data to be transformed.
+            data (List[Sample]): The input data to be evaluated for representation test.
 
         Returns:
             Any: The transformed data based on the implemented representation measure.
@@ -49,6 +49,14 @@ class GenderRepresentation(BaseRepresentation):
 
 class EthnicityRepresentation(BaseRepresentation):
     
+    """
+    Subclass of BaseRepresentation that implements the ethnicity representation test.
+
+    Attributes:
+        alias_name (List[str]): The list of test names that identify the representation measure.
+
+    """
+    
     alias_name = [
         "min_ethnicity_name_representation_count",
         "min_ethnicity_name_representation_proportion"
@@ -57,6 +65,18 @@ class EthnicityRepresentation(BaseRepresentation):
     
 
     def transform(test,data,params):
+        """
+        Args:
+            test (str): name of the test
+            data (List[Sample]): The input data to be evaluated for representation test.
+            params : parameters specified in config.
+
+        Raises:
+            ValueError: If sum of specified proportions in config is greater than 1
+    
+        Returns:
+            List[Sample]: Ethnicity Representation test results.
+        """        
         sample_list = []
           
         if test=="min_ethnicity_name_representation_count":
@@ -126,6 +146,13 @@ class EthnicityRepresentation(BaseRepresentation):
         return sample_list
            
 class LabelRepresentation(BaseRepresentation):
+    """
+    Subclass of BaseRepresentation that implements the label representation test.
+
+    Attributes:
+        alias_name (List[str]): The list of test names that identify the representation measure.
+
+    """
     
     alias_name = [
         "min_label_representation_count",
@@ -134,6 +161,18 @@ class LabelRepresentation(BaseRepresentation):
     
     
     def transform(test,data,params):
+        """
+        Args:
+            test (str): name of the test
+            data (List[Sample]): The input data to be evaluated for representation test.
+            params : parameters specified in config.
+
+        Raises:
+            ValueError: If sum of specified proportions in config is greater than 1
+    
+        Returns:
+            List[Sample]: Label Representation test results.
+        """  
         sample_list = []
  
         if test=="min_label_representation_count":
@@ -206,6 +245,13 @@ class LabelRepresentation(BaseRepresentation):
     
 
 class ReligionRepresentation(BaseRepresentation):
+    """
+    Subclass of BaseRepresentation that implements the religion representation test.
+
+    Attributes:
+        alias_name (List[str]): The list of test names that identify the representation measure.
+
+    """
     
     alias_name = [
         "min_religion_name_representation_count",
@@ -214,6 +260,18 @@ class ReligionRepresentation(BaseRepresentation):
     
 
     def transform(test,data,params):
+        """
+        Args:
+            test (str): name of the test
+            data (List[Sample]): The input data to be evaluated for representation test.
+            params : parameters specified in config.
+
+        Raises:
+            ValueError: If sum of specified proportions in config is greater than 1
+    
+        Returns:
+            List[Sample]: Religion Representation test results.
+        """  
         sample_list = []
         
         if test=="min_religion_name_representation_count":
@@ -283,6 +341,13 @@ class ReligionRepresentation(BaseRepresentation):
         return sample_list
 
 class CountryEconomicRepresentation(BaseRepresentation):
+    """
+    Subclass of BaseRepresentation that implements the country economic representation test.
+
+    Attributes:
+        alias_name (List[str]): The list of test names that identify the representation measure.
+
+    """
     
     alias_name = [
         "min_country_economic_representation_count",
@@ -291,6 +356,18 @@ class CountryEconomicRepresentation(BaseRepresentation):
     
 
     def transform(test,data,params):
+        """
+        Args:
+            test (str): name of the test
+            data (List[Sample]): The input data to be evaluated for representation test.
+            params : parameters specified in config.
+
+        Raises:
+            ValueError: If sum of specified proportions in config is greater than 1
+    
+        Returns:
+            List[Sample]: Country Economic Representation test results.
+        """  
         sample_list = []
         
         if test=="min_country_economic_representation_count":
