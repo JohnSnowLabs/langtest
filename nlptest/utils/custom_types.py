@@ -172,9 +172,9 @@ class SequenceClassificationOutput(BaseModel):
         top_class = max(self.predictions, key=lambda x: x.score).label
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
-
+    
 class MinScoreOutput(BaseModel):
-    """Output for accuracy tests."""
+    """Output for accuracy/representation tests."""
     score: float
 
     def to_str_list(self) -> float:
@@ -186,7 +186,7 @@ class MinScoreOutput(BaseModel):
         return f"{self.score}"
 
 class MaxScoreOutput(BaseModel):
-    """Output for accuracy tests."""
+    """Output for accuracy/representation tests."""
     score: float
 
     def to_str_list(self) -> float:
@@ -196,6 +196,10 @@ class MaxScoreOutput(BaseModel):
         return f"{self.score}"
     def __str__(self) -> str:
         return f"{self.score}"
+
+class AccuracyOutput(BaseModel):
+    """Output for accuracy tests."""
+    score: float
 
 Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput)
 

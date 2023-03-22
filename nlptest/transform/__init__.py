@@ -461,15 +461,15 @@ class RepresentationTestFactory(ITests):
         List[Sample]
             A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
-
-        all_samples = []
+        
+        all_samples = [] 
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
-                                                                            **params.get('parameters', {}))
+            transformed_samples = self.supported_tests[test_name].transform(test_name,data_handler_copy, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
+        
         return all_samples
 
     @classmethod
