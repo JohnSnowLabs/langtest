@@ -1,8 +1,6 @@
 numpy
 pandas
 scikit-learn
-spark-nlp==4.3.2
-pyspark==3.1.2
 transformers
 nltk
 torch
@@ -11,3 +9,4 @@ sentencepiece
 pydantic==1.10.6
 spacy
 johnsnowlabs
+plotly

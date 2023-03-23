@@ -95,7 +95,7 @@ def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
 
     chunk = list()
     ent_type = None
-    for row in ner_data.iterrows():
+    for idx, row in ner_data.iterrows():
         sent_labels = row.label
         for token_indx, label in enumerate(sent_labels):
             if label.startswith('B'):
