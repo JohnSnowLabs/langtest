@@ -6,37 +6,12 @@
 NLP Test Documentation
 =======================================
 
-
-***********
-Quick Start
-***********
-
-Follow this guide to get up and running with ``nlptest``
+Follow these guides to get up and running with ``nlptest``
 
 .. toctree::
    :maxdepth: 2
 
-   getting_started/index
-
-**********
-User Guide
-**********
-
-Information about using and configuring the library.
-
-.. toctree::
-   :maxdepth: 2
-
-   user_guide/index
-
-***
-API
-***
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-module-template.rst
-   :recursive:
-
-   nlptest
+   Quick Start <getting_started/index>
+   User Guide <user_guide/index>
+   API reference <_autosummary/nlptest>
 

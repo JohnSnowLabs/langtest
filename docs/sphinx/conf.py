@@ -52,6 +52,8 @@ autosummary_generate = True
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
+# Remove namespaces from class/method signatures
+add_module_names = False
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -67,3 +69,6 @@ html_css_files = ["css/custom.css"]
 
 html_logo = "_static/logo.png"
 html_favicon = "_static/fav.ico"
+
+# Remove 'view source code' from top of page (for html, not python)
+html_show_sourcelink = False

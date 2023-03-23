@@ -2,9 +2,8 @@
 Quick Start
 ###############
 
-*********************
 NLP Test Quick Start
-*********************
+=======================
 
 The following can be used as a quick reference on how to get up and running with ``nlptest``:
 
