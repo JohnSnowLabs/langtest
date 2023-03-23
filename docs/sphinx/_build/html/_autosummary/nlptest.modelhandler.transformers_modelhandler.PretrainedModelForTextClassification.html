@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -483,13 +511,17 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.modelhandler.transformers_modelhandler.</span></span><span class="sig-name descname"><span class="pre">PretrainedModelForTextClassification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ModelHandler</span></code></p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><dl class="simple">
-<dt>model (transformers.pipeline.Pipeline):</dt><dd><p>Loaded Text Classification pipeline for predictions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.model" title="Permalink to this definition">#</a></dt>
+<dd><p>Loaded Text Classification pipeline for predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>transformers.pipeline.Pipeline</p>
 </dd>
 </dl>
-</dd>
-</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.__init__" title="Permalink to this definition">#</a></dt>
@@ -528,7 +560,7 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.load_model">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.load_model" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nlptest.augmentation.fix_robustness.BaseAugmentaion.html#nlptest.augmentation.fix_robustness.BaseAugmentaion.None" title="nlptest.augmentation.fix_robustness.BaseAugmentaion.None"><span class="pre">None</span></a></span></span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.load_model" title="Permalink to this definition">#</a></dt>
 <dd><p>Load and return text classification transformers pipeline</p>
 </dd></dl>
 
@@ -536,12 +568,19 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nlptest.utils.custom_types.SequenceClassificationOutput.html#nlptest.utils.custom_types.SequenceClassificationOutput" title="nlptest.utils.custom_types.SequenceClassificationOutput"><span class="pre">SequenceClassificationOutput</span></a></span></span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.predict" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform predictions on the input text.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>text (str): Input text to perform NER on.
-return_all_scores (bool): Option to group entities.
-kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Input text to perform NER on.</p></li>
+<li><p><strong>return_all_scores</strong> (<em>bool</em>) – Option to group entities.</p></li>
+<li><p><strong>kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>SequenceClassificationOutput: text classification from the input text.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>text classification from the input text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="nlptest.utils.custom_types.SequenceClassificationOutput.html#nlptest.utils.custom_types.SequenceClassificationOutput" title="nlptest.utils.custom_types.SequenceClassificationOutput">SequenceClassificationOutput</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -550,10 +589,15 @@ kwargs: Additional keyword arguments.</p>
 <dt class="sig sig-object py" id="nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.predict_raw">
 <span class="sig-name descname"><span class="pre">predict_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.predict_raw" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform predictions on the input text.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>text (str): Input text to perform NER on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Input text to perform NER on.</p>
 </dd>
-<dt>Returns:</dt><dd><p>List[str]: Predictions as a list of strings.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predictions as a list of strings.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -604,6 +648,7 @@ kwargs: Additional keyword arguments.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification"><code class="docutils literal notranslate"><span class="pre">PretrainedModelForTextClassification</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.model"><code class="docutils literal notranslate"><span class="pre">PretrainedModelForTextClassification.model</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.__init__"><code class="docutils literal notranslate"><span class="pre">PretrainedModelForTextClassification.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.labels"><code class="docutils literal notranslate"><span class="pre">PretrainedModelForTextClassification.labels</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.load_model"><code class="docutils literal notranslate"><span class="pre">PretrainedModelForTextClassification.load_model()</span></code></a></li>

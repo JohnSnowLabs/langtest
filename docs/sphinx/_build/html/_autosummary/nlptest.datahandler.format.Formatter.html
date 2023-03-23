@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -487,15 +515,20 @@ document.write(`
 <p>This class uses the <cite>to_csv</cite> and <cite>to_conll</cite> methods of subclasses of <cite>BaseFormatter</cite>
 to perform the conversions. The appropriate subclass is selected based on the
 type of the expected results in the <cite>sample</cite> argument.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>sample: The input sample to convert.
-format: The output format to convert to, either “csv” or “conll”.
-<a href="#id1"><span class="problematic" id="id2">*</span></a>args: Optional positional arguments to pass to the <cite>to_csv</cite> or <cite>to_conll</cite> methods.
-<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: Optional keyword arguments to pass to the <cite>to_csv</cite> or <cite>to_conll</cite> methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> – The input sample to convert.</p></li>
+<li><p><strong>format</strong> – The output format to convert to, either “csv” or “conll”.</p></li>
+<li><p><strong>*args</strong> – Optional positional arguments to pass to the <cite>to_csv</cite> or <cite>to_conll</cite> methods.</p></li>
+<li><p><strong>**kwargs</strong> – Optional keyword arguments to pass to the <cite>to_csv</cite> or <cite>to_conll</cite> methods.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>The output string in the specified format.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The output string in the specified format.</p>
 </dd>
-<dt>Raises:</dt><dd><p>NameError: If no formatter subclass is defined for the type of the expected results in the sample.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NameError</strong> – If no formatter subclass is defined for the type of the expected results in the sample.</p>
 </dd>
 </dl>
 <dl class="py method">

@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -484,12 +512,23 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.bias.</span></span><span class="sig-name descname"><span class="pre">BaseBias</span></span><a class="headerlink" href="#nlptest.transform.bias.BaseBias" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract base class for implementing bias measures.</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the bias measure.</p>
-</dd>
-<dt>Methods:</dt><dd><p>transform(data: List[Sample]) -&gt; Any: Transforms the input data into an output based on the implemented bias measure.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.transform.bias.BaseBias.alias_name">
+<span class="sig-name descname"><span class="pre">alias_name</span></span><a class="headerlink" href="#nlptest.transform.bias.BaseBias.alias_name" title="Permalink to this definition">#</a></dt>
+<dd><p>A name or list of names that identify the bias measure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transform(data</span></span></dt>
+<dd><p>List[Sample]) -&gt; Any: Transforms the input data into an output based on the implemented bias measure.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.transform.bias.BaseBias.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.bias.BaseBias.__init__" title="Permalink to this definition">#</a></dt>
@@ -509,7 +548,7 @@ document.write(`
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">alias_name</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.bias.BaseBias.alias_name" title="nlptest.transform.bias.BaseBias.alias_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alias_name</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -518,10 +557,15 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.transform.bias.BaseBias.transform">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.bias.BaseBias.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract method that implements the bias measure.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be transformed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>List</em><em>[</em><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><em>Sample</em></a><em>]</em>) – The input data to be transformed.</p>
 </dd>
-<dt>Returns:</dt><dd><p>Any: The transformed data based on the implemented bias measure.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed data based on the implemented bias measure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
 </dd>
 </dl>
 </dd></dl>
@@ -572,6 +616,7 @@ document.write(`
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.BaseBias"><code class="docutils literal notranslate"><span class="pre">BaseBias</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.BaseBias.alias_name"><code class="docutils literal notranslate"><span class="pre">BaseBias.alias_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.BaseBias.__init__"><code class="docutils literal notranslate"><span class="pre">BaseBias.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.BaseBias.transform"><code class="docutils literal notranslate"><span class="pre">BaseBias.transform()</span></code></a></li>
 </ul>

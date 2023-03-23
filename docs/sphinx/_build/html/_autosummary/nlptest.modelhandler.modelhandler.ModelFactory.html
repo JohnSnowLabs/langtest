@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -488,14 +516,15 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.modelhandler.modelhandler.ModelFactory.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.modelhandler.modelhandler.ModelFactory.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initializes the ModelFactory object.
-Args:</p>
-<blockquote>
-<div><p>model: SparkNLP, HuggingFace or Spacy model to test.
-task (str): task to perform</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>ValueError: If the task specified is not supported.
-ValueError: If the given model is not supported.</p>
+:param model: SparkNLP, HuggingFace or Spacy model to test.
+:param task: task to perform
+:type task: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the task specified is not supported.</p></li>
+<li><p><strong>ValueError</strong> – If the given model is not supported.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -504,7 +533,7 @@ ValueError: If the given model is not supported.</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.modelhandler.modelhandler.ModelFactory.__init__" title="nlptest.modelhandler.modelhandler.ModelFactory.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(model, task)</p></td>
-<td><p>Initializes the ModelFactory object. Args:     model: SparkNLP, HuggingFace or Spacy model to test. task (str): task to perform.</p></td>
+<td><p>Initializes the ModelFactory object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nlptest.modelhandler.modelhandler.ModelFactory.load_model" title="nlptest.modelhandler.modelhandler.ModelFactory.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(task, hub, path)</p></td>
 <td><p>Load the model.</p></td>
@@ -535,10 +564,13 @@ ValueError: If the given model is not supported.</p>
 <dt class="sig sig-object py" id="nlptest.modelhandler.modelhandler.ModelFactory.load_model">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nlptest.modelhandler.modelhandler.ModelFactory" title="nlptest.modelhandler.modelhandler.ModelFactory"><span class="pre">ModelFactory</span></a></span></span><a class="headerlink" href="#nlptest.modelhandler.modelhandler.ModelFactory.load_model" title="Permalink to this definition">#</a></dt>
 <dd><p>Load the model.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>path (str): path to model to use
-task (str): task to perform
-hub (str): model hub to load custom model from the path, either to hub or local disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – path to model to use</p></li>
+<li><p><strong>task</strong> (<em>str</em>) – task to perform</p></li>
+<li><p><strong>hub</strong> (<em>str</em>) – model hub to load custom model from the path, either to hub or local disk.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -547,10 +579,12 @@ hub (str): model hub to load custom model from the path, either to hub or local 
 <dt class="sig sig-object py" id="nlptest.modelhandler.modelhandler.ModelFactory.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nlptest.utils.custom_types.NEROutput.html#nlptest.utils.custom_types.NEROutput" title="nlptest.utils.custom_types.NEROutput"><span class="pre">NEROutput</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nlptest.utils.custom_types.SequenceClassificationOutput.html#nlptest.utils.custom_types.SequenceClassificationOutput" title="nlptest.utils.custom_types.SequenceClassificationOutput"><span class="pre">SequenceClassificationOutput</span></a></span></span><a class="headerlink" href="#nlptest.modelhandler.modelhandler.ModelFactory.predict" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform predictions on input text.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>text (str): Input text to perform predictions on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Input text to perform predictions on.</p>
 </dd>
-<dt>Returns:</dt><dd><p>NEROutput or SequenceClassificationOutput</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NEROutput or SequenceClassificationOutput</p>
 </dd>
 </dl>
 </dd></dl>
@@ -559,10 +593,15 @@ hub (str): model hub to load custom model from the path, either to hub or local 
 <dt class="sig sig-object py" id="nlptest.modelhandler.modelhandler.ModelFactory.predict_raw">
 <span class="sig-name descname"><span class="pre">predict_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.modelhandler.modelhandler.ModelFactory.predict_raw" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform predictions on input text.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>text (str): Input text to perform predictions on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Input text to perform predictions on.</p>
 </dd>
-<dt>Returns:</dt><dd><p>List[str]: Predictions.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predictions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>

@@ -3,12 +3,35 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the docs page for NLP Test!
+NLP Test Documentation
 =======================================
 
-*******
-Content
-*******
+
+***********
+Quick Start
+***********
+
+Follow this guide to get up and running with ``nlptest``
+
+.. toctree::
+   :maxdepth: 2
+
+   getting_started/index
+
+**********
+User Guide
+**********
+
+Information about using and configuring the library.
+
+.. toctree::
+   :maxdepth: 2
+
+   user_guide/index
+
+***
+API
+***
 
 .. autosummary::
    :toctree: _autosummary

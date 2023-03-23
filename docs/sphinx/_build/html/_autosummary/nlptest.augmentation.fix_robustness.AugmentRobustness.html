@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -484,41 +512,85 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.augmentation.fix_robustness.</span></span><span class="sig-name descname"><span class="pre">AugmentRobustness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="nlptest.augmentation.fix_robustness.BaseAugmentaion.html#nlptest.augmentation.fix_robustness.BaseAugmentaion" title="nlptest.augmentation.fix_robustness.BaseAugmentaion"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAugmentaion</span></code></a></p>
 <p>A class for performing a specified task with historical results.</p>
-<p>Attributes:</p>
-<blockquote>
-<div><p>task (str): A string indicating the task being performed.
-config (dict): A dictionary containing configuration parameters for the task.
-h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
-max_prop (float): The maximum proportion of improvement that can be suggested by the class methods.</p>
-<blockquote>
-<div><p>Defaults to 0.5.</p>
-</div></blockquote>
-</div></blockquote>
-<p>Methods:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>__init__(self, task, h_report, config, max_prop=0.5) -&gt; None:</dt><dd><p>Initializes an instance of MyClass with the specified parameters.</p>
-</dd>
-<dt>fix(self) -&gt; List[Sample]:</dt><dd><p>.</p>
-</dd>
-<dt>suggestions(self, prop) -&gt; pandas.DataFrame:</dt><dd><p>Calculates suggestions for improving test performance based on a given report.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.task">
+<span class="sig-name descname"><span class="pre">task</span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.task" title="Permalink to this definition">#</a></dt>
+<dd><p>A string indicating the task being performed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
-</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.config">
+<span class="sig-name descname"><span class="pre">config</span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.config" title="Permalink to this definition">#</a></dt>
+<dd><p>A dictionary containing configuration parameters for the task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.h_report">
+<span class="sig-name descname"><span class="pre">h_report</span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.h_report" title="Permalink to this definition">#</a></dt>
+<dd><p>A DataFrame containing a report of historical results for the task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.max_prop">
+<span class="sig-name descname"><span class="pre">max_prop</span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.max_prop" title="Permalink to this definition">#</a></dt>
+<dd><p>The maximum proportion of improvement that can be suggested by the class methods.
+Defaults to 0.5.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nlptest.augmentation.fix_robustness.BaseAugmentaion.html#nlptest.augmentation.fix_robustness.BaseAugmentaion.None" title="nlptest.augmentation.fix_robustness.BaseAugmentaion.None"><span class="pre">None</span></a></span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initializes an instance of MyClass with the specified parameters.</p>
-<dl>
-<dt>Args:</dt><dd><p>task (str): A string indicating the task being performed.
-h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
-config (dict): A dictionary containing configuration parameters for the task.
-max_prop (float): The maximum proportion of improvement that can be suggested by the class methods.</p>
-<blockquote>
-<div><p>Defaults to 0.5.</p>
-</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.fix">
+<span class="sig-name descname"><span class="pre">fix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.fix" title="Permalink to this definition">#</a></dt>
+<dd><p>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions">
+<span class="sig-name descname"><span class="pre">suggestions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.DataFrame</span></span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculates suggestions for improving test performance based on a given report.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nlptest.augmentation.fix_robustness.BaseAugmentaion.html#nlptest.augmentation.fix_robustness.BaseAugmentaion.None" title="nlptest.augmentation.fix_robustness.BaseAugmentaion.None"><span class="pre">None</span></a></span></span><a class="headerlink" href="#id0" title="Permalink to this definition">#</a></dt>
+<dd><p>Initializes an instance of MyClass with the specified parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task</strong> (<em>str</em>) – A string indicating the task being performed.</p></li>
+<li><p><strong>h_report</strong> (<em>pandas.DataFrame</em>) – A DataFrame containing a report of historical results for the task.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – A dictionary containing configuration parameters for the task.</p></li>
+<li><p><strong>max_prop</strong> (<em>float</em>) – The maximum proportion of improvement that can be suggested by the class methods.
+Defaults to 0.5.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>None</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -526,46 +598,51 @@ max_prop (float): The maximum proportion of improvement that can be suggested by
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.__init__" title="nlptest.augmentation.fix_robustness.AugmentRobustness.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(task, h_report, config[, max_prop])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="nlptest.augmentation.fix_robustness.AugmentRobustness.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(task, h_report, config[, max_prop])</p></td>
 <td><p>Initializes an instance of MyClass with the specified parameters.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.fix" title="nlptest.augmentation.fix_robustness.AugmentRobustness.fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix</span></code></a>(input_path, output_path[, inplace])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#id1" title="nlptest.augmentation.fix_robustness.AugmentRobustness.fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix</span></code></a>(input_path, output_path[, inplace])</p></td>
 <td><p>Applies perturbations to the input data based on the recommendations from harness reports.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions" title="nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suggestions</span></code></a>(report)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suggestions</span></code></a>(report)</p></td>
 <td><p>Calculates suggestions for improving test performance based on a given report.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.fix">
-<span class="sig-name descname"><span class="pre">fix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.fix" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">fix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Permalink to this definition">#</a></dt>
 <dd><p>Applies perturbations to the input data based on the recommendations from harness reports.</p>
-<dl>
-<dt>Args:</dt><dd><p>input_path (str): The path to the input data file.
-output_path (str): The path to save the augmented data file.
-inplace (bool, optional): If True, the list of samples is modified in place.</p>
-<blockquote>
-<div><p>Otherwise, a new samples are add to input data. Defaults to False.</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path</strong> (<em>str</em>) – The path to the input data file.</p></li>
+<li><p><strong>output_path</strong> (<em>str</em>) – The path to save the augmented data file.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the list of samples is modified in place.
+Otherwise, a new samples are add to input data. Defaults to False.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>List[Dict[str, Any]]: A list of augmented data samples.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of augmented data samples.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Any]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions">
-<span class="sig-name descname"><span class="pre">suggestions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">suggestions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculates suggestions for improving test performance based on a given report.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>report (pandas.DataFrame): A DataFrame containing test results by category and test type,</dt><dd><p>including pass rates and minimum pass rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>report</strong> (<em>pandas.DataFrame</em>) – A DataFrame containing test results by category and test type,
+including pass rates and minimum pass rates.</p>
 </dd>
-</dl>
-</dd>
-<dt>Returns:</dt><dd><dl class="simple">
-<dt>pandas.DataFrame: A DataFrame containing the following columns for each suggestion:</dt><dd><ul class="simple">
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A DataFrame containing the following columns for each suggestion:</dt><dd><ul class="simple">
 <li><p>category: the test category</p></li>
 <li><p>test_type: the type of test</p></li>
 <li><p>ratio: the pass rate divided by the minimum pass rate for the test</p></li>
@@ -577,6 +654,10 @@ inplace (bool, optional): If True, the list of samples is modified in place.</p>
 </ul>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -627,9 +708,16 @@ inplace (bool, optional): If True, the list of samples is modified in place.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.task"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.task</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.config"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.h_report"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.h_report</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.max_prop"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.max_prop</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.__init__"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.fix"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.fix()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.suggestions()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.fix()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.suggestions()</span></code></a></li>
 </ul>
 </li>
 </ul>

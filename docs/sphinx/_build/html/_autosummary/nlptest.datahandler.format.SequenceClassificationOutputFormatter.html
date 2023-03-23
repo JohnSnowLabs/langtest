@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -486,13 +514,18 @@ document.write(`
 <p>Formatter class for converting <cite>SequenceClassificationOutput</cite> objects to CSV.</p>
 <p>The <cite>to_csv</cite> method returns a CSV string representing the <cite>SequenceClassificationOutput</cite>
 object in the sample argument.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>sample: The input sample containing the <cite>SequenceClassificationOutput</cite> object to convert.
-delimiter: The delimiter character to use in the CSV string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> – The input sample containing the <cite>SequenceClassificationOutput</cite> object to convert.</p></li>
+<li><p><strong>delimiter</strong> – The delimiter character to use in the CSV string.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>The CSV string representation of the <cite>SequenceClassificationOutput</cite> object.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CSV string representation of the <cite>SequenceClassificationOutput</cite> object.</p>
 </dd>
-<dt>Raises:</dt><dd><p>None.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None.</strong> – </p>
 </dd>
 </dl>
 <dl class="py method">
@@ -518,12 +551,15 @@ delimiter: The delimiter character to use in the CSV string.</p>
 <dt class="sig sig-object py" id="nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_conll">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_conll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">custom_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_conll" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts a custom type to a CoNLL string.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>custom_type: The custom type to convert.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>custom_type</strong> – The custom type to convert.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The CoNLL string representation of the custom type.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CoNLL string representation of the custom type.</p>
 </dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: This method should be implemented by the subclass.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – This method should be implemented by the subclass.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -532,12 +568,15 @@ delimiter: The delimiter character to use in the CSV string.</p>
 <dt class="sig sig-object py" id="nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_csv">
 <span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_csv" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts a custom type to a CSV string.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>custom_type: The custom type to convert.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>custom_type</strong> – The custom type to convert.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The CSV string representation of the custom type.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CSV string representation of the custom type.</p>
 </dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: This method should be implemented by the subclass.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – This method should be implemented by the subclass.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -486,14 +514,19 @@ document.write(`
 <p>Formatter class for converting <cite>NEROutput</cite> objects to CSV and CoNLL.</p>
 <p>The <cite>to_csv</cite> method returns a CSV string representing the <cite>NEROutput</cite> object in the sample
 argument. The <cite>to_conll</cite> method returns a CoNLL string representing the <cite>NEROutput</cite> object.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>sample: The input sample containing the <cite>NEROutput</cite> object to convert.
-delimiter: The delimiter character to use in the CSV string.
-temp_id: A temporary ID to use for grouping entities by document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample</strong> – The input sample containing the <cite>NEROutput</cite> object to convert.</p></li>
+<li><p><strong>delimiter</strong> – The delimiter character to use in the CSV string.</p></li>
+<li><p><strong>temp_id</strong> – A temporary ID to use for grouping entities by document.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>The CSV or CoNLL string representation of the <cite>NEROutput</cite> object.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CSV or CoNLL string representation of the <cite>NEROutput</cite> object.</p>
 </dd>
-<dt>Raises:</dt><dd><p>None.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None.</strong> – </p>
 </dd>
 </dl>
 <dl class="py method">
@@ -519,12 +552,15 @@ temp_id: A temporary ID to use for grouping entities by document.</p>
 <dt class="sig sig-object py" id="nlptest.datahandler.format.NEROutputFormatter.to_conll">
 <span class="sig-name descname"><span class="pre">to_conll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.format.NEROutputFormatter.to_conll" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts a custom type to a CoNLL string.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>custom_type: The custom type to convert.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>custom_type</strong> – The custom type to convert.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The CoNLL string representation of the custom type.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CoNLL string representation of the custom type.</p>
 </dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: This method should be implemented by the subclass.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – This method should be implemented by the subclass.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -533,12 +569,15 @@ temp_id: A temporary ID to use for grouping entities by document.</p>
 <dt class="sig sig-object py" id="nlptest.datahandler.format.NEROutputFormatter.to_csv">
 <span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.format.NEROutputFormatter.to_csv" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts a custom type to a CSV string.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>custom_type: The custom type to convert.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>custom_type</strong> – The custom type to convert.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The CSV string representation of the custom type.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The CSV string representation of the custom type.</p>
 </dd>
-<dt>Raises:</dt><dd><p>NotImplementedError: This method should be implemented by the subclass.</p>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> – This method should be implemented by the subclass.</p>
 </dd>
 </dl>
 </dd></dl>

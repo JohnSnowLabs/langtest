@@ -30,7 +30,8 @@ release = '1.0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ["sphinx.ext.autodoc",
-              "sphinx.ext.autosummary"]
+              "sphinx.ext.autosummary",
+              "sphinx.ext.napoleon"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -63,3 +64,6 @@ html_theme = 'pydata_sphinx_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 html_css_files = ["css/custom.css"]
+
+html_logo = "_static/logo.png"
+html_favicon = "_static/fav.ico"

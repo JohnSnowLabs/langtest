@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -495,21 +523,19 @@ document.write(`
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.perturbation.AddPunctuation.transform" title="nlptest.transform.perturbation.AddPunctuation.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(sample_list[, whitelist])</p></td>
-<td><p>Add punctuation at the end of the string, if there is punctuation at the end skip it Args:     sample_list: List of sentences to apply perturbation. whitelist: Whitelist for punctuations to add to sentences. Returns:     List of sentences that have punctuation at the end.</p></td>
+<td><p>Add punctuation at the end of the string, if there is punctuation at the end skip it :param sample_list: List of sentences to apply perturbation.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.transform.perturbation.AddPunctuation.transform">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whitelist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.transform.perturbation.AddPunctuation.transform" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whitelist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="nlptest.augmentation.fix_robustness.BaseAugmentaion.html#nlptest.augmentation.fix_robustness.BaseAugmentaion.None" title="nlptest.augmentation.fix_robustness.BaseAugmentaion.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.transform.perturbation.AddPunctuation.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Add punctuation at the end of the string, if there is punctuation at the end skip it
-Args:</p>
-<blockquote>
-<div><p>sample_list: List of sentences to apply perturbation.
-whitelist: Whitelist for punctuations to add to sentences.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>List of sentences that have punctuation at the end.</p>
+:param sample_list: List of sentences to apply perturbation.
+:param whitelist: Whitelist for punctuations to add to sentences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of sentences that have punctuation at the end.</p>
 </dd>
 </dl>
 </dd></dl>

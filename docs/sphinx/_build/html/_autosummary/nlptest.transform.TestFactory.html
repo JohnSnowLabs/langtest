@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -480,16 +508,24 @@ document.write(`
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A factory class for creating and running different types of tests on data.</p>
 <p>…</p>
-<section id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">#</a></h2>
-<dl class="simple">
-<dt>transform(data: List[Sample], test_types: dict) -&gt; List[Results]:</dt><dd><p>Runs the specified tests on the given data and returns a list of results.</p>
-</dd>
-<dt>test_categories() -&gt; dict:</dt><dd><p>Returns a dictionary mapping test category names to the corresponding test classes.</p>
-</dd>
-<dt>test_scenarios() -&gt; dict:</dt><dd><p>Returns a dictionary mapping test class names to the available test scenarios for each class.</p>
-</dd>
-</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.TestFactory.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List[Results]:</span></span></span><a class="headerlink" href="#nlptest.transform.TestFactory.transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs the specified tests on the given data and returns a list of results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.TestFactory.test_categories">
+<span class="sig-name descname"><span class="pre">test_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict:</span></span></span><a class="headerlink" href="#nlptest.transform.TestFactory.test_categories" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a dictionary mapping test category names to the corresponding test classes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.TestFactory.test_scenarios">
+<span class="sig-name descname"><span class="pre">test_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict:</span></span></span><a class="headerlink" href="#nlptest.transform.TestFactory.test_scenarios" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a dictionary mapping test class names to the available test scenarios for each class.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.transform.TestFactory.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.TestFactory.__init__" title="Permalink to this definition">#</a></dt>
@@ -504,10 +540,10 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.TestFactory.test_catgories" title="nlptest.transform.TestFactory.test_catgories"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_catgories</span></code></a>()</p></td>
 <td><p>Returns a dictionary mapping test category names to the corresponding test classes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.TestFactory.test_scenarios" title="nlptest.transform.TestFactory.test_scenarios"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_scenarios</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="nlptest.transform.TestFactory.test_scenarios"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_scenarios</span></code></a>()</p></td>
 <td><p>Returns a dictionary mapping test class names to the available test scenarios for each class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.TestFactory.transform" title="nlptest.transform.TestFactory.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(data, test_types, model)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#id1" title="nlptest.transform.TestFactory.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a>(data, test_types, model)</p></td>
 <td><p>Runs the specified tests on the given data and returns a list of results.</p></td>
 </tr>
 </tbody>
@@ -516,53 +552,51 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.transform.TestFactory.test_catgories">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_catgories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.TestFactory.test_catgories" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a dictionary mapping test category names to the corresponding test classes.</p>
-<section id="returns">
-<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h3>
-<dl class="simple">
-<dt>dict</dt><dd><p>A dictionary mapping test category names to the corresponding test classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary mapping test category names to the corresponding test classes.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nlptest.transform.TestFactory.test_scenarios">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.TestFactory.test_scenarios" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_scenarios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a dictionary mapping test class names to the available test scenarios for each class.</p>
-<section id="id1">
-<h3>Returns<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
-<dl class="simple">
-<dt>dict</dt><dd><p>A dictionary mapping test class names to the available test scenarios for each class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary mapping test class names to the available test scenarios for each class.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="nlptest.transform.TestFactory.transform">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory" title="nlptest.modelhandler.modelhandler.ModelFactory"><span class="pre">ModelFactory</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.TestFactory.transform" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="id1">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory" title="nlptest.modelhandler.modelhandler.ModelFactory"><span class="pre">ModelFactory</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Permalink to this definition">#</a></dt>
 <dd><p>Runs the specified tests on the given data and returns a list of results.</p>
-<section id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h3>
-<dl class="simple">
-<dt>data<span class="classifier">List[Sample]</span></dt><dd><p>The data to be tested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>List</em><em>[</em><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><em>Sample</em></a><em>]</em>) – The data to be tested.</p></li>
+<li><p><strong>test_types</strong> (<em>dict</em>) – A dictionary mapping test category names to lists of test scenario names.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory" title="nlptest.modelhandler.modelhandler.ModelFactory"><em>ModelFactory</em></a>) – Model to be tested.</p></li>
+</ul>
 </dd>
-<dt>test_types<span class="classifier">dict</span></dt><dd><p>A dictionary mapping test category names to lists of test scenario names.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of results from running the specified tests on the data.</p>
 </dd>
-<dt>model: ModelFactory</dt><dd><p>Model to be tested.</p>
-</dd>
-</dl>
-</section>
-<section id="id2">
-<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
-<dl class="simple">
-<dt>List[Results]</dt><dd><p>A list of results from running the specified tests on the data.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Results]</p>
 </dd>
 </dl>
-</section>
 </dd></dl>
 
-</section>
 </dd></dl>
 
 </section>
@@ -609,10 +643,13 @@ document.write(`
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory"><code class="docutils literal notranslate"><span class="pre">TestFactory</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.transform"><code class="docutils literal notranslate"><span class="pre">TestFactory.transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.test_categories"><code class="docutils literal notranslate"><span class="pre">TestFactory.test_categories()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.test_scenarios"><code class="docutils literal notranslate"><span class="pre">TestFactory.test_scenarios()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.__init__"><code class="docutils literal notranslate"><span class="pre">TestFactory.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.test_catgories"><code class="docutils literal notranslate"><span class="pre">TestFactory.test_catgories()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.test_scenarios"><code class="docutils literal notranslate"><span class="pre">TestFactory.test_scenarios()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory.transform"><code class="docutils literal notranslate"><span class="pre">TestFactory.transform()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">TestFactory.test_scenarios()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">TestFactory.transform()</span></code></a></li>
 </ul>
 </li>
 </ul>

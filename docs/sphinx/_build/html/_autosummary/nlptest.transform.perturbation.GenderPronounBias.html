@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -503,12 +531,16 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.transform.perturbation.GenderPronounBias.transform">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pronouns_to_substitute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pronoun_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nlptest.utils.custom_types.Sample.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.transform.perturbation.GenderPronounBias.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Replace pronouns to check the gender bias</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>sample_list: List of sentences to apply perturbation.
-pronouns_to_substitute: list of pronouns that need to be substituted.
-pronoun_type: replacing pronoun type string (‘male’, ‘female’ or ‘neutral’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_list</strong> – List of sentences to apply perturbation.</p></li>
+<li><p><strong>pronouns_to_substitute</strong> – list of pronouns that need to be substituted.</p></li>
+<li><p><strong>pronoun_type</strong> – replacing pronoun type string (‘male’, ‘female’ or ‘neutral’)</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>List of sentences with replaced pronouns</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of sentences with replaced pronouns</p>
 </dd>
 </dl>
 </dd></dl>

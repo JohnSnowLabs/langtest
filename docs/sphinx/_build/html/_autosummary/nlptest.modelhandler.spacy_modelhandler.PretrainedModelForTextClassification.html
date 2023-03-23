@@ -125,6 +125,20 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -208,6 +222,20 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="nlptest.html">
                         nlptest
@@ -483,8 +511,9 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.modelhandler.spacy_modelhandler.</span></span><span class="sig-name descname"><span class="pre">PretrainedModelForTextClassification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ModelHandler</span></code></p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>model: Pretrained SpaCy pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> – Pretrained SpaCy pipeline.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -533,11 +562,18 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nlptest.utils.custom_types.SequenceClassificationOutput.html#nlptest.utils.custom_types.SequenceClassificationOutput" title="nlptest.utils.custom_types.SequenceClassificationOutput"><span class="pre">SequenceClassificationOutput</span></a></span></span><a class="headerlink" href="#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.predict" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform text classification predictions on the input text.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>text (str): Input text to classify.
-return_all_scores (bool): Option to return score for all labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Input text to classify.</p></li>
+<li><p><strong>return_all_scores</strong> (<em>bool</em>) – Option to return score for all labels.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>SequenceClassificationOutput: Text classification predictions from the input text.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Text classification predictions from the input text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="nlptest.utils.custom_types.SequenceClassificationOutput.html#nlptest.utils.custom_types.SequenceClassificationOutput" title="nlptest.utils.custom_types.SequenceClassificationOutput">SequenceClassificationOutput</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -546,10 +582,15 @@ return_all_scores (bool): Option to return score for all labels.</p>
 <dt class="sig sig-object py" id="nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.predict_raw">
 <span class="sig-name descname"><span class="pre">predict_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.predict_raw" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform classification predictions on input text.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>text (str): Input text to classify.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Input text to classify.</p>
 </dd>
-<dt>Returns:</dt><dd><p>List[str]: Predictions of the model.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predictions of the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
 </dd>
 </dl>
 </dd></dl>
