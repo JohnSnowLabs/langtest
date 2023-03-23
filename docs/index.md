@@ -43,6 +43,12 @@ data:
    - title: In Just One Line of Code
      oneline: yes
 
+   - title: 50+ Tests Out-Of-The-Box
+     outbox: yes
+
+   - title: Auto-Correct Models with Data Augmentation
+     autocorrect_models: yes
+
    - title: Pandas
      excerpt: NLU ships with many <b>NLP features</b>, pre-trained <b>models</b> and <b>pipelines</b> <div>It takes in Pandas and outputs <b>Pandas Dataframes</b></div><div>All in <b>one line</b></div>
      pandas: yes
