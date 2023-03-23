@@ -643,7 +643,11 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():            
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            try:
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            except:
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
+
             X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
             y_pred = X_test.apply(self._model_handler.predict_raw)
 

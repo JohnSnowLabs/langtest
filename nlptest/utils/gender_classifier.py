@@ -1,5 +1,6 @@
 import torch
 import logging
+import os
 from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
 
 class GenderClassifier():
@@ -7,7 +8,10 @@ class GenderClassifier():
         logging.getLogger("transformers").setLevel(logging.ERROR)
         tokenizer = AutoTokenizer.from_pretrained("microsoft/xtremedistil-l6-h256-uncased")
         model = AutoModelForSequenceClassification.from_pretrained("microsoft/xtremedistil-l6-h256-uncased", num_labels=3)
-        ckpts = torch.load("checkpoints.ckpt")
+
+        curr_dir = os.path.dirname(__file__)
+        ckpt_path = os.path.join(curr_dir, 'checkpoints.ckpt')
+        ckpts = torch.load(ckpt_path)
         model.load_state_dict(ckpts)
         self.pipe = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
