@@ -22,6 +22,7 @@ Classes
    nlptest.transform.RobustnessTestFactory
    nlptest.transform.BiasTestFactory
    nlptest.transform.RepresentationTestFactory
+   nlptest.transform.FairnessTestFactory
    nlptest.transform.AccuracyTestFactory
 
 
@@ -289,6 +290,68 @@ Classes
 
       available_tests() -> dict:
           Returns a dictionary of available test scenarios for the `representation` class.
+
+
+   .. py:method:: transform()
+
+      Runs the robustness test and returns the resulting `Sample` objects.
+
+      Returns
+      -------
+      List[Sample]
+          A list of `Sample` objects representing the resulting dataset after running the robustness test.
+
+
+   .. py:method:: available_tests() -> dict
+      :classmethod:
+
+      Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+      Returns:
+          dict: A dictionary of test names and classes.
+
+
+
+
+.. py:class:: FairnessTestFactory(data_handler: List[nlptest.utils.custom_types.Sample], tests, model: nlptest.modelhandler.ModelFactory)
+
+
+
+   An abstract base class for defining different types of tests.
+
+   ...
+
+   Methods
+   -------
+   transform() -> List[Results]:
+       Runs the test and returns the results.
+
+   available_tests() -> List[str]:
+       Returns a list of available test scenarios for the test class.
+
+   .. py:attribute:: alias_name
+      :annotation: = fairness
+
+      A class for performing fairness tests on a given dataset.
+
+      ...
+
+      Attributes
+      ----------
+      supported_tests : dict
+          A dictionary of supported fairness test scenarios.
+      tests : dict
+          A dictionary of test names and corresponding parameters.
+      _data_handler : List[Sample]
+          A list of `Sample` objects representing the input dataset.
+
+      Methods
+      -------
+      transform() -> List[Sample]:
+          Runs the fairness test and returns the resulting `Sample` objects.
+
+      available_tests() -> dict:
+          Returns a dictionary of available test scenarios for the `fairness` class.
 
 
    .. py:method:: transform()

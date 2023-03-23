@@ -19,6 +19,11 @@ Functions
 
    nlptest.transform.utils.get_substitution_names
    nlptest.transform.utils.create_terminology
+   nlptest.transform.utils.get_label_representation_dict
+   nlptest.transform.utils.get_country_economic_representation_dict
+   nlptest.transform.utils.get_religion_name_representation_dict
+   nlptest.transform.utils.get_ethnicity_representation_dict
+   nlptest.transform.utils.get_entity_representation_proportions
 
 
 
@@ -42,5 +47,50 @@ Functions
 
    Returns:
        Dictionary of entities and corresponding list of words.
+
+
+.. py:function:: get_label_representation_dict(data)
+
+   Args:
+       data (List[Sample]): The input data to be evaluated for representation test.
+
+   Returns:
+       dict: a dictionary containing label representation information.
+
+
+.. py:function:: get_country_economic_representation_dict(data)
+
+   Args:
+      data (List[Sample]): The input data to be evaluated for representation test.
+
+   Returns:
+      dict: a dictionary containing country economic representation information.
+
+
+.. py:function:: get_religion_name_representation_dict(data)
+
+   Args:
+       data (List[Sample]): The input data to be evaluated for representation test.
+
+   Returns:
+       dict: a dictionary containing religion representation information.
+
+
+.. py:function:: get_ethnicity_representation_dict(data)
+
+   Args:
+       data (List[Sample]): The input data to be evaluated for representation test.
+
+   Returns:
+       dict: a dictionary containing ethnicity representation information.
+
+
+.. py:function:: get_entity_representation_proportions(entity_representation)
+
+   Args:
+      entity_representation (dict): a dictionary containing representation information.
+
+   Returns:
+      dict: a dictionary with proportions of each entity.
 
 

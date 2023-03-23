@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,25 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.datahandler.format.BaseFormatter" title="nlptest.datahandler.format.BaseFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseFormatter</span></code></a></p></td>
-<td><p>Abstract base class for defining formatter classes.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.datahandler.format.Formatter" title="nlptest.datahandler.format.Formatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Formatter</span></code></a></p></td>
-<td><p>Formatter class for converting between custom types and different output formats.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter" title="nlptest.datahandler.format.SequenceClassificationOutputFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceClassificationOutputFormatter</span></code></a></p></td>
-<td><p>Formatter class for converting <cite>SequenceClassificationOutput</cite> objects to CSV.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.datahandler.format.NEROutputFormatter" title="nlptest.datahandler.format.NEROutputFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEROutputFormatter</span></code></a></p></td>
-<td><p>Formatter class for converting <cite>NEROutput</cite> objects to CSV and CoNLL.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.format.BaseFormatter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseFormatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.BaseFormatter" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.format.</span></span><span class="sig-name descname"><span class="pre">BaseFormatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.BaseFormatter" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for defining formatter classes.
 Subclasses should implement the static methods <cite>to_csv</cite> and <cite>to_conll</cite>.</p>
 <dl class="py method">
@@ -373,7 +356,7 @@ Subclasses should implement the static methods <cite>to_csv</cite> and <cite>to_
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.format.Formatter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Formatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.Formatter" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.format.</span></span><span class="sig-name descname"><span class="pre">Formatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.Formatter" title="Permalink to this definition">#</a></dt>
 <dd><p>Formatter class for converting between custom types and different output formats.</p>
 <p>This class uses the <cite>to_csv</cite> and <cite>to_conll</cite> methods of subclasses of <cite>BaseFormatter</cite>
 to perform the conversions. The appropriate subclass is selected based on the
@@ -393,7 +376,7 @@ format: The output format to convert to, either “csv” or “conll”.
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.format.SequenceClassificationOutputFormatter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SequenceClassificationOutputFormatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.format.</span></span><span class="sig-name descname"><span class="pre">SequenceClassificationOutputFormatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter" title="Permalink to this definition">#</a></dt>
 <dd><p>Formatter class for converting <cite>SequenceClassificationOutput</cite> objects to CSV.</p>
 <p>The <cite>to_csv</cite> method returns a CSV string representing the <cite>SequenceClassificationOutput</cite>
 object in the sample argument.</p>
@@ -424,7 +407,7 @@ delimiter: The delimiter character to use in the CSV string.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.format.NEROutputFormatter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NEROutputFormatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.NEROutputFormatter" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.format.</span></span><span class="sig-name descname"><span class="pre">NEROutputFormatter</span></span><a class="headerlink" href="#nlptest.datahandler.format.NEROutputFormatter" title="Permalink to this definition">#</a></dt>
 <dd><p>Formatter class for converting <cite>NEROutput</cite> objects to CSV and CoNLL.</p>
 <p>The <cite>to_csv</cite> method returns a CSV string representing the <cite>NEROutput</cite> object in the sample
 argument. The <cite>to_conll</cite> method returns a CoNLL string representing the <cite>NEROutput</cite> object.</p>
@@ -510,21 +493,6 @@ temp_id: A temporary ID to use for grouping entities by document.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.NEROutputFormatter"><code class="docutils literal notranslate"><span class="pre">NEROutputFormatter</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.NEROutputFormatter.to_csv"><code class="docutils literal notranslate"><span class="pre">NEROutputFormatter.to_csv()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.NEROutputFormatter.to_conll"><code class="docutils literal notranslate"><span class="pre">NEROutputFormatter.to_conll()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.BaseFormatter">BaseFormatter</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.BaseFormatter.to_csv">to_csv</a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.BaseFormatter.to_conll">to_conll</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.Formatter">Formatter</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter">SequenceClassificationOutputFormatter</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_csv">to_csv</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.NEROutputFormatter">NEROutputFormatter</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.NEROutputFormatter.to_csv">to_csv</a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.format.NEROutputFormatter.to_conll">to_conll</a></li>
 </ul>
 </li>
 </ul>

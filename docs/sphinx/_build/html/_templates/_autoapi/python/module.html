@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -375,10 +374,6 @@ Submodules
 {% if visible_classes %}
 Classes
 ~~~~~~~</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
 <dl class="simple">
 <dt>{% for klass in visible_classes %}</dt><dd><p>{{ klass.id }}</p>
 </dd>
@@ -390,10 +385,6 @@ Classes
 {% if visible_functions %}
 Functions
 ~~~~~~~~~</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
 <dl class="simple">
 <dt>{% for function in visible_functions %}</dt><dd><p>{{ function.id }}</p>
 </dd>
@@ -405,10 +396,6 @@ Functions
 {% if visible_attributes %}
 Attributes
 ~~~~~~~~~~</p>
-<table class="autosummary longtable table autosummary">
-<tbody>
-</tbody>
-</table>
 <dl class="simple">
 <dt>{% for attribute in visible_attributes %}</dt><dd><p>{{ attribute.id }}</p>
 </dd>

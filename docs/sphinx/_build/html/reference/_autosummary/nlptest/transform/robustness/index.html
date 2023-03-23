@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,59 +319,12 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.BaseRobustness" title="nlptest.transform.robustness.BaseRobustness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseRobustness</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.robustness.UpperCase" title="nlptest.transform.robustness.UpperCase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UpperCase</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.LowerCase" title="nlptest.transform.robustness.LowerCase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LowerCase</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.robustness.TitleCase" title="nlptest.transform.robustness.TitleCase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TitleCase</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.AddPunctuation" title="nlptest.transform.robustness.AddPunctuation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddPunctuation</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.robustness.StripPunctuation" title="nlptest.transform.robustness.StripPunctuation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StripPunctuation</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.AddTypo" title="nlptest.transform.robustness.AddTypo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddTypo</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.robustness.SwapEntities" title="nlptest.transform.robustness.SwapEntities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SwapEntities</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.SwapCohyponyms" title="nlptest.transform.robustness.SwapCohyponyms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SwapCohyponyms</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.robustness.ConvertAccent" title="nlptest.transform.robustness.ConvertAccent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConvertAccent</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.AddContext" title="nlptest.transform.robustness.AddContext"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddContext</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.robustness.AddContraction" title="nlptest.transform.robustness.AddContraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddContraction</span></code></a></p></td>
-<td><p>Abstract base class for implementing robustness measures.</p></td>
-</tr>
-</tbody>
-</table>
 </section>
 <section id="functions">
 <h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.robustness.get_cohyponyms_wordnet" title="nlptest.transform.robustness.get_cohyponyms_wordnet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cohyponyms_wordnet</span></code></a>(→ str)</p></td>
-<td><p>Retrieve co-hyponym of the input string using WordNet when a hit is found.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.BaseRobustness">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseRobustness</span></span><a class="headerlink" href="#nlptest.transform.robustness.BaseRobustness" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">BaseRobustness</span></span><a class="headerlink" href="#nlptest.transform.robustness.BaseRobustness" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -396,7 +348,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.UpperCase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">UpperCase</span></span><a class="headerlink" href="#nlptest.transform.robustness.UpperCase" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">UpperCase</span></span><a class="headerlink" href="#nlptest.transform.robustness.UpperCase" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -422,7 +374,7 @@ Args:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.LowerCase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LowerCase</span></span><a class="headerlink" href="#nlptest.transform.robustness.LowerCase" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">LowerCase</span></span><a class="headerlink" href="#nlptest.transform.robustness.LowerCase" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -448,7 +400,7 @@ Args:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.TitleCase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TitleCase</span></span><a class="headerlink" href="#nlptest.transform.robustness.TitleCase" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">TitleCase</span></span><a class="headerlink" href="#nlptest.transform.robustness.TitleCase" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -474,7 +426,7 @@ Args:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.AddPunctuation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AddPunctuation</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddPunctuation" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">AddPunctuation</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddPunctuation" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -501,7 +453,7 @@ whitelist: Whitelist for punctuations to add to sentences.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.StripPunctuation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">StripPunctuation</span></span><a class="headerlink" href="#nlptest.transform.robustness.StripPunctuation" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">StripPunctuation</span></span><a class="headerlink" href="#nlptest.transform.robustness.StripPunctuation" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -526,7 +478,7 @@ whitelist: Whitelist for punctuations to strip from sentences.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.AddTypo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AddTypo</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddTypo" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">AddTypo</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddTypo" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -552,7 +504,7 @@ Args:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.SwapEntities">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SwapEntities</span></span><a class="headerlink" href="#nlptest.transform.robustness.SwapEntities" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">SwapEntities</span></span><a class="headerlink" href="#nlptest.transform.robustness.SwapEntities" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -578,7 +530,7 @@ terminology: Dictionary of entities and corresponding list of words.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.get_cohyponyms_wordnet">
-<span class="sig-name descname"><span class="pre">get_cohyponyms_wordnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">word</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#nlptest.transform.robustness.get_cohyponyms_wordnet" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">get_cohyponyms_wordnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">word</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#nlptest.transform.robustness.get_cohyponyms_wordnet" title="Permalink to this definition">#</a></dt>
 <dd><p>Retrieve co-hyponym of the input string using WordNet when a hit is found.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>word: input string to retrieve co-hyponym</p>
@@ -590,7 +542,7 @@ terminology: Dictionary of entities and corresponding list of words.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.SwapCohyponyms">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SwapCohyponyms</span></span><a class="headerlink" href="#nlptest.transform.robustness.SwapCohyponyms" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">SwapCohyponyms</span></span><a class="headerlink" href="#nlptest.transform.robustness.SwapCohyponyms" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -615,7 +567,7 @@ labels: Corresponding labels to make changes according to sentences.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.ConvertAccent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConvertAccent</span></span><a class="headerlink" href="#nlptest.transform.robustness.ConvertAccent" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">ConvertAccent</span></span><a class="headerlink" href="#nlptest.transform.robustness.ConvertAccent" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -642,7 +594,7 @@ accent_map: Dictionary with conversion terms.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.AddContext">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AddContext</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddContext" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">AddContext</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddContext" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -671,7 +623,7 @@ ending_context: list of terms (context) to input at end of sentences.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.robustness.AddContraction">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AddContraction</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddContraction" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.robustness.</span></span><span class="sig-name descname"><span class="pre">AddContraction</span></span><a class="headerlink" href="#nlptest.transform.robustness.AddContraction" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing robustness measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the robustness measure.</p>
@@ -768,55 +720,6 @@ Args:</p>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddContraction"><code class="docutils literal notranslate"><span class="pre">AddContraction</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddContraction.transform"><code class="docutils literal notranslate"><span class="pre">AddContraction.transform()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.BaseRobustness">BaseRobustness</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.BaseRobustness.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.UpperCase">UpperCase</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.UpperCase.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.LowerCase">LowerCase</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.LowerCase.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.TitleCase">TitleCase</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.TitleCase.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddPunctuation">AddPunctuation</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddPunctuation.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.StripPunctuation">StripPunctuation</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.StripPunctuation.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddTypo">AddTypo</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddTypo.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.SwapEntities">SwapEntities</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.SwapEntities.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.get_cohyponyms_wordnet">get_cohyponyms_wordnet</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.SwapCohyponyms">SwapCohyponyms</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.SwapCohyponyms.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.ConvertAccent">ConvertAccent</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.ConvertAccent.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddContext">AddContext</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddContext.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddContraction">AddContraction</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.robustness.AddContraction.transform">transform</a></li>
 </ul>
 </li>
 </ul>

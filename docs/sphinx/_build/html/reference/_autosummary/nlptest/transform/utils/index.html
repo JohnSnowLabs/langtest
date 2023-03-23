@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,19 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="functions">
 <h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.utils.get_substitution_names" title="nlptest.transform.utils.get_substitution_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_substitution_names</span></code></a>(values_list)</p></td>
-<td><p>Helper function to get list of substitution names</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.utils.create_terminology" title="nlptest.transform.utils.create_terminology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_terminology</span></code></a>(→ Dict[str, List[str]])</p></td>
-<td><p>Iterate over the DataFrame to create terminology from the predictions. IOB format converted to the IO.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py function">
 <dt class="sig sig-object py" id="nlptest.transform.utils.get_substitution_names">
-<span class="sig-name descname"><span class="pre">get_substitution_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_substitution_names" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">get_substitution_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_substitution_names" title="Permalink to this definition">#</a></dt>
 <dd><p>Helper function to get list of substitution names</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>values_list : list of substitution lists.</p>
@@ -344,12 +333,67 @@ document.write(`
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nlptest.transform.utils.create_terminology">
-<span class="sig-name descname"><span class="pre">create_terminology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ner_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.transform.utils.create_terminology" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">create_terminology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ner_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nlptest.transform.utils.create_terminology" title="Permalink to this definition">#</a></dt>
 <dd><p>Iterate over the DataFrame to create terminology from the predictions. IOB format converted to the IO.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>ner_data: Pandas DataFrame that has 2 column, ‘text’ as string and ‘label’ as list of labels</p>
 </dd>
 <dt>Returns:</dt><dd><p>Dictionary of entities and corresponding list of words.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlptest.transform.utils.get_label_representation_dict">
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">get_label_representation_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_label_representation_dict" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be evaluated for representation test.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: a dictionary containing label representation information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlptest.transform.utils.get_country_economic_representation_dict">
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">get_country_economic_representation_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_country_economic_representation_dict" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be evaluated for representation test.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: a dictionary containing country economic representation information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlptest.transform.utils.get_religion_name_representation_dict">
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">get_religion_name_representation_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_religion_name_representation_dict" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be evaluated for representation test.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: a dictionary containing religion representation information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlptest.transform.utils.get_ethnicity_representation_dict">
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">get_ethnicity_representation_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_ethnicity_representation_dict" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be evaluated for representation test.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: a dictionary containing ethnicity representation information.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nlptest.transform.utils.get_entity_representation_proportions">
+<span class="sig-prename descclassname"><span class="pre">nlptest.transform.utils.</span></span><span class="sig-name descname"><span class="pre">get_entity_representation_proportions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_representation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.utils.get_entity_representation_proportions" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>entity_representation (dict): a dictionary containing representation information.</p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: a dictionary with proportions of each entity.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -385,8 +429,11 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_substitution_names"><code class="docutils literal notranslate"><span class="pre">get_substitution_names()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.create_terminology"><code class="docutils literal notranslate"><span class="pre">create_terminology()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_substitution_names">get_substitution_names</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.create_terminology">create_terminology</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_label_representation_dict"><code class="docutils literal notranslate"><span class="pre">get_label_representation_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_country_economic_representation_dict"><code class="docutils literal notranslate"><span class="pre">get_country_economic_representation_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_religion_name_representation_dict"><code class="docutils literal notranslate"><span class="pre">get_religion_name_representation_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_ethnicity_representation_dict"><code class="docutils literal notranslate"><span class="pre">get_ethnicity_representation_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.utils.get_entity_representation_proportions"><code class="docutils literal notranslate"><span class="pre">get_entity_representation_proportions()</span></code></a></li>
 </ul>
 </li>
 </ul>

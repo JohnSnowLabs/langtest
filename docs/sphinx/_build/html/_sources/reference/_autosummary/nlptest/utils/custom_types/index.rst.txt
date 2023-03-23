@@ -18,6 +18,8 @@ Classes
 
    nlptest.utils.custom_types.NEROutput
    nlptest.utils.custom_types.SequenceClassificationOutput
+   nlptest.utils.custom_types.MinScoreOutput
+   nlptest.utils.custom_types.MaxScoreOutput
    nlptest.utils.custom_types.AccuracyOutput
    nlptest.utils.custom_types.Sample
 
@@ -52,6 +54,20 @@ Classes
       Returns:
           List[str]: predictions in form of a list of strings.
 
+
+
+.. py:class:: MinScoreOutput
+
+
+
+   Output for accuracy/representation tests.
+
+
+.. py:class:: MaxScoreOutput
+
+
+
+   Output for accuracy/representation tests.
 
 
 .. py:class:: AccuracyOutput

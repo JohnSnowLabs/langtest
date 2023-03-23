@@ -17,7 +17,11 @@ Classes
 .. autoapisummary::
 
    nlptest.transform.representation.BaseRepresentation
-   nlptest.transform.representation.GenderReprestation
+   nlptest.transform.representation.GenderRepresentation
+   nlptest.transform.representation.EthnicityRepresentation
+   nlptest.transform.representation.LabelRepresentation
+   nlptest.transform.representation.ReligionRepresentation
+   nlptest.transform.representation.CountryEconomicRepresentation
 
 
 
@@ -41,14 +45,14 @@ Classes
       Abstract method that implements the representation measure.
 
       Args:
-          data (List[Sample]): The input data to be transformed.
+          data (List[Sample]): The input data to be evaluated for representation test.
 
       Returns:
           Any: The transformed data based on the implemented representation measure.
 
 
 
-.. py:class:: GenderReprestation
+.. py:class:: GenderRepresentation
 
 
 
@@ -65,10 +69,110 @@ Classes
       Abstract method that implements the representation measure.
 
       Args:
-          data (List[Sample]): The input data to be transformed.
+          data (List[Sample]): The input data to be evaluated for representation test.
 
       Returns:
           Any: The transformed data based on the implemented representation measure.
+
+
+
+.. py:class:: EthnicityRepresentation
+
+
+
+   Subclass of BaseRepresentation that implements the ethnicity representation test.
+
+   Attributes:
+       alias_name (List[str]): The list of test names that identify the representation measure.
+
+
+   .. py:method:: transform(data, params)
+
+      Args:
+          test (str): name of the test
+          data (List[Sample]): The input data to be evaluated for representation test.
+          params : parameters specified in config.
+
+      Raises:
+          ValueError: If sum of specified proportions in config is greater than 1
+
+      Returns:
+          List[Sample]: Ethnicity Representation test results.
+
+
+
+.. py:class:: LabelRepresentation
+
+
+
+   Subclass of BaseRepresentation that implements the label representation test.
+
+   Attributes:
+       alias_name (List[str]): The list of test names that identify the representation measure.
+
+
+   .. py:method:: transform(data, params)
+
+      Args:
+          test (str): name of the test
+          data (List[Sample]): The input data to be evaluated for representation test.
+          params : parameters specified in config.
+
+      Raises:
+          ValueError: If sum of specified proportions in config is greater than 1
+
+      Returns:
+          List[Sample]: Label Representation test results.
+
+
+
+.. py:class:: ReligionRepresentation
+
+
+
+   Subclass of BaseRepresentation that implements the religion representation test.
+
+   Attributes:
+       alias_name (List[str]): The list of test names that identify the representation measure.
+
+
+   .. py:method:: transform(data, params)
+
+      Args:
+          test (str): name of the test
+          data (List[Sample]): The input data to be evaluated for representation test.
+          params : parameters specified in config.
+
+      Raises:
+          ValueError: If sum of specified proportions in config is greater than 1
+
+      Returns:
+          List[Sample]: Religion Representation test results.
+
+
+
+.. py:class:: CountryEconomicRepresentation
+
+
+
+   Subclass of BaseRepresentation that implements the country economic representation test.
+
+   Attributes:
+       alias_name (List[str]): The list of test names that identify the representation measure.
+
+
+   .. py:method:: transform(data, params)
+
+      Args:
+          test (str): name of the test
+          data (List[Sample]): The input data to be evaluated for representation test.
+          params : parameters specified in config.
+
+      Raises:
+          ValueError: If sum of specified proportions in config is greater than 1
+
+      Returns:
+          List[Sample]: Country Economic Representation test results.
 
 
 

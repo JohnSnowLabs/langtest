@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,28 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.bias.BaseBias" title="nlptest.transform.bias.BaseBias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseBias</span></code></a></p></td>
-<td><p>Abstract base class for implementing bias measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.bias.GenderPronounBias" title="nlptest.transform.bias.GenderPronounBias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GenderPronounBias</span></code></a></p></td>
-<td><p>Abstract base class for implementing bias measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.bias.CountryEconomicBias" title="nlptest.transform.bias.CountryEconomicBias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CountryEconomicBias</span></code></a></p></td>
-<td><p>Abstract base class for implementing bias measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.bias.EthnicityNameBias" title="nlptest.transform.bias.EthnicityNameBias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EthnicityNameBias</span></code></a></p></td>
-<td><p>Abstract base class for implementing bias measures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.bias.ReligionBias" title="nlptest.transform.bias.ReligionBias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReligionBias</span></code></a></p></td>
-<td><p>Abstract base class for implementing bias measures.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.bias.BaseBias">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseBias</span></span><a class="headerlink" href="#nlptest.transform.bias.BaseBias" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.bias.</span></span><span class="sig-name descname"><span class="pre">BaseBias</span></span><a class="headerlink" href="#nlptest.transform.bias.BaseBias" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing bias measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the bias measure.</p>
@@ -365,7 +345,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.bias.GenderPronounBias">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GenderPronounBias</span></span><a class="headerlink" href="#nlptest.transform.bias.GenderPronounBias" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.bias.</span></span><span class="sig-name descname"><span class="pre">GenderPronounBias</span></span><a class="headerlink" href="#nlptest.transform.bias.GenderPronounBias" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing bias measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the bias measure.</p>
@@ -391,7 +371,7 @@ pronoun_type: replacing pronoun type string (‘male’, ‘female’ or ‘neut
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.bias.CountryEconomicBias">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CountryEconomicBias</span></span><a class="headerlink" href="#nlptest.transform.bias.CountryEconomicBias" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.bias.</span></span><span class="sig-name descname"><span class="pre">CountryEconomicBias</span></span><a class="headerlink" href="#nlptest.transform.bias.CountryEconomicBias" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing bias measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the bias measure.</p>
@@ -417,7 +397,7 @@ chosen_country_names: list of country names to replace with.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.bias.EthnicityNameBias">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EthnicityNameBias</span></span><a class="headerlink" href="#nlptest.transform.bias.EthnicityNameBias" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.bias.</span></span><span class="sig-name descname"><span class="pre">EthnicityNameBias</span></span><a class="headerlink" href="#nlptest.transform.bias.EthnicityNameBias" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing bias measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the bias measure.</p>
@@ -444,7 +424,7 @@ chosen_ethnicity_names: list of ethnicity names to replace with.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.bias.ReligionBias">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ReligionBias</span></span><a class="headerlink" href="#nlptest.transform.bias.ReligionBias" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.bias.</span></span><span class="sig-name descname"><span class="pre">ReligionBias</span></span><a class="headerlink" href="#nlptest.transform.bias.ReligionBias" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing bias measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the bias measure.</p>
@@ -515,26 +495,6 @@ chosen_names: list of names to replace with.</p>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.ReligionBias"><code class="docutils literal notranslate"><span class="pre">ReligionBias</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.ReligionBias.transform"><code class="docutils literal notranslate"><span class="pre">ReligionBias.transform()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.BaseBias">BaseBias</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.BaseBias.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.GenderPronounBias">GenderPronounBias</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.GenderPronounBias.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.CountryEconomicBias">CountryEconomicBias</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.CountryEconomicBias.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.EthnicityNameBias">EthnicityNameBias</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.EthnicityNameBias.transform">transform</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.ReligionBias">ReligionBias</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.bias.ReligionBias.transform">transform</a></li>
 </ul>
 </li>
 </ul>

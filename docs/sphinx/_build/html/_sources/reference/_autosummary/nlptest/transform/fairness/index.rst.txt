@@ -1,0 +1,114 @@
+:orphan:
+
+.. INDEX
+
+:py:mod:`nlptest.transform.fairness`
+====================================
+
+.. py:module:: nlptest.transform.fairness
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   nlptest.transform.fairness.BaseFairness
+   nlptest.transform.fairness.MinGenderF1Score
+   nlptest.transform.fairness.MaxGenderF1Score
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   nlptest.transform.fairness.get_gendered_data
+
+
+
+.. py:class:: BaseFairness
+
+
+
+   Abstract base class for implementing accuracy measures.
+
+   Attributes:
+       alias_name (str): A name or list of names that identify the accuracy measure.
+
+   Methods:
+       transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
+
+   .. py:method:: transform(data, model, params)
+      :staticmethod:
+      :abstractmethod:
+
+      Abstract method that implements the accuracy measure.
+
+      Args:
+          data (List[Sample]): The input data to be transformed.
+
+      Returns:
+          Any: The transformed data based on the implemented accuracy measure.
+
+
+
+.. py:class:: MinGenderF1Score
+
+
+
+   Subclass of BaseFairness that implements the minimum F1 score.
+
+   Attributes:
+       alias_name (str): The name "min_f1" identifying the minimum F1 score.
+
+   Methods:
+       transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the minimum F1 score.
+
+   .. py:method:: transform(data: List[nlptest.utils.custom_types.Sample], model, params)
+      :staticmethod:
+
+      Computes the minimum F1 score for the given data.
+
+      Args:
+          data (List[Sample]): The input data to be transformed.
+
+      Returns:
+          Any: The transformed data based on the minimum F1 score.
+
+
+
+.. py:class:: MaxGenderF1Score
+
+
+
+   Subclass of BaseFairness that implements the maximum F1 score.
+
+   Attributes:
+       alias_name (str): The name identifying the test.
+
+   Methods:
+       transform(data: List[Sample]) -> List[Sample]: Transforms the input data into an output samples.
+
+   .. py:method:: transform(data: List[nlptest.utils.custom_types.Sample], model, params)
+      :staticmethod:
+
+      Computes the gendered max F1 score tests for the given data.
+
+      Args:
+          data (List[Sample]): The input data to be transformed.
+
+      Returns:
+          List[Sample]: The transformed samples.
+
+
+
+.. py:function:: get_gendered_data(data)
+
+   Split list of samples into gendered lists.
+
+

@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,19 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.augmentation.fix_robustness.BaseAugmentaion" title="nlptest.augmentation.fix_robustness.BaseAugmentaion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseAugmentaion</span></code></a></p></td>
-<td><p>Abstract base class for data augmentation techniques.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.augmentation.fix_robustness.AugmentRobustness" title="nlptest.augmentation.fix_robustness.AugmentRobustness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmentRobustness</span></code></a></p></td>
-<td><p>A class for performing a specified task with historical results.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.BaseAugmentaion">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseAugmentaion</span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.BaseAugmentaion" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.augmentation.fix_robustness.</span></span><span class="sig-name descname"><span class="pre">BaseAugmentaion</span></span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.BaseAugmentaion" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for data augmentation techniques.</p>
 <dl>
 <dt>Attributes:</dt><dd><p>None</p>
@@ -362,7 +351,7 @@ This method should perform the data augmentation operation.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.augmentation.fix_robustness.AugmentRobustness">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AugmentRobustness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.augmentation.fix_robustness.</span></span><span class="sig-name descname"><span class="pre">AugmentRobustness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_report</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.augmentation.fix_robustness.AugmentRobustness" title="Permalink to this definition">#</a></dt>
 <dd><p>A class for performing a specified task with historical results.</p>
 <p>Attributes:</p>
 <blockquote>
@@ -467,15 +456,6 @@ inplace (bool, optional): If True, the list of samples is modified in place.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.fix"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.fix()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions"><code class="docutils literal notranslate"><span class="pre">AugmentRobustness.suggestions()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.BaseAugmentaion">BaseAugmentaion</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.BaseAugmentaion.fix">fix</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness">AugmentRobustness</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.fix">fix</a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.augmentation.fix_robustness.AugmentRobustness.suggestions">suggestions</a></li>
 </ul>
 </li>
 </ul>

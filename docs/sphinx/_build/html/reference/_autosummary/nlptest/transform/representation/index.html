@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,19 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.representation.BaseRepresentation" title="nlptest.transform.representation.BaseRepresentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseRepresentation</span></code></a></p></td>
-<td><p>Abstract base class for implementing representation measures.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.representation.GenderReprestation" title="nlptest.transform.representation.GenderReprestation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GenderReprestation</span></code></a></p></td>
-<td><p>Abstract base class for implementing representation measures.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.representation.BaseRepresentation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.BaseRepresentation" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.representation.</span></span><span class="sig-name descname"><span class="pre">BaseRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.BaseRepresentation" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing representation measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the representation measure.</p>
@@ -345,7 +334,7 @@ document.write(`
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.BaseRepresentation.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract method that implements the representation measure.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be transformed.</p>
+<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be evaluated for representation test.</p>
 </dd>
 <dt>Returns:</dt><dd><p>Any: The transformed data based on the implemented representation measure.</p>
 </dd>
@@ -355,8 +344,8 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="nlptest.transform.representation.GenderReprestation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GenderReprestation</span></span><a class="headerlink" href="#nlptest.transform.representation.GenderReprestation" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nlptest.transform.representation.GenderRepresentation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.representation.</span></span><span class="sig-name descname"><span class="pre">GenderRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.GenderRepresentation" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract base class for implementing representation measures.</p>
 <dl class="simple">
 <dt>Attributes:</dt><dd><p>alias_name (str): A name or list of names that identify the representation measure.</p>
@@ -365,13 +354,113 @@ document.write(`
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="nlptest.transform.representation.GenderReprestation.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.GenderReprestation.transform" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nlptest.transform.representation.GenderRepresentation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.GenderRepresentation.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Abstract method that implements the representation measure.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be transformed.</p>
+<dt>Args:</dt><dd><p>data (List[Sample]): The input data to be evaluated for representation test.</p>
 </dd>
 <dt>Returns:</dt><dd><p>Any: The transformed data based on the implemented representation measure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nlptest.transform.representation.EthnicityRepresentation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.representation.</span></span><span class="sig-name descname"><span class="pre">EthnicityRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.EthnicityRepresentation" title="Permalink to this definition">#</a></dt>
+<dd><p>Subclass of BaseRepresentation that implements the ethnicity representation test.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>alias_name (List[str]): The list of test names that identify the representation measure.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.representation.EthnicityRepresentation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.EthnicityRepresentation.transform" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>test (str): name of the test
+data (List[Sample]): The input data to be evaluated for representation test.
+params : parameters specified in config.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If sum of specified proportions in config is greater than 1</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[Sample]: Ethnicity Representation test results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nlptest.transform.representation.LabelRepresentation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.representation.</span></span><span class="sig-name descname"><span class="pre">LabelRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.LabelRepresentation" title="Permalink to this definition">#</a></dt>
+<dd><p>Subclass of BaseRepresentation that implements the label representation test.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>alias_name (List[str]): The list of test names that identify the representation measure.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.representation.LabelRepresentation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.LabelRepresentation.transform" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>test (str): name of the test
+data (List[Sample]): The input data to be evaluated for representation test.
+params : parameters specified in config.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If sum of specified proportions in config is greater than 1</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[Sample]: Label Representation test results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nlptest.transform.representation.ReligionRepresentation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.representation.</span></span><span class="sig-name descname"><span class="pre">ReligionRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.ReligionRepresentation" title="Permalink to this definition">#</a></dt>
+<dd><p>Subclass of BaseRepresentation that implements the religion representation test.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>alias_name (List[str]): The list of test names that identify the representation measure.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.representation.ReligionRepresentation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.ReligionRepresentation.transform" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>test (str): name of the test
+data (List[Sample]): The input data to be evaluated for representation test.
+params : parameters specified in config.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If sum of specified proportions in config is greater than 1</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[Sample]: Religion Representation test results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nlptest.transform.representation.CountryEconomicRepresentation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.representation.</span></span><span class="sig-name descname"><span class="pre">CountryEconomicRepresentation</span></span><a class="headerlink" href="#nlptest.transform.representation.CountryEconomicRepresentation" title="Permalink to this definition">#</a></dt>
+<dd><p>Subclass of BaseRepresentation that implements the country economic representation test.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>alias_name (List[str]): The list of test names that identify the representation measure.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.representation.CountryEconomicRepresentation.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.representation.CountryEconomicRepresentation.transform" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>test (str): name of the test
+data (List[Sample]): The input data to be evaluated for representation test.
+params : parameters specified in config.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If sum of specified proportions in config is greater than 1</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[Sample]: Country Economic Representation test results.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -411,16 +500,24 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.BaseRepresentation.transform"><code class="docutils literal notranslate"><span class="pre">BaseRepresentation.transform()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.GenderReprestation"><code class="docutils literal notranslate"><span class="pre">GenderReprestation</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.GenderReprestation.transform"><code class="docutils literal notranslate"><span class="pre">GenderReprestation.transform()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.GenderRepresentation"><code class="docutils literal notranslate"><span class="pre">GenderRepresentation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.GenderRepresentation.transform"><code class="docutils literal notranslate"><span class="pre">GenderRepresentation.transform()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.BaseRepresentation">BaseRepresentation</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.BaseRepresentation.transform">transform</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.EthnicityRepresentation"><code class="docutils literal notranslate"><span class="pre">EthnicityRepresentation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.EthnicityRepresentation.transform"><code class="docutils literal notranslate"><span class="pre">EthnicityRepresentation.transform()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.GenderReprestation">GenderReprestation</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.GenderReprestation.transform">transform</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.LabelRepresentation"><code class="docutils literal notranslate"><span class="pre">LabelRepresentation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.LabelRepresentation.transform"><code class="docutils literal notranslate"><span class="pre">LabelRepresentation.transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.ReligionRepresentation"><code class="docutils literal notranslate"><span class="pre">ReligionRepresentation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.ReligionRepresentation.transform"><code class="docutils literal notranslate"><span class="pre">ReligionRepresentation.transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.CountryEconomicRepresentation"><code class="docutils literal notranslate"><span class="pre">CountryEconomicRepresentation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.representation.CountryEconomicRepresentation.transform"><code class="docutils literal notranslate"><span class="pre">CountryEconomicRepresentation.transform()</span></code></a></li>
 </ul>
 </li>
 </ul>

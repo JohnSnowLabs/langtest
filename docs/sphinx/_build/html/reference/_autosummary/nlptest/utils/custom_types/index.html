@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,25 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.utils.custom_types.NEROutput" title="nlptest.utils.custom_types.NEROutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEROutput</span></code></a></p></td>
-<td><p>Output model for NER tasks.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.utils.custom_types.SequenceClassificationOutput" title="nlptest.utils.custom_types.SequenceClassificationOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SequenceClassificationOutput</span></code></a></p></td>
-<td><p>Output model for text classification tasks.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.utils.custom_types.AccuracyOutput" title="nlptest.utils.custom_types.AccuracyOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AccuracyOutput</span></code></a></p></td>
-<td><p>Output for accuracy tests.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sample</span></code></a></p></td>
-<td><p>Helper object storing the original text, the perturbed one and the corresponding</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.utils.custom_types.NEROutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NEROutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.NEROutput" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.utils.custom_types.</span></span><span class="sig-name descname"><span class="pre">NEROutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.NEROutput" title="Permalink to this definition">#</a></dt>
 <dd><p>Output model for NER tasks.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.utils.custom_types.NEROutput.to_str_list">
@@ -354,7 +337,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.utils.custom_types.SequenceClassificationOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SequenceClassificationOutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.SequenceClassificationOutput" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.utils.custom_types.</span></span><span class="sig-name descname"><span class="pre">SequenceClassificationOutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.SequenceClassificationOutput" title="Permalink to this definition">#</a></dt>
 <dd><p>Output model for text classification tasks.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.utils.custom_types.SequenceClassificationOutput.to_str_list">
@@ -369,14 +352,26 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="nlptest.utils.custom_types.MinScoreOutput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.utils.custom_types.</span></span><span class="sig-name descname"><span class="pre">MinScoreOutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.MinScoreOutput" title="Permalink to this definition">#</a></dt>
+<dd><p>Output for accuracy/representation tests.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nlptest.utils.custom_types.MaxScoreOutput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.utils.custom_types.</span></span><span class="sig-name descname"><span class="pre">MaxScoreOutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.MaxScoreOutput" title="Permalink to this definition">#</a></dt>
+<dd><p>Output for accuracy/representation tests.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="nlptest.utils.custom_types.AccuracyOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AccuracyOutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.AccuracyOutput" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.utils.custom_types.</span></span><span class="sig-name descname"><span class="pre">AccuracyOutput</span></span><a class="headerlink" href="#nlptest.utils.custom_types.AccuracyOutput" title="Permalink to this definition">#</a></dt>
 <dd><p>Output for accuracy tests.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.utils.custom_types.Sample">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.utils.custom_types.Sample" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.utils.custom_types.</span></span><span class="sig-name descname"><span class="pre">Sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.utils.custom_types.Sample" title="Permalink to this definition">#</a></dt>
 <dd><p>Helper object storing the original text, the perturbed one and the corresponding
 predictions for each of them.</p>
 <p>The specificity here is that it is task-agnostic, one only needs to call access the <cite>is_pass</cite>
@@ -450,26 +445,13 @@ with any other the tuple is of the form (Span, None) (or (None, Span)).</p>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.SequenceClassificationOutput.to_str_list"><code class="docutils literal notranslate"><span class="pre">SequenceClassificationOutput.to_str_list()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.MinScoreOutput"><code class="docutils literal notranslate"><span class="pre">MinScoreOutput</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.MaxScoreOutput"><code class="docutils literal notranslate"><span class="pre">MaxScoreOutput</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.AccuracyOutput"><code class="docutils literal notranslate"><span class="pre">AccuracyOutput</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample"><code class="docutils literal notranslate"><span class="pre">Sample</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample.to_dict"><code class="docutils literal notranslate"><span class="pre">Sample.to_dict()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample.sort_transformations"><code class="docutils literal notranslate"><span class="pre">Sample.sort_transformations()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample.get_aligned_span_pairs"><code class="docutils literal notranslate"><span class="pre">Sample.get_aligned_span_pairs()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.NEROutput">NEROutput</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.NEROutput.to_str_list">to_str_list</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.SequenceClassificationOutput">SequenceClassificationOutput</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.SequenceClassificationOutput.to_str_list">to_str_list</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.AccuracyOutput">AccuracyOutput</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample">Sample</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample.to_dict">to_dict</a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample.sort_transformations">sort_transformations</a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.utils.custom_types.Sample.get_aligned_span_pairs">get_aligned_span_pairs</a></li>
 </ul>
 </li>
 </ul>

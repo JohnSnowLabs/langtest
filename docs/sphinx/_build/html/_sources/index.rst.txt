@@ -4,17 +4,16 @@
    contain the root `toctree` directive.
 
 Welcome to the docs page for NLP Test!
-===================================
+=======================================
 
 *******
 Content
 *******
 
-.. toctree::
-    :maxdepth: 2
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
 
-    getting_started/index
-    user_guide/index
-    third_party/index
-    reference/index
+   nlptest
 

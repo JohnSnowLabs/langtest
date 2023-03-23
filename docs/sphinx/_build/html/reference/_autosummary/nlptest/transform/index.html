@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,31 +319,9 @@ document.write(`
 <h2>Package Contents<a class="headerlink" href="#package-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.TestFactory" title="nlptest.transform.TestFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TestFactory</span></code></a></p></td>
-<td><p>A factory class for creating and running different types of tests on data.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.ITests" title="nlptest.transform.ITests"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ITests</span></code></a></p></td>
-<td><p>An abstract base class for defining different types of tests.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.RobustnessTestFactory" title="nlptest.transform.RobustnessTestFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RobustnessTestFactory</span></code></a></p></td>
-<td><p>An abstract base class for defining different types of tests.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.BiasTestFactory" title="nlptest.transform.BiasTestFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BiasTestFactory</span></code></a></p></td>
-<td><p>An abstract base class for defining different types of tests.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.transform.RepresentationTestFactory" title="nlptest.transform.RepresentationTestFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RepresentationTestFactory</span></code></a></p></td>
-<td><p>An abstract base class for defining different types of tests.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.transform.AccuracyTestFactory" title="nlptest.transform.AccuracyTestFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AccuracyTestFactory</span></code></a></p></td>
-<td><p>An abstract base class for defining different types of tests.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.TestFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TestFactory</span></span><a class="headerlink" href="#nlptest.transform.TestFactory" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">TestFactory</span></span><a class="headerlink" href="#nlptest.transform.TestFactory" title="Permalink to this definition">#</a></dt>
 <dd><p>A factory class for creating and running different types of tests on data.</p>
 <p>…</p>
 <section id="methods">
@@ -412,7 +389,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.ITests">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ITests</span></span><a class="headerlink" href="#nlptest.transform.ITests" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">ITests</span></span><a class="headerlink" href="#nlptest.transform.ITests" title="Permalink to this definition">#</a></dt>
 <dd><p>An abstract base class for defining different types of tests.</p>
 <p>…</p>
 <section id="id3">
@@ -454,7 +431,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.RobustnessTestFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RobustnessTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.RobustnessTestFactory" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">RobustnessTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.RobustnessTestFactory" title="Permalink to this definition">#</a></dt>
 <dd><p>An abstract base class for defining different types of tests.</p>
 <p>…</p>
 <section id="id6">
@@ -520,7 +497,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.BiasTestFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BiasTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.BiasTestFactory" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">BiasTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.BiasTestFactory" title="Permalink to this definition">#</a></dt>
 <dd><p>An abstract base class for defining different types of tests.</p>
 <p>…</p>
 <section id="id9">
@@ -586,7 +563,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.transform.RepresentationTestFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RepresentationTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.RepresentationTestFactory" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">RepresentationTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.RepresentationTestFactory" title="Permalink to this definition">#</a></dt>
 <dd><p>An abstract base class for defining different types of tests.</p>
 <p>…</p>
 <section id="id13">
@@ -651,8 +628,8 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="nlptest.transform.AccuracyTestFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AccuracyTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.AccuracyTestFactory" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="nlptest.transform.FairnessTestFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">FairnessTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.FairnessTestFactory" title="Permalink to this definition">#</a></dt>
 <dd><p>An abstract base class for defining different types of tests.</p>
 <p>…</p>
 <section id="id17">
@@ -664,14 +641,14 @@ document.write(`
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="nlptest.transform.AccuracyTestFactory.alias_name">
-<span class="sig-name descname"><span class="pre">alias_name</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">accuracy</span></em><a class="headerlink" href="#nlptest.transform.AccuracyTestFactory.alias_name" title="Permalink to this definition">#</a></dt>
-<dd><p>A class for performing accuracy tests on a given dataset.</p>
+<dt class="sig sig-object py" id="nlptest.transform.FairnessTestFactory.alias_name">
+<span class="sig-name descname"><span class="pre">alias_name</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">fairness</span></em><a class="headerlink" href="#nlptest.transform.FairnessTestFactory.alias_name" title="Permalink to this definition">#</a></dt>
+<dd><p>A class for performing fairness tests on a given dataset.</p>
 <p>…</p>
 <section id="id18">
 <h5>Attributes<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h5>
 <dl class="simple">
-<dt>supported_tests<span class="classifier">dict</span></dt><dd><p>A dictionary of supported accuracy test scenarios.</p>
+<dt>supported_tests<span class="classifier">dict</span></dt><dd><p>A dictionary of supported fairness test scenarios.</p>
 </dd>
 <dt>tests<span class="classifier">dict</span></dt><dd><p>A dictionary of test names and corresponding parameters.</p>
 </dd>
@@ -681,6 +658,72 @@ document.write(`
 </section>
 <section id="id19">
 <h5>Methods<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h5>
+<dl class="simple">
+<dt>transform() -&gt; List[Sample]:</dt><dd><p>Runs the fairness test and returns the resulting <cite>Sample</cite> objects.</p>
+</dd>
+<dt>available_tests() -&gt; dict:</dt><dd><p>Returns a dictionary of available test scenarios for the <cite>fairness</cite> class.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.FairnessTestFactory.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.FairnessTestFactory.transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs the robustness test and returns the resulting <cite>Sample</cite> objects.</p>
+<section id="id20">
+<h5>Returns<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h5>
+<dl class="simple">
+<dt>List[Sample]</dt><dd><p>A list of <cite>Sample</cite> objects representing the resulting dataset after running the robustness test.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nlptest.transform.FairnessTestFactory.available_tests">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available_tests</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#nlptest.transform.FairnessTestFactory.available_tests" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>dict: A dictionary of test names and classes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nlptest.transform.AccuracyTestFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.transform.</span></span><span class="sig-name descname"><span class="pre">AccuracyTestFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../utils/custom_types/index.html#nlptest.utils.custom_types.Sample" title="nlptest.utils.custom_types.Sample"><span class="pre">nlptest.utils.custom_types.Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">nlptest.modelhandler.ModelFactory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.AccuracyTestFactory" title="Permalink to this definition">#</a></dt>
+<dd><p>An abstract base class for defining different types of tests.</p>
+<p>…</p>
+<section id="id21">
+<h4>Methods<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h4>
+<dl class="simple">
+<dt>transform() -&gt; List[Results]:</dt><dd><p>Runs the test and returns the results.</p>
+</dd>
+<dt>available_tests() -&gt; List[str]:</dt><dd><p>Returns a list of available test scenarios for the test class.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nlptest.transform.AccuracyTestFactory.alias_name">
+<span class="sig-name descname"><span class="pre">alias_name</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">accuracy</span></em><a class="headerlink" href="#nlptest.transform.AccuracyTestFactory.alias_name" title="Permalink to this definition">#</a></dt>
+<dd><p>A class for performing accuracy tests on a given dataset.</p>
+<p>…</p>
+<section id="id22">
+<h5>Attributes<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h5>
+<dl class="simple">
+<dt>supported_tests<span class="classifier">dict</span></dt><dd><p>A dictionary of supported accuracy test scenarios.</p>
+</dd>
+<dt>tests<span class="classifier">dict</span></dt><dd><p>A dictionary of test names and corresponding parameters.</p>
+</dd>
+<dt>_data_handler<span class="classifier">List[Sample]</span></dt><dd><p>A list of <cite>Sample</cite> objects representing the input dataset.</p>
+</dd>
+</dl>
+</section>
+<section id="id23">
+<h5>Methods<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h5>
 <dl class="simple">
 <dt>transform() -&gt; List[Sample]:</dt><dd><p>Runs the accuracy test and returns the resulting <cite>Sample</cite> objects.</p>
 </dd>
@@ -694,8 +737,8 @@ document.write(`
 <dt class="sig sig-object py" id="nlptest.transform.AccuracyTestFactory.transform">
 <span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.transform.AccuracyTestFactory.transform" title="Permalink to this definition">#</a></dt>
 <dd><p>Runs the robustness test and returns the resulting <cite>Sample</cite> objects.</p>
-<section id="id20">
-<h5>Returns<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h5>
+<section id="id24">
+<h5>Returns<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h5>
 <dl class="simple">
 <dt>List[Sample]</dt><dd><p>A list of <cite>Sample</cite> objects representing the resulting dataset after running the robustness test.</p>
 </dd>
@@ -774,18 +817,18 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.RepresentationTestFactory.available_tests"><code class="docutils literal notranslate"><span class="pre">RepresentationTestFactory.available_tests()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.FairnessTestFactory"><code class="docutils literal notranslate"><span class="pre">FairnessTestFactory</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.FairnessTestFactory.alias_name"><code class="docutils literal notranslate"><span class="pre">FairnessTestFactory.alias_name</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.FairnessTestFactory.transform"><code class="docutils literal notranslate"><span class="pre">FairnessTestFactory.transform()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.FairnessTestFactory.available_tests"><code class="docutils literal notranslate"><span class="pre">FairnessTestFactory.available_tests()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.AccuracyTestFactory"><code class="docutils literal notranslate"><span class="pre">AccuracyTestFactory</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.AccuracyTestFactory.alias_name"><code class="docutils literal notranslate"><span class="pre">AccuracyTestFactory.alias_name</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.AccuracyTestFactory.transform"><code class="docutils literal notranslate"><span class="pre">AccuracyTestFactory.transform()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.AccuracyTestFactory.available_tests"><code class="docutils literal notranslate"><span class="pre">AccuracyTestFactory.available_tests()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.TestFactory">TestFactory</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.ITests">ITests</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.RobustnessTestFactory">RobustnessTestFactory</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.BiasTestFactory">BiasTestFactory</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.RepresentationTestFactory">RepresentationTestFactory</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.transform.AccuracyTestFactory">AccuracyTestFactory</a></li>
 </ul>
 </li>
 </ul>

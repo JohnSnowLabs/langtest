@@ -30,7 +30,6 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -320,25 +319,9 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
-<table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.datahandler.datasource.DataFactory" title="nlptest.datahandler.datasource.DataFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataFactory</span></code></a></p></td>
-<td><p>Data factory for creating Dataset objects.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.datahandler.datasource.ConllDataset" title="nlptest.datahandler.datasource.ConllDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConllDataset</span></code></a></p></td>
-<td><p>Class to handle Conll files. Subclass of _IDataset.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nlptest.datahandler.datasource.JSONDataset" title="nlptest.datahandler.datasource.JSONDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JSONDataset</span></code></a></p></td>
-<td><p>Class to handle JSON dataset files. Subclass of _IDataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nlptest.datahandler.datasource.CSVDataset" title="nlptest.datahandler.datasource.CSVDataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CSVDataset</span></code></a></p></td>
-<td><p>Class to handle CSV files dataset. Subclass of _IDataset.</p></td>
-</tr>
-</tbody>
-</table>
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.DataFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.DataFactory" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.datasource.</span></span><span class="sig-name descname"><span class="pre">DataFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.DataFactory" title="Permalink to this definition">#</a></dt>
 <dd><p>Data factory for creating Dataset objects.</p>
 <p>The DataFactory class is responsible for creating instances of the
 correct Dataset type based on the file extension.</p>
@@ -356,7 +339,7 @@ correct Dataset type based on the file extension.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.ConllDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ConllDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.ConllDataset" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.datasource.</span></span><span class="sig-name descname"><span class="pre">ConllDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.ConllDataset" title="Permalink to this definition">#</a></dt>
 <dd><p>Class to handle Conll files. Subclass of _IDataset.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.ConllDataset.load_data">
@@ -372,7 +355,7 @@ correct Dataset type based on the file extension.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.JSONDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JSONDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.JSONDataset" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.datasource.</span></span><span class="sig-name descname"><span class="pre">JSONDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.JSONDataset" title="Permalink to this definition">#</a></dt>
 <dd><p>Class to handle JSON dataset files. Subclass of _IDataset.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.JSONDataset.load_data">
@@ -384,7 +367,7 @@ correct Dataset type based on the file extension.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.CSVDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CSVDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.CSVDataset" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nlptest.datahandler.datasource.</span></span><span class="sig-name descname"><span class="pre">CSVDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nlptest.datahandler.datasource.CSVDataset" title="Permalink to this definition">#</a></dt>
 <dd><p>Class to handle CSV files dataset. Subclass of _IDataset.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nlptest.datahandler.datasource.CSVDataset.load_data">
@@ -438,22 +421,6 @@ correct Dataset type based on the file extension.</p>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.CSVDataset"><code class="docutils literal notranslate"><span class="pre">CSVDataset</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.CSVDataset.load_data"><code class="docutils literal notranslate"><span class="pre">CSVDataset.load_data()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.DataFactory">DataFactory</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.DataFactory.load">load</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.ConllDataset">ConllDataset</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.ConllDataset.load_data">load_data</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.JSONDataset">JSONDataset</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.JSONDataset.load_data">load_data</a></li>
-</ul>
-</li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.CSVDataset">CSVDataset</a><ul class="nav section-nav flex-column">
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#nlptest.datahandler.datasource.CSVDataset.load_data">load_data</a></li>
 </ul>
 </li>
 </ul>
