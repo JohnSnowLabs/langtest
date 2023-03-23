@@ -83,6 +83,8 @@ class MinPrecisionScore(BaseAccuracy):
 
         precision_samples = []
         for k, v in df_metrics.items():
+            if k not in min_scores.keys():
+                continue
             sample = Sample(
                 original = "-",
                 category = "Accuracy",
@@ -138,6 +140,8 @@ class MinRecallScore(BaseAccuracy):
 
         rec_samples = []
         for k, v in df_metrics.items():
+            if k not in min_scores.keys():
+                continue
             sample = Sample(
                 original = "-",
                 category = "Accuracy",
@@ -194,6 +198,8 @@ class MinF1Score(BaseAccuracy):
 
         f1_samples = []
         for k, v in df_metrics.items():
+            if k not in min_scores.keys():
+                continue
             sample = Sample(
                 original = "-",
                 category = "Accuracy",
