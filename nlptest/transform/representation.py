@@ -1,9 +1,8 @@
-
-
 from abc import ABC, abstractmethod
 from typing import List
 import pandas as pd
 from nlptest.utils.custom_types import Sample, MinScoreOutput
+from nlptest.utils.gender_classifier import GenderClassifier
 from .utils import default_label_representation ,default_ehtnicity_representation,default_economic_country_representation,  default_religion_representation, get_label_representation_dict, get_country_economic_representation_dict, get_religion_name_representation_dict, get_ethnicity_representation_dict, get_entity_representation_proportions
 
 class BaseRepresentation(ABC):
@@ -38,15 +37,90 @@ class BaseRepresentation(ABC):
 
 
 class GenderRepresentation(BaseRepresentation):
+    """
+    Subclass of BaseRepresentation that implements the gender representation test.
 
+    Attributes:
+        alias_name (List[str]): The list of test names that identify the representation measure.
+
+    """
     alias_name = [
         "min_gender_representation_count",
         "min_gender_representation_proportion"
     ]
     
-    def transform(data: List[Sample]):
-        return super().transform()
+    def transform(test, data, params):
+        """
+        Args:
+            test (str): name of the test
+            data (List[Sample]): The input data to be evaluated for representation test.
+            params : parameters specified in config.
 
+        Raises:
+            ValueError: If sum of specified proportions in config is greater than 1
+    
+        Returns:
+            List[Sample]: Ethnicity Representation test results.
+        """    
+        classifier = GenderClassifier()
+        genders = [classifier.predict(sample.original) for sample in data]
+
+        gender_counts = {
+            "male": len([x for x in genders if x == "male"]),
+            "female": len([x for x in genders if x == "female"]),
+            "unknown": len([x for x in genders if x == "unknown"])
+        }
+
+        samples = []
+        if test == "min_gender_representation_count":
+            if isinstance(params["min_count"], dict):
+                min_counts = params["min_count"]
+            else:
+                min_counts = {
+                    "male": params["min_count"],
+                    "female": params["min_count"],
+                    "unknown": params["min_count"]
+                }
+
+            for k, v in min_counts.items():
+                sample = Sample(
+                    original = "-",
+                    category = "representation",
+                    test_type = "min_gender_representation_count",
+                    test_case = k,
+                    expected_results = MinScoreOutput(score=v) ,
+                    actual_results = MinScoreOutput(score=gender_counts[k]),
+                    state = "done"
+                )
+                samples.append(sample)
+        elif test == "min_gender_representation_proportion":
+            min_proportions = {
+                "male": 0.26,
+                "female": 0.26,
+                "unknown": 0.26
+            }
+
+            if isinstance(params["min_proportion"], dict):
+                min_proportions = params["min_proportion"]
+                if sum(min_proportions.values()) > 1:
+                    raise ValueError("Sum of proportions cannot be greater than 1. So min_gender_representation_proportion test cannot run.")
+
+            total_samples = len(data)
+            for k, v in min_proportions.items():
+                sample = Sample(
+                    original = "-",
+                    category = "representation",
+                    test_type = "min_gender_representation_proportion",
+                    test_case = k,
+                    expected_results = MinScoreOutput(score=v) ,
+                    actual_results = MinScoreOutput(score=gender_counts[k]/total_samples),
+                    state = "done"
+                )
+                samples.append(sample)
+        return samples
+            
+        
+        
 class EthnicityRepresentation(BaseRepresentation):
     
     """
