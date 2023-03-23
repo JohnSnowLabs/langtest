@@ -88,8 +88,8 @@ class GenderRepresentation(BaseRepresentation):
                     category = "representation",
                     test_type = "min_gender_representation_count",
                     test_case = k,
-                    expected_results = MinScoreOutput(score=v) ,
-                    actual_results = MinScoreOutput(score=gender_counts[k]),
+                    expected_results = MinScoreOutput(min_score=v) ,
+                    actual_results = MinScoreOutput(min_score=gender_counts[k]),
                     state = "done"
                 )
                 samples.append(sample)
@@ -112,8 +112,8 @@ class GenderRepresentation(BaseRepresentation):
                     category = "representation",
                     test_type = "min_gender_representation_proportion",
                     test_case = k,
-                    expected_results = MinScoreOutput(score=v) ,
-                    actual_results = MinScoreOutput(score=gender_counts[k]/total_samples),
+                    expected_results = MinScoreOutput(min_score=v) ,
+                    actual_results = MinScoreOutput(min_score=gender_counts[k]/total_samples),
                     state = "done"
                 )
                 samples.append(sample)
@@ -175,8 +175,8 @@ class EthnicityRepresentation(BaseRepresentation):
                     category = "representation",
                     test_type = "min_ethnicity_name_representation_count",
                     test_case = key,
-                    expected_results = MinScoreOutput(score=value) ,
-                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    expected_results = MinScoreOutput(min_score=value) ,
+                    actual_results = MinScoreOutput(min_score=actual_representation[key]),
                     state = "done"
                 )
                 sample_list.append(sample)
@@ -211,8 +211,8 @@ class EthnicityRepresentation(BaseRepresentation):
                         category = "representation",
                         test_type = "min_ethnicity_name_representation_proportion",
                         test_case = key,
-                        expected_results = MinScoreOutput(score=value),
-                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        expected_results = MinScoreOutput(min_score=value),
+                        actual_results = MinScoreOutput(min_score=actual_representation[key]),
                         state = "done"
                     )
                     sample_list.append(sample)
@@ -272,8 +272,8 @@ class LabelRepresentation(BaseRepresentation):
                     category = "representation",
                     test_type = "min_label_representation_count",
                     test_case = key,
-                    expected_results = MinScoreOutput(score=value) ,
-                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    expected_results = MinScoreOutput(min_score=value) ,
+                    actual_results = MinScoreOutput(min_score=actual_representation[key]),
                     state = "done"
                 )
                 sample_list.append(sample)
@@ -309,8 +309,8 @@ class LabelRepresentation(BaseRepresentation):
                         category = "representation",
                         test_type = "min_label_representation_proportion",
                         test_case = key,
-                        expected_results = MinScoreOutput(score=value),
-                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        expected_results = MinScoreOutput(min_score=value),
+                        actual_results = MinScoreOutput(min_score=actual_representation[key]),
                         state = "done"
                     )
                     sample_list.append(sample)
@@ -371,8 +371,8 @@ class ReligionRepresentation(BaseRepresentation):
                     category = "representation",
                     test_type = "min_religion_name_representation_count",
                     test_case = key,
-                    expected_results = MinScoreOutput(score=value) ,
-                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    expected_results = MinScoreOutput(min_score=value) ,
+                    actual_results = MinScoreOutput(min_score=actual_representation[key]),
                     state = "done"
                 )
                 sample_list.append(sample)
@@ -406,8 +406,8 @@ class ReligionRepresentation(BaseRepresentation):
                         category = "representation",
                         test_type = "min_religion_name_representation_proportion",
                         test_case = key,
-                        expected_results = MinScoreOutput(score=value),
-                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        expected_results = MinScoreOutput(min_score=value),
+                        actual_results = MinScoreOutput(min_score=actual_representation[key]),
                         state = "done"
                     )
                     sample_list.append(sample)
@@ -465,8 +465,8 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     category = "representation",
                     test_type = "min_country_economic_representation_count",
                     test_case = key,
-                    expected_results = MinScoreOutput(score=value) ,
-                    actual_results = MinScoreOutput(score=actual_representation[key]),
+                    expected_results = MinScoreOutput(min_score=value) ,
+                    actual_results = MinScoreOutput(min_score=actual_representation[key]),
                     state = "done"
                 )
                 sample_list.append(sample)
@@ -500,8 +500,8 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         category = "representation",
                         test_type = "min_country_economic_representation_proportion",
                         test_case = key,
-                        expected_results = MinScoreOutput(score=value),
-                        actual_results = MinScoreOutput(score=actual_representation[key]),
+                        expected_results = MinScoreOutput(min_score=value),
+                        actual_results = MinScoreOutput(min_score=actual_representation[key]),
                         state = "done"
                     )
                     sample_list.append(sample)

@@ -88,8 +88,8 @@ class MinPrecisionScore(BaseAccuracy):
                 category = "Accuracy",
                 test_type = "min_precision_score",
                 test_case = k,
-                expected_results = MinScoreOutput(score=min_scores[k]),
-                actual_results = MinScoreOutput(score=v["precision"]),
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["precision"]),
                 state = "done"
             )
             precision_samples.append(sample)
@@ -143,8 +143,8 @@ class MinRecallScore(BaseAccuracy):
                 category = "Accuracy",
                 test_type = "min_recall_score",
                 test_case = k,
-                expected_results = MinScoreOutput(score=min_scores[k]),
-                actual_results = MinScoreOutput(score=v["recall"]),
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["recall"]),
                 state = "done"
             )
             rec_samples.append(sample)
@@ -199,8 +199,8 @@ class MinF1Score(BaseAccuracy):
                 category = "Accuracy",
                 test_type = "min_f1_score",
                 test_case = k,
-                expected_results = MinScoreOutput(score=min_scores[k]),
-                actual_results = MinScoreOutput(score=v["f1-score"]),
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["f1-score"]),
                 state = "done"
             )
             f1_samples.append(sample)
@@ -242,8 +242,8 @@ class MinMicroF1Score(BaseAccuracy):
             category = "Accuracy",
             test_type = "min_micro_f1_score",
             test_case = "micro",
-            expected_results = MinScoreOutput(score=min_score),
-            actual_results = MinScoreOutput(score=f1),
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
 
             state = "done"
         )
@@ -285,8 +285,8 @@ class MinMacroF1Score(BaseAccuracy):
             category = "Accuracy",
             test_type = "min__macro_f1_score",
             test_case = "macro",
-            expected_results = MinScoreOutput(score=min_score),
-            actual_results = MinScoreOutput(score=f1),
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
             state = "done"
         )
 
@@ -327,8 +327,8 @@ class MinWeightedF1Score(BaseAccuracy):
             category = "Accuracy",
             test_type = "min_weighted_f1_score",
             test_case = "weighted",
-            expected_results = MinScoreOutput(score=min_score),
-            actual_results = MinScoreOutput(score=f1),
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
             state = "done"
         )
 

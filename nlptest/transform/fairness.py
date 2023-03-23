@@ -105,8 +105,8 @@ class MinGenderF1Score(BaseFairness):
                 category = "fairness",
                 test_type = "min_gender_f1_score",
                 test_case = key,
-                expected_results = MinScoreOutput(score=min_scores[key]),
-                actual_results = MinScoreOutput(score=macro_f1_score),
+                expected_results = MinScoreOutput(min_score=min_scores[key]),
+                actual_results = MinScoreOutput(min_score=macro_f1_score),
                 state = "done"
             )
 
@@ -178,10 +178,10 @@ class MaxGenderF1Score(BaseFairness):
             sample = Sample(
                 original = "-",
                 category = "fairness",
-                test_type = "min_gender_f1_score",
+                test_type = "max_gender_f1_score",
                 test_case = key,
-                expected_results = MaxScoreOutput(score=max_scores[key]),
-                actual_results = MaxScoreOutput(score=macro_f1_score),
+                expected_results = MaxScoreOutput(max_score=max_scores[key]),
+                actual_results = MaxScoreOutput(max_score=macro_f1_score),
                 state = "done"
             )
 

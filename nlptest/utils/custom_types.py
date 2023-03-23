@@ -175,33 +175,30 @@ class SequenceClassificationOutput(BaseModel):
     
 class MinScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
-    score: float
+    min_score: float
 
     def to_str_list(self) -> float:
-        return self.score
+        return self.min_score
     
     def __repr__(self) -> str:
-        return f"{self.score}"
+        return f"{self.min_score}"
     def __str__(self) -> str:
-        return f"{self.score}"
+        return f"{self.min_score}"
 
 class MaxScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
-    score: float
+    max_score: float
 
     def to_str_list(self) -> float:
-        return self.score
+        return self.max_score
     
     def __repr__(self) -> str:
-        return f"{self.score}"
+        return f"{self.max_score}"
     def __str__(self) -> str:
-        return f"{self.score}"
+        return f"{self.max_score}"
 
-class AccuracyOutput(BaseModel):
-    """Output for accuracy tests."""
-    score: float
 
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput)
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput)
 
 class Transformation(BaseModel):
     original_span: Span
@@ -384,9 +381,9 @@ class Sample(BaseModel):
             expected_preds = [j.entity for j in self.expected_results.predictions]
             return actual_preds == expected_preds
         elif isinstance(self.actual_results, MinScoreOutput):
-            return self.actual_results.score >= self.expected_results.score
+            return self.actual_results.min_score >= self.expected_results.min_score
         elif isinstance(self.actual_results, MaxScoreOutput):
-            return self.actual_results.score <= self.expected_results.score
+            return self.actual_results.max_score <= self.expected_results.max_score
 
         else:
             filtered_actual_results = self.actual_results
