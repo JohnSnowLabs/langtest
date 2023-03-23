@@ -172,9 +172,9 @@ class SequenceClassificationOutput(BaseModel):
         top_class = max(self.predictions, key=lambda x: x.score).label
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
-
-class AccuracyOutput(BaseModel):
-    """Output for accuracy tests."""
+    
+class MinScoreOutput(BaseModel):
+    """Output for accuracy/representation tests."""
     score: float
 
     def to_str_list(self) -> float:
@@ -185,8 +185,23 @@ class AccuracyOutput(BaseModel):
     def __str__(self) -> str:
         return f"{self.score}"
 
+class MaxScoreOutput(BaseModel):
+    """Output for accuracy/representation tests."""
+    score: float
 
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, AccuracyOutput)
+    def to_str_list(self) -> float:
+        return self.score
+    
+    def __repr__(self) -> str:
+        return f"{self.score}"
+    def __str__(self) -> str:
+        return f"{self.score}"
+
+class AccuracyOutput(BaseModel):
+    """Output for accuracy tests."""
+    score: float
+
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput)
 
 class Transformation(BaseModel):
     original_span: Span
@@ -368,8 +383,10 @@ class Sample(BaseModel):
             actual_preds = [i.entity for i in self.actual_results.predictions]
             expected_preds = [j.entity for j in self.expected_results.predictions]
             return actual_preds == expected_preds
-        elif isinstance(self.actual_results, AccuracyOutput):
+        elif isinstance(self.actual_results, MinScoreOutput):
             return self.actual_results.score >= self.expected_results.score
+        elif isinstance(self.actual_results, MaxScoreOutput):
+            return self.actual_results.score <= self.expected_results.score
 
         else:
             filtered_actual_results = self.actual_results
