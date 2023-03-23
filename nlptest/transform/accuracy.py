@@ -76,7 +76,7 @@ class MinPrecisionScore(BaseAccuracy):
                 label:params["min_score"] for label in labels
             }
 
-        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
@@ -131,7 +131,7 @@ class MinRecallScore(BaseAccuracy):
                 label:params["min_score"] for label in labels
             }
         
-        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
@@ -187,7 +187,7 @@ class MinF1Score(BaseAccuracy):
                 label:params["min_score"] for label in labels
             }
 
-        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
@@ -235,7 +235,7 @@ class MinMicroF1Score(BaseAccuracy):
 
         min_score = params["min_score"]
 
-        f1 = f1_score(y_true, y_pred, average="micro")
+        f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)
 
         sample = Sample(
             original = "-",
@@ -278,7 +278,7 @@ class MinMacroF1Score(BaseAccuracy):
         """
 
         min_score = params["min_score"]
-        f1 = f1_score(y_true, y_pred, average="macro")
+        f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
 
         sample = Sample(
             original = "-",
@@ -320,7 +320,7 @@ class MinWeightedF1Score(BaseAccuracy):
         """
 
         min_score = params["min_score"]
-        f1 = f1_score(y_true, y_pred, average="weighted")
+        f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
 
         sample = Sample(
             original = "-",

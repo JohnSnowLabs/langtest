@@ -78,7 +78,11 @@ class MinGenderF1Score(BaseFairness):
         samples = []
 
         for key, val in gendered_data.items():
-            y_true = pd.Series(val).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            try:
+                y_true = pd.Series(val).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            except:
+                y_true = pd.Series(val).apply(lambda x: [y.label for y in x.expected_results.predictions])
+
             X_test = pd.Series(val).apply(lambda x: x.original)
             y_pred = X_test.apply(model.predict_raw)
             
@@ -92,7 +96,7 @@ class MinGenderF1Score(BaseFairness):
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
-            macro_f1_score = f1_score(y_true, y_pred, average="macro")
+            macro_f1_score = f1_score(y_true, y_pred, average="macro", zero_division=0)
             if np.isnan(macro_f1_score):
                 macro_f1_score = 1
 
@@ -149,7 +153,10 @@ class MaxGenderF1Score(BaseFairness):
         samples = []
 
         for key, val in gendered_data.items():
-            y_true = pd.Series(val).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            try:
+                y_true = pd.Series(val).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            except:
+                y_true = pd.Series(val).apply(lambda x: [y.label for y in x.expected_results.predictions])
             X_test = pd.Series(val).apply(lambda x: x.original)
             y_pred = X_test.apply(model.predict_raw)
             
@@ -163,7 +170,7 @@ class MaxGenderF1Score(BaseFairness):
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
-            macro_f1_score = f1_score(y_true, y_pred, average="macro")
+            macro_f1_score = f1_score(y_true, y_pred, average="macro", zero_division=0)
 
             if np.isnan(macro_f1_score):
                 macro_f1_score = 0
