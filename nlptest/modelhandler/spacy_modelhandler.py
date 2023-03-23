@@ -27,7 +27,12 @@ class PretrainedModelForNER(_ModelHandler):
     @classmethod
     def load_model(cls, path):
         """Load and return SpaCy pipeline"""
-        return spacy.load(path)
+        if path in spacy.util.get_installed_models():
+            return spacy.load(path)
+        else:
+            raise NameError(
+                f'''Please install {path} model from 
+                >>> python -m spacy download {path}''')
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.

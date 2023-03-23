@@ -12,8 +12,9 @@ class SparkNLPTestCase(unittest.TestCase):
         self.params = {
             "task": 'ner',
             "model": "ner.dl",
-            "data": "nlptest/demo/data/test.conll",
-            "config": "nlptest/demo/data/config.yml"
+            "data": "demo/data/test.conll",
+            "config": "demo/data/config.yml",
+            "hub": "johnsnowlabs"
         }
 
     def test_predict(self):
