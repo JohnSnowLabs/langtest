@@ -1,4 +1,5 @@
 import unittest
+import nlptest
 from nlptest.modelhandler.modelhandler import *
 
 
@@ -7,27 +8,24 @@ class ModelHandlerTestCase(unittest.TestCase):
         pass
 
     def test_unsupported_task(self) -> None:
-        self.assertRaises(
-            ValueError,
+        with self.assertRaises(AssertionError) as _:
             ModelFactory.load_model(
                 task="unsupported_task", hub="spacy", path="en_core_web_sm")
-        )
 
     def test_unsupported_hub(self) -> None:
-        self.assertRaises(
-            ValueError,
+        with self.assertRaises(AssertionError) as _:
             ModelFactory.load_model(
-                task="unsupported_task", hub="invalid_hub", path="en_core_web_sm")
-        )
+                task="ner", hub="invalid_hub", path="en_core_web_sm")
 
     def test_ner_transformers_model(self) -> None:
         model = ModelFactory.load_model(
             "ner", "huggingface", "dslim/bert-base-NER")
         self.assertIsInstance(model, ModelFactory)
         self.assertIsInstance(
-            model.model_class, NERTransformersPretrainedModel)
+            model.model_class, nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER)
 
     def test_ner_spacy_model(self) -> None:
         model = ModelFactory.load_model("ner", "spacy", "en_core_web_sm")
         self.assertIsInstance(model, ModelFactory)
-        self.assertIsInstance(model.model_class, NERSpaCyPretrainedModel)
+        self.assertIsInstance(
+            model.model_class, nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER)
