@@ -78,13 +78,15 @@ class MinGenderF1Score(BaseFairness):
         samples = []
 
         for key, val in gendered_data.items():
+            if key not in min_scores.keys():
+                continue
             val = pd.Series(val, dtype="object")
             try:
                 y_true = val.apply(lambda x: [y.entity for y in x.expected_results.predictions])
             except:
                 y_true = val.apply(lambda x: [y.label for y in x.expected_results.predictions])
-
             X_test = val.apply(lambda x: x.original)
+
             y_pred = X_test.apply(model.predict_raw)
             
             valid_indices = y_true.apply(len) == y_pred.apply(len)
@@ -153,8 +155,9 @@ class MaxGenderF1Score(BaseFairness):
         gendered_data = get_gendered_data(data)
 
         samples = []
-
         for key, val in gendered_data.items():
+            if key not in max_scores.keys():
+                continue
             val = pd.Series(val, dtype="object")
 
             try:
@@ -162,6 +165,8 @@ class MaxGenderF1Score(BaseFairness):
             except:
                 y_true = val.apply(lambda x: [y.label for y in x.expected_results.predictions])
             X_test = val.apply(lambda x: x.original)
+            y_true = pd.Series(val).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            X_test = pd.Series(val).apply(lambda x: x.original)
             y_pred = X_test.apply(model.predict_raw)
             
             valid_indices = y_true.apply(len) == y_pred.apply(len)
