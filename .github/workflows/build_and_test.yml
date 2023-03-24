@@ -7,10 +7,11 @@ on:
   push:
     branches:
       - 'main'
-      
+
   pull_request:
     branches:
       - 'release/*'
+      - 'main'
 
 jobs:
   build:
@@ -40,5 +41,8 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        echo java -version
+        echo %JAVA_HOME%
+        echo %PYSPARK_HOME%
         python -m spacy download en_core_web_sm
         pytest
