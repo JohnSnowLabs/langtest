@@ -42,7 +42,7 @@ class TestFactory:
     """
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict, model: ModelFactory):
+    def transform(data: List[Sample], test_types: dict):
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -66,8 +66,9 @@ class TestFactory:
         # process = []
         for each in list(test_types.keys()):
             values = test_types[each]
+            print(each)
             all_results.extend(
-                all_categories[each](data, values, model).transform()
+                all_categories[each](data, values).transform()
             )
         return all_results
 
@@ -518,7 +519,7 @@ class RepresentationTestFactory(BaseTests):
         return tests
 
 
-class FairnessTestFactory(BaseTests):
+class FairnessTestFactory(BaseFairness):
     alias_name = "fairness"
     """
     A class for performing fairness tests on a given dataset.
@@ -547,7 +548,7 @@ class FairnessTestFactory(BaseTests):
             self,
             data_handler: List[Sample],
             tests,
-            model: ModelFactory
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler

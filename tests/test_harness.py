@@ -53,9 +53,11 @@ class HarnessTestCase(unittest.TestCase):
     def test_report(self):
         """"""
         self.harness.generate()
-        df = self.harness.run().accuracy_results
-        self.assertCountEqual(df.columns.tolist(), [
-                              'test_type', 'test_case', 'actual_result'])
+        df = self.harness.run().report()
+        self.assertCountEqual(
+            df.columns.tolist(),
+            ['category', 'test_type', 'fail_count', 'pass_count', 'pass_rate',
+       'minimum_pass_rate', 'pass'] )
 
     def test_duplicate_tasks(self):
         """"""

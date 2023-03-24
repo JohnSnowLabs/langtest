@@ -19,9 +19,9 @@ class AccuracyTestCase(unittest.TestCase):
                        }
              }
         )
-        self.h_spacy.generate().run().report()
 
     def test_accuracy_report(self) -> None:
-        acc_report = self.h_spacy.accuracy_report()
+        self.h_spacy.generate().run().report()
+        acc_report = self.h_spacy.generated_results()
         self.assertGreaterEqual(acc_report.shape[0], 1)
-        self.assertEqual(acc_report.shape[1], 5)
+        self.assertEqual(acc_report.shape[1], 7)

@@ -1,31 +1,6 @@
 defaults:
   min_pass_rate: 0.65
 tests:
-  accuracy:
-    min_micro_f1_score:
-      min_score: 0.5
-    min_macro_f1_score:
-      min_score: 0.5
-    min_weighted_f1_score:
-      min_score: 0.5
-    min_precision_score:
-      min_score:
-        O: 0.5
-        LOC: 0.9
-        PER: 0.8
-        MISC: 0.8
-        ORG: 0.8
-    min_recall_score:
-      min_score: 0.75
-    min_f1_score:
-      min_score: 0.8
-      
-  fairness:
-    min_gender_f1_score:
-      min_score: 0.5
-    max_gender_f1_score:
-      max_score: 0.99
-
   bias:
     replace_to_female_pronouns:
       min_pass_rate: 0.65
