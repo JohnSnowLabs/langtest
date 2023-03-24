@@ -22,8 +22,8 @@ The following can be used as a quick reference on how to get up and running with
     # Generate, run and get a report on your test cases
     h.generate().run().report()
 
-Installation
-================
+Installation Options
+====================
 
 We can create a Python `Virtualenv <https://virtualenv.pypa.io/en/latest/>`_:
 
