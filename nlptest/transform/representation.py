@@ -60,7 +60,7 @@ class GenderRepresentation(BaseRepresentation):
             ValueError: If sum of specified proportions in config is greater than 1
     
         Returns:
-            List[Sample]: Ethnicity Representation test results.
+            List[Sample]: Gender Representation test results.
         """    
         classifier = GenderClassifier()
         genders = [classifier.predict(sample.original) for sample in data]
