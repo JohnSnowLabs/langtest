@@ -67,9 +67,17 @@ pip install nlptest
         <div class="grid--container">
           <div class="grid jcc">
             <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
-              <h3 class="grey h3_title">{{ _section.title }}</h3>     
-              <div class="highlight-box">
-                {% highlight bash %}
+              <h3 class="grey h3_title">{{ _section.title }}</h3> 
+              <div class="tabs-wrapper">
+                <div class="tabs-header">
+                  <a href="#" class="tab-btn">JohnSnowLabs</a>
+                  <a href="#" class="tab-btn">Transformers</a>
+                  <a href="#" class="tab-btn">Spacy</a>
+                </div>
+                <div class="tabs-body">
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight bash %}
 from nlptest import Harness
 
 # Create a Harness object
@@ -77,8 +85,26 @@ h = Harness('ner', model='dslim/bert-base-NER', hub='transformers')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
-                {% endhighlight %}
-              </div>
+                      {% endhighlight %}
+                    </div>
+                  </div>
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight bash %}
+Transformers
+                      {% endhighlight %}
+                    </div>
+                  </div>
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight bash %}
+Spacy
+                      {% endhighlight %}
+                    </div>
+                  </div>
+                </div>
+              </div>    
+              
             </div>
           </div>
         </div>
@@ -94,53 +120,53 @@ h.generate().run().report()
           <div class="test_out_item">
               <div class="test_out_title tac mont">Robustness</div>
               <div class="test_out_body">
-                  <div class="test_out_line df">This movie was beyond horrible <strong class="mont">NEGATIVE</strong><figure class="df"><img src="../assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
-                  <div class="test_out_line df">This mvie wsa beyond hroieble <strong class="mont">NEUTRAL</strong><figure class="df"><img src="../assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df">This movie was beyond horrible <strong class="mont">NEGATIVE</strong><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df">This mvie wsa beyond hroieble <strong class="mont">NEUTRAL</strong><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
               </div>
           </div>
           <div class="test_out_item test_out_blue">
               <div class="test_out_title tac mont">Fairness</div>
-              <figure class="test_out_image tac"><img src="../assets/images/home/test_out_1.svg" alt=""></figure>
+              <figure class="test_out_image tac"><img src="assets/images/home/test_out_1.svg" alt=""></figure>
           </div>
           <div class="test_out_item">
               <div class="test_out_title tac mont">Coverage</div>
               <div class="test_out_body">
-                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="../assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
-                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper nlp_libraries_orange">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="../assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper nlp_libraries_orange">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
               </div>
           </div>
           <div class="test_out_item test_out_blue">
               <div class="test_out_title tac mont">Age Bias</div>
               <div class="test_out_body">
-                  <div class="test_out_line df"><div class="test_out_line_inner df">An old man with <div class="test_line_wrapper">Parkinson's <em class="mont">DISEASE</em></div></div><figure class="df"><img src="../assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
-                  <div class="test_out_line df"><div class="test_out_line_inner df">A young man with <div class="test_line_wrapper nlp_libraries_orange">Parkinson's <em class="mont">OTHER</em></div></div><figure class="df"><img src="../assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">An old man with <div class="test_line_wrapper">Parkinson's <em class="mont">DISEASE</em></div></div><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">A young man with <div class="test_line_wrapper nlp_libraries_orange">Parkinson's <em class="mont">OTHER</em></div></div><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
               </div>
           </div>
           <div class="test_out_item">
               <div class="test_out_title tac mont">Origin Bias</div>
               <div class="test_out_body">
-                  <div class="test_out_line df">The company's CEO is British <strong class="mont">NEUTRAL</strong><figure class="df"><img src="../assets/images/home/test_out_check.svg" alt=""></figure></div>
-                  <div class="test_out_line df">The company's CEO is Syrian <strong class="mont">NEGATIVE</strong><figure class="df"><img src="../assets/images/home/test_out_false.svg" alt=""></figure></div>
+                  <div class="test_out_line df">The company's CEO is British <strong class="mont">NEUTRAL</strong><figure class="df"><img src="assets/images/home/test_out_check.svg" alt=""></figure></div>
+                  <div class="test_out_line df">The company's CEO is Syrian <strong class="mont">NEGATIVE</strong><figure class="df"><img src="assets/images/home/test_out_false.svg" alt=""></figure></div>
               </div>
           </div>
           <div class="test_out_item test_out_blue">
               <div class="test_out_title tac mont">Ethnicity Bias</div>
               <div class="test_out_body">
-                  <div class="test_out_line df">Jonas Smith is flying tomorrow <strong class="mont">NEUTRAL</strong><figure class="df"><img src="../assets/images/home/test_out_check.svg" alt=""></figure></div>
-                  <div class="test_out_line df">Abdul Karim is flying tomorrow <strong class="mont">NEGATIVE</strong><figure class="df"><img src="../assets/images/home/test_out_false.svg" alt=""></figure></div>
+                  <div class="test_out_line df">Jonas Smith is flying tomorrow <strong class="mont">NEUTRAL</strong><figure class="df"><img src="assets/images/home/test_out_check.svg" alt=""></figure></div>
+                  <div class="test_out_line df">Abdul Karim is flying tomorrow <strong class="mont">NEGATIVE</strong><figure class="df"><img src="assets/images/home/test_out_false.svg" alt=""></figure></div>
               </div>
           </div>
           <div class="test_out_item">
               <div class="test_out_title tac mont">Accuracy</div>
-              <figure class="test_out_image tac"><img src="../assets/images/home/accuracy_testout.svg" alt=""></figure>
+              <figure class="test_out_image tac"><img src="assets/images/home/accuracy_testout.svg" alt=""></figure>
           </div>
           <div class="test_out_item test_out_blue">
               <div class="test_out_title tac mont">Gender Representation</div>
-              <figure class="test_out_image tac"><img src="../assets/images/home/gender_represent.svg" alt=""></figure>
+              <figure class="test_out_image tac"><img src="assets/images/home/gender_represent.svg" alt=""></figure>
           </div>
           <div class="test_out_item">
               <div class="test_out_title tac mont">Data Leakage</div>
-              <figure class="test_out_image tac"><img src="../assets/images/home/data_leakage.svg" alt=""></figure>
+              <figure class="test_out_image tac"><img src="assets/images/home/data_leakage.svg" alt=""></figure>
           </div>
       </div>
       </div>
@@ -409,7 +435,6 @@ Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()
 <script>
 
 {%- include scripts/components/sidebar.js -%}
-{%- include scripts/aside/affix.js -%}
 {%- include scripts/aside/toc.js -%}
 
 </script>
