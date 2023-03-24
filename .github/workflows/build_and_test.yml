@@ -6,8 +6,8 @@ name: NLPTest Python package
 on:
   push:
     branches:
-      - 'release/*'
-      - 'issue-*'
+      - 'main'
+      
   pull_request:
     branches:
       - 'release/*'
