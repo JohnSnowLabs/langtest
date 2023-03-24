@@ -172,16 +172,38 @@ class SequenceClassificationOutput(BaseModel):
         top_class = max(self.predictions, key=lambda x: x.score).label
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
+    
+class MinScoreOutput(BaseModel):
+    """Output for accuracy/representation tests."""
+    min_score: float
+
+    def to_str_list(self) -> float:
+        return self.min_score
+    
+    def __repr__(self) -> str:
+        return f"{self.min_score}"
+    def __str__(self) -> str:
+        return f"{self.min_score}"
+
+class MaxScoreOutput(BaseModel):
+    """Output for accuracy/representation tests."""
+    max_score: float
+
+    def to_str_list(self) -> float:
+        return self.max_score
+    
+    def __repr__(self) -> str:
+        return f"{self.max_score}"
+    def __str__(self) -> str:
+        return f"{self.max_score}"
 
 
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput)
-
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput)
 
 class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
-
 
 class Sample(BaseModel):
     """
@@ -203,6 +225,7 @@ class Sample(BaseModel):
     transformations: List[Transformation] = None
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
     category: str = None
+    state: str = None
 
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
 
@@ -212,8 +235,8 @@ class Sample(BaseModel):
 
     def to_dict(self):
         """Returns the dict version of sample."""
-        expected_result = self.expected_results.predictions
-        actual_result = self.actual_results.predictions if self.actual_results else None
+        expected_result = self.expected_results.to_str_list()
+        actual_result = self.actual_results.to_str_list() if self.actual_results is not None else None
 
         result = {
             'category': self.category,
@@ -360,6 +383,10 @@ class Sample(BaseModel):
             expected_preds = [
                 j.entity for j in self.expected_results.predictions]
             return actual_preds == expected_preds
+        elif isinstance(self.actual_results, MinScoreOutput):
+            return self.actual_results.min_score >= self.expected_results.min_score
+        elif isinstance(self.actual_results, MaxScoreOutput):
+            return self.actual_results.max_score <= self.expected_results.max_score
 
         else:
             filtered_actual_results = self.actual_results

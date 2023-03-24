@@ -117,3 +117,26 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+
+    def test_save_load_testcases(self):
+        """"""
+        path_to_file = "/tmp/saved_testcases.pkl"
+        harness = Harness(
+            task='text-classification',
+            model='bert-base-cased',
+            data="tests/fixtures/text_classification.csv",
+            config="tests/fixtures/config_text_classification.yaml",
+            hub="huggingface"
+        )
+        harness.generate()
+        harness.save_testcases(path_to_file)
+
+        new_harness = Harness(
+            task='text-classification',
+            model='bert-base-cased',
+            data="tests/fixtures/text_classification.csv",
+            config="tests/fixtures/config_text_classification.yaml",
+            hub="huggingface"
+        )
+        new_harness.load_testcases(path_to_file)
+        self.assertEqual(harness._testcases, new_harness._testcases)
