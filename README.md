@@ -77,7 +77,7 @@ We welcome all sorts of contributions:
 - Bug reports
 - Development and testing
 
-Feel free to clone the repo and submit your pull-requests! You can also contribute by opening issues in this repo.
+Feel free to clone the repo and submit pull-requests! You can also contribute by opening issues in this repo.
 
 ## Contributors
 
