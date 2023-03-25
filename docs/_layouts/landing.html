@@ -52,11 +52,7 @@ article_header:
               <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
                 <div class="highlight-box">
   {% highlight bash %}
-# Install nlptest from PyPI
 pip install nlptest
-
-# Install nlptest from Anaconda/Conda
-conda install nlptest
             {% endhighlight %}
                   </div>
               </div>
@@ -71,26 +67,191 @@ conda install nlptest
         <div class="grid--container">
           <div class="grid jcc">
             <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
-              <h3 class="grey h3_title">{{ _section.title }}</h3>     
-              <div class="highlight-box">
-                {% highlight bash %}
+              <h3 class="grey h3_title">{{ _section.title }}</h3> 
+              <div class="tabs-wrapper">
+                <div class="tabs-header">
+                  <a href="#" class="tab-btn">JohnSnowLabs</a>
+                  <a href="#" class="tab-btn">Transformers</a>
+                  <a href="#" class="tab-btn">Spacy</a>
+                </div>
+                <div class="tabs-body">
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight bash %}
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='dslim/bert-base-NER', hub='transformers', data=\"test.conll\")
+h = Harness('ner', model='dslim/bert-base-NER', hub='transformers')
 
-# Generate and run your test cases
-h.generate().run()
-
-# View a report
-h.report()
-                {% endhighlight %}
-              </div>
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+                      {% endhighlight %}
+                    </div>
+                  </div>
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight bash %}
+Transformers
+                      {% endhighlight %}
+                    </div>
+                  </div>
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight bash %}
+Spacy
+                      {% endhighlight %}
+                    </div>
+                  </div>
+                </div>
+              </div>    
+              
             </div>
           </div>
         </div>
       {%- endif -%}
 
+
+{%- if _section.outbox -%}
+  <div class="grid--container outbox-section">
+    <div class="grid jcc">
+      <div class="cell cell--12">
+        <h3 class="grey h3_title">{{ _section.title }}</h3>     
+        <div class="test_out_wrapper">
+          <div class="test_out_item">
+              <div class="test_out_title tac mont">Robustness</div>
+              <div class="test_out_body">
+                  <div class="test_out_line df">This movie was beyond horrible <strong class="mont">NEGATIVE</strong><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df">This mvie wsa beyond hroieble <strong class="mont">NEUTRAL</strong><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+              </div>
+          </div>
+          <div class="test_out_item test_out_blue">
+              <div class="test_out_title tac mont">Fairness</div>
+              <figure class="test_out_image tac"><img src="assets/images/home/test_out_1.svg" alt=""></figure>
+          </div>
+          <div class="test_out_item">
+              <div class="test_out_title tac mont">Coverage</div>
+              <div class="test_out_body">
+                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper nlp_libraries_orange">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+              </div>
+          </div>
+          <div class="test_out_item test_out_blue">
+              <div class="test_out_title tac mont">Age Bias</div>
+              <div class="test_out_body">
+                  <div class="test_out_line df"><div class="test_out_line_inner df">An old man with <div class="test_line_wrapper">Parkinson's <em class="mont">DISEASE</em></div></div><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">A young man with <div class="test_line_wrapper nlp_libraries_orange">Parkinson's <em class="mont">OTHER</em></div></div><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+              </div>
+          </div>
+          <div class="test_out_item">
+              <div class="test_out_title tac mont">Origin Bias</div>
+              <div class="test_out_body">
+                  <div class="test_out_line df">The company's CEO is British <strong class="mont">NEUTRAL</strong><figure class="df"><img src="assets/images/home/test_out_check.svg" alt=""></figure></div>
+                  <div class="test_out_line df">The company's CEO is Syrian <strong class="mont">NEGATIVE</strong><figure class="df"><img src="assets/images/home/test_out_false.svg" alt=""></figure></div>
+              </div>
+          </div>
+          <div class="test_out_item test_out_blue">
+              <div class="test_out_title tac mont">Ethnicity Bias</div>
+              <div class="test_out_body">
+                  <div class="test_out_line df">Jonas Smith is flying tomorrow <strong class="mont">NEUTRAL</strong><figure class="df"><img src="assets/images/home/test_out_check.svg" alt=""></figure></div>
+                  <div class="test_out_line df">Abdul Karim is flying tomorrow <strong class="mont">NEGATIVE</strong><figure class="df"><img src="assets/images/home/test_out_false.svg" alt=""></figure></div>
+              </div>
+          </div>
+          <div class="test_out_item">
+              <div class="test_out_title tac mont">Accuracy</div>
+              <figure class="test_out_image tac"><img src="assets/images/home/accuracy_testout.svg" alt=""></figure>
+          </div>
+          <div class="test_out_item test_out_blue">
+              <div class="test_out_title tac mont">Gender Representation</div>
+              <figure class="test_out_image tac"><img src="assets/images/home/gender_represent.svg" alt=""></figure>
+          </div>
+          <div class="test_out_item">
+              <div class="test_out_title tac mont">Data Leakage</div>
+              <figure class="test_out_image tac"><img src="assets/images/home/data_leakage.svg" alt=""></figure>
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{%- if _section.autocorrect_models -%}
+        <div class="grid--container">
+          <div class="grid jcc">
+            <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
+              <h3 class="grey h3_title">{{ _section.title }}</h3>     
+              <div class="highlight-box">
+                {% highlight bash %}
+h.augment(input='training_dataset', output='augmented_dataset')
+new_model = nlp.fit('augmented_dataset')
+Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()                
+                {% endhighlight %}
+              </div>
+            </div>
+          </div>
+          <div class="autocorrect-models-tables">
+            <div class="grid">
+              <div class="cell cell--12 cell--lg-6 cell--md-6 cell--sm-12">
+                <div class="ac_models_title tac mont orange_c">Before</div>
+                <table class="table1 nlp_test_table">
+                  <thead>
+                      <tr>
+                          <th>Category</th>
+                          <th>Test Type</th>
+                          <th>Pass</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>Robustness</td>
+                          <td>Add Typos</td>
+                          <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"><g stroke="#EF8000" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" clip-path="url(#a)"><path d="M16.592 1.408 1.446 16.592M1.446 1.408l15.183 15.184"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h18v18H0z"/></clipPath></defs></svg></td>
+                      </tr>
+                      <tr>
+                          <td>Bias</td>
+                          <td>Ethnicity</td>
+                          <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"><g stroke="#EF8000" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" clip-path="url(#a)"><path d="M16.592 1.408 1.446 16.592M1.446 1.408l15.183 15.184"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h18v18H0z"/></clipPath></defs></svg></td>
+                      </tr>
+                      <tr>
+                          <td>Representation</td>
+                          <td>Gender</td>
+                          <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="15" fill="none"><g clip-path="url(#a)"><path stroke="#0098DA" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M20.66 1.34 9.242 12.856a2.126 2.126 0 0 1-3.009 0L1.34 8.017"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h22v14.83H0z"/></clipPath></defs></svg></td>
+                      </tr>
+                  </tbody>
+              </table>
+              </div>
+              <div class="cell cell--12 cell--lg-6 cell--md-6 cell--sm-12">
+                <div class="ac_models_title tac mont blue">After</div>
+                <table class="table1 nlp_test_table">
+                  <thead>
+                      <tr>
+                          <th>Category</th>
+                          <th>Test Type</th>
+                          <th>Pass</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>Robustness</td>
+                          <td>Add Typos</td>
+                          <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="15" fill="none"><g clip-path="url(#a)"><path stroke="#0098DA" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M20.66 1.34 9.242 12.856a2.126 2.126 0 0 1-3.009 0L1.34 8.017"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h22v14.83H0z"/></clipPath></defs></svg></td>
+                      </tr>
+                      <tr>
+                          <td>Bias</td>
+                          <td>Ethnicity</td>
+                          <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="15" fill="none"><g clip-path="url(#a)"><path stroke="#0098DA" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M20.66 1.34 9.242 12.856a2.126 2.126 0 0 1-3.009 0L1.34 8.017"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h22v14.83H0z"/></clipPath></defs></svg></td>
+                      </tr>
+                      <tr>
+                          <td>Representation</td>
+                          <td>Gender</td>
+                          <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="15" fill="none"><g clip-path="url(#a)"><path stroke="#0098DA" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M20.66 1.34 9.242 12.856a2.126 2.126 0 0 1-3.009 0L1.34 8.017"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h22v14.83H0z"/></clipPath></defs></svg></td>
+                      </tr>
+                  </tbody>
+              </table>
+              </div>
+            </div>
+          </div>          
+        </div>
+      {%- endif -%}
 
         
         {%- if _section.children -%}
@@ -274,7 +435,6 @@ h.report()
 <script>
 
 {%- include scripts/components/sidebar.js -%}
-{%- include scripts/aside/affix.js -%}
 {%- include scripts/aside/toc.js -%}
 
 </script>
