@@ -71,11 +71,11 @@ We propose here an early stage open-source community project that aims to fill t
 
 We welcome all sorts of contributions:
 
-- ideas
-- feedback
-- documentation
-- bug reports
-- development and testing
+- Ideas
+- Feedback
+- Documentation
+- Bug reports
+- Development and testing
 
 Feel free to clone the repo and submit your pull-requests! Or directly create issues in this repo.
 
