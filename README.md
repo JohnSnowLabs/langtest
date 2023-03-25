@@ -87,17 +87,6 @@ We would like to acknowledge all contributors of this open-source community proj
   <img src="https://contrib.rocks/image?repo=johnsnowlabs/nlptest" />
 </a>
 
-
-<a href="https://github.com/mauro-nievoff">
-  <img src="https://github.com/mauro-nievoff.png?size=62.5" style="border-radius: 50%; border: 0.5px solid white; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);" />
-</a>
-<a href="https://github.com/vkocaman">
-  <img src="https://github.com/vkocaman.png?size=62.5" style="border-radius: 50%; border: 0.5px solid white; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);" />
-</a>
-<a href="https://github.com/davidtalby">
-  <img src="https://github.com/davidtalby.png?size=62.5" style="border-radius: 50%; border: 0.5px solid white; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);" />
-</a>
-
 ## License
 
 NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
