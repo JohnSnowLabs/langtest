@@ -12,6 +12,5 @@ Follow these guides to get up and running with ``nlptest``
    :maxdepth: 2
 
    Home Page <self>
-   Quick Start <quickstart>
+   Quick Start <quick_start>
    API Reference <_autosummary/nlptest>
-
