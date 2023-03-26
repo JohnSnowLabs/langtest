@@ -56,8 +56,8 @@ coverage.xml
 cover/
 
 # Sphinx docs
-sphinx/_build/
-sphinx/_autosummary/
+sphinx/_build/**
+sphinx/_autosummary/**
 
 # Translations
 *.mo
