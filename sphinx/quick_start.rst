@@ -8,6 +8,7 @@ NLP Test Quick Start
 The following can be used as a quick reference on how to get up and running with ``nlptest``:
 
 .. code-block:: bash
+    :substitutions:
 
     # Install Spark NLP from PyPI
     pip install nlptest==|release|
@@ -28,6 +29,7 @@ Alternative Installation Options
 We can create a Python `Virtualenv <https://virtualenv.pypa.io/en/latest/>`_:
 
 .. code-block:: bash
+    :substitutions:
 
     virtualenv nlptest --python=python3.8
     source nlptest/bin/activate
@@ -44,6 +46,7 @@ We can also use conda and create a new `conda <https://docs.conda.io/projects/co
 Then we can create a new environment ``nlptest`` and install the ``nlptest`` package with pip:
 
 .. code-block:: bash
+    :substitutions:
 
     conda create -n nlptest python=3.8 -y
     conda activate nlptest
