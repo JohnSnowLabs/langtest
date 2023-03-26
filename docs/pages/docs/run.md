@@ -1,11 +1,11 @@
 ---
 layout: docs
-header: true
 seotitle: NLP Docs | John Snow Labs
-title: Augmentation generate()
-key: docs-examples
-permalink: /docs/pages/docs/generate_augmentation
-modify_date: "2019-05-16"
+title: run()
+permalink: /docs/pages/docs/run
+key: docs-install
+modify_date: "2020-05-26"
+header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
@@ -40,6 +40,6 @@ nlp.to_nlu_pipe(pipe).predict('That was easy')
 ```
 
 
-for alternative installation options see [Custom Installation](/docs/website/pages/docs/install_advanced)
+for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
 
 </div></div>
