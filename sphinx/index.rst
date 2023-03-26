@@ -6,7 +6,7 @@
 NLP Test Documentation
 =======================================
 
-Follow these guides to get up and running with ``nlptest``
+This page contains technical documentation for the NLP Test library. For in-depth explanations around usage, supported NLP tasks and test types, please head over to `nlptest.org <https://www.nlptest.org/>`_
 
 .. toctree::
    :maxdepth: 2
