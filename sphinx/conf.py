@@ -87,3 +87,8 @@ html_favicon = "_static/fav.ico"
 
 # Remove 'view source code' from top of page (for html, not python)
 html_show_sourcelink = False
+
+# Global substitutions in the RST files.
+rst_prolog = """
+.. |release| replace:: {0}
+""".format(release)

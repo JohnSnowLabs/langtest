@@ -11,6 +11,5 @@ Follow these guides to get up and running with ``nlptest``
 .. toctree::
    :maxdepth: 2
 
-   Home Page <self>
    Quick Start <quick_start>
    API Reference <_autosummary/nlptest>
