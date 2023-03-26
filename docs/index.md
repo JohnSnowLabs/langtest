@@ -1,7 +1,7 @@
 ---
 layout: landing
 title: 'NLP Test <span>Deliver Safe & Effective Models</span>'
-excerpt:  <br> 50+ Tests Evaluating NER and Text Classification Models
+excerpt:  <br> 
 permalink: /
 header: true
 article_header:
@@ -36,14 +36,14 @@ data:
             src: /assets/images/open_source.svg
          excerpt: The full code base is open under the Apache 2.0 license, designed for easy extension and AI community collaboration  
 
-   - title: 'Get Started Now'
+   - title: 'Quick & Easy'
      install: yes
   
   
    - title: In Just One Line of Code
      oneline: yes
 
-   - title: 50+ Tests Out-Of-The-Box
+   - title: 50+ Out-Of-The-Box Test Types
      outbox: yes
 
    - title: Auto-Correct Models with Data Augmentation

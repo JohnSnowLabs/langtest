@@ -52,7 +52,11 @@ article_header:
               <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
                 <div class="highlight-box">
   {% highlight bash %}
+# Using PyPI
 pip install nlptest
+
+# Using Conda
+conda install nlptest
             {% endhighlight %}
                   </div>
               </div>
@@ -70,8 +74,8 @@ pip install nlptest
               <h3 class="grey h3_title">{{ _section.title }}</h3> 
               <div class="tabs-wrapper">
                 <div class="tabs-header">
-                  <a href="#" class="tab-btn">JohnSnowLabs</a>
-                  <a href="#" class="tab-btn">Transformers</a>
+                  <a href="#" class="tab-btn">John Snow Labs</a>
+                  <a href="#" class="tab-btn">Hugging Face</a>
                   <a href="#" class="tab-btn">Spacy</a>
                 </div>
                 <div class="tabs-body">
@@ -81,7 +85,7 @@ pip install nlptest
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='dslim/bert-base-NER', hub='transformers')
+h = Harness('ner', model='ner', hub='johnsnowlabs')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -91,14 +95,26 @@ h.generate().run().report()
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight bash %}
-Transformers
+from nlptest import Harness
+
+# Create a Harness object
+h = Harness('ner', model='dslim/bert-base-NER', hub='huggingface')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
                       {% endhighlight %}
                     </div>
                   </div>
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight bash %}
-Spacy
+from nlptest import Harness
+
+# Create a Harness object
+h = Harness('ner', model='en_core_web_sm', hub='spacy')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
                       {% endhighlight %}
                     </div>
                   </div>
