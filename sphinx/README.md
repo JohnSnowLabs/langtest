@@ -2,9 +2,9 @@
 
 You can clone this repo and build and view the API documentation locally:
    
-1. Change to the `docs` directory:
+1. Change to the `sphinx` directory:
 
-   `cd docs`
+   `cd sphinx`
 
 2. Assuming a Python 3.x environment, install dependencies:
 
