@@ -12,6 +12,5 @@ Follow these guides to get up and running with ``nlptest``
    :maxdepth: 2
 
    Quick Start <getting_started/index>
-   User Guide <user_guide/index>
    API reference <_autosummary/nlptest>
 
