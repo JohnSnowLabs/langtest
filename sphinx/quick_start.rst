@@ -10,7 +10,7 @@ The following can be used as a quick reference on how to get up and running with
 .. code-block:: bash
     :substitutions:
 
-    # Install Spark NLP from PyPI
+    # Install NLP Test from PyPI
     pip install nlptest==|release|
 
 .. code-block:: python

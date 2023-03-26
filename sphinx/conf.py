@@ -89,6 +89,6 @@ html_favicon = "_static/fav.ico"
 html_show_sourcelink = False
 
 # Global substitutions in the RST files.
-rst_prolog = """
+rst_epilog = """
 .. |release| replace:: {0}
 """.format(release)
