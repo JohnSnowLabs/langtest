@@ -33,7 +33,7 @@ jobs:
           $hadoopUri = 'https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz'
           $winutilsUri = 'https://github.com/cdarlint/winutils/raw/master/hadoop-3.2.0/bin/winutils.exe'
           $hadoopFile = 'hadoop.tar.gz'
-          $hadoopDir = 'C:\hadoop'
+          $hadoopDir = 'C:\hadoop\hadoop-3.2.2'
           mkdir($hadoopDir)
           Invoke-WebRequest -Uri $hadoopUri -OutFile $hadoopFile -UseBasicParsing
           if ((Test-Path $hadoopFile) -eq $false) {
