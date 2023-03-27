@@ -76,20 +76,22 @@ class MinPrecisionScore(BaseAccuracy):
                 label:params["min_score"] for label in labels
             }
 
-        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
 
         precision_samples = []
         for k, v in df_metrics.items():
+            if k not in min_scores.keys():
+                continue
             sample = Sample(
                 original = "-",
                 category = "Accuracy",
                 test_type = "min_precision_score",
                 test_case = k,
-                expected_results = MinScoreOutput(score=min_scores[k]),
-                actual_results = MinScoreOutput(score=v["precision"]),
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["precision"]),
                 state = "done"
             )
             precision_samples.append(sample)
@@ -131,20 +133,22 @@ class MinRecallScore(BaseAccuracy):
                 label:params["min_score"] for label in labels
             }
         
-        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
 
         rec_samples = []
         for k, v in df_metrics.items():
+            if k not in min_scores.keys():
+                continue
             sample = Sample(
                 original = "-",
                 category = "Accuracy",
                 test_type = "min_recall_score",
                 test_case = k,
-                expected_results = MinScoreOutput(score=min_scores[k]),
-                actual_results = MinScoreOutput(score=v["recall"]),
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["recall"]),
                 state = "done"
             )
             rec_samples.append(sample)
@@ -187,20 +191,22 @@ class MinF1Score(BaseAccuracy):
                 label:params["min_score"] for label in labels
             }
 
-        df_metrics = classification_report(y_true, y_pred, output_dict=True)
+        df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
 
         f1_samples = []
         for k, v in df_metrics.items():
+            if k not in min_scores.keys():
+                continue
             sample = Sample(
                 original = "-",
                 category = "Accuracy",
                 test_type = "min_f1_score",
                 test_case = k,
-                expected_results = MinScoreOutput(score=min_scores[k]),
-                actual_results = MinScoreOutput(score=v["f1-score"]),
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["f1-score"]),
                 state = "done"
             )
             f1_samples.append(sample)
@@ -235,15 +241,15 @@ class MinMicroF1Score(BaseAccuracy):
 
         min_score = params["min_score"]
 
-        f1 = f1_score(y_true, y_pred, average="micro")
+        f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)
 
         sample = Sample(
             original = "-",
             category = "Accuracy",
             test_type = "min_micro_f1_score",
             test_case = "micro",
-            expected_results = MinScoreOutput(score=min_score),
-            actual_results = MinScoreOutput(score=f1),
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
 
             state = "done"
         )
@@ -278,15 +284,15 @@ class MinMacroF1Score(BaseAccuracy):
         """
 
         min_score = params["min_score"]
-        f1 = f1_score(y_true, y_pred, average="macro")
+        f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
 
         sample = Sample(
             original = "-",
             category = "Accuracy",
             test_type = "min__macro_f1_score",
             test_case = "macro",
-            expected_results = MinScoreOutput(score=min_score),
-            actual_results = MinScoreOutput(score=f1),
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
             state = "done"
         )
 
@@ -320,15 +326,15 @@ class MinWeightedF1Score(BaseAccuracy):
         """
 
         min_score = params["min_score"]
-        f1 = f1_score(y_true, y_pred, average="weighted")
+        f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
 
         sample = Sample(
             original = "-",
             category = "Accuracy",
             test_type = "min_weighted_f1_score",
             test_case = "weighted",
-            expected_results = MinScoreOutput(score=min_score),
-            actual_results = MinScoreOutput(score=f1),
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
             state = "done"
         )
 
