@@ -31,6 +31,7 @@ release = '1.0.0'
 # ones.
 extensions = ["sphinx.ext.autodoc",
               "sphinx.ext.autosummary",
+              "sphinx_substitution_extensions",
               "sphinx.ext.napoleon"]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -88,7 +89,7 @@ html_favicon = "_static/fav.ico"
 # Remove 'view source code' from top of page (for html, not python)
 html_show_sourcelink = False
 
-# Global substitutions in the RST files.
-rst_epilog = """
+# Global substitutions in the RST files
+rst_prolog = """
 .. |release| replace:: {0}
 """.format(release)

@@ -3,3 +3,4 @@ pydata-sphinx-theme
 pydantic
 spacy
 autoapi
+sphinx_substitution_extensions
