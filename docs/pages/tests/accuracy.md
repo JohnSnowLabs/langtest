@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: NLP Test | John Snow Labs
-title: Representation
+title: Accuracy
 key: tests
-permalink: /docs/pages/tests/representation
+permalink: /docs/pages/tests/accuracy
 aside:
     toc: true
 sidebar:
@@ -14,11 +14,10 @@ nav_key: tests
 modify_date: "2019-05-16"
 ---
 
-{% assign parent_path = "pages/tests/representation" %}
+{% assign parent_path = "pages/tests/accuracy" %}
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}
-        {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "representation/" %}
+        {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "accuracy/" %}
         {% include_relative {{ file_name }} %}
     {% endif %}
 {% endfor %}
-</div></div>

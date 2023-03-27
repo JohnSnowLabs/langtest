@@ -57,33 +57,15 @@ tests:
   - title: Tests
     url: /docs/pages/tests/test
     children:
-      - title: Robustness
-        url: /docs/pages/tests/robustness
-        key: tests
-      - title: Uppercase
-        url: /docs/pages/tests/uppercase
-        key: tests
-      - title: Lowercase
-        url: /docs/pages/tests/lowercase
-        key: tests
-      - title: Titlecase
-        url: /docs/pages/tests/titlecase
-        key: tests
-      - title: Add Context
-        url: /docs/pages/tests/add_context
-        key: tests
-      - title: Swap Entities
-        url: /docs/pages/tests/swap_entities
+      - title: Accuracy
+        url: /docs/pages/tests/accuracy
         key: tests
       - title: Bias
         url: /docs/pages/tests/bias
         key: tests
-      - title: Gender
-        url: /docs/pages/tests/gender
-        key: tests
       - title: Representation
         url: /docs/pages/tests/representation
         key: tests
-      - title: Age Bias
-        url: /docs/pages/tests/age_bias
+      - title: Robustness
+        url: /docs/pages/tests/robustness
         key: tests

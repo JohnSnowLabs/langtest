@@ -1,21 +1,7 @@
----
-layout: docs
-header: true
-seotitle: NLP Test | John Snow Labs
-title: Add Context
-key: tests
-permalink: /docs/pages/tests/add_context
-aside:
-    toc: true
-sidebar:
-    nav: tests
-show_edit_on_github: true
-nav_key: tests
-modify_date: "2019-05-16"
----
+
+## AddContext
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
 
 {:.h2-select}
 This test checks if the NLP model can handle input text with added context, such as a greeting or closing.
@@ -24,7 +10,7 @@ This test checks if the NLP model can handle input text with added context, such
 
 </div><div class="h3-box" markdown="1">
 
-## Config
+### Config
 ```yaml
 add_context:
     min_pass_rate: <float>
@@ -37,7 +23,7 @@ add_context:
 - **ending_context:** Phrases to be added at the end of inputs.
 - **strategy:** Which places to add the given phrases.
 
-## Examples
+### Examples
 
 {:.table2}
 |Original|Testcase|
