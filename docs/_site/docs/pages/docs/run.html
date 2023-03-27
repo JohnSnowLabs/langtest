@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>NLP Docs | John Snow Labs</title><meta name="description" content="NLP
 ">
-<link rel="canonical" href="http://localhost:4000/docs/pages/docs/generate"><link rel="alternate" type="application/rss+xml" title="NLP" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ -->
+<link rel="canonical" href="http://localhost:4000/docs/pages/docs/run"><link rel="alternate" type="application/rss+xml" title="NLP" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ -->
 <!---->
 <!-- <link rel="apple-touch-icon" sizes="180x180" href="/fav.ico"> -->
 
@@ -316,52 +316,28 @@
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><div class="article__header"><header><h1>Generating the testcases</h1></header><span class="split-space">&nbsp;</span>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><div class="article__header"><header><h1>Running the testcases</h1></header><span class="split-space">&nbsp;</span>
           <a class="edit-on-github"
             title="Edit on Github"
-            href="https://github.com/johnsnowlabs/nlu/tree/master/docs/pages/docs/generate.md">
-            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="Generating the testcases"><meta itemprop="author" content=""/><div class="js-article-content"><div class="docs-wrapper">
+            href="https://github.com/johnsnowlabs/nlu/tree/master/docs/pages/docs/run.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="Running the testcases"><meta itemprop="author" content=""/><div class="js-article-content"><div class="docs-wrapper">
 <div class="layout--article"><!-- start custom article top snippet -->
 
 <!-- end custom article top snippet -->
 <div class="article__content" itemprop="articleBody"><div class="main-docs">
   <div class="h3-box">
 
-    <p>The <strong>generate()</strong> method automatically generates the test cases (based on the provided configuration). The configuration for the tests can be passed in the form of a YAML file or using .configure() method.</p>
+    <p>Called after <strong>.generate()</strong> method and is to used to run all the specified tests. Returns a pass/fail flag for each test.</p>
 
-    <p>Config YAML format :</p>
-
-    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-defaults:
-  min_pass_rate: 0.65
-tests:     
-  robustness:
-    lowercase:
-      min_pass_rate: 0.60
-    uppercase:
-      min_pass_rate: 0.60
-  
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div>    </div>
 
-    <p>If config file not present, we can use the <strong>.configure()</strong> method to configure the harness to perform the needed tests.</p>
+    <p>To get the run results in the form of a pandas dataframe we can use the <strong>.generated_results()</strong> method.</p>
 
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span>
-<span class="p">{</span><span class="s">'defaults'</span><span class="p">:</span> <span class="p">{</span><span class="s">'min_pass_rate'</span><span class="p">:</span> <span class="mf">0.65</span><span class="p">},</span>
- <span class="s">'tests'</span><span class="p">:</span> <span class="p">{</span><span class="s">'robustness'</span><span class="p">:</span> <span class="p">{</span><span class="s">'lowercase'</span><span class="p">:</span> <span class="p">{</span><span class="s">'min_pass_rate'</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">},</span> 
-                          <span class="s">'uppercase'</span><span class="p">:{</span><span class="s">'min_pass_rate'</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">}}</span>
-          <span class="p">}</span>
- <span class="p">}</span>
- <span class="p">)</span>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">generated_results</span><span class="p">()</span>
 </code></pre></div>    </div>
 
-    <p><strong>Generating test cases</strong>:</p>
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">generate</span><span class="p">()</span>
-</code></pre></div>    </div>
-
-    <p>After generating the testcases we can use the <strong>.testcases()</strong> method.</p>
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">testcases</span><span class="p">()</span>
-</code></pre></div>    </div>
-    <p>This method returns the produced testcases in form of a pandas data frame – making them easy to edit, filter, import, or export. We can manually review the list of generated test cases, and decide on which ones to keep or edit.</p>
+    <p>It returns the generated results in the form of a dataframe with pass/fail flag for each test that we had specified.</p>
 
   </div>
 </div>
@@ -369,7 +345,7 @@ tests:
       <time itemprop="dateModified" datetime="2020-05-26T00:00:00+05:30">May 26, 2020</time>
     </span><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous nav_link"><span>PREVIOUS</span><a href="/docs/pages/docs/quick_start">Quick Start</a></div><div class="next nav_link"><span>NEXT</span><a href="/docs/pages/docs/run">run()</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous nav_link"><span>PREVIOUS</span><a href="/docs/pages/docs/generate">generate()</a></div><div class="next nav_link"><span>NEXT</span><a href="/docs/pages/docs/report">report()</a></div></div></div>
 
 </div>
 </div>
