@@ -10,7 +10,7 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+The Harness class is a testing class for Natural Language Processing (NLP) models. It evaluates the performance of a given NLP model on a given task using test data and generates a report with test results.
 
 ```shell 
 pip install johnsnowlabs
