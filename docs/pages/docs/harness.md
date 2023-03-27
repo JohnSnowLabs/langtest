@@ -12,34 +12,15 @@ header: true
 
 The Harness class is a testing class for Natural Language Processing (NLP) models. It evaluates the performance of a given NLP model on a given task using test data and generates a report with test results.
 
-```shell 
-pip install johnsnowlabs
-```
+Here is a list of the different parameters that can be passed to the `Harness` function:
 
-To quickly test the installation, you can run in your **Shell**:
+| Parameter  | Description |  |
+| - | - | - |
+|**task**      |Task for which the model is to be evaluated (text-classification or ner)|
+|**model** |PipelineModel with document assembler, sentence detector, tokenizer, <br/>word embeddings (if applicable), NER model with _"ner"_ output label name <br/> or path to a saved model or pretrained pipeline/model from hub.
+|**data**     |Path to the data that is to be used for evaluation. Can be .csv or .conll file in <br/> the CoNLL format 
+|**config**      |Configuration for the tests to be performed, specified in form of a YAML file.
+|**hub**      |model hub to load from the path. Required if model param is passed as path.|
 
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
-```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
-```
-
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
-
-
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
 
 </div></div>
