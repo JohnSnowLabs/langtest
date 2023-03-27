@@ -32,9 +32,9 @@ jobs:
         run: python -m venv venv
 
       - name: Activate virtual environment
+        
         run: |
           .\venv\Scripts\Activate.ps1
-          pip install --upgrade pip
 
       - name: Install dependencies
         run: |
