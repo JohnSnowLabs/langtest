@@ -35,6 +35,7 @@ jobs:
           $hadoopFile = 'hadoop.tar.gz'
           $hadoopDir = 'C:\hadoop\hadoop-3.2.2'
           mkdir($hadoopDir)
+          ls
           Invoke-WebRequest -Uri $hadoopUri -OutFile $hadoopFile -UseBasicParsing
           if ((Test-Path $hadoopFile) -eq $false) {
             Write-Error "Failed to download $hadoopUri"
