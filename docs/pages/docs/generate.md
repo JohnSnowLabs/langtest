@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: generate()
+title: Generating the testcases
 permalink: /docs/pages/docs/generate
 key: docs-install
 modify_date: "2020-05-26"
