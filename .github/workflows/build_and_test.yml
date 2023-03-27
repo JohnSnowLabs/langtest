@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -27,41 +27,26 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+        
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '8'
 
-      - name: Install Hadoop
+      - name: Build Spark NLP on Apache Spark 3.2.3
         run: |
-          $hadoopUri = 'https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz'
-          $winutilsUri = 'https://github.com/cdarlint/winutils/raw/master/hadoop-3.2.0/bin/winutils.exe'
-          $hadoopFile = 'hadoop.tar.gz'
-          $hadoopDir = 'C:\hadoop\hadoop-3.2.2'
-          mkdir($hadoopDir)
-          ls
-          Invoke-WebRequest -Uri $hadoopUri -OutFile $hadoopFile -UseBasicParsing
-          if ((Test-Path $hadoopFile) -eq $false) {
-            Write-Error "Failed to download $hadoopUri"
-            exit 1
-          }
-
-          & tar.exe -xf $hadoopFile -C $hadoopDir
-          if ((Test-Path $hadoopDir) -eq $false) {
-            Write-Error "Failed to extract $hadoopFile to $hadoopDir"
-            exit 1
-          }
-
-          Invoke-WebRequest -Uri $winutilsUri -OutFile "$hadoopDir\bin\winutils.exe" -UseBasicParsing
-          if ((Test-Path "$hadoopDir\bin\winutils.exe") -eq $false) {
-            Write-Error "Failed to download $winutilsUri"
-            exit 1
-          }
-
-          echo "HADOOP_HOME=$hadoopDir" >> $env:GITHUB_ENV
+          brew install sbt
+          sbt -mem 4096 clean assemblyAndCopy
+      - name: Test Spark NLP in Scala - Apache Spark 3.2.x
+        run: |
+          sbt -mem 4096 test
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest
-          # if (-f requirements.txt ); then pip install -r requirements.txt; fi
-          If (Test-Path "requirements.txt") { pip install -r requirements.txt }
+          if (-f requirements.txt ); then pip install -r requirements.txt; fi
+          # If (Test-Path "requirements.txt") { pip install -r requirements.txt }
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
