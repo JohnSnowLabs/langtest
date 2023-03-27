@@ -30,10 +30,30 @@ jobs:
 
       - name: Install Hadoop
         run: |
-          Invoke-WebRequest -Uri 'https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz' -OutFile 'hadoop.tar.gz'
-          Expand-Archive -Path hadoop.tar.gz -DestinationPath 'C:\hadoop'
-          Invoke-WebRequest -Uri 'https://github.com/cdarlint/winutils/raw/master/hadoop-3.2.0/bin/winutils.exe' -OutFile 'C:\hadoop\bin\winutils.exe'
-          echo "HADOOP_HOME=C:\hadoop" >> $env:GITHUB_ENV
+          $hadoopUri = 'https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz'
+          $winutilsUri = 'https://github.com/cdarlint/winutils/raw/master/hadoop-3.2.0/bin/winutils.exe'
+          $hadoopFile = 'hadoop.tar.gz'
+          $hadoopDir = 'C:\hadoop'
+
+          Invoke-WebRequest -Uri $hadoopUri -OutFile $hadoopFile -UseBasicParsing
+          if ((Test-Path $hadoopFile) -eq $false) {
+            Write-Error "Failed to download $hadoopUri"
+            exit 1
+          }
+
+          & tar.exe -xf $hadoopFile -C $hadoopDir
+          if ((Test-Path $hadoopDir) -eq $false) {
+            Write-Error "Failed to extract $hadoopFile to $hadoopDir"
+            exit 1
+          }
+
+          Invoke-WebRequest -Uri $winutilsUri -OutFile "$hadoopDir\bin\winutils.exe" -UseBasicParsing
+          if ((Test-Path "$hadoopDir\bin\winutils.exe") -eq $false) {
+            Write-Error "Failed to download $winutilsUri"
+            exit 1
+          }
+
+          echo "HADOOP_HOME=$hadoopDir" >> $env:GITHUB_ENV
 
       - name: Install dependencies
         run: |
