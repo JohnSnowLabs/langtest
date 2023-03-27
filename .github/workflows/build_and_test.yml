@@ -28,13 +28,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Java
-        uses: actions/setup-java@v2
-        with:
-          java-version: "11"
-          distribution: "adopt"
-          cache: "gradle"
-
       - name: Install Hadoop
         run: |
           Invoke-WebRequest -Uri 'https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz' -OutFile 'hadoop.tar.gz'
