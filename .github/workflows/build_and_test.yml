@@ -38,14 +38,13 @@ jobs:
 
       - name: CHECK ENV's
         run: |
-          printenv JAVA_HOME
-          printenv HADOOP_HOME
-      # - name: Create virtual environment
-      #   run: python -m venv venv
+          printenv 
+      - name: Create virtual environment
+        run: python -m venv sparknlp-env
 
-      # - name: Activate virtual environment
-      #   run: |
-      #     .\venv\Scripts\Activate.ps1
+      - name: Activate virtual environment
+        run: |
+          source .sparknlp-env/bin/activate
 
       - name: Install dependencies
         run: |
