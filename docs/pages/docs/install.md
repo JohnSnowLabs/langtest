@@ -32,13 +32,7 @@ Whether you are using **Spark NLP**, **Hugging Face Transformers**, or **spaCy**
 You can easily pass the test data and the trained NLP pipeline.
 ```python
 from nlptest import Harness
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
-
-model = AutoModelForSequenceClassification.from_pretrained('path/to/model')
-tokenizer = AutoTokenizer.from_pretrained('path/to/model')
-pipe = pipeline('text-classification', model=model, tokenizer=tokenizer)
-
-h = Harness(task='text-classification', model=pipe, data='path/to/data.csv')
+h = Harness(task='text-classification', model='distilbert-base-uncased', hub='huggingface')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
