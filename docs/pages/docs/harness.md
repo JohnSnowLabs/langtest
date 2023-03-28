@@ -24,11 +24,11 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 
 | Parameter  | Description |  
 | - | - | 
-|**task**      |Task for which the model is to be evaluated (text-classification or ner)|
+|**task**  |Task for which the model is to be evaluated (text-classification or ner)|
 |**model** |PipelineModel or path to a saved model or pretrained pipeline/model from hub.
-|**data**     |Path to the data that is to be used for evaluation. Can be .csv or .conll file in the CoNLL format 
-|**config**      |Configuration for the tests to be performed, specified in form of a YAML file.
-|**hub**      |model hub to load from the path. Required if model param is passed as path.|
+|**data**  |Path to the data that is to be used for evaluation. Can be .csv or .conll file in the CoNLL format 
+|**config** |Configuration for the tests to be performed, specified in form of a YAML file.
+|**hub**    |model hub to load from the path. Required if model param is passed as path.|
 
 
 
