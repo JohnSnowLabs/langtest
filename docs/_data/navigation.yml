@@ -56,16 +56,11 @@ tutorials:
 tests:
   - title: Tests
     url: /docs/pages/tests/test
-    children:
-      - title: Accuracy
-        url: /docs/pages/tests/accuracy
-        key: tests
-      - title: Bias
-        url: /docs/pages/tests/bias
-        key: tests
-      - title: Representation
-        url: /docs/pages/tests/representation
-        key: tests
-      - title: Robustness
-        url: /docs/pages/tests/robustness
-        key: tests
+  - title: Accuracy
+    url: /docs/pages/tests/accuracy
+  - title: Bias
+    url: /docs/pages/tests/bias
+  - title: Representation
+    url: /docs/pages/tests/representation
+  - title: Robustness
+    url: /docs/pages/tests/robustness
