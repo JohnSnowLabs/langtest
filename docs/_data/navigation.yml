@@ -24,9 +24,9 @@ docs-menu:
     url:    /docs/pages/docs/run
   - title:  Report
     url:    /docs/pages/docs/report
-  - title:  Save
+  - title:  Saving Test Cases
     url: /docs/pages/docs/save
-  - title:  Load
+  - title:  Loading Test Cases
     url:    /docs/pages/docs/load
   - title: Generating Augmentations
     url: /docs/pages/docs/generate_augmentation
@@ -51,10 +51,10 @@ tutorials:
 tests:
   - title: Tests
     url: /docs/pages/tests/test
-    children:      
+    children:
       - title: Uppercase
         url: /docs/pages/tests/uppercase
-        key: tests      
+        key: tests
       - title: Titlecase
         url: /docs/pages/tests/titlecase
         key: tests
