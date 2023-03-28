@@ -13,7 +13,7 @@ header: true
 **nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
 You can install **nlptest** using pip or conda.
 
-```shell 
+```python 
 
 # Using PyPI
 pip install nlptest
