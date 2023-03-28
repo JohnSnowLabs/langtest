@@ -48,7 +48,7 @@ After generating the testcases we can use the **.testcases()** method.
 ```python
 harness.testcases()
 ```
-This method returns the produced testcases in form of a pandas data frame – making them easy to edit, filter, import, or export. We can manually review the list of generated test cases, and decide on which ones to keep or edit. 
+This method returns the produced test cases in form of a pandas data frame – making them easy to edit, filter, import, or export. We can manually review the list of generated test cases, and decide on which ones to keep or edit. 
 
 A sample testcases dataframe looks like the one given below:
 
