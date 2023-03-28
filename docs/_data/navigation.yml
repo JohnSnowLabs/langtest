@@ -18,9 +18,9 @@ docs-menu:
 
   - title: Harness and its Parameters
     url: /docs/pages/docs/harness
-  - title:  Generating Testcases
+  - title:  Generating Test Cases
     url:    /docs/pages/docs/generate
-  - title:  Running Testcases
+  - title:  Running Test Cases
     url:    /docs/pages/docs/run
   - title:  Report
     url:    /docs/pages/docs/report
