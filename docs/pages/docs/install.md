@@ -17,6 +17,12 @@ You can install **nlptest** using pip.
 pip install nlptest
 ```
 
+or using conda.
+
+```shell 
+conda install nlptest
+```
+
 With just one line of code, it can generate and run over 50 different test types to assess the quality of NLP models in terms of accuracy, bias, robustness, representation, and fairness.
 You can test any **Text Classification** and **Named Entity Recognition** model using ``Harness``.
 
