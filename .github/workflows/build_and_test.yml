@@ -27,18 +27,21 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-      
-      - name: Setup Apache Hadoop
-        # You may pin to the exact commit or the version.
-        # uses: chakravarthik27/setup-hdfs@4c200ebccaf43aaf063743d3ae6155a72b2621c4
-        uses: chakravarthik27/setup-hdfs@v1.0
+
+      - uses: actions/setup-java@v1
         with:
-          # The installed Apache Hadoop version.
-          hdfs-version: 3.3.1
+          java-version: "11"
+
+      - uses: vemonet/setup-spark@v1
+        with:
+          spark-version: "3.2.1"
+          hadoop-version: "3.2"
+
+      - run: spark-submit --version
 
       - name: CHECK ENV's
         run: |
-          printenv 
+          printenv
       - name: Create virtual environment
         run: python -m venv sparknlp-env
 
