@@ -22,6 +22,8 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 |**config**      |Configuration for the tests to be performed, specified in form of a YAML file.
 |**hub**      |model hub to load from the path. Required if model param is passed as path.|
 
+</div><div class="h3-box" markdown="1">
+
 
 Harness can be imported from the nlptest library in the following way.
 
