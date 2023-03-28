@@ -4,7 +4,7 @@ seotitle: NLP Docs | John Snow Labs
 title: Harness and its Parameters
 permalink: /docs/pages/docs/harness
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
