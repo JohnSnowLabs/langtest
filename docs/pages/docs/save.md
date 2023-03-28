@@ -21,7 +21,10 @@ harness.testcases()
 harness.save("path/to/nlptest_folder")
 ```
 
-
+Harness will save generated testcasses, nlptest configurations and test data. `nlptest` saved folder can be used to test
+ different NLP pipelines later using `harness.load()` method.
+ 
+see [Loading testcases](/docs/pages/docs/load)  
 ```
 
 </div></div>
