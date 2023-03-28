@@ -1,7 +1,7 @@
 import os
 import pickle
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
 import yaml
@@ -24,7 +24,7 @@ class Harness:
     def __init__(
             self,
             task: Optional[str],
-            model: Union[str],
+            model: Union[str, Any],
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -48,13 +48,16 @@ class Harness:
 
         if isinstance(model, str):
             if hub is None:
-                raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
+                raise OSError(
+                    "You need to pass the 'hub' parameter when passing a string as 'model'.")
 
-            self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
+            self.model = ModelFactory.load_model(
+                path=model, task=task, hub=hub)
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        self.data = DataFactory(data, task=self.task).load() if data is not None else None
+        self.data = DataFactory(
+            data, task=self.task).load() if data is not None else None
         self._config = self.configure(config) if config is not None else None
 
         self._testcases = None
@@ -87,7 +90,7 @@ class Harness:
             None: The generated testcases are stored in `_testcases` attribute.
         """
         tests = self._config['tests']
-        self._testcases = TestFactory.transform(self.data, tests, self.model)
+        self._testcases = TestFactory.transform(self.data, tests)
         return self
 
     def run(self) -> "Harness":
@@ -98,7 +101,7 @@ class Harness:
             None: The evaluations are stored in `generated_results` attribute.
         """
         self._generated_results = TestRunner(self._testcases, self.model,
-                                                                    self.data).evaluate()
+                                             self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -108,9 +111,10 @@ class Harness:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
         if isinstance(self._config, dict):
-            self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
+            self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in
                                   self._config['tests'].items() for j, k in v.items()}
-        self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
+        self.default_min_pass_dict = self._config['defaults'].get(
+            'min_pass_rate', 0.65)
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self._generated_results:
@@ -119,8 +123,10 @@ class Harness:
 
         report = {}
         for test_type, value in summary.items():
-            pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
-            min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
+            pass_rate = summary[test_type]["true"] / \
+                (summary[test_type]["true"] + summary[test_type]["false"])
+            min_pass_rate = self.min_pass_dict.get(
+                test_type, self.default_min_pass_dict)
             if summary[test_type]['category'] == "Accuracy":
                 min_pass_rate = 1
             report[test_type] = {
@@ -133,11 +139,13 @@ class Harness:
             }
 
         df_report = pd.DataFrame.from_dict(report, orient="index")
-        df_report = df_report.reset_index().rename(columns={'index': 'test_type'})
+        df_report = df_report.reset_index().rename(
+            columns={'index': 'test_type'})
 
-        df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-
+        df_report['pass_rate'] = df_report['pass_rate'].apply(
+            lambda x: "{:.0f}%".format(x * 100))
+        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
+            lambda x: "{:.0f}%".format(x * 100))
 
         col_to_move = 'category'
         first_column = df_report.pop('category')
@@ -145,7 +153,6 @@ class Harness:
         df_report = df_report.reset_index(drop=True)
 
         self.df_report = df_report.fillna("-")
-
         return self.df_report
 
     def generated_results(self) -> pd.DataFrame:
@@ -158,7 +165,8 @@ class Harness:
         if self._generated_results is None:
             print("Please run Harness.run() first.")
             return
-        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
+        generated_results_df = pd.DataFrame.from_dict(
+            [x.to_dict() for x in self._generated_results])
         # accuracy_df = self.accuracy_report()
         # final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
         # final_df = final_df.reset_index(drop=True)
@@ -166,7 +174,6 @@ class Harness:
         return generated_results_df
 
     def augment(self, input_path, output_path, inplace=False):
-
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -193,8 +200,10 @@ class Harness:
             lambda x: str(x),
             self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
         if dtypes not in [['int64'] * 2, ['int32'] * 2]:
-            self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
-            self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
+            self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace(
+                "%", "").astype(int)
+            self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace(
+                "%", "").astype(int)
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
@@ -280,7 +289,8 @@ class Harness:
         """
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
+                raise OSError(
+                    f"File '{filename}' is missing to load a previously saved `Harness`.")
 
         harness = Harness(task=task, model=model, hub=hub)
         harness.configure(os.path.join(save_dir, "config.yaml"))
