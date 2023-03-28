@@ -70,6 +70,10 @@ class Harness:
 
             self.data = DataFactory(data, task=self.task).load()
             logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+        elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
+            raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
+                             f"passed is not among the default ones. You need to either specify the parameter 'data' "
+                             f"or use a default configuration.")
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
@@ -120,7 +124,7 @@ class Harness:
             None: The evaluations are stored in `generated_results` attribute.
         """
         self._generated_results = TestRunner(self._testcases, self.model,
-                                                                    self.data).evaluate()
+                                             self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -159,7 +163,6 @@ class Harness:
 
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-
 
         col_to_move = 'category'
         first_column = df_report.pop('category')
