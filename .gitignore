@@ -201,3 +201,5 @@ docs/website/.sass-cache/**
 
 tst_shortcut_sd/
 src/*/resources/*.classes
+
+_site\
