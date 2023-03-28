@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: Installation
+title: Quick Start
 permalink: /docs/pages/docs/install
 key: docs-install
 modify_date: "2020-05-26"
