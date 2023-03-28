@@ -22,6 +22,7 @@ It imports the Harness class from within the module, that is designed to provide
 
 Here is a list of the different parameters that can be passed to the `Harness` function:
 
+{:.table2}
 | Parameter  | Description |  
 | - | - | 
 |**task**  |Task for which the model is to be evaluated (text-classification or ner)|

@@ -26,6 +26,7 @@ harness.generated_results()
 
  The generated results dataframe looks something like the following:
 
+{:.table2}
 | category  | test_type |  original | test_case | expected_result |  actual_result | pass |
 | - | - | - | - | - | - | - |
 |Robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] | [O, O, O, O] | False |

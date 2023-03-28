@@ -17,6 +17,7 @@ harness.report()
 ```
 The report looks something like the following:
 
+{:.table2}
 | category  | test_type |  fail_count | pass_count | pass_rate |  minimun_pass_rate | pass |
 | - | - | - | - | - | - | - |
 |Robustness | lowercase | 77 | 14 | 15% | 60%  | False |
