@@ -17,10 +17,10 @@ testcases to from saved nlptest folder.
 from nlptest import Harness
 
 #   load testcases
-harness = Harness.load('saved_nlptest_folder' task='ner', model='ner_dl_bert', hub='johnsnowlabs')
+harness = Harness.load("saved_nlptest_folder", task='ner', model="ner_dl_bert", hub="johnsnowlabs")
 ```
 
-Harness will load saved testcasses, nlptest configurations and test data. 
+Harness will load saved testcasses, nlptest configurations and test data.
  
 see [Generating testcases](/docs/pages/docs/generate)
 

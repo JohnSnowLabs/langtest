@@ -330,6 +330,12 @@
     <p>Harness class provides <code class="language-plaintext highlighter-rouge">save()</code> and <code class="language-plaintext highlighter-rouge">load()</code> pipeline for the testcases. You can easily load and run generated 
 testcases to from saved nlptest folder.</p>
 
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">nlptest</span> <span class="kn">import</span> <span class="n">Harness</span>
+
+<span class="c1">#   load testcases
+</span><span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"saved_nlptest_folder, task='ner', model="</span><span class="n">ner_dl_bert</span><span class="s">", hub="</span><span class="n">johnsnowlabs</span><span class="s">")
+</span></code></pre></div>    </div>
+
     <p>Harness will load saved testcasses, nlptest configurations and test data.</p>
 
     <p>see <a href="/docs/pages/docs/generate">Generating testcases</a></p>
