@@ -11,14 +11,14 @@ This test checks if the NLP model can handle input text that is in all uppercase
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 uppercase:
     min_pass_rate: <float>
 ```
 **min_pass_rate:** Minimum pass rate to pass the test.
 
-### Examples
+#### Examples
 
 {:.table2}
 |Original|Testcase|

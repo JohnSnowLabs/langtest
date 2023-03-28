@@ -10,7 +10,7 @@ This test checks the recall score for each label. Test is passed if the recall s
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 min_recall_score:
       min_score: 0.5
@@ -24,6 +24,6 @@ min_recall_score:
 ```
 **min_pass_rate:** Minimum pass rate to pass the test.
 
-<!-- ### Examples -->
+<!-- #### Examples -->
 
 </div></div>

@@ -9,14 +9,14 @@ This test checks if the NLP model can handle input text that is in titlecase for
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 titlecase:
     min_pass_rate: <float>
 ```
 **min_pass_rate:** Minimum pass rate to pass the test.
 
-### Examples
+#### Examples
 
 {:.table2}
 |Original|Testcase|

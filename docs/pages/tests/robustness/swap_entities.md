@@ -10,14 +10,14 @@ This test shuffles the labeled entities in the input to test the models robustne
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 add_context:
     min_pass_rate: <float>
 ```
 - **min_pass_rate:** Minimum pass rate to pass the test.
 
-### Examples
+#### Examples
 
 {:.table2}
 |Original|Testcase|

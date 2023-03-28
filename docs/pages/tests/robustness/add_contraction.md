@@ -10,14 +10,14 @@ This test checks if the NLP model can handle input text if the data uses contrac
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 add_context:
     min_pass_rate: 0.7
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 
-### Examples
+#### Examples
 
 {:.table2}
 |Original|Testcase|

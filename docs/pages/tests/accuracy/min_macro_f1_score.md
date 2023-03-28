@@ -10,7 +10,7 @@ This test checks the macro-f1 score for each label. Test is passed if the macro-
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 min_macro_f1_score:
       min_score: 0.8
@@ -24,6 +24,6 @@ min_macro_f1_score:
 ```
 **min_pass_rate:** Minimum pass rate to pass the test.
 
-<!-- ### Examples -->
+<!-- #### Examples -->
 
 </div></div>

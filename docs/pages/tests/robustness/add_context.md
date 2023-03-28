@@ -10,7 +10,7 @@ This test checks if the NLP model can handle input text with added context, such
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 add_context:
     min_pass_rate: <float>
@@ -23,7 +23,7 @@ add_context:
 - **ending_context:** Phrases to be added at the end of inputs.
 - **strategy:** Which places to add the given phrases.
 
-### Examples
+#### Examples
 
 {:.table2}
 |Original|Testcase|

@@ -10,7 +10,7 @@ This test checks the micro-f1 score for each label. Test is passed if the micro-
 
 </div><div class="h3-box" markdown="1">
 
-### Config
+#### Config
 ```yaml
 min_micro_f1_score:
       min_score: 0.8
@@ -24,6 +24,6 @@ min_micro_f1_score:
 ```
 **min_pass_rate:** Minimum pass rate to pass the test.
 
-<!-- ### Examples -->
+<!-- #### Examples -->
 
 </div></div>
