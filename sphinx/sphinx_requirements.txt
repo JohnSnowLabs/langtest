@@ -1,0 +1,6 @@
+sphinx==6.1.3
+pydata-sphinx-theme
+pydantic
+spacy
+autoapi
+sphinx_substitution_extensions
