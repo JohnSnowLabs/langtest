@@ -15,7 +15,7 @@ Called after harness.run() and it summarizes the results giving information abou
 ```python
 harness.report()
 ```
-The report looks something like the following:
+A sample report looks like the one given below:
 
 {:.table2}
 | category  | test_type |  fail_count | pass_count | pass_rate |  minimun_pass_rate | pass |
