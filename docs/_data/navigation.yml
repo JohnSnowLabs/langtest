@@ -13,31 +13,31 @@ header:
 
 
 docs-menu:
-  - title: Installation
+  - title: Quick Start
     url: /docs/pages/docs/install
-    children:
-      - title:  Quick Start
-        url:    /docs/pages/docs/quick_start
-  - title: Harness
+    # children:
+    #   - title:  Quick Start
+    #     url:    /docs/pages/docs/quick_start
+  - title: Harness and its Parameters
     url: /docs/pages/docs/harness
-    children:
-      - title:  generate()
-        url:    /docs/pages/docs/generate
-      - title:  run()
-        url:    /docs/pages/docs/run
-      - title:  report()
-        url:    /docs/pages/docs/report
-      - title: save()
-        url: /docs/pages/docs/save
-      - title:  load()
-        url:    /docs/pages/docs/load
-  - title: Augmentation
-    url:    /docs/pages/docs/augmentation
-    children:
-      - title: generate()
-        url: /docs/pages/docs/generate_augmentation
-      - title: save()
-        url: /docs/pages/docs/save_augmentation
+    # children:
+  - title:  Generating Testcases
+    url:    /docs/pages/docs/generate
+  - title:  Running Testcases
+    url:    /docs/pages/docs/run
+  - title:  Report
+    url:    /docs/pages/docs/report
+  - title:  Save
+    url: /docs/pages/docs/save
+  - title:  Load
+    url:    /docs/pages/docs/load
+  # - title: Augmentation
+  #   url:    /docs/pages/docs/augmentation
+    # children:
+  - title: Generating Augmentations
+    url: /docs/pages/docs/generate_augmentation
+  - title: Saving Augmentations
+    url: /docs/pages/docs/save_augmentation
 
 tutorials:
   - title: Tutorials
