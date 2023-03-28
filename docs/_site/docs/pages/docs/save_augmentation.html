@@ -3,7 +3,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"><title>NLP Docs | John Snow Labs</title><meta name="description" content="NLP
 ">
-<link rel="canonical" href="http://localhost:4000/docs/pages/docs/run"><link rel="alternate" type="application/rss+xml" title="NLP" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ -->
+<link rel="canonical" href="http://localhost:4000/docs/pages/docs/save_augmentation"><link rel="alternate" type="application/rss+xml" title="NLP" href="/feed.xml"><!-- start favicons snippet, use https://realfavicongenerator.net/ -->
 <!---->
 <!-- <link rel="apple-touch-icon" sizes="180x180" href="/fav.ico"> -->
 
@@ -316,36 +316,51 @@
 
               <div class="col-main cell cell--auto"><!-- start custom main top snippet -->
 
-<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><div class="article__header"><header><h1>Running the testcases</h1></header><span class="split-space">&nbsp;</span>
+<!-- end custom main top snippet --><article itemscope itemtype="http://schema.org/Article"><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script><div class="article__header"><header><h1>Augmentation save()</h1></header><span class="split-space">&nbsp;</span>
           <a class="edit-on-github"
             title="Edit on Github"
-            href="https://github.com/johnsnowlabs/nlu/tree/master/docs/pages/docs/run.md">
-            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="Running the testcases"><meta itemprop="author" content=""/><div class="js-article-content"><div class="docs-wrapper">
+            href="https://github.com/johnsnowlabs/nlu/tree/master/docs/pages/docs/save_augmentation.md">
+            <i class="far fa-edit"></i></a></div><meta itemprop="headline" content="Augmentation save()"><meta itemprop="author" content=""/><div class="js-article-content"><div class="docs-wrapper">
 <div class="layout--article"><!-- start custom article top snippet -->
 
 <!-- end custom article top snippet -->
 <div class="article__content" itemprop="articleBody"><div class="main-docs">
   <div class="h3-box">
 
-    <p>Called after <strong>.generate()</strong> method and is to used to run all the specified tests. Returns a pass/fail flag for each test.</p>
+    <p>To install the <strong>johnsnowlabs Python library</strong> and all of John Snow Labs open <strong>source libraries</strong>, just run</p>
 
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>johnsnowlabs
 </code></pre></div>    </div>
 
-    <p>To get the run results in the form of a pandas dataframe we can use the <strong>.generated_results()</strong> method.</p>
+    <p>To quickly test the installation, you can run in your <strong>Shell</strong>:</p>
 
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">harness</span><span class="p">.</span><span class="n">generated_results</span><span class="p">()</span>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python <span class="nt">-c</span> <span class="s2">"from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"</span>
+</code></pre></div>    </div>
+    <p>or in <strong>Python</strong>:</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span>  <span class="nn">johnsnowlabs</span> <span class="kn">import</span> <span class="n">nlp</span>
+<span class="n">nlp</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'emotion'</span><span class="p">).</span><span class="n">predict</span><span class="p">(</span><span class="s">'Wow that easy!'</span><span class="p">)</span>
 </code></pre></div>    </div>
 
-    <p>It returns the generated results in the form of a dataframe with pass/fail flag for each test that we had specified.</p>
+    <p>when using <strong>Annotator based pipelines</strong>, use <code class="language-plaintext highlighter-rouge">nlp.start()</code> to start up your session</p>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">johnsnowlabs</span> <span class="kn">import</span> <span class="n">nlp</span>
+<span class="n">nlp</span><span class="p">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">stages</span><span class="o">=</span>
+<span class="p">[</span>
+    <span class="n">nlp</span><span class="p">.</span><span class="n">DocumentAssembler</span><span class="p">().</span><span class="n">setInputCol</span><span class="p">(</span><span class="s">'text'</span><span class="p">).</span><span class="n">setOutputCol</span><span class="p">(</span><span class="s">'doc'</span><span class="p">),</span>
+    <span class="n">nlp</span><span class="p">.</span><span class="n">Tokenizer</span><span class="p">().</span><span class="n">setInputCols</span><span class="p">(</span><span class="s">'doc'</span><span class="p">).</span><span class="n">setOutputCol</span><span class="p">(</span><span class="s">'tok'</span><span class="p">)</span>
+<span class="p">])</span>
+<span class="n">nlp</span><span class="p">.</span><span class="n">to_nlu_pipe</span><span class="p">(</span><span class="n">pipe</span><span class="p">).</span><span class="n">predict</span><span class="p">(</span><span class="s">'That was easy'</span><span class="p">)</span>
+</code></pre></div>    </div>
+
+    <p>for alternative installation options see <a href="/docs/pages/docs/install_advanced">Custom Installation</a></p>
 
   </div>
 </div>
 </div><div class="d-print-none"><footer class="article__footer "><span class="footer_date">Last updated
-      <time itemprop="dateModified" datetime="2020-05-26T00:00:00+05:30">May 26, 2020</time>
+      <time itemprop="dateModified" datetime="2019-05-16T00:00:00+05:30">May 16, 2019</time>
     </span><!-- start custom article footer snippet -->
 
-<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous nav_link"><span>PREVIOUS</span><a href="/docs/pages/docs/generate">generate()</a></div><div class="next nav_link"><span>NEXT</span><a href="/docs/pages/docs/report">report()</a></div></div></div>
+<!-- end custom article footer snippet --></footer><div class="article__section-navigator clearfix"><div class="previous nav_link"><span>PREVIOUS</span><a href="/docs/pages/docs/generate_augmentation">generate()</a></div></div></div>
 
 </div>
 </div>
