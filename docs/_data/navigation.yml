@@ -56,16 +56,10 @@ tutorials:
 tests:
   - title: Tests
     url: /docs/pages/tests/test
-    children:
-      - title: Robustness
-        url: /docs/pages/tests/robustness
-        key: tests
+    children:      
       - title: Uppercase
         url: /docs/pages/tests/uppercase
-        key: tests
-      - title: Lowercase
-        url: /docs/pages/tests/lowercase
-        key: tests
+        key: tests      
       - title: Titlecase
         url: /docs/pages/tests/titlecase
         key: tests
@@ -81,9 +75,28 @@ tests:
       - title: Gender
         url: /docs/pages/tests/gender
         key: tests
-      - title: Representation
-        url: /docs/pages/tests/representation
-        key: tests
       - title: Age Bias
         url: /docs/pages/tests/age_bias
         key: tests
+  - title: Robustness
+    url: /docs/pages/tests/robustness
+    key: tests
+    children:
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+  - title: Accuracy
+    url: #
+    key: tests
+    children:
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+  - title: Representation
+    url: /docs/pages/tests/representation
+    key: tests
+    children:
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+
