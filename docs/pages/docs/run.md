@@ -4,7 +4,7 @@ seotitle: NLP Docs | John Snow Labs
 title: Running the testcases
 permalink: /docs/pages/docs/run
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
@@ -24,7 +24,7 @@ harness.generated_results()
 
  It returns the generated results in the form of a dataframe with pass/fail flag for each test that we had specified.
 
- The generated results dataframe looks something like the following:
+ A sample generated results dataframe looks like the one given below:
 
 {:.table2}
 | category  | test_type |  original | test_case | expected_result |  actual_result | pass |

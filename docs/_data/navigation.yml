@@ -15,29 +15,24 @@ header:
 docs-menu:
   - title: Quick Start
     url: /docs/pages/docs/install
-    # children:
-    #   - title:  Quick Start
-    #     url:    /docs/pages/docs/quick_start
+
   - title: Harness and its Parameters
     url: /docs/pages/docs/harness
-    # children:
-  - title:  Generating Testcases
+  - title:  Generating Test Cases
     url:    /docs/pages/docs/generate
-  - title:  Running Testcases
+  - title:  Running Test Cases
     url:    /docs/pages/docs/run
   - title:  Report
     url:    /docs/pages/docs/report
-  - title:  Saving Testcases
+  - title:  Saving Test Cases
     url: /docs/pages/docs/save
-  - title:  Loading Testcases
+  - title:  Loading Test Cases
     url:    /docs/pages/docs/load
-  # - title: Augmentation
-  #   url:    /docs/pages/docs/augmentation
-    # children:
   - title: Generating Augmentations
     url: /docs/pages/docs/generate_augmentation
   - title: Saving Augmentations
     url: /docs/pages/docs/save_augmentation
+
 
 tutorials:
   - title: Tutorials
@@ -57,14 +52,8 @@ tests:
   - title: Tests
     url: /docs/pages/tests/test
     children:
-      - title: Robustness
-        url: /docs/pages/tests/robustness
-        key: tests
       - title: Uppercase
         url: /docs/pages/tests/uppercase
-        key: tests
-      - title: Lowercase
-        url: /docs/pages/tests/lowercase
         key: tests
       - title: Titlecase
         url: /docs/pages/tests/titlecase
@@ -81,9 +70,28 @@ tests:
       - title: Gender
         url: /docs/pages/tests/gender
         key: tests
-      - title: Representation
-        url: /docs/pages/tests/representation
-        key: tests
       - title: Age Bias
         url: /docs/pages/tests/age_bias
         key: tests
+  - title: Robustness
+    url: /docs/pages/tests/robustness
+    key: tests
+    children:
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+  - title: Accuracy
+    url: #
+    key: tests
+    children:
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+  - title: Representation
+    url: /docs/pages/tests/representation
+    key: tests
+    children:
+      - title: Lowercase
+        url: /docs/pages/tests/lowercase
+        key: tests
+

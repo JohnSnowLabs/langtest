@@ -1,45 +1,45 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: Quick Start
-permalink: /docs/pages/docs/quick_start
+title: Installation
+permalink: /docs/pages/docs/install
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+**nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
+You can install **nlptest** using pip or conda.
 
-```shell 
-pip install johnsnowlabs
+```python 
+# Using PyPI
+pip install nlptest
+
+# Using Conda
+conda install nlptest
 ```
 
-To quickly test the installation, you can run in your **Shell**:
+With just one line of code, it can generate and run over 50 different test types to assess the quality of NLP models in terms of accuracy, bias, robustness, representation, and fairness.
+You can test any **Text Classification** and **Named Entity Recognition** model using ``Harness``.
 
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
 ```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+from nlptest import Harness
+h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs')
+
+# Generate test cases, run them and view a report
+h.generate().run().report()
 ```
 
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
+Whether you are using **Spark NLP**, **Hugging Face Transformers**, or **spaCy** models, ``Harness`` has got you covered.
+You can easily pass the test data and the trained NLP pipeline.
 ```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
+from nlptest import Harness
+h = Harness(task='text-classification', model='distilbert-base-uncased', hub='huggingface')
+
+# Generate test cases, run them and view a report
+h.generate().run().report()
 ```
-
-
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
 
 </div></div>

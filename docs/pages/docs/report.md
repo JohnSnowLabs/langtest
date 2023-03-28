@@ -4,7 +4,7 @@ seotitle: NLP Docs | John Snow Labs
 title: report()
 permalink: /docs/pages/docs/report
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
@@ -15,7 +15,7 @@ Called after harness.run() and it summarizes the results giving information abou
 ```python
 harness.report()
 ```
-The report looks something like the following:
+A sample report looks like the one given below:
 
 {:.table2}
 | category  | test_type |  fail_count | pass_count | pass_rate |  minimun_pass_rate | pass |

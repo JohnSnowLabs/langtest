@@ -27,8 +27,8 @@ article_header:
       {%- endif -%}
 
       <div class="">
-        {%- if _section.install -%}
 
+        {%- if _section.install -%}
         <div class="quick_easy">
           <div class="grid--container">
             <div class="grid">
@@ -43,8 +43,7 @@ article_header:
                     {%- include snippets/get-nav-url.html path=_action.url -%}
                     {%- assign _url = __return -%}
                     {%- assign _type = _action.type | default: 'outline-info' -%}
-                    <li><a class="button button--{{ _type }} button--lg" href="{{ _url }}">{{ _action.text }}</a>
-                    </li>
+                    <li><a class="button button--{{ _type }} button--lg" href="{{ _url }}">{{ _action.text }}</a></li>
                     {%- endfor -%}
                   </ul>
                   {%- endif -%}
@@ -62,8 +61,19 @@ conda install nlptest
               </div>
             </div>
           </div>           
+        </div>      
+      {%- endif -%}
+
+      {%- if _section.topimage -%}
+      <div class="grid--container">
+        <div class="grid">
+          <div class="cell cell--12 cell--lg-12">
+            {%- for topimageitem in _section.topimage -%} 
+              <figure class="shadow"><img src="{{ topimageitem.image.src }}" alt=""></figure>
+            {%- endfor-%}
+          </div>
         </div>
-      
+      </div>
       {%- endif -%}
         
 
@@ -119,8 +129,7 @@ h.generate().run().report()
                     </div>
                   </div>
                 </div>
-              </div>    
-              
+              </div>                  
             </div>
           </div>
         </div>
@@ -148,7 +157,7 @@ h.generate().run().report()
               <div class="test_out_title tac mont">Coverage</div>
               <div class="test_out_body">
                   <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="assets/images/home/test_out_check.svg" width="21" height="21" alt=""></figure></div>
-                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper nlp_libraries_orange">football <em class="mont">SPORT</em></div></div><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
+                  <div class="test_out_line df"><div class="test_out_line_inner df">She's a massive fan of <div class="test_line_wrapper nlp_libraries_orange">cricket <em class="mont">ANIMAL</em></div></div><figure class="df"><img src="assets/images/home/test_out_false.svg" width="21" height="21" alt=""></figure></div>
               </div>
           </div>
           <div class="test_out_item test_out_blue">
@@ -269,92 +278,122 @@ Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()
         </div>
       {%- endif -%}
 
-        
-        {%- if _section.children -%}
-        {%- assign _size = _section.children | size  -%}
+      {%- if _section.autogeterate_test -%}
         <div class="grid--container">
-          <div class="grid grid--p-3">
-
-            {%- for child in _section.children -%}
-
-            {%- if _size >= 2 -%}
-            {%- assign _cell_sm_col = 12 -%}
-            {%- else -%}
-            {%- assign _cell_sm_col = 12 | divided_by: _size -%}
-            {%- endif -%}
-
-            {%- if _size >= 2 -%}
-            {%- assign _cell_md_col = 4 -%}
-            {%- else -%}
-            {%- assign _cell_md_col = 12 | divided_by: _size -%}
-            {%- endif -%}
-
-            {%- if _size >= 4 -%}
-            {%- assign _cell_lg_col = 3 -%}
-            {%- else -%}
-            {%- assign _cell_lg_col = 12 | divided_by: _size -%}
-            {%- endif -%}
-
-            {%- if _size >= 6 -%}
-            {%- assign _cell_lg_col = 2 -%}
-            {%- else -%}
-            {%- assign _cell_lg_col = 12 | divided_by: _size -%}
-            {%- endif -%}
-
-            <div class="cell cell--12 cell--md-{{ _cell_md_col }} cell--lg-{{ _cell_lg_col }} cell--sm-{{ _cell_sm_col }}">
-
-              <div class="feature-item topthree {{ _section.featureitem }} ">
-                {%- if child.image and child.image.src -%}
-
-                {%- if child.image.url -%}
-                {%- include snippets/get-nav-url.html path=child.image.url -%}
-                {%- assign _item_image_url = __return -%}
-                {%- else -%}
-                {%- assign _item_image_url = nil -%}
-                {%- endif -%}
-
-                {%- include snippets/get-nav-url.html path=child.image.src -%}
-                {%- assign _item_image_src = __return -%}
-
-                {%- if child.image.is_row -%}
-                  {%- endif -%}
-                  <figure class="mx-auto" style="{{ child.image.style }}">
-                    <img src="{{ _item_image_src }}" />
-                  </figure>
-                  {%- if child.image.is_row -%}
-                {%- endif -%}
-                {%- endif -%}
-
-                <h4>{{ child.title }}</h4>
-
-
-                {%- if child.excerpt-%}
-                <p>{{ child.excerpt }}</p>
-                {%- endif -%}
-
-                {%- if child.actions -%}
-                <ul class="menu">
-                  {%- for _action in child.actions -%}
-                  {%- include snippets/get-nav-url.html path=_action.url -%}
-                  {%- assign _url = __return -%}
-                  {%- assign _type = _action.type | default: 'outline-info' -%}
-                  <li><a class="button button--{{ _type }} button--lg"
-                      href="{{ _url }}">{{ _action.text }}</a></li>
-                  {%- endfor -%}
-                </ul>
-                {%- endif -%}
-              </div>              
-
-              {%- if child.content-%}
-              <p>{{ child.content }}</p>
-              {%- endif -%}
-
+          <div class="grid jcc">
+            <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
+              <h3 class="grey h3_title">{{ _section.title }}</h3>     
+              <div class="highlight-box">
+                {% highlight bash %}
+h.generate().run().report()            
+                {% endhighlight %}
+              </div>
             </div>
-            {%- endfor-%}
-
           </div>
+          <div class="autocorrect-models-tables">
+            <div class="grid">
+              <div class="cell cell--12 cell--lg-12">
+              <div class="over_y">
+                  <table class="table1 nlp_test_table">
+                      <thead>
+                          <tr>
+                              <th>Category</th>
+                              <th>Test Type</th>
+                              <th>Pass Rate</th>
+                              <th>Minimum <br>Pass Rate</th>
+                              <th>Pass</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>Robustness</td>
+                              <td>Add Typos</td>
+                              <td>0.50</td>
+                              <td>0.65</td>
+                              <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"><g stroke="#EF8000" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" clip-path="url(#a)"><path d="M16.592 1.408 1.446 16.592M1.446 1.408l15.183 15.184"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h18v18H0z"/></clipPath></defs></svg></td>
+                          </tr>
+                          <tr>
+                              <td>Bias</td>
+                              <td>Ethnicity</td>
+                              <td>0.85</td>
+                              <td>0.75</td>
+                              <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="15" fill="none"><g clip-path="url(#a)"><path stroke="#0098DA" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M20.66 1.34 9.242 12.856a2.126 2.126 0 0 1-3.009 0L1.34 8.017"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h22v14.83H0z"/></clipPath></defs></svg></td>
+                          </tr>
+                          <tr>
+                              <td>Representation</td>
+                              <td>Gender</td>
+                              <td>0.80</td>
+                              <td>0.75</td>
+                              <td class="tac"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="15" fill="none"><g clip-path="url(#a)"><path stroke="#0098DA" stroke-linecap="round" stroke-miterlimit="10" stroke-width="3" d="M20.66 1.34 9.242 12.856a2.126 2.126 0 0 1-3.009 0L1.34 8.017"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h22v14.83H0z"/></clipPath></defs></svg></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>          
         </div>
-        {%- endif -%}
+      {%- endif -%}
+
+      {%- if _section.integrate_testing -%}
+        <div class="grid--container integrate_testing_section">
+          <div class="grid jcc">
+            <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
+              <h3 class="grey h3_title">{{ _section.title }}</h3>     
+              <div class="highlight-box">
+                {% highlight bash %}
+class DataScienceWorkFlow(FlowSpec):
+@step
+def train(self): ...
+
+@step
+def run_tests(self):
+    harness = Harness(model=self.model, data="data.csv")
+    self.report = harness.generate().run().report()
+
+@step
+def deploy(self):
+    if self.report["score"] > self.threshold: ...         
+                {% endhighlight %}
+              </div>
+                
+              {%- if _section.button -%}                
+                <div class="tac">
+                  {%- for integrate_testing_btn in _section.button -%} 
+                      <a class="button button--lg" href="{{ integrate_testing_btn.url }}">{{ integrate_testing_btn.text }}</a>
+                  {%- endfor-%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>         
+        </div>
+      {%- endif -%}
+        
+      {%- if _section.threeblocks -%}
+      <div class="grid--container">
+        <div class="grid grid--p-3">
+
+          {%- for child in _section.threeblocks -%}            
+
+          <div class="cell cell--12 cell--md-4 cell--lg-4 cell--sm-12">
+
+            <div class="feature-item topthree">
+              <figure class="mx-auto">
+                <img src="{{ child.image.src }}" />
+              </figure>
+              <h4>{{ child.title }}</h4>
+              {%- if child.excerpt-%}
+              <p>{{ child.excerpt }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+          {%- endfor-%}
+
+        </div>
+      </div>
+      {%- endif -%}
+
+
 
         {%- if _section.image.full_width == true -%}
       </div> {% comment %} end hero__content {% endcomment %}

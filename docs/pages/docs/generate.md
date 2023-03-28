@@ -4,7 +4,7 @@ seotitle: NLP Docs | John Snow Labs
 title: Generating the testcases
 permalink: /docs/pages/docs/generate
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
@@ -27,7 +27,7 @@ tests:
   
 ```
 
-If config file not present, we can use the **.configure()** method to configure the harness to perform the needed tests.
+If config file is not present, we can use the **.configure()** method to configure the harness to perform the needed tests.
 
 ```python
 harness.configure(
@@ -48,9 +48,9 @@ After generating the testcases we can use the **.testcases()** method.
 ```python
 harness.testcases()
 ```
-This method returns the produced testcases in form of a pandas data frame – making them easy to edit, filter, import, or export. We can manually review the list of generated test cases, and decide on which ones to keep or edit. 
+This method returns the produced test cases in form of a pandas data frame – making them easy to edit, filter, import, or export. We can manually review the list of generated test cases, and decide on which ones to keep or edit. 
 
-The testcases dataframe looks something like the following:
+A sample testcases dataframe looks like the one given below:
 
 {:.table2}
 | category  | test_type |  original | test_case | expected_result | 
