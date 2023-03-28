@@ -20,8 +20,7 @@ from nlptest import Harness
 harness = Harness.load("saved_nlptest_folder", task='ner', model="ner_dl_bert", hub="johnsnowlabs")
 ```
 
-Harness will load saved testcasses, nlptest configurations and test data.
- 
-see [Generating testcases](/docs/pages/docs/generate)
+Harness will load saved testcasses, nlptest configurations and test data. Now you can easily run saved test casses with
+`ner_dl_bert` model that you passed. In order to `run()` testcasses see [Running testcases](/docs/pages/docs/run)
 
 </div></div>

@@ -333,12 +333,11 @@ testcases to from saved nlptest folder.</p>
     <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">nlptest</span> <span class="kn">import</span> <span class="n">Harness</span>
 
 <span class="c1">#   load testcases
-</span><span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"saved_nlptest_folder, task='ner', model="</span><span class="n">ner_dl_bert</span><span class="s">", hub="</span><span class="n">johnsnowlabs</span><span class="s">")
-</span></code></pre></div>    </div>
+</span><span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"saved_nlptest_folder"</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s">'ner'</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s">"ner_dl_bert"</span><span class="p">,</span> <span class="n">hub</span><span class="o">=</span><span class="s">"johnsnowlabs"</span><span class="p">)</span>
+</code></pre></div>    </div>
 
-    <p>Harness will load saved testcasses, nlptest configurations and test data.</p>
-
-    <p>see <a href="/docs/pages/docs/generate">Generating testcases</a></p>
+    <p>Harness will load saved testcasses, nlptest configurations and test data. Now you can easily run saved test casses with
+<code class="language-plaintext highlighter-rouge">ner_dl_bert</code> model that you passed. In order to <code class="language-plaintext highlighter-rouge">run()</code> testcasses see <a href="/docs/pages/docs/run">Running testcases</a></p>
 
   </div>
 </div>
