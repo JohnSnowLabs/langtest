@@ -15,12 +15,9 @@ header:
 docs-menu:
   - title: Quick Start
     url: /docs/pages/docs/install
-    # children:
-    #   - title:  Quick Start
-    #     url:    /docs/pages/docs/quick_start
+
   - title: Harness and its Parameters
     url: /docs/pages/docs/harness
-    # children:
   - title:  Generating Testcases
     url:    /docs/pages/docs/generate
   - title:  Running Testcases
@@ -31,9 +28,6 @@ docs-menu:
     url: /docs/pages/docs/save
   - title:  Load
     url:    /docs/pages/docs/load
-  # - title: Augmentation
-  #   url:    /docs/pages/docs/augmentation
-    # children:
   - title: Generating Augmentations
     url: /docs/pages/docs/generate_augmentation
   - title: Saving Augmentations
