@@ -4,7 +4,7 @@
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
 {:.h2-select}
-This test checks the data regarding the sample counts of genders. The test checks the count or proportion of genders depending on the alias_name.
+This test checks the data regarding the sample counts of religions. The test checks the count or proportion of religions depending on the alias_name and config.
 
 **alias_name:** `min_religion_name_representation_count` or `min_religion_name_representation_proportion`
 
