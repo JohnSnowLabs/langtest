@@ -25,6 +25,5 @@ Harness will save generated testcasses, nlptest configurations and test data. `n
  different NLP pipelines later using `harness.load()` method.
  
 see [Loading testcases](/docs/pages/docs/load)  
-```
 
 </div></div>
