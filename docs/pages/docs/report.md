@@ -20,8 +20,8 @@ The report looks something like the following:
 {:.table2}
 | category  | test_type |  fail_count | pass_count | pass_rate |  minimun_pass_rate | pass |
 | - | - | - | - | - | - | - |
-|Robustness | lowercase | 77 | 14 | 15% | 60%  | False |
-|Robustness | uppercase | 11 | 80 | 88% | 60%  | True |
+|robustness | lowercase | 77 | 14 | 15% | 60%  | False |
+|robustness | uppercase | 11 | 80 | 88% | 60%  | True |
 
 
 

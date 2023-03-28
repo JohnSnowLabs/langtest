@@ -55,8 +55,8 @@ The testcases dataframe looks something like the following:
 {:.table2}
 | category  | test_type |  original | test_case | expected_result | 
 | - | - | - | - | - |
-|Robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] |
-|Robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | [O, O, O, LOC] |
+|robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] |
+|robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | [O, O, O, LOC] |
 
 
 </div></div>

@@ -29,7 +29,7 @@ harness.generated_results()
 {:.table2}
 | category  | test_type |  original | test_case | expected_result |  actual_result | pass |
 | - | - | - | - | - | - | - |
-|Robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] | [O, O, O, O] | False |
-|Robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | [O, O, O, LOC] | [O, O, O, LOC] | True |
+|robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] | [O, O, O, O] | False |
+|robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | [O, O, O, LOC] | [O, O, O, LOC] | True |
 
 </div></div>
