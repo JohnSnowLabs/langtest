@@ -24,22 +24,22 @@ data:
    - title: 
      topimage: 
       - image:
-          src: /assets/images/home/infographic_17_03_23_final_big.jpg
+          src: assets/images/home/infographic_17_03_23_final_big.jpg
 
 
    - title:
      threeblocks:
        - title: Simple
          image: 
-            src: /assets/images/home/powerfull_one.svg
+            src: assets/images/home/powerfull_one.svg
          excerpt: Generate & run over 50 test types on the most popular NLP libraries & tasks with 1 line of code
        - title: Comprehensive
          image: 
-            src: /assets/images/home/elegant_python.svg
+            src: assets/images/home/elegant_python.svg
          excerpt: Test all aspects of model quality - robustness, bias, fairness, representation and accuracy - before going to production
        - title: 100% Open Source
          image: 
-            src: /assets/images/home/open_source.svg
+            src: assets/images/home/open_source.svg
          excerpt: The full code base is open under the Apache 2.0 license, designed for easy extension and AI community collaboration  
 
    - title: 'Quick & Easy'
