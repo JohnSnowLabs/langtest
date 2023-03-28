@@ -38,7 +38,7 @@ body {
 	margin-top: 0;
 }
 
-code {
+.highlight-box code {
 	font-size: 1.04rem;
 }
 
@@ -1249,12 +1249,14 @@ code {
 			}
 		}
 	}
-	.highlight > pre {
+}
+
+.highlight > pre {
+	overflow: visible;
+	code {
 		overflow: visible;
 	}
 }
-
-
 
 .test_out_item {
 	width: 33.3333%;
