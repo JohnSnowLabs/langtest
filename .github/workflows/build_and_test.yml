@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -27,21 +27,33 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+      
+      - name: Setup Apache Hadoop
+        # You may pin to the exact commit or the version.
+        # uses: chakravarthik27/setup-hdfs@4c200ebccaf43aaf063743d3ae6155a72b2621c4
+        uses: chakravarthik27/setup-hdfs@v1.0
+        with:
+          # The installed Apache Hadoop version.
+          hdfs-version: 3.2.1
 
-      - name: Create virtual environment
-        run: python -m venv venv
-
-      - name: Activate virtual environment
-        
+      - name: CHECK ENV's
         run: |
-          .\venv\Scripts\Activate.ps1
+          echo %JAVA_HOME%
+          echo %HADOOP_HOME%
+          echo %SPARK_HOME%
+      # - name: Create virtual environment
+      #   run: python -m venv venv
+
+      # - name: Activate virtual environment
+      #   run: |
+      #     .\venv\Scripts\Activate.ps1
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest
-          # if (-f requirements.txt ); then pip install -r requirements.txt; fi
-          If (Test-Path "requirements.txt") { pip install -r requirements.txt }
+          if (-f requirements.txt ); then pip install -r requirements.txt; fi
+          # If (Test-Path "requirements.txt") { pip install -r requirements.txt }
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
