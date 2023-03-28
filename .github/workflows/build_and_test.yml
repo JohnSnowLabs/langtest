@@ -14,12 +14,12 @@ on:
       - "main"
 
 jobs:
-  spark32:
+  build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.10"]
 
     steps:
       - uses: actions/checkout@v3
@@ -28,24 +28,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/setup-java@v1
-        with:
-          java-version: "11"
-
-      - uses: vemonet/setup-spark@v1
-        with:
-          spark-version: "3.2.1"
-          hadoop-version: "3.2"
-      - run: spark-submit --version
-
-      - name: Setup Apache Hadoop
-        uses: chakravarthik27/setup-hdfs@v1.0
-        with:
-          hdfs-version: 3.3.1
-
-      - name: CHECK ENV's
-        run: |
-          printenv
       - name: Create virtual environment
         run: python -m venv venv
 
@@ -68,4 +50,4 @@ jobs:
       - name: Test with pytest
         run: |
           python -m spacy download en_core_web_sm
-          pytest
+          pytest -s
