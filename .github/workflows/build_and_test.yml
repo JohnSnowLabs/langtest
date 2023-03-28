@@ -34,7 +34,7 @@ jobs:
         uses: chakravarthik27/setup-hdfs@v1.0
         with:
           # The installed Apache Hadoop version.
-          hdfs-version: 3.2.1
+          hdfs-version: 3.3.1
 
       - name: CHECK ENV's
         run: |
