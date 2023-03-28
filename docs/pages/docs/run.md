@@ -1,45 +1,35 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: run()
+title: Running the testcases
 permalink: /docs/pages/docs/run
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+Called after **.generate()** method and is to used to run all the specified tests. Returns a pass/fail flag for each test.
 
-```shell 
-pip install johnsnowlabs
+```python 
+harness.run()
 ```
 
-To quickly test the installation, you can run in your **Shell**:
+To get the run results in the form of a pandas dataframe we can use the **.generated_results()** method.
 
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
-```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+```python 
+harness.generated_results()
 ```
 
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
+ It returns the generated results in the form of a dataframe with pass/fail flag for each test that we had specified.
 
+ A sample generated results dataframe looks like the one given below:
 
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+{:.table2}
+| category  | test_type |  original | test_case | expected_result |  actual_result | pass |
+| - | - | - | - | - | - | - |
+|robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] | [O, O, O, O] | False |
+|robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | [O, O, O, LOC] | [O, O, O, LOC] | True |
 
 </div></div>
