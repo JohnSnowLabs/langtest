@@ -1,19 +1,19 @@
 import os
 import unittest
 
-from ..nlptest import Harness
-from ..nlptest.modelhandler import ModelFactory
+from nlptest import Harness
+from nlptest.modelhandler import ModelFactory
 
 
 class SparkNLPTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
-        print(os.getcwd())
         self.params = {
             "task": 'ner',
-            "model": "ner.dl",
-            "data": "nlptest/demo/data/test.conll",
-            "config": "nlptest/demo/data/config.yml"
+            "model": "ner_dl_bert",
+            "data": "demo/data/test.conll",
+            "config": "demo/data/config.yml",
+            "hub": "johnsnowlabs"
         }
 
     def test_predict(self):
@@ -29,11 +29,4 @@ class SparkNLPTestCase(unittest.TestCase):
         """
         harness = Harness(**self.params)
         self.assertIsInstance(harness.model, (str, ModelFactory))
-        self.assertIsInstance(harness.model.output_col, str)
-
-    def test_confidence(self):
-        """
-        Testing Attributes of Harness Class
-        """
-        harness = Harness(**self.params)
-        self.assertIsInstance(harness.model.model.getIncludeAllConfidence(), bool)
+        self.assertIsInstance(harness.model.model_class.output_col, str)
