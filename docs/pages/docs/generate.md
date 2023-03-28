@@ -52,6 +52,7 @@ This method returns the produced testcases in form of a pandas data frame – ma
 
 The testcases dataframe looks something like the following:
 
+{:.table2}
 | category  | test_type |  original | test_case | expected_result | 
 | - | - | - | - | - |
 |Robustness| lowercase | I live in Berlin | i live in berlin | [O, O, O, LOC] |
