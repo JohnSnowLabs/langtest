@@ -50,4 +50,4 @@ jobs:
       - name: Test with pytest
         run: |
           python -m spacy download en_core_web_sm
-          pytest 
+          pytest -s ./tests/test_sparknlp_model.py
