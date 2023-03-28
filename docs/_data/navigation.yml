@@ -16,7 +16,7 @@ docs-menu:
   - title: Quick Start
     url: /docs/pages/docs/install
 
-  - title: Harness and its Parameters
+  - title: Test Harness
     url: /docs/pages/docs/harness
   - title:  Generating Test Cases
     url:    /docs/pages/docs/generate
@@ -84,14 +84,15 @@ tests:
     url: #
     key: tests
     children:
-      - title: Lowercase
-        url: /docs/pages/tests/lowercase
-        key: tests
-  - title: Representation
-    url: /docs/pages/tests/representation
-    key: tests
-    children:
-      - title: Lowercase
-        url: /docs/pages/tests/lowercase
-        key: tests
-
+    - title: Accuracy
+      url: /docs/pages/tests/accuracy
+      key: accuracy
+    - title: Bias
+      url: /docs/pages/tests/bias
+      key: bias
+    - title: Representation
+      url: /docs/pages/tests/representation
+      key: representation
+    - title: Robustness
+      url: /docs/pages/tests/robustness
+      key: robustness
