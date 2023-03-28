@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: load()
+title: Loading Testcases
 permalink: /docs/pages/docs/load
 key: docs-install
 modify_date: "2020-05-26"
@@ -10,36 +10,11 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+Harness class provides `save()` and `load()` pipeline for the testcases. You can easily load and run generated 
+testcases to from saved nlptest folder.
 
-```shell 
-pip install johnsnowlabs
-```
-
-To quickly test the installation, you can run in your **Shell**:
-
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
-```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
-```
-
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
-
-
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+Harness will load saved testcasses, nlptest configurations and test data. 
+ 
+see [Generating testcases](/docs/pages/docs/generate)
 
 </div></div>

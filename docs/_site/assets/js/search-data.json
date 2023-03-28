@@ -99,8 +99,8 @@
   },
   "14": {
     "id": "14",
-    "title": "load()",
-    "content": "To install the johnsnowlabs Python library and all of John Snow Labs open source libraries, just run pip install johnsnowlabs To quickly test the installation, you can run in your Shell: python -c &quot;from johnsnowlabs import nlp;print(nlp.load(&#39;emotion&#39;).predict(&#39;Wow that easy!&#39;))&quot; or in Python: from johnsnowlabs import nlp nlp.load(&#39;emotion&#39;).predict(&#39;Wow that easy!&#39;) when using Annotator based pipelines, use nlp.start() to start up your session from johnsnowlabs import nlp nlp.start() pipe = nlp.Pipeline(stages= [ nlp.DocumentAssembler().setInputCol(&#39;text&#39;).setOutputCol(&#39;doc&#39;), nlp.Tokenizer().setInputCols(&#39;doc&#39;).setOutputCol(&#39;tok&#39;) ]) nlp.to_nlu_pipe(pipe).predict(&#39;That was easy&#39;) for alternative installation options see Custom Installation",
+    "title": "Loading Testcases",
+    "content": "Harness class provides save() and load() pipeline for the testcases. You can easily load and run generated testcases to from saved nlptest folder. # load testcases .load(&#39;saved_nlptest_folder&#39; task=&#39;ner&#39;, model=&#39;ner_dl_bert&#39;, hub=&#39;johnsnowlabs&#39;) Harness will load saved testcasses, nlptest configurations and test data. see Generating testcases",
     "url": "http://localhost:4000/docs/pages/docs/load",
     "relUrl": "/docs/pages/docs/load"
   },
