@@ -50,7 +50,7 @@ harness.testcases()
 ```
 This method returns the produced testcases in form of a pandas data frame – making them easy to edit, filter, import, or export. We can manually review the list of generated test cases, and decide on which ones to keep or edit. 
 
-The testcases dataframe looks something like this.
+The testcases dataframe looks something like the following:
 
 | category  | test_type |  original | test_case | expected_result | 
 | - | - | - | - | - |
