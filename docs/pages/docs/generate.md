@@ -27,7 +27,7 @@ tests:
   
 ```
 
-If config file not present, we can use the **.configure()** method to configure the harness to perform the needed tests.
+If config file is not present, we can use the **.configure()** method to configure the harness to perform the needed tests.
 
 ```python
 harness.configure(
