@@ -57,14 +57,6 @@ class Harness:
         super().__init__()
         self.task = task
 
-        if isinstance(model, str):
-            if hub is None:
-                raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
-
-            self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
-        else:
-            self.model = ModelFactory(task=task, model=model)
-
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
@@ -77,6 +69,14 @@ class Harness:
                              f"or use a default configuration.")
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
+
+        if isinstance(model, str):
+            if hub is None:
+                raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
+
+            self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
+        else:
+            self.model = ModelFactory(task=task, model=model)
 
         if config is not None:
             self._config = self.configure(config)
