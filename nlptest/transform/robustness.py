@@ -1,7 +1,6 @@
 import random
 import re
 from abc import ABC, abstractmethod
-from functools import reduce
 from typing import Dict, List, Optional
 import numpy as np
 
@@ -18,13 +17,13 @@ class BaseRobustness(ABC):
         alias_name (str): A name or list of names that identify the robustness measure.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
+        transform(data: List[Sample]) -> Any: Transforms the input data into an output
+        based on the implemented robustness measure.
     """
 
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-
         """
         Abstract method that implements the robustness measure.
 
@@ -36,12 +35,13 @@ class BaseRobustness(ABC):
         """
 
         return NotImplementedError()
-    
+
     alias_name = None
+
 
 class UpperCase(BaseRobustness):
     alias_name = "uppercase"
-    
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Transform a list of strings with uppercase robustness
@@ -109,7 +109,8 @@ class AddPunctuation(BaseRobustness):
 
         for sample in sample_list:
             if sample.original[-1] not in whitelist:
-                sample.test_case = sample.original[:-1] + random.choice(whitelist)
+                sample.test_case = sample.original[:-
+                                                   1] + random.choice(whitelist)
             else:
                 sample.test_case = sample.original
             sample.category = "Robustness"
@@ -173,8 +174,10 @@ class AddTypo(BaseRobustness):
                         char_frequency = TYPO_FREQUENCY[char.lower()]
 
                         if sum(char_frequency) > 0:
-                            chosen_char = random.choices(idx_list, weights=char_frequency)
-                            difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
+                            chosen_char = random.choices(
+                                idx_list, weights=char_frequency)
+                            difference = ord(char.lower()) - \
+                                ord(char_list[chosen_char[0]])
                             char = chr(ord(char) - difference)
                             string[idx] = char
                     else:
@@ -213,16 +216,19 @@ class SwapEntities(BaseRobustness):
         """
 
         if terminology is None:
-            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, terminology should be passed!')
 
         if labels is None:
-            raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, labels should be passed!')
 
         for idx, sample in enumerate(sample_list):
             sent_tokens = sample.original.split(' ')
             sent_labels = labels[idx]
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sent_labels])
+            ent_start_pos = np.array(
+                [1 if label[0] == 'B' else 0 for label in sent_labels])
             ent_idx, = np.where(ent_start_pos == 1)
 
             #  no swaps since there is no entity in the sentence
@@ -240,13 +246,19 @@ class SwapEntities(BaseRobustness):
                     else:
                         break
 
-            replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
+            replace_token = sent_tokens[replace_idx: replace_idx +
+                                        len(replace_idxs)]
             token_length = len(replace_token)
             replace_token = " ".join(replace_token)
 
-            proper_entities = [ent for ent in terminology[ent_type] if len(ent.split(' ')) == token_length]
-            chosen_ent = random.choice(proper_entities)
-            replaced_string = sample.original.replace(replace_token, chosen_ent)
+            proper_entities = [ent for ent in terminology[ent_type] if len(
+                ent.split(' ')) == token_length]
+            if len(proper_entities) > 0:
+                chosen_ent = random.choice(proper_entities)
+            else:
+                continue
+            replaced_string = sample.original.replace(
+                replace_token, chosen_ent)
             sample.test_case = replaced_string
             sample.category = "Robustness"
         return sample_list
@@ -314,13 +326,15 @@ class SwapCohyponyms(BaseRobustness):
         """
 
         if labels is None:
-            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, terminology should be passed!')
 
         for idx, sample in enumerate(sample_list):
             sent_tokens = sample.original.split(' ')
             sent_labels = labels[idx]
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sent_labels])
+            ent_start_pos = np.array(
+                [1 if label[0] == 'B' else 0 for label in sent_labels])
             ent_idx, = np.where(ent_start_pos == 1)
 
             #  no swaps since there is no entity in the sentence
@@ -338,11 +352,13 @@ class SwapCohyponyms(BaseRobustness):
                     else:
                         break
 
-            replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
+            replace_token = sent_tokens[replace_idx: replace_idx +
+                                        len(replace_idxs)]
 
             replace_token = " ".join(replace_token)
             chosen_ent = get_cohyponyms_wordnet(replace_token)
-            replaced_string = sample.original.replace(replace_token, chosen_ent)
+            replaced_string = sample.original.replace(
+                replace_token, chosen_ent)
             sample.test_case = replaced_string
             sample.category = "Robustness"
 
@@ -364,7 +380,8 @@ class ConvertAccent(BaseRobustness):
         """
         for sample in sample_list:
             tokens = sample.original.split(' ')
-            tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
+            tokens = [accent_map[t.lower()] if accent_map.get(
+                t.lower(), None) else t for t in tokens]
             sample.test_case = ' '.join(tokens)
             sample.category = "Robustness"
 
@@ -404,12 +421,14 @@ class AddContext(BaseRobustness):
             transformations = []
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)
-                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                add_string = " ".join(add_tokens) if isinstance(
+                    add_tokens, list) else add_tokens
                 string = add_string + ' ' + sample.original
                 transformations.append(
                     Transformation(
                         original_span=Span(start=0, end=0, word=""),
-                        new_span=Span(start=0, end=len(add_string) + 1, word=add_string),
+                        new_span=Span(start=0, end=len(
+                            add_string) + 1, word=add_string),
                         ignore=True
                     )
                 )
@@ -418,7 +437,8 @@ class AddContext(BaseRobustness):
 
             if strategy == "end" or strategy == "combined":
                 add_tokens = random.choice(ending_context)
-                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                add_string = " ".join(add_tokens) if isinstance(
+                    add_tokens, list) else add_tokens
 
                 if sample.original[-1].isalnum():
                     from_start, from_end = len(string), len(string)
@@ -433,8 +453,10 @@ class AddContext(BaseRobustness):
 
                 transformations.append(
                     Transformation(
-                        original_span=Span(start=from_start, end=from_end, word=""),
-                        new_span=Span(start=to_start, end=to_end, word=string[to_start:to_end]),
+                        original_span=Span(
+                            start=from_start, end=from_end, word=""),
+                        new_span=Span(start=to_start, end=to_end,
+                                      word=string[to_start:to_end]),
                         ignore=True
                     )
                 )
@@ -463,7 +485,8 @@ class AddContraction(BaseRobustness):
               regex replace for contraction.
             """
             token = match.group(0)
-            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(token.lower()))
+            contracted_token = CONTRACTION_MAP.get(
+                token, CONTRACTION_MAP.get(token.lower()))
 
             is_upper_case = token[0]
             expanded_contraction = is_upper_case + contracted_token[1:]
@@ -473,7 +496,8 @@ class AddContraction(BaseRobustness):
             string = sample.original
             for contraction in CONTRACTION_MAP:
                 if re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL):
-                    string = re.sub(contraction, custom_replace, sample.original, flags=re.IGNORECASE | re.DOTALL)
+                    string = re.sub(contraction, custom_replace,
+                                    sample.original, flags=re.IGNORECASE | re.DOTALL)
             sample.test_case = string
             sample.category = "Robustness"
         return sample_list
