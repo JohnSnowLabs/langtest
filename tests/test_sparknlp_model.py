@@ -10,7 +10,7 @@ class SparkNLPTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.params = {
             "task": 'ner',
-            "model": "ner_dl_bert",
+            "model": "ner",
             "data": "demo/data/test.conll",
             "config": "demo/data/config.yml",
             "hub": "johnsnowlabs"
