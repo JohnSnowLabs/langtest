@@ -28,6 +28,7 @@ class Harness:
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
         ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
             "tweet/sample.csv",
+        ("text-classification", "model/model-best", "spacy"): "imdb/sample.csv"
     }
 
     def __init__(
