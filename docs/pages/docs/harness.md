@@ -10,7 +10,14 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-The Harness class is a testing class for Natural Language Processing (NLP) models. It evaluates the performance of a given NLP model on a given task using test data and generates a report with test results.
+The Harness class is a testing class for Natural Language Processing (NLP) models. It evaluates the performance of a given NLP model on a given task using test data and generates a report with test results. Harness can be imported from the nlptest library in the following way.
+
+```python
+#Import Harness from the nlptest library
+from nlptest import Harness
+```
+
+It imports the Harness class from within the module, that is designed to provide a blueprint or framework for conducting NLP testing, and that instances of the Harness class can be customized or configured for different testing scenarios or environments.
 
 Here is a list of the different parameters that can be passed to the `Harness` function:
 
@@ -22,16 +29,7 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 |**config**      |Configuration for the tests to be performed, specified in form of a YAML file.
 |**hub**      |model hub to load from the path. Required if model param is passed as path.|
 
-</div><div class="h3-box" markdown="1">
 
 
-Harness can be imported from the nlptest library in the following way.
-
-```python
-#Import Harness from the nlptest library
-from nlptest import Harness
-```
-
-It imports the Harness class from within that module, that is designed to provide a blueprint or framework for conducting NLP testing, and that instances of the Harness class can be customized or configured for different testing scenarios or environments.
 
 </div></div>
