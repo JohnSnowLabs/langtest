@@ -6,7 +6,7 @@
 {:.h2-select}
 This test checks if the NLP model can handle input text with sentences with a punctuation at the end. The added punctuation is randomly chosen from the list `['!', '?', ',', '.', '-', ':', ';']`. If there already is a punctuation it is not changed.
 
-**alias_name:** `add_contraction`
+**alias_name:** `add_punctuation`
 
 </div><div class="h3-box" markdown="1">
 

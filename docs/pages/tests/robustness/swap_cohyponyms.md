@@ -1,19 +1,19 @@
 
-## Swap Entities
+## Swap Cohyponyms
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
 {:.h2-select}
-This test shuffles the labeled entities in the input to test the models robustness.
+This test uses wordnet to replace words with their cohyponyms.
 
-**alias_name:** `swap_entities`
+**alias_name:** `swap_cohyponyms`
 
 </div><div class="h3-box" markdown="1">
 
 #### Config
 ```yaml
 add_context:
-    min_pass_rate: 0.8
+    min_pass_rate: 0.6
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 
@@ -22,8 +22,7 @@ add_context:
 {:.table2}
 |Original|Testcase|
 |-|
-|I love Paris.|I love Istanbul.|
-|Jack is sick today.|Adam is sick today.|
+|I love apple.|I love peach.|
 
 
 </div></div>

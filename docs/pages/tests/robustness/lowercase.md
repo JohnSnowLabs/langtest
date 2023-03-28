@@ -13,9 +13,9 @@ This test checks if the NLP model can handle input text that is in all lowercase
 #### Config
 ```yaml
 lowercase:
-    min_pass_rate: <float>
+    min_pass_rate: 0.8
 ```
-**min_pass_rate:** Minimum pass rate to pass the test.
+- **min_pass_rate (float):** Minimum pass rate to pass the test.
 
 #### Examples
 
