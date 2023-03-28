@@ -10,36 +10,38 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+**nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
+You can install **nlptest** using pip.
 
 ```shell 
-pip install johnsnowlabs
+pip install nlptest
 ```
 
-To quickly test the installation, you can run in your **Shell**:
+With just one line of code, it can generate and run over 50 different test types to assess the quality of NLP models in terms of accuracy, bias, robustness, representation, and fairness.
+You can test any **Text Classification** and **Named Entity Recognition** model using ``Harness``.
 
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
 ```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+from nlptest import Harness
+h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs')
+
+# Generate test cases, run them and view a report
+h.generate().run().report()
 ```
 
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
+Whether you are using **Spark NLP**, **Hugging Face Transformers**, or **spaCy** models, ``Harness`` has got you covered.
+You can easily pass the test data and the trained NLP pipeline.
 ```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
+from nlptest import Harness
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
+
+model = AutoModelForSequenceClassification.from_pretrained('path/to/model')
+tokenizer = AutoTokenizer.from_pretrained('path/to/model')
+pipe = pipeline('text-classification', model=model, tokenizer=tokenizer)
+
+h = Harness(task='text-classification', model=pipe, data='path/to/data.csv')
+
+# Generate test cases, run them and view a report
+h.generate().run().report()
 ```
-
-
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
 
 </div></div>

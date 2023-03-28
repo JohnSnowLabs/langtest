@@ -1,8 +1,8 @@
-# NLP Test
-
-**Deliver Safe & Effective NLP models**
+# NLP Test: Deliver Safe & Effective Models
 
 <p align="center">
+    <a href="https://github.com/JohnSnowLabs/nlptest/actions" alt="build">
+        <img src="https://github.com/JohnSnowLabs/nlptest/workflows/build_and_test.yml/badge.svg" /></a>
     <a href="https://github.com/JohnSnowLabs/nlptest/releases" alt="Current Release Version">
         <img src="https://img.shields.io/github/v/release/JohnSnowLabs/nlptest.svg?style=flat-square&logo=github" /></a>
     <a href="https://github.com/JohnSnowLabs/nlptest/blob/master/LICENSE" alt="License">
@@ -22,7 +22,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/nlptest/nlptest_flow_graphic.png?token=GHSAT0AAAAAABPNZRXYN3KIUTRXHIDR3GWIZAXL7OQ)
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/nlptest/nlptest_flow_graphic.png)
 
 ## Project's Website
 
@@ -59,23 +59,33 @@ h.generate().run().report()
 - [GitHub](https://github.com/JohnSnowLabs/nlptest/tree/main) For bug reports, feature requests, and contributions
 - [Discussions](https://github.com/JohnSnowLabs/nlptest/discussions) To engage with other community members, share ideas, and show off how you use NLP Test!
 
+## Mission
+
+While there is a lot of talk about the need to train AI models that are safe, robust, and fair - few tools have been made available to data scientists to meet these goals. As a result, the front line of NLP models in production systems reflects a sorry state of affairs. 
+
+We propose here an early stage open-source community project that aims to fill this gap, and would love for you to join us on this mission. We aim to build on the foundation laid by previous research such as [Ribeiro et al. (2020)](https://arxiv.org/abs/2005.04118), [Song et al. (2020)](https://arxiv.org/abs/2004.00053), [Parrish et al. (2021)](https://arxiv.org/abs/2110.08193), [van Aken et al. (2021)](https://arxiv.org/abs/2111.15512) and many others. 
+
+[John Snow Labs](www.johnsnowlabs.com) has a full development team allocated to the project and is committed to improving the library for years, as we do with other open-source libraries. Expect frequent releases with new test types, tasks, languages, and platforms to be added regularly. We look forward to working together to make safe, reliable, and responsible NLP an everyday reality. 
+
 ## Contributing
 
 We welcome all sorts of contributions:
 
-- ideas
-- feedback
-- documentation
-- bug reports
-- development and testing
+- Ideas
+- Feedback
+- Documentation
+- Bug reports
+- Development and testing
 
-Feel free to clone the repo and submit your pull-requests! Or directly create issues in this repo.
+Feel free to clone the repo and submit pull-requests! You can also contribute by opening issues in this repo.
 
-## Mission
+## Contributors
 
-While there is a lot of talk about the need to train AI models that are safe, robust, and equitable - few tools have been made available to data scientists to meet these goals. As a result, the front line of NLP models in production systems reflects a sorry state of affairs. We propose here an early stage open-source community project which you are welcome to join. 
+We would like to acknowledge all contributors of this open-source community project. 
 
-[John Snow Labs](www.johnsnowlabs.com) has a full development team allocated to the project and is committed to improving the library for years, as we do with other open-source libraries. Expect frequent releases with new test types, tasks, languages, and platforms to be added regularly. We look forward to working together to make safe, reliable, and responsible NLP an everyday reality. 
+<a href="https://github.com/johnsnowlabs/nlptest/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=johnsnowlabs/nlptest" />
+</a>
 
 ## License
 
