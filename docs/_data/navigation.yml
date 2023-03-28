@@ -16,7 +16,7 @@ docs-menu:
   - title: Quick Start
     url: /docs/pages/docs/install
 
-  - title: Harness and its Parameters
+  - title: Test Harness
     url: /docs/pages/docs/harness
   - title:  Generating Test Cases
     url:    /docs/pages/docs/generate
