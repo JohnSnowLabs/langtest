@@ -16,7 +16,7 @@ Called after **.generate()** method and is to used to run all the specified test
 harness.run()
 ```
 
-Once the tests have been run using the harness.run() method, the results can be accessed using the **.generated_results()** method. 
+Once the tests have been run using the harness.run() method, the results can be accessed using the **`.generated_results()`** method. 
 ```python 
 harness.generated_results()
 ```
