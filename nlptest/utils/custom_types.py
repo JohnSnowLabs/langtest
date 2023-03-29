@@ -1,9 +1,10 @@
-from typing import List, Optional, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
 from pydantic import BaseModel, Field, PrivateAttr, validator
 
 
 class Span(BaseModel):
+    """Representation of a text's slice"""
     start: int
     end: int
     word: str
@@ -27,9 +28,7 @@ class Span(BaseModel):
 
     def __eq__(self, other):
         """"""
-        return self.start == other.start and \
-               self.end == other.end and \
-               self.word == other.word
+        return self.start == other.start and self.end == other.end and self.word == other.word
 
     def __str__(self):
         """"""
@@ -41,7 +40,7 @@ class Span(BaseModel):
 
 
 class NERPrediction(BaseModel):
-    """"""
+    """Single prediction obtained from a named entity recognition model"""
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
@@ -91,6 +90,7 @@ class NERPrediction(BaseModel):
         return False
 
     def __str__(self) -> str:
+        """"""
         return self.entity
 
     def __repr__(self) -> str:
@@ -115,13 +115,14 @@ class NEROutput(BaseModel):
 
     def __getitem__(self, span: Span) -> Optional[NERPrediction]:
         """"""
-        for pred in self.predictions:
-            if pred.span == span:
-                return pred
+        for prediction in self.predictions:
+            if prediction.span == span:
+                return prediction
         return None
 
     def to_str_list(self) -> List[str]:
-        """Convert the ouput into list of strings.
+        """
+        Converts predictions into a list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -129,9 +130,11 @@ class NEROutput(BaseModel):
         return [x.entity for x in self.predictions]
 
     def __repr__(self) -> str:
+        """"""
         return self.predictions.__repr__()
 
     def __str__(self) -> str:
+        """"""
         return [str(x) for x in self.predictions].__repr__()
 
     def __eq__(self, other: "NEROutput"):
@@ -142,11 +145,12 @@ class NEROutput(BaseModel):
 
 
 class SequenceLabel(BaseModel):
-    """"""
+    """Single prediction obtained from text-classification models"""
     label: str
     score: float
 
     def __str__(self):
+        """"""
         return f"{self.label}"
 
 
@@ -157,7 +161,7 @@ class SequenceClassificationOutput(BaseModel):
     predictions: List[SequenceLabel]
 
     def to_str_list(self) -> List[str]:
-        """Convert the ouput into list of strings.
+        """Convert the output into list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -165,6 +169,7 @@ class SequenceClassificationOutput(BaseModel):
         return [x.label for x in self.predictions]
 
     def __str__(self):
+        """"""
         labels = {elt.label: elt.score for elt in self.predictions}
         return f"SequenceClassificationOutput(predictions={labels})"
 
@@ -180,12 +185,15 @@ class MinScoreOutput(BaseModel):
     min_score: float
 
     def to_str_list(self) -> float:
+        """"""
         return self.min_score
 
     def __repr__(self) -> str:
+        """"""
         return f"{self.min_score}"
 
     def __str__(self) -> str:
+        """"""
         return f"{self.min_score}"
 
 
@@ -194,12 +202,15 @@ class MaxScoreOutput(BaseModel):
     max_score: float
 
     def to_str_list(self) -> float:
+        """"""
         return self.max_score
 
     def __repr__(self) -> str:
+        """"""
         return f"{self.max_score}"
 
     def __str__(self) -> str:
+        """"""
         return f"{self.max_score}"
 
 
@@ -207,6 +218,10 @@ Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutp
 
 
 class Transformation(BaseModel):
+    """
+    Helper object keeping track of an alteration performed on a piece of text.
+    It holds information about how a given span was transformed into another one
+    """
     original_span: Span
     new_span: Span
     ignore: bool = False
@@ -240,7 +255,7 @@ class Sample(BaseModel):
         super().__init__(**data)
         self._realigned_spans = None
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the dict version of sample."""
         expected_result = self.expected_results.to_str_list()
         actual_result = self.actual_results.to_str_list() if self.actual_results is not None else None
@@ -272,22 +287,23 @@ class Sample(BaseModel):
         if not hasattr(self.actual_results, 'predictions'):
             return self.actual_results
         predictions = []
-        irrelevant_transformations = self.irrelevant_transformations
-        for pred in self.actual_results.predictions:
-            for transfo in irrelevant_transformations:
-                if transfo.new_span.start <= pred.span.start and transfo.new_span.end >= pred.span.end:
-                    predictions.append(pred)
+
+        for prediction in self.actual_results.predictions:
+            for transformation in self.irrelevant_transformations:
+                if transformation.new_span.start <= prediction.span.start \
+                        and transformation.new_span.end >= prediction.span.end:
+                    predictions.append(prediction)
         return predictions
 
     @property
-    def relevant_transformations(self) -> List[Transformation]:
+    def relevant_transformations(self) -> Optional[List[Transformation]]:
         """"""
         if not self.transformations:
             return None
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
     @property
-    def irrelevant_transformations(self) -> List[Transformation]:
+    def irrelevant_transformations(self) -> Optional[List[Transformation]]:
         """"""
         if not self.transformations:
             return None
