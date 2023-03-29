@@ -55,6 +55,8 @@ tests:
     url: /docs/pages/tests/accuracy
   - title: Bias
     url: /docs/pages/tests/bias
+  - title: Fairness
+    url: /docs/pages/tests/fairness
   - title: Representation
     url: /docs/pages/tests/representation
   - title: Robustness
