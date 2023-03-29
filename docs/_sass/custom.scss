@@ -327,15 +327,13 @@ header {
 			}
 			.toc-h1 {
 					border: none;
-					padding: 10px 0 0;
+					padding: 7px 0 0;
 				a {
 					font-weight: 500;
 					font-size: 18px;
-					line-height: 22px;
-					font-family: 'Montserrat', sans-serif;
+					line-height: 20px;
 					color: #5334AE;
 					border: none;
-					letter-spacing: -0.5px;
 					margin: 0 !important;
 				}	
 				&.active a,							
@@ -803,6 +801,7 @@ ul.list1 {
 
 .table2 {
 	width: 100%;
+	display: table !important;
 	background: #ffffff;
 	thead {
 		tr {
@@ -1024,6 +1023,9 @@ ul.list1 {
 	padding: 0 15px;
 	.main-docs {
 		width: 100%;
+		p {
+			font-size: 15px;
+		}
 	}
 	img {
 		margin-bottom: 15px;
@@ -1255,10 +1257,15 @@ code {
 }
 
 .highlight > pre {
-	overflow: visible;
+	overflow: hidden;
 	code {
-		overflow: visible;
+		overflow: hidden;
 	}
+}
+
+.highlight:hover code,
+.highlight:hover pre {
+	overflow-x: auto;
 }
 
 .test_out_item {
@@ -1345,6 +1352,7 @@ code {
 	margin: 0 0 20px;
 	padding: 0;
 	width: 100%;
+	display: table;
 	border-collapse: collapse;
 	border-spacing: 0;
 	background-color: #fff;
@@ -1395,6 +1403,9 @@ code {
 
 .tabs-wrapper {
 	text-align: left;
+	.tabs-header {
+		text-align: center;
+	}
 }
 
 .tab-btn {
