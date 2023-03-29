@@ -53,7 +53,7 @@ docs-menu:
         - title: Generating Augmentations
           url: /docs/pages/docs/generate_augmentation
         - title:  Saving Augmentations
-          url:    /docs/pages/docs/save_augmentation
+          url:    /docs/pages/docs/generate_augmentation#save-augmentation
   
 
 tutorials:

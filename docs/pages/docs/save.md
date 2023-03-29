@@ -15,6 +15,9 @@ header: true
 Harness class provides `save()` and `load()` pipeline for the loading and saving the testcases. 
       
 ```python
+#  import harness
+from nlptest import Harness
+
 #   save testcases   
 harness.save("path/to/nlptest_folder")
 ```
@@ -25,13 +28,14 @@ Harness will save generated test cases, nlptest configurations and test data. La
  <div class="heading" id="loading">Loading Test Cases</div>
  
 ```python
+#   import harness
 from nlptest import Harness
 
 #   load testcases
 harness = Harness.load("saved_nlptest_folder", task='ner', model="ner_dl_bert", hub="johnsnowlabs")
 ```
 
-Harness will load saved testcasses, nlptest configurations and test data. Now you can easily run saved test cases with
+Harness will load saved testcases, nlptest configurations and test data. Now you can easily run saved test cases with
 `ner_dl_bert` model that you passed. In order to run the test cases use `harness.run()`.
 
 <style>
