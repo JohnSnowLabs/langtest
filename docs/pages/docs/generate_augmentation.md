@@ -5,7 +5,7 @@ seotitle: NLP Docs | John Snow Labs
 title: Augmentation generate()
 key: docs-examples
 permalink: /docs/pages/docs/generate_augmentation
-modify_date: "2019-05-16"
+modify_date: "2023-03-28"
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">

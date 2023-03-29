@@ -38,6 +38,13 @@ body {
 	margin-top: 0;
 }
 
+.highlight code {
+	font-size: 1.03rem;
+}
+.highlight-box code {
+	font-size: 1.04rem;
+}
+
 h1,h2,h3,h4 {
 	font-family: 'Montserrat', sans-serif;
 }
@@ -1245,12 +1252,14 @@ code {
 			}
 		}
 	}
-	.highlight > pre {
+}
+
+.highlight > pre {
+	overflow: visible;
+	code {
 		overflow: visible;
 	}
 }
-
-
 
 .test_out_item {
 	width: 33.3333%;

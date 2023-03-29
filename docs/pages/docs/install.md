@@ -1,20 +1,31 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: Installation
+title: Quick Start
 permalink: /docs/pages/docs/install
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
 **nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
-You can install **nlptest** using pip.
+You can install **nlptest** using pip or conda.
+
+```python 
+
+# Using PyPI
+pip install nlptest
+
+# Using Conda
+conda install nlptest
+```
+
+or using conda.
 
 ```shell 
-pip install nlptest
+conda install nlptest
 ```
 
 With just one line of code, it can generate and run over 50 different test types to assess the quality of NLP models in terms of accuracy, bias, robustness, representation, and fairness.
@@ -32,13 +43,7 @@ Whether you are using **Spark NLP**, **Hugging Face Transformers**, or **spaCy**
 You can easily pass the test data and the trained NLP pipeline.
 ```python
 from nlptest import Harness
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
-
-model = AutoModelForSequenceClassification.from_pretrained('path/to/model')
-tokenizer = AutoTokenizer.from_pretrained('path/to/model')
-pipe = pipeline('text-classification', model=model, tokenizer=tokenizer)
-
-h = Harness(task='text-classification', model=pipe, data='path/to/data.csv')
+h = Harness(task='text-classification', model='distilbert-base-uncased', hub='huggingface')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
