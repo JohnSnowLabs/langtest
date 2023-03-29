@@ -13,7 +13,6 @@ class BaseFormatter(ABC):
     @staticmethod
     @abstractmethod
     def to_csv(custom_type):
-
         """
         Converts a custom type to a CSV string.
 
@@ -26,13 +25,12 @@ class BaseFormatter(ABC):
         Raises:
             NotImplementedError: This method should be implemented by the subclass.
         """
-         
+
         return NotImplementedError
-    
+
     @staticmethod
     @abstractmethod
     def to_conll(custom_type):
-
         """
         Converts a custom type to a CoNLL string.
 
@@ -47,7 +45,8 @@ class BaseFormatter(ABC):
         """
 
         return NotImplementedError
-    
+
+
 class Formatter:
 
     """
@@ -77,8 +76,8 @@ class Formatter:
         try:
             return getattr(formats[f"{class_name}Formatter"], f"to_{format}")(sample, *args, **kwargs)
         except KeyError:
-            raise NameError(f"Class '{class_name}Formatter' not yet implemented.")
-
+            raise NameError(
+                f"Class '{class_name}Formatter' not yet implemented.")
 
 
 class SequenceClassificationOutputFormatter(BaseFormatter):
@@ -107,8 +106,7 @@ class SequenceClassificationOutputFormatter(BaseFormatter):
             return f"{test_case}{delimiter}{sample.expected_results.to_str_list()[0]}\n"
         else:
             return f"{original}{delimiter}{sample.expected_results.to_str_list()[0]}\n"
-    
-    
+
 
 class NEROutputFormatter(BaseFormatter):
 
@@ -147,24 +145,23 @@ class NEROutputFormatter(BaseFormatter):
                         text += f"{j.doc_name}\n\n"
                         temp_id = j.doc_id
                     else:
-                        text+=f"{test_case_items[jdx]}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
+                        text += f"{test_case_items[jdx]}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
                     norm_original_items.pop(oitem_index)
                     temp_len += 1
                 else:
-                    text+=f"{test_case_items[jdx]}{delimiter}O{delimiter}O{delimiter}O\n"
-            text+="\n"
-            
+                    text += f"{test_case_items[jdx]}{delimiter}O{delimiter}O{delimiter}O\n"
+            text += "\n"
+
         else:
             for j in sample.expected_results.predictions:
                 if temp_id != j.doc_id:
                     text += f"{j.doc_name}\n\n"
                     temp_id = j.doc_id
-                else:
-                    text+=f"{j.span.word}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
-            text+="\n"
+                text += f"{j.span.word}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
+            text += "\n"
         return text, temp_id
 
-    def to_conll(sample: Sample, temp_id = None):
+    def to_conll(sample: Sample, temp_id=None):
         text = ""
         test_case = sample.test_case
         original = sample.original
@@ -181,20 +178,18 @@ class NEROutputFormatter(BaseFormatter):
                         text += f"{j.doc_name}\n\n"
                         temp_id = j.doc_id
                     else:
-                        text+=f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                        text += f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
                     norm_original_items.pop(oitem_index)
                     temp_len += 1
                 else:
-                    text+=f"{test_case_items[jdx]} O O O\n"
-            text+="\n"
-            
+                    text += f"{test_case_items[jdx]} O O O\n"
+            text += "\n"
+
         else:
             for j in sample.expected_results.predictions:
                 if temp_id != j.doc_id:
                     text += f"{j.doc_name}\n\n"
                     temp_id = j.doc_id
-                text+=f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
-            text+="\n"
+                text += f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+            text += "\n"
         return text, temp_id
-
-
