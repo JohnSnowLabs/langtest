@@ -70,48 +70,11 @@ tutorials:
 tests:
   - title: Tests
     url: /docs/pages/tests/test
-    children:
-      - title: Uppercase
-        url: /docs/pages/tests/uppercase
-        key: tests
-      - title: Titlecase
-        url: /docs/pages/tests/titlecase
-        key: tests
-      - title: Add Context
-        url: /docs/pages/tests/add_context
-        key: tests
-      - title: Swap Entities
-        url: /docs/pages/tests/swap_entities
-        key: tests
-      - title: Bias
-        url: /docs/pages/tests/bias
-        key: tests
-      - title: Gender
-        url: /docs/pages/tests/gender
-        key: tests
-      - title: Age Bias
-        url: /docs/pages/tests/age_bias
-        key: tests
+  - title: Accuracy
+    url: /docs/pages/tests/accuracy
+  - title: Bias
+    url: /docs/pages/tests/bias
+  - title: Representation
+    url: /docs/pages/tests/representation
   - title: Robustness
     url: /docs/pages/tests/robustness
-    key: tests
-    children:
-      - title: Lowercase
-        url: /docs/pages/tests/lowercase
-        key: tests
-  - title: Accuracy
-    url: #
-    key: tests
-    children:
-    - title: Accuracy
-      url: /docs/pages/tests/accuracy
-      key: accuracy
-    - title: Bias
-      url: /docs/pages/tests/bias
-      key: bias
-    - title: Representation
-      url: /docs/pages/tests/representation
-      key: representation
-    - title: Robustness
-      url: /docs/pages/tests/robustness
-      key: robustness
