@@ -22,7 +22,7 @@ min_precision_score:
         PER: 0.65
         LOC: 0.90
 ```
-**min_pass_rate:** Minimum pass rate to pass the test.
+- **min_score (dict or float):** Minimum pass rate to pass the test.
 
 <!-- #### Examples -->
 
