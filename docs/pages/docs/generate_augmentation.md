@@ -10,36 +10,11 @@ modify_date: "2023-03-28"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+**harness.augment()** is a method in the library that allows users to easily augment their training data. The input to the method is the path to the training dataset, and the output is the path to save the augmented dataset. There is another optional parameter **inplace** , that is a boolean to decide whether you want to modify the input file directly. It defaults to False.
 
-```shell 
-pip install johnsnowlabs
-```
-
-To quickly test the installation, you can run in your **Shell**:
-
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
 ```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+harness.augment(input='training_dataset', output='augmented_dataset')
 ```
-
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
-
-
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+Essentially it applies perturbations to the input data based on the recommendations from the harness reports. Then this augmented_dataset is used to retrain the original model so as to make the model more robust and improve its performance.
 
 </div></div>
