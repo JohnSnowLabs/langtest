@@ -37,10 +37,9 @@ h.generate().run().report()
 ```
 
 Whether you are using **Spark NLP**, **Hugging Face Transformers**, or **spaCy** models, ``Harness`` has got you covered.
-You can easily pass the test data and the trained NLP pipeline.
 ```python
 from nlptest import Harness
-h = Harness(task='text-classification', model='distilbert-base-uncased', hub='huggingface')
+h = Harness(task='text-classification', model='mrm8488/distilroberta-finetuned-tweets-hate-speech', hub='huggingface')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()

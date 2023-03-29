@@ -45,12 +45,7 @@ docs-menu:
         - title: Save
           url: /docs/pages/docs/save
         - title:  Load
-          url:    /docs/pages/docs/save#loading
-        - title: Saving Test Cases
-          url: /docs/pages/docs/save#saving-testcase
-        - title:  Loading Test Cases
-          url:    /docs/pages/docs/save#loading-testcase
-        
+          url:    /docs/pages/docs/save#loading      
   
   - title: Augmentations
     url: /docs/pages/docs/generate_augmentation
