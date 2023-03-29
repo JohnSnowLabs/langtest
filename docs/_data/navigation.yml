@@ -39,7 +39,7 @@ docs-menu:
         - title:  Report 
           url:    /docs/pages/docs/report
 
-  - title:  Saving/Loading Workflow
+  - title:  Save/Load Workflow
     url: /docs/pages/docs/save
     children:
         - title: Saving Test Cases
@@ -52,9 +52,6 @@ docs-menu:
     children:
         - title: Generating Augmentations
           url: /docs/pages/docs/generate_augmentation
-        - title:  Saving Augmentations
-          url:    /docs/pages/docs/generate_augmentation#save-augmentation
-  
 
 tutorials:
   - title: Tutorials

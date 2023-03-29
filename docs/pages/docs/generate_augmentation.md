@@ -23,15 +23,6 @@ harness.augment(input='training_dataset', output='augmented_dataset')
 ```
 Essentially it applies perturbations to the input data based on the recommendations from the harness reports. Then this augmented_dataset is used to retrain the original model so as to make the model more robust and improve its performance.
 
-<div class="heading" id="save-augmentation">Saving Augmentations</div>
-```python
-#  import harness
-from nlptest import Harness
-
-#   saving augmentations
-harness.save(....)
-```
-
 <style>
   .heading {
     text-align: center;
@@ -45,10 +36,6 @@ harness.save(....)
     color: #1E77B7;
   }
   
-  #save-augmentation {
-    color: #1E77B7;
-  }
-
 </style>
 
 
