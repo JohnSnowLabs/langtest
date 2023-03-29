@@ -28,7 +28,7 @@ class Span(BaseModel):
 
     def __eq__(self, other):
         """"""
-        return self.start == other.start and self.end == other.end and self.word == other.word
+        return self.start == other.start and self.end == other.end
 
     def __str__(self):
         """"""
@@ -362,52 +362,51 @@ class Sample(BaseModel):
                 with any other the tuple is of the form (Span, None) (or (None, Span)).
         """
         aligned_results = []
-        expected_pred_set, actual_pred_set = set(), set()
+        expected_predictions_set, actual_predictions_set = set(), set()
         realigned_spans = self.realigned_spans
 
         # Retrieving and aligning perturbed spans for later comparison
         if self.relevant_transformations:
             for transformation in self.relevant_transformations:
-                expected_pred = self.expected_results[transformation.original_span]
-                actual_pred = realigned_spans[transformation.new_span]
+                # import ipdb
+                # ipdb.set_trace()
+                expected_prediction = self.expected_results[transformation.original_span]
+                actual_prediction = realigned_spans[transformation.original_span]
 
-                aligned_results.append((expected_pred, actual_pred))
-                expected_pred_set.add(expected_pred)
-                actual_pred_set.add(actual_pred)
+                aligned_results.append((expected_prediction, actual_prediction))
+                expected_predictions_set.add(expected_prediction)
+                actual_predictions_set.add(actual_prediction)
 
         # Retrieving predictions for spans from the original sentence
-        for expected_pred in self.expected_results.predictions:
-            if expected_pred in expected_pred_set:
+        for expected_prediction in self.expected_results.predictions:
+            if expected_prediction in expected_predictions_set:
                 continue
-            actual_pred = realigned_spans[expected_pred.span]
-            aligned_results.append((expected_pred, actual_pred))
-            expected_pred_set.add(expected_pred)
-            if actual_pred is not None:
-                actual_pred_set.add(actual_pred)
+            actual_prediction = realigned_spans[expected_prediction.span]
+            aligned_results.append((expected_prediction, actual_prediction))
+            expected_predictions_set.add(expected_prediction)
+            if actual_prediction is not None:
+                actual_predictions_set.add(actual_prediction)
 
         # Retrieving predictions for spans from the perturbed sentence
-        for actual_pred in realigned_spans.predictions:
-            if actual_pred in actual_pred_set:
+        for actual_prediction in realigned_spans.predictions:
+            if actual_prediction in actual_predictions_set:
                 continue
-            expected_pred = self.expected_results[actual_pred.span]
-            aligned_results.append((expected_pred, actual_pred))
-            actual_pred_set.add(actual_pred)
-            if expected_pred is not None:
-                expected_pred_set.add(expected_pred)
+            expected_prediction = self.expected_results[actual_prediction.span]
+            aligned_results.append((expected_prediction, actual_prediction))
+            actual_predictions_set.add(actual_prediction)
+            if expected_prediction is not None:
+                expected_predictions_set.add(expected_prediction)
 
         return aligned_results
 
     def is_pass(self) -> bool:
         """"""
         if isinstance(self.actual_results, NEROutput):
-            actual_preds = [i.entity for i in self.actual_results.predictions]
-            expected_preds = [j.entity for j in self.expected_results.predictions]
-            return actual_preds == expected_preds
+            return all([a == b for (a, b) in self.get_aligned_span_pairs()])
         elif isinstance(self.actual_results, MinScoreOutput):
             return self.actual_results.min_score >= self.expected_results.min_score
         elif isinstance(self.actual_results, MaxScoreOutput):
             return self.actual_results.max_score <= self.expected_results.max_score
-
         else:
             filtered_actual_results = self.actual_results
 
