@@ -16,6 +16,6 @@ min_country_economic_representation_proportion:
         high_income: 0.6
         low_income: 0.1
 ```
-- **min_proportion:** Minimum proportion to pass the test.
+- **min_proportion (float):** Minimum proportion to pass the test.
 
 <!-- #### Examples -->

@@ -17,6 +17,6 @@ min_label_representation_count:
         negative: 10
 ```
 
-- **min_count:** Minimum count to pass the test.
+- **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->

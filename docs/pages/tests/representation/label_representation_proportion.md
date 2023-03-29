@@ -18,6 +18,6 @@ min_label_representation_proportion:
                 
 ```
 
-- **min_proportion:** Minimum proportion to pass the test.
+- **min_proportion (float):** Minimum proportion to pass the test.
 
 <!-- #### Examples -->

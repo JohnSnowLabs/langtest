@@ -17,6 +17,6 @@ min_gender_representation_count:
         female: 30
 ```
 
-- **min_count:** Minimum count to pass the test.
+- **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->

@@ -17,6 +17,6 @@ min_ethnicity_name_representation_proportion:
         black: 0.36                
 ```
 
-- **min_proportion:** Minimum proportion to pass the test.
+- **min_proportion (float):** Minimum proportion to pass the test.
 
 <!-- #### Examples -->

@@ -18,6 +18,6 @@ min_ethnicity_name_representation_count:
         asian: 40
         hispanic: 30           
 ```
-- **min_count:** Minimum count to pass the test.
+- **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->

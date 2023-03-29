@@ -17,6 +17,6 @@ min_religion_name_representation_proportion:
         hindu: 0.5
 ```
 
-- **min_proportion:** Minimum proportion to pass the test.
+- **min_proportion (float):** Minimum proportion to pass the test.
 
 <!-- #### Examples -->

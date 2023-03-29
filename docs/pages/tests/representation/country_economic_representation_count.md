@@ -16,6 +16,6 @@ min_country_economic_representation_count:
         low_income: 50
 
 ```
-- **min_count:** Minimum count to pass the test.
+- **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->

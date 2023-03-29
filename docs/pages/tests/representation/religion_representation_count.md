@@ -20,6 +20,6 @@ min_religion_name_representation_count:
         sikh: 10
 ```
 
-- **min_count:** Minimum count to pass the test.
+- **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->

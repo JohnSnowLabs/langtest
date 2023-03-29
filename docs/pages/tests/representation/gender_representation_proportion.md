@@ -17,6 +17,6 @@ min_gender_representation_count:
         female: 30
 ```
 
-- **min_proportion:** Minimum proportion to pass the test.
+- **min_proportion (float):** Minimum proportion to pass the test.
 
 <!-- #### Examples -->
