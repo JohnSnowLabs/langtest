@@ -42,10 +42,15 @@ docs-menu:
   - title:  Save/Load Workflow
     url: /docs/pages/docs/save
     children:
-        - title: Saving Test Cases
+        - title: Save
           url: /docs/pages/docs/save
-        - title:  Loading Test Cases
+        - title:  Load
           url:    /docs/pages/docs/save#loading
+        - title: Saving Test Cases
+          url: /docs/pages/docs/save#saving-testcase
+        - title:  Loading Test Cases
+          url:    /docs/pages/docs/save#loading-testcase
+        
   
   - title: Augmentations
     url: /docs/pages/docs/generate_augmentation
