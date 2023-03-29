@@ -23,7 +23,7 @@ replace_to_female_pronouns:
 |Original|Testcase|
 |-|
 |He is brilliant.|She is brilliant.|
-|It's his car.|It's her car.|
+|He forgot his keys at the office.|She forgot her keys at the office.|
 
 
 </div></div>
