@@ -15,24 +15,46 @@ header:
 docs-menu:
   - title: Quick Start
     url: /docs/pages/docs/install
+    children:
+        - title: Installation
+          url: /docs/pages/docs/install
+        - title:  One Liners
+          url:    /docs/pages/docs/install#one-liners
 
   - title: Test Harness
     url: /docs/pages/docs/harness
-  - title:  Generating Test Cases
-    url:    /docs/pages/docs/generate
-  - title:  Running Test Cases
-    url:    /docs/pages/docs/run
-  - title:  Report
-    url:    /docs/pages/docs/report
-  - title:  Saving Test Cases
-    url: /docs/pages/docs/save
-  - title:  Loading Test Cases
-    url:    /docs/pages/docs/load
-  - title: Generating Augmentations
-    url: /docs/pages/docs/generate_augmentation
-  - title: Saving Augmentations
-    url: /docs/pages/docs/save_augmentation
+    children:
+        - title: Harness Explained
+          url: /docs/pages/docs/harness
+        - title:  Parameters
+          url:    /docs/pages/docs/harness#parameters
 
+  - title:  Generate/Run Workflow
+    url:    /docs/pages/docs/generate
+    children:
+        - title: Generating Test Cases
+          url: /docs/pages/docs/generate
+        - title:  Running Test Cases
+          url:    /docs/pages/docs/run
+        - title:  Report 
+          url:    /docs/pages/docs/report
+
+  - title:  Saving/Loading Workflow
+    url: /docs/pages/docs/save
+    children:
+        - title: Saving Test Cases
+          url: /docs/pages/docs/save
+        - title:  Loading Test Cases
+          url:    /docs/pages/docs/load
+  
+  - title: Augmentations
+    url: /docs/pages/docs/generate_augmentation
+    children:
+        - title: Generating Augmentations
+          url: /docs/pages/docs/generate_augmentation
+        - title:  Saving Augmentations
+          url:    /docs/pages/docs/save_augmentation
+  
 
 tutorials:
   - title: Tutorials

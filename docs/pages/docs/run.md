@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: Running the testcases
+title: Running Test Cases
 permalink: /docs/pages/docs/run
 key: docs-install
 modify_date: "2023-03-28"

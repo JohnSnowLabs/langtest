@@ -44,7 +44,7 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 
 </style>
 
-<div class="heading" id="parameters">Paramaters</div>
+<div class="heading" id="parameters">Parameters</div>
  
 
 {:.table2}
