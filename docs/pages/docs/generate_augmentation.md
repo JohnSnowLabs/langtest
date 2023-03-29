@@ -19,7 +19,7 @@ modify_date: "2023-03-28"
 from nlptest import Harness
 
 #   generating augmentations
-harness.augment(input='training_dataset', output='augmented_dataset')
+harness.augment(input_path='training_dataset', output_path='augmented_dataset')
 ```
 Essentially it applies perturbations to the input data based on the recommendations from the harness reports. Then this augmented_dataset is used to retrain the original model so as to make the model more robust and improve its performance.
 
