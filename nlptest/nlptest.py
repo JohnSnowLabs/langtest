@@ -1,3 +1,4 @@
+import logging
 import os
 import pickle
 from collections import defaultdict
@@ -5,6 +6,7 @@ from typing import Optional, Union
 
 import pandas as pd
 import yaml
+from pkg_resources import resource_filename
 
 from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
@@ -20,6 +22,15 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
+    DEFAULTS_DATASET = {
+        ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
+        ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
+        ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
+        ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
+            "tweet/sample.csv",
+        ("text-classification", "nlptest/data/textcat_imdb", "spacy"): "imdb/sample.csv",
+        ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
+    }
 
     def __init__(
             self,
@@ -46,6 +57,19 @@ class Harness:
         super().__init__()
         self.task = task
 
+        if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
+            data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
+            data = resource_filename("nlptest", data_path)
+
+            self.data = DataFactory(data, task=self.task).load()
+            logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+        elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
+            raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
+                             f"passed is not among the default ones. You need to either specify the parameter 'data' "
+                             f"or use a default configuration.")
+        else:
+            self.data = DataFactory(data, task=self.task).load() if data is not None else None
+
         if isinstance(model, str):
             if hub is None:
                 raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
@@ -54,8 +78,11 @@ class Harness:
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        self.data = DataFactory(data, task=self.task).load() if data is not None else None
-        self._config = self.configure(config) if config is not None else None
+        if config is not None:
+            self._config = self.configure(config)
+        else:
+            logging.info(f"No configuration file was provided, loading default config.")
+            self._config = self.configure(resource_filename("nlptest", "data/config.yml"))
 
         self._testcases = None
         self._generated_results = None
@@ -98,7 +125,7 @@ class Harness:
             None: The evaluations are stored in `generated_results` attribute.
         """
         self._generated_results = TestRunner(self._testcases, self.model,
-                                                                    self.data).evaluate()
+                                             self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -137,7 +164,6 @@ class Harness:
 
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-
 
         col_to_move = 'category'
         first_column = df_report.pop('category')
