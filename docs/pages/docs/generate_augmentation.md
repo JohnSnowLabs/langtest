@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Docs | John Snow Labs
 title: Augmentations
-key: docs-examples
+key: docs-install
 permalink: /docs/pages/docs/generate_augmentation
 modify_date: "2023-03-28"
 ---
