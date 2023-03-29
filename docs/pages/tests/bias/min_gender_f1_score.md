@@ -5,6 +5,7 @@
 
 {:.h2-select}
 This test evaluates the model for each gender seperately. The f1 score for each gender is calculated and test is passed if they are higher than config.
+
 **alias_name:** `min_gender_f1_score`
 
 </div><div class="h3-box" markdown="1">
