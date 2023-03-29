@@ -44,7 +44,7 @@ class Harness:
         """
 
         super().__init__()
-        self.task = task
+        self.task = task if task else 'ner'
 
         if isinstance(model, str):
             if hub is None:
@@ -198,7 +198,8 @@ class Harness:
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report
+            h_report=self.df_report,
+            model = self.model
         ).fix(
             input_path=input_path,
             output_path=output_path,
