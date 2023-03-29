@@ -14,7 +14,7 @@ The **generate()** method automatically generates the test cases (based on the p
 
 Config YAML format :
 
-```shell 
+```python 
 
 defaults:
   min_pass_rate: 0.65
@@ -32,8 +32,9 @@ If config file is not present, we can use the **.configure()** method to configu
 ```python
 harness.configure(
 {'defaults': {'min_pass_rate': 0.65},
- 'tests': {'robustness': {'lowercase': {'min_pass_rate': 0.60}, 
-                          'uppercase':{'min_pass_rate': 0.60}}
+ 'tests': {'robustness': 
+                {'lowercase': {'min_pass_rate': 0.60}, 
+                   'uppercase':{'min_pass_rate': 0.60}}
           }
  }
  )

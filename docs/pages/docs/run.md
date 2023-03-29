@@ -16,13 +16,11 @@ Called after **.generate()** method and is to used to run all the specified test
 harness.run()
 ```
 
-To get the run results in the form of a pandas dataframe we can use the **.generated_results()** method.
-
+Once the tests have been run using the harness.run() method, the results can be accessed using the **.generated_results()** method. 
 ```python 
 harness.generated_results()
 ```
-
- It returns the generated results in the form of a dataframe with pass/fail flag for each test that we had specified.
+This method returns the generated results in the form of a pandas dataframe, which provides a convenient and easy-to-use format for working with the test results. You can use this method to quickly identify the test cases that failed and to determine where fixes are needed.
 
  A sample generated results dataframe looks like the one given below:
 
