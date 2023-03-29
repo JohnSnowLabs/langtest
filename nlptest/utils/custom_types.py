@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, PrivateAttr, validator
 from typing import List, Optional, Tuple, TypeVar
+
+from pydantic import BaseModel, Field, PrivateAttr, validator
 
 
 class Span(BaseModel):
@@ -55,16 +56,16 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-        cls, 
-        entity: str, 
-        word: str, 
-        start: int, 
-        end: int, 
-        score: float = None,
-        doc_id: int = None,
-        doc_name: str = None,
-        pos_tag: str = None,
-        chunk_tag: str = None
+            cls,
+            entity: str,
+            word: str,
+            start: int,
+            end: int,
+            score: float = None,
+            doc_id: int = None,
+            doc_name: str = None,
+            pos_tag: str = None,
+            chunk_tag: str = None
     ) -> "NERPrediction":
         """"""
         return cls(
@@ -172,18 +173,21 @@ class SequenceClassificationOutput(BaseModel):
         top_class = max(self.predictions, key=lambda x: x.score).label
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
-    
+
+
 class MinScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
     min_score: float
 
     def to_str_list(self) -> float:
         return self.min_score
-    
+
     def __repr__(self) -> str:
         return f"{self.min_score}"
+
     def __str__(self) -> str:
         return f"{self.min_score}"
+
 
 class MaxScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
@@ -191,19 +195,22 @@ class MaxScoreOutput(BaseModel):
 
     def to_str_list(self) -> float:
         return self.max_score
-    
+
     def __repr__(self) -> str:
         return f"{self.max_score}"
+
     def __str__(self) -> str:
         return f"{self.max_score}"
 
 
 Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput)
 
+
 class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
+
 
 class Sample(BaseModel):
     """
