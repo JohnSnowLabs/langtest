@@ -21,12 +21,6 @@ article_header:
 
 data:
  sections:
-   - title: 
-     topimage: 
-      - image:
-          src: assets/images/home/infographic_17_03_23_final_big.jpg
-
-
    - title:
      threeblocks:
        - title: Simple
@@ -41,6 +35,11 @@ data:
          image: 
             src: assets/images/home/open_source.svg
          excerpt: The full code base is open under the Apache 2.0 license, designed for easy extension and AI community collaboration  
+
+   - title: All-in-One Workflow
+     topimage: 
+      - image:
+          src: assets/images/home/infographic_17_03_23_final_big.jpg
 
    - title: 'Quick & Easy'
      install: yes
