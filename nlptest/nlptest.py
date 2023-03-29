@@ -55,7 +55,7 @@ class Harness:
         """
 
         super().__init__()
-        self.task = task
+        self.task = task if task else 'ner'
 
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
@@ -224,7 +224,8 @@ class Harness:
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report
+            h_report=self.df_report,
+            model = self.model
         ).fix(
             input_path=input_path,
             output_path=output_path,

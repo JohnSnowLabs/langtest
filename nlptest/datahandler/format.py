@@ -193,8 +193,7 @@ class NEROutputFormatter(BaseFormatter):
                 if temp_id != j.doc_id:
                     text += f"{j.doc_name}\n\n"
                     temp_id = j.doc_id
-                else:
-                    text+=f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                text+=f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
             text+="\n"
         return text, temp_id
 
