@@ -128,6 +128,8 @@ class AugmentRobustness(BaseAugmentaion):
         
         for proportion in suggest.iterrows():
             cat = proportion[-1]['category'].lower()
+            if cat not in ["robustness", 'bias']:
+                continue
             test = proportion[-1]['test_type'].lower()
             test_type = {
                 cat: {
