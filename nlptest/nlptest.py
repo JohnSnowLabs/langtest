@@ -131,6 +131,9 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
+        if self._testcases is None:
+            raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
+                             "calling the `.run()` method.")
         self._generated_results = BaseRunner(self._testcases, self.model,
                                              self.data).evaluate()
         return self
