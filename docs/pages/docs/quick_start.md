@@ -23,7 +23,7 @@ pip install nlptest
 conda install nlptest
 ```
 
-Whether you are using **Spark NLP**, **Hugging Face**, or **Spacy** models, ``Harness`` has got you covered. You can test any **Text Classification** and **Named Entity Recognition** model using ``Harness``.
+Whether you are using **John Snow Labs**, **Hugging Face**, or **Spacy** models, ``Harness`` has got you covered. You can test any **Text Classification** and **Named Entity Recognition (NER)** model using the ``Harness``. The library supports 50+ out of the box tests. These tests fall into robustness, accuracy, bias, representation and fairness test catergories.
 
 
 <style>

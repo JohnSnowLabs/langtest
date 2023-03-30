@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Docs | John Snow Labs
-title: Augmentations
+seotitle: Data Augmentations | NLP Docs | John Snow Labs
+title: Data Augmentations
 key: docs-install
 permalink: /docs/pages/docs/generate_augmentation
 modify_date: "2023-03-28"
@@ -13,14 +13,14 @@ modify_date: "2023-03-28"
 <div class="heading" id="generate-augmentation">Generating Augmentations</div>
 
 
-The library provides a method called **`harness.augment()`** that facilitates the data augmentation process for training data. To use this method, you need to specify two parameters: **`input_path`**, which is the path to the original training dataset, and **`output_path`**, which is the path to save the augmented dataset. Additionally, there's an optional parameter **`inplace`**, which is a boolean that controls whether the original input file should be modified directly. By default, inplace is set to False. If True, the list of samples are modified in place. Otherwise, new samples are added to the input data. 
+The library provides a method called **`.augment()`** that facilitates the data augmentation process for training data. To use this method, you need to specify two parameters: **`input_path`**, which is the path to the original training dataset, and **`output_path`**, which is the path to save the augmented dataset. Additionally, there's an optional parameter **`inplace`**, which is a boolean that controls whether the original input file should be modified directly. By default, inplace is set to False. If True, the list of samples are modified in place. Otherwise, new samples are added to the input data. 
 
 
 
 ```python
 
 # generating augmentations
-harness.augment(input_path='training_dataset', output_path='augmented_dataset')
+h.augment(input_path='training_dataset', output_path='augmented_dataset')
 
 ```
 

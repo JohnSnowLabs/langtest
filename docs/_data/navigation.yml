@@ -19,7 +19,7 @@ docs-menu:
         - title: Installation
           url: /docs/pages/docs/install
         - title:  One Liners
-          url:    /docs/pages/docs/install#one-liners
+          url:    /docs/pages/docs/one_liner
 
   - title: Test Harness
     url: /docs/pages/docs/harness
