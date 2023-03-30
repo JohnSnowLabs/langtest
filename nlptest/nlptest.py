@@ -11,7 +11,7 @@ from pkg_resources import resource_filename
 from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
-from .testrunner import TestRunner
+from .testrunner import BaseRunner
 from .transform import TestFactory
 
 
@@ -134,7 +134,7 @@ class Harness:
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                              "calling the `.run()` method.")
-        self._generated_results = TestRunner(self._testcases, self.model,
+        self._generated_results = BaseRunner(self._testcases, self.model,
                                              self.data).evaluate()
         return self
 
@@ -285,22 +285,6 @@ class Harness:
         with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
 
-    def save_testcases(self, path_to_file: str) -> None:
-        """
-        Save the generated testcases into a pickle file.
-
-        Args:
-            path_to_file (str):
-                location to save the pickle file to
-        Returns:
-
-        """
-        if self._testcases is None:
-            raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
-                             "calling the `.save` method.")
-
-        with open(path_to_file, "wb") as writer:
-            pickle.dump(self._testcases, writer)
 
     @classmethod
     def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
@@ -332,15 +316,3 @@ class Harness:
        
         return harness
 
-    def load_testcases(self, path_to_file: str) -> None:
-        """
-        Loads the testcases from a pickle file
-
-        Args:
-            path_to_file (str):
-                location to load the test cases from
-        Returns:
-
-        """
-        with open(path_to_file, "rb") as reader:
-            self._testcases = pickle.load(reader)
