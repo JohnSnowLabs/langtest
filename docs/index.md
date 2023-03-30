@@ -39,7 +39,7 @@ data:
    - title: All-in-One Workflow
      topimage: 
       - image:
-          src: assets/images/home/infographic_17_03_23_final_big.jpg
+          src: assets/images/home/infographic_17_03_23_final_big.png
 
    - title: 'Quick & Easy'
      install: yes
