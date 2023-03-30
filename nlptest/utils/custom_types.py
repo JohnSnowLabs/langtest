@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 
 from pydantic import BaseModel, Field, PrivateAttr, validator
 
@@ -113,12 +113,15 @@ class NEROutput(BaseModel):
         """"""
         return len(self.predictions)
 
-    def __getitem__(self, span: Span) -> Optional[NERPrediction]:
+    def __getitem__(self, item: Union[Span, int]) -> Optional[NERPrediction]:
         """"""
-        for prediction in self.predictions:
-            if prediction.span == span:
-                return prediction
-        return None
+        if isinstance(item, int):
+            return self.predictions[item]
+        elif isinstance(item, Span):
+            for prediction in self.predictions:
+                if prediction.span == item:
+                    return prediction
+            return None
 
     def to_str_list(self) -> List[str]:
         """
