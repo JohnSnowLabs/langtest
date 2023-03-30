@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: NLP Docs | John Snow Labs
-title: Generating the testcases
+title: Generating Test Cases
 permalink: /docs/pages/docs/generate
 key: docs-install
 modify_date: "2023-03-28"
@@ -14,7 +14,7 @@ The **generate()** method automatically generates the test cases (based on the p
 
 Config YAML format :
 
-```shell 
+```python 
 
 defaults:
   min_pass_rate: 0.65
@@ -27,13 +27,14 @@ tests:
   
 ```
 
-If config file is not present, we can use the **.configure()** method to configure the harness to perform the needed tests.
+If config file is not present, we can use the **`.configure()`** method to configure the harness to perform the needed tests.
 
 ```python
 harness.configure(
 {'defaults': {'min_pass_rate': 0.65},
- 'tests': {'robustness': {'lowercase': {'min_pass_rate': 0.60}, 
-                          'uppercase':{'min_pass_rate': 0.60}}
+ 'tests': {'robustness': 
+                {'lowercase': {'min_pass_rate': 0.60}, 
+                   'uppercase':{'min_pass_rate': 0.60}}
           }
  }
  )
@@ -44,7 +45,7 @@ harness.configure(
 harness.generate()
 ```
 
-After generating the testcases we can use the **.testcases()** method. 
+After generating the testcases we can use the **`.testcases()`** method. 
 ```python
 harness.testcases()
 ```
