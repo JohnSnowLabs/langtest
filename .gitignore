@@ -55,6 +55,10 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Sphinx docs
+sphinx/_build/**
+sphinx/_autosummary/**
+
 # Translations
 *.mo
 *.pot
@@ -71,9 +75,6 @@ instance/
 
 # Scrapy stuff:
 .scrapy
-
-# Sphinx documentation
-docs/_build/
 
 # PyBuilder
 .pybuilder/
@@ -193,8 +194,8 @@ python/src/
 python/tensorflow/bert/models/**
 **/.DS_Store
 **/tmp_*
-docs/_site/**
-docs/.sass-cache/**
+docs/website/_site/**
+docs/website/.sass-cache/**
 
 tst_shortcut_sd/
 src/*/resources/*.classes
