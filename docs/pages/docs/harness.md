@@ -69,13 +69,13 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 
 
 <div class="heading" id="data_input">Data Input</div>
-Supported data inputs are **`CoNLL`** and **`csv`** formats. CoNLL dataset can only be loaded for `ner`. For the `text-classification`, both formats are supported provided the column names are from a list of supported column names.
+Supported data inputs are **`CoNLL`** and **`CSV`** formats. CoNLL dataset can only be loaded for `ner`. For the `text-classification`, both formats are supported provided the column names are from a list of supported column names.
 
 {:.table2}
 | Task  | Supported Data Inputs |  
 | - | - | 
-|**ner**     |CoNLL and Csv|
-|**text-classification**     |Csv
+|**ner**     |CoNLL and CSV|
+|**text-classification**     |CSV
 
 <div class="heading" id="NER"> For NER  </div>
 
