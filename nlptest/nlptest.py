@@ -316,12 +316,7 @@ class Harness:
             data = pickle.load(reader)
             
         harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
-        tests = harness._config['tests']
-        harness._testcases = TestFactory.transform(data, tests, model)
-
-        # with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
-        #     harness._testcases = pickle.load(reader)
-
+        harness.generate()
        
         return harness
 
