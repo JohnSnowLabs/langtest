@@ -31,12 +31,17 @@ If config file is not present, we can use the **`.configure()`** method to confi
 
 ```python
 harness.configure(
-{'defaults': {'min_pass_rate': 0.65},
- 'tests': {'robustness': 
-                {'lowercase': {'min_pass_rate': 0.60}, 
-                   'uppercase':{'min_pass_rate': 0.60}}
-          }
- }
+  {
+    'defaults': {
+      'min_pass_rate': 0.65
+    },
+    'tests': {
+      'robustness': {
+          'lowercase': { 'min_pass_rate': 0.60 }, 
+          'uppercase': { 'min_pass_rate': 0.60 }
+        }
+      }
+  }
  )
 ```
 
