@@ -106,6 +106,7 @@ class Harness:
         else:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
+        self._config_copy = self._config
         return self._config
 
     def generate(self) -> "Harness":
@@ -264,7 +265,7 @@ class Harness:
             os.mkdir(save_dir)
 
         with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
-            yml.write(yaml.safe_dump(self._config))
+            yml.write(yaml.safe_dump(self._config_copy))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
             pickle.dump(self._testcases, writer)
