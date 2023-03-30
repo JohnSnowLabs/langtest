@@ -125,7 +125,7 @@ class AugmentRobustness(BaseAugmentaion):
             return "Test metrics all have over 0.9 f1-score."
 
         fianl_aug_data = []
-        
+        hash_map = {k: v for k, v in enumerate(data)}
         for proportion in suggest.iterrows():
             cat = proportion[-1]['category'].lower()
             if cat not in ["robustness", 'bias']:
@@ -139,17 +139,17 @@ class AugmentRobustness(BaseAugmentaion):
             if proportion[-1]['test_type'] in supported_tests[cat]:
                 sample_length = len(data) * self.max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
                 if inplace:
-                    hash_map = {k: v for k, v in enumerate(data)}
                     sample_indices = random.sample(range(0, len(data)), int(sample_length))
                     for each in sample_indices:
                         hash_map[each] = TestFactory.transform([hash_map[each]], test_type, model=self.model)[0]
-                    fianl_aug_data.extend(list(hash_map.values()))
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
                     aug_data = TestFactory.transform(sample_data, test_type, model=self.model)
                     fianl_aug_data.extend(aug_data)
-   
-        data.extend(fianl_aug_data)
+        if inplace:
+            data.extend(list(hash_map.values()))
+        else:
+            data.extend(fianl_aug_data)
         self.df.export(data, output_path)
         return fianl_aug_data
 
