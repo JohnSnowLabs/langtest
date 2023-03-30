@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Quick Start | NLP Docs | John Snow Labs
 title: Quick Start
 permalink: /docs/pages/docs/install
 key: docs-install
@@ -23,27 +23,9 @@ pip install nlptest
 conda install nlptest
 ```
 
-<div class="heading" id="one-liners"> One Liners </div>
+Whether you are using **Spark NLP**, **Hugging Face**, or **Spacy** models, ``Harness`` has got you covered. You can test any **Text Classification** and **Named Entity Recognition** model using ``Harness``.
 
-With just one line of code, it can generate and run over 50 different test types to assess the quality of NLP models in terms of accuracy, bias, robustness, representation, and fairness.
-You can test any **Text Classification** and **Named Entity Recognition** model using ``Harness``.
 
-```python
-from nlptest import Harness
-h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs')
-
-# Generate test cases, run them and view a report
-h.generate().run().report()
-```
-
-Whether you are using **Spark NLP**, **Hugging Face Transformers**, or **spaCy** models, ``Harness`` has got you covered.
-```python
-from nlptest import Harness
-h = Harness(task='text-classification', model='mrm8488/distilroberta-finetuned-tweets-hate-speech', hub='huggingface')
-
-# Generate test cases, run them and view a report
-h.generate().run().report()
-```
 <style>
   .heading {
     text-align: center;
