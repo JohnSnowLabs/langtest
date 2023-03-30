@@ -195,8 +195,10 @@ class RobustnessTestFactory(ITests):
                                'label': [[i.entity for i in sample.expected_results.predictions]
                                          for sample in data_handler]})
             self.tests['swap_entities']['parameters'] = {}
-            self.tests['swap_entities']['parameters']['terminology'] = create_terminology(df)
-            self.tests['swap_entities']['parameters']['labels'] = df.label.tolist()
+            params = self.tests['swap_entities']['parameters']
+            if len(params.get('terminology', {})) == 0:
+                params['terminology'] = create_terminology(df)
+                params['labels'] = df.label.tolist()
 
         if "american_to_british" in self.tests:
             self.tests['american_to_british']['parameters'] = {}
