@@ -113,6 +113,10 @@ class Harness:
         Returns:
             None: The generated testcases are stored in `_testcases` attribute.
         """
+
+        if self._config is None:
+            raise RuntimeError("Please call .configure() first.")
+
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
         return self
@@ -124,6 +128,9 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
+        if self._testcases is None:
+            raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
+                             "calling the `.run()` method.")
         self._generated_results = TestRunner(self._testcases, self.model,
                                              self.data).evaluate()
         return self
@@ -134,6 +141,11 @@ class Harness:
         Returns:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
+        if self._generated_results is None:
+            raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
+                             "calling the `.report()` method.")
+        
+
         if isinstance(self._config, dict):
             self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
                                   self._config['tests'].items() for j, k in v.items()}
@@ -251,11 +263,11 @@ class Harness:
 
         """
         if self._config is None:
-            raise ValueError("The current Harness has not been configured yet. Please use the `.configure` method "
+            raise RuntimeError("The current Harness has not been configured yet. Please use the `.configure` method "
                              "before calling the `.save` method.")
 
         if self._testcases is None:
-            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+            raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
                              "calling the `.save` method.")
 
         if not os.path.isdir(save_dir):
@@ -281,7 +293,7 @@ class Harness:
 
         """
         if self._testcases is None:
-            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+            raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
                              "calling the `.save` method.")
 
         with open(path_to_file, "wb") as writer:
