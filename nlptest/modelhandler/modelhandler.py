@@ -86,11 +86,25 @@ class ModelFactory:
             ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
 
         if hub == 'johnsnowlabs':
-            modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
+            if importlib.util.find_spec('johnsnowlabs'):
+                modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
+            else:
+                raise ModuleNotFoundError("""Please install the johnsnowlabs library by calling `pip install johnsnowlabs`.
+                For in-depth instructions, head-over to https://nlu.johnsnowlabs.com/docs/en/install""")
+            
         elif hub == 'huggingface':
-            modelhandler_module = importlib.import_module('nlptest.modelhandler.transformers_modelhandler')
-        else:
-            modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
+            if importlib.util.find_spec('transformers'):
+                modelhandler_module = importlib.import_module('nlptest.modelhandler.transformers_modelhandler')
+            else:
+                raise ModuleNotFoundError("""Please install the transformers library by calling `pip install transformers`.
+                For in-depth instructions, head-over to https://huggingface.co/docs/transformers/installation""")
+            
+        elif hub == "spacy":
+            if importlib.util.find_spec('spacy'):
+                modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
+            else:
+                raise ModuleNotFoundError("""Please install the spacy library by calling `pip install spacy`.
+                For in-depth instructions, head-over to https://spacy.io/usage""")
 
         if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
