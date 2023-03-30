@@ -26,8 +26,11 @@ docs-menu:
     children:
         - title: Harness Explained
           url: /docs/pages/docs/harness
-        - title:  Parameters
-          url:    /docs/pages/docs/harness#parameters
+        - title:  Data Input
+          url:    /docs/pages/docs/harness#data_input
+        - title:  Model Input
+          url:    /docs/pages/docs/harness
+
 
   - title:  Generate/Run Workflow
     url:    /docs/pages/docs/generate

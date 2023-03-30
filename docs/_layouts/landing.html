@@ -96,7 +96,7 @@ conda install nlptest
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='ner', hub='johnsnowlabs')
+h = Harness('ner', model='ner_dl_bert', hub='johnsnowlabs')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -207,9 +207,9 @@ h.generate().run().report()
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
                 {% highlight python %}
-h.augment(input='training_dataset', output='augmented_dataset')
-new_model = nlp.fit('augmented_dataset')
-Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()                
+Harness.augment(input_path='training_dataset', output_path='augmented_dataset')
+new_model = nlp.load("model_name").fit('augmented_dataset') 
+Harness.load("save_dir", task='ner', model=new_model, hub="johnsnowlabs").run()              
 {% endhighlight %}
               </div>
             </div>
