@@ -86,7 +86,7 @@ class ModelFactory:
             ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
 
         if hub == 'johnsnowlabs':
-            if importlib.util.find_spec('pyspark') and importlib.util.find_spec('johnsnowlabs') and importlib.util.find_spec('sparknlp'):
+            if importlib.util.find_spec('johnsnowlabs'):
                 modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
             else:
                 raise ModuleNotFoundError("""Please install the johnsnowlabs library by calling `pip install johnsnowlabs`.
