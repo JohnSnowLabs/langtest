@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: Tutorials | NLP Test | John Snow Labs
 title: Tutorials
 key: docs-tutorials
 permalink: /docs/pages/tutorials/tutorials
@@ -15,23 +15,36 @@ modify_date: "2019-05-16"
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-The following tables give an overview on the different tutorials.
+The following table give an overview on the different tutorial notebooks. We have test specific tutorial notebooks (Accuracy, Fairness, Robustness, Representation and Bias) and library specific notebooks.
 
-## Tutorial Notebooks Overview
+<div class="heading" id="tutorial-notebook">Tutorial Notebooks Overview</div>
 
 {:.table2}
 |Tutorial Description|Library|Task|Open In Colab|
 |-|
-|Accuracy Tests                     |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Bias Tests                         |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Fairness Tests                     |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Robustness Tests                   |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hodCD_UW353zEdoaCDN1picXP4BmyFu5)|
-|Representation Tests               |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|JSL Workflow                       |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|JSL Custom Pipeline Workflow       |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Transformers Workflow              |Transformers   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|spaCy Workflow                     |spaCy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|Accuracy Tests                     |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|Bias Tests                         |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|Fairness Tests                     |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|Robustness Tests                   |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hodCD_UW353zEdoaCDN1picXP4BmyFu5)|
+|Representation Tests               |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End to End Workflow                       |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End to End Custom Pipeline Workflow       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End to End Workflow              |Hugging Face   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End to End Workflow                      |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
 
+
+<style>
+  .heading {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    padding-top: 20px;
+    padding-bottom: 30px;
+  }
+
+  #tutorial-notebook {
+    color: #1E77B7;
+  }
 
 </div><div class="h3-box" markdown="1">
 
