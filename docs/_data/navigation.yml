@@ -48,7 +48,7 @@ docs-menu:
         - title: Save
           url: /docs/pages/docs/save
         - title:  Load
-          url:    /docs/pages/docs/save#loading      
+          url:    /docs/pages/docs/load    
   
   - title: Augmentations
     url: /docs/pages/docs/generate_augmentation
