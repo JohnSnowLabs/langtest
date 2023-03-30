@@ -37,13 +37,9 @@ class TestRunner:
         Returns:
             Tuple[List[Sample], pd.DataFrame]
         """
-        # self._model_handler.load_model()
-
+     
         robustness_runner = RobustnessTestRunner(self.load_testcases, self._model_handler, self._data)
         robustness_result = robustness_runner.evaluate()
-
-        # accuracy_runner = AccuracyTestRunner(self.load_testcases, self._model_handler, self._data)
-        # accuracy_result = accuracy_runner.evaluate()
 
         return robustness_result
 
