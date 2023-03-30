@@ -88,7 +88,7 @@ class Harness:
         self._generated_results = None
         self.accuracy_results = None
 
-    def configure(self, config: Union[str, dict]):
+    def configure(self, config: Union[str, dict]) -> dict:
         """
         Configure the Harness with a given configuration.
 
