@@ -15,22 +15,20 @@ modify_date: "2019-05-16"
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+The following tables give an overview on the different tutorials.
 
-```shell 
-pip install johnsnowlabs
-```
+## Tutorial Notebooks Overview
 
-## Test h2
+{:.table2}
+|Tutorial Description|Library Used|Task Used|Open In Colab|
+|-|
+|Accuracy Tests         |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](colab_link_here)|
+|Bias Tests             |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](colab_link_here)|
+|Fairness Tests         |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](colab_link_here)|
+|Robustness Tests       |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](colab_link_here)|
+|Representation Tests   |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](colab_link_here)|
 
-To quickly test the installation, you can run in your **Shell**:
 
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
-```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
-```
+</div><div class="h3-box" markdown="1">
+
 </div></div>
