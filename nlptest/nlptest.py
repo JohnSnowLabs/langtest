@@ -308,16 +308,19 @@ class Harness:
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
-
-        harness = Harness(task=task, model=model, hub=hub)
-        harness.configure(os.path.join(save_dir, "config.yaml"))
-
-        with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
-            harness._testcases = pickle.load(reader)
-
+        
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
-            harness.data = pickle.load(reader)
+            data = pickle.load(reader)
 
+        harness = Harness(task=task, model=model, data=data, hub=hub)
+        harness.configure(os.path.join(save_dir, "config.yaml"))
+        tests = harness._config['tests']
+        harness._testcases = TestFactory.transform(data, tests, model)
+
+        # with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
+        #     harness._testcases = pickle.load(reader)
+
+       
         return harness
 
     def load_testcases(self, path_to_file: str) -> None:
