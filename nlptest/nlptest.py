@@ -67,6 +67,8 @@ class Harness:
             raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
                              f"passed is not among the default ones. You need to either specify the parameter 'data' "
                              f"or use a default configuration.")
+        elif isinstance(data,list):
+            self.data = data
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
@@ -104,6 +106,7 @@ class Harness:
         else:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
+        self._config_copy = self._config
         return self._config
 
     def generate(self) -> "Harness":
@@ -274,7 +277,7 @@ class Harness:
             os.mkdir(save_dir)
 
         with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
-            yml.write(yaml.safe_dump(self._config))
+            yml.write(yaml.safe_dump(self._config_copy))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
             pickle.dump(self._testcases, writer)
@@ -320,16 +323,13 @@ class Harness:
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
-
-        harness = Harness(task=task, model=model, hub=hub)
-        harness.configure(os.path.join(save_dir, "config.yaml"))
-
-        with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
-            harness._testcases = pickle.load(reader)
-
+        
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
-            harness.data = pickle.load(reader)
-
+            data = pickle.load(reader)
+            
+        harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
+        harness.generate()
+       
         return harness
 
     def load_testcases(self, path_to_file: str) -> None:
