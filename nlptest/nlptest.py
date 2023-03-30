@@ -314,9 +314,8 @@ class Harness:
         
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
-
-        harness = Harness(task=task, model=model, data=data, hub=hub)
-        harness.configure(os.path.join(save_dir, "config.yaml"))
+            
+        harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
         tests = harness._config['tests']
         harness._testcases = TestFactory.transform(data, tests, model)
 
