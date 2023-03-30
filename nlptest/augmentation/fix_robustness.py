@@ -147,7 +147,8 @@ class AugmentRobustness(BaseAugmentaion):
                     aug_data = TestFactory.transform(sample_data, test_type, model=self.model)
                     fianl_aug_data.extend(aug_data)
         if inplace:
-            self.df.export(list(hash_map.values()), output_path)
+            fianl_aug_data = list(hash_map.values())
+            self.df.export(fianl_aug_data, output_path) 
         else:
             data.extend(fianl_aug_data)
             self.df.export(data, output_path)
