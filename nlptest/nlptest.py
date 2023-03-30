@@ -67,6 +67,8 @@ class Harness:
             raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
                              f"passed is not among the default ones. You need to either specify the parameter 'data' "
                              f"or use a default configuration.")
+        elif isinstance(data,list):
+            self.data = data
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
