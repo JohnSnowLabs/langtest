@@ -62,7 +62,8 @@ class RobustnessTestRunner(TestRunner):
         """
         for sample in tqdm(self.load_testcases, desc="Running robustness tests..."):
             if sample.state != "done":
-                sample.expected_results = self._model_handler(sample.original)
+                if sample.category not in ["Robustness","Bias"]:
+                    sample.expected_results = self._model_handler(sample.original)
                 sample.actual_results = self._model_handler(sample.test_case)
                 sample.state = "done"
 
