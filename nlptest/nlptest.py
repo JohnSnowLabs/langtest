@@ -87,6 +87,9 @@ class Harness:
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None
+        self.min_pass_dict = None
+        self.default_min_pass_dict = None
+        self.df_report = None
 
     def configure(self, config: Union[str, dict]) -> dict:
         """
@@ -108,10 +111,8 @@ class Harness:
 
     def generate(self) -> "Harness":
         """
-        Generates the testcases to be used when evaluating the model.
-
-        Returns:
-            None: The generated testcases are stored in `_testcases` attribute.
+        Generates the testcases to be used when evaluating the model. The generated testcases are stored in
+        `_testcases` attribute.
         """
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
@@ -124,19 +125,26 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results = TestRunner(self._testcases, self.model,
-                                             self.data).evaluate()
+        self._generated_results = TestRunner(
+            self._testcases,
+            self.model,
+            self.data
+        ).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
         """
         Generate a report of the test results.
+
         Returns:
-            pd.DataFrame: DataFrame containing the results of the tests.
+            pd.DataFrame:
+                DataFrame containing the results of the tests.
         """
         if isinstance(self._config, dict):
-            self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
-                                  self._config['tests'].items() for j, k in v.items()}
+            self.min_pass_dict = {
+                j: k.get('min_pass_rate', 0.65) for v in self._config['tests'].values() for j, k in v.items()
+            }
+
         self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
 
         summary = defaultdict(lambda: defaultdict(int))
@@ -148,8 +156,10 @@ class Harness:
         for test_type, value in summary.items():
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
+
             if summary[test_type]['category'] == "Accuracy":
                 min_pass_rate = 1
+
             report[test_type] = {
                 "category": summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
@@ -174,7 +184,7 @@ class Harness:
 
         return self.df_report
 
-    def generated_results(self) -> pd.DataFrame:
+    def generated_results(self) -> Optional[pd.DataFrame]:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
@@ -182,16 +192,13 @@ class Harness:
             pd.DataFrame: Generated dataframe.
         """
         if self._generated_results is None:
-            print("Please run Harness.run() first.")
+            logging.warning("Please run `Harness.run()` before calling `.generated_results()`.")
             return
-        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
-        # accuracy_df = self.accuracy_report()
-        # final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
-        # final_df = final_df.reset_index(drop=True)
+        generated_results_df = pd.DataFrame.from_records([x.to_dict() for x in self._generated_results])
 
         return generated_results_df
 
-    def augment(self, input_path, output_path, inplace=False):
+    def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
 
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
@@ -221,7 +228,7 @@ class Harness:
         if dtypes not in [['int64'] * 2, ['int32'] * 2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
-        _ = AugmentRobustness(
+        AugmentRobustness(
             task=self.task,
             config=self._config,
             h_report=self.df_report
@@ -234,7 +241,13 @@ class Harness:
         return self
 
     def testcases(self) -> pd.DataFrame:
-        """Testcases after .generate() is called"""
+        """
+        Testcases after .generate() is called
+
+        Returns:
+            pd.DataFrame:
+                testcases formatted into a pd.DataFrame
+        """
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
         final_df = final_df.reset_index(drop=True)
