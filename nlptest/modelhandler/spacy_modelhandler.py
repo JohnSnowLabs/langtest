@@ -97,7 +97,8 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """Return classification labels of SpaCy model."""
         return self.model.get_pipe("textcat").labels
 
-    def load_model(self, path):
+    @classmethod
+    def load_model(cls, path):
         """Load and return SpaCy pipeline"""
         return spacy.load(path)
 
@@ -113,7 +114,10 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """
         output = self.model(text).cats
         if not return_all_scores:
-            output = max(output, key=output.get)
+            label = max(output, key=output.get)
+            output = [{"label": label, "score": output[label]}]
+        else:
+            output = [{"label": key, "score": value} for key, value in output.items()]
 
         return SequenceClassificationOutput(
             text=text,
@@ -130,8 +134,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
             List[str]: Predictions of the model.
         """
         output = self.model(text).cats
-        output = max(output, key=output.get)
-        return [pred["label"] for pred in output]
+        return [max(output, key=output.get)]
 
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""

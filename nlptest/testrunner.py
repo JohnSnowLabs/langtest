@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.metrics import classification_report, f1_score
 from functools import reduce
-
+from tqdm import tqdm
 from nlptest.modelhandler import ModelFactory
 from typing import List, Tuple
 
@@ -37,13 +37,9 @@ class TestRunner:
         Returns:
             Tuple[List[Sample], pd.DataFrame]
         """
-        # self._model_handler.load_model()
-
+     
         robustness_runner = RobustnessTestRunner(self.load_testcases, self._model_handler, self._data)
         robustness_result = robustness_runner.evaluate()
-
-        # accuracy_runner = AccuracyTestRunner(self.load_testcases, self._model_handler, self._data)
-        # accuracy_result = accuracy_runner.evaluate()
 
         return robustness_result
 
@@ -58,11 +54,12 @@ class RobustnessTestRunner(TestRunner):
 
         Returns:
             List[Sample]:
-                all containing the predictions for both the original text and the pertubed one
+                all containing the predictions for both the original text and the perturbed one
         """
-        for sample in self.load_testcases:
+        for sample in tqdm(self.load_testcases, desc="Running robustness tests..."):
             if sample.state != "done":
-                sample.expected_results = self._model_handler(sample.original)
+                if sample.category not in ["Robustness","Bias"]:
+                    sample.expected_results = self._model_handler(sample.original)
                 sample.actual_results = self._model_handler(sample.test_case)
                 sample.state = "done"
 

@@ -1,3 +1,4 @@
+import logging
 import os
 import pickle
 from collections import defaultdict
@@ -5,6 +6,7 @@ from typing import Optional, Union
 
 import pandas as pd
 import yaml
+from pkg_resources import resource_filename
 
 from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
@@ -20,6 +22,15 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
+    DEFAULTS_DATASET = {
+        ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
+        ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
+        ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
+        ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
+            "tweet/sample.csv",
+        ("text-classification", "nlptest/data/textcat_imdb", "spacy"): "imdb/sample.csv",
+        ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
+    }
 
     def __init__(
             self,
@@ -44,7 +55,22 @@ class Harness:
         """
 
         super().__init__()
-        self.task = task
+        self.task = task if task else 'ner'
+
+        if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
+            data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
+            data = resource_filename("nlptest", data_path)
+
+            self.data = DataFactory(data, task=self.task).load()
+            logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+        elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
+            raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
+                             f"passed is not among the default ones. You need to either specify the parameter 'data' "
+                             f"or use a default configuration.")
+        elif isinstance(data,list):
+            self.data = data
+        else:
+            self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
         if isinstance(model, str):
             if hub is None:
@@ -54,8 +80,11 @@ class Harness:
         else:
             self.model = ModelFactory(task=task, model=model)
 
-        self.data = DataFactory(data, task=self.task).load() if data is not None else None
-        self._config = self.configure(config) if config is not None else None
+        if config is not None:
+            self._config = self.configure(config)
+        else:
+            logging.info(f"No configuration file was provided, loading default config.")
+            self._config = self.configure(resource_filename("nlptest", "data/config.yml"))
 
         self._testcases = None
         self._generated_results = None
@@ -77,6 +106,7 @@ class Harness:
         else:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
+        self._config_copy = self._config
         return self._config
 
     def generate(self) -> "Harness":
@@ -86,6 +116,10 @@ class Harness:
         Returns:
             None: The generated testcases are stored in `_testcases` attribute.
         """
+
+        if self._config is None:
+            raise RuntimeError("Please call .configure() first.")
+
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
         return self
@@ -97,8 +131,11 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
+        if self._testcases is None:
+            raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
+                             "calling the `.run()` method.")
         self._generated_results = TestRunner(self._testcases, self.model,
-                                                                    self.data).evaluate()
+                                             self.data).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
@@ -107,6 +144,11 @@ class Harness:
         Returns:
             pd.DataFrame: DataFrame containing the results of the tests.
         """
+        if self._generated_results is None:
+            raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
+                             "calling the `.report()` method.")
+        
+
         if isinstance(self._config, dict):
             self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
                                   self._config['tests'].items() for j, k in v.items()}
@@ -137,7 +179,6 @@ class Harness:
 
         df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
         df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-
 
         col_to_move = 'category'
         first_column = df_report.pop('category')
@@ -198,7 +239,8 @@ class Harness:
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report
+            h_report=self.df_report,
+            model = self.model
         ).fix(
             input_path=input_path,
             output_path=output_path,
@@ -224,18 +266,18 @@ class Harness:
 
         """
         if self._config is None:
-            raise ValueError("The current Harness has not been configured yet. Please use the `.configure` method "
+            raise RuntimeError("The current Harness has not been configured yet. Please use the `.configure` method "
                              "before calling the `.save` method.")
 
         if self._testcases is None:
-            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+            raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
                              "calling the `.save` method.")
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
 
         with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
-            yml.write(yaml.safe_dump(self._config))
+            yml.write(yaml.safe_dump(self._config_copy))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
             pickle.dump(self._testcases, writer)
@@ -254,7 +296,7 @@ class Harness:
 
         """
         if self._testcases is None:
-            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+            raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
                              "calling the `.save` method.")
 
         with open(path_to_file, "wb") as writer:
@@ -281,16 +323,13 @@ class Harness:
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
-
-        harness = Harness(task=task, model=model, hub=hub)
-        harness.configure(os.path.join(save_dir, "config.yaml"))
-
-        with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
-            harness._testcases = pickle.load(reader)
-
+        
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
-            harness.data = pickle.load(reader)
-
+            data = pickle.load(reader)
+            
+        harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
+        harness.generate()
+       
         return harness
 
     def load_testcases(self, path_to_file: str) -> None:

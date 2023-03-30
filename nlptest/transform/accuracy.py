@@ -87,7 +87,7 @@ class MinPrecisionScore(BaseAccuracy):
                 continue
             sample = Sample(
                 original = "-",
-                category = "Accuracy",
+                category = "accuracy",
                 test_type = "min_precision_score",
                 test_case = k,
                 expected_results = MinScoreOutput(min_score=min_scores[k]),
@@ -144,7 +144,7 @@ class MinRecallScore(BaseAccuracy):
                 continue
             sample = Sample(
                 original = "-",
-                category = "Accuracy",
+                category = "accuracy",
                 test_type = "min_recall_score",
                 test_case = k,
                 expected_results = MinScoreOutput(min_score=min_scores[k]),
@@ -202,7 +202,7 @@ class MinF1Score(BaseAccuracy):
                 continue
             sample = Sample(
                 original = "-",
-                category = "Accuracy",
+                category = "accuracy",
                 test_type = "min_f1_score",
                 test_case = k,
                 expected_results = MinScoreOutput(min_score=min_scores[k]),
@@ -245,7 +245,7 @@ class MinMicroF1Score(BaseAccuracy):
 
         sample = Sample(
             original = "-",
-            category = "Accuracy",
+            category = "accuracy",
             test_type = "min_micro_f1_score",
             test_case = "micro",
             expected_results = MinScoreOutput(min_score=min_score),
@@ -288,7 +288,7 @@ class MinMacroF1Score(BaseAccuracy):
 
         sample = Sample(
             original = "-",
-            category = "Accuracy",
+            category = "accuracy",
             test_type = "min__macro_f1_score",
             test_case = "macro",
             expected_results = MinScoreOutput(min_score=min_score),
@@ -330,7 +330,7 @@ class MinWeightedF1Score(BaseAccuracy):
 
         sample = Sample(
             original = "-",
-            category = "Accuracy",
+            category = "accuracy",
             test_type = "min_weighted_f1_score",
             test_case = "weighted",
             expected_results = MinScoreOutput(min_score=min_score),

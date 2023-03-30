@@ -59,15 +59,6 @@ docs-menu:
 tutorials:
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials
-    children:
-      - title: Casing tests with johnsnowlabs
-        url: /docs/pages/tutorials/casing_tests
-      - title: Bias tests with transformers
-        url: /docs/pages/tutorials/bias_tests
-        key: tutorials
-      - title: Testing and fixing workflow with spacy
-        url: /docs/pages/tutorials/workflow_spacy
-        key: tutorials
 
 
 tests:
@@ -77,6 +68,8 @@ tests:
     url: /docs/pages/tests/accuracy
   - title: Bias
     url: /docs/pages/tests/bias
+  - title: Fairness
+    url: /docs/pages/tests/fairness
   - title: Representation
     url: /docs/pages/tests/representation
   - title: Robustness
