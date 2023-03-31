@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Test Harness | NLP Docs | John Snow Labs
 title: Test Harness
 permalink: /docs/pages/docs/harness
 key: docs-install
