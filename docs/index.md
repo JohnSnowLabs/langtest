@@ -8,7 +8,7 @@ article_header:
  actions:
    - text: Getting Started
      type: trans
-     url: /docs/en/install   
+     url: /docs/pages/docs/install   
    - text: '<i class="fab fa-github"></i>Star on GitHub'
      type: full_white
      url: https://github.com/JohnSnowLabs/nlptest 
