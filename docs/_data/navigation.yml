@@ -29,7 +29,7 @@ docs-menu:
         - title:  Data Inputs
           url:    /docs/pages/docs/data_input
         - title:  Model Input
-          url:    /docs/pages/docs/harness
+          url:    /docs/pages/docs/model_input
 
 
   - title:  Generate/Run Workflow
