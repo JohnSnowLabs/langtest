@@ -18,7 +18,7 @@ pip install johnsnowlabs
 from johnsnowlabs import nlp
 ```
 
-Using a `Pretrained Model` in John Snow Labs.
+Using a `Pretrained Model` from hub in John Snow Labs.
 
 ```python
 from nlptest import Harness
@@ -59,18 +59,27 @@ ner_model_pipeline = ner_pipeline.fit(spark.createDataFrame([[""]]).toDF("text")
 
 
 from nlptest import Harness
-h = Harness(task='ner', model=ner_model_pipeline, data="test.conll", config="test.config")
+h = Harness(task='ner', model=ner_model_pipeline, data='test.conll', config='test.config')
 h.generate().run().report()
 
 
 ```
 
+Using a `Locally Saved John Snow Labs Model` .
+
+```python
+from nlptest import Harness
+h = Harness(task='ner', model='path/to/local_saved_model', hub='johnsnowlabs', data='test.conll', config='test.config')
+
+# Generate test cases, run them and view a report
+h.generate().run().report()
+```
 
 
 
 <div class="heading" id="model">Spacy</div>
 
-Using a `Pretrained Model` in Spacy.
+Using a `Pretrained Model` from hub in Spacy.
 ```python
 from nlptest import Harness
 
@@ -83,7 +92,7 @@ h.generate().run().report()
 
 <div class="heading" id="model">Hugging Face</div>
 
-Using a `Pretrained Model` in Hugging Face.
+Using a `Pretrained Model` from hub in Hugging Face.
 ```python
 from nlptest import Harness
 
