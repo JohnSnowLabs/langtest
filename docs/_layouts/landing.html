@@ -209,7 +209,7 @@ h.generate().run().report()
                 {% highlight python %}
 h.augment(input_path='training_dataset', output_path='augmented_dataset')
 new_model = nlp.load("model_name").fit('augmented_dataset') 
-Harness.load("save_dir", task='ner', model=new_model, hub="johnsnowlabs").run()              
+Harness.load(save_dir=“testsuite", model=new_model, hub="johnsnowlabs").run()              
 {% endhighlight %}
               </div>
             </div>
