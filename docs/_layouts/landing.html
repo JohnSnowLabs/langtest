@@ -208,8 +208,8 @@ h.generate().run().report()
               <div class="highlight-box">
                 {% highlight python %}
 h.augment(input_path='training_data', output_path='augmented_data')
-new_model = nlp.load("model_name").fit('augmented_data')
-Harness.load(save_dir="testsuite", model=new_model).run()              
+new_model = nlp.load('model_name').fit('augmented_data')
+Harness.load(save_dir='testsuite', model=new_model).run()
 {% endhighlight %}
               </div>
             </div>
@@ -344,17 +344,17 @@ h.generate().run().report()
               <div class="highlight-box">
                 {% highlight python %}
 class DataScienceWorkFlow(FlowSpec):
-  @step
+    @step
     def train(self): ...
 
-  @step
+    @step
     def run_tests(self):
-        harness = Harness.load(model=self.model, save_dir="testsuite")
+        harness = Harness.load(model=self.model, save_dir='testsuite')
         self.report = harness.run().report()
 
-  @step
+    @step
     def deploy(self):
-        if self.report["score"] > self.threshold: ...         
+        if self.report['score'] > self.threshold: ...
 {% endhighlight %}
               </div>
                 

@@ -531,8 +531,8 @@
               <div class="highlight-box">
                 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">h</span><span class="p">.</span><span class="n">augment</span><span class="p">(</span><span class="n">input_path</span><span class="o">=</span><span class="s">'training_data'</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">'augmented_data'</span><span class="p">)</span>
-<span class="n">new_model</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"model_name"</span><span class="p">).</span><span class="n">fit</span><span class="p">(</span><span class="s">'augmented_dataset'</span><span class="p">)</span> 
-<span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="s">"testsuite"</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">new_model</span><span class="p">).</span><span class="n">run</span><span class="p">()</span>              </code></pre></figure>
+<span class="n">new_model</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">'model_name'</span><span class="p">).</span><span class="n">fit</span><span class="p">(</span><span class="s">'augmented_data'</span><span class="p">)</span>
+<span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="s">'testsuite'</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">new_model</span><span class="p">).</span><span class="n">run</span><span class="p">()</span></code></pre></figure>
 
               </div>
             </div>
@@ -607,17 +607,17 @@
               <div class="highlight-box">
                 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">DataScienceWorkFlow</span><span class="p">(</span><span class="n">FlowSpec</span><span class="p">):</span>
-  <span class="o">@</span><span class="n">step</span>
+    <span class="o">@</span><span class="n">step</span>
     <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="p">...</span>
-
-  <span class="o">@</span><span class="n">step</span>
+                  
+    <span class="o">@</span><span class="n">step</span>
     <span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-       <span class="err"> </span><span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="s">"testsuite"</span><span class="p">)</span>
+        <span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="s">'testsuite'</span><span class="p">)</span>
         <span class="bp">self</span><span class="p">.</span><span class="n">report</span> <span class="o">=</span> <span class="n">harness</span><span class="p">.</span><span class="n">run</span><span class="p">().</span><span class="n">report</span><span class="p">()</span>
 
-  <span class="o">@</span><span class="n">step</span>
+    <span class="o">@</span><span class="n">step</span>
     <span class="k">def</span> <span class="nf">deploy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">report</span><span class="p">[</span><span class="s">"score"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="p">.</span><span class="n">threshold</span><span class="p">:</span> <span class="p">...</span>         </code></pre></figure>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">report</span><span class="p">[</span><span class="s">'score'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="p">.</span><span class="n">threshold</span><span class="p">:</span> <span class="p">...</span></code></pre></figure>
 
               </div><div class="tac"><a class="button button--lg" href="docs/pages/docs/install">Get Started Now</a></div></div>
           </div>         
