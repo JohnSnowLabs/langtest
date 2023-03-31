@@ -18,5 +18,5 @@ harness = h.load("saved_nlptest_folder", model="ner_dl_bert", task='ner', hub="j
 Harness will load the saved nlptest configurations and test data. Now you can easily run the test cases with any new model
 (ner_dl_bert, in our case). In order to run the test cases we can just use `harness.run()`.
 
-
+If no task parameter is specified, it takes "ner" as the defaut. Also the hub parameter is optional and is not required to be specified if our model is a PipelineModel.
 </div></div>
