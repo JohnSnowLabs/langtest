@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Report | NLP Docs | John Snow Labs
+seotitle: Report | NLP Test | John Snow Labs
 title: Report
 permalink: /docs/pages/docs/report
 key: docs-install

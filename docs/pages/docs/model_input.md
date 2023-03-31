@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Model Input | NLP Docs | John Snow Labs
+seotitle: Model Input | NLP Test | John Snow Labs
 title: Model Input
 permalink: /docs/pages/docs/model_input
 key: docs-install

@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Data Augmentations | NLP Docs | John Snow Labs
+seotitle: Data Augmentations | NLP Test | John Snow Labs
 title: Data Augmentations
 key: docs-install
 permalink: /docs/pages/docs/generate_augmentation

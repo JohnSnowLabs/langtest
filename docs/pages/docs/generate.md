@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Generate | NLP Docs | John Snow Labs
+seotitle: Generate | NLP Test | John Snow Labs
 title: Generating Test Cases
 permalink: /docs/pages/docs/generate
 key: docs-install
