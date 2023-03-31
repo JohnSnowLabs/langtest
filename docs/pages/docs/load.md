@@ -12,7 +12,7 @@ header: true
  
 ```python
 # load saved configurations and test data
-harness = h.load("saved_nlptest_folder", task='ner', model="ner_dl_bert", hub="johnsnowlabs")
+harness = h.load("saved_nlptest_folder", model="ner_dl_bert", task='ner', hub="johnsnowlabs")
 ```
 
 Harness will load the saved nlptest configurations and test data. Now you can easily run the test cases with any new model
