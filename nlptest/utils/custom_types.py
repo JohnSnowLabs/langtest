@@ -1,8 +1,10 @@
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
+
 from pydantic import BaseModel, Field, PrivateAttr, validator
-from typing import List, Optional, Tuple, TypeVar
 
 
 class Span(BaseModel):
+    """Representation of a text's slice"""
     start: int
     end: int
     word: str
@@ -26,9 +28,7 @@ class Span(BaseModel):
 
     def __eq__(self, other):
         """"""
-        return self.start == other.start and \
-               self.end == other.end and \
-               self.word == other.word
+        return self.start == other.start and self.end == other.end
 
     def __str__(self):
         """"""
@@ -40,7 +40,7 @@ class Span(BaseModel):
 
 
 class NERPrediction(BaseModel):
-    """"""
+    """Single prediction obtained from a named entity recognition model"""
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
@@ -55,16 +55,16 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-        cls, 
-        entity: str, 
-        word: str, 
-        start: int, 
-        end: int, 
-        score: float = None,
-        doc_id: int = None,
-        doc_name: str = None,
-        pos_tag: str = None,
-        chunk_tag: str = None
+            cls,
+            entity: str,
+            word: str,
+            start: int,
+            end: int,
+            score: float = None,
+            doc_id: int = None,
+            doc_name: str = None,
+            pos_tag: str = None,
+            chunk_tag: str = None
     ) -> "NERPrediction":
         """"""
         return cls(
@@ -90,6 +90,7 @@ class NERPrediction(BaseModel):
         return False
 
     def __str__(self) -> str:
+        """"""
         return self.entity
 
     def __repr__(self) -> str:
@@ -114,13 +115,14 @@ class NEROutput(BaseModel):
 
     def __getitem__(self, span: Span) -> Optional[NERPrediction]:
         """"""
-        for pred in self.predictions:
-            if pred.span == span:
-                return pred
+        for prediction in self.predictions:
+            if prediction.span == span:
+                return prediction
         return None
 
     def to_str_list(self) -> List[str]:
-        """Convert the ouput into list of strings.
+        """
+        Converts predictions into a list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -128,9 +130,11 @@ class NEROutput(BaseModel):
         return [x.entity for x in self.predictions]
 
     def __repr__(self) -> str:
+        """"""
         return self.predictions.__repr__()
 
     def __str__(self) -> str:
+        """"""
         return [str(x) for x in self.predictions].__repr__()
 
     def __eq__(self, other: "NEROutput"):
@@ -141,11 +145,12 @@ class NEROutput(BaseModel):
 
 
 class SequenceLabel(BaseModel):
-    """"""
+    """Single prediction obtained from text-classification models"""
     label: str
     score: float
 
     def __str__(self):
+        """"""
         return f"{self.label}"
 
 
@@ -156,7 +161,7 @@ class SequenceClassificationOutput(BaseModel):
     predictions: List[SequenceLabel]
 
     def to_str_list(self) -> List[str]:
-        """Convert the ouput into list of strings.
+        """Convert the output into list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -164,6 +169,7 @@ class SequenceClassificationOutput(BaseModel):
         return [x.label for x in self.predictions]
 
     def __str__(self):
+        """"""
         labels = {elt.label: elt.score for elt in self.predictions}
         return f"SequenceClassificationOutput(predictions={labels})"
 
@@ -172,38 +178,54 @@ class SequenceClassificationOutput(BaseModel):
         top_class = max(self.predictions, key=lambda x: x.score).label
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
-    
+
+
 class MinScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
     min_score: float
 
     def to_str_list(self) -> float:
+        """"""
         return self.min_score
-    
+
     def __repr__(self) -> str:
+        """"""
         return f"{self.min_score}"
+
     def __str__(self) -> str:
+        """"""
         return f"{self.min_score}"
+
 
 class MaxScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
     max_score: float
 
     def to_str_list(self) -> float:
+        """"""
         return self.max_score
-    
+
     def __repr__(self) -> str:
+        """"""
         return f"{self.max_score}"
+
     def __str__(self) -> str:
+        """"""
         return f"{self.max_score}"
 
 
 Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput)
 
+
 class Transformation(BaseModel):
+    """
+    Helper object keeping track of an alteration performed on a piece of text.
+    It holds information about how a given span was transformed into another one
+    """
     original_span: Span
     new_span: Span
     ignore: bool = False
+
 
 class Sample(BaseModel):
     """
@@ -233,7 +255,7 @@ class Sample(BaseModel):
         super().__init__(**data)
         self._realigned_spans = None
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Returns the dict version of sample."""
         expected_result = self.expected_results.to_str_list()
         actual_result = self.actual_results.to_str_list() if self.actual_results is not None else None
@@ -265,22 +287,23 @@ class Sample(BaseModel):
         if not hasattr(self.actual_results, 'predictions'):
             return self.actual_results
         predictions = []
-        irrelevant_transformations = self.irrelevant_transformations
-        for pred in self.actual_results.predictions:
-            for transfo in irrelevant_transformations:
-                if transfo.new_span.start <= pred.span.start and transfo.new_span.end >= pred.span.end:
-                    predictions.append(pred)
+
+        for prediction in self.actual_results.predictions:
+            for transformation in self.irrelevant_transformations:
+                if transformation.new_span.start <= prediction.span.start \
+                        and transformation.new_span.end >= prediction.span.end:
+                    predictions.append(prediction)
         return predictions
 
     @property
-    def relevant_transformations(self) -> List[Transformation]:
+    def relevant_transformations(self) -> Optional[List[Transformation]]:
         """"""
         if not self.transformations:
             return None
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
     @property
-    def irrelevant_transformations(self) -> List[Transformation]:
+    def irrelevant_transformations(self) -> Optional[List[Transformation]]:
         """"""
         if not self.transformations:
             return None
@@ -339,52 +362,51 @@ class Sample(BaseModel):
                 with any other the tuple is of the form (Span, None) (or (None, Span)).
         """
         aligned_results = []
-        expected_pred_set, actual_pred_set = set(), set()
+        expected_predictions_set, actual_predictions_set = set(), set()
         realigned_spans = self.realigned_spans
 
         # Retrieving and aligning perturbed spans for later comparison
         if self.relevant_transformations:
             for transformation in self.relevant_transformations:
-                expected_pred = self.expected_results[transformation.original_span]
-                actual_pred = realigned_spans[transformation.new_span]
+                # import ipdb
+                # ipdb.set_trace()
+                expected_prediction = self.expected_results[transformation.original_span]
+                actual_prediction = realigned_spans[transformation.original_span]
 
-                aligned_results.append((expected_pred, actual_pred))
-                expected_pred_set.add(expected_pred)
-                actual_pred_set.add(actual_pred)
+                aligned_results.append((expected_prediction, actual_prediction))
+                expected_predictions_set.add(expected_prediction)
+                actual_predictions_set.add(actual_prediction)
 
         # Retrieving predictions for spans from the original sentence
-        for expected_pred in self.expected_results.predictions:
-            if expected_pred in expected_pred_set:
+        for expected_prediction in self.expected_results.predictions:
+            if expected_prediction in expected_predictions_set:
                 continue
-            actual_pred = realigned_spans[expected_pred.span]
-            aligned_results.append((expected_pred, actual_pred))
-            expected_pred_set.add(expected_pred)
-            if actual_pred is not None:
-                actual_pred_set.add(actual_pred)
+            actual_prediction = realigned_spans[expected_prediction.span]
+            aligned_results.append((expected_prediction, actual_prediction))
+            expected_predictions_set.add(expected_prediction)
+            if actual_prediction is not None:
+                actual_predictions_set.add(actual_prediction)
 
         # Retrieving predictions for spans from the perturbed sentence
-        for actual_pred in realigned_spans.predictions:
-            if actual_pred in actual_pred_set:
+        for actual_prediction in realigned_spans.predictions:
+            if actual_prediction in actual_predictions_set:
                 continue
-            expected_pred = self.expected_results[actual_pred.span]
-            aligned_results.append((expected_pred, actual_pred))
-            actual_pred_set.add(actual_pred)
-            if expected_pred is not None:
-                expected_pred_set.add(expected_pred)
+            expected_prediction = self.expected_results[actual_prediction.span]
+            aligned_results.append((expected_prediction, actual_prediction))
+            actual_predictions_set.add(actual_prediction)
+            if expected_prediction is not None:
+                expected_predictions_set.add(expected_prediction)
 
         return aligned_results
 
     def is_pass(self) -> bool:
         """"""
         if isinstance(self.actual_results, NEROutput):
-            actual_preds = [i.entity for i in self.actual_results.predictions]
-            expected_preds = [j.entity for j in self.expected_results.predictions]
-            return actual_preds == expected_preds
+            return all([a == b for (a, b) in self.get_aligned_span_pairs()])
         elif isinstance(self.actual_results, MinScoreOutput):
             return self.actual_results.min_score >= self.expected_results.min_score
         elif isinstance(self.actual_results, MaxScoreOutput):
             return self.actual_results.max_score <= self.expected_results.max_score
-
         else:
             filtered_actual_results = self.actual_results
 

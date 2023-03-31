@@ -180,7 +180,9 @@ class RobustnessTestFactory(BaseTests):
         """
 
         self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
         self.tests = tests
+        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -242,6 +244,7 @@ class RobustnessTestFactory(BaseTests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
+                sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -294,6 +297,7 @@ class BiasTestFactory(BaseTests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -413,6 +417,7 @@ class BiasTestFactory(BaseTests):
                 data_handler_copy, **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
+                sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 

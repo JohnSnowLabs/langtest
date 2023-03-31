@@ -34,6 +34,7 @@ if try_import_lib("sparknlp"):
 
     SUPPORTED_SPARKNLP_CLASSIFERS.extend([
         ClassifierDLModel,
+        SentimentDLModel,
         AlbertForSequenceClassification,
         BertForSequenceClassification,
         DeBertaForSequenceClassification,

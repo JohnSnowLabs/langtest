@@ -88,7 +88,7 @@ class ConllDataset(_IDataset):
             content = f.read()
             docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
             docs = [i.strip() for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
-            for d_id, doc in enumerate(docs[:5]):
+            for d_id, doc in enumerate(docs):
                 #  file content to sentence split
                 sentences = doc.strip().split('\n\n')
 

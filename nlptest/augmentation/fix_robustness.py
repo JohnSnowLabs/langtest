@@ -68,7 +68,7 @@ class AugmentRobustness(BaseAugmentaion):
 
     """
 
-    def __init__(self, task, h_report, config, max_prop=0.5) -> None:
+    def __init__(self, task, h_report, config, model, max_prop=0.5) -> None:
 
         """
         Initializes an instance of MyClass with the specified parameters.
@@ -90,6 +90,7 @@ class AugmentRobustness(BaseAugmentaion):
         self.config = config
         self.h_report = h_report
         self.max_prop = max_prop
+        self.model = model
 
         if isinstance(self.config, str):
             with open(self.config) as fread:
@@ -127,6 +128,8 @@ class AugmentRobustness(BaseAugmentaion):
         
         for proportion in suggest.iterrows():
             cat = proportion[-1]['category'].lower()
+            if cat not in ["robustness", 'bias']:
+                continue
             test = proportion[-1]['test_type'].lower()
             test_type = {
                 cat: {
@@ -139,11 +142,11 @@ class AugmentRobustness(BaseAugmentaion):
                     hash_map = {k: v for k, v in enumerate(data)}
                     sample_indices = random.sample(range(0, len(data)), int(sample_length))
                     for each in sample_indices:
-                        hash_map[each] = TestFactory.transform([hash_map[each]], test_type)[0]
+                        hash_map[each] = TestFactory.transform([hash_map[each]], test_type, model=self.model)[0]
                     fianl_aug_data.extend(list(hash_map.values()))
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
-                    aug_data = TestFactory.transform(sample_data, test_type)
+                    aug_data = TestFactory.transform(sample_data, test_type, model=self.model)
                     fianl_aug_data.extend(aug_data)
    
         data.extend(fianl_aug_data)

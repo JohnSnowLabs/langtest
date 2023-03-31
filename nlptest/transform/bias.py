@@ -88,8 +88,10 @@ class GenderPronounBias(BaseBias):
                             regex, chosen_token, replaced_string)
                     sample.test_case = replaced_string
             else:
-                sample.test_case = sample.original
-            sample.category = "Bias"
+              sample.test_case = sample.original
+            
+            sample.category="bias"
+      
         return sample_list
 
 
@@ -133,8 +135,10 @@ class CountryEconomicBias(BaseBias):
                             replace_token, chosen_token)
                     sample.test_case = replaced_string
             else:
-                sample.test_case = sample.original
-            sample.category = "Bias"
+              sample.test_case = sample.original
+              
+            sample.category="bias"
+      
 
         return sample_list
 
@@ -188,8 +192,10 @@ class EthnicityNameBias(BaseBias):
 
                     sample.test_case = replaced_string
             else:
-                sample.test_case = sample.original
-            sample.category = "Bias"
+              sample.test_case = sample.original
+
+            sample.category="bias"
+      
         return sample_list
 
 
@@ -233,6 +239,9 @@ class ReligionBias(BaseBias):
                             regex, chosen_token, replaced_string)
                     sample.test_case = replaced_string
             else:
-                sample.test_case = sample.original
-            sample.category = "Bias"
+              sample.test_case = sample.original
+
+            sample.category="bias"
+      
+
         return sample_list

@@ -1,5 +1,8 @@
 from typing import Dict, List
+
 import pandas as pd
+
+from ..utils.custom_types import Sample
 from ..resources import Resource
 
 resources = Resource()
@@ -125,42 +128,36 @@ def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
     return terminology
 
 
-default_label_representation = {
-    'O': 0, 'LOC': 0, 'PER': 0, 'MISC': 0, 'ORG': 0}
-default_ehtnicity_representation = {
-    'black': 0, 'asian': 0, 'white': 0, 'native_american': 0, 'hispanic': 0, 'inter_racial': 0}
-default_religion_representation = {
-    'muslim': 0, 'hindu': 0, 'sikh': 0, 'christian': 0, 'jain': 0, 'buddhist': 0, 'parsi': 0}
-default_economic_country_representation = {
-    'high_income': 0,
-    'low_income': 0,
-    'lower_middle_income': 0,
-    'upper_middle_income': 0}
+default_label_representation = {'O': 0, 'LOC': 0, 'PER': 0, 'MISC': 0, 'ORG': 0}
+default_ehtnicity_representation = {'black': 0, 'asian':0, 'white':0, 'native_american': 0, 'hispanic': 0, 'inter_racial': 0}
+default_religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}
+default_economic_country_representation = {'high_income':0 , 'low_income':0, 'lower_middle_income':0, 'upper_middle_income':0} 
 
 
-def get_label_representation_dict(data):
+def get_label_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
     Args:
         data (List[Sample]): The input data to be evaluated for representation test.
 
     Returns:
         dict: a dictionary containing label representation information.
-    """
-
-    entity_representation = {}
+    """ 
+    
+    entity_representation={}
     for sample in data:
         for i in sample.expected_results.predictions:
-            if i.entity == 'O':
-                if i.entity not in entity_representation:
-                    entity_representation[i.entity] = 1
+            if i.entity=='O':
+                if  i.entity not in entity_representation:
+                    entity_representation[i.entity]=1
                 else:
-                    entity_representation[i.entity] += 1
-
-            elif i.entity in ['B-LOC', 'I-LOC', 'B-PER', 'I-PER', 'B-MISC', 'I-MISC', 'B-ORG', 'I-ORG']:
-                if i.entity.split("-")[1] not in entity_representation:
-                    entity_representation[i.entity.split("-")[1]] = 1
+                    entity_representation[i.entity]+=1
+                    
+            elif i.entity in ['B-LOC','I-LOC','B-PER','I-PER','B-MISC','I-MISC','B-ORG','I-ORG']:
+                if  i.entity.split("-")[1] not in entity_representation :
+                    entity_representation[i.entity.split("-")[1]]=1
                 else:
-                    entity_representation[i.entity.split("-")[1]] += 1
+                    entity_representation[i.entity.split("-")[1]]+=1
+                                
 
     return entity_representation
 
@@ -202,11 +199,10 @@ def get_religion_name_representation_dict(data):
 
     Returns:
         dict: a dictionary containing religion representation information.
-    """
-
-    religion_representation = {'muslim': 0, 'hindu': 0, 'sikh': 0,
-                               'christian': 0, 'jain': 0, 'buddhist': 0, 'parsi': 0}
-
+    """ 
+    
+    religion_representation = {'muslim': 0, 'hindu':0, 'sikh':0, 'christian':0, 'jain':0, 'buddhist':0, 'parsi':0}
+        
     for sample in data:
         for i in sample.expected_results.predictions:
             if check_name(i.span.word, [religion_wise_names['Muslim']]):
@@ -234,10 +230,9 @@ def get_ethnicity_representation_dict(data):
 
     Returns:
         dict: a dictionary containing ethnicity representation information.
-    """
-    ethnicity_representation = {"black": 0, "asian": 0, "white": 0,
-                                "native_american": 0, "hispanic": 0, "inter_racial": 0}
-
+    """  
+    ethnicity_representation = {"black": 0, "asian": 0, "white": 0, "native_american": 0, "hispanic": 0, "inter_racial": 0}
+        
     for sample in data:
         for i in sample.expected_results.predictions:
             if check_name(i.span.word, [white_names['first_names'], white_names['last_names']]):
@@ -251,6 +246,8 @@ def get_ethnicity_representation_dict(data):
             if check_name(i.span.word, [inter_racial_names['last_names']]):
                 ethnicity_representation["inter_racial"] += 1
             if check_name(i.span.word, [native_american_names['last_names']]):
+                ethnicity_representation["native_american"] += 1
+
                 ethnicity_representation["native_american"] += 1
 
     return ethnicity_representation

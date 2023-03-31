@@ -52,7 +52,7 @@ class UpperCase(BaseRobustness):
         """
         for sample in sample_list:
             sample.test_case = sample.original.upper()
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -69,7 +69,7 @@ class LowerCase(BaseRobustness):
         """
         for sample in sample_list:
             sample.test_case = sample.original.lower()
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -86,7 +86,7 @@ class TitleCase(BaseRobustness):
         """
         for sample in sample_list:
             sample.test_case = sample.original.title()
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -113,7 +113,7 @@ class AddPunctuation(BaseRobustness):
                                                    1] + random.choice(whitelist)
             else:
                 sample.test_case = sample.original
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -140,7 +140,7 @@ class StripPunctuation(BaseRobustness):
                 sample.test_case = sample.original[:-1]
             else:
                 sample.test_case = sample.original
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -191,7 +191,7 @@ class AddTypo(BaseRobustness):
                 string[swap_idx + 1] = tmp
 
             sample.test_case = "".join(string)
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -260,7 +260,7 @@ class SwapEntities(BaseRobustness):
             replaced_string = sample.original.replace(
                 replace_token, chosen_ent)
             sample.test_case = replaced_string
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -360,7 +360,7 @@ class SwapCohyponyms(BaseRobustness):
             replaced_string = sample.original.replace(
                 replace_token, chosen_ent)
             sample.test_case = replaced_string
-            sample.category = "Robustness"
+            sample.category = "robustness"
 
         return sample_list
 
@@ -383,7 +383,7 @@ class ConvertAccent(BaseRobustness):
             tokens = [accent_map[t.lower()] if accent_map.get(
                 t.lower(), None) else t for t in tokens]
             sample.test_case = ' '.join(tokens)
-            sample.category = "Robustness"
+            sample.category = "robustness"
 
         return sample_list
 
@@ -463,7 +463,7 @@ class AddContext(BaseRobustness):
 
             sample.test_case = string
             sample.transformations = transformations
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list
 
 
@@ -499,5 +499,5 @@ class AddContraction(BaseRobustness):
                     string = re.sub(contraction, custom_replace,
                                     sample.original, flags=re.IGNORECASE | re.DOTALL)
             sample.test_case = string
-            sample.category = "Robustness"
+            sample.category = "robustness"
         return sample_list

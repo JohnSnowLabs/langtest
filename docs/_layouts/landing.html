@@ -50,13 +50,13 @@ article_header:
               </div>
               <div class="cell cell--12 cell--lg-7 cell--md-7 cell--sm-12">
                 <div class="highlight-box">
-  {% highlight bash %}
+  {% highlight python %}
 # Using PyPI
 pip install nlptest
 
 # Using Conda
 conda install nlptest
-            {% endhighlight %}
+{% endhighlight %}
                   </div>
               </div>
             </div>
@@ -68,6 +68,7 @@ conda install nlptest
       <div class="grid--container">
         <div class="grid">
           <div class="cell cell--12 cell--lg-12">
+            <h3 class="grey h3_title">{{ _section.title }}</h3> 
             {%- for topimageitem in _section.topimage -%} 
               <figure class="shadow"><img src="{{ topimageitem.image.src }}" alt=""></figure>
             {%- endfor-%}
@@ -91,20 +92,20 @@ conda install nlptest
                 <div class="tabs-body">
                   <div class="tabs-item">
                     <div class="highlight-box">
-                      {% highlight bash %}
+                      {% highlight python %}
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='ner', hub='johnsnowlabs')
+h = Harness('ner', model='ner_dl_bert', hub='johnsnowlabs')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
-                      {% endhighlight %}
+{% endhighlight %}
                     </div>
                   </div>
                   <div class="tabs-item">
                     <div class="highlight-box">
-                      {% highlight bash %}
+                      {% highlight python %}
 from nlptest import Harness
 
 # Create a Harness object
@@ -112,12 +113,12 @@ h = Harness('ner', model='dslim/bert-base-NER', hub='huggingface')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
-                      {% endhighlight %}
+{% endhighlight %}
                     </div>
                   </div>
                   <div class="tabs-item">
                     <div class="highlight-box">
-                      {% highlight bash %}
+                      {% highlight python %}
 from nlptest import Harness
 
 # Create a Harness object
@@ -125,7 +126,7 @@ h = Harness('ner', model='en_core_web_sm', hub='spacy')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
-                      {% endhighlight %}
+{% endhighlight %}
                     </div>
                   </div>
                 </div>
@@ -205,11 +206,11 @@ h.generate().run().report()
             <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
-                {% highlight bash %}
-h.augment(input='training_dataset', output='augmented_dataset')
-new_model = nlp.fit('augmented_dataset')
-Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()                
-                {% endhighlight %}
+                {% highlight python %}
+Harness.augment(input_path='training_dataset', output_path='augmented_dataset')
+new_model = nlp.load("model_name").fit('augmented_dataset') 
+Harness.load("save_dir", task='ner', model=new_model, hub="johnsnowlabs").run()              
+{% endhighlight %}
               </div>
             </div>
           </div>
@@ -284,9 +285,9 @@ Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()
             <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
-                {% highlight bash %}
+                {% highlight python %}
 h.generate().run().report()            
-                {% endhighlight %}
+{% endhighlight %}
               </div>
             </div>
           </div>
@@ -341,20 +342,20 @@ h.generate().run().report()
             <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
-                {% highlight bash %}
+                {% highlight python %}
 class DataScienceWorkFlow(FlowSpec):
-@step
-def train(self): ...
+  @step
+    def train(self): ...
 
-@step
-def run_tests(self):
-    harness = Harness(model=self.model, data="data.csv")
-    self.report = harness.generate().run().report()
+  @step
+    def run_tests(self):
+        harness = Harness(model=self.model, data="data.csv")
+        self.report = harness.generate().run().report()
 
-@step
-def deploy(self):
-    if self.report["score"] > self.threshold: ...         
-                {% endhighlight %}
+  @step
+    def deploy(self):
+        if self.report["score"] > self.threshold: ...         
+{% endhighlight %}
               </div>
                 
               {%- if _section.button -%}                

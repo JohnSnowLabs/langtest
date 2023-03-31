@@ -24,8 +24,7 @@ class TestSample:
                     entity="PROD", span=Span(start=16, end=19, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_add_context_right(self):
         """"""
@@ -49,8 +48,7 @@ class TestSample:
                     entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_add_context_middle(self):
         """"""
@@ -74,8 +72,7 @@ class TestSample:
                     entity="PROD", span=Span(start=17, end=20, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_add_two_contexts(self):
         """"""
@@ -104,8 +101,7 @@ class TestSample:
                     entity="PROD", span=Span(start=23, end=26, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
         sample = Sample(
             original="Attendance : 3,000",
@@ -132,8 +128,7 @@ class TestSample:
                     entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_contraction(self):
         """"""
@@ -157,8 +152,7 @@ class TestSample:
                     entity="PROD", span=Span(start=12, end=15, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_entity_swap(self):
         """"""
@@ -182,8 +176,7 @@ class TestSample:
                     start=10, end=18, word="McDonald"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
         sample = Sample(
             original="I do love KFC",
@@ -206,8 +199,7 @@ class TestSample:
                     start=10, end=32, word="Kentucky Fried Chicken"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
         sample = Sample(
             original="I do love McDonald",
@@ -229,8 +221,7 @@ class TestSample:
                     start=10, end=18, word="McDonald"))]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_two_entities_two_contexts(self):
         """"""
@@ -267,8 +258,7 @@ class TestSample:
                 ]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_entity_to_ignore(self):
         """"""
@@ -298,5 +288,30 @@ class TestSample:
                 ]
             ),
         )
-        realigned_actual_results = sample.realigned_spans
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
+
+    def test_swap_entities(self):
+        """"""
+        sample = Sample(
+            original="I live in India",
+            test_type="swap_entities",
+            test_case="I live in United States",
+            transformations=[
+                Transformation(
+                    original_span=Span(start=10, end=15, word="India"),
+                    new_span=Span(start=10, end=23, word="United States"),
+                    ignore=False
+                )
+            ],
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity="GPE", span=Span(start=10, end=15, word="India"))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity="GPE", span=Span(start=10, end=23, word="United States")),
+                ]
+            ),
+        )
+        assert sample.is_pass()

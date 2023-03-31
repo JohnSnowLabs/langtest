@@ -3,6 +3,7 @@ import pandas as pd
 import pathlib as pl
 
 from nlptest.augmentation.fix_robustness import AugmentRobustness
+from nlptest.modelhandler.modelhandler import ModelFactory
 from nlptest.nlptest import Harness
 
 
@@ -44,10 +45,16 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             'pass': [True, True, False, False, False]
         })
 
+        model = ModelFactory.load_model(
+            task='ner',
+            hub="huggingface",
+            path='dslim/bert-base-NER')
+
         augment = AugmentRobustness(
             task='ner',
             h_report=temp_df,
-            config='tests/fixtures/config_ner.yaml'
+            config='tests/fixtures/config_ner.yaml',
+            model=model
         )
         augment.fix('tests/fixtures/train.conll',
                     'tests/fixtures/augmentated_train.conll')
