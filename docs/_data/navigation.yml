@@ -19,17 +19,17 @@ docs-menu:
         - title: Installation
           url: /docs/pages/docs/install
         - title:  One Liners
-          url:    /docs/pages/docs/install#one-liners
+          url:    /docs/pages/docs/one_liner
 
   - title: Test Harness
     url: /docs/pages/docs/harness
     children:
         - title: Harness Explained
           url: /docs/pages/docs/harness
-        - title:  Data Input
-          url:    /docs/pages/docs/harness#data_input
+        - title:  Data Inputs
+          url:    /docs/pages/docs/data_input
         - title:  Model Input
-          url:    /docs/pages/docs/harness
+          url:    /docs/pages/docs/model_input
 
 
   - title:  Generate/Run Workflow
@@ -48,7 +48,7 @@ docs-menu:
         - title: Save
           url: /docs/pages/docs/save
         - title:  Load
-          url:    /docs/pages/docs/save#loading      
+          url:    /docs/pages/docs/load    
   
   - title: Augmentations
     url: /docs/pages/docs/generate_augmentation

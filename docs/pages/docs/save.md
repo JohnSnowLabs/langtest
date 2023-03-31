@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Save | NLP Docs | John Snow Labs
 title: Save/Load Workflow
 permalink: /docs/pages/docs/save
 key: docs-install
@@ -12,26 +12,15 @@ header: true
 
 <div class="heading" id="saving">Save</div>
 
-Harness class provides `save()` and `load()` pipeline for the loading and saving the test configuration, generated testcases and the test data so that it can be reused later.
+Harness class provides `save()` and `load()` pipeline for the loading and saving the test configuration, generated test cases and the test data so that it can be reused later.
       
 ```python
 # save testcases, test configuration, test data  
-harness.save("path/to/saved_nlptest_folder")
+h.save("path/to/saved_nlptest_folder")
 ```
 
 Harness will save generated test cases, nlptest configurations and test data. Later the saved folder can be used to test
- different NLP pipelines using `harness.load()` method.
-
-<div class="heading" id="loading">Load</div>
- 
-```python
-# load saved testcases, config and test data
-harness = Harness.load("saved_nlptest_folder", task='ner', model="ner_dl_bert", hub="johnsnowlabs")
-```
-
-Harness will load saved testcases, nlptest configurations and test data. Now you can easily run saved test cases with any model
-(ner_dl_bert) in our case. In order to run the test cases we can just use `harness.run()`.
-
+ different NLP pipelines using `h.load()` method.
 
 
 <style>
@@ -47,11 +36,6 @@ Harness will load saved testcases, nlptest configurations and test data. Now you
     color: #1E77B7;
   }
   
-  #loading {
-    color: #1E77B7;
-  }
-
-
 </style>
 
 </div></div>
