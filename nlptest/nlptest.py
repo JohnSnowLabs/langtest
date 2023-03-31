@@ -287,7 +287,7 @@ class Harness:
 
 
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str], hub: str = None) -> 'Harness':
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'],   task: Optional[str] ="ner", hub: str = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -304,12 +304,14 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
+
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
         
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
+        
             
         harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
         harness.generate()
