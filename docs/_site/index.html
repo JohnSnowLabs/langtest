@@ -333,7 +333,7 @@
       class="hero section-row hero--center" id="hero-2"style="background-image: url(/);"><div class=""><div class="grid--container">
         <div class="grid">
           <div class="cell cell--12 cell--lg-12">
-            <h3 class="grey h3_title">Integrated Workflow</h3><figure class="shadow"><img src="assets/images/home/infographic_17_03_23_final_big.png" alt=""></figure></div>
+            <h3 class="grey h3_title">Fully Integrated Workflow</h3><figure class="shadow"><img src="assets/images/home/infographic_17_03_23_final_big.png" alt=""></figure></div>
         </div>
       </div></div> </section><section
       class="hero section-row hero--center" id="hero-3"style="background-image: url(/);"><div class=""><div class="quick_easy">
@@ -530,9 +530,9 @@
               <h3 class="grey h3_title">Auto-Correct Models with Data Augmentation</h3>     
               <div class="highlight-box">
                 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">Harness</span><span class="p">.</span><span class="n">augment</span><span class="p">(</span><span class="n">input_path</span><span class="o">=</span><span class="s">'training_dataset'</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">'augmented_dataset'</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">h</span><span class="p">.</span><span class="n">augment</span><span class="p">(</span><span class="n">input_path</span><span class="o">=</span><span class="s">'training_dataset'</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s">'augmented_dataset'</span><span class="p">)</span>
 <span class="n">new_model</span> <span class="o">=</span> <span class="n">nlp</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"model_name"</span><span class="p">).</span><span class="n">fit</span><span class="p">(</span><span class="s">'augmented_dataset'</span><span class="p">)</span> 
-<span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="s">"save_dir"</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s">'ner'</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">new_model</span><span class="p">,</span> <span class="n">hub</span><span class="o">=</span><span class="s">"johnsnowlabs"</span><span class="p">).</span><span class="n">run</span><span class="p">()</span>              </code></pre></figure>
+<span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="s">"testsuite"</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">new_model</span><span class="p">).</span><span class="n">run</span><span class="p">()</span>              </code></pre></figure>
 
               </div>
             </div>

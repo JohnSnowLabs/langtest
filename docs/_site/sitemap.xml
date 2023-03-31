@@ -4,9 +4,6 @@
 <loc>http://localhost:4000/docs/pages/tests/accuracy</loc>
 </url>
 <url>
-<loc>http://localhost:4000/docs/pages/docs/augmentation</loc>
-</url>
-<url>
 <loc>http://localhost:4000/docs/pages/tests/bias</loc>
 </url>
 <url>
@@ -14,6 +11,9 @@
 </url>
 <url>
 <loc>http://localhost:4000/docs/pages/tutorials/casing_tests</loc>
+</url>
+<url>
+<loc>http://localhost:4000/docs/pages/docs/data_input</loc>
 </url>
 <url>
 <loc>http://localhost:4000/docs/pages/docs/examples</loc>
@@ -34,10 +34,13 @@
 <loc>http://localhost:4000/</loc>
 </url>
 <url>
-<loc>http://localhost:4000/docs/pages/docs/install</loc>
+<loc>http://localhost:4000/docs/pages/docs/load</loc>
 </url>
 <url>
-<loc>http://localhost:4000/docs/pages/docs/load</loc>
+<loc>http://localhost:4000/docs/pages/docs/model_input</loc>
+</url>
+<url>
+<loc>http://localhost:4000/docs/pages/docs/one_liner</loc>
 </url>
 <url>
 <loc>http://localhost:4000/docs/pages/docs/install</loc>
@@ -56,9 +59,6 @@
 </url>
 <url>
 <loc>http://localhost:4000/docs/pages/docs/save</loc>
-</url>
-<url>
-<loc>http://localhost:4000/docs/pages/docs/save_augmentation</loc>
 </url>
 <url>
 <loc>http://localhost:4000/docs/pages/tests/test</loc>
