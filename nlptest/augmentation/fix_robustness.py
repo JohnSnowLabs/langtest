@@ -118,6 +118,7 @@ class AugmentRobustness(BaseAugmentaion):
 
         self.df = DataFactory(input_path, self.task)
         data = self.df.load()
+        TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest = self.suggestions(self.h_report)
         sum_propotion = suggest['proportion_increase'].sum()
@@ -152,6 +153,7 @@ class AugmentRobustness(BaseAugmentaion):
         else:
             data.extend(fianl_aug_data)
             self.df.export(data, output_path)
+        TestFactory.is_augment = False
         return fianl_aug_data
 
     def suggestions(self, report):

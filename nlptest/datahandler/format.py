@@ -147,7 +147,14 @@ class NEROutputFormatter(BaseFormatter):
                     text += f"{test_case_items[jdx]}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
                     norm_original_items.pop(oitem_index)
                     temp_len += 1
-                text += f"{test_case_items[jdx]}{delimiter}O{delimiter}O{delimiter}O\n"
+                else:
+                    o_item = norm_original_items[jdx-temp_len]
+                    letters_count = len(set(o_item) - set(item))
+                    if len(norm_test_case_items) == len(norm_original_items) or letters_count < len(o_item):
+                        tl = sample.expected_results.predictions[jdx]
+                        text += f"{test_case_items[jdx]}{delimiter}{tl.pos_tag}{delimiter}{tl.chunk_tag}{delimiter}{tl.entity}\n"
+                    else:
+                        text += f"{test_case_items[jdx]}{delimiter}O{delimiter}O{delimiter}O\n"
             text += "\n"
 
         else:
@@ -179,7 +186,13 @@ class NEROutputFormatter(BaseFormatter):
                     norm_original_items.pop(oitem_index)
                     temp_len += 1
                 else:
-                    text += f"{test_case_items[jdx]} O O O\n"
+                    o_item = norm_original_items[jdx-temp_len]
+                    letters_count = len(set(o_item) - set(item))
+                    if len(norm_test_case_items) == len(norm_original_items) or letters_count < len(o_item):
+                        tl = sample.expected_results.predictions[jdx]
+                        text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
+                    else:
+                        text += f"{test_case_items[jdx]} O O O\n"
             text += "\n"
 
         else:
