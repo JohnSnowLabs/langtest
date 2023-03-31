@@ -5,7 +5,6 @@ import nltk
 import pandas as pd
 
 from nlptest.modelhandler import ModelFactory
-
 from nlptest.transform.accuracy import BaseAccuracy
 from nlptest.transform.fairness import BaseFairness
 from .bias import BaseBias
