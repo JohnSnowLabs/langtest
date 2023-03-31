@@ -156,7 +156,7 @@
   "22": {
     "id": "22",
     "title": "Tutorials",
-    "content": "The following table gives an overview of the different tutorial notebooks. We have test specific (Accuracy, Fairness, Robustness, Representation and Bias) and library specific (John Snow Labs, Hugging Face, Spacy) tutorial notebooks. Tutorial Notebooks Overview Tutorial Description Library Task Open In Colab Accuracy Tests John Snow Labs NER Bias Tests John Snow Labs NER Fairness Tests John Snow Labs NER Robustness Tests John Snow Labs NER Representation Tests John Snow Labs NER End to End Workflow JohnSnowLabs NER End to End Custom Pipeline Workflow John Snow Labs NER End to End Workflow Hugging Face NER End to End Workflow Spacy NER",
+    "content": "The following table gives an overview of the different tutorial notebooks. We have test specific (Accuracy, Fairness, Robustness, Representation and Bias) and library specific (John Snow Labs, Hugging Face, Spacy) tutorial notebooks. Tutorial Notebooks Overview Tutorial Description Library Task Open In Colab Accuracy Tests John Snow Labs NER Bias Tests John Snow Labs NER Fairness Tests John Snow Labs NER Robustness Tests John Snow Labs NER Representation Tests John Snow Labs NER End-to-End Workflow John Snow Labs NER End-to-End Custom Pipeline Workflow John Snow Labs NER End-to-End Workflow Hugging Face NER End-to-End Workflow Spacy NER",
     "url": "http://localhost:4000/docs/pages/tutorials/tutorials",
     "relUrl": "/docs/pages/tutorials/tutorials"
   },

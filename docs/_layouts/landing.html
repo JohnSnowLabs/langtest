@@ -207,7 +207,7 @@ h.generate().run().report()
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
                 {% highlight python %}
-h.augment(input_path='training_dataset', output_path='augmented_dataset')
+h.augment(input_path='training_data', output_path='augmented_data')
 new_model = nlp.load("model_name").fit('augmented_dataset') 
 Harness.load(save_dir="testsuite", model=new_model).run()              
 {% endhighlight %}
@@ -352,7 +352,6 @@ class DataScienceWorkFlow(FlowSpec):
         harness = Harness.load(model=self.model, save_dir="testsuite")
         self.report = harness.run().report()
 
-  
   @step
     def deploy(self):
         if self.report["score"] > self.threshold: ...         

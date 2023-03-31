@@ -612,8 +612,8 @@
 
   <span class="o">@</span><span class="n">step</span>
     <span class="k">def</span> <span class="nf">run_tests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s">"data.csv"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="p">.</span><span class="n">report</span> <span class="o">=</span> <span class="n">harness</span><span class="p">.</span><span class="n">generate</span><span class="p">().</span><span class="n">run</span><span class="p">().</span><span class="n">report</span><span class="p">()</span>
+       <span class="err"> </span><span class="n">harness</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="s">"testsuite"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">report</span> <span class="o">=</span> <span class="n">harness</span><span class="p">.</span><span class="n">run</span><span class="p">().</span><span class="n">report</span><span class="p">()</span>
 
   <span class="o">@</span><span class="n">step</span>
     <span class="k">def</span> <span class="nf">deploy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
