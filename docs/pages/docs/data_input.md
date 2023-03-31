@@ -40,7 +40,8 @@ A sample CSV data input looks like the following :
 {:.table2}
 | text | label  |  
 | - | - | 
-|This is a pretty faithful adaptation of Masuji Ibuse's novel, "Black Rain." Like the book it is very moving and thought-provoking. The story revolves around a couple's attempts to see their niece successfully married. They are having trouble finding suitors because of a rumor that she suffers from radiation sickness, after walking through Hiroshima on the day of the bombing. Well filmed, well acted, moving, tragic, horrifying and funny.| 1 |
+|I thoroughly enjoyed Manna from Heaven. The hopes and dreams and perspectives of each of the characters is endearing and we, the audience, get to know each and every one of them, warts and all. And the ending was a great, wonderful and uplifting surprise! Thanks for the experience; I'll be looking forward to more.| 1 |
+|Absolutely nothing is redeeming about this total piece of trash, and the only thing worse than seeing this film is seeing it in English class. This is literally one of the worst films I have ever seen. It totally ignores and contradicts any themes it may present, so the story is just really really dull. Thank god the 80's are over, and god save whatever man was actually born as "James Bond III".| 0 |
 
 For `CSV` files, we support different variations of the column names. They are shown below :
 
