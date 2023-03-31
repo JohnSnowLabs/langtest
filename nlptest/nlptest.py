@@ -34,8 +34,8 @@ class Harness:
 
     def __init__(
             self,
-            task: Optional[str],
             model: Union[str],
+            task: Optional[str] = "ner",
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -55,7 +55,7 @@ class Harness:
         """
 
         super().__init__()
-        self.task = task if task else 'ner'
+        self.task = task
 
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
@@ -287,7 +287,7 @@ class Harness:
 
 
     @classmethod
-    def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] ="ner", hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -304,12 +304,14 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
+
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
         
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
+        
             
         harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
         harness.generate()

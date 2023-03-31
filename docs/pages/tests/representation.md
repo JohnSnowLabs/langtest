@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Test | John Snow Labs
+seotitle: Representation Tests | NLP Test | John Snow Labs
 title: Representation
 key: tests
 permalink: /docs/pages/tests/representation

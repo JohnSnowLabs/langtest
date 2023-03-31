@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Test Harness | NLP Test | John Snow Labs
 title: Test Harness
 permalink: /docs/pages/docs/harness
 key: docs-install
@@ -65,48 +65,6 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 |**data**       |Path to the data that is to be used for evaluation. Can be .csv or .conll file in the CoNLL format 
 |**config**     |Configuration for the tests to be performed, specified in form of a YAML file.
 |**hub**       |model hub to load from the path. Required if model param is passed as path.|
-
-
-
-<div class="heading" id="data_input">Data Input</div>
-Supported data inputs are **`CoNLL`** and **`csv`** formats. CoNLL dataset can only be loaded for `ner`. For the `text-classification`, both formats are supported provided the column names are from a list of supported column names.
-
-{:.table2}
-| Task  | Supported Data Inputs |  
-| - | - | 
-|**ner**     |CoNLL and Csv|
-|**text-classification**     |Csv
-
-<div class="heading" id="NER"> For NER  </div>
-
-```python
-#Import Harness from the nlptest library
-from nlptest import Harness
-harness = Harness(
-            task='ner',
-            model='en_core_web_sm',
-            config= 'sample_config.yml',
-            hub = "spacy",
-            data= 'sample.conll/sample.csv'  
-         
-        )
-```
-
-<div class="heading" id="NER"> For Text-Classification  </div>
-
-```python
-#Import Harness from the nlptest library
-from nlptest import Harness
-harness = Harness(
-            task='text-classification',
-            model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
-            config= 'sample_config.yml',
-            hub = "huggingface",
-            data= 'sample.csv'  #CoNLL format not supported
-         
-        )
-
-```
 
 
 </div></div>

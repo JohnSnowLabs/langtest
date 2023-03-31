@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Report | NLP Test | John Snow Labs
 title: Report
 permalink: /docs/pages/docs/report
 key: docs-install
@@ -10,12 +10,12 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-Called after harness.run(). This method summarizes the results of your tests, providing information about the number of tests that passed and failed, as well as an overall pass/fail flag. 
+Called after h.run(). This method summarizes the results of your tests, providing information about the number of tests that passed and failed, as well as an overall pass/fail flag. 
 
-It provides a convenient way to quickly evaluate the results of your tests and determine whether your model is performing as expected. By using this, you can identify areas where your model needs improvement and make necessary changes to ensure that it meets your requirements.
+It provides a convenient way to quickly evaluate the results of your tests and determine whether your model is performing as expected. By using this, you can identify areas where your model needs improvement and make necessary changes to ensure that it meets the requirements.
 
 ```python
-harness.report()
+h.report()
 ```
 A sample report looks like the one given below:
 
