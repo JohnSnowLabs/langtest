@@ -164,7 +164,7 @@ class ConllDataset(_IDataset):
         temp_id = None
         otext = ""
         for i in data:
-            text, temp_id = Formatter.process(i, format='conll', temp_id=temp_id)
+            text, temp_id = Formatter.process(i, output_format='conll', temp_id=temp_id)
             otext += text
 
         with open(output_path, "wb") as fwriter:
@@ -275,9 +275,9 @@ class CSVDataset(_IDataset):
         otext = ""
         for i in data:
             if isinstance(i, NEROutput):
-                text, temp_id = Formatter.process(i, format='csv', temp_id=temp_id)
+                text, temp_id = Formatter.process(i, output_format='csv', temp_id=temp_id)
             else:
-                text = Formatter.process(i, format='csv')
+                text = Formatter.process(i, output_format='csv')
             otext += text
 
         with open(output_path, "wb") as fwriter:
@@ -362,6 +362,7 @@ class CSVDataset(_IDataset):
 
     def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
         """
+        Helper function to map original column into standardized ones.
 
         Args:
             column_names (List[str]):
