@@ -41,11 +41,10 @@ data:
       - image:
           src: assets/images/home/infographic_17_03_23_final_big.png
 
-   - title: 'Quick & Easy'
+   - title: 'Get Started Now'
      install: yes
   
-  
-   - title: In Just One Line of Code
+   - title: In a Few Lines of Code
      oneline: yes
 
    - title: 50+ Out-Of-The-Box Test Types
