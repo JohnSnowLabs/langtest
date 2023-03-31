@@ -27,10 +27,10 @@ The following table gives an overview of the different tutorial notebooks. We ha
 |Fairness Tests                     |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
 |Robustness Tests                   |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hodCD_UW353zEdoaCDN1picXP4BmyFu5)|
 |Representation Tests               |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End to End Workflow                       |JohnSnowLabs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End to End Custom Pipeline Workflow       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End to End Workflow              |Hugging Face   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End to End Workflow                      |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End-to-End Workflow                       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End-to-End Custom Pipeline Workflow       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End-to-End Workflow              |Hugging Face   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|End-to-End Workflow                      |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
 
 
 <style>

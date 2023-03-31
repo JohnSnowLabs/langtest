@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Load | NLP Docs | John Snow Labs
+seotitle: Load | NLP Test | John Snow Labs
 title: Load
 permalink: /docs/pages/docs/load
 key: docs-install
