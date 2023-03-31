@@ -1,9 +1,10 @@
 import random
 import re
+import numpy as np
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
-import numpy as np
+
 
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
