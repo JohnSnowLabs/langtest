@@ -35,7 +35,7 @@ class Harness:
     def __init__(
             self,
             model: Union[str],
-            task: Optional[str] ="ner",
+            task: Optional[str] = "ner",
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -287,7 +287,7 @@ class Harness:
 
 
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], hub: str = None, task: Optional[str] ="ner") -> 'Harness':
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] ="ner", hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
 
