@@ -1,7 +1,7 @@
 ---
 layout: landing
 title: 'NLP Test <span>Deliver Safe & Effective Models</span>'
-excerpt:  <br> 
+excerpt: <br> 50+ Tests Evaluating NER and Text Classification Models
 permalink: /
 header: true
 article_header:
