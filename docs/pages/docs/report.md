@@ -12,7 +12,7 @@ header: true
 
 Called after h.run(). This method summarizes the results of your tests, providing information about the number of tests that passed and failed, as well as an overall pass/fail flag. 
 
-It provides a convenient way to quickly evaluate the results of your tests and determine whether your model is performing as expected. By using this, you can identify areas where your model needs improvement and make necessary changes to ensure that it meets your requirements.
+It provides a convenient way to quickly evaluate the results of your tests and determine whether your model is performing as expected. By using this, you can identify areas where your model needs improvement and make necessary changes to ensure that it meets the requirements.
 
 ```python
 h.report()

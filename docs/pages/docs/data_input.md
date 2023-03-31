@@ -10,7 +10,7 @@ modify_date: "2019-05-16"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-Supported data inputs formats are **`CoNLL`** and **`CSV`**. CoNLL dataset can only be loaded for `ner`. For `text-classification`, both formats are supported provided the column names are from a list of supported column names.
+Supported data input formats are **`CoNLL`** and **`CSV`**. CoNLL dataset can only be loaded for `ner`. For `text-classification`, both formats are supported provided the column names are from a list of supported column names.
 
 {:.table2}
 | Task  | Supported Data Inputs |  
