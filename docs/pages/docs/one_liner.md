@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: One Liners | NLP Docs | John Snow Labs
+seotitle: One Liners | NLP Test | John Snow Labs
 title: One Liners
 permalink: /docs/pages/docs/one_liner
 key: docs-install

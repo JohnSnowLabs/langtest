@@ -349,9 +349,10 @@ class DataScienceWorkFlow(FlowSpec):
 
   @step
     def run_tests(self):
-        harness = Harness(model=self.model, data="data.csv")
-        self.report = harness.generate().run().report()
+        harness = Harness.load(model=self.model, save_dir="testsuite")
+        self.report = harness.run().report()
 
+  
   @step
     def deploy(self):
         if self.report["score"] > self.threshold: ...         
