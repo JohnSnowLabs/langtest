@@ -287,7 +287,7 @@ class Harness:
 
 
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'],   task: Optional[str] ="ner", hub: str = None) -> 'Harness':
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], hub: str = None, task: Optional[str] ="ner") -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
 
