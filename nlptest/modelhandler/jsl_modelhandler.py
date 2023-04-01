@@ -113,12 +113,6 @@ class PretrainedModelForNER(_ModelHandler):
         if ner_model is None:
             raise ValueError('Invalid PipelineModel! There should be at least one NER component.')
 
-        #    this line is to set pipeline to add confidence score in predictions
-        #    even though they are useful information, not used yet.
-        if hasattr(ner_model, 'setIncludeConfidence') and callable(getattr(ner_model, 'setIncludeConfidence')):
-            ner_model.setIncludeConfidence(True)
-            ner_model.setIncludeAllConfidenceScores(True)
-
         self.output_col = ner_model.getOutputCol()
 
         #   in order to overwrite configs, light pipeline should be reinitialized.
