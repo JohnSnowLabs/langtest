@@ -56,7 +56,6 @@ class DataFactory:
         self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
         _, self.file_ext = os.path.splitext(self._file_path)
         self.task = task
-
         self.init_cls = None
 
     def load(self) -> List[Sample]:
