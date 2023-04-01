@@ -160,9 +160,10 @@ setup(
     package_data={  # Optional
         "nlptest": [
             "utils/checkpoints.ckpt",
-            "demo/data/config.yml",
-            "demo/data/imdb.csv",
-            "demo/data/conll03.conll",
+            "data/config.yml",
+            "data/imdb/sample.csv",
+            "data/tweet/sample.csv",
+            "data/conll/sample.conll",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
