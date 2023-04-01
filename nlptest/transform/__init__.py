@@ -216,6 +216,7 @@ class BiasTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict = None,
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -347,6 +348,7 @@ class RepresentationTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict = None,
+            model: ModelFactory = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
