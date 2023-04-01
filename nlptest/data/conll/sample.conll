@@ -623,40 +623,6 @@ Coste NNP B-NP B-PER
 said VBD B-VP O
 . . O O
 
-" " O O
-I PRP B-NP O
-thought VBD B-VP O
-it PRP B-NP O
-would MD B-VP O
-be VB I-VP O
-useful JJ B-ADJP O
-to TO B-VP O
-have VB I-VP O
-him PRP B-NP O
-back RB B-ADVP O
-and CC O O
-he PRP B-NP O
-said VBD B-VP O
-he PRP B-NP O
-would MD B-VP O
-be VB I-VP O
-available JJ B-ADJP O
-. . O O
-
-I PRP B-NP O
-think VBP B-VP O
-now RB I-VP O
-is VBZ I-VP O
-the DT B-NP O
-right JJ I-NP O
-time NN I-NP O
-for IN B-SBAR O
-him PRP B-NP O
-to TO B-VP O
-return VB I-VP O
-. . O O
-" " O O
-
 Squad VB B-VP O
 : : O O
 Javier NNP B-NP B-PER
@@ -1602,36 +1568,6 @@ w-14 CD B-NP O
 ) ) O O
 24 CD B-NP O
 
-Total JJ B-NP O
-( ( O O
-for IN B-PP O
-9 CD B-NP O
-wickets NNS I-NP O
-in IN B-PP O
-47 CD B-NP O
-overs NNS I-NP O
-) ) O O
-277 CD B-NP O
-
-Fall NN B-NP O
-of IN B-PP O
-wicket NN B-NP O
-: : O O
-1-177 CD B-NP O
-( ( O O
-corrects VBZ B-VP O
-from IN B-PP O
-1-178 CD B-NP O
-) ) O O
-2-225 CD B-NP O
-3-240 CD I-NP O
-4-247 CD B-ADVP O
-5-252 CD B-NP O
-6-260 CD I-NP O
-7-261 CD I-NP O
-8-269 CD I-NP O
-9-276 CD B-ADVP O
-
 Bowling NNP B-NP O
 : : O O
 Doull VB B-NP B-PER
@@ -1766,41 +1702,6 @@ Kennedy NNP I-NP I-PER
 not RB O O
 out IN B-PP O
 7 CD B-NP O
-
-Extras NNS B-NP O
-( ( O O
-b-9 CD B-NP O
-lb-3 CD I-NP O
-w-12 CD I-NP O
-nb-2 JJ B-ADJP O
-) ) O O
-26 CD B-NP O
-
-Total JJ B-NP O
-( ( O O
-all DT B-NP O
-out RP B-PRT O
-in IN B-PP O
-42.1 CD B-NP O
-overs NNS I-NP O
-) ) O O
-231 CD B-NP O
-
-Fall NN B-NP O
-of IN B-PP O
-wickets NN B-NP O
-: : O O
-1-3 CD B-NP O
-2-7 JJ I-NP O
-3-125 CD I-NP O
-4-146 JJ I-NP O
-5-170 JJ I-NP O
-6-190 CD I-NP O
-7-195 NN I-NP O
-
-8-213 CD B-NP O
-9-216 CD B-ADVP O
-. . O O
 
 Bowling NNP B-NP O
 : : O O
@@ -2134,36 +2035,6 @@ a DT B-NP O
 court NN I-NP O
 in IN B-PP O
 London NNP B-NP B-LOC
-. . O O
-
-He PRP B-NP O
-was VBD B-VP O
-fined VBN I-VP O
-and CC O O
-ordered VBD B-VP O
-to TO I-VP O
-pay VB I-VP O
-a DT B-NP O
-total NN I-NP O
-of IN B-PP O
-175 CD B-NP O
-pounds NNS I-NP O
-to TO B-PP O
-two CD B-NP O
-members NNS I-NP O
-of IN B-PP O
-staff NN B-NP O
-injured VBN B-VP O
-in IN B-PP O
-the DT B-NP O
-fracas NN I-NP O
-in IN B-PP O
-an DT B-NP O
-east JJ I-NP O
-London NNP I-NP B-LOC
-restaurant NN I-NP O
-in IN B-PP O
-October NNP B-NP O
 . . O O
 
 Leeds NNS B-NP B-ORG
@@ -2645,43 +2516,6 @@ match NN I-NP O
 in IN B-PP O
 Australian JJ B-NP B-MISC
 colours NNS I-NP O
-. . O O
-
-The DT B-NP O
-Wallabies NNP I-NP B-ORG
-currently RB B-ADVP O
-have VBP B-VP O
-no DT B-NP O
-plans NNS I-NP O
-to TO B-VP O
-make VB I-VP O
-any DT B-NP O
-special JJ I-NP O
-presentation NN I-NP O
-to TO B-PP O
-the DT B-NP O
-34-year-old JJ I-NP O
-winger NN I-NP O
-but CC O O
-a DT B-NP O
-full JJ I-NP O
-house NN I-NP O
-of IN B-PP O
-75,000 CD B-NP O
-spectators NNS I-NP O
-will MD B-VP O
-still RB I-VP O
-gather VB I-VP O
-in IN B-PP O
-the DT B-NP O
-hope NN I-NP O
-of IN B-PP O
-witnessing VBG B-VP O
-one CD B-NP O
-last JJ B-NP O
-moment NN I-NP O
-of IN B-PP O
-magic NN B-NP O
 . . O O
 
 Campese NNS B-NP B-PER
