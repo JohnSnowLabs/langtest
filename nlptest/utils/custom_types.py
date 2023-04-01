@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
 from pydantic import BaseModel, Field, PrivateAttr, validator
 
@@ -113,15 +113,12 @@ class NEROutput(BaseModel):
         """"""
         return len(self.predictions)
 
-    def __getitem__(self, item: Union[Span, int]) -> Optional[NERPrediction]:
+    def __getitem__(self, span: Span) -> Optional[NERPrediction]:
         """"""
-        if isinstance(item, int):
-            return self.predictions[item]
-        elif isinstance(item, Span):
-            for prediction in self.predictions:
-                if prediction.span == item:
-                    return prediction
-            return None
+        for prediction in self.predictions:
+            if prediction.span == span:
+                return prediction
+        return None
 
     def to_str_list(self) -> List[str]:
         """
@@ -281,19 +278,12 @@ class Sample(BaseModel):
 
     @validator("transformations")
     def sort_transformations(cls, v):
-        """
-        Validator ensuring that transformations are in correct order
-        """
+        """Validator ensuring that transformations are in correct order"""
         return sorted(v, key=lambda x: x.original_span.start)
 
     @property
     def ignored_predictions(self) -> List[NERPrediction]:
-        """
-        List of predictions that should be ignored because of the perturbations applied
-
-        Returns:
-            List[NERPrediction]: list of predictions which should be ignored
-        """
+        """List of predictions that should be ignored because of the perturbations applied"""
         if not hasattr(self.actual_results, 'predictions'):
             return self.actual_results
         predictions = []
@@ -307,24 +297,14 @@ class Sample(BaseModel):
 
     @property
     def relevant_transformations(self) -> Optional[List[Transformation]]:
-        """
-        Retrieves the transformations that need to be taken into account to realign `original` and `test_case`.
-
-        Returns:
-            Optional[List[Transformation]]: list of transformations which shouldn't be ignored
-        """
+        """"""
         if not self.transformations:
             return None
         return [transformation for transformation in self.transformations if not transformation.ignore]
 
     @property
     def irrelevant_transformations(self) -> Optional[List[Transformation]]:
-        """
-        Retrieves the transformations that do not need to be taken into account to realign `original` and `test_case`.
-
-        Returns:
-            Optional[List[Transformation]]: list of transformations which should be ignored
-        """
+        """"""
         if not self.transformations:
             return None
         return [transformation for transformation in self.transformations if transformation.ignore]
@@ -388,6 +368,8 @@ class Sample(BaseModel):
         # Retrieving and aligning perturbed spans for later comparison
         if self.relevant_transformations:
             for transformation in self.relevant_transformations:
+                # import ipdb
+                # ipdb.set_trace()
                 expected_prediction = self.expected_results[transformation.original_span]
                 actual_prediction = realigned_spans[transformation.original_span]
 

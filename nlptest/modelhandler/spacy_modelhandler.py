@@ -98,7 +98,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         return self.model.get_pipe("textcat").labels
 
     @classmethod
-    def load_model(cls, path: str):
+    def load_model(cls, path):
         """Load and return SpaCy pipeline"""
         return spacy.load(path)
 
