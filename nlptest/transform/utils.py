@@ -6950,14 +6950,16 @@ country_economic_dict = {
                             "Kosovo", "South Africa"]}
 
 
-def get_substitution_names(values_list):
+def get_substitution_names(values_list: List[List[str]]) -> List[str]:
     """ Helper function to get list of substitution names
 
     Args:
-         values_list : list of substitution lists.
+         values_list (List[List[str]]):
+            list of substitution lists.
 
     Returns:
-         List of substitution names
+         List[str]:
+            List of substitution names
     """
     substitution_names = []
     for lst in values_list:
@@ -7048,17 +7050,26 @@ def get_label_representation_dict(data: List[Sample]) -> Dict[str, int]:
     return label_representation
 
 
-def check_name(word, name_lists):
+def check_name(word: str, name_lists: List[List[str]]) -> bool:
+    """
+    Checks if a word is in a list of list of strings
+
+    Args:
+        word (str):
+            string to look for
+        name_lists (List[List[str]]):
+            list of lists of potential candidates
+    """
     return any(word.lower() in [name.lower() for name in name_list] for name_list in name_lists)
 
 
-def get_country_economic_representation_dict(data):
+def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
     Args:
        data (List[Sample]): The input data to be evaluated for representation test.
 
     Returns:
-       dict: a dictionary containing country economic representation information.
+       Dict[str, int]: a dictionary containing country economic representation information.
     """
 
     country_economic_representation = {"high_income": 0, "low_income": 0, "lower_middle_income": 0,
@@ -7078,13 +7089,13 @@ def get_country_economic_representation_dict(data):
     return country_economic_representation
 
 
-def get_religion_name_representation_dict(data):
+def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
     Args:
         data (List[Sample]): The input data to be evaluated for representation test.
 
     Returns:
-        dict: a dictionary containing religion representation information.
+        Dict[str, int]: a dictionary containing religion representation information.
     """
 
     religion_representation = {'muslim': 0, 'hindu': 0, 'sikh': 0, 'christian': 0, 'jain': 0, 'buddhist': 0, 'parsi': 0}
@@ -7109,13 +7120,13 @@ def get_religion_name_representation_dict(data):
     return religion_representation
 
 
-def get_ethnicity_representation_dict(data):
+def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
     Args:
         data (List[Sample]): The input data to be evaluated for representation test.
 
     Returns:
-        dict: a dictionary containing ethnicity representation information.
+        Dict[str, int]: a dictionary containing ethnicity representation information.
     """
     ethnicity_representation = {"black": 0, "asian": 0, "white": 0, "native_american": 0, "hispanic": 0,
                                 "inter_racial": 0}
