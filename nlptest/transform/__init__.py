@@ -75,7 +75,7 @@ class ITests(ABC):
     """
     An abstract base class for defining different types of tests.
     """
-    ALIAS_NAME = None
+    alias_name = None
 
     @abstractmethod
     def transform(cls):
@@ -104,7 +104,7 @@ class RobustnessTestFactory(ITests):
     """
     A class for performing robustness tests on a given dataset.
     """
-    ALIAS_NAME = "robustness"
+    alias_name = "robustness"
 
     def __init__(
             self,
@@ -209,7 +209,7 @@ class BiasTestFactory(ITests):
     """
     A class for performing bias tests on a given dataset.
     """
-    ALIAS_NAME = "bias"
+    alias_name = "bias"
 
     def __init__(
             self,
@@ -340,7 +340,7 @@ class RepresentationTestFactory(ITests):
     """
     A class for performing representation tests on a given dataset.
     """
-    ALIAS_NAME = "representation"
+    alias_name = "representation"
 
     def __init__(
             self,
@@ -401,7 +401,7 @@ class FairnessTestFactory(ITests):
     """
     A class for performing fairness tests on a given dataset.
     """
-    ALIAS_NAME = "fairness"
+    alias_name = "fairness"
 
     def __init__(
             self,
@@ -467,7 +467,7 @@ class AccuracyTestFactory(ITests):
     """
     A class for performing accuracy tests on a given dataset.
     """
-    ALIAS_NAME = "accuracy"
+    alias_name = "accuracy"
 
     def __init__(
             self,
