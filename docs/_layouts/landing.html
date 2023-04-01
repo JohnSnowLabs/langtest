@@ -96,7 +96,7 @@ conda install nlptest
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='ner_dl_bert', hub='johnsnowlabs')
+h = Harness('ner', model='ner.dl', hub='johnsnowlabs')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
