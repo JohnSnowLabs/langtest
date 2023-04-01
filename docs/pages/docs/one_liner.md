@@ -14,7 +14,7 @@ With just one line of code, it can generate and run over 50 different test types
 
 ```python
 from nlptest import Harness
-h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs')
+h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
