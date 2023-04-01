@@ -12,6 +12,7 @@ tests:
   accuracy:
     min_micro_f1_score:
       min_score: 0.70
+      min_pass_rate: 1.00
 
   bias:
     replace_to_female_pronouns:
