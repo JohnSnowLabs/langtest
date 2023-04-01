@@ -110,6 +110,7 @@ class RobustnessTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict = None,
+            model: ModelFactory = None
     ) -> None:
 
         """
