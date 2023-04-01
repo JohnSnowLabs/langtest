@@ -208,7 +208,7 @@ class Harness:
         if self._generated_results is None:
             logging.warning("Please run `Harness.run()` before calling `.generated_results()`.")
             return
-        generated_results_df = pd.DataFrame.from_records([x.to_dict() for x in self._generated_results])
+        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
 
         return generated_results_df
 
