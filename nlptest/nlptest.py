@@ -25,6 +25,7 @@ class Harness:
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
+        ("ner", "ner.dl", "johnsnowlabs"): "conll/sample.conll",
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
         ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
             "tweet/sample.csv",
@@ -150,10 +151,10 @@ class Harness:
         
 
         if isinstance(self._config, dict):
-            self.min_pass_dict = {j: k.get('min_pass_rate', 0.65) for i, v in \
+            self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
+            self.min_pass_dict = {j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in \
                                   self._config['tests'].items() for j, k in v.items()}
-        self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
-
+        
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self._generated_results:
             summary[sample.test_type]['category'] = sample.category

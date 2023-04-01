@@ -158,7 +158,13 @@ setup(
     # If there are data files included in your packages that need to be
     # installed, specify them here.
     package_data={  # Optional
-        "nlptest": ["utils/checkpoints.ckpt"],
+        "nlptest": [
+            "utils/checkpoints.ckpt",
+            "data/config.yml",
+            "data/imdb/sample.csv",
+            "data/tweet/sample.csv",
+            "data/conll/sample.conll",
+        ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:
