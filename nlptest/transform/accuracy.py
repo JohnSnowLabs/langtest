@@ -1,3 +1,4 @@
+
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -7,8 +8,8 @@ from sklearn.metrics import classification_report, f1_score, precision_score, re
 from nlptest.utils.custom_types import Sample, MinScoreOutput
 from nlptest.modelhandler import ModelFactory
 
-
 class BaseAccuracy(ABC):
+
     """
     Abstract base class for implementing accuracy measures.
 
@@ -22,6 +23,7 @@ class BaseAccuracy(ABC):
     @staticmethod
     @abstractmethod
     def transform(y_true, y_pred):
+
         """
         Abstract method that implements the accuracy measure.
 
@@ -35,11 +37,12 @@ class BaseAccuracy(ABC):
         """
 
         return NotImplementedError
-
+    
     alias_name = None
 
 
 class MinPrecisionScore(BaseAccuracy):
+
     """
     Subclass of BaseAccuracy that implements the minimum precision score.
 
@@ -65,12 +68,12 @@ class MinPrecisionScore(BaseAccuracy):
             List[Sample]: Precision test results.
         """
         labels = set(y_true).union(set(y_pred))
-
+        
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
             min_scores = {
-                label: params["min_score"] for label in labels
+                label:params["min_score"] for label in labels
             }
 
         df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
@@ -83,19 +86,19 @@ class MinPrecisionScore(BaseAccuracy):
             if k not in min_scores.keys():
                 continue
             sample = Sample(
-                original="-",
-                category="accuracy",
-                test_type="min_precision_score",
-                test_case=k,
-                expected_results=MinScoreOutput(min_score=min_scores[k]),
-                actual_results=MinScoreOutput(min_score=v["precision"]),
-                state="done"
+                original = "-",
+                category = "accuracy",
+                test_type = "min_precision_score",
+                test_case = k,
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["precision"]),
+                state = "done"
             )
             precision_samples.append(sample)
         return precision_samples
-
-
+    
 class MinRecallScore(BaseAccuracy):
+
     """
     Subclass of BaseAccuracy that implements the minimum precision score.
 
@@ -122,14 +125,14 @@ class MinRecallScore(BaseAccuracy):
         """
 
         labels = set(y_true).union(set(y_pred))
-
+        
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
             min_scores = {
-                label: params["min_score"] for label in labels
+                label:params["min_score"] for label in labels
             }
-
+        
         df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
@@ -140,19 +143,20 @@ class MinRecallScore(BaseAccuracy):
             if k not in min_scores.keys():
                 continue
             sample = Sample(
-                original="-",
-                category="accuracy",
-                test_type="min_recall_score",
-                test_case=k,
-                expected_results=MinScoreOutput(min_score=min_scores[k]),
-                actual_results=MinScoreOutput(min_score=v["recall"]),
-                state="done"
+                original = "-",
+                category = "accuracy",
+                test_type = "min_recall_score",
+                test_case = k,
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["recall"]),
+                state = "done"
             )
             rec_samples.append(sample)
         return rec_samples
-
+    
 
 class MinF1Score(BaseAccuracy):
+
     """
     Subclass of BaseAccuracy that implements the minimum precision score.
 
@@ -179,12 +183,12 @@ class MinF1Score(BaseAccuracy):
         """
 
         labels = set(y_true).union(set(y_pred))
-
+        
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
             min_scores = {
-                label: params["min_score"] for label in labels
+                label:params["min_score"] for label in labels
             }
 
         df_metrics = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
@@ -197,19 +201,19 @@ class MinF1Score(BaseAccuracy):
             if k not in min_scores.keys():
                 continue
             sample = Sample(
-                original="-",
-                category="accuracy",
-                test_type="min_f1_score",
-                test_case=k,
-                expected_results=MinScoreOutput(min_score=min_scores[k]),
-                actual_results=MinScoreOutput(min_score=v["f1-score"]),
-                state="done"
+                original = "-",
+                category = "accuracy",
+                test_type = "min_f1_score",
+                test_case = k,
+                expected_results = MinScoreOutput(min_score=min_scores[k]),
+                actual_results = MinScoreOutput(min_score=v["f1-score"]),
+                state = "done"
             )
             f1_samples.append(sample)
         return f1_samples
 
-
 class MinMicroF1Score(BaseAccuracy):
+
     """
     Subclass of BaseAccuracy that implements the minimum precision score.
 
@@ -240,20 +244,20 @@ class MinMicroF1Score(BaseAccuracy):
         f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)
 
         sample = Sample(
-            original="-",
-            category="accuracy",
-            test_type="min_micro_f1_score",
-            test_case="micro",
-            expected_results=MinScoreOutput(min_score=min_score),
-            actual_results=MinScoreOutput(min_score=f1),
+            original = "-",
+            category = "accuracy",
+            test_type = "min_micro_f1_score",
+            test_case = "micro",
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
 
-            state="done"
+            state = "done"
         )
 
         return [sample]
 
-
 class MinMacroF1Score(BaseAccuracy):
+
     """
     Subclass of BaseAccuracy that implements the minimum precision score.
 
@@ -283,19 +287,19 @@ class MinMacroF1Score(BaseAccuracy):
         f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
 
         sample = Sample(
-            original="-",
-            category="accuracy",
-            test_type="min__macro_f1_score",
-            test_case="macro",
-            expected_results=MinScoreOutput(min_score=min_score),
-            actual_results=MinScoreOutput(min_score=f1),
-            state="done"
+            original = "-",
+            category = "accuracy",
+            test_type = "min__macro_f1_score",
+            test_case = "macro",
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
+            state = "done"
         )
 
         return [sample]
 
-
 class MinWeightedF1Score(BaseAccuracy):
+
     """
     Subclass of BaseAccuracy that implements the minimum weighted f1 score.
 
@@ -325,13 +329,13 @@ class MinWeightedF1Score(BaseAccuracy):
         f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
 
         sample = Sample(
-            original="-",
-            category="accuracy",
-            test_type="min_weighted_f1_score",
-            test_case="weighted",
-            expected_results=MinScoreOutput(min_score=min_score),
-            actual_results=MinScoreOutput(min_score=f1),
-            state="done"
+            original = "-",
+            category = "accuracy",
+            test_type = "min_weighted_f1_score",
+            test_case = "weighted",
+            expected_results = MinScoreOutput(min_score=min_score),
+            actual_results = MinScoreOutput(min_score=f1),
+            state = "done"
         )
 
         return [sample]

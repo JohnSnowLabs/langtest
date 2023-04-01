@@ -47,6 +47,7 @@ class PretrainedModelForNER(_ModelHandler):
         """
         prediction = self.model(text, **kwargs)
 
+        # prediction = [group for group in self.model.group_entities(prediction) if group["entity_group"] != "O"]
         return NEROutput(predictions=[NERPrediction.from_span(
             entity=pred.get('entity_group', pred.get('entity', None)),
             word=pred['word'],
@@ -87,12 +88,12 @@ class PretrainedModelForTextClassification(_ModelHandler):
         self.model = model
 
     @property
-    def labels(self) -> List[str]:
+    def labels(self):
         """Return classification labels of pipeline model."""
         return list(self.model.model.config.id2label.values())
 
     @classmethod
-    def load_model(cls, path: str) -> "Pipeline":
+    def load_model(cls, path) -> "Pipeline":
         """Load and return text classification transformers pipeline"""
         return pipeline(model=path, task="text-classification")
 

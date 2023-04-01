@@ -70,7 +70,6 @@ if try_import_lib("sparknlp_jsl"):
 
 
 class PretrainedModelForNER(_ModelHandler):
-    """"""
 
     def __init__(
             self,
@@ -113,15 +112,20 @@ class PretrainedModelForNER(_ModelHandler):
         if ner_model is None:
             raise ValueError('Invalid PipelineModel! There should be at least one NER component.')
 
+        #    this line is to set pipeline to add confidence score in predictions
+        #    even though they are useful information, not used yet.
+        if hasattr(ner_model, 'setIncludeConfidence') and callable(getattr(ner_model, 'setIncludeConfidence')):
+            ner_model.setIncludeConfidence(True)
+            ner_model.setIncludeAllConfidenceScores(True)
+
         self.output_col = ner_model.getOutputCol()
 
         #   in order to overwrite configs, light pipeline should be reinitialized.
         self.model = LightPipeline(model)
 
     @classmethod
-    def load_model(cls, path: str) -> 'NLUPipeline':
-        """
-        Load the NER model into the `model` attribute.
+    def load_model(cls, path) -> 'NLUPipeline':
+        """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
         """
@@ -172,6 +176,7 @@ class PretrainedModelForNER(_ModelHandler):
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 
+    #   helpers
     @staticmethod
     def is_ner_annotator(model_instance) -> bool:
         """Check ner model instance is supported by nlptest"""
@@ -182,7 +187,6 @@ class PretrainedModelForNER(_ModelHandler):
 
 
 class PretrainedModelForTextClassification(_ModelHandler):
-    """"""
 
     def __init__(
             self,
@@ -225,21 +229,13 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
-        self.model = LightPipeline(model)
 
-    @staticmethod
-    def is_classifier(model_instance) -> bool:
-        """Check classifier model instance is supported by nlptest"""
-        for model in SUPPORTED_SPARKNLP_CLASSIFERS:
-            if isinstance(model_instance, model):
-                return True
-        return False
+        #   in order to overwrite configs, light pipeline should be reinitialized.
+        self.model = LightPipeline(model)
 
     @classmethod
     def load_model(cls, path) -> 'NLUPipeline':
-        """
-        Load the NER model into the `model` attribute.
-
+        """Load the NER model into the `model` attribute.
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
         """
@@ -258,9 +254,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         return loaded_model
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
-        """
-        Perform predictions with SparkNLP LightPipeline on the input text.
-
+        """Perform predictions with SparkNLP LightPipeline on the input text.
         Args:
             text (str): Input text to perform NER on.
             return_all_scores (bool): Option to return score for all labels.
@@ -280,14 +274,6 @@ class PretrainedModelForTextClassification(_ModelHandler):
         )
 
     def predict_raw(self, text: str) -> List[str]:
-        """Perform predictions on the input text.
-
-        Args:
-            text (str): Input text to perform text classification on.
-
-        Returns:
-            List[str]: Predictions as a list of strings.
-        """
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
         prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
         prediction = [max(prediction, key=lambda x: x['score'])]
@@ -296,3 +282,12 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def __call__(self, text: str) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
+
+    #   helpers
+    @staticmethod
+    def is_classifier(model_instance) -> bool:
+        """Check classifier model instance is supported by nlptest"""
+        for model in SUPPORTED_SPARKNLP_CLASSIFERS:
+            if isinstance(model_instance, model):
+                return True
+        return False
