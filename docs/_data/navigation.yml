@@ -19,15 +19,18 @@ docs-menu:
         - title: Installation
           url: /docs/pages/docs/install
         - title:  One Liners
-          url:    /docs/pages/docs/install#one-liners
+          url:    /docs/pages/docs/one_liner
 
   - title: Test Harness
     url: /docs/pages/docs/harness
     children:
         - title: Harness Explained
           url: /docs/pages/docs/harness
-        - title:  Parameters
-          url:    /docs/pages/docs/harness#parameters
+        - title:  Data Inputs
+          url:    /docs/pages/docs/data_input
+        - title:  Model Input
+          url:    /docs/pages/docs/model_input
+
 
   - title:  Generate/Run Workflow
     url:    /docs/pages/docs/generate
@@ -45,7 +48,7 @@ docs-menu:
         - title: Save
           url: /docs/pages/docs/save
         - title:  Load
-          url:    /docs/pages/docs/save#loading      
+          url:    /docs/pages/docs/load    
   
   - title: Augmentations
     url: /docs/pages/docs/generate_augmentation
@@ -56,15 +59,6 @@ docs-menu:
 tutorials:
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials
-    children:
-      - title: Casing tests with johnsnowlabs
-        url: /docs/pages/tutorials/casing_tests
-      - title: Bias tests with transformers
-        url: /docs/pages/tutorials/bias_tests
-        key: tutorials
-      - title: Testing and fixing workflow with spacy
-        url: /docs/pages/tutorials/workflow_spacy
-        key: tutorials
 
 
 tests:

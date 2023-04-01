@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Test | John Snow Labs
+seotitle: Accuracy Tests | NLP Test | John Snow Labs
 title: Accuracy
 key: tests
 permalink: /docs/pages/tests/accuracy

@@ -1,9 +1,10 @@
 import random
 import re
+import numpy as np
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
-import numpy as np
+
 
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
@@ -245,7 +246,10 @@ class SwapEntities(BaseRobustness):
             replace_token = " ".join(replace_token)
 
             proper_entities = [ent for ent in terminology[ent_type] if len(ent.split(' ')) == token_length]
-            chosen_ent = random.choice(proper_entities)
+            if len(proper_entities) > 0:
+                chosen_ent = random.choice(proper_entities)
+            else:
+                continue
             replaced_string = sample.original.replace(replace_token, chosen_ent)
             sample.test_case = replaced_string
             sample.category = "robustness"

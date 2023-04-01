@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Test Harness | NLP Test | John Snow Labs
 title: Test Harness
 permalink: /docs/pages/docs/harness
 key: docs-install
@@ -36,8 +36,18 @@ Here is a list of the different parameters that can be passed to the `Harness` f
   #parameters {
     color: #1E77B7;
   }
+
+  #NER {
+    color: #1E77B7;
+    font-size: 16px;
+  }
+
   
   #harness {
+    color: #1E77B7;
+  }
+
+  #data_input {
     color: #1E77B7;
   }
   
@@ -55,7 +65,6 @@ Here is a list of the different parameters that can be passed to the `Harness` f
 |**data**       |Path to the data that is to be used for evaluation. Can be .csv or .conll file in the CoNLL format 
 |**config**     |Configuration for the tests to be performed, specified in form of a YAML file.
 |**hub**       |model hub to load from the path. Required if model param is passed as path.|
-
 
 
 </div></div>

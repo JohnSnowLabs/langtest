@@ -1,14 +1,14 @@
 ---
 layout: landing
 title: 'NLP Test <span>Deliver Safe & Effective Models</span>'
-excerpt:  <br> 
+excerpt: <br> 50+ Tests Evaluating NER and Text Classification Models
 permalink: /
 header: true
 article_header:
  actions:
    - text: Getting Started
      type: trans
-     url: /docs/en/install   
+     url: /docs/pages/docs/install   
    - text: '<i class="fab fa-github"></i>Star on GitHub'
      type: full_white
      url: https://github.com/JohnSnowLabs/nlptest 
@@ -36,16 +36,15 @@ data:
             src: assets/images/home/open_source.svg
          excerpt: The full code base is open under the Apache 2.0 license, designed for easy extension and AI community collaboration  
 
-   - title: All-in-One Workflow
+   - title: Fully Integrated Workflow
      topimage: 
       - image:
-          src: assets/images/home/infographic_17_03_23_final_big.jpg
+          src: assets/images/home/infographic_17_03_23_final_big.png
 
-   - title: 'Quick & Easy'
+   - title: 'Get Started Now'
      install: yes
   
-  
-   - title: In Just One Line of Code
+   - title: In a Few Lines of Code
      oneline: yes
 
    - title: 50+ Out-Of-The-Box Test Types
