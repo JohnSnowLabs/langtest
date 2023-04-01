@@ -172,7 +172,6 @@ class PretrainedModelForNER(_ModelHandler):
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 
-    #   helpers
     @staticmethod
     def is_ner_annotator(model_instance) -> bool:
         """Check ner model instance is supported by nlptest"""
