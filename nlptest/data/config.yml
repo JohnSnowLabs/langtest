@@ -4,7 +4,7 @@ defaults:
 tests:
 
   robustness:
-    uppercase:
+    lowercase:
       min_pass_rate: 0.70
     add_typo:
       min_pass_rate: 0.70
