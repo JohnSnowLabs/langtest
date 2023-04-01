@@ -1,5 +1,6 @@
 from abc import ABC, abstractclassmethod, abstractmethod
 from typing import List
+from tqdm import tqdm
 
 import nltk
 import pandas as pd
@@ -55,7 +56,9 @@ class TestFactory:
         all_results = []
         all_categories = TestFactory.test_catgories()
         # process = []
-        for each in list(test_types.keys()):
+        tests = tqdm(test_types.keys(), desc="Generating testcases...")
+        for each in tests:
+            tests.set_description(f"Generating testcases... ({each})")
             values = test_types[each]
             all_results.extend(
                 all_categories[each](data, values, model).transform()
