@@ -96,7 +96,7 @@ conda install nlptest
 from nlptest import Harness
 
 # Create a Harness object
-h = Harness('ner', model='ner', hub='johnsnowlabs')
+h = Harness('ner', model='ner.dl', hub='johnsnowlabs')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -207,9 +207,9 @@ h.generate().run().report()
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
                 {% highlight python %}
-h.augment(input='training_dataset', output='augmented_dataset')
-new_model = nlp.fit('augmented_dataset')
-Harness(model=new_model, hub='johnsnowlabs').load('testcases.csv').run()                
+h.augment(input_path='training_data', output_path='augmented_data')
+new_model = nlp.load('model_name').fit('augmented_data')
+Harness.load(save_dir='testsuite', model=new_model).run()
 {% endhighlight %}
               </div>
             </div>
@@ -344,17 +344,17 @@ h.generate().run().report()
               <div class="highlight-box">
                 {% highlight python %}
 class DataScienceWorkFlow(FlowSpec):
-  @step
+    @step
     def train(self): ...
 
-  @step
+    @step
     def run_tests(self):
-        harness = Harness(model=self.model, data="data.csv")
-        self.report = harness.generate().run().report()
+        harness = Harness.load(model=self.model, save_dir='testsuite')
+        self.report = harness.run().report()
 
-  @step
+    @step
     def deploy(self):
-        if self.report["score"] > self.threshold: ...         
+        if self.report['score'] > self.threshold: ...
 {% endhighlight %}
               </div>
                 

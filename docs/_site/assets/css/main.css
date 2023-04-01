@@ -5009,6 +5009,12 @@ body {
 .article__content p {
   margin-top: 0; }
 
+.highlight code {
+  font-size: 1.03rem; }
+
+.highlight-box code {
+  font-size: 1.04rem; }
+
 h1, h2, h3, h4 {
   font-family: 'Montserrat', sans-serif; }
 
@@ -5237,15 +5243,13 @@ header h1 {
       margin: 0 0 10px; }
     .page__sidebar .sidebar-toc ul.toc--navigator .toc-h1 {
       border: none;
-      padding: 10px 0 0; }
+      padding: 7px 0 0; }
       .page__sidebar .sidebar-toc ul.toc--navigator .toc-h1 a {
         font-weight: 500;
         font-size: 18px;
-        line-height: 22px;
-        font-family: 'Montserrat', sans-serif;
+        line-height: 20px;
         color: #5334AE;
         border: none;
-        letter-spacing: -0.5px;
         margin: 0 !important; }
       .page__sidebar .sidebar-toc ul.toc--navigator .toc-h1.active a, .page__sidebar .sidebar-toc ul.toc--navigator .toc-h1:hover a {
         color: #1E77B7; }
@@ -5601,6 +5605,7 @@ ul.list1 {
 
 .table2 {
   width: 100%;
+  display: table !important;
   background: #ffffff; }
   .table2 thead tr {
     background: #3E4095;
@@ -5781,6 +5786,8 @@ ul.list1 {
   padding: 0 15px; }
   .docs-wrapper .main-docs {
     width: 100%; }
+    .docs-wrapper .main-docs p {
+      font-size: 15px; }
   .docs-wrapper img {
     margin-bottom: 15px; }
   .docs-wrapper p.info,
@@ -5951,8 +5958,15 @@ code {
   .layout--landing .hero .test_out_wrapper figure img {
     width: auto;
     display: inline-block; }
-.layout--landing .highlight > pre {
-  overflow: visible; }
+
+.highlight > pre {
+  overflow: hidden; }
+  .highlight > pre code {
+    overflow: hidden; }
+
+.highlight:hover code,
+.highlight:hover pre {
+  overflow-x: auto; }
 
 .test_out_item {
   width: 33.3333%;
@@ -6025,6 +6039,7 @@ code {
   margin: 0 0 20px;
   padding: 0;
   width: 100%;
+  display: table;
   border-collapse: collapse;
   border-spacing: 0;
   background-color: #fff;
@@ -6062,6 +6077,8 @@ code {
 /****Tabs****/
 .tabs-wrapper {
   text-align: left; }
+  .tabs-wrapper .tabs-header {
+    text-align: center; }
 
 .tab-btn {
   text-align: center;

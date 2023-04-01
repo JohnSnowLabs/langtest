@@ -11,7 +11,7 @@ from pkg_resources import resource_filename
 from .augmentation.fix_robustness import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
-from .testrunner import TestRunner
+from .testrunner import BaseRunner
 from .transform import TestFactory
 
 
@@ -25,6 +25,7 @@ class Harness:
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
+        ("ner", "ner.dl", "johnsnowlabs"): "conll/sample.conll",
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
         ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
             "tweet/sample.csv",
@@ -34,8 +35,8 @@ class Harness:
 
     def __init__(
             self,
-            task: Optional[str],
             model: Union[str],
+            task: Optional[str] = "ner",
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -67,6 +68,8 @@ class Harness:
             raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
                              f"passed is not among the default ones. You need to either specify the parameter 'data' "
                              f"or use a default configuration.")
+        elif isinstance(data,list):
+            self.data = data
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
@@ -107,6 +110,7 @@ class Harness:
         else:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
+        self._config_copy = self._config
         return self._config
 
     def generate(self) -> "Harness":
@@ -114,6 +118,9 @@ class Harness:
         Generates the testcases to be used when evaluating the model. The generated testcases are stored in
         `_testcases` attribute.
         """
+        if self._config is None:
+            raise RuntimeError("Please call .configure() first.")
+
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
         return self
@@ -125,7 +132,10 @@ class Harness:
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
         """
-        self._generated_results = TestRunner(
+        if self._testcases is None:
+            raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
+                             "calling the `.run()` method.")
+        self._generated_results = BaseRunner(
             self._testcases,
             self.model,
             self.data
@@ -140,12 +150,16 @@ class Harness:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
-        if isinstance(self._config, dict):
-            self.min_pass_dict = {
-                j: k.get('min_pass_rate', 0.65) for v in self._config['tests'].values() for j, k in v.items()
-            }
+        if self._generated_results is None:
+            raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
+                             "calling the `.report()` method.")
 
-        self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
+        if isinstance(self._config, dict):
+            self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
+            self.min_pass_dict = {
+                j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in \
+                                  self._config['tests'].items() for j, k in v.items()
+            }
 
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self._generated_results:
@@ -228,10 +242,11 @@ class Harness:
         if dtypes not in [['int64'] * 2, ['int32'] * 2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
-        AugmentRobustness(
+        _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report
+            h_report=self.df_report,
+            model = self.model
         ).fix(
             input_path=input_path,
             output_path=output_path,
@@ -263,18 +278,18 @@ class Harness:
 
         """
         if self._config is None:
-            raise ValueError("The current Harness has not been configured yet. Please use the `.configure` method "
+            raise RuntimeError("The current Harness has not been configured yet. Please use the `.configure` method "
                              "before calling the `.save` method.")
 
         if self._testcases is None:
-            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
+            raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
                              "calling the `.save` method.")
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
 
         with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
-            yml.write(yaml.safe_dump(self._config))
+            yml.write(yaml.safe_dump(self._config_copy))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
             pickle.dump(self._testcases, writer)
@@ -282,25 +297,9 @@ class Harness:
         with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
 
-    def save_testcases(self, path_to_file: str) -> None:
-        """
-        Save the generated testcases into a pickle file.
-
-        Args:
-            path_to_file (str):
-                location to save the pickle file to
-        Returns:
-
-        """
-        if self._testcases is None:
-            raise ValueError("The test cases have not been generated yet. Please use the `.generate` method before"
-                             "calling the `.save` method.")
-
-        with open(path_to_file, "wb") as writer:
-            pickle.dump(self._testcases, writer)
 
     @classmethod
-    def load(cls, save_dir: str, task: str, model: Union[str, 'ModelFactory'], hub: str = None) -> 'Harness':
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] ="ner", hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -321,26 +320,10 @@ class Harness:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
 
-        harness = Harness(task=task, model=model, hub=hub)
-        harness.configure(os.path.join(save_dir, "config.yaml"))
-
-        with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
-            harness._testcases = pickle.load(reader)
-
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
-            harness.data = pickle.load(reader)
+            data = pickle.load(reader)
+
+        harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
+        harness.generate()
 
         return harness
-
-    def load_testcases(self, path_to_file: str) -> None:
-        """
-        Loads the testcases from a pickle file
-
-        Args:
-            path_to_file (str):
-                location to load the test cases from
-        Returns:
-
-        """
-        with open(path_to_file, "rb") as reader:
-            self._testcases = pickle.load(reader)

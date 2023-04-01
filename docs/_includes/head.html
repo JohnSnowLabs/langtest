@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
 {%- if page.layout == "landing" -%}
-<title>John Snow Labs - NLP Test</title>
+<title>NLP Test | Deliver Safe & Effective Models | John Snow Labs</title>
 {%- else -%}
 {%- include snippets/get-article-seotitle.html article=page -%}
 <title>{%- if __return -%}{{ __return }}{%- endif -%}</title>
@@ -29,3 +29,12 @@
 <link rel="stylesheet" href="{{ _sources.font_awesome }}" >
 
 {%- include head/custom.html -%}
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0RS3CYS4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7V0RS3CYS4');
+</script>

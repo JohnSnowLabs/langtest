@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from ..nlptest import Harness
-from ..nlptest.modelhandler import ModelFactory
+from nlptest import Harness
+from nlptest.modelhandler import ModelFactory
 
 
 class SparkNLPTestCase(unittest.TestCase):

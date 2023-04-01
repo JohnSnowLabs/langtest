@@ -16,7 +16,10 @@ class HuggingFaceTestCase(unittest.TestCase):
         self.tasks = ["ner", "text-classifier"]
 
     def test_transformers_models(self):
-        model = ModelFactory(self.models[0], self.tasks[0])
+        model = ModelFactory.load_model(
+            task=self.tasks[0],
+            hub="huggingface",
+            path=self.models[0])
         self.assertIsInstance(model, ModelFactory)
 
 

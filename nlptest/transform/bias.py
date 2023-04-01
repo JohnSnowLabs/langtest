@@ -94,7 +94,7 @@ class GenderPronounBias(BaseBias):
             else:
               sample.test_case = sample.original
             
-            sample.category="Bias"
+            sample.category="bias"
       
         return sample_list
     
@@ -140,7 +140,7 @@ class CountryEconomicBias(BaseBias):
             else:
               sample.test_case = sample.original
               
-            sample.category="Bias"
+            sample.category="bias"
       
 
         return sample_list
@@ -194,7 +194,7 @@ class EthnicityNameBias(BaseBias):
             else:
               sample.test_case = sample.original
 
-            sample.category="Bias"
+            sample.category="bias"
       
         return sample_list
     
@@ -246,7 +246,7 @@ class ReligionBias(BaseBias):
             else:
               sample.test_case = sample.original
 
-            sample.category="Bias"
+            sample.category="bias"
       
 
         return sample_list

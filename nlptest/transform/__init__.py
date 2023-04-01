@@ -20,6 +20,7 @@ class TestFactory:
     """
     A factory class for creating and running different types of tests on data.
     """
+    is_augment = False
 
     @staticmethod
     def transform(data: List[Sample], test_types: dict, model: ModelFactory) -> List[Result]:
@@ -122,7 +123,9 @@ class RobustnessTestFactory(ITests):
         """
 
         self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
         self.tests = tests
+        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -143,9 +146,11 @@ class RobustnessTestFactory(ITests):
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
                                'label': [[i.entity for i in sample.expected_results.predictions]
                                          for sample in data_handler]})
-            self.tests['swap_entities']['parameters'] = {}
-            self.tests['swap_entities']['parameters']['terminology'] = create_terminology(df)
-            self.tests['swap_entities']['parameters']['labels'] = df.label.tolist()
+            params = self.tests['swap_entities']
+            if len(params.get('parameters', {}).get('terminology', {})) == 0:
+                params['parameters'] = {}
+                params['parameters']['terminology'] = create_terminology(df)
+                params['parameters']['labels'] = df.label.tolist()
 
         if "american_to_british" in self.tests:
             self.tests['american_to_british']['parameters'] = {}
@@ -180,6 +185,8 @@ class RobustnessTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
+                if not TestFactory.is_augment:
+                    sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -212,6 +219,7 @@ class BiasTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -306,6 +314,8 @@ class BiasTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
+                if not TestFactory.is_augment:  
+                    sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
