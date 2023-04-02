@@ -12,7 +12,7 @@ This test uses wordnet to replace words with their cohyponyms.
 
 #### Config
 ```yaml
-add_context:
+swap_cohyponyms:
     min_pass_rate: 0.6
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
