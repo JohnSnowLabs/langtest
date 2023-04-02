@@ -12,7 +12,7 @@ This test checks if the NLP model can handle input text if the data uses contrac
 
 #### Config
 ```yaml
-add_context:
+add_contraction:
     min_pass_rate: 0.7
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.

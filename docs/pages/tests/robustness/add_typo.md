@@ -12,7 +12,7 @@ This test checks if the NLP model can handle input text with typos. A typo frequ
 
 #### Config
 ```yaml
-add_context:
+add_typo:
     min_pass_rate: 0.7
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
