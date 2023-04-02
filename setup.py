@@ -19,8 +19,6 @@ REQUIRED_PKGS = [
     'pandas',
     'wn',
     'scikit-learn',
-    'spark-nlp==4.3.2',
-    'pyspark==3.1.2',
     'transformers',
     'nltk',
     'torch',
