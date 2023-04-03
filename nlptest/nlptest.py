@@ -90,8 +90,11 @@ class Harness:
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None
+        self.min_pass_dict = None
+        self.default_min_pass_dict = None
+        self.df_report = None
 
-    def configure(self, config: Union[str, dict]):
+    def configure(self, config: Union[str, dict]) -> dict:
         """
         Configure the Harness with a given configuration.
 
@@ -112,12 +115,9 @@ class Harness:
 
     def generate(self) -> "Harness":
         """
-        Generates the testcases to be used when evaluating the model.
-
-        Returns:
-            None: The generated testcases are stored in `_testcases` attribute.
+        Generates the testcases to be used when evaluating the model. The generated testcases are stored in
+        `_testcases` attribute.
         """
-
         if self._config is None:
             raise RuntimeError("Please call .configure() first.")
 
@@ -135,26 +135,32 @@ class Harness:
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                              "calling the `.run()` method.")
-        self._generated_results = BaseRunner(self._testcases, self.model,
-                                             self.data).evaluate()
+        self._generated_results = BaseRunner(
+            self._testcases,
+            self.model,
+            self.data
+        ).evaluate()
         return self
 
     def report(self) -> pd.DataFrame:
         """
         Generate a report of the test results.
+
         Returns:
-            pd.DataFrame: DataFrame containing the results of the tests.
+            pd.DataFrame:
+                DataFrame containing the results of the tests.
         """
         if self._generated_results is None:
             raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
                              "calling the `.report()` method.")
-        
 
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
-            self.min_pass_dict = {j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in \
-                                  self._config['tests'].items() for j, k in v.items()}
-        
+            self.min_pass_dict = {
+                j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in \
+                                  self._config['tests'].items() for j, k in v.items()
+            }
+
         summary = defaultdict(lambda: defaultdict(int))
         for sample in self._generated_results:
             summary[sample.test_type]['category'] = sample.category
@@ -164,8 +170,10 @@ class Harness:
         for test_type, value in summary.items():
             pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
             min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
+
             if summary[test_type]['category'] == "Accuracy":
                 min_pass_rate = 1
+
             report[test_type] = {
                 "category": summary[test_type]['category'],
                 "fail_count": summary[test_type]["false"],
@@ -190,7 +198,7 @@ class Harness:
 
         return self.df_report
 
-    def generated_results(self) -> pd.DataFrame:
+    def generated_results(self) -> Optional[pd.DataFrame]:
         """
         Generates an overall report with every textcase and labelwise metrics.
 
@@ -198,16 +206,13 @@ class Harness:
             pd.DataFrame: Generated dataframe.
         """
         if self._generated_results is None:
-            print("Please run Harness.run() first.")
+            logging.warning("Please run `Harness.run()` before calling `.generated_results()`.")
             return
         generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
-        # accuracy_df = self.accuracy_report()
-        # final_df = pd.concat([generated_results_df, accuracy_df]).fillna("-")
-        # final_df = final_df.reset_index(drop=True)
 
         return generated_results_df
 
-    def augment(self, input_path, output_path, inplace=False):
+    def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
 
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
@@ -251,7 +256,13 @@ class Harness:
         return self
 
     def testcases(self) -> pd.DataFrame:
-        """Testcases after .generate() is called"""
+        """
+        Testcases after .generate() is called
+
+        Returns:
+            pd.DataFrame:
+                testcases formatted into a pd.DataFrame
+        """
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
         final_df = final_df.reset_index(drop=True)
@@ -305,17 +316,14 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
-
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
-        
+
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
-        
-            
+
         harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
         harness.generate()
-       
-        return harness
 
+        return harness
