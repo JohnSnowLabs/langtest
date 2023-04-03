@@ -12,7 +12,7 @@ This test shuffles the labeled entities in the input to test the models robustne
 
 #### Config
 ```yaml
-add_context:
+swap_entities:
     min_pass_rate: 0.8
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.

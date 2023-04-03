@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
-from ..utils.custom_types import Sample, SequenceClassificationOutput
+from typing import Tuple
+
+from ..utils.custom_types import Sample
 
 
 class BaseFormatter(ABC):
-
     """
     Abstract base class for defining formatter classes.
     Subclasses should implement the static methods `to_csv` and `to_conll`.
@@ -48,58 +48,62 @@ class BaseFormatter(ABC):
 
 
 class Formatter:
-
     """
     Formatter class for converting between custom types and different output formats.
 
     This class uses the `to_csv` and `to_conll` methods of subclasses of `BaseFormatter`
     to perform the conversions. The appropriate subclass is selected based on the
     type of the expected results in the `sample` argument.
-
-    Args:
-        sample: The input sample to convert.
-        format: The output format to convert to, either "csv" or "conll".
-        *args: Optional positional arguments to pass to the `to_csv` or `to_conll` methods.
-        **kwargs: Optional keyword arguments to pass to the `to_csv` or `to_conll` methods.
-
-    Returns:
-        The output string in the specified format.
-
-    Raises:
-        NameError: If no formatter subclass is defined for the type of the expected results in the sample.
     """
 
     @staticmethod
-    def process(sample: Sample, format: str, *args, **kwargs):
+    def process(sample: Sample, output_format: str, *args, **kwargs):
+        """
+        Args:
+            sample (Sample):
+                The input sample to convert.
+            output_format (str):
+                The output format to convert to, either "csv" or "conll".
+            *args:
+                Optional positional arguments to pass to the `to_csv` or `to_conll` methods.
+            **kwargs:
+                Optional keyword arguments to pass to the `to_csv` or `to_conll` methods.
+
+        Returns:
+            The output string in the specified format.
+
+        Raises:
+            NameError: If no formatter subclass is defined for the type of the expected results in the sample.
+
+        """
         formats = {cls.__name__: cls for cls in BaseFormatter.__subclasses__()}
         class_name = type(sample.expected_results).__name__
         try:
-            return getattr(formats[f"{class_name}Formatter"], f"to_{format}")(sample, *args, **kwargs)
+            return getattr(formats[f"{class_name}Formatter"], f"to_{output_format}")(sample, *args, **kwargs)
         except KeyError:
-            raise NameError(
-                f"Class '{class_name}Formatter' not yet implemented.")
+            raise NameError(f"Class '{class_name}Formatter' not yet implemented.")
 
 
-class SequenceClassificationOutputFormatter(BaseFormatter):
-
+class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
     """
     Formatter class for converting `SequenceClassificationOutput` objects to CSV.
 
     The `to_csv` method returns a CSV string representing the `SequenceClassificationOutput`
     object in the sample argument.
-
-    Args:
-        sample: The input sample containing the `SequenceClassificationOutput` object to convert.
-        delimiter: The delimiter character to use in the CSV string.
-
-    Returns:
-        The CSV string representation of the `SequenceClassificationOutput` object.
-
-    Raises:
-        None.
     """
 
-    def to_csv(sample: Sample, delimiter=","):
+    @staticmethod
+    def to_csv(sample: Sample, delimiter: str = ",") -> str:
+        """
+        Args:
+            sample (Sample):
+                The input sample containing the `SequenceClassificationOutput` object to convert.
+            delimiter (str):
+                The delimiter character to use in the CSV string.
+
+        Returns:
+            str: The CSV string representation of the `SequenceClassificationOutput` object.
+        """
         original = sample.original
         test_case = sample.test_case
         if test_case:
@@ -109,26 +113,28 @@ class SequenceClassificationOutputFormatter(BaseFormatter):
 
 
 class NEROutputFormatter(BaseFormatter):
-
     """
     Formatter class for converting `NEROutput` objects to CSV and CoNLL.
 
     The `to_csv` method returns a CSV string representing the `NEROutput` object in the sample
     argument. The `to_conll` method returns a CoNLL string representing the `NEROutput` object.
-
-    Args:
-        sample: The input sample containing the `NEROutput` object to convert.
-        delimiter: The delimiter character to use in the CSV string.
-        temp_id: A temporary ID to use for grouping entities by document.
-
-    Returns:
-        The CSV or CoNLL string representation of the `NEROutput` object.
-
-    Raises:
-        None.
     """
 
-    def to_csv(sample: Sample, delimiter=",", temp_id=None):
+    @staticmethod
+    def to_csv(sample: Sample, delimiter: str = ",", temp_id: int = None) -> Tuple[str, int]:
+        """
+        Args:
+            sample (Sample):
+                The input sample containing the `NEROutput` object to convert.
+            delimiter (str):
+                The delimiter character to use in the CSV string.
+            temp_id (int):
+                A temporary ID to use for grouping entities by document.
+
+        Returns:
+            Tuple[str, int]:
+                The CSV or CoNLL string representation of the `NEROutput` object along with the document id
+        """
         text = ""
         test_case = sample.test_case
         original = sample.original
@@ -140,7 +146,7 @@ class NEROutputFormatter(BaseFormatter):
             for jdx, item in enumerate(norm_test_case_items):
                 if item in norm_original_items and jdx >= norm_original_items.index(item):
                     oitem_index = norm_original_items.index(item)
-                    j = sample.expected_results.predictions[oitem_index+temp_len]
+                    j = sample.expected_results.predictions[oitem_index + temp_len]
                     if temp_id != j.doc_id and jdx == 0:
                         text += f"{j.doc_name}\n\n"
                         temp_id = j.doc_id
@@ -166,7 +172,18 @@ class NEROutputFormatter(BaseFormatter):
             text += "\n"
         return text, temp_id
 
-    def to_conll(sample: Sample, temp_id=None):
+    @staticmethod
+    def to_conll(sample: Sample, temp_id: int = None) -> Tuple[str, int]:
+        """
+        Args:
+            sample (Sample):
+                The input sample containing the `NEROutput` object to convert.
+            temp_id (int):
+                A temporary ID to use for grouping entities by document.
+
+        Returns:
+            The CoNLL string representation of the custom type.
+        """
         text = ""
         test_case = sample.test_case
         original = sample.original

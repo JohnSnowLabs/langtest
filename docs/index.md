@@ -41,7 +41,7 @@ data:
       - image:
           src: assets/images/home/infographic_17_03_23_final_big.png
 
-   - title: 'Get Started Now'
+   - title: 'Get Started'
      install: yes
   
    - title: In a Few Lines of Code

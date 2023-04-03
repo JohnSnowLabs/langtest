@@ -13,15 +13,14 @@ This test checks if the NLP model can handle input text with added context, such
 #### Config
 ```yaml
 add_context:
-    min_pass_rate: 0.6
-    starting_context: ["Hello,", "Hey"]
-    ending_context: ["Bye"]
-    strategy: "combined"
+    min_pass_rate: 0.65
+    parameters:
+      ending_context: ['Bye', 'Reported']
+      starting_context: ['Hi', 'Good morning', 'Hello']
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 - **starting_context (<List[str]>):** Phrases to be added at the start of inputs.
 - **ending_context (<List[str]>):** Phrases to be added at the end of inputs.
-- **strategy ('start', 'end' or 'combined'):** Which places to add the given phrases.
 
 #### Examples
 
