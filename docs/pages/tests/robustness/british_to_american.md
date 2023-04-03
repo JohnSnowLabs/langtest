@@ -12,7 +12,7 @@ This test checks if the NLP model can handle input text with American accent. An
 
 #### Config
 ```yaml
-american_to_british:
+british_to_american:
     min_pass_rate: 0.7
 ```
 

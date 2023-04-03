@@ -1,0 +1,43 @@
+package:
+  name: "nlptest"
+  version: 1.0.0.rc.1
+
+app:
+  entry: nlptest
+  summary: Deliver safe & effective NLP models in a few lines of code.
+
+source:
+    fn: nlptest-1.0.0rc1.tar.gz
+    url: https://files.pythonhosted.org/packages/ff/ba/7ac40c507bd07d718e32670e72537bc2bd73e6882b0a5505c1ec74213d58/nlptest-1.0.0rc1.tar.gz
+    sha256: 05bbdde06dbf6c509845cdf46db35a252e8a08cdd643ba772d860c834c535941
+
+build:
+  noarch: generic
+  number: 0
+  script: "python -m pip install . --no-deps -vv"
+
+requirements:
+  build:
+    - python
+  run:
+    - python
+    - pip
+    - numpy
+    - pandas
+    - scikit-learn
+    - transformers
+    - nltk
+    - pytorch
+    - protobuf<=3.20.0
+    - sentencepiece
+
+files:
+  - requirements.txt
+
+about:
+  home: https://github.com/JohnSnowLabs/nlptest/
+  license: Apache License 2.0
+  license_family: APACHE
+  license_url: https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE
+  description: John Snow Labs' NLP Test is a Python library for testing NLP models and datasets. It comes with over 50 tests covering fairness, robustness, accuracy, bias and representation for named entity recognition and text classification.
+  summary: Deliver safe & effective NLP models in a few lines of code.

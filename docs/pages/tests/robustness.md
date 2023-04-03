@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Test | John Snow Labs
+seotitle: Robustness Tests | NLP Test | John Snow Labs
 title: Robustness
 key: tests
 permalink: /docs/pages/tests/robustness
