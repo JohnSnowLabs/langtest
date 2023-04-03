@@ -46,7 +46,6 @@ class DataFactory:
             task: str,
     ) -> None:
         """Initializes DataFactory object.
-
         Args:
             file_path (str): Path to the dataset.
             task (str): Task to be evaluated.
@@ -60,7 +59,7 @@ class DataFactory:
 
     def load(self) -> List[Sample]:
         """Loads the data for the correct Dataset type.
-
+        
         Returns:
             list[Sample]: Loaded text data.
         """
@@ -70,7 +69,6 @@ class DataFactory:
     def export(self, data: List[Sample], output_path: str):
         """
         Exports the data to the corresponding format and saves it to 'output_path'.
-
         Args:
             data (List[Sample]):
                 data to export
@@ -87,7 +85,6 @@ class ConllDataset(_IDataset):
 
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes ConllDataset object.
-
         Args:
             file_path (str): Path to the data file.
         """
@@ -95,12 +92,11 @@ class ConllDataset(_IDataset):
         self._file_path = file_path
 
         if task != 'ner':
-            raise OSError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
+            raise ValueError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
         self.task = task
 
     def load_data(self) -> List[Sample]:
         """Loads data from a CoNLL file.
-
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
@@ -153,7 +149,6 @@ class ConllDataset(_IDataset):
     def export_data(self, data: List[Sample], output_path: str):
         """
         Exports the data to the corresponding format and saves it to 'output_path'.
-
         Args:
             data (List[Sample]):
                 data to export
@@ -177,7 +172,6 @@ class JSONDataset(_IDataset):
 
     def __init__(self, file_path: str):
         """Initializes JSONDataset object.
-
         Args:
             file_path (str): Path to the data file.
         """
@@ -191,7 +185,6 @@ class JSONDataset(_IDataset):
     def export_data(self, data: List[Sample], output_path: str):
         """
         Exports the data to the corresponding format and saves it to 'output_path'.
-
         Args:
             data (List[Sample]):
                 data to export
@@ -220,7 +213,6 @@ class CSVDataset(_IDataset):
 
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes CSVDataset object.
-
         Args:
             file_path (str):
                 Path to the data file.
@@ -236,7 +228,6 @@ class CSVDataset(_IDataset):
 
     def load_data(self) -> List[Sample]:
         """Loads data from a csv file.
-
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
@@ -263,7 +254,6 @@ class CSVDataset(_IDataset):
     def export_data(self, data: List[Sample], output_path: str):
         """
         Exports the data to the corresponding format and saves it to 'output_path'.
-
         Args:
             data (List[Sample]):
                 data to export
@@ -286,7 +276,6 @@ class CSVDataset(_IDataset):
     def _find_delimiter(file_path: str) -> property:
         """
         Helper function in charge of finding the delimiter character in a csv file.
-
         Args:
             file_path (str):
                 location of the csv file to load
@@ -302,12 +291,10 @@ class CSVDataset(_IDataset):
     def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
         """
         Convert a row from the dataset into a Sample for the NER task.
-
         Args:
             row (Dict[str, List[str]]):
                 single row of the dataset
             sent_index (int):
-
         Returns:
             Sample:
                 row formatted into a Sample object
@@ -345,7 +332,6 @@ class CSVDataset(_IDataset):
     def _row_to_seq_classification_sample(self, row: Dict[str, str]) -> Sample:
         """
         Convert a row from the dataset into a Sample for the text-classification task
-
         Args:
             row (Dict[str, str]):
                 single row of the dataset
@@ -362,11 +348,9 @@ class CSVDataset(_IDataset):
     def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
         """
         Helper function to map original column into standardized ones.
-
         Args:
             column_names (List[str]):
                 list of column names of the csv file
-
         Returns:
             Dict[str, str]:
                 mapping from the original column names into 'standardized' names

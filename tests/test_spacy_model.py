@@ -1,9 +1,8 @@
 
 import unittest
-import pandas as  pd
-
 from nlptest import Harness
 from nlptest.modelhandler.modelhandler import ModelFactory
+
 
 class SpacyTestCase(unittest.TestCase):
 
@@ -11,11 +10,11 @@ class SpacyTestCase(unittest.TestCase):
         self.params = {
             "task": 'ner',
             "model": "en_core_web_sm",
-            "data": "demo/data/test.conll",
-            "config": "demo/data/config.yml",
+            "data": "nlptest/data/conll/sample.conll",
+            "config": "tests/fixtures/config_ner.yaml",
             "hub": "spacy"
         }
-        
+
     def test_Harness(self):
         """
         Testing Instance after in Harness Class
@@ -23,17 +22,15 @@ class SpacyTestCase(unittest.TestCase):
         harness = Harness(**self.params)
         self.assertIsInstance(harness, Harness)
 
-
     def test_attributes(self):
         """
         Testing Attributes of Harness Class
         """
         harness = Harness(**self.params)
-        self.assertIsInstance(harness.task, str) 
-        self.assertIsInstance(harness.model, (str, ModelFactory)) 
-        # self.assertIsInstance(self.harness.data, (str, DataFactory)) 
-        self.assertIsInstance(harness._config, (str, dict)) 
-
+        self.assertIsInstance(harness.task, str)
+        self.assertIsInstance(harness.model, (str, ModelFactory))
+        # self.assertIsInstance(self.harness.data, (str, DataFactory))
+        self.assertIsInstance(harness._config, (str, dict))
 
     def test_generate(self):
         harness = Harness(**self.params)
