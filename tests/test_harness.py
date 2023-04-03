@@ -64,7 +64,7 @@ class HarnessTestCase(unittest.TestCase):
         with self.assertRaises(AssertionError):
             Harness(
                 task="text-classifer",
-                model=ModelFactory(task="ner", "dslim/bert-base-NER"),
+                model="dslim/bert-base-NER",
                 data=self.data_path,
                 config=self.config_path,
                 hub="huggingface"
