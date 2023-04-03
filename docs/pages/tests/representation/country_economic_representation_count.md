@@ -6,7 +6,7 @@
 {:.h2-select}
 This test checks the data regarding the sample counts of countries by economic levels.
 
-**alias_name:** `min_religion_name_representation_count`
+**alias_name:** `min_country_economic_representation_count`
 
 #### Config
 ```yaml

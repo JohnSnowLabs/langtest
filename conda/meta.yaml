@@ -1,6 +1,6 @@
 package:
   name: "nlptest"
-  version: 1.0.0.rc.1
+  version: 1.0.0
 
 app:
   entry: nlptest
@@ -28,7 +28,6 @@ requirements:
     - transformers
     - nltk
     - pytorch
-    - protobuf<=3.20.0
     - sentencepiece
 
 files:

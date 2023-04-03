@@ -13,8 +13,9 @@ This test checks the data regarding the sample proportions of labels.
 ```yaml
 min_label_representation_proportion:
     min_proportion: 
-        O: 0.6
-        LOC: 0.7
+        O: 0.2
+        LOC: 0.2
+        PER: 0.2
                 
 ```
 
