@@ -161,6 +161,7 @@ class RobustnessTestFactory(ITests):
             self.tests['american_to_british']['parameters']['accent_map'] = A2B_DICT
 
         if "british_to_american" in self.tests:
+            self.tests['british_to_american']['parameters'] = {}
             self.tests['british_to_american']['parameters']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self.tests:
