@@ -95,7 +95,7 @@ class Conll03Dataset(datasets.GeneratorBasedBuilder):
     def _split_generators(self, dl_manager: datasets.DownloadManager) -> List[datasets.SplitGenerator]:
         """Returns SplitGenerators."""
         urls_to_download = {
-            "train": self.config.data_dir + "conll03.conll",
+            "train": self.config.data_dir + "augmented_conll03.conll",
         }
         downloaded_files = dl_manager.download_and_extract(urls_to_download)
         return [
