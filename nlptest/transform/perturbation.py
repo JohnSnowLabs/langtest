@@ -5,12 +5,14 @@ import logging
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
+from overrides import overrides
 
 import numpy as np
 import pandas as pd
 import nltk
 
-from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY, create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
+from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY,
+                    create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -57,11 +59,10 @@ class PerturbationFactory:
 
         if 'swap_entities' in self._tests:
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                             for sample in data_handler]})
+                               'label': [[i.entity for i in sample.expected_results.predictions]
+                                         for sample in data_handler]})
             self._tests['swap_entities']['terminology'] = create_terminology(df)
             self._tests['swap_entities']['labels'] = df.label.tolist()
-
 
         if "american_to_british" in self._tests:
             self._tests['american_to_british']['accent_map'] = A2B_DICT
@@ -73,22 +74,35 @@ class PerturbationFactory:
             nltk.download('omw-1.4', quiet=True)
             nltk.download('wordnet', quiet=True)
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                   'label': [[i.entity for i in sample.expected_results.predictions]
-                         for sample in data_handler]})
+                               'label': [[i.entity for i in sample.expected_results.predictions]
+                                         for sample in data_handler]})
             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
         if 'replace_to_male_pronouns' in self._tests:
-          self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
-        
+            self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in
+                                                                                 list(female_pronouns.values()) for item
+                                                                                 in sublist] + [item for sublist in
+                                                                                                list(
+                                                                                                    neutral_pronouns.values())
+                                                                                                for item in sublist]
+            self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
+
         if 'replace_to_female_pronouns' in self._tests:
-          self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in list(male_pronouns.values()) for item in sublist] +[item for sublist in list(neutral_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
+            self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in
+                                                                                   list(male_pronouns.values()) for item
+                                                                                   in sublist] + [item for sublist in
+                                                                                                  list(
+                                                                                                      neutral_pronouns.values())
+                                                                                                  for item in sublist]
+            self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self._tests:
-          self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in list(female_pronouns.values()) for item in sublist] +[item for sublist in list(male_pronouns.values()) for item in sublist] 
-          self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
-
+            self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in
+                                                                                    list(female_pronouns.values()) for
+                                                                                    item in sublist] + [item for sublist
+                                                                                                        in list(
+                    male_pronouns.values()) for item in sublist]
+            self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
 
         self._data_handler = data_handler
 
@@ -107,7 +121,8 @@ class PerturbationFactory:
             if len(transformed_samples) == 0:
                 logging.warning("%s did not create any test cases. Test will be removed from results.", test_name)
             elif len(transformed_samples) < 10:
-                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name, len(transformed_samples))
+                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name,
+                                len(transformed_samples))
 
             all_samples.extend(transformed_samples)
         return all_samples
@@ -171,7 +186,23 @@ class AddPunctuation(BasePerturbation):
 
         for sample in sample_list:
             if sample.original[-1] not in whitelist:
-                sample.test_case = sample.original[:-1] + random.choice(whitelist)
+                chosen_punc = random.choice(whitelist)
+                sample.test_case = sample.original + chosen_punc
+                sample.transformations = [
+                    Transformation(
+                        original_span=Span(
+                            start=len(sample.original),
+                            end=len(sample.original),
+                            word=""
+                        ),
+                        new_span=Span(
+                            start=len(sample.original),
+                            end=len(sample.test_case),
+                            word=chosen_punc
+                        ),
+                        ignore=True
+                    )
+                ]
             else:
                 sample.test_case = sample.original
         return sample_list
@@ -195,6 +226,21 @@ class StripPunctuation(BasePerturbation):
         for sample in sample_list:
             if sample.original[-1] in whitelist:
                 sample.test_case = sample.original[:-1]
+                sample.transformations = [
+                    Transformation(
+                        original_span=Span(
+                            start=len(sample.original) - 1,
+                            end=len(sample.original),
+                            word=sample.original[-1:]
+                        ),
+                        new_span=Span(
+                            start=len(sample.test_case),
+                            end=len(sample.test_case),
+                            word=""
+                        ),
+                        ignore=True
+                    )
+                ]
             else:
                 sample.test_case = sample.original
         return sample_list
@@ -268,23 +314,23 @@ class SwapEntities(BasePerturbation):
         if labels is None:
             raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
 
-        for idx, sample in enumerate(sample_list):
-            sent_tokens = sample.original.split(' ')
-            sent_labels = labels[idx]
+        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sent_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            #  no swaps since there is no entity in the sentence
-            if len(ent_idx) == 0:
+        for sample, sample_labels in zip(sample_list, labels):
+            if all([label == "O" for label in sample_labels]):
                 sample.test_case = sample.original
                 continue
 
+            sent_tokens = sample.original.split(' ')
+
+            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
+            ent_idx, = np.where(ent_start_pos == 1)
+
             replace_idx = np.random.choice(ent_idx)
-            ent_type = sent_labels[replace_idx][2:]
+            ent_type = sample_labels[replace_idx][2:]
             replace_idxs = [replace_idx]
-            if replace_idx < len(sent_labels) - 1:
-                for i, label in enumerate(sent_labels[replace_idx + 1:]):
+            if replace_idx < len(sample_labels) - 1:
+                for i, label in enumerate(sample_labels[replace_idx + 1:]):
                     if label == f'I-{ent_type}':
                         replace_idxs.append(i + replace_idx + 1)
                     else:
@@ -294,10 +340,26 @@ class SwapEntities(BasePerturbation):
             token_length = len(replace_token)
             replace_token = " ".join(replace_token)
 
-            proper_entities = [ent for ent in terminology[ent_type] if len(ent.split(' ')) == token_length]
-            chosen_ent = random.choice(proper_entities)
-            replaced_string = sample.original.replace(replace_token, chosen_ent)
-            sample.test_case = replaced_string
+            chosen_ent = random.choice(terminology[ent_type])
+            replace_token_pos = re.search(replace_token, sample.original)
+
+            sample.test_case = sample.original.replace(replace_token, chosen_ent)
+            sample.transformations = [
+                Transformation(
+                    original_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.end(),
+                        word=replace_token
+                    ),
+                    new_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.start() + len(chosen_ent),
+                        word=chosen_ent
+                    ),
+                    ignore=False
+                )
+            ]
+
         return sample_list
 
 
@@ -342,9 +404,10 @@ def get_cohyponyms_wordnet(word: str) -> str:
                     name = str(hypos[ind].lemmas()[0])
             return name.replace("_", " ").split(".")[0][7:]
 
+
 class GenderPronounBias(BasePerturbation):
     @staticmethod
-    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type:str) -> List[Sample]:
+    def transform(sample_list: List[Sample], pronouns_to_substitute: List[str], pronoun_type: str) -> List[Sample]:
         """Replace pronouns to check the gender bias
 
         Args:
@@ -356,34 +419,48 @@ class GenderPronounBias(BasePerturbation):
             List of sentences with replaced pronouns
         """
 
-
         for sample in sample_list:
-          
-            tokens_to_substitute = [token for token in sample.original.split(' ') if token.lower() in pronouns_to_substitute]
-          
-            if len(tokens_to_substitute)!=0:
-                replace_token = random.choice(tokens_to_substitute)
-                if pronoun_type =="female":
-                  combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
-                  chosen_dict = female_pronouns
-                elif pronoun_type =="male":
-                  combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}  
-                  chosen_dict = male_pronouns      
-                elif pronoun_type =="neutral":
-                  combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
-                  chosen_dict = neutral_pronouns  
+            tokens_to_substitute = [token for token in sample.original.split(' ') if
+                                    token.lower() in pronouns_to_substitute]
 
-                for key, value in combined_dict.items() :
-                      if replace_token in value:
+            if len(tokens_to_substitute) != 0:
+                replace_token = random.choice(tokens_to_substitute)
+                if pronoun_type == "female":
+                    combined_dict = {k: male_pronouns[k] + neutral_pronouns[k] for k in male_pronouns.keys()}
+                    chosen_dict = female_pronouns
+                elif pronoun_type == "male":
+                    combined_dict = {k: female_pronouns[k] + neutral_pronouns[k] for k in female_pronouns.keys()}
+                    chosen_dict = male_pronouns
+                elif pronoun_type == "neutral":
+                    combined_dict = {k: female_pronouns[k] + male_pronouns[k] for k in female_pronouns.keys()}
+                    chosen_dict = neutral_pronouns
+
+                for key, value in chosen_dict.items():
+                    if replace_token.lower() in value:
                         type_of_pronoun = str(key)
                         break
 
-                chosen_token= random.choice(chosen_dict[type_of_pronoun])
-                replaced_string = sample.original.replace(replace_token, chosen_token)
+                chosen_token = random.choice(combined_dict[type_of_pronoun])
+                diff_len = len(chosen_token) - len(replace_token)
+
+                replaced_string = sample.original
+                transformations = []
+                for _ in range(len(re.findall(replace_token, sample.original))):
+                    span = re.search(replace_token, replaced_string)
+                    replaced_string = re.sub(replace_token, chosen_token, replaced_string, count=1)
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=span.start(), end=span.end(), word=replace_token),
+                            new_span=Span(start=span.start(), end=span.end() + diff_len, word=chosen_token),
+                            ignore=False
+                        )
+                    )
+
                 sample.test_case = replaced_string
+                sample.transformations = transformations
             else:
-              sample.test_case = sample.original
-      
+                sample.test_case = sample.original
+
         return sample_list
 
 
@@ -451,9 +528,28 @@ class ConvertAccent(BasePerturbation):
             List of sentences that perturbed with accent conversion.
         """
         for sample in sample_list:
-            tokens = sample.original.split(' ')
-            tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
-            sample.test_case = ' '.join(tokens)
+            tokens = set(sample.original.split(' '))
+            replaced_string = sample.original
+            transformations = []
+
+            for token in tokens:
+                new_token = accent_map.get(token.lower(), token)
+                if new_token != token:
+                    diff_len = len(new_token) - len(token)
+                    nb_occurrences = len(re.findall(token, replaced_string))
+
+                    for c in range(nb_occurrences):
+                        span = re.search(token, replaced_string)
+                        replaced_string = re.sub(token, new_token, replaced_string, count=1)
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=span.start(), end=span.end(), word=token),
+                                new_span=Span(start=span.start(), end=span.end() + diff_len, word=new_token),
+                                ignore=False
+                            )
+                        )
+            sample.test_case = replaced_string
+            sample.transformations = transformations
 
         return sample_list
 
@@ -465,7 +561,7 @@ class AddContext(BasePerturbation):
             sample_list: List[Sample],
             starting_context: Optional[List[str]] = None,
             ending_context: Optional[List[str]] = None,
-            strategy: List[str] = None,
+            strategy: str = None,
     ) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
@@ -476,8 +572,8 @@ class AddContext(BasePerturbation):
         Returns:
             List of sentences that context added at to begging, end or both, randomly.
         """
-
         possible_methods = ['start', 'end', 'combined']
+
         for sample in sample_list:
             if strategy is None:
                 strategy = random.choice(possible_methods)
@@ -534,10 +630,13 @@ class AddContraction(BasePerturbation):
     @staticmethod
     def transform(
             sample_list: List[Sample],
-    ) -> List[str]:
+    ) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
             sample_list: List of sentences to process.
+        Returns:
+            List[Sample]:
+                transformed samples
         """
 
         def custom_replace(match):
@@ -552,9 +651,23 @@ class AddContraction(BasePerturbation):
             return expanded_contraction
 
         for sample in sample_list:
-            string = sample.original
+            replaced_string = sample.original
+            transformations = []
+
             for contraction in CONTRACTION_MAP:
-                if re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL):
-                    string = re.sub(contraction, custom_replace, sample.original, flags=re.IGNORECASE | re.DOTALL)
-            sample.test_case = string
+                search = re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL)
+                if search:
+                    new_string = CONTRACTION_MAP.get(search.group(), CONTRACTION_MAP.get(search.group()))
+                    diff_len = len(new_string) - len(search.group())
+                    replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                             flags=re.IGNORECASE | re.DOTALL)
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=search.start(), end=search.end(), word=search.group()),
+                            new_span=Span(start=search.start(), end=search.end() + diff_len, word=new_string),
+                            ignore=False
+                        )
+                    )
+            sample.test_case = replaced_string
+            sample.transformations = transformations
         return sample_list

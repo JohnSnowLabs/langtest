@@ -63,7 +63,12 @@ class PretrainedModelForNER(_ModelHandler):
             List[str]: A list of named entities recognized in the input text.
         """
         prediction = self.model(text)
-        return [x["entity"] for x in prediction]
+        if len(prediction) == 0:
+            return []
+
+        if prediction[0].get("entity") is not None:
+            return [x["entity"] for x in prediction]
+        return [x["entity_group"] for x in prediction]
 
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""

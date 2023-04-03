@@ -289,3 +289,81 @@ class TestSample:
             ),
         )
         assert sample.is_pass()
+
+    def test_token_mismatch_hf(self):
+        """"""
+        sample = Sample(
+            original="Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C championship match on Friday .",
+            test_type="replace_to_female_pronouns",
+            test_case="Japan began the defence of hers Asian Cup title with a lucky 2-1 win against Syria in a Group "
+                      "C championship match on Friday .",
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='B-LOC', span=Span(start=0, end=5, word='Japan')),
+                    NERPrediction(entity='O', span=Span(start=6, end=11, word='began')),
+                    NERPrediction(entity='O', span=Span(start=12, end=15, word='the')),
+                    NERPrediction(entity='O', span=Span(start=16, end=23, word='defence')),
+                    NERPrediction(entity='O', span=Span(start=24, end=26, word='of')),
+                    NERPrediction(entity='O', span=Span(start=27, end=32, word='their')),
+                    NERPrediction(entity='B-MISC', span=Span(start=33, end=38, word='Asian')),
+                    NERPrediction(entity='I-MISC', span=Span(start=39, end=42, word='Cup')),
+                    NERPrediction(entity='O', span=Span(start=43, end=48, word='title')),
+                    NERPrediction(entity='O', span=Span(start=49, end=53, word='with')),
+                    NERPrediction(entity='O', span=Span(start=54, end=55, word='a')),
+                    NERPrediction(entity='O', span=Span(start=56, end=61, word='lucky')),
+                    NERPrediction(entity='O', span=Span(start=62, end=63, word='2')),
+                    NERPrediction(entity='O', span=Span(start=63, end=64, word='-')),
+                    NERPrediction(entity='O', span=Span(start=64, end=65, word='1')),
+                    NERPrediction(entity='O', span=Span(start=66, end=69, word='win')),
+                    NERPrediction(entity='O', span=Span(start=70, end=77, word='against')),
+                    NERPrediction(entity='B-LOC', span=Span(start=78, end=83, word='Syria')),
+                    NERPrediction(entity='O', span=Span(start=84, end=86, word='in')),
+                    NERPrediction(entity='O', span=Span(start=87, end=88, word='a')),
+                    NERPrediction(entity='B-MISC', span=Span(start=89, end=94, word='Group')),
+                    NERPrediction(entity='I-MISC', span=Span(start=95, end=96, word='C')),
+                    NERPrediction(entity='O', span=Span(start=97, end=109, word='championship')),
+                    NERPrediction(entity='O', span=Span(start=110, end=115, word='match')),
+                    NERPrediction(entity='O', span=Span(start=116, end=118, word='on')),
+                    NERPrediction(entity='O', span=Span(start=119, end=125, word='Friday')),
+                    NERPrediction(entity='O', span=Span(start=126, end=127, word='.'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='B-LOC', span=Span(start=0, end=5, word='Japan')),
+                    NERPrediction(entity='O', span=Span(start=6, end=11, word='began')),
+                    NERPrediction(entity='O', span=Span(start=12, end=15, word='the')),
+                    NERPrediction(entity='O', span=Span(start=16, end=23, word='defence')),
+                    NERPrediction(entity='O', span=Span(start=24, end=26, word='of')),
+                    NERPrediction(entity='O', span=Span(start=27, end=31, word='hers')),
+                    NERPrediction(entity='B-MISC', span=Span(start=32, end=37, word='Asian')),
+                    NERPrediction(entity='I-MISC', span=Span(start=38, end=41, word='Cup')),
+                    NERPrediction(entity='O', span=Span(start=42, end=47, word='title')),
+                    NERPrediction(entity='O', span=Span(start=48, end=52, word='with')),
+                    NERPrediction(entity='O', span=Span(start=53, end=54, word='a')),
+                    NERPrediction(entity='O', span=Span(start=55, end=60, word='lucky')),
+                    NERPrediction(entity='O', span=Span(start=61, end=62, word='2')),
+                    NERPrediction(entity='O', span=Span(start=62, end=63, word='-')),
+                    NERPrediction(entity='O', span=Span(start=63, end=64, word='1')),
+                    NERPrediction(entity='O', span=Span(start=65, end=68, word='win')),
+                    NERPrediction(entity='O', span=Span(start=69, end=76, word='against')),
+                    NERPrediction(entity='B-LOC', span=Span(start=77, end=82, word='Syria')),
+                    NERPrediction(entity='O', span=Span(start=83, end=85, word='in')),
+                    NERPrediction(entity='O', span=Span(start=86, end=87, word='a')),
+                    NERPrediction(entity='B-MISC', span=Span(start=88, end=93, word='Group')),
+                    NERPrediction(entity='I-MISC', span=Span(start=94, end=95, word='C')),
+                    NERPrediction(entity='O', span=Span(start=96, end=108, word='championship')),
+                    NERPrediction(entity='O', span=Span(start=109, end=114, word='match')),
+                    NERPrediction(entity='O', span=Span(start=115, end=117, word='on')),
+                    NERPrediction(entity='O', span=Span(start=118, end=124, word='Friday')),
+                    NERPrediction(entity='O', span=Span(start=125, end=126, word='.'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=27, end=32, word="their"),
+                    new_span=Span(start=27, end=31, word="hers")
+                )
+            ]
+        )
+        assert sample.is_pass()
