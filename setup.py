@@ -22,7 +22,6 @@ REQUIRED_PKGS = [
     'transformers',
     'nltk',
     'torch',
-    'protobuf<=3.20.0',
     'sentencepiece',
 ]
 
