@@ -28,7 +28,6 @@ requirements:
     - transformers
     - nltk
     - pytorch
-    - protobuf<=3.20.0
     - sentencepiece
 
 files:
