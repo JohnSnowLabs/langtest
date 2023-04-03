@@ -13,8 +13,8 @@ This test checks the data regarding the sample proportions of genders.
 ```yaml
 min_gender_representation_count:
     min_count: 
-        male: 20
-        female: 30
+        male: 0.2
+        female: 0.3
 ```
 
 - **min_proportion (float):** Minimum proportion to pass the test.

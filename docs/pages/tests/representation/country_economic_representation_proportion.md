@@ -6,7 +6,7 @@
 {:.h2-select}
 This test checks the data regarding the sample proportions of countries by economic levels. 
 
-**alias_name:** `min_religion_name_representation_proportion`
+**alias_name:** `min_country_economic_representation_proportion`
 
 
 #### Config
