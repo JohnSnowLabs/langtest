@@ -75,7 +75,7 @@ class PerturbationTestCase(unittest.TestCase):
     
     def test_swap_entities(self) -> None:
         test_cases = SwapEntities.transform(
-            list_of_strings = self.sentences,
+            sample_list = self.sentences,
             labels = self.labels,
             terminology = self.terminology
             )
@@ -84,7 +84,7 @@ class PerturbationTestCase(unittest.TestCase):
     
     def test_american_to_british(self) -> None:
         test_cases = ConvertAccent.transform(
-            list_of_strings = self.sentences,
+            sample_list = self.sentences,
             accent_map=A2B_DICT
             )
         self.assertIsInstance(test_cases, list)
@@ -95,7 +95,7 @@ class PerturbationTestCase(unittest.TestCase):
         start_context = [["Hello"]]
         end_context = [["Bye"]]
         test_cases = AddContext.transform(
-            list_of_strings=self.sentences,
+            sample_list=self.sentences,
             starting_context=start_context,
             ending_context=end_context,
             strategy="combined"
