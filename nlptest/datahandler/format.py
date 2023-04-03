@@ -188,8 +188,6 @@ class NEROutputFormatter(BaseFormatter):
         test_case = sample.test_case
         original = sample.original
         if test_case:
-            text += sample.test_case+"\n"
-            text += sample.original+"\n\n"
             test_case_items = test_case.split()
             norm_test_case_items = test_case.lower().split()
             norm_original_items = original.lower().split()
@@ -207,8 +205,8 @@ class NEROutputFormatter(BaseFormatter):
                         temp_len += 1
                     else:
                         o_item = sample.expected_results.predictions[jdx].span.word
-                        letters_count = len(set(o_item) - set(item))
-                        if len(norm_test_case_items) == len(norm_original_items) or letters_count > 2:
+                        letters_count = len(set(item) - set(o_item))
+                        if len(norm_test_case_items) == len(norm_original_items) or letters_count < 2:
                             tl = sample.expected_results.predictions[jdx]
                             text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
                         else:
