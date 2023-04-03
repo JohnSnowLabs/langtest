@@ -320,7 +320,7 @@ class BiasTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-                if not TestFactory.is_augment:  
+                if not TestFactory.is_augment:
                     sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
