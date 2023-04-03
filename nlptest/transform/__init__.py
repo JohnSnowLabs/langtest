@@ -42,7 +42,7 @@ class TestFactory:
         """
         all_results = []
         all_categories = TestFactory.test_categories()
-        tests = tqdm(test_types.keys(), desc="Generating testcases...")
+        tests = tqdm(test_types.keys(), desc="Generating testcases...", disable=TestFactory.is_augment)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             values = test_types[each]
