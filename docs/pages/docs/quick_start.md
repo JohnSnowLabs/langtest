@@ -1,45 +1,47 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
+seotitle: Quick Start | NLP Test | John Snow Labs
 title: Quick Start
-permalink: /docs/pages/docs/quick_start
+permalink: /docs/pages/docs/install
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+**nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
+You can install **nlptest** using pip or conda.
 
-```shell 
-pip install johnsnowlabs
+<div class="heading" id="installation"> Installation </div>
+
+```python 
+# Using PyPI
+pip install nlptest
+
+# Using Conda
+conda install nlptest
 ```
 
-To quickly test the installation, you can run in your **Shell**:
-
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
-```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
-```
-
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
+Whether you are using **John Snow Labs**, **Hugging Face**, or **Spacy** models, ``Harness`` has got you covered. You can test any **Text Classification** and **Named Entity Recognition (NER)** model using the ``Harness``. The library supports 50+ out of the box tests. These tests fall into robustness, accuracy, bias, representation and fairness test categories.
 
 
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+<style>
+  .heading {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  #installation {
+    color: #1E77B7;
+  }
+  
+  #one-liners {
+    color: #1E77B7;
+  }
+  
 
 </div></div>

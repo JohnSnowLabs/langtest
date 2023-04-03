@@ -8,6 +8,7 @@ from sklearn.metrics import f1_score
 from nlptest.utils.custom_types import Sample, MinScoreOutput, MaxScoreOutput
 from nlptest.utils.gender_classifier import GenderClassifier
 
+
 class BaseFairness(ABC):
     """
     Abstract base class for implementing accuracy measures.
@@ -16,13 +17,13 @@ class BaseFairness(ABC):
         alias_name (str): A name or list of names that identify the accuracy measure.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
+        transform(data: List[Sample]) -> Any: Transforms the input data into an 
+        output based on the implemented accuracy measure.
     """
 
     @staticmethod
     @abstractmethod
     def transform(data, model, params):
-
         """
         Abstract method that implements the accuracy measure.
 
@@ -34,7 +35,7 @@ class BaseFairness(ABC):
         """
 
         return NotImplementedError
-    
+
     alias_name = None
 
 
@@ -47,11 +48,11 @@ class MinGenderF1Score(BaseFairness):
         alias_name (str): The name "min_f1" identifying the minimum F1 score.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the minimum F1 score.
+        transform(data: List[Sample]) -> Any: Transforms the input data into 
+        an output based on the minimum F1 score.
     """
 
     alias_name = "min_gender_f1_score"
-
 
     @staticmethod
     def transform(data: List[Sample], model, params):
@@ -82,40 +83,46 @@ class MinGenderF1Score(BaseFairness):
                 continue
             val = pd.Series(val, dtype="object")
             try:
-                y_true = val.apply(lambda x: [y.entity for y in x.expected_results.predictions])
+                y_true = val.apply(
+                    lambda x: [y.entity for y in x.expected_results.predictions])
             except:
-                y_true = val.apply(lambda x: [y.label for y in x.expected_results.predictions])
+                y_true = val.apply(
+                    lambda x: [y.label for y in x.expected_results.predictions])
             X_test = val.apply(lambda x: x.original)
 
             y_pred = X_test.apply(model.predict_raw)
-            
+
             valid_indices = y_true.apply(len) == y_pred.apply(len)
             # length_mismatch = valid_indices.count()-valid_indices.sum()
             # if length_mismatch > 0:
-                # print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.\nPlease make sure dataset and model uses same tokenizer.")
+            # print(f"{length_mismatch} predictions have different lenghts
+            # than dataset and will be ignored.\nPlease make sure dataset
+            # and model uses same tokenizer.")
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
 
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-            
-            if len(y_true)>0:
-                macro_f1_score = f1_score(y_true, y_pred, average="macro", zero_division=0)
+
+            if len(y_true) > 0:
+                macro_f1_score = f1_score(
+                    y_true, y_pred, average="macro", zero_division=0)
             else:
                 macro_f1_score = 1
 
             sample = Sample(
-                original = "-",
-                category = "fairness",
-                test_type = "min_gender_f1_score",
-                test_case = key,
-                expected_results = MinScoreOutput(min_score=min_scores[key]),
-                actual_results = MinScoreOutput(min_score=macro_f1_score),
-                state = "done"
+                original="-",
+                category="fairness",
+                test_type="min_gender_f1_score",
+                test_case=key,
+                expected_results=MinScoreOutput(min_score=min_scores[key]),
+                actual_results=MinScoreOutput(min_score=macro_f1_score),
+                state="done"
             )
 
             samples.append(sample)
         return samples
+
 
 class MaxGenderF1Score(BaseFairness):
 
@@ -126,11 +133,11 @@ class MaxGenderF1Score(BaseFairness):
         alias_name (str): The name identifying the test.
 
     Methods:
-        transform(data: List[Sample]) -> List[Sample]: Transforms the input data into an output samples.
+        transform(data: List[Sample]) -> List[Sample]: Transforms the 
+        input data into an output samples.
     """
 
     alias_name = "max_gender_f1_score"
-
 
     @staticmethod
     def transform(data: List[Sample], model, params):
@@ -151,7 +158,7 @@ class MaxGenderF1Score(BaseFairness):
                 "female": params["max_score"],
                 "unknown": params["max_score"]
             }
-        
+
         gendered_data = get_gendered_data(data)
 
         samples = []
@@ -161,41 +168,48 @@ class MaxGenderF1Score(BaseFairness):
             val = pd.Series(val, dtype="object")
 
             try:
-                y_true = val.apply(lambda x: [y.entity for y in x.expected_results.predictions])
+                y_true = val.apply(
+                    lambda x: [y.entity for y in x.expected_results.predictions])
             except:
-                y_true = val.apply(lambda x: [y.label for y in x.expected_results.predictions])
+                y_true = val.apply(
+                    lambda x: [y.label for y in x.expected_results.predictions])
             X_test = val.apply(lambda x: x.original)
-            y_true = pd.Series(val).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            y_true = pd.Series(val).apply(
+                lambda x: [y.entity for y in x.expected_results.predictions])
             X_test = pd.Series(val).apply(lambda x: x.original)
             y_pred = X_test.apply(model.predict_raw)
-            
+
             valid_indices = y_true.apply(len) == y_pred.apply(len)
             # length_mismatch = valid_indices.count()-valid_indices.sum()
             # if length_mismatch > 0:
-                # print(f"{length_mismatch} predictions have different lenghts than dataset and will be ignored.\nPlease make sure dataset and model uses same tokenizer.")
+            # print(f"{length_mismatch} predictions have different
+            # lenghts than dataset and will be ignored.\nPlease make
+            # sure dataset and model uses same tokenizer.")
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
 
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
-            if len(y_true)>0:
-                macro_f1_score = f1_score(y_true, y_pred, average="macro", zero_division=0)
+            if len(y_true) > 0:
+                macro_f1_score = f1_score(
+                    y_true, y_pred, average="macro", zero_division=0)
             else:
                 macro_f1_score = 0
-            
+
             sample = Sample(
-                original = "-",
-                category = "fairness",
-                test_type = "max_gender_f1_score",
-                test_case = key,
-                expected_results = MaxScoreOutput(max_score=max_scores[key]),
-                actual_results = MaxScoreOutput(max_score=macro_f1_score),
-                state = "done"
+                original="-",
+                category="fairness",
+                test_type="max_gender_f1_score",
+                test_case=key,
+                expected_results=MaxScoreOutput(max_score=max_scores[key]),
+                actual_results=MaxScoreOutput(max_score=macro_f1_score),
+                state="done"
             )
 
             samples.append(sample)
         return samples
+
 
 def get_gendered_data(data):
     """Split list of samples into gendered lists."""
@@ -209,4 +223,3 @@ def get_gendered_data(data):
         "unknown": data[genders == "unknown"].tolist(),
     }
     return gendered_data
-    

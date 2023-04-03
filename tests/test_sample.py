@@ -16,14 +16,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=16, end=19, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=16, end=19, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_add_context_right(self):
         """"""
@@ -39,14 +40,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_add_context_middle(self):
         """"""
@@ -62,14 +64,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=17, end=20, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=17, end=20, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_add_two_contexts(self):
         """"""
@@ -90,14 +93,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=23, end=26, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=23, end=26, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
         sample = Sample(
             original="Attendance : 3,000",
@@ -116,14 +120,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="CARDINAL", span=Span(start=13, end=18, word="3,000"))]
+                predictions=[NERPrediction(
+                    entity="CARDINAL", span=Span(start=13, end=18, word="3,000"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_contraction(self):
         """"""
@@ -139,14 +144,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=14, end=17, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=14, end=17, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=12, end=15, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=12, end=15, word="KFC"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_entity_swap(self):
         """"""
@@ -162,14 +168,15 @@ class TestSample:
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))]
+                predictions=[NERPrediction(entity="PROD", span=Span(
+                    start=10, end=18, word="McDonald"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
         sample = Sample(
             original="I do love KFC",
@@ -178,19 +185,21 @@ class TestSample:
             transformations=[
                 Transformation(
                     original_span=Span(start=10, end=13, word="KFC"),
-                    new_span=Span(start=10, end=32, word="Kentucky Fried Chicken"),
+                    new_span=Span(start=10, end=32,
+                                  word="Kentucky Fried Chicken"),
                     ignore=False
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=32, word="Kentucky Fried Chicken"))]
+                predictions=[NERPrediction(entity="PROD", span=Span(
+                    start=10, end=32, word="Kentucky Fried Chicken"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
         sample = Sample(
             original="I do love McDonald",
@@ -204,14 +213,15 @@ class TestSample:
                 )
             ],
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[NERPrediction(
+                    entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))]
+                predictions=[NERPrediction(entity="PROD", span=Span(
+                    start=10, end=18, word="McDonald"))]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_two_entities_two_contexts(self):
         """"""
@@ -233,19 +243,22 @@ class TestSample:
             ],
             expected_results=NEROutput(
                 predictions=[
-                    NERPrediction(entity="PROD", span=Span(start=31, end=34, word="KFC")),
-                    NERPrediction(entity="PERS", span=Span(start=11, end=16, word="Jules"))
+                    NERPrediction(entity="PROD", span=Span(
+                        start=31, end=34, word="KFC")),
+                    NERPrediction(entity="PERS", span=Span(
+                        start=11, end=16, word="Jules"))
                 ]
             ),
             actual_results=NEROutput(
                 predictions=[
-                    NERPrediction(entity="PROD", span=Span(start=44, end=47, word="KFC")),
-                    NERPrediction(entity="PERS", span=Span(start=17, end=22, word="Jules"))
+                    NERPrediction(entity="PROD", span=Span(
+                        start=44, end=47, word="KFC")),
+                    NERPrediction(entity="PERS", span=Span(
+                        start=17, end=22, word="Jules"))
                 ]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
 
     def test_entity_to_ignore(self):
         """"""
@@ -262,15 +275,43 @@ class TestSample:
             ],
             expected_results=NEROutput(
                 predictions=[
-                    NERPrediction(entity="GPE", span=Span(start=0, end=5, word="China"))
+                    NERPrediction(entity="GPE", span=Span(
+                        start=0, end=5, word="China"))
                 ]
             ),
             actual_results=NEROutput(
                 predictions=[
-                    NERPrediction(entity="ORDINAL", span=Span(start=0, end=18, word="21/02/2022")),
-                    NERPrediction(entity="GPE", span=Span(start=18, end=23, word="China"))
+                    NERPrediction(entity="ORDINAL", span=Span(
+                        start=0, end=18, word="21/02/2022")),
+                    NERPrediction(entity="GPE", span=Span(
+                        start=18, end=23, word="China"))
                 ]
             ),
         )
-        realigned_actual_results = sample._get_realigned_spans()
-        assert realigned_actual_results.predictions == sample.expected_results.predictions
+        assert sample.is_pass()
+
+    def test_swap_entities(self):
+        """"""
+        sample = Sample(
+            original="I live in India",
+            test_type="swap_entities",
+            test_case="I live in United States",
+            transformations=[
+                Transformation(
+                    original_span=Span(start=10, end=15, word="India"),
+                    new_span=Span(start=10, end=23, word="United States"),
+                    ignore=False
+                )
+            ],
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity="GPE", span=Span(start=10, end=15, word="India"))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity="GPE", span=Span(start=10, end=23, word="United States")),
+                ]
+            ),
+        )
+        assert sample.is_pass()

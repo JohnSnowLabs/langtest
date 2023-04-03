@@ -1,0 +1,28 @@
+defaults:
+  min_pass_rate: 1.00
+
+tests:
+
+  robustness:
+    lowercase:
+      min_pass_rate: 0.70
+    add_typo:
+      min_pass_rate: 0.70
+
+  accuracy:
+    min_micro_f1_score:
+      min_score: 0.70
+
+  bias:
+    replace_to_female_pronouns:
+      min_pass_rate: 0.70
+    replace_to_low_income_country:
+      min_pass_rate: 0.70
+
+  fairness:
+    min_gender_f1_score:
+      min_score: 0.6
+
+  representation:
+    min_label_representation_count:
+      min_count: 50

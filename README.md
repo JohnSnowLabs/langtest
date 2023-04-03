@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://github.com/JohnSnowLabs/nlptest/actions" alt="build">
-        <img src="https://github.com/JohnSnowLabs/nlptest/workflows/build_and_test.yml/badge.svg" /></a>
+        <img src="https://github.com/JohnSnowLabs/nlptest/workflows/build/badge.svg" /></a>
     <a href="https://github.com/JohnSnowLabs/nlptest/releases" alt="Current Release Version">
         <img src="https://img.shields.io/github/v/release/JohnSnowLabs/nlptest.svg?style=flat-square&logo=github" /></a>
     <a href="https://github.com/JohnSnowLabs/nlptest/blob/master/LICENSE" alt="License">

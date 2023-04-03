@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: Tutorials | NLP Test | John Snow Labs
 title: Tutorials
 key: docs-tutorials
 permalink: /docs/pages/tutorials/tutorials
@@ -15,22 +15,36 @@ modify_date: "2019-05-16"
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+The following table gives an overview of the different tutorial notebooks. We have test specific (Accuracy, Fairness, Robustness, Representation and Bias) and library specific (John Snow Labs, Hugging Face, Spacy) tutorial notebooks.
 
-```shell 
-pip install johnsnowlabs
-```
+<div class="heading" id="tutorial-notebook">Tutorial Notebooks Overview</div>
 
-## Test h2
+{:.table2}
+|Tutorial Description|Library|Task|Open In Colab|
+|-|
+|Accuracy Tests                             |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Accuracy_Demo.ipynb)|
+|Bias Tests                                 |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Bias_Demo.ipynb)|
+|Fairness Tests                             |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Fairness_Demo.ipynb)|
+|Representation Tests                       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Representation_Demo.ipynb)|
+|Robustness Tests                           |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Robustness_DEMO.ipynb)|
+|End-to-End Workflow                        |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/JohnSnowLabs_RealWorld_Notebook.ipynb)|
+|End-to-End Custom Pipeline Workflow        |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/JohnSnowLabs_RealWorld_Custom_Pipeline_Notebook.ipynb)|
+|End-to-End Workflow                        |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/Spacy_Real_World_Notebook.ipynb)|
 
-To quickly test the installation, you can run in your **Shell**:
 
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
-```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
-```
+<style>
+  .heading {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    padding-top: 20px;
+    padding-bottom: 30px;
+  }
+
+  #tutorial-notebook {
+    color: #1E77B7;
+  }
+
+</div><div class="h3-box" markdown="1">
+
 </div></div>

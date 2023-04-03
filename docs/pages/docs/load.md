@@ -1,7 +1,7 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
-title: load()
+seotitle: Load | NLP Test | John Snow Labs
+title: Load
 permalink: /docs/pages/docs/load
 key: docs-install
 modify_date: "2020-05-26"
@@ -9,37 +9,14 @@ header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
-
-```shell 
-pip install johnsnowlabs
-```
-
-To quickly test the installation, you can run in your **Shell**:
-
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
+ 
 ```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+# load saved configurations and test data
+harness = h.load("saved_nlptest_folder", model="ner_dl_bert", task='ner', hub="johnsnowlabs")
 ```
 
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
+Harness will load the saved nlptest configurations and test data. Now you can easily run the test cases with any new model
+(ner_dl_bert, in our case). In order to run the test cases we can just use `harness.run()`.
 
-
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
-
+If no task parameter is specified, it takes "ner" as the defaut. Also the hub parameter is optional and is not required to be specified if our model is a PipelineModel.
 </div></div>

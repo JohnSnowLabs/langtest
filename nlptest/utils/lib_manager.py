@@ -1,7 +1,8 @@
 import importlib
 
-def try_import_lib(lib):
 
+def try_import_lib(lib: str) -> bool:
+    """"""
     try:
         importlib.import_module(lib)
         return True

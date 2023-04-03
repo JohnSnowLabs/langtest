@@ -23,6 +23,8 @@ lib64/
 parts/
 sdist/
 var/
+.sass-cache/
+_site/
 wheels/
 share/python-wheels/
 *.egg-info/
@@ -199,3 +201,5 @@ docs/website/.sass-cache/**
 
 tst_shortcut_sd/
 src/*/resources/*.classes
+
+_site\

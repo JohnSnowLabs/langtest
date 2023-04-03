@@ -6,21 +6,20 @@ from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 
 class _ModelHandler(ABC):
-    """Abstract base class for handling different models.
+    """
+    Abstract base class for handling different models.
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
 
     @abstractmethod
-    def load_model(cls, path):
-        """Load the model.
-        """
+    def load_model(cls, path: str):
+        """Load the model."""
         return NotImplementedError()
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs):
-        """Perform predictions on input text.
-        """
+        """Perform predictions on input text."""
         return NotImplementedError()
 
 
@@ -28,19 +27,22 @@ class ModelFactory:
     """
     A factory class for instantiating models.
     """
+
     SUPPORTED_TASKS = ["ner", "text-classification"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy']
     SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
 
     def __init__(
             self,
-            model,
+            model: str,
             task: str,
     ):
         """Initializes the ModelFactory object.
         Args:
-            model: SparkNLP, HuggingFace or Spacy model to test.
-            task (str): task to perform
+            model (str):
+                path to the model to evaluate
+            task (str):
+                task to perform
 
         Raises:
             ValueError: If the task specified is not supported.
@@ -65,18 +67,18 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
 
     @classmethod
-    def load_model(
-            cls,
-            task: str,
-            hub: str,
-            path: str
-    ) -> 'ModelFactory':
-        """Load the model.
+    def load_model(cls, task: str, hub: str, path: str) -> 'ModelFactory':
+        """Loads the model.
 
         Args:
-            path (str): path to model to use
-            task (str): task to perform
-            hub (str): model hub to load custom model from the path, either to hub or local disk.
+            path (str):
+                path to model to use
+            task (str):
+                task to perform
+            hub (str):
+                model hub to load custom model from the path, either to hub or local disk.
+
+        Returns
         """
 
         assert task in cls.SUPPORTED_TASKS, \
@@ -86,11 +88,25 @@ class ModelFactory:
             ValueError(f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}")
 
         if hub == 'johnsnowlabs':
-            modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
+            if importlib.util.find_spec('johnsnowlabs'):
+                modelhandler_module = importlib.import_module('nlptest.modelhandler.jsl_modelhandler')
+            else:
+                raise ModuleNotFoundError("""Please install the johnsnowlabs library by calling `pip install johnsnowlabs`.
+                For in-depth instructions, head-over to https://nlu.johnsnowlabs.com/docs/en/install""")
+            
         elif hub == 'huggingface':
-            modelhandler_module = importlib.import_module('nlptest.modelhandler.transformers_modelhandler')
-        else:
-            modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
+            if importlib.util.find_spec('transformers'):
+                modelhandler_module = importlib.import_module('nlptest.modelhandler.transformers_modelhandler')
+            else:
+                raise ModuleNotFoundError("""Please install the transformers library by calling `pip install transformers`.
+                For in-depth instructions, head-over to https://huggingface.co/docs/transformers/installation""")
+            
+        elif hub == "spacy":
+            if importlib.util.find_spec('spacy'):
+                modelhandler_module = importlib.import_module(f'nlptest.modelhandler.{hub}_modelhandler')
+            else:
+                raise ModuleNotFoundError("""Please install the spacy library by calling `pip install spacy`.
+                For in-depth instructions, head-over to https://spacy.io/usage""")
 
         if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
@@ -109,11 +125,12 @@ class ModelFactory:
             text (str): Input text to perform predictions on.
 
         Returns:
-            NEROutput or SequenceClassificationOutput
+            Union[NEROutput, SequenceClassificationOutput]:
+                predicted output
         """
         return self.model_class(text=text, **kwargs)
 
-    def predict_raw(self, text) -> List[str]:
+    def predict_raw(self, text: str) -> List[str]:
         """Perform predictions on input text.
 
         Args:
@@ -124,6 +141,14 @@ class ModelFactory:
         """
         return self.model_class.predict_raw(text)
 
-    def __call__(self, text: str, *args, **kwargs) -> List[NEROutput]:
-        """Alias of the 'predict' method"""
+    def __call__(self, text: str, *args, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
+        """Alias of the 'predict' method
+
+        Args:
+            text (str): Input text to perform predictions on.
+
+        Returns:
+            Union[NEROutput, SequenceClassificationOutput]:
+                predicted output
+        """
         return self.model_class(text=text, **kwargs)

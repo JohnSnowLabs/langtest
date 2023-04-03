@@ -1,7 +1,7 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
-title: save()
+seotitle: Save | NLP Docs | John Snow Labs
+title: Save/Load Workflow
 permalink: /docs/pages/docs/save
 key: docs-install
 modify_date: "2020-05-26"
@@ -10,36 +10,32 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+<div class="heading" id="saving">Save</div>
 
-```shell 
-pip install johnsnowlabs
-```
-
-To quickly test the installation, you can run in your **Shell**:
-
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
+Harness class provides `save()` and `load()` pipeline for the loading and saving the test configuration, generated test cases and the test data so that it can be reused later.
+      
 ```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+# save testcases, test configuration, test data  
+h.save("path/to/saved_nlptest_folder")
 ```
 
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
+Harness will save generated test cases, nlptest configurations and test data. Later the saved folder can be used to test
+ different NLP pipelines using `h.load()` method.
 
 
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
+<style>
+  .heading {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  #saving {
+    color: #1E77B7;
+  }
+  
+</style>
 
 </div></div>

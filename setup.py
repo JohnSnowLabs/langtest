@@ -19,12 +19,9 @@ REQUIRED_PKGS = [
     'pandas',
     'wn',
     'scikit-learn',
-    'spark-nlp==4.3.2',
-    'pyspark==3.1.2',
     'transformers',
     'nltk',
     'torch',
-    'protobuf<=3.20.0',
     'sentencepiece',
 ]
 
@@ -50,7 +47,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.0.0-beta.2",  # Required
+    version="1.0.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -95,7 +92,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         # Indicate who your project is intended for
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Build Tools",
@@ -135,7 +132,7 @@ setup(
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. See
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.7, <4",
+    python_requires=">=3.7, <=3.11",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -158,7 +155,13 @@ setup(
     # If there are data files included in your packages that need to be
     # installed, specify them here.
     package_data={  # Optional
-        "nlptest": ["utils/checkpoints.ckpt"],
+        "nlptest": [
+            "utils/checkpoints.ckpt",
+            "data/config.yml",
+            "data/imdb/sample.csv",
+            "data/tweet/sample.csv",
+            "data/conll/sample.conll",
+        ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages. See:

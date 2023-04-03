@@ -1,45 +1,30 @@
 ---
 layout: docs
-seotitle: NLP Docs | John Snow Labs
-title: report()
+seotitle: Report | NLP Test | John Snow Labs
+title: Report
 permalink: /docs/pages/docs/report
 key: docs-install
-modify_date: "2020-05-26"
+modify_date: "2023-03-28"
 header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-To install the **johnsnowlabs Python library** and all of John Snow Labs open **source libraries**, just run
+Called after h.run(). This method summarizes the results of your tests, providing information about the number of tests that passed and failed, as well as an overall pass/fail flag. 
 
-```shell 
-pip install johnsnowlabs
-```
+It provides a convenient way to quickly evaluate the results of your tests and determine whether your model is performing as expected. By using this, you can identify areas where your model needs improvement and make necessary changes to ensure that it meets the requirements.
 
-To quickly test the installation, you can run in your **Shell**:
-
-```shell
-python -c "from johnsnowlabs import nlp;print(nlp.load('emotion').predict('Wow that easy!'))"
-```
-or in **Python**:
 ```python
-from  johnsnowlabs import nlp
-nlp.load('emotion').predict('Wow that easy!')
+h.report()
 ```
+A sample report looks like the one given below:
 
-when using **Annotator based pipelines**, use `nlp.start()` to start up your session 
-```python
-from johnsnowlabs import nlp
-nlp.start()
-pipe = nlp.Pipeline(stages=
-[
-    nlp.DocumentAssembler().setInputCol('text').setOutputCol('doc'),
-    nlp.Tokenizer().setInputCols('doc').setOutputCol('tok')
-])
-nlp.to_nlu_pipe(pipe).predict('That was easy')
-```
+{:.table2}
+| category  | test_type |  fail_count | pass_count | pass_rate |  minimun_pass_rate | pass |
+| - | - | - | - | - | - | - |
+|robustness | lowercase | 77 | 14 | 15% | 60%  | False |
+|robustness | uppercase | 11 | 80 | 88% | 60%  | True |
 
 
-for alternative installation options see [Custom Installation](/docs/pages/docs/install_advanced)
 
 </div></div>
