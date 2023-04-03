@@ -171,28 +171,33 @@ class NEROutputFormatter(BaseFormatter):
         test_case = sample.test_case
         original = sample.original
         if test_case:
+            text += sample.test_case+"\n"
+            text += sample.original+"\n\n"
             test_case_items = test_case.split()
             norm_test_case_items = test_case.lower().split()
             norm_original_items = original.lower().split()
             temp_len = 0
             for jdx, item in enumerate(norm_test_case_items):
-                if item in norm_original_items and jdx >= norm_original_items.index(item):
-                    oitem_index = norm_original_items.index(item)
-                    j = sample.expected_results.predictions[oitem_index+temp_len]
-                    if temp_id != j.doc_id and jdx == 0:
-                        text += f"{j.doc_name}\n\n"
-                        temp_id = j.doc_id
-                    text += f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
-                    norm_original_items.pop(oitem_index)
-                    temp_len += 1
-                else:
-                    o_item = norm_original_items[jdx-temp_len]
-                    letters_count = len(set(o_item) - set(item))
-                    if len(norm_test_case_items) == len(norm_original_items) or letters_count < len(o_item):
-                        tl = sample.expected_results.predictions[jdx]
-                        text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
+                try:
+                    if item in norm_original_items and jdx >= norm_original_items.index(item):
+                        oitem_index = norm_original_items.index(item)
+                        j = sample.expected_results.predictions[oitem_index+temp_len]
+                        if temp_id != j.doc_id and jdx == 0:
+                            text += f"{j.doc_name}\n\n"
+                            temp_id = j.doc_id
+                        text += f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                        norm_original_items.pop(oitem_index)
+                        temp_len += 1
                     else:
-                        text += f"{test_case_items[jdx]} O O O\n"
+                        o_item = sample.expected_results.predictions[jdx].span.word
+                        letters_count = len(set(o_item) - set(item))
+                        if len(norm_test_case_items) == len(norm_original_items) or letters_count > 2:
+                            tl = sample.expected_results.predictions[jdx]
+                            text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
+                        else:
+                            text += f"{test_case_items[jdx]} O O O\n"
+                except IndexError:
+                    text += f"{test_case_items[jdx]} O O O\n"
             text += "\n"
 
         else:
