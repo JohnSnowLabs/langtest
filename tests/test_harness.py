@@ -64,7 +64,7 @@ class HarnessTestCase(unittest.TestCase):
         with self.assertRaises(AssertionError):
             Harness(
                 task="text-classifer",
-                model=ModelFactory("ner", "dslim/bert-base-NER"),
+                model=ModelFactory(task="ner", "dslim/bert-base-NER"),
                 data=self.data_path,
                 config=self.config_path,
                 hub="huggingface"
@@ -149,12 +149,12 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
 
     def test_non_existing_default(self):
         with self.assertRaises(ValueError):
-            h = Harness("ner", model="xxxxxxxxx", hub="spacy")
+            h = Harness(task="ner", model="xxxxxxxxx", hub="spacy")
 
     def test_ner_spacy(self):
         """"""
         try:
-            h = Harness("ner", model="en_core_web_sm", hub="spacy")
+            h = Harness(task="ner", model="en_core_web_sm", hub="spacy")
             h.generate().run().report()
         except Exception as e:
             self.fail(f"Test failed with the following error:\n{e}")
@@ -162,7 +162,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
     def test_ner_hf(self):
         """"""
         try:
-            h = Harness("ner", model="dslim/bert-base-NER", hub="huggingface")
+            h = Harness(task="ner", model="dslim/bert-base-NER", hub="huggingface")
             h.generate().run().report()
         except Exception as e:
             self.fail(f"Test failed with the following error:\n{e}")
@@ -170,7 +170,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
     def test_ner_jsl(self):
         """"""
         try:
-            h = Harness("ner", model="ner_dl_bert", hub="johnsnowlabs")
+            h = Harness(task="ner", model="ner_dl_bert", hub="johnsnowlabs")
             h.generate().run().report()
         except Exception as e:
             self.fail(f"Test failed with the following error:\n{e}")
@@ -178,7 +178,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
     def test_text_classification_spacy(self):
         """"""
         try:
-            h = Harness("text-classification", model="nlptest/data/textcat_imdb", hub="spacy")
+            h = Harness(task="text-classification", model="nlptest/data/textcat_imdb", hub="spacy")
             h.generate().run().report()
         except Exception as e:
             self.fail(f"Test failed with the following error:\n{e}")
@@ -186,7 +186,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
     def test_text_classification_hf(self):
         """"""
         try:
-            h = Harness("text-classification", model="mrm8488/distilroberta-finetuned-tweets-hate-speech",
+            h = Harness(task="text-classification", model="mrm8488/distilroberta-finetuned-tweets-hate-speech",
                         hub="huggingface")
             h.generate().run().report()
         except Exception as e:
@@ -195,7 +195,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
     def test_text_classification_jsl(self):
         """"""
         try:
-            h = Harness("text-classification", model="en.sentiment.imdb.glove", hub="johnsnowlabs")
+            h = Harness(task="text-classification", model="en.sentiment.imdb.glove", hub="johnsnowlabs")
             h.generate().run().report()
         except Exception as e:
             self.fail(f"Test failed with the following error:\n{e}")

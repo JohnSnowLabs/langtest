@@ -10,7 +10,7 @@ class SpacyTestCase(unittest.TestCase):
         self.params = {
             "task": 'ner',
             "model": "en_core_web_sm",
-            "data": "demo/data/test.conll",
+            "data": "nlptest/data/conll/sample.conll",
             "config": "tests/fixtures/config_ner.yaml",
             "hub": "spacy"
         }
