@@ -5,13 +5,11 @@ from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
 
-
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
 class BaseRobustness(ABC):
-
     """
     Abstract base class for implementing robustness measures.
 
@@ -21,28 +19,27 @@ class BaseRobustness(ABC):
     Methods:
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
     """
+    alias_name = None
 
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-
         """
         Abstract method that implements the robustness measure.
 
         Args:
-            data (List[Sample]): The input data to be transformed.
+            sample_list (List[Sample]): The input data to be transformed.
 
         Returns:
             Any: The transformed data based on the implemented robustness measure.
         """
 
         return NotImplementedError()
-    
-    alias_name = None
+
 
 class UpperCase(BaseRobustness):
     alias_name = "uppercase"
-    
+
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """Transform a list of strings with uppercase robustness
@@ -92,7 +89,6 @@ class TitleCase(BaseRobustness):
 
 
 class AddPunctuation(BaseRobustness):
-
     alias_name = 'add_punctuation'
 
     @staticmethod
@@ -110,15 +106,30 @@ class AddPunctuation(BaseRobustness):
 
         for sample in sample_list:
             if sample.original[-1] not in whitelist:
-                sample.test_case = sample.original[:-1] + random.choice(whitelist)
+                chosen_punc = random.choice(whitelist)
+                sample.test_case = sample.original + chosen_punc
+                sample.transformations = [
+                    Transformation(
+                        original_span=Span(
+                            start=len(sample.original),
+                            end=len(sample.original),
+                            word=""
+                        ),
+                        new_span=Span(
+                            start=len(sample.original),
+                            end=len(sample.test_case),
+                            word=chosen_punc
+                        ),
+                        ignore=True
+                    )
+                ]
             else:
                 sample.test_case = sample.original
-            sample.category = "robustness"
+            sample.test_type = "robustness"
         return sample_list
 
 
 class StripPunctuation(BaseRobustness):
-
     alias_name = "strip_punctuation"
 
     @staticmethod
@@ -138,14 +149,29 @@ class StripPunctuation(BaseRobustness):
         for sample in sample_list:
             if sample.original[-1] in whitelist:
                 sample.test_case = sample.original[:-1]
+                sample.transformations = [
+                    Transformation(
+                        original_span=Span(
+                            start=len(sample.original) - 1,
+                            end=len(sample.original),
+                            word=sample.original[-1:]
+                        ),
+                        new_span=Span(
+                            start=len(sample.test_case),
+                            end=len(sample.test_case),
+                            word=""
+                        ),
+                        ignore=True
+                    )
+                ]
             else:
                 sample.test_case = sample.original
+
             sample.category = "robustness"
         return sample_list
 
 
 class AddTypo(BaseRobustness):
-
     alias_name = 'add_typo'
 
     @staticmethod
@@ -194,7 +220,6 @@ class AddTypo(BaseRobustness):
 
 
 class SwapEntities(BaseRobustness):
-
     alias_name = 'swap_entities'
 
     @staticmethod
@@ -219,23 +244,23 @@ class SwapEntities(BaseRobustness):
         if labels is None:
             raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
 
-        for idx, sample in enumerate(sample_list):
-            sent_tokens = sample.original.split(' ')
-            sent_labels = labels[idx]
+        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sent_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            #  no swaps since there is no entity in the sentence
-            if len(ent_idx) == 0:
+        for sample, sample_labels in zip(sample_list, labels):
+            if all([label == "O" for label in sample_labels]):
                 sample.test_case = sample.original
                 continue
 
+            sent_tokens = sample.original.split(' ')
+
+            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
+            ent_idx, = np.where(ent_start_pos == 1)
+
             replace_idx = np.random.choice(ent_idx)
-            ent_type = sent_labels[replace_idx][2:]
+            ent_type = sample_labels[replace_idx][2:]
             replace_idxs = [replace_idx]
-            if replace_idx < len(sent_labels) - 1:
-                for i, label in enumerate(sent_labels[replace_idx + 1:]):
+            if replace_idx < len(sample_labels) - 1:
+                for i, label in enumerate(sample_labels[replace_idx + 1:]):
                     if label == f'I-{ent_type}':
                         replace_idxs.append(i + replace_idx + 1)
                     else:
@@ -245,13 +270,25 @@ class SwapEntities(BaseRobustness):
             token_length = len(replace_token)
             replace_token = " ".join(replace_token)
 
-            proper_entities = [ent for ent in terminology[ent_type] if len(ent.split(' ')) == token_length]
-            if len(proper_entities) > 0:
-                chosen_ent = random.choice(proper_entities)
-            else:
-                continue
-            replaced_string = sample.original.replace(replace_token, chosen_ent)
-            sample.test_case = replaced_string
+            chosen_ent = random.choice(terminology[ent_type])
+            replace_token_pos = re.search(replace_token, sample.original)
+
+            sample.test_case = sample.original.replace(replace_token, chosen_ent)
+            sample.transformations = [
+                Transformation(
+                    original_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.end(),
+                        word=replace_token
+                    ),
+                    new_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.start() + len(chosen_ent),
+                        word=chosen_ent
+                    ),
+                    ignore=False
+                )
+            ]
             sample.category = "robustness"
         return sample_list
 
@@ -299,7 +336,6 @@ def get_cohyponyms_wordnet(word: str) -> str:
 
 
 class SwapCohyponyms(BaseRobustness):
-
     alias_name = "swap_cohyponyms"
 
     @staticmethod
@@ -320,41 +356,57 @@ class SwapCohyponyms(BaseRobustness):
         if labels is None:
             raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
 
-        for idx, sample in enumerate(sample_list):
-            sent_tokens = sample.original.split(' ')
-            sent_labels = labels[idx]
+        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sent_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            #  no swaps since there is no entity in the sentence
-            if len(ent_idx) == 0:
+        for sample, sample_labels in zip(sample_list, labels):
+            if all([label == "O" for label in sample_labels]):
                 sample.test_case = sample.original
                 continue
 
+            sent_tokens = sample.original.split(' ')
+
+            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
+            ent_idx, = np.where(ent_start_pos == 1)
+
             replace_idx = np.random.choice(ent_idx)
-            ent_type = sent_labels[replace_idx][2:]
+            ent_type = sample_labels[replace_idx][2:]
             replace_idxs = [replace_idx]
-            if replace_idx < len(sent_labels) - 1:
-                for i, label in enumerate(sent_labels[replace_idx + 1:]):
+            if replace_idx < len(sample_labels) - 1:
+                for i, label in enumerate(sample_labels[replace_idx + 1:]):
                     if label == f'I-{ent_type}':
                         replace_idxs.append(i + replace_idx + 1)
                     else:
                         break
 
             replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
-
+            token_length = len(replace_token)
             replace_token = " ".join(replace_token)
+
             chosen_ent = get_cohyponyms_wordnet(replace_token)
-            replaced_string = sample.original.replace(replace_token, chosen_ent)
-            sample.test_case = replaced_string
+            replace_token_pos = re.search(replace_token, sample.original)
+
+            sample.test_case = sample.original.replace(replace_token, chosen_ent)
+            sample.transformations = [
+                Transformation(
+                    original_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.end(),
+                        word=replace_token
+                    ),
+                    new_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.start() + len(chosen_ent),
+                        word=chosen_ent
+                    ),
+                    ignore=False
+                )
+            ]
             sample.category = "robustness"
 
         return sample_list
 
 
 class ConvertAccent(BaseRobustness):
-
     alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
@@ -367,16 +419,34 @@ class ConvertAccent(BaseRobustness):
             List of sentences that perturbed with accent conversion.
         """
         for sample in sample_list:
-            tokens = sample.original.split(' ')
-            tokens = [accent_map[t.lower()] if accent_map.get(t.lower(), None) else t for t in tokens]
-            sample.test_case = ' '.join(tokens)
+            tokens = set(sample.original.split(' '))
+            replaced_string = sample.original
+            transformations = []
+
+            for token in tokens:
+                new_token = accent_map.get(token.lower(), token)
+                if new_token != token:
+                    diff_len = len(new_token) - len(token)
+                    nb_occurrences = len(re.findall(token, replaced_string))
+
+                    for c in range(nb_occurrences):
+                        span = re.search(token, replaced_string)
+                        replaced_string = re.sub(token, new_token, replaced_string, count=1)
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=span.start(), end=span.end(), word=token),
+                                new_span=Span(start=span.start(), end=span.end() + diff_len, word=new_token),
+                                ignore=False
+                            )
+                        )
+            sample.test_case = replaced_string
+            sample.transformations = transformations
             sample.category = "robustness"
 
         return sample_list
 
 
 class AddContext(BaseRobustness):
-
     alias_name = 'add_context'
 
     @staticmethod
@@ -450,13 +520,12 @@ class AddContext(BaseRobustness):
 
 
 class AddContraction(BaseRobustness):
-
     alias_name = 'add_contraction'
 
     @staticmethod
     def transform(
             sample_list: List[Sample],
-    ) -> List[str]:
+    ) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
             sample_list: List of sentences to process.
@@ -474,10 +543,24 @@ class AddContraction(BaseRobustness):
             return expanded_contraction
 
         for sample in sample_list:
-            string = sample.original
+            replaced_string = sample.original
+            transformations = []
+
             for contraction in CONTRACTION_MAP:
-                if re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL):
-                    string = re.sub(contraction, custom_replace, sample.original, flags=re.IGNORECASE | re.DOTALL)
-            sample.test_case = string
+                search = re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL)
+                if search:
+                    new_string = CONTRACTION_MAP.get(search.group(), CONTRACTION_MAP.get(search.group()))
+                    diff_len = len(new_string) - len(search.group())
+                    replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                             flags=re.IGNORECASE | re.DOTALL)
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=search.start(), end=search.end(), word=search.group()),
+                            new_span=Span(start=search.start(), end=search.end() + diff_len, word=new_string),
+                            ignore=False
+                        )
+                    )
+            sample.test_case = replaced_string
+            sample.transformations = transformations
             sample.category = "robustness"
         return sample_list

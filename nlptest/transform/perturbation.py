@@ -484,34 +484,51 @@ class SwapCohyponyms(BasePerturbation):
         if labels is None:
             raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
 
-        for idx, sample in enumerate(sample_list):
-            sent_tokens = sample.original.split(' ')
-            sent_labels = labels[idx]
+        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sent_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            #  no swaps since there is no entity in the sentence
-            if len(ent_idx) == 0:
+        for sample, sample_labels in zip(sample_list, labels):
+            if all([label == "O" for label in sample_labels]):
                 sample.test_case = sample.original
                 continue
 
+            sent_tokens = sample.original.split(' ')
+
+            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
+            ent_idx, = np.where(ent_start_pos == 1)
+
             replace_idx = np.random.choice(ent_idx)
-            ent_type = sent_labels[replace_idx][2:]
+            ent_type = sample_labels[replace_idx][2:]
             replace_idxs = [replace_idx]
-            if replace_idx < len(sent_labels) - 1:
-                for i, label in enumerate(sent_labels[replace_idx + 1:]):
+            if replace_idx < len(sample_labels) - 1:
+                for i, label in enumerate(sample_labels[replace_idx + 1:]):
                     if label == f'I-{ent_type}':
                         replace_idxs.append(i + replace_idx + 1)
                     else:
                         break
 
             replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
-
+            token_length = len(replace_token)
             replace_token = " ".join(replace_token)
+
             chosen_ent = get_cohyponyms_wordnet(replace_token)
-            replaced_string = sample.original.replace(replace_token, chosen_ent)
-            sample.test_case = replaced_string
+            replace_token_pos = re.search(replace_token, sample.original)
+
+            sample.test_case = sample.original.replace(replace_token, chosen_ent)
+            sample.transformations = [
+                Transformation(
+                    original_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.end(),
+                        word=replace_token
+                    ),
+                    new_span=Span(
+                        start=replace_token_pos.start(),
+                        end=replace_token_pos.start() + len(chosen_ent),
+                        word=chosen_ent
+                    ),
+                    ignore=False
+                )
+            ]
 
         return sample_list
 
