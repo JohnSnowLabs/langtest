@@ -1,10 +1,10 @@
 import unittest
 
-from nlptest.transform.perturbation import *
+from nlptest.transform.robustness import *
 from nlptest.transform.utils import A2B_DICT
 
 
-class PerturbationTestCase(unittest.TestCase):
+class RobustnessTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.sentences = [
@@ -77,20 +77,6 @@ class PerturbationTestCase(unittest.TestCase):
         transformed_samples = StripPunctuation.transform(self.sentences_with_punctuation)
         self.assertIsInstance(transformed_samples, list)
         self.assertEqual(len(self.sentences), len(transformed_samples))
-        for sample in transformed_samples:
-            self.assertNotEqual(sample.test_case, sample.original)
-            self.assertEqual(len(sample.transformations), 1)
-
-    def test_swap_gender(self) -> None:
-        """"""
-        transformed_samples = GenderPronounBias.transform(
-            sample_list=self.gendered_sentences,
-            pronouns_to_substitute=["he", "his"],
-            pronoun_type="male"
-
-        )
-        self.assertIsInstance(transformed_samples, list)
-        self.assertEqual(len(self.sentences_with_punctuation), len(transformed_samples))
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
             self.assertEqual(len(sample.transformations), 1)

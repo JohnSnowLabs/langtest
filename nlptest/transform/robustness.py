@@ -454,7 +454,7 @@ class AddContext(BaseRobustness):
             sample_list: List[Sample],
             starting_context: Optional[List[str]] = None,
             ending_context: Optional[List[str]] = None,
-            strategy: List[str] = None,
+            strategy: str = None,
     ) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
