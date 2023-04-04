@@ -60,7 +60,7 @@ class Conll03Dataset(datasets.GeneratorBasedBuilder):
         Conll03Config(
             name="default",
             description=_DESCRIPTION,
-            data_dir="."
+            data_dir="./"
         )
 
     ]
