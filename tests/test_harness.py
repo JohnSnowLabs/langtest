@@ -6,18 +6,21 @@ from nlptest.modelhandler.modelhandler import ModelFactory
 
 
 class HarnessTestCase(unittest.TestCase):
-    # TODO: add tests for the different combination of hub/task
-    def setUp(self) -> None:
+    
+    @classmethod
+    def setUpClass(cls) -> None:
         """"""
-        self.data_path = "tests/fixtures/test.conll"
-        self.config_path = "tests/fixtures/config_ner.yaml"
-        self.harness = Harness(
+        cls.data_path = "tests/fixtures/test.conll"
+        cls.config_path = "tests/fixtures/config_ner.yaml"
+        cls.harness = Harness(
             task='ner',
             model='dslim/bert-base-NER',
-            data=self.data_path,
-            config=self.config_path,
+            data=cls.data_path,
+            config=cls.config_path,
             hub="huggingface"
         )
+
+        cls.harness.generate().run()
 
     def test_Harness(self):
         """"""
@@ -39,21 +42,19 @@ class HarnessTestCase(unittest.TestCase):
 
     def test_generate_testcases(self):
         """"""
-        load_testcases = self.harness.generate()._testcases
+        load_testcases = self.harness._testcases
         self.assertIsInstance(load_testcases, list)
         self.assertIsInstance(load_testcases[0], Sample)
 
     def test_run_testcases(self):
         """"""
-        self.harness.generate()
-        robustness_results = self.harness.run()._generated_results
+        robustness_results = self.harness._generated_results
         self.assertIsInstance(robustness_results, list)
         self.assertIsInstance(robustness_results[0], Sample)
 
     def test_report(self):
         """"""
-        self.harness.generate()
-        df = self.harness.run().report()
+        df = self.harness.report()
         self.assertCountEqual(
             df.columns.tolist(),
             ['category', 'test_type', 'fail_count', 'pass_count', 'pass_rate',
@@ -73,7 +74,6 @@ class HarnessTestCase(unittest.TestCase):
     def test_save(self):
         """"""
         save_dir = "/tmp/saved_harness_test"
-        self.harness.generate()
         self.harness.save(save_dir)
 
         self.assertCountEqual(os.listdir(save_dir), [
@@ -121,7 +121,6 @@ class HarnessTestCase(unittest.TestCase):
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """"""
-
     def test_non_existing_default(self):
         with self.assertRaises(ValueError):
             h = Harness(task="ner", model="xxxxxxxxx", hub="spacy")

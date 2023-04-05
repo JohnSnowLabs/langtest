@@ -22,15 +22,14 @@ The following table gives an overview of the different tutorial notebooks. We ha
 {:.table2}
 |Tutorial Description|Library|Task|Open In Colab|
 |-|
-|Accuracy Tests                     |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Bias Tests                         |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Fairness Tests                     |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|Robustness Tests                   |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hodCD_UW353zEdoaCDN1picXP4BmyFu5)|
-|Representation Tests               |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End-to-End Workflow                       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End-to-End Custom Pipeline Workflow       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End-to-End Workflow              |Hugging Face   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
-|End-to-End Workflow                      |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1r04gLNVNoId9LmZ18-4JTZT36ANeg-FA)|
+|Accuracy Tests                             |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Accuracy_Demo.ipynb)|
+|Bias Tests                                 |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Bias_Demo.ipynb)|
+|Fairness Tests                             |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Fairness_Demo.ipynb)|
+|Representation Tests                       |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Representation_Demo.ipynb)|
+|Robustness Tests                           |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/test-specific-notebooks/Robustness_DEMO.ipynb)|
+|End-to-End Workflow                        |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/JohnSnowLabs_RealWorld_Notebook.ipynb)|
+|End-to-End Custom Pipeline Workflow        |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/JohnSnowLabs_RealWorld_Custom_Pipeline_Notebook.ipynb)|
+|End-to-End Workflow                        |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/Spacy_Real_World_Notebook.ipynb)|
 
 
 <style>

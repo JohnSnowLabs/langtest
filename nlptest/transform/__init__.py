@@ -42,7 +42,7 @@ class TestFactory:
         """
         all_results = []
         all_categories = TestFactory.test_categories()
-        tests = tqdm(test_types.keys(), desc="Generating testcases...")
+        tests = tqdm(test_types.keys(), desc="Generating testcases...", disable=TestFactory.is_augment)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             values = test_types[each]
@@ -161,6 +161,7 @@ class RobustnessTestFactory(ITests):
             self.tests['american_to_british']['parameters']['accent_map'] = A2B_DICT
 
         if "british_to_american" in self.tests:
+            self.tests['british_to_american']['parameters'] = {}
             self.tests['british_to_american']['parameters']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self.tests:
