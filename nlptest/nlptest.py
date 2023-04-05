@@ -318,7 +318,7 @@ class Harness:
         """
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
+                raise FileNotFoundError(f"File '{filename}' is missing to load a previously saved `Harness`.")
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)

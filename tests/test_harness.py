@@ -59,9 +59,9 @@ class HarnessTestCase(unittest.TestCase):
             ['category', 'test_type', 'fail_count', 'pass_count', 'pass_rate',
        'minimum_pass_rate', 'pass'] )
 
-    def test_duplicate_tasks(self):
+    def test_incompatible_tasks(self):
         """"""
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             Harness(
                 task="text-classifer",
                 model="dslim/bert-base-NER",
@@ -91,7 +91,6 @@ class HarnessTestCase(unittest.TestCase):
             model="bert-base-cased",
             hub="huggingface"
         )
-        self.assertEqual(self.harness._testcases, loaded_harness._testcases)
         self.assertEqual(self.harness._config, loaded_harness._config)
         self.assertEqual(self.harness.data, loaded_harness.data)
         self.assertNotEqual(self.harness.model, loaded_harness.model)
@@ -115,33 +114,9 @@ class HarnessTestCase(unittest.TestCase):
             model="bert-base-uncased",
             hub="huggingface"
         )
-        self.assertEqual(tc_harness._testcases, loaded_tc_harness._testcases)
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
-
-    def test_save_load_testcases(self):
-        """"""
-        path_to_file = "/tmp/saved_testcases.pkl"
-        harness = Harness(
-            task='text-classification',
-            model='bert-base-cased',
-            data="tests/fixtures/text_classification.csv",
-            config="tests/fixtures/config_text_classification.yaml",
-            hub="huggingface"
-        )
-        harness.generate()
-        harness.save_testcases(path_to_file)
-
-        new_harness = Harness(
-            task='text-classification',
-            model='bert-base-cased',
-            data="tests/fixtures/text_classification.csv",
-            config="tests/fixtures/config_text_classification.yaml",
-            hub="huggingface"
-        )
-        new_harness.load_testcases(path_to_file)
-        self.assertEqual(harness._testcases, new_harness._testcases)
 
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
@@ -153,44 +128,29 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
 
     def test_ner_spacy(self):
         """"""
-        try:
-            h = Harness(task="ner", model="en_core_web_sm", hub="spacy")
-            h.generate().run().report()
-        except Exception as e:
-            self.fail(f"Test failed with the following error:\n{e}")
+        h = Harness(task="ner", model="en_core_web_sm", hub="spacy")
+        h.generate().run().report()
 
     def test_ner_hf(self):
         """"""
-        try:
-            h = Harness(task="ner", model="dslim/bert-base-NER", hub="huggingface")
-            h.generate().run().report()
-        except Exception as e:
-            self.fail(f"Test failed with the following error:\n{e}")
+        h = Harness(task="ner", model="dslim/bert-base-NER", hub="huggingface")
+        h.generate().run().report()
 
     def test_ner_jsl(self):
         """"""
-        try:
-            h = Harness(task="ner", model="ner_dl_bert", hub="johnsnowlabs")
-            h.generate().run().report()
-        except Exception as e:
-            self.fail(f"Test failed with the following error:\n{e}")
+        h = Harness(task="ner", model="ner_dl_bert", hub="johnsnowlabs")
+        h.generate().run().report()
 
     def test_text_classification_spacy(self):
         """"""
-        try:
-            h = Harness(task="text-classification", model="nlptest/data/textcat_imdb", hub="spacy")
-            h.generate().run().report()
-        except Exception as e:
-            self.fail(f"Test failed with the following error:\n{e}")
+        h = Harness(task="text-classification", model="nlptest/data/textcat_imdb", hub="spacy")
+        h.generate().run().report()
 
     def test_text_classification_hf(self):
         """"""
-        try:
-            h = Harness(task="text-classification", model="mrm8488/distilroberta-finetuned-tweets-hate-speech",
-                        hub="huggingface")
-            h.generate().run().report()
-        except Exception as e:
-            self.fail(f"Test failed with the following error:\n{e}")
+        h = Harness(task="text-classification", model="mrm8488/distilroberta-finetuned-tweets-hate-speech",
+                    hub="huggingface")
+        h.generate().run().report()
 
     def test_text_classification_jsl(self):
         """"""

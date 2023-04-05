@@ -36,13 +36,13 @@ class AugmentRobustnessTestCase(unittest.TestCase):
 
     def test_augmentrobustness(self):
         temp_df = pd.DataFrame({
-            'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase', 'add_context'],
-            'category': ['bias', 'bias', 'robustness', 'robustness', 'robustness'],
-            'fail_count': [3, 0, 82, 43, 91],
-            'pass_count': [88, 91, 9, 48, 0],
-            'pass_rate': [97, 100, 10, 53, 0],
-            'minimum_pass_rate': [65, 65, 65, 65, 65],
-            'pass': [True, True, False, False, False]
+            'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase'],
+            'category': ['bias', 'bias', 'robustness', 'robustness'],
+            'fail_count': [3, 0, 82, 43],
+            'pass_count': [88, 91, 9, 48],
+            'pass_rate': [97, 100, 10, 53],
+            'minimum_pass_rate': [65, 65, 65, 65],
+            'pass': [True, True, False, False]
         })
 
         model = ModelFactory.load_model(

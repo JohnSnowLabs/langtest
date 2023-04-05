@@ -95,7 +95,7 @@ class ConllDataset(_IDataset):
         self._file_path = file_path
 
         if task != 'ner':
-            raise OSError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
+            raise ValueError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
         self.task = task
 
     def load_data(self) -> List[Sample]:
@@ -240,7 +240,7 @@ class CSVDataset(_IDataset):
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
-        with open(self._file_path, newline='') as csv_file:
+        with open(self._file_path, newline='',encoding="utf-8") as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
             samples = []
@@ -294,7 +294,7 @@ class CSVDataset(_IDataset):
             property:
         """
         sniffer = csv.Sniffer()
-        with open(file_path) as fp:
+        with open(file_path, encoding="utf-8") as fp:
             first_line = fp.readline()
             delimiter = sniffer.sniff(first_line).delimiter
         return delimiter
