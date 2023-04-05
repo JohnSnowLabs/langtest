@@ -44,7 +44,7 @@ Take a look at our official page for user documentation and examples: [nlptest.o
 
 # Import and create a Harness object
 from nlptest import Harness
-h = Harness(task='ner', model='dslim/bert-base-NER', hub='transformers')
+h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
