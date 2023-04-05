@@ -27,7 +27,15 @@ class PretrainedModelForNER(_ModelHandler):
     @classmethod
     def load_model(cls, path):
         """Load and return SpaCy pipeline"""
-        return spacy.load(path)
+        installed_models = spacy.util.get_installed_models()
+        if path in installed_models:
+            return spacy.load(path)
+        else:
+            model_name = path if len(
+                installed_models) > 0 else "en_core_web_sm"
+            raise OSError(
+                f'''Please download {model_name} from spaCy to use this model:
+            python -m spacy download {model_name}''')
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -100,7 +108,15 @@ class PretrainedModelForTextClassification(_ModelHandler):
     @classmethod
     def load_model(cls, path: str):
         """Load and return SpaCy pipeline"""
-        return spacy.load(path)
+        installed_models = spacy.util.get_installed_models()
+        if path in installed_models:
+            return spacy.load(path)
+        else:
+            model_name = path if len(
+                installed_models) > 0 else "en_core_web_sm"
+            raise OSError(
+                f'''Please download {model_name} from spaCy to use this model:
+            python -m spacy download {model_name}''')
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Perform text classification predictions on the input text.
@@ -117,7 +133,8 @@ class PretrainedModelForTextClassification(_ModelHandler):
             label = max(output, key=output.get)
             output = [{"label": label, "score": output[label]}]
         else:
-            output = [{"label": key, "score": value} for key, value in output.items()]
+            output = [{"label": key, "score": value}
+                      for key, value in output.items()]
 
         return SequenceClassificationOutput(
             text=text,
