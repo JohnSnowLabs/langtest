@@ -30,7 +30,7 @@ class PretrainedModelForNER(_ModelHandler):
     @classmethod
     def load_model(cls, path) -> 'Pipeline':
         """Load the NER model into the `model` attribute."""
-        return pipeline(model=path, task="ner", ignore_labels=[])
+        return pipeline(model=path, task="ner", aggregation_strategy="first", ignore_labels=[])
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
