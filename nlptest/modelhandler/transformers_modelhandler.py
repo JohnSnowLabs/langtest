@@ -1,5 +1,6 @@
-from typing import List, Dict
+from typing import Dict, List, Tuple
 
+import numpy as np
 from transformers import Pipeline, pipeline
 
 from .modelhandler import _ModelHandler
@@ -48,6 +49,78 @@ class PretrainedModelForNER(_ModelHandler):
                 aggregated_words[-1]["end"] = prediction["end"]
         return aggregated_words
 
+    @staticmethod
+    def _get_tag(entity_label: str) -> Tuple[str, str]:
+        """"
+        Args:
+            entity_label (str):
+                BIO style label
+        Returns:
+            Tuple[str,str]:
+                tag, label
+        """
+        if entity_label.startswith("B-") or entity_label.startswith("I-"):
+            return entity_label.split("-")
+        return "I", "O"
+
+    @staticmethod
+    def _group_sub_entities(entities: List[dict]) -> dict:
+        """
+        Group together the adjacent tokens with the same entity predicted.
+        Args:
+            entities (`dict`): The entities predicted by the pipeline.
+        """
+        # Get the first entity in the entity group
+        entity = entities[0]["entity"].split("-")[-1]
+        scores = np.nanmean([entity["score"] for entity in entities])
+        tokens = [entity["word"] for entity in entities]
+
+        entity_group = {
+            "entity_group": entity,
+            "score": np.mean(scores),
+            "word": " ".join(tokens),
+            "start": entities[0]["start"],
+            "end": entities[-1]["end"],
+        }
+        return entity_group
+
+    def group_entities(self, entities: List[Dict]) -> List[Dict]:
+        """
+        Find and group together the adjacent tokens with the same entity predicted.
+        Inspired and adapted from:
+        https://github.com/huggingface/transformers/blob/68287689f2f0d8b7063c400230b3766987abf18d/src/transformers/pipelines/token_classification.py#L421
+
+        Args:
+            entities (List[Dict]):
+                The entities predicted by the pipeline.
+        Returns:
+            List[Dict]:
+                grouped entities
+        """
+        entity_groups = []
+        entity_group_disagg = []
+
+        for entity in entities:
+            if not entity_group_disagg:
+                entity_group_disagg.append(entity)
+                continue
+
+            bi, tag = self._get_tag(entity["entity"])
+            last_bi, last_tag = self._get_tag(entity_group_disagg[-1]["entity"])
+
+            if tag == "O":
+                entity_groups.append(self._group_sub_entities(entity_group_disagg))
+                entity_group_disagg = [entity]
+            elif tag == last_tag and bi != "B":
+                entity_group_disagg.append(entity)
+            else:
+                entity_groups.append(self._group_sub_entities(entity_group_disagg))
+                entity_group_disagg = [entity]
+        if entity_group_disagg:
+            entity_groups.append(self._group_sub_entities(entity_group_disagg))
+
+        return entity_groups
+
     @classmethod
     def load_model(cls, path: str) -> 'Pipeline':
         """Load the NER model into the `model` attribute.
@@ -75,7 +148,8 @@ class PretrainedModelForNER(_ModelHandler):
             NEROutput: A list of named entities recognized in the input text.
         """
         predictions = self.model(text, **kwargs)
-        aggregated_predictions = self._aggregate_words(predictions)
+        aggregated_words = self._aggregate_words(predictions)
+        aggregated_predictions = self.group_entities(aggregated_words)
 
         return NEROutput(
             predictions=[
@@ -118,7 +192,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     def __init__(
             self,
-            model,
+            model: Pipeline,
     ):
         assert isinstance(model, Pipeline), \
             ValueError(f"Invalid transformers pipeline! "
