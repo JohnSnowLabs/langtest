@@ -341,12 +341,12 @@ class Sample(BaseModel):
              NEROutput:
                 realigned NER predictions
         """
-        reversed_transformations = list(reversed(self.transformations))
 
         if self._realigned_spans is None:
             if len(self.transformations or '') == 0:
                 return self.actual_results
 
+            reversed_transformations = list(reversed(self.transformations))
             ignored_predictions = self.ignored_predictions
 
             realigned_results = []
