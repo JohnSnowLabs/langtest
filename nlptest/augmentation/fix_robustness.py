@@ -1,13 +1,13 @@
-
-from abc import ABC, abstractmethod, abstractstaticmethod
-import random
-from abc import ABC, abstractmethod
-from typing import List, Optional
-
 import yaml
+import random
+import pandas as pd
+from typing import List
+from abc import ABC, abstractmethod
 
-from nlptest.datahandler.datasource import DataFactory
 from nlptest.transform import TestFactory
+from nlptest.utils.custom_types import Sample
+from nlptest.datahandler.datasource import DataFactory
+from nlptest.transform.utils import create_terminology
 
 
 class BaseAugmentaion(ABC):
@@ -63,13 +63,12 @@ class AugmentRobustness(BaseAugmentaion):
         suggestions(self, prop) -> pandas.DataFrame:
             Calculates suggestions for improving test performance based on a given report.
 
-        
+
 
 
     """
 
     def __init__(self, task, h_report, config, model, max_prop=0.5) -> None:
-
         """
         Initializes an instance of MyClass with the specified parameters.
 
@@ -98,11 +97,10 @@ class AugmentRobustness(BaseAugmentaion):
 
     def fix(
         self,
-        input_path:str,
+        input_path: str,
         output_path,
         inplace: bool = False
     ):
-        
         """
         Applies perturbations to the input data based on the recommendations from harness reports.
 
@@ -125,8 +123,11 @@ class AugmentRobustness(BaseAugmentaion):
         if suggest.shape[0] <= 0:
             return "Test metrics all have over 0.9 f1-score."
 
+        self.config = self._parameters_overrides(self.config, data)
+
         fianl_aug_data = []
         hash_map = {k: v for k, v in enumerate(data)}
+
         for proportion in suggest.iterrows():
             cat = proportion[-1]['category'].lower()
             if cat not in ["robustness", 'bias']:
@@ -134,22 +135,30 @@ class AugmentRobustness(BaseAugmentaion):
             test = proportion[-1]['test_type'].lower()
             test_type = {
                 cat: {
-                test: self.config.get('tests').get(cat).get(test)
+                    test: self.config.get('tests').get(cat).get(test)
                 }
             }
             if proportion[-1]['test_type'] in supported_tests[cat]:
-                sample_length = len(data) * self.max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
+                sample_length = len(
+                    data) * self.max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
                 if inplace:
-                    sample_indices = random.sample(range(0, len(data)), int(sample_length))
+                    sample_indices = random.sample(
+                        range(0, len(data)), int(sample_length))
                     for each in sample_indices:
-                        hash_map[each] = TestFactory.transform([hash_map[each]], test_type, model=self.model)[0]
+                        if test == 'swap_entities':
+                            test_type['robustness']['swap_entities']['parameters']['labels'] = [
+                                self.label[each]]
+                        hash_map[each] = TestFactory.transform(
+                            [hash_map[each]], test_type, model=self.model)[0]
+
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
-                    aug_data = TestFactory.transform(sample_data, test_type, model=self.model)
+                    aug_data = TestFactory.transform(
+                        sample_data, test_type, model=self.model)
                     fianl_aug_data.extend(aug_data)
         if inplace:
             fianl_aug_data = list(hash_map.values())
-            self.df.export(fianl_aug_data, output_path) 
+            self.df.export(fianl_aug_data, output_path)
         else:
             data.extend(fianl_aug_data)
             self.df.export(data, output_path)
@@ -157,7 +166,6 @@ class AugmentRobustness(BaseAugmentaion):
         return fianl_aug_data
 
     def suggestions(self, report):
-        
         """
         Calculates suggestions for improving test performance based on a given report.
 
@@ -174,15 +182,13 @@ class AugmentRobustness(BaseAugmentaion):
                                                     should increase to reach the minimum pass rate
 
         """
-        report['ratio'] = report['pass_rate']/ report['minimum_pass_rate']
+        report['ratio'] = report['pass_rate'] / report['minimum_pass_rate']
         report['proportion_increase'] = report['ratio'].apply(
-                                            lambda x: self._proportion_values(x)
-                                        )
-        return report[~report['proportion_increase'].isna()][['category','test_type', 'ratio', 'proportion_increase']]
-
+            lambda x: self._proportion_values(x)
+        )
+        return report[~report['proportion_increase'].isna()][['category', 'test_type', 'ratio', 'proportion_increase']]
 
     def _proportion_values(self, x):
-
         """
         Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
 
@@ -198,7 +204,7 @@ class AugmentRobustness(BaseAugmentaion):
                 If the pass rate is less than 0.7 times the minimum pass rate, returns 0.3.
 
         """
-        
+
         if x >= 1:
             return None
         elif x > 0.9:
@@ -209,3 +215,17 @@ class AugmentRobustness(BaseAugmentaion):
             return 0.2
         else:
             return 0.3
+
+    def _parameters_overrides(self, config: dict, data_handler: List[Sample]) -> dict:
+        tests = config.get('tests', {}).get('robustness', {})
+        if 'swap_entities' in config.get('tests', {}).get('robustness', {}):
+            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
+                               'label': [[i.entity for i in sample.expected_results.predictions]
+                                         for sample in data_handler]})
+            params = tests['swap_entities']
+            params['parameters'] = {}
+            params['parameters']['terminology'] = create_terminology(df)
+            params['parameters']['labels'] = df.label.tolist()
+            self.label = self.config.get('tests').get('robustness').get(
+                'swap_entities').get('parameters').get('labels')
+        return config
