@@ -14,7 +14,7 @@ article_header:
      url: https://github.com/JohnSnowLabs/nlptest 
    - text: '<i class="fab fa-slack-hash"></i> Slack'
      type: trans
-     url: https://app.slack.com/client/T9BRVC9AT/C0196BQCDPY   
+     url: https://spark-nlp.slack.com/archives/C051A5XG6CU   
 
  height: 50vh
  theme: dark

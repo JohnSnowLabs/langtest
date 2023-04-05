@@ -19,10 +19,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=16, end=19, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=16, end=19, word="KFC"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -41,10 +45,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -63,10 +71,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=17, end=20, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=17, end=20, word="KFC"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -90,10 +102,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=23, end=26, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=23, end=26, word="KFC"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -115,10 +131,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="CARDINAL", span=Span(start=13, end=18, word="3,000"))]
+                predictions=[
+                    NERPrediction(entity="CARDINAL", span=Span(start=13, end=18, word="3,000"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -137,10 +157,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=14, end=17, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=14, end=17, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=12, end=15, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=12, end=15, word="KFC"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -159,10 +183,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -179,10 +207,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=32, word="Kentucky Fried Chicken"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=32, word="Kentucky Fried Chicken"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())
@@ -199,10 +231,14 @@ class TestSample(unittest.TestCase):
                 )
             ],
             actual_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                ]
             ),
             expected_results=NEROutput(
-                predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))]
+                predictions=[
+                    NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))
+                ]
             ),
         )
         self.assertTrue(sample.is_pass())

@@ -5,7 +5,6 @@ import logging
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
-from overrides import overrides
 
 import numpy as np
 import pandas as pd
@@ -49,26 +48,29 @@ class PerturbationFactory:
                 if test_name not in DEFAULT_PERTURBATIONS:
                     raise ValueError(
                         f'Invalid test specification: {test_name}. Available tests are: {DEFAULT_PERTURBATIONS}')
-                self._tests[test_name] = reduce(lambda x, y: {**x, **y}, test[test_name])
+                self._tests[test_name] = reduce(
+                    lambda x, y: {**x, **y}, test[test_name])
             else:
                 raise ValueError(
-                    f'Invalid test configuration! Tests can be '
-                    f'[1] test name as string or '
-                    f'[2] dictionary of test name and corresponding parameters.'
+                    '''Invalid test configuration! Tests can be
+                    [1] test name as string or
+                    [2] dictionary of test name and corresponding parameters.'''
                 )
 
         if 'swap_entities' in self._tests:
             df = pd.DataFrame({'text': [sample.original for sample in data_handler],
                                'label': [[i.entity for i in sample.expected_results.predictions]
                                          for sample in data_handler]})
-            self._tests['swap_entities']['terminology'] = create_terminology(df)
+            self._tests['swap_entities']['terminology'] = create_terminology(
+                df)
             self._tests['swap_entities']['labels'] = df.label.tolist()
 
         if "american_to_british" in self._tests:
             self._tests['american_to_british']['accent_map'] = A2B_DICT
 
         if "british_to_american" in self._tests:
-            self._tests['british_to_american']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
+            self._tests['british_to_american']['accent_map'] = {
+                v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self._tests:
             nltk.download('omw-1.4', quiet=True)
@@ -79,29 +81,30 @@ class PerturbationFactory:
             self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
         if 'replace_to_male_pronouns' in self._tests:
-            self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = [item for sublist in
-                                                                                 list(female_pronouns.values()) for item
-                                                                                 in sublist] + [item for sublist in
-                                                                                                list(
-                                                                                                    neutral_pronouns.values())
-                                                                                                for item in sublist]
+            neutral_pronouns_list = [item for sublist in list(
+                neutral_pronouns.values()) for item in sublist]
+            female_pronouns_list = [item for sublist in list(
+                female_pronouns.values()) for item in sublist]
+            self._tests['replace_to_male_pronouns']['pronouns_to_substitute'] = female_pronouns_list + \
+                neutral_pronouns_list
             self._tests['replace_to_male_pronouns']['pronoun_type'] = 'male'
 
         if 'replace_to_female_pronouns' in self._tests:
-            self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = [item for sublist in
-                                                                                   list(male_pronouns.values()) for item
-                                                                                   in sublist] + [item for sublist in
-                                                                                                  list(
-                                                                                                      neutral_pronouns.values())
-                                                                                                  for item in sublist]
+            neutral_pronouns_list = [item for sublist in list(
+                neutral_pronouns.values()) for item in sublist]
+            male_pronouns_list = [item for sublist in list(
+                male_pronouns.values()) for item in sublist]
+            self._tests['replace_to_female_pronouns']['pronouns_to_substitute'] = male_pronouns_list + \
+                neutral_pronouns_list
             self._tests['replace_to_female_pronouns']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self._tests:
-            self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = [item for sublist in
-                                                                                    list(female_pronouns.values()) for
-                                                                                    item in sublist] + [item for sublist
-                                                                                                        in list(
-                    male_pronouns.values()) for item in sublist]
+            female_pronouns_list = [item for sublist in list(
+                female_pronouns.values()) for item in sublist]
+            male_pronouns_list = [item for sublist in list(
+                male_pronouns.values()) for item in sublist]
+            self._tests['replace_to_neutral_pronouns']['pronouns_to_substitute'] = male_pronouns_list + \
+                female_pronouns_list
             self._tests['replace_to_neutral_pronouns']['pronoun_type'] = 'neutral'
 
         self._data_handler = data_handler
@@ -112,17 +115,20 @@ class PerturbationFactory:
         all_samples = []
         for test_name, params in self._tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(data_handler_copy, **params)
+            transformed_samples = globals()[PERTURB_CLASS_MAP[test_name]].transform(
+                data_handler_copy, **params)
             for sample in transformed_samples:
                 sample.test_type = test_name
 
             # Check for number of perturbed sentences
-            transformed_samples = [x for x in transformed_samples if x.original != x.test_case]
+            transformed_samples = [
+                x for x in transformed_samples if x.original != x.test_case]
             if len(transformed_samples) == 0:
-                logging.warning("%s did not create any test cases. Test will be removed from results.", test_name)
+                logging.warning(
+                    "%s did not create any test cases. Test will be removed from results.", test_name)
             elif len(transformed_samples) < 10:
-                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name,
-                                len(transformed_samples))
+                logging.warning("%s has perturbed %s sample(s). Results may not be reliable.", test_name, len(
+                    transformed_samples))
 
             all_samples.extend(transformed_samples)
         return all_samples
@@ -661,7 +667,8 @@ class AddContraction(BasePerturbation):
               regex replace for contraction.
             """
             token = match.group(0)
-            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(token.lower()))
+            contracted_token = CONTRACTION_MAP.get(
+                token, CONTRACTION_MAP.get(token.lower()))
 
             is_upper_case = token[0]
             expanded_contraction = is_upper_case + contracted_token[1:]
