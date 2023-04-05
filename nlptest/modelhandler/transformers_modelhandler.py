@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from transformers import Pipeline, pipeline
 
@@ -27,10 +27,39 @@ class PretrainedModelForNER(_ModelHandler):
                        f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
         self.model = model
 
+    @staticmethod
+    def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
+        """
+        Aggregates predictions at a word-level by taking the first token label.
+
+        Args:
+            predictions (List[Dict]):
+                predictions obtained with the pipeline object
+        Returns:
+            List[Dict]:
+                aggregated predictions
+        """
+        aggregated_words = []
+        for prediction in predictions:
+            if not prediction["word"].startswith("##"):
+                aggregated_words.append(prediction)
+            else:
+                aggregated_words[-1]["word"] += prediction["word"][2:]
+                aggregated_words[-1]["end"] = prediction["end"]
+        return aggregated_words
+
     @classmethod
-    def load_model(cls, path) -> 'Pipeline':
-        """Load the NER model into the `model` attribute."""
-        return pipeline(model=path, task="ner", aggregation_strategy="first", ignore_labels=[])
+    def load_model(cls, path: str) -> 'Pipeline':
+        """Load the NER model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+        return pipeline(model=path, task="ner", ignore_labels=[])
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -45,14 +74,19 @@ class PretrainedModelForNER(_ModelHandler):
         Returns:
             NEROutput: A list of named entities recognized in the input text.
         """
-        prediction = self.model(text, **kwargs)
+        predictions = self.model(text, **kwargs)
+        aggregated_predictions = self._aggregate_words(predictions)
 
-        return NEROutput(predictions=[NERPrediction.from_span(
-            entity=pred.get('entity_group', pred.get('entity', None)),
-            word=pred['word'],
-            start=pred['start'],
-            end=pred['end']
-        ) for pred in prediction])
+        return NEROutput(
+            predictions=[
+                NERPrediction.from_span(
+                    entity=prediction.get('entity_group', prediction.get('entity', None)),
+                    word=prediction['word'],
+                    start=prediction['start'],
+                    end=prediction['end']
+                ) for prediction in aggregated_predictions
+            ]
+        )
 
     def predict_raw(self, text: str) -> List[str]:
         """
