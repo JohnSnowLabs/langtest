@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 import pathlib as pl
 
-from nlptest.augmentation.fix_robustness import AugmentRobustness
+from nlptest.augmentation import AugmentRobustness
 from nlptest.modelhandler.modelhandler import ModelFactory
 from nlptest.nlptest import Harness
 
