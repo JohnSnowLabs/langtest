@@ -1,7 +1,10 @@
+import unittest
 from nlptest.utils.custom_types import NEROutput, NERPrediction, Sample, Span, Transformation
 
 
-class TestSample:
+class TestSample(unittest.TestCase):
+    """"""
+
     def test_add_context_left(self):
         """"""
         sample = Sample(
@@ -22,7 +25,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=16, end=19, word="KFC"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_add_context_right(self):
         """"""
@@ -44,7 +47,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_add_context_middle(self):
         """"""
@@ -66,7 +69,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=17, end=20, word="KFC"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_add_two_contexts(self):
         """"""
@@ -93,7 +96,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=23, end=26, word="KFC"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
         sample = Sample(
             original="Attendance : 3,000",
@@ -118,7 +121,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="CARDINAL", span=Span(start=19, end=24, word="KFC"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_contraction(self):
         """"""
@@ -140,7 +143,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=12, end=15, word="KFC"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_entity_swap(self):
         """"""
@@ -162,7 +165,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
         sample = Sample(
             original="I do love KFC",
@@ -182,7 +185,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=32, word="Kentucky Fried Chicken"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
         sample = Sample(
             original="I do love McDonald",
@@ -202,7 +205,7 @@ class TestSample:
                 predictions=[NERPrediction(entity="PROD", span=Span(start=10, end=18, word="McDonald"))]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_two_entities_two_contexts(self):
         """"""
@@ -235,7 +238,7 @@ class TestSample:
                 ]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_entity_to_ignore(self):
         """"""
@@ -262,7 +265,7 @@ class TestSample:
                 ]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
 
     def test_swap_entities(self):
         """"""
@@ -288,7 +291,11 @@ class TestSample:
                 ]
             ),
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
+
+
+class TokenMismatch(unittest.TestCase):
+    """"""
 
     def test_token_mismatch_hf(self):
         """"""
@@ -366,4 +373,92 @@ class TestSample:
                 )
             ]
         )
-        assert sample.is_pass()
+        self.assertTrue(sample.is_pass())
+
+    def test_token_mismatch_hf2(self):
+        """"""
+        sample = Sample(
+            original='But China saw their luck desert them in the second match of the group , crashing to a surprise '
+                     '2-0 defeat to newcomers Uzbekistan .',
+            test_type='replace_to_female_pronouns',
+            test_case='But China saw her luck desert her in the second match of the group , crashing to a surprise 2-0 defeat to newcomers Uzbekistan .',
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='O', span=Span(start=0, end=3, word='But')),
+                    NERPrediction(entity='B-LOC', span=Span(start=4, end=9, word='China')),
+                    NERPrediction(entity='O', span=Span(start=10, end=13, word='saw')),
+                    NERPrediction(entity='O', span=Span(start=14, end=19, word='their')),
+                    NERPrediction(entity='O', span=Span(start=20, end=24, word='luck')),
+                    NERPrediction(entity='O', span=Span(start=25, end=31, word='desert')),
+                    NERPrediction(entity='O', span=Span(start=32, end=36, word='them')),
+                    NERPrediction(entity='O', span=Span(start=37, end=39, word='in')),
+                    NERPrediction(entity='O', span=Span(start=40, end=43, word='the')),
+                    NERPrediction(entity='O', span=Span(start=44, end=50, word='second')),
+                    NERPrediction(entity='O', span=Span(start=51, end=56, word='match')),
+                    NERPrediction(entity='O', span=Span(start=57, end=59, word='of')),
+                    NERPrediction(entity='O', span=Span(start=60, end=63, word='the')),
+                    NERPrediction(entity='O', span=Span(start=64, end=69, word='group')),
+                    NERPrediction(entity='O', span=Span(start=70, end=71, word=',')),
+                    NERPrediction(entity='O', span=Span(start=72, end=80, word='crashing')),
+                    NERPrediction(entity='O', span=Span(start=81, end=83, word='to')),
+                    NERPrediction(entity='O', span=Span(start=84, end=85, word='a')),
+                    NERPrediction(entity='O', span=Span(start=86, end=94, word='surprise')),
+                    NERPrediction(entity='O', span=Span(start=95, end=96, word='2')),
+                    NERPrediction(entity='O', span=Span(start=96, end=97, word='-')),
+                    NERPrediction(entity='O', span=Span(start=97, end=98, word='0')),
+                    NERPrediction(entity='O', span=Span(start=99, end=105, word='defeat')),
+                    NERPrediction(entity='O', span=Span(start=106, end=108, word='to')),
+                    NERPrediction(entity='O', span=Span(start=109, end=117, word='newcomer')),
+                    NERPrediction(entity='O', span=Span(start=117, end=118, word='##s')),
+                    NERPrediction(entity='B-LOC', span=Span(start=119, end=129, word='Uzbekistan')),
+                    NERPrediction(entity='O', span=Span(start=130, end=131, word='.'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='O', span=Span(start=0, end=3, word='But')),
+                    NERPrediction(entity='B-LOC', span=Span(start=4, end=9, word='China')),
+                    NERPrediction(entity='O', span=Span(start=10, end=13, word='saw')),
+                    NERPrediction(entity='O', span=Span(start=14, end=17, word='her')),
+                    NERPrediction(entity='O', span=Span(start=18, end=22, word='luck')),
+                    NERPrediction(entity='O', span=Span(start=23, end=29, word='desert')),
+                    NERPrediction(entity='O', span=Span(start=30, end=33, word='her')),
+                    NERPrediction(entity='O', span=Span(start=34, end=36, word='in')),
+                    NERPrediction(entity='O', span=Span(start=37, end=40, word='the')),
+                    NERPrediction(entity='O', span=Span(start=41, end=47, word='second')),
+                    NERPrediction(entity='O', span=Span(start=48, end=53, word='match')),
+                    NERPrediction(entity='O', span=Span(start=54, end=56, word='of')),
+                    NERPrediction(entity='O', span=Span(start=57, end=60, word='the')),
+                    NERPrediction(entity='O', span=Span(start=61, end=66, word='group')),
+                    NERPrediction(entity='O', span=Span(start=67, end=68, word=',')),
+                    NERPrediction(entity='O', span=Span(start=69, end=77, word='crashing')),
+                    NERPrediction(entity='O', span=Span(start=78, end=80, word='to')),
+                    NERPrediction(entity='O', span=Span(start=81, end=82, word='a')),
+                    NERPrediction(entity='O', span=Span(start=83, end=91, word='surprise')),
+                    NERPrediction(entity='O', span=Span(start=92, end=93, word='2')),
+                    NERPrediction(entity='O', span=Span(start=93, end=94, word='-')),
+                    NERPrediction(entity='O', span=Span(start=94, end=95, word='0')),
+                    NERPrediction(entity='O', span=Span(start=96, end=102, word='defeat')),
+                    NERPrediction(entity='O', span=Span(start=103, end=105, word='to')),
+                    NERPrediction(entity='O', span=Span(start=106, end=114, word='newcomer')),
+                    NERPrediction(entity='O', span=Span(start=114, end=115, word='##s')),
+                    NERPrediction(entity='B-LOC', span=Span(start=116, end=126, word='Uzbekistan')),
+                    NERPrediction(entity='O', span=Span(start=127, end=128, word='.'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=14, end=19, word='their'),
+                    new_span=Span(start=14, end=17, word='her'),
+                    ignore=False
+                ),
+                Transformation(
+                    original_span=Span(start=30, end=34, word='them'),
+                    new_span=Span(start=30, end=33, word='her'),
+                    ignore=False
+                )
+            ],
+            category='bias',
+            state='done'
+        )
+        self.assertTrue(sample.is_pass())
