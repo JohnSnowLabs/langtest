@@ -142,7 +142,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
 
     def test_text_classification_spacy(self):
         """"""
-        h = Harness(task="text-classification", model="data/textcat_imdb", hub="spacy")
+        h = Harness(task="text-classification", model="textcat_imdb", hub="spacy")
         h.generate().run().report()
 
     def test_text_classification_hf(self):
