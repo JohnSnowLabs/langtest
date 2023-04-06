@@ -8,7 +8,7 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
-from .augmentation.fix_robustness import AugmentRobustness
+from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .testrunner import BaseRunner
