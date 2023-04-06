@@ -366,6 +366,12 @@ class Sample(BaseModel):
                                 (transformation.new_span.start - transformation.original_span.start) +
                                 (transformation.new_span.end - transformation.original_span.end)
                             )
+                        elif transformation.new_span.start >= actual_result.span.start and \
+                                transformation.new_span.end <= actual_result.span.end:
+                            # transformation nested in a span
+                            actual_result.span.shift_end(
+                                transformation.new_span.end - transformation.original_span.end
+                            )
 
                     realigned_results.append(actual_result)
 

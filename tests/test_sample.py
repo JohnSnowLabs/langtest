@@ -567,3 +567,77 @@ class TokenMismatch(unittest.TestCase):
             ]
         )
         self.assertTrue(sample.is_pass())
+
+    def test_entity_nested_in_transformation(self):
+        """"""
+        sample = Sample(
+            original='GOLF - ZIMBABWE OPEN SECOND ROUND SCORES .',
+            test_type='replace_to_low_income_country',
+            test_case='GOLF - Mozambique OPEN SECOND ROUND SCORES .',
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='O', span=Span(start=0, end=4, word='GOLF')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word='-')),
+                    NERPrediction(entity='MISC', span=Span(start=7, end=20, word='ZIMBABWE OPEN')),
+                    NERPrediction(entity='O', span=Span(start=21, end=27, word='SECOND')),
+                    NERPrediction(entity='O', span=Span(start=28, end=33, word='ROUND')),
+                    NERPrediction(entity='O', span=Span(start=34, end=40, word='SCORES')),
+                    NERPrediction(entity='O', span=Span(start=41, end=42, word='.'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='O', span=Span(start=0, end=4, word='GOLF')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word='-')),
+                    NERPrediction(entity='MISC', span=Span(start=7, end=22, word='Mozambique OPEN')),
+                    NERPrediction(entity='O', span=Span(start=23, end=29, word='SECOND')),
+                    NERPrediction(entity='O', span=Span(start=30, end=35, word='ROUND')),
+                    NERPrediction(entity='O', span=Span(start=36, end=42, word='SCORES')),
+                    NERPrediction(entity='O', span=Span(start=43, end=44, word='.'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=7, end=15, word='ZIMBABWE'),
+                    new_span=Span(start=7, end=17, word='Mozambique'),
+                    ignore=False
+                )
+            ]
+        )
+        self.assertTrue(sample.is_pass())
+
+        sample = Sample(
+            original='GOLF - NEW ZIMBABWE OPEN SECOND ROUND SCORES .',
+            test_type='replace_to_low_income_country',
+            test_case='GOLF - NEW Mozambique OPEN SECOND ROUND SCORES .',
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='O', span=Span(start=0, end=4, word='GOLF')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word='-')),
+                    NERPrediction(entity='MISC', span=Span(start=7, end=24, word='NEW ZIMBABWE OPEN')),
+                    NERPrediction(entity='O', span=Span(start=25, end=31, word='SECOND')),
+                    NERPrediction(entity='O', span=Span(start=32, end=37, word='ROUND')),
+                    NERPrediction(entity='O', span=Span(start=38, end=44, word='SCORES')),
+                    NERPrediction(entity='O', span=Span(start=45, end=46, word='.'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='O', span=Span(start=0, end=4, word='GOLF')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word='-')),
+                    NERPrediction(entity='MISC', span=Span(start=7, end=26, word='NEW Mozambique OPEN')),
+                    NERPrediction(entity='O', span=Span(start=27, end=33, word='SECOND')),
+                    NERPrediction(entity='O', span=Span(start=34, end=39, word='ROUND')),
+                    NERPrediction(entity='O', span=Span(start=40, end=46, word='SCORES')),
+                    NERPrediction(entity='O', span=Span(start=47, end=48, word='.'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=11, end=19, word='ZIMBABWE'),
+                    new_span=Span(start=11, end=21, word='Mozambique'),
+                    ignore=False
+                )
+            ]
+        )
+        self.assertTrue(sample.is_pass())
