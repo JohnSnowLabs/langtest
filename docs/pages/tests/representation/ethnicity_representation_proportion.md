@@ -15,7 +15,7 @@ This test checks the data regarding the sample proportions of ethnicities.
 ```yaml
 min_ethnicity_name_representation_proportion:
     min_proportion: 
-        white : 0.20
+        white: 0.20
         black: 0.36                
 ```
 
