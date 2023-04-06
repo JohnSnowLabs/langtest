@@ -68,7 +68,7 @@ class Harness:
             raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
                              f"passed is not among the default ones. You need to either specify the parameter 'data' "
                              f"or use a default configuration.")
-        elif isinstance(data,list):
+        elif isinstance(data, list):
             self.data = data
         else:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
@@ -134,7 +134,7 @@ class Harness:
         """
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
-                             "calling the `.run()` method.")
+                               "calling the `.run()` method.")
         self._generated_results = BaseRunner(
             self._testcases,
             self.model,
@@ -152,13 +152,13 @@ class Harness:
         """
         if self._generated_results is None:
             raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
-                             "calling the `.report()` method.")
+                               "calling the `.report()` method.")
 
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
             self.min_pass_dict = {
                 j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in \
-                                  self._config['tests'].items() for j, k in v.items()
+                self._config['tests'].items() for j, k in v.items()
             }
 
         summary = defaultdict(lambda: defaultdict(int))
@@ -246,7 +246,7 @@ class Harness:
             task=self.task,
             config=self._config,
             h_report=self.df_report,
-            model = self.model
+            model=self.model
         ).fix(
             input_path=input_path,
             output_path=output_path,
@@ -279,11 +279,11 @@ class Harness:
         """
         if self._config is None:
             raise RuntimeError("The current Harness has not been configured yet. Please use the `.configure` method "
-                             "before calling the `.save` method.")
+                               "before calling the `.save` method.")
 
         if self._testcases is None:
             raise RuntimeError("The test cases have not been generated yet. Please use the `.generate` method before"
-                             "calling the `.save` method.")
+                               "calling the `.save` method.")
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
@@ -297,9 +297,9 @@ class Harness:
         with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
 
-
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] ="ner", hub: Optional[str] = None) -> 'Harness':
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] = "ner",
+             hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
 
