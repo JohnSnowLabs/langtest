@@ -91,7 +91,7 @@ class NERPrediction(BaseModel):
 
     def __str__(self) -> str:
         """"""
-        return f"{self.span.word} :{self.entity}"
+        return f"{self.span.word}: {self.entity}"
 
     def __repr__(self) -> str:
         """"""
