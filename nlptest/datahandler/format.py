@@ -81,7 +81,8 @@ class Formatter:
         try:
             return getattr(formats[f"{class_name}Formatter"], f"to_{output_format}")(sample, *args, **kwargs)
         except KeyError:
-            raise NameError(f"Class '{class_name}Formatter' not yet implemented.")
+            raise NameError(
+                f"Class '{class_name}Formatter' not yet implemented.")
 
 
 class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
@@ -206,7 +207,7 @@ class NEROutputFormatter(BaseFormatter):
                     else:
                         o_item = sample.expected_results.predictions[jdx].span.word
                         letters_count = len(set(item) - set(o_item))
-                        if len(norm_test_case_items) == len(norm_original_items) or letters_count < 2:
+                        if len(norm_test_case_items) == len(original.lower().split()) or letters_count < 2:
                             tl = sample.expected_results.predictions[jdx]
                             text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
                         else:
