@@ -9,7 +9,7 @@ This test checks if the NLP model can handle input text if the input text has Pa
 **alias_name:** `replace_to_parsi_names`
 
 <i class="fa fa-info-circle"></i>
-<em>This data was curated from Kidpaw and JSL data. To apply this test appropriately in other contexts, please adapt the [data dictionaries.](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py)</em>
+<em>This data was curated using [Kidpaw](https://www.kidpaw.com/). Please adapt the [data dictionaries](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py) to fit your use-case.</em>
 
 </div><div class="h3-box" markdown="1">
 

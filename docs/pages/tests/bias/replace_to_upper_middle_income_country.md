@@ -9,7 +9,7 @@ This test checks if the NLP model can handle input text if the input text has co
 **alias_name:** `replace_to_upper_middle_income_country`
 
 <i class="fa fa-info-circle"></i>
-<em>This data was curated from World Bank. To apply this test appropriately in other contexts, please adapt the [data dictionaries.](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py)</em>
+<em>This data was curated using World Bank data. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py).</em>
 
 </div><div class="h3-box" markdown="1">
 
