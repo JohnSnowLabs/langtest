@@ -29,7 +29,7 @@ class Harness:
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
         ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
             "tweet/sample.csv",
-        ("text-classification", "nlptest/data/textcat_imdb", "spacy"): "imdb/sample.csv",
+        ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
     }
 
@@ -61,9 +61,12 @@ class Harness:
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
-
             self.data = DataFactory(data, task=self.task).load()
+            if model == "textcat_imdb":
+                model = resource_filename("nlptest", "data/textcat_imdb")
+
             logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
                              f"passed is not among the default ones. You need to either specify the parameter 'data' "

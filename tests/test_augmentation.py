@@ -67,6 +67,37 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
 
+    def test_augmentrobustness(self):
+        temp_df = pd.DataFrame({
+            'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase'],
+            'category': ['bias', 'bias', 'robustness', 'robustness'],
+            'fail_count': [3, 0, 82, 43],
+            'pass_count': [88, 91, 9, 48],
+            'pass_rate': [97, 100, 10, 53],
+            'minimum_pass_rate': [65, 65, 65, 65],
+            'pass': [True, True, False, False]
+        })
+
+        model = ModelFactory.load_model(
+            task='ner',
+            hub="huggingface",
+            path='dslim/bert-base-NER')
+
+        augment = AugmentRobustness(
+            task='ner',
+            h_report=temp_df,
+            config='tests/fixtures/config_ner.yaml',
+            model=model
+        )
+        augment.fix('tests/fixtures/train.conll',
+                    'tests/fixtures/augmentated_train.conll')
+        self.assertIsInstance(augment, AugmentRobustness)
+        self.assertIsInstance(augment.suggestions(temp_df), pd.DataFrame)
+
+        is_file_exist = pl.Path(
+            'tests/fixtures/augmentated_train.conll').is_file()
+        self.assertTrue(is_file_exist)
+
     def test_hf_ner_augmentation(self):
         harness = Harness(**self.params['huggingface_ner'])
         self.assertIsInstance(harness, Harness)
