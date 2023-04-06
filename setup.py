@@ -161,6 +161,7 @@ setup(
             "data/imdb/sample.csv",
             "data/tweet/sample.csv",
             "data/conll/sample.conll",
+            "data/textcat_imdb/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
