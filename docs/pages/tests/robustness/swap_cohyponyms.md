@@ -20,7 +20,7 @@ swap_cohyponyms:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |I love apple.|I love peach.|
 

@@ -19,7 +19,7 @@ titlecase:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |The quick brown fox jumps over the lazy dog.|The Quick Brown Fox Jumps Over the Lazy Dog.|
 |I LIKE TO SHOUT.|I Like To Shout.|

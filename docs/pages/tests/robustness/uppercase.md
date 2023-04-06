@@ -20,7 +20,7 @@ uppercase:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |The quick brown fox jumps over the lazy dog.|THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG.|
 |I like to shout.|I LIKE TO SHOUT.|

@@ -20,7 +20,7 @@ add_contraction:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |He is not a great chess player.|He isn't a great chess player.|
 |I will wash the car this afternoon.|I'll wash the car this afternoon.|
