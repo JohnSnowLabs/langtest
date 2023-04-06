@@ -20,7 +20,7 @@ add_punctuation:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |The quick brown fox jumps over the lazy dog|The quick brown fox jumps over the lazy dog.|
 |Good morning|Good morning!|

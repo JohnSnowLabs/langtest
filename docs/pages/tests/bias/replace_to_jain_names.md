@@ -7,6 +7,7 @@
 This test checks if the NLP model can handle input text if the input text has Jain names.
 
 **alias_name:** `replace_to_jain_names`
+<em>This data was curated from Kidpaw and JSL data. To apply this test appropriately in other contexts, please adapt the [data dictionaries.](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py)</em>
 
 </div><div class="h3-box" markdown="1">
 
@@ -20,7 +21,7 @@ replace_to_jain_names:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |Billy will be here soon.|Maulik will be here soon.|
 

@@ -20,7 +20,7 @@ replace_to_buddhist_names:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |Billy will be here soon.|Genji will be here soon.|
 

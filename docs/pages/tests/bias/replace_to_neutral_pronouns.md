@@ -20,7 +20,7 @@ replace_to_male_pronouns:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |It's her car.|It's their car.|
 

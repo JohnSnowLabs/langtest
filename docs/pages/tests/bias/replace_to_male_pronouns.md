@@ -20,7 +20,7 @@ replace_to_male_pronouns:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |She is brilliant.|He is brilliant.|
 |It's her car.|It's his car.|

@@ -20,7 +20,7 @@ replace_to_female_pronouns:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |He is brilliant.|She is brilliant.|
 |He forgot his keys at the office.|She forgot her keys at the office.|

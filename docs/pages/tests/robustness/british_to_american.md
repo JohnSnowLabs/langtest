@@ -21,7 +21,7 @@ british_to_american:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |The technician analyzed your samples.|The technician analyzed your samples.|
 |What colour is this?|What color is this?|
