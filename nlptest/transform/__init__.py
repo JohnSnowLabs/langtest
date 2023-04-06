@@ -294,7 +294,8 @@ class BiasTestFactory(ITests):
                 }
 
         ethnicity_last_names = {'white': white_names['last_names'], 'black': black_names['last_names'],
-                                'hispanic': hispanic_names['last_names'], 'asian': asian_names['last_names']}
+                                'hispanic': hispanic_names['last_names'], 'asian': asian_names['last_names'],
+                                'native_american': native_american_names['last_names'], 'inter_racial': inter_racial_names['last_names']}
         for ethnicity in ['white', 'black', 'hispanic', 'asian', 'native_american', 'inter_racial']:
             test_key = f'replace_to_{ethnicity}_lastnames'
             if test_key in self.tests:
