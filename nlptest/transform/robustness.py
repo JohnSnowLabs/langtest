@@ -125,7 +125,7 @@ class AddPunctuation(BaseRobustness):
                 ]
             else:
                 sample.test_case = sample.original
-            sample.test_type = "robustness"
+            sample.category = "robustness"
         return sample_list
 
 
