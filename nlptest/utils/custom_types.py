@@ -130,7 +130,7 @@ class NEROutput(BaseModel):
         Returns:
             List[str]: predictions in form of a list of strings.
         """
-        return "; ".join([str(x) for x in self.predictions])
+        return ", ".join([str(x) for x in self.predictions if str(x)[-3:] != ': O'])
 
     def __repr__(self) -> str:
         """"""
