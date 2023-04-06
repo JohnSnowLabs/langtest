@@ -136,11 +136,10 @@ class PretrainedModelForNER(_ModelHandler):
             aggregated_words.append(
                 {
                     'entity': prediction[i].result,
-                    'score' : float(prediction[i].metadata['confidence']),
                     'index':i+1,
                     'word' : prediction[i].metadata['word'],
                     'start': prediction[i].begin,
-                    'end' :  prediction[i].end
+                    'end' :  (prediction[i].end)+1
                     
                 }
             )
@@ -170,12 +169,10 @@ class PretrainedModelForNER(_ModelHandler):
         """
         # Get the first entity in the entity group
         entity = entities[0]["entity"].split("-")[-1]
-        scores = np.nanmean([entity["score"] for entity in entities])
         tokens = [entity["word"] for entity in entities]
 
         entity_group = {
             "entity_group": entity,
-            "score": np.mean(scores),
             "word": " ".join(tokens),
             "start": entities[0]["start"],
             "end": entities[-1]["end"],
@@ -258,7 +255,6 @@ class PretrainedModelForNER(_ModelHandler):
                     word=ent['word'],
                     start=ent['start'],
                     end=ent['end'],
-                    score=ent['score']
                 ) for ent in aggregated_predictions
             ]
         )
