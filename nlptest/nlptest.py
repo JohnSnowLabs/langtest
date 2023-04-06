@@ -61,13 +61,15 @@ class Harness:
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
-
             self.data = DataFactory(data, task=self.task).load()
+            if(model=="textcat_imdb"): model = resource_filename("nlptest", "data/textcat_imdb")
+            
             logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+            
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
-                             f"passed is not among the default ones. You need to either specify the parameter 'data' "
-                             f"or use a default configuration.")
+            raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
+                             "passed is not among the default ones. You need to either specify the parameter 'data' "
+                             "or use a default configuration.")
         elif isinstance(data,list):
             self.data = data
         else:
