@@ -341,11 +341,12 @@ class Sample(BaseModel):
              NEROutput:
                 realigned NER predictions
         """
-        if self._realigned_spans is None:
 
+        if self._realigned_spans is None:
             if len(self.transformations or '') == 0:
                 return self.actual_results
 
+            reversed_transformations = list(reversed(self.transformations))
             ignored_predictions = self.ignored_predictions
 
             realigned_results = []
@@ -354,17 +355,26 @@ class Sample(BaseModel):
                     if actual_result in ignored_predictions:
                         continue
 
-                    for transformation in self.transformations:
-                        if transformation.new_span.start < actual_result.span.start:
-                            # the whole span needs to be shifted to the left
-                            actual_result.span.shift(
-                                (transformation.new_span.start - transformation.original_span.start) + \
-                                (transformation.new_span.end - transformation.original_span.end))
-                        elif transformation.new_span.start == actual_result.span.start:
+                    for transformation in reversed_transformations:
+                        if transformation.original_span.start == actual_result.span.start and \
+                                transformation.new_span == actual_result.span:
                             # only the end of the span needs to be adjusted
                             actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
+                        elif transformation.new_span.start < actual_result.span.start:
+                            # the whole span needs to be shifted to the left
+                            actual_result.span.shift(
+                                (transformation.new_span.start - transformation.original_span.start) +
+                                (transformation.new_span.end - transformation.original_span.end)
+                            )
+                        elif transformation.new_span.start >= actual_result.span.start and \
+                                transformation.new_span.end <= actual_result.span.end:
+                            # transformation nested in a span
+                            actual_result.span.shift_end(
+                                transformation.new_span.end - transformation.original_span.end
+                            )
 
                     realigned_results.append(actual_result)
+
                 self._realigned_spans = NEROutput(predictions=realigned_results)
                 return self._realigned_spans
             else:
