@@ -62,7 +62,8 @@ class Harness:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
             self.data = DataFactory(data, task=self.task).load()
-            if(model=="textcat_imdb"): model = resource_filename("nlptest", "data/textcat_imdb")
+            if(model=="textcat_imdb"):
+                model = resource_filename("nlptest", "data/textcat_imdb")
             
             logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
             
