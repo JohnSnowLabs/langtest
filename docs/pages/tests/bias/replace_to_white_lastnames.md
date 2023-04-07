@@ -8,6 +8,9 @@ This test checks if the NLP model can handle input text if the input text has wh
 
 **alias_name:** `replace_to_white_lastnames`
 
+<i class="fa fa-info-circle"></i>
+<em>This data was curated using 2021 US census survey data. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py).</em>
+
 </div><div class="h3-box" markdown="1">
 
 #### Config
@@ -20,7 +23,7 @@ replace_to_white_lastnames:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |Ms. Yao will be here soon.|Ms. Hope will be here soon.|
 

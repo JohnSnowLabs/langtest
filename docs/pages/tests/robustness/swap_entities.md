@@ -20,7 +20,7 @@ swap_entities:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |I love Paris.|I love Istanbul.|
 |Jack is sick today.|Adam is sick today.|

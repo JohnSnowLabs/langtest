@@ -8,6 +8,9 @@ This test checks if the NLP model can handle input text if the input text has Bu
 
 **alias_name:** `replace_to_buddhist_names`
 
+<i class="fa fa-info-circle"></i>
+<em>This data was curated using [Kidpaw](https://www.kidpaw.com/). Please adapt the [data dictionaries](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py) to fit your use-case.</em>
+
 </div><div class="h3-box" markdown="1">
 
 #### Config
@@ -20,7 +23,7 @@ replace_to_buddhist_names:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |Billy will be here soon.|Genji will be here soon.|
 

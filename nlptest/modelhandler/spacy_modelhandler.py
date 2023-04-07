@@ -27,7 +27,12 @@ class PretrainedModelForNER(_ModelHandler):
     @classmethod
     def load_model(cls, path):
         """Load and return SpaCy pipeline"""
-        return spacy.load(path)
+
+        try:
+            return spacy.load(path)
+        except:
+            raise ValueError(
+                f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -100,7 +105,11 @@ class PretrainedModelForTextClassification(_ModelHandler):
     @classmethod
     def load_model(cls, path: str):
         """Load and return SpaCy pipeline"""
-        return spacy.load(path)
+        try:
+            return spacy.load(path)
+        except:
+            raise ValueError(
+                f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Perform text classification predictions on the input text.
@@ -117,7 +126,8 @@ class PretrainedModelForTextClassification(_ModelHandler):
             label = max(output, key=output.get)
             output = [{"label": label, "score": output[label]}]
         else:
-            output = [{"label": key, "score": value} for key, value in output.items()]
+            output = [{"label": key, "score": value}
+                      for key, value in output.items()]
 
         return SequenceClassificationOutput(
             text=text,

@@ -20,7 +20,7 @@ add_typo:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |The quick brown fox jumps over the lazy dog.|The wuick brown fox jumps over the fazy dog.|
 |Good morning|Good morninh|

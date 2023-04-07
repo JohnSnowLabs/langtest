@@ -23,6 +23,7 @@ REQUIRED_PKGS = [
     'nltk',
     'torch',
     'sentencepiece',
+    'pydantic'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -47,7 +48,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.0.0",  # Required
+    version="1.0.1",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -132,7 +133,7 @@ setup(
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. See
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.7, <=3.11",
+    python_requires=">=3.7, <3.12",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -161,6 +162,8 @@ setup(
             "data/imdb/sample.csv",
             "data/tweet/sample.csv",
             "data/conll/sample.conll",
+            "data/textcat_imdb/*",
+            "data/textcat_imdb/*/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

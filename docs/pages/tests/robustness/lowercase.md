@@ -20,7 +20,7 @@ lowercase:
 #### Examples
 
 {:.table2}
-|Original|Testcase|
+|Original|Test Case|
 |-|
 |The quick brown fox jumps over the lazy dog.|the quick brown fox jumps over the lazy dog.|
 |I AM VERY QUIET.|i am very quiet.|

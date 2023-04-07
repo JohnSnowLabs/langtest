@@ -1,15 +1,15 @@
 package:
   name: "nlptest"
-  version: 1.0.0
+  version: 1.0.1
 
 app:
   entry: nlptest
   summary: Deliver safe & effective NLP models in a few lines of code.
 
 source:
-    fn: nlptest-1.0.0rc1.tar.gz
-    url: https://files.pythonhosted.org/packages/ff/ba/7ac40c507bd07d718e32670e72537bc2bd73e6882b0a5505c1ec74213d58/nlptest-1.0.0rc1.tar.gz
-    sha256: 05bbdde06dbf6c509845cdf46db35a252e8a08cdd643ba772d860c834c535941
+    fn: nlptest-1.0.1.tar.gz
+    url: https://files.pythonhosted.org/packages/e0/e3/500e7c45404f52dae3858819b7d7c1d8cd8086624993616953ad922f86f3/nlptest-1.0.1.tar.gz
+    sha256: 4d56528a2af3bbc335a98f81b105e21d8cfada220939efbe2d43ac8abae26b7a
 
 build:
   noarch: generic
