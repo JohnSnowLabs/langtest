@@ -553,7 +553,8 @@ class AddContraction(BaseRobustness):
                     if new_string is not None:
                        diff_len = len(new_string) - len(search.group())
                     else:
-                        diff_len = 0      
+                        diff_len = 0 
+                        new_string  =  search.group()
                     replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                              flags=re.IGNORECASE | re.DOTALL)
                     transformations.append(
