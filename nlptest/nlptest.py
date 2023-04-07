@@ -94,6 +94,11 @@ class Harness:
         self.default_min_pass_dict = None
         self.df_report = None
 
+    def __repr__(self) -> str:
+        return ""
+    def __str__(self) -> str:
+        return object.__repr__(self)
+
     def configure(self, config: Union[str, dict]) -> dict:
         """
         Configure the Harness with a given configuration.
