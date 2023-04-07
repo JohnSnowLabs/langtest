@@ -549,12 +549,8 @@ class AddContraction(BaseRobustness):
             for contraction in CONTRACTION_MAP:
                 search = re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL)
                 if search:
-                    new_string = CONTRACTION_MAP.get(search.group())
-                    if new_string is not None:
-                       diff_len = len(new_string) - len(search.group())
-                    else:
-                        diff_len = 0 
-                        new_string  =  search.group()
+                    new_string = CONTRACTION_MAP.get(search.group(), search.group())
+                    diff_len = len(new_string) - len(search.group())
                     replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                              flags=re.IGNORECASE | re.DOTALL)
                     transformations.append(
