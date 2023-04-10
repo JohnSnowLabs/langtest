@@ -58,6 +58,9 @@ class Harness:
         super().__init__()
         self.task = task
 
+        if hub not in self.SUPPORTED_HUBS:
+            raise ValueError("Provided hub parameter is not in supported hubs. Please see docs for supported hubs.")
+
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
