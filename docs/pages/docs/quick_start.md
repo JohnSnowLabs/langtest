@@ -23,7 +23,7 @@ pip install nlptest
 conda install -c johnsnowlabs nlptest
 ```
 
-The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, or **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories.
+The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more tasks coming soon.
 
 
 <style>
