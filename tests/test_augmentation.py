@@ -1,7 +1,8 @@
-import yaml
-import unittest
-import pandas as pd
 import pathlib as pl
+import unittest
+
+import pandas as pd
+import yaml
 
 from nlptest.augmentation import AugmentRobustness
 from nlptest.modelhandler.modelhandler import ModelFactory
@@ -9,8 +10,10 @@ from nlptest.nlptest import Harness
 
 
 class AugmentRobustnessTestCase(unittest.TestCase):
+    """"""
 
     def setUp(self) -> None:
+        """"""
         self.params = {
             "spacy_ner": {
                 "task": 'ner',
@@ -34,8 +37,9 @@ class AugmentRobustnessTestCase(unittest.TestCase):
                 "hub": "huggingface"
             }
         }
-    
-    def test_augmentrobustness(self):
+
+    def test_augment_robustness(self):
+        """"""
         temp_df = pd.DataFrame({
             'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase'],
             'category': ['bias', 'bias', 'robustness', 'robustness'],
@@ -66,8 +70,6 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             'tests/fixtures/augmentated_train.conll').is_file()
         self.assertTrue(is_file_exist)
 
-
-    def test_augmentrobustness(self):
         temp_df = pd.DataFrame({
             'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase'],
             'category': ['bias', 'bias', 'robustness', 'robustness'],
@@ -99,6 +101,7 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_hf_ner_augmentation(self):
+        """"""
         harness = Harness(**self.params['huggingface_ner'])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
