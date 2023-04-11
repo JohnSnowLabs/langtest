@@ -10,7 +10,7 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-<div class="heading" id="harness">Harness Explained</div>
+### Harness Explained
 
 The Harness class is a testing class for Natural Language Processing (NLP) models. It evaluates the performance of a given NLP model on a given task using test data and generates a report with test results. Harness can be imported from the nlptest library in the following way.
 
@@ -24,37 +24,9 @@ It imports the Harness class from within the module, that is designed to provide
 
 Here is a list of the different parameters that can be passed to the `Harness` function:
 
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
+</div><div class="h3-box" markdown="1">
 
-  #parameters {
-    color: #1E77B7;
-  }
-
-  #NER {
-    color: #1E77B7;
-    font-size: 16px;
-  }
-
-  
-  #harness {
-    color: #1E77B7;
-  }
-
-  #data_input {
-    color: #1E77B7;
-  }
-  
-
-</style>
-
-<div class="heading" id="parameters">Parameters</div>
+### Parameters
  
 
 {:.table2}

@@ -18,8 +18,9 @@ Supported data input formats are **`CoNLL`** and **`CSV`**. CoNLL dataset can on
 |**ner**     |CoNLL and CSV|
 |**text-classification**     |CSV
 
+</div><div class="h3-box" markdown="1">
 
-<div class="heading" id="NER"> Sample CoNLL format </div>
+### Sample CoNLL format
 
 ```bash
 LEICESTERSHIRE NNP B-NP B-ORG
@@ -33,7 +34,9 @@ VICTORY NN I-NP O
 . . O O
 ```
 
-<div class="heading" id="NER"> Sample CSV format </div>
+</div><div class="h3-box" markdown="1">
+
+### Sample CSV format
 
 A sample CSV data input looks like the following : 
 
@@ -45,15 +48,18 @@ A sample CSV data input looks like the following :
 
 For `CSV` files, we support different variations of the column names. They are shown below :
 
-<div class="heading" id="NER"> For Text-Classification </div>
+</div><div class="h3-box" markdown="1">
+
+### For Text-Classification
 
 {:.table2}
 | Supported "text" column names | Supported "label" column names   |  
 | - | - | 
 | ['text', 'sentences', 'sentence', 'sample'] | ['label', 'labels ', 'class', 'classes'] |
 
+</div><div class="h3-box" markdown="1">
 
-<div class="heading" id="NER"> For NER </div>
+### For NER
 
 {:.table2}
 | Supported "text" column names | Supported "ner" column names | Supported "pos" column names | Supported "chunk" column names | 
@@ -61,10 +67,11 @@ For `CSV` files, we support different variations of the column names. They are s
 | ['text', 'sentences', 'sentence', 'sample'] |  ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'] |  ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'] | ['chunk_tags', 'chunk_tag'] |
 
 
-
 In the harness, we specify the data input in the following way:
 
-<div class="heading" id="NER"> For NER  </div>
+</div><div class="h3-box" markdown="1">
+
+### For NER
 
 ```python
 #Import Harness from the nlptest library
@@ -79,7 +86,9 @@ harness = Harness(
         )
 ```
 
-<div class="heading" id="NER"> For Text-Classification  </div>
+</div><div class="h3-box" markdown="1">
+
+### For Text-Classification
 
 ```python
 #Import Harness from the nlptest library
@@ -94,19 +103,5 @@ harness = Harness(
         )
 
 ```
-
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
-  #NER {
-    color: #1E77B7;
-    font-size: 16px;
-  }
 
 </div></div>

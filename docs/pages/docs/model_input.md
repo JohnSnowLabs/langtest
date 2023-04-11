@@ -11,7 +11,7 @@ header: true
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 For model inputs, we can pass either a pretrained model/pipeline from the hub or our own custom pipeline model, or path to a locally saved model.
 
-<div class="heading" id="model">John Snow Labs</div>
+### John Snow Labs
 
 ```python
 pip install johnsnowlabs
@@ -75,9 +75,9 @@ h = Harness(task='ner', model='path/to/local_saved_model', hub='johnsnowlabs', d
 h.generate().run().report()
 ```
 
+</div><div class="h3-box" markdown="1"> 	
 
-
-<div class="heading" id="model">Spacy</div>
+### Spacy
 
 Using a `Pretrained Model` in Spacy.
 ```python
@@ -90,7 +90,9 @@ h = Harness('ner', model='en_core_web_sm', hub='spacy')
 h.generate().run().report()
 ```
 
-<div class="heading" id="model">Hugging Face</div>
+</div><div class="h3-box" markdown="1">
+
+### Hugging Face
 
 Using a `Pretrained Model` in Hugging Face.
 ```python
@@ -103,17 +105,5 @@ h = Harness('ner', model='dslim/bert-base-NER', hub='huggingface')
 h.generate().run().report()
 ```
 
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
-  #model {
-    color: #1E77B7;
-  }
 
 </div></div>
