@@ -8,39 +8,34 @@ modify_date: "2023-03-28"
 header: true
 ---
 
-With just one line of code, you can generate and run over 50 different test types to assess the quality of **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more tasks coming soon. 
+<div class="h3-box">
+  <p>With just one line of code, you can generate and run over 50 different test types to assess the quality of **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more tasks coming soon.</p>
+</div> 
 
-<div class="heading" id="ner">One Liner - NER</div>
-
-
-
-<div class="grid--container">
-  <div class="grid jcc">
-    <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
-      <h3 class="grey h3_title">{{ _section.title }}</h3> 
-      <div class="tabs-wrapper">
-        <div class="tabs-header">
-          <a href="#" class="tab-btn">John Snow Labs</a>
-          <a href="#" class="tab-btn">Hugging Face</a>
-          <a href="#" class="tab-btn">Spacy</a>
-        </div>
-        <div class="tabs-body">
-          <div class="tabs-item">
-            <div class="highlight-box">
-              {% highlight python %}
+<h3>One Liner - NER</h3>
+<div class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">John Snow Labs</a>
+    <a href="#" class="tab-btn">Hugging Face</a>
+    <a href="#" class="tab-btn">Spacy</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
 from nlptest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
-      
+
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 {% endhighlight %}
-            </div>
-          </div>
-          <div class="tabs-item">
-            <div class="highlight-box">
-              {% highlight python %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
 from nlptest import Harness
 
 # Create a Harness object
@@ -49,11 +44,11 @@ h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 {% endhighlight %}
-            </div>
-          </div>
-          <div class="tabs-item">
-            <div class="highlight-box">
-              {% highlight python %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
 from nlptest import Harness
 
 # Create a Harness object
@@ -62,15 +57,12 @@ h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 {% endhighlight %}
-            </div>
-          </div>
-        </div>
-      </div>                  
+      </div>
     </div>
   </div>
 </div>
 
-<div class="heading" id="classification">One Liner - Text Classification </div>
+<h3>One Liner - Text Classification </h3>
 
 ```python
 from nlptest import Harness
@@ -79,23 +71,3 @@ h = Harness(task='text-classification', model='en.sentiment.imdb.glove', hub='jo
 # Generate test cases, run them and view a report
 h.generate().run().report()
 ```
-
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
-  #ner {
-    color: #1E77B7;
-  }
-  
-  #classification {
-    color: #1E77B7;
-  }
-  
-
-</div></div>

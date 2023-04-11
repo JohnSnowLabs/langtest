@@ -31,8 +31,6 @@ GEM
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
     ffi (1.15.5)
-    ffi (1.15.5-x64-mingw-ucrt)
-    ffi (1.15.5-x64-mingw32)
     forwardable-extended (2.6.0)
     gemoji (3.0.1)
     github-pages (226)
@@ -266,6 +264,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  ffi (~> 1.15, >= 1.15.5)
   github-pages (= 226)
   webrick (~> 1.7)
 
