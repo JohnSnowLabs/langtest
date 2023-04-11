@@ -2,7 +2,7 @@ import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import pandas as pd
 import yaml
@@ -35,7 +35,7 @@ class Harness:
 
     def __init__(
             self,
-            model: Union[str],
+            model: Union[str, Any],
             task: Optional[str] = "ner",
             hub: Optional[str] = None,
             data: Optional[str] = None,
@@ -58,10 +58,13 @@ class Harness:
         super().__init__()
         self.task = task
 
-        if hub not in self.SUPPORTED_HUBS:
-            raise ValueError(f"Provided hub parameter is not in supported. Please choose one of supported hubs: {', '.join(self. self.SUPPORTED_HUBS)}")
+        if isinstance(model, str) and hub is None:
+            raise ValueError("You need to pass the 'hub' parameter when passing a string as 'model'.")
+
+        if hub is not None and hub not in self.SUPPORTED_HUBS:
+            raise ValueError(f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}")
         
-        if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
+        if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
             self.data = DataFactory(data, task=self.task).load()
@@ -80,9 +83,6 @@ class Harness:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
         if isinstance(model, str):
-            if hub is None:
-                raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
-
             self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
         else:
             self.model = ModelFactory(task=task, model=model)
@@ -90,7 +90,7 @@ class Harness:
         if config is not None:
             self._config = self.configure(config)
         else:
-            logging.info(f"No configuration file was provided, loading default config.")
+            logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(resource_filename("nlptest", "data/config.yml"))
 
         self._testcases = None
