@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from nlptest.utils.custom_types import Sample, MinScoreOutput
+from nlptest.utils.custom_types import Sample, MinScoreOutput, MinScoreSample
 from nlptest.utils.gender_classifier import GenderClassifier
 from .utils import (default_label_representation,
                     default_ehtnicity_representation,
@@ -90,7 +90,7 @@ class GenderRepresentation(BaseRepresentation):
                 }
 
             for k, v in min_counts.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_gender_representation_count",
@@ -116,7 +116,7 @@ class GenderRepresentation(BaseRepresentation):
 
             total_samples = len(data)
             for k, v in min_proportions.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_gender_representation_proportion",
@@ -179,7 +179,7 @@ class EthnicityRepresentation(BaseRepresentation):
                 **default_ehtnicity_representation, **entity_representation}
 
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_ethnicity_name_representation_count",
@@ -220,7 +220,7 @@ class EthnicityRepresentation(BaseRepresentation):
                 **default_ehtnicity_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_ethnicity_name_representation_proportion",
@@ -284,7 +284,7 @@ class LabelRepresentation(BaseRepresentation):
                 **default_label_representation, **entity_representation}
 
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_label_representation_count",
@@ -326,7 +326,7 @@ class LabelRepresentation(BaseRepresentation):
                 **default_label_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_label_representation_proportion",
@@ -389,7 +389,7 @@ class ReligionRepresentation(BaseRepresentation):
                 **default_religion_representation, **entity_representation}
 
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_religion_name_representation_count",
@@ -430,7 +430,7 @@ class ReligionRepresentation(BaseRepresentation):
                 **default_religion_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_religion_name_representation_proportion",
@@ -494,7 +494,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                 **default_economic_country_representation, **entity_representation}
 
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_country_economic_representation_count",
@@ -536,7 +536,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                 **default_economic_country_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_country_economic_representation_proportion",

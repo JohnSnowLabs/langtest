@@ -1,12 +1,13 @@
 import os
 import unittest
+
 from nlptest import Harness
-from nlptest.utils.custom_types import Sample
 from nlptest.modelhandler.modelhandler import ModelFactory
+from nlptest.utils.custom_types import Sample
 
 
 class HarnessTestCase(unittest.TestCase):
-    
+
     @classmethod
     def setUpClass(cls) -> None:
         """"""
@@ -44,13 +45,13 @@ class HarnessTestCase(unittest.TestCase):
         """"""
         load_testcases = self.harness._testcases
         self.assertIsInstance(load_testcases, list)
-        self.assertIsInstance(load_testcases[0], Sample)
+        self.assertIsInstance(load_testcases[0], Sample.__constraints__)
 
     def test_run_testcases(self):
         """"""
         robustness_results = self.harness._generated_results
         self.assertIsInstance(robustness_results, list)
-        self.assertIsInstance(robustness_results[0], Sample)
+        self.assertIsInstance(robustness_results[0], Sample.__constraints__)
 
     def test_report(self):
         """"""
@@ -58,7 +59,7 @@ class HarnessTestCase(unittest.TestCase):
         self.assertCountEqual(
             df.columns.tolist(),
             ['category', 'test_type', 'fail_count', 'pass_count', 'pass_rate',
-       'minimum_pass_rate', 'pass'] )
+             'minimum_pass_rate', 'pass'])
 
     def test_incompatible_tasks(self):
         """"""
@@ -77,7 +78,7 @@ class HarnessTestCase(unittest.TestCase):
         self.harness.save(save_dir)
 
         self.assertCountEqual(os.listdir(save_dir), [
-                              'config.yaml', 'test_cases.pkl', 'data.pkl'])
+            'config.yaml', 'test_cases.pkl', 'data.pkl'])
 
     def test_load_ner(self):
         """"""
@@ -121,6 +122,7 @@ class HarnessTestCase(unittest.TestCase):
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """"""
+
     def test_non_existing_default(self):
         with self.assertRaises(ValueError):
             h = Harness(task="ner", model="xxxxxxxxx", hub="spacy")
