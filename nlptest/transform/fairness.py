@@ -2,10 +2,9 @@ from abc import ABC, abstractmethod
 from typing import List
 
 import pandas as pd
-import numpy as np
 from sklearn.metrics import f1_score
 
-from nlptest.utils.custom_types import Sample, MinScoreOutput, MaxScoreOutput
+from nlptest.utils.custom_types import MaxScoreOutput, MaxScoreSample, MinScoreOutput, MinScoreSample, Sample
 from nlptest.utils.gender_classifier import GenderClassifier
 
 
@@ -40,7 +39,6 @@ class BaseFairness(ABC):
 
 
 class MinGenderF1Score(BaseFairness):
-
     """
     Subclass of BaseFairness that implements the minimum F1 score.
 
@@ -110,7 +108,7 @@ class MinGenderF1Score(BaseFairness):
             else:
                 macro_f1_score = 1
 
-            sample = Sample(
+            sample = MinScoreSample(
                 original="-",
                 category="fairness",
                 test_type="min_gender_f1_score",
@@ -125,7 +123,6 @@ class MinGenderF1Score(BaseFairness):
 
 
 class MaxGenderF1Score(BaseFairness):
-
     """
     Subclass of BaseFairness that implements the maximum F1 score.
 
@@ -197,7 +194,7 @@ class MaxGenderF1Score(BaseFairness):
             else:
                 macro_f1_score = 0
 
-            sample = Sample(
+            sample = MaxScoreSample(
                 original="-",
                 category="fairness",
                 test_type="max_gender_f1_score",

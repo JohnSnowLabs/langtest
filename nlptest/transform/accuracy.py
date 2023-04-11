@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import Any, Dict, List
 
-import pandas as pd
-from sklearn.metrics import classification_report, f1_score, precision_score, recall_score
+from sklearn.metrics import classification_report, f1_score
 
-from nlptest.utils.custom_types import Sample, MinScoreOutput
-from nlptest.modelhandler import ModelFactory
+from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
 
 
 class BaseAccuracy(ABC):
@@ -21,20 +19,20 @@ class BaseAccuracy(ABC):
 
     @staticmethod
     @abstractmethod
-    def transform(y_true, y_pred):
+    def transform(y_true: List[Any], y_pred: List[Any], params: Dict) -> List[MinScoreSample]:
         """
         Abstract method that implements the accuracy measure.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values
-            model (ModelFactory): Model to be evaluted.
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
 
         Returns:
-            Any: The transformed data based on the implemented accuracy measure.
+            List[MinScoreSample]: The transformed data based on the implemented accuracy measure.
         """
 
-        return NotImplementedError
+        raise NotImplementedError()
 
     alias_name = None
 
@@ -53,16 +51,18 @@ class MinPrecisionScore(BaseAccuracy):
     alias_name = "min_precision_score"
 
     @staticmethod
-    def transform(y_true, y_pred, params):
+    def transform(y_true: List[Any], y_pred: List[Any], params: Dict) -> List[MinScoreSample]:
         """
         Computes the minimum F1 score for the given data.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
+
 
         Returns:
-            List[Sample]: Precision test results.
+            List[MinScoreSample]: Precision test results.
         """
         labels = set(y_true).union(set(y_pred))
 
@@ -82,7 +82,7 @@ class MinPrecisionScore(BaseAccuracy):
         for k, v in df_metrics.items():
             if k not in min_scores.keys():
                 continue
-            sample = Sample(
+            sample = MinScoreSample(
                 original="-",
                 category="accuracy",
                 test_type="min_precision_score",
@@ -109,16 +109,17 @@ class MinRecallScore(BaseAccuracy):
     alias_name = "min_recall_score"
 
     @staticmethod
-    def transform(y_true, y_pred, params):
+    def transform(y_true: List[Any], y_pred: List[Any], params: Dict) -> List[MinScoreSample]:
         """
         Computes the minimum recall score for the given data.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
 
         Returns:
-            List[Sample]: Precision recall results.
+            List[MinScoreSample]: Precision recall results.
         """
 
         labels = set(y_true).union(set(y_pred))
@@ -139,7 +140,7 @@ class MinRecallScore(BaseAccuracy):
         for k, v in df_metrics.items():
             if k not in min_scores.keys():
                 continue
-            sample = Sample(
+            sample = MinScoreSample(
                 original="-",
                 category="accuracy",
                 test_type="min_recall_score",
@@ -166,16 +167,17 @@ class MinF1Score(BaseAccuracy):
     alias_name = "min_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred, params):
+    def transform(y_true: List[Any], y_pred: List[Any], params: Dict) -> List[MinScoreSample]:
         """
         Computes the minimum F1 score for the given data.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
 
         Returns:
-            List[Sample]: F1 score test results.
+            List[MinScoreSample]: F1 score test results.
         """
 
         labels = set(y_true).union(set(y_pred))
@@ -196,7 +198,7 @@ class MinF1Score(BaseAccuracy):
         for k, v in df_metrics.items():
             if k not in min_scores.keys():
                 continue
-            sample = Sample(
+            sample = MinScoreSample(
                 original="-",
                 category="accuracy",
                 test_type="min_f1_score",
@@ -223,23 +225,24 @@ class MinMicroF1Score(BaseAccuracy):
     alias_name = "min_micro_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred, params):
+    def transform(y_true: List[Any], y_pred: List[Any], params: Dict) -> List[MinScoreSample]:
         """
         Computes the minimum F1 score for the given data.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
 
         Returns:
-            Any: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
 
         min_score = params["min_score"]
 
         f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)
 
-        sample = Sample(
+        sample = MinScoreSample(
             original="-",
             category="accuracy",
             test_type="min_micro_f1_score",
@@ -272,17 +275,18 @@ class MinMacroF1Score(BaseAccuracy):
         Computes the minimum F1 score for the given data.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
 
         Returns:
-            Any: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
 
         min_score = params["min_score"]
         f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
 
-        sample = Sample(
+        sample = MinScoreSample(
             original="-",
             category="accuracy",
             test_type="min__macro_f1_score",
@@ -309,22 +313,23 @@ class MinWeightedF1Score(BaseAccuracy):
     alias_name = "min_weighted_f1_score"
 
     @staticmethod
-    def transform(y_true, y_pred, params):
+    def transform(y_true: List[Any], y_pred: List[Any], params: Dict) -> List[MinScoreSample]:
         """
         Computes the minimum weighted F1 score for the given data.
 
         Args:
-            y_true: True values
-            y_pred: Predicted values   
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
 
         Returns:
-            Any: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
 
         min_score = params["min_score"]
         f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
 
-        sample = Sample(
+        sample = MinScoreSample(
             original="-",
             category="accuracy",
             test_type="min_weighted_f1_score",
