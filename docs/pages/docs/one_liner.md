@@ -12,13 +12,7 @@ With just one line of code, you can generate and run over 50 different test type
 
 <div class="heading" id="ner">One Liner - NER</div>
 
-```python
-from nlptest import Harness
-h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
 
-# Generate test cases, run them and view a report
-h.generate().run().report()
-```
 
 <div class="grid--container">
   <div class="grid jcc">
@@ -36,9 +30,9 @@ h.generate().run().report()
               {% highlight python %}
 from nlptest import Harness
 
-# Create a Harness object
+# Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
-
+      
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 {% endhighlight %}
