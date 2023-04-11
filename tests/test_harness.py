@@ -28,7 +28,7 @@ class HarnessTestCase(unittest.TestCase):
 
     def test_missing_parameter(self):
         """"""
-        with self.assertRaises(OSError) as _:
+        with self.assertRaises(ValueError) as _:
             Harness(task='ner', model='dslim/bert-base-NER',
                     data=self.data_path, config=self.config_path)
 
