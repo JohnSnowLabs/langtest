@@ -30,6 +30,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 |End-to-End Workflow                        |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/JohnSnowLabs_RealWorld_Notebook.ipynb)|
 |End-to-End Custom Pipeline Workflow        |John Snow Labs   |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/JohnSnowLabs_RealWorld_Custom_Pipeline_Notebook.ipynb)|
 |End-to-End Workflow                        |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/Spacy_Real_World_Notebook.ipynb)|
+|End-to-End Workflow                        |Hugging Face          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/end-to-end-notebooks/HuggingFace_Real_World_Notebook.ipynb)|
 
 
 <style>
