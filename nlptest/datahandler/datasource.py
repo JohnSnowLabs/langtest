@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 from typing import Dict, List
 
 from .format import Formatter
-from ..utils.custom_types import NEROutput, NERPrediction, Sample, SequenceClassificationOutput, SequenceLabel
+from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
+    SequenceClassificationSample, SequenceLabel
 
 
 class _IDataset(ABC):
@@ -95,10 +96,10 @@ class ConllDataset(_IDataset):
             raise ValueError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
         self.task = task
 
-    def load_data(self) -> List[Sample]:
+    def load_data(self) -> List[NERSample]:
         """Loads data from a CoNLL file.
         Returns:
-            List[Sample]: List of formatted sentences from the dataset.
+            List[NERSample]: List of formatted sentences from the dataset.
         """
         data = []
         with open(self._file_path) as f:
@@ -141,7 +142,7 @@ class ConllDataset(_IDataset):
                     original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                        Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+                        NERSample(original=original, expected_results=NEROutput(predictions=ner_labels))
                     )
 
         return data
@@ -231,7 +232,7 @@ class CSVDataset(_IDataset):
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
-        with open(self._file_path, newline='',encoding="utf-8") as csv_file:
+        with open(self._file_path, newline='', encoding="utf-8") as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
             samples = []
@@ -327,7 +328,10 @@ class CSVDataset(_IDataset):
             )
             cursor += len(token) + 1  # +1 to account for the white space
 
-        return Sample(original=original, expected_results=NEROutput(predictions=ner_labels))
+        return NERSample(
+            original=original,
+            expected_results=NEROutput(predictions=ner_labels)
+        )
 
     def _row_to_seq_classification_sample(self, row: Dict[str, str]) -> Sample:
         """
@@ -343,7 +347,10 @@ class CSVDataset(_IDataset):
         #   label score should be 1 since it is ground truth, required for __eq__
         label = SequenceLabel(label=row[self.column_map['label']], score=1)
 
-        return Sample(original=original, expected_results=SequenceClassificationOutput(predictions=[label]))
+        return SequenceClassificationSample(
+            original=original,
+            expected_results=SequenceClassificationOutput(predictions=[label])
+        )
 
     def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
         """
