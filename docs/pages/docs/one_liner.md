@@ -8,7 +8,7 @@ modify_date: "2023-03-28"
 header: true
 ---
 
-With just one line of code, it can generate and run over 50 different test types to assess the quality of NLP models in terms of accuracy, bias, robustness, representation, and fairness. 
+With just one line of code, you can generate and run over 50 different test types to assess the quality of **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more tasks coming soon. 
 
 <div class="heading" id="ner">One Liner - NER</div>
 
