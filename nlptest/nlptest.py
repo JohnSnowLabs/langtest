@@ -59,7 +59,8 @@ class Harness:
         self.task = task
 
         if isinstance(model, str) and hub is None:
-            raise ValueError("You need to pass the 'hub' parameter when passing a string as 'model'.")
+            raise ValueError(f"When passing a string argument to the 'model' parameter, you must provide an argument "
+                             f"for the 'hub' parameter as well.")
 
         if hub is not None and hub not in self.SUPPORTED_HUBS:
             raise ValueError(f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}")
