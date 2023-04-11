@@ -20,6 +20,62 @@ h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
 h.generate().run().report()
 ```
 
+<div class="grid--container">
+  <div class="grid jcc">
+    <div class="cell cell--12 cell--lg-8 cell--md-8 cell--sm-12">
+      <h3 class="grey h3_title">{{ _section.title }}</h3> 
+      <div class="tabs-wrapper">
+        <div class="tabs-header">
+          <a href="#" class="tab-btn">John Snow Labs</a>
+          <a href="#" class="tab-btn">Hugging Face</a>
+          <a href="#" class="tab-btn">Spacy</a>
+        </div>
+        <div class="tabs-body">
+          <div class="tabs-item">
+            <div class="highlight-box">
+              {% highlight python %}
+from nlptest import Harness
+
+# Create a Harness object
+h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+            </div>
+          </div>
+          <div class="tabs-item">
+            <div class="highlight-box">
+              {% highlight python %}
+from nlptest import Harness
+
+# Create a Harness object
+h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+            </div>
+          </div>
+          <div class="tabs-item">
+            <div class="highlight-box">
+              {% highlight python %}
+from nlptest import Harness
+
+# Create a Harness object
+h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+            </div>
+          </div>
+        </div>
+      </div>                  
+    </div>
+  </div>
+</div>
+
 <div class="heading" id="classification">One Liner - Text Classification </div>
 
 ```python
