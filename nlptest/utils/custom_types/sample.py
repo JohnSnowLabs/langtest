@@ -148,7 +148,9 @@ class NERSample(BaseSample):
                         if transformation.original_span.start == actual_result.span.start and \
                                 transformation.new_span == actual_result.span:
                             # only the end of the span needs to be adjusted
-                            actual_result.span.shift_end(transformation.new_span.end - transformation.original_span.end)
+                            actual_result.span.shift_end(
+                                transformation.new_span.end - transformation.original_span.end
+                            )
                         elif transformation.new_span.start < actual_result.span.start:
                             # the whole span needs to be shifted to the left
                             actual_result.span.shift(
@@ -156,7 +158,8 @@ class NERSample(BaseSample):
                                 (transformation.new_span.end - transformation.original_span.end)
                             )
                         elif transformation.new_span.start >= actual_result.span.start and \
-                                transformation.new_span.end <= actual_result.span.end:
+                                transformation.new_span.end - int(
+                            transformation.new_span.ends_with_space) <= actual_result.span.end:
                             # transformation nested in a span
                             actual_result.span.shift_end(
                                 transformation.new_span.end - transformation.original_span.end

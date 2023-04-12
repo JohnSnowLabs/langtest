@@ -7,6 +7,11 @@ class Span(BaseModel):
     end: int
     word: str
 
+    @property
+    def ends_with_space(self) -> bool:
+        """"""
+        return self.word.endswith(" ")
+
     def shift_start(self, offset: int) -> None:
         """"""
         self.start -= offset
@@ -26,7 +31,8 @@ class Span(BaseModel):
 
     def __eq__(self, other):
         """"""
-        return self.start == other.start and self.end == other.end
+        return self.start == other.start and \
+               self.end - int(self.ends_with_space) == other.end - int(other.ends_with_space)
 
     def __str__(self):
         """"""
