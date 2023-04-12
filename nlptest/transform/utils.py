@@ -17,7 +17,6 @@ DEFAULT_PERTURBATIONS = [
     "add_context",
     "add_contractions",
     "swap_entities",
-    "swap_cohyponyms",
     "replace_to_male_pronouns",
     "replace_to_female_pronouns",
     "replace_to_neutral_pronouns"
