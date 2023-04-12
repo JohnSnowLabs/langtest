@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
-import nltk
 
 from .utils import (A2B_DICT, CONTRACTION_MAP, DEFAULT_PERTURBATIONS, PERTURB_CLASS_MAP, TYPO_FREQUENCY,
                     create_terminology, male_pronouns, female_pronouns, neutral_pronouns)
@@ -71,14 +70,6 @@ class PerturbationFactory:
         if "british_to_american" in self._tests:
             self._tests['british_to_american']['accent_map'] = {
                 v: k for k, v in A2B_DICT.items()}
-
-        if 'swap_cohyponyms' in self._tests:
-            nltk.download('omw-1.4', quiet=True)
-            nltk.download('wordnet', quiet=True)
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                               'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
-            self._tests['swap_cohyponyms']['labels'] = df.label.tolist()
 
         if 'replace_to_male_pronouns' in self._tests:
             neutral_pronouns_list = [item for sublist in list(
