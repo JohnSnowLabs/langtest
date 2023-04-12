@@ -130,6 +130,8 @@ class Harness:
             raise RuntimeError("Please call .configure() first.")
 
         tests = self._config['tests']
+        for sample in self.data:
+            sample.expected_results = self.model(sample.original)
         self._testcases = TestFactory.transform(self.data, tests)
         return self
 

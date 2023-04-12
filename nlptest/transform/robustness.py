@@ -52,7 +52,6 @@ class BaseRobustness(ABC):
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
         created_task = asyncio.create_task(cls.run(sample_list, model))
-        print(created_task.get_name())
         return created_task
 
 

@@ -139,6 +139,15 @@ class ITests(ABC):
         """
         return NotImplementedError
 
+    @classmethod
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory) -> List[Sample]:
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            tasks.append(supported_tests[test_name].async_run(samples, model))
+
+        return tasks
+
 
 class RobustnessTestFactory(ITests):
     """
@@ -245,15 +254,6 @@ class RobustnessTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
-
-    @staticmethod
-    def run(sample_list: Dict[str, List[Sample]], model: ModelFactory) -> List[Sample]:
-        supported_tests = RobustnessTestFactory.available_tests()
-        tasks = []
-        for test_name, samples in sample_list.items():
-            tasks.append(supported_tests[test_name].async_run(samples, model))
-
-        return tasks
 
 
 class BiasTestFactory(ITests):
@@ -373,9 +373,9 @@ class BiasTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-                if not TestFactory.is_augment:
-                    sample.expected_results = self._model_handler(
-                        sample.original)
+                # if not TestFactory.is_augment:
+                #     sample.expected_results = self._model_handler(
+                #         sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 

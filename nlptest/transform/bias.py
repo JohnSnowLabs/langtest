@@ -1,7 +1,10 @@
+import asyncio
 import random
 import re
 from abc import ABC, abstractmethod
 from typing import List
+
+from nlptest.modelhandler.modelhandler import ModelFactory
 
 from .utils import female_pronouns, male_pronouns, neutral_pronouns
 from ..utils.custom_types import Sample, Span, Transformation
@@ -31,6 +34,22 @@ class BaseBias(ABC):
             Any: The transformed data based on the implemented bias measure.
         """
         return NotImplementedError
+    
+    @staticmethod
+    @abstractmethod
+    async def run(sample_list: List[Sample], model: ModelFactory) -> List[Sample]:
+        for sample in sample_list:
+            if sample.state != "done":
+                sample.expected_results = model(sample.original)
+                sample.actual_results = model(sample.test_case)
+                sample.state = "done"
+        return sample_list
+    
+    @classmethod
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
+        created_task = asyncio.create_task(cls.run(sample_list, model))
+        print(created_task.get_name())
+        return created_task
 
 
 class GenderPronounBias(BaseBias):
@@ -54,6 +73,7 @@ class GenderPronounBias(BaseBias):
         """
 
         for sample in sample_list:
+            sample.category = "bias"
             transformations = []
             replaced_string = sample.original
 
@@ -93,7 +113,6 @@ class GenderPronounBias(BaseBias):
 
             sample.test_case = replaced_string
             sample.transformations = transformations
-            sample.category = "bias"
 
         return sample_list
 
