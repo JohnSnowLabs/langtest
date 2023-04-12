@@ -1,9 +1,12 @@
+import asyncio
 import random
 import re
 import numpy as np
 from abc import ABC, abstractmethod
 from functools import reduce
 from typing import Dict, List, Optional
+
+from nlptest.modelhandler.modelhandler import ModelFactory
 
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
@@ -35,6 +38,22 @@ class BaseRobustness(ABC):
         """
 
         return NotImplementedError()
+
+    @staticmethod
+    @abstractmethod
+    async def run(sample_list: List[Sample], model: ModelFactory) -> List[Sample]:
+        for sample in sample_list:
+            if sample.state != "done":
+                sample.expected_results = model(sample.original)
+                sample.actual_results = model(sample.test_case)
+                sample.state = "done"
+        return sample_list
+    
+    @classmethod
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
+        created_task = asyncio.create_task(cls.run(sample_list, model))
+        print(created_task.get_name())
+        return created_task
 
 
 class UpperCase(BaseRobustness):
@@ -183,6 +202,7 @@ class AddTypo(BaseRobustness):
             List of sentences that typo introduced.
         """
         for sample in sample_list:
+            sample.category = "robustness"
             if len(sample.original) < 5:
                 sample.test_case = sample.original
                 continue
@@ -215,7 +235,6 @@ class AddTypo(BaseRobustness):
                 string[swap_idx + 1] = tmp
 
             sample.test_case = "".join(string)
-            sample.category = "robustness"
         return sample_list
 
 

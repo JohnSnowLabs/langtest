@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import asyncio
 from typing import Dict, List
 from tqdm import tqdm
 
@@ -24,7 +25,7 @@ class TestFactory:
     is_augment = False
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict, model: ModelFactory) -> List[Result]:
+    def transform(data: List[Sample], test_types: dict) -> List[Result]:
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -42,12 +43,13 @@ class TestFactory:
         """
         all_results = []
         all_categories = TestFactory.test_categories()
-        tests = tqdm(test_types.keys(), desc="Generating testcases...", disable=TestFactory.is_augment)
+        tests = tqdm(test_types.keys(), desc="Generating testcases...",
+                     disable=TestFactory.is_augment)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             values = test_types[each]
             all_results.extend(
-                all_categories[each](data, values, model).transform()
+                all_categories[each](data, values).transform()
             )
         return all_results
 
@@ -72,6 +74,41 @@ class TestFactory:
                 A dictionary mapping test class names to the available test scenarios for each class.
         """
         return {cls.alias_name.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
+
+    @staticmethod
+    def run(samples_list: List[Sample], model_handler: ModelFactory):
+        async_tests = TestFactory.async_run(samples_list, model_handler)
+        temp_res = asyncio.run(async_tests)
+        results = []
+        for each in temp_res:
+            results.extend(each.result())
+
+        return results
+
+    @classmethod
+    async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory):
+        hash_samples = {}
+        for sample in samples_list:
+            if sample.category not in hash_samples:
+                hash_samples[sample.category] = {}
+            if sample.test_type not in hash_samples[sample.category]:
+                hash_samples[sample.category][sample.test_type] = [sample]
+            else:
+                hash_samples[sample.category][sample.test_type].append(sample)
+
+        all_categories = TestFactory.test_categories()
+        print(hash_samples.keys())
+        tests = tqdm(hash_samples.keys(), desc="Running testcases...",
+                     disable=TestFactory.is_augment)
+        all_results = []
+        for each in tests:
+            tests.set_description(f"Running testcases... ({each})")
+            values = hash_samples[each]
+            all_results.extend(
+                all_categories[each].run(values, model_handler)
+            )
+
+        return await asyncio.gather(*all_results)
 
 
 class ITests(ABC):
@@ -115,7 +152,6 @@ class RobustnessTestFactory(ITests):
             tests: Dict = None,
             model: ModelFactory = None
     ) -> None:
-
         """
         Initializes a new instance of the `Robustness` class.
 
@@ -162,7 +198,8 @@ class RobustnessTestFactory(ITests):
 
         if "british_to_american" in self.tests:
             self.tests['british_to_american']['parameters'] = {}
-            self.tests['british_to_american']['parameters']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
+            self.tests['british_to_american']['parameters']['accent_map'] = {
+                v: k for k, v in A2B_DICT.items()}
 
         if 'swap_cohyponyms' in self.tests:
             nltk.download('omw-1.4', quiet=True)
@@ -190,8 +227,8 @@ class RobustnessTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-                if not TestFactory.is_augment:
-                    sample.expected_results = self._model_handler(sample.original)
+            #     if not TestFactory.is_augment:
+            #         sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -208,6 +245,15 @@ class RobustnessTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+    @staticmethod
+    def run(sample_list: Dict[str, List[Sample]], model: ModelFactory) -> List[Sample]:
+        supported_tests = RobustnessTestFactory.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            tasks.append(supported_tests[test_name].async_run(samples, model))
+
+        return tasks
 
 
 class BiasTestFactory(ITests):
@@ -252,21 +298,25 @@ class BiasTestFactory(ITests):
             self.tests['replace_to_female_pronouns']['parameters'] = {}
             self.tests['replace_to_female_pronouns']['parameters']['pronouns_to_substitute'] = \
                 [item for sublist in list(male_pronouns.values()) for item in sublist] + \
-                [item for sublist in list(neutral_pronouns.values()) for item in sublist]
+                [item for sublist in list(neutral_pronouns.values())
+                 for item in sublist]
             self.tests['replace_to_female_pronouns']['parameters']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self.tests:
             self.tests['replace_to_neutral_pronouns']['parameters'] = {}
             self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = \
                 [item for sublist in list(female_pronouns.values()) for item in sublist] + \
-                [item for sublist in list(male_pronouns.values()) for item in sublist]
+                [item for sublist in list(male_pronouns.values())
+                 for item in sublist]
             self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
 
         for income_level in ['Low-income', 'Lower-middle-income', 'Upper-middle-income', 'High-income']:
             economic_level = income_level.replace("-", "_").lower()
             if f'replace_to_{economic_level}_country' in self.tests:
-                countries_to_exclude = [v for k, v in country_economic_dict.items() if k != income_level]
-                self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {}
+                countries_to_exclude = [
+                    v for k, v in country_economic_dict.items() if k != income_level]
+                self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {
+                }
                 self.tests[f"replace_to_{economic_level}_country"]['parameters'][
                     'country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
                 self.tests[f"replace_to_{economic_level}_country"]['parameters']['chosen_country_names'] = \
@@ -274,8 +324,10 @@ class BiasTestFactory(ITests):
 
         for religion in religion_wise_names.keys():
             if f"replace_to_{religion.lower()}_names" in self.tests:
-                religion_to_exclude = [v for k, v in religion_wise_names.items() if k != religion]
-                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {}
+                religion_to_exclude = [
+                    v for k, v in religion_wise_names.items() if k != religion]
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {
+                }
                 self.tests[f"replace_to_{religion.lower()}_names"]['parameters'][
                     'names_to_substitute'] = get_substitution_names(religion_to_exclude)
                 self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['chosen_names'] = religion_wise_names[
@@ -322,7 +374,8 @@ class BiasTestFactory(ITests):
             for sample in transformed_samples:
                 sample.test_type = test_name
                 if not TestFactory.is_augment:
-                    sample.expected_results = self._model_handler(sample.original)
+                    sample.expected_results = self._model_handler(
+                        sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -383,7 +436,8 @@ class RepresentationTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(test_name, data_handler_copy, params)
+            transformed_samples = self.supported_tests[test_name].transform(
+                test_name, data_handler_copy, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -519,7 +573,8 @@ class AccuracyTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.entity for y in x.expected_results.predictions])
             except:
-                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
+                y_true = pd.Series(data_handler_copy).apply(
+                    lambda x: [y.label for y in x.expected_results.predictions])
 
             X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
             y_pred = X_test.apply(self._model_handler.predict_raw)
@@ -531,7 +586,8 @@ class AccuracyTestFactory(ITests):
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
-            transformed_samples = self.supported_tests[test_name].transform(y_true, y_pred, params)
+            transformed_samples = self.supported_tests[test_name].transform(
+                y_true, y_pred, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)

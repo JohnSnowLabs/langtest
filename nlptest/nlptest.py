@@ -130,7 +130,7 @@ class Harness:
             raise RuntimeError("Please call .configure() first.")
 
         tests = self._config['tests']
-        self._testcases = TestFactory.transform(self.data, tests, self.model)
+        self._testcases = TestFactory.transform(self.data, tests)
         return self
 
     def run(self) -> "Harness":
@@ -143,11 +143,12 @@ class Harness:
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
-        self._generated_results = BaseRunner(
-            self._testcases,
-            self.model,
-            self.data
-        ).evaluate()
+        # self._generated_results = BaseRunner(
+        #     self._testcases,
+        #     self.model,
+        #     self.data
+        # ).evaluate()
+        self._generated_results = TestFactory.run(self._testcases, self.model)
         return self
 
     def report(self) -> pd.DataFrame:
