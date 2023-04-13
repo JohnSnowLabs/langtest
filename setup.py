@@ -20,7 +20,6 @@ REQUIRED_PKGS = [
     'wn',
     'scikit-learn',
     'transformers',
-    'nltk',
     'torch',
     'sentencepiece',
     'pydantic'

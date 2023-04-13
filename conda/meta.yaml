@@ -26,7 +26,6 @@ requirements:
     - pandas
     - scikit-learn
     - transformers
-    - nltk
     - pytorch
     - sentencepiece
 
