@@ -83,7 +83,6 @@ class HarnessTestCase(unittest.TestCase):
     def test_load_ner(self):
         """"""
         save_dir = "/tmp/saved_ner_harness_test"
-        self.harness.generate()
         self.harness.save(save_dir)
 
         loaded_harness = Harness.load(
