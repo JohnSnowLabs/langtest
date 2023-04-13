@@ -329,6 +329,37 @@ class TestNERSample(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
+    def test_trailing_whitespace_realignment(self):
+        """"""
+        sample = NERSample(
+            original='CRICKET - LARA ENDURES ANOTHER MISERABLE DAY .',
+            test_case='Good Morning CRICKET - LARA ENDURES ANOTHER MISERABLE DAY Reported .',
+            test_type='add_context',
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='DATE', span=Span(start=23, end=44, word='ANOTHER MISERABLE DAY'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='DATE', span=Span(start=36, end=66, word='ANOTHER MISERABLE DAY Reported'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=0, end=0, word=''),
+                    new_span=Span(start=0, end=13, word='Good Morning'),
+                    ignore=True
+                ),
+                Transformation(
+                    original_span=Span(start=58, end=58, word=''),
+                    new_span=Span(start=58, end=67, word='Reported '),
+                    ignore=True
+                )
+            ]
+        )
+        self.assertTrue(sample.is_pass())
+
 
 class TestTokenMismatch(unittest.TestCase):
     """"""
