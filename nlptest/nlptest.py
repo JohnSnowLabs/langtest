@@ -136,6 +136,8 @@ class Harness:
         """
         if self._config is None:
             raise RuntimeError("Please call .configure() first.")
+        if self._testcases is not None:
+            raise RuntimeError("Testcases are already generated, please call .run() and .report() next.")
 
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
