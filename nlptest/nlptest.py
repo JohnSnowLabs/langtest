@@ -36,7 +36,7 @@ class Harness:
     def __init__(
             self,
             model: Union[str, Any],
-            task: Optional[str] = "ner",
+            task: str,
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -310,7 +310,7 @@ class Harness:
             pickle.dump(self.data, writer)
 
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] = "ner",
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: str,
              hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
