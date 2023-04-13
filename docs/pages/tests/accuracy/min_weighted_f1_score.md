@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Min Weighted-F1 Score
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks the weighted-f1 score. Test is passed if the weighted-f1 score is higher than the configured min score.
 
 **alias_name:** `min_weighted_f1_score`
@@ -20,4 +19,4 @@ min_weighted_f1_score:
 
 <!-- #### Examples -->
 
-</div></div>
+</div>

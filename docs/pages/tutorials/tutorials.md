@@ -17,7 +17,9 @@ modify_date: "2019-05-16"
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 The following table gives an overview of the different tutorial notebooks. We have test specific (Accuracy, Fairness, Robustness, Representation and Bias) and library specific (John Snow Labs, Hugging Face, Spacy) tutorial notebooks.
 
-<div class="heading" id="tutorial-notebook">Tutorial Notebooks Overview</div>
+</div><div class="h3-box" markdown="1">
+
+### Tutorial Notebooks Overview
 
 {:.table2}
 |Tutorial Description|Library|Task|Open In Colab|
@@ -33,19 +35,5 @@ The following table gives an overview of the different tutorial notebooks. We ha
 |End-to-End Workflow                        |Hugging Face          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/end-to-end-notebooks/HuggingFace_Real_World_Notebook.ipynb)|
 
 
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 20px;
-    padding-bottom: 30px;
-  }
-
-  #tutorial-notebook {
-    color: #1E77B7;
-  }
-
-</div><div class="h3-box" markdown="1">
 
 </div></div>

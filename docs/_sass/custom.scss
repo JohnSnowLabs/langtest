@@ -66,6 +66,7 @@ h1,h2,h3,h4 {
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
     width: auto;
+	height: auto;
 }
 
 .shadow {
@@ -414,7 +415,7 @@ header {
 	}
 }
 .page__aside .toc-aside {
-	padding: 3rem 10px 10rem 30px;
+	padding: 3rem 13px 10rem 30px;
 }
 
 .col-aside .page__aside ul.toc--ellipsis .toc-h3 a {
@@ -514,7 +515,7 @@ header {
 .layout--page.layout--page--sidebar {
 	.page__viewport,
 	.page__grid {
-		height: auto;
+		min-height: 100vh;
 	}
 }
 
@@ -830,6 +831,9 @@ ul.list1 {
 				line-height: 24px;
 				color: $color-darkblue;
 				text-align: left;
+				img {
+					margin: 0;
+				}
 			}
 			&:nth-child(odd) {
 				box-shadow: inset 0px 0px 35px rgba(0, 152, 218, 0.05);
@@ -1530,7 +1534,7 @@ code {
 			.page__viewport {
 				margin-right: 260px;
 				.has-aside .col-aside {
-					right: 260px;
+					right: 275px;
 				}
 			}
 		}

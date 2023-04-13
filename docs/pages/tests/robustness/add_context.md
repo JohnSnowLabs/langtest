@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Add Context
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks if the NLP model can handle input text with added context, such as a greeting or closing.
 
 **alias_name:** `add_context`
@@ -22,6 +21,8 @@ add_context:
 - **starting_context (<List[str]>):** Phrases to be added at the start of inputs.
 - **ending_context (<List[str]>):** Phrases to be added at the end of inputs.
 
+</div><div class="h3-box" markdown="1">
+
 #### Examples
 
 {:.table2}
@@ -31,4 +32,4 @@ add_context:
 |I love playing football.|Hello, I love playing football.|
 
 
-</div></div>
+</div>
