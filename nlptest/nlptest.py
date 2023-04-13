@@ -21,6 +21,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
+    SUPPORTED_TASKS = ["ner", "text-classification"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
@@ -56,6 +57,9 @@ class Harness:
         """
 
         super().__init__()
+
+        if(task not in self.SUPPORTED_TASKS):
+            raise ValueError(f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}")
         self.task = task
 
         if isinstance(model, str) and hub is None:
