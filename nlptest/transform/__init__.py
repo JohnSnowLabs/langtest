@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import asyncio
+import nest_asyncio
+nest_asyncio.apply()
 from typing import Dict, List
 from tqdm import tqdm
 
