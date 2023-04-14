@@ -564,16 +564,9 @@ class AccuracyTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.label for y in x.expected_results.predictions])
 
-            # X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
-            # y_pred = X_test.apply(self._model_handler.predict_raw)
-
-            # valid_indices = y_true.apply(len) == y_pred.apply(len)
-            # y_true = y_true[valid_indices]
-            # y_pred = y_pred[valid_indices]
-
+            y_true = y_true.dropna()
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-            # y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-
+            
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
             for sample in transformed_samples:
