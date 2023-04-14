@@ -660,6 +660,15 @@ figure {
 	}
 }
 
+.article__content figure.highlight {
+	&::before {
+		font-size: 0;
+	}
+	> pre {
+		padding: 1rem;
+	}
+}
+
 .heros {
 	padding-top: 50px;
 	.section-row {

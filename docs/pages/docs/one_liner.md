@@ -14,7 +14,7 @@ With just one line of code, you can generate and run over 50 different test type
 
 ### One Liner - NER
 
-<div class="tabs-wrapper h3-box">
+<div id="one_liner_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
     <a href="#" class="tab-btn">John Snow Labs</a>
     <a href="#" class="tab-btn">Hugging Face</a>
@@ -65,7 +65,7 @@ h.generate().run().report()
 
 ### One Liner - Text Classification
 
-<div class="tabs-wrapper h3-box">
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
     <a href="#" class="tab-btn">John Snow Labs</a>
     <a href="#" class="tab-btn">Hugging Face</a>

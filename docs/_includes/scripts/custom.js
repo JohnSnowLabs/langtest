@@ -29,26 +29,29 @@ jQuery(document).ready(function($) {
 /* Tabs
 	 ========================================================*/
 try {
-  const tabs = (headerSelector, tabSelector, contentSelector, activeClass, display = 'block') => {
-    const header = document.querySelector(headerSelector),
-          tab = document.querySelectorAll(tabSelector),
-          content = document.querySelectorAll(contentSelector);
-  
+  const tabs = (tabContainer, headerSelector, tabSelector, contentSelector, activeClass, display = 'block') => {
+    const tabWrapper = document.querySelectorAll(tabContainer);
+    
+    tabWrapper.forEach(item => {
+    const header = item.querySelector(headerSelector),
+          tab = item.querySelectorAll(tabSelector),
+          content = item.querySelectorAll(contentSelector);
+
     function hideTabContent() {
         content.forEach(item => {
             item.style.display = 'none';
         })
-  
+
         tab.forEach(item => {
             item.classList.remove(activeClass);
         })
     }
-  
+
     function showTabContent(i = 0) {
         content[i].style.display = display;
         tab[i].classList.add(activeClass);
     }
-  
+
     header.addEventListener('click', (e) => {
       e.preventDefault();
         const target = e.target;
@@ -63,9 +66,12 @@ try {
             })
         }
     });
-  
+
     hideTabContent();
     showTabContent();
+    })
+          
   }
-tabs('.tabs-header', '.tab-btn', '.tabs-item', 'active');
+tabs('.tabs-wrapper', '.tabs-header', '.tab-btn', '.tabs-item', 'active');
+//tabs('#one_liner_text_tab', '.tabs-header', '.tab-btn', '.tabs-item', 'active');
 } catch(e){}
