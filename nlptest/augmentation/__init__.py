@@ -64,11 +64,9 @@ class AugmentRobustness(BaseAugmentaion):
             Calculates suggestions for improving test performance based on a given report.
 
 
-
-
     """
 
-    def __init__(self, task, h_report, config, model, max_prop=0.5) -> None:
+    def __init__(self, task, h_report, config, max_prop=0.5) -> None:
         """
         Initializes an instance of MyClass with the specified parameters.
 
@@ -89,7 +87,6 @@ class AugmentRobustness(BaseAugmentaion):
         self.config = config
         self.h_report = h_report
         self.max_prop = max_prop
-        self.model = model
 
         if isinstance(self.config, str):
             with open(self.config) as fread:
@@ -149,12 +146,12 @@ class AugmentRobustness(BaseAugmentaion):
                             test_type['robustness']['swap_entities']['parameters']['labels'] = [
                                 self.label[each]]
                         hash_map[each] = TestFactory.transform(
-                            [hash_map[each]], test_type, model=self.model)[0]
+                            [hash_map[each]], test_type)[0]
 
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
                     aug_data = TestFactory.transform(
-                        sample_data, test_type, model=self.model)
+                        sample_data, test_type)
                     fianl_aug_data.extend(aug_data)
         if inplace:
             fianl_aug_data = list(hash_map.values())

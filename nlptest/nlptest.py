@@ -256,8 +256,7 @@ class Harness:
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report,
-            model=self.model
+            h_report=self.df_report
         ).fix(
             input_path=input_path,
             output_path=output_path,
