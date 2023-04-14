@@ -5,7 +5,6 @@ nest_asyncio.apply()
 from typing import Dict, List
 from tqdm import tqdm
 
-import nltk
 import pandas as pd
 
 from nlptest.modelhandler import ModelFactory
@@ -212,15 +211,6 @@ class RobustnessTestFactory(ITests):
             self.tests['british_to_american']['parameters'] = {}
             self.tests['british_to_american']['parameters']['accent_map'] = {
                 v: k for k, v in A2B_DICT.items()}
-
-        if 'swap_cohyponyms' in self.tests:
-            nltk.download('omw-1.4', quiet=True)
-            nltk.download('wordnet', quiet=True)
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                               'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
-            self.tests['swap_cohyponyms']['parameters'] = {}
-            self.tests['swap_cohyponyms']['parameters']['labels'] = df.label.tolist()
 
         self._data_handler = data_handler
 

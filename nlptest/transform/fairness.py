@@ -3,11 +3,10 @@ import asyncio
 from typing import List
 
 import pandas as pd
-import numpy as np
 from sklearn.metrics import f1_score
 from nlptest.modelhandler.modelhandler import ModelFactory
 
-from nlptest.utils.custom_types import Sample, MinScoreOutput, MaxScoreOutput
+from nlptest.utils.custom_types import MaxScoreOutput, MaxScoreSample, MinScoreOutput, MinScoreSample, Sample
 from nlptest.utils.gender_classifier import GenderClassifier
 
 
@@ -52,7 +51,6 @@ class BaseFairness(ABC):
 
 
 class MinGenderF1Score(BaseFairness):
-
     """
     Subclass of BaseFairness that implements the minimum F1 score.
 
@@ -88,7 +86,7 @@ class MinGenderF1Score(BaseFairness):
 
         samples = []
         for key, val in min_scores.items():
-            sample = Sample(
+            sample = MinScoreSample(
                 original="-",
                 category="fairness",
                 test_type="min_gender_f1_score",
@@ -99,7 +97,7 @@ class MinGenderF1Score(BaseFairness):
             samples.append(sample)
         return samples
 
-    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+    async def run(sample_list: List[MinScoreSample], model: ModelFactory, **kwargs) -> List[MinScoreSample]:
 
         gendered_data = get_gendered_data(kwargs['raw_data'])
 
@@ -135,7 +133,6 @@ class MinGenderF1Score(BaseFairness):
 
 
 class MaxGenderF1Score(BaseFairness):
-
     """
     Subclass of BaseFairness that implements the maximum F1 score.
 
@@ -171,7 +168,7 @@ class MaxGenderF1Score(BaseFairness):
 
         samples = []
         for key, val in max_scores.items():
-            sample = Sample(
+            sample = MaxScoreSample(
                 original="-",
                 category="fairness",
                 test_type="max_gender_f1_score",
@@ -182,7 +179,7 @@ class MaxGenderF1Score(BaseFairness):
             samples.append(sample)
         return samples
 
-    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+    async def run(sample_list: List[MaxScoreSample], model: ModelFactory, **kwargs) -> List[MaxScoreSample]:
         gendered_data = get_gendered_data(kwargs['raw_data'])
 
         for sample in sample_list:

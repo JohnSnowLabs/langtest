@@ -3,7 +3,6 @@ import random
 import re
 import numpy as np
 from abc import ABC, abstractmethod
-from functools import reduce
 from typing import Dict, List, Optional
 
 from nlptest.modelhandler.modelhandler import ModelFactory
@@ -309,120 +308,6 @@ class SwapEntities(BaseRobustness):
             ]
             sample.category = "robustness"
         return sample_list
-
-
-def get_cohyponyms_wordnet(word: str) -> str:
-    """
-    Retrieve co-hyponym of the input string using WordNet when a hit is found.
-
-    Args:
-        word: input string to retrieve co-hyponym
-    Returns:
-        Cohyponym of the input word if exists, else original word.
-    """
-
-    try:
-        from nltk.corpus import wordnet as wn
-    except ImportError:
-        raise ImportError("WordNet is not available!\n"
-                          "Please install WordNet via pip install wordnet to use swap_cohyponyms")
-
-    orig_word = word
-    word = word.lower()
-    if len(word.split()) > 0:
-        word = word.replace(" ", "_")
-    syns = wn.synsets(word)
-
-    if len(syns) == 0:
-        return orig_word
-    else:
-        hypernym = syns[0].hypernyms()
-        if len(hypernym) == 0:
-            return orig_word
-        else:
-            hypos = hypernym[0].hyponyms()
-            hypo_len = len(hypos)
-            if hypo_len == 1:
-                name = str(hypos[0].lemmas()[0])
-            else:
-                ind = random.sample(range(hypo_len), k=1)[0]
-                name = str(hypos[ind].lemmas()[0])
-                while name == word:
-                    ind = random.sample(range(hypo_len), k=1)[0]
-                    name = str(hypos[ind].lemmas()[0])
-            return name.replace("_", " ").split(".")[0][7:]
-
-
-class SwapCohyponyms(BaseRobustness):
-    alias_name = "swap_cohyponyms"
-
-    @staticmethod
-    def transform(
-            sample_list: List[Sample],
-            labels: List[List[str]] = None,
-    ) -> List[Sample]:
-        """Swaps named entities with the new one from the terminology extracted from passed data.
-
-        Args:
-            sample_list: List of sentences to process.
-            labels: Corresponding labels to make changes according to sentences.
-
-        Returns:
-            List sample indexes and corresponding augmented sentences, tags and labels if provided.
-        """
-
-        if labels is None:
-            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
-
-        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
-
-        for sample, sample_labels in zip(sample_list, labels):
-            if all([label == "O" for label in sample_labels]):
-                sample.test_case = sample.original
-                continue
-
-            sent_tokens = sample.original.split(' ')
-
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            replace_idx = np.random.choice(ent_idx)
-            ent_type = sample_labels[replace_idx][2:]
-            replace_idxs = [replace_idx]
-            if replace_idx < len(sample_labels) - 1:
-                for i, label in enumerate(sample_labels[replace_idx + 1:]):
-                    if label == f'I-{ent_type}':
-                        replace_idxs.append(i + replace_idx + 1)
-                    else:
-                        break
-
-            replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
-            token_length = len(replace_token)
-            replace_token = " ".join(replace_token)
-
-            chosen_ent = get_cohyponyms_wordnet(replace_token)
-            replace_token_pos = re.search(replace_token, sample.original)
-
-            sample.test_case = sample.original.replace(replace_token, chosen_ent)
-            sample.transformations = [
-                Transformation(
-                    original_span=Span(
-                        start=replace_token_pos.start(),
-                        end=replace_token_pos.end(),
-                        word=replace_token
-                    ),
-                    new_span=Span(
-                        start=replace_token_pos.start(),
-                        end=replace_token_pos.start() + len(chosen_ent),
-                        word=chosen_ent
-                    ),
-                    ignore=False
-                )
-            ]
-            sample.category = "robustness"
-
-        return sample_list
-
 
 class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
