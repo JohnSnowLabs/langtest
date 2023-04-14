@@ -7035,8 +7035,8 @@ def get_label_representation_dict(data: List[Sample]) -> Dict[str, int]:
             elif isinstance(prediction, NERPrediction):
                 if prediction.entity == 'O':
                     label_representation[prediction.entity] += 1
-                elif prediction.entity in ['B-LOC', 'I-LOC', 'B-PER', 'I-PER', 'B-MISC', 'I-MISC', 'B-ORG', 'I-ORG']:
-                    label_representation[prediction.entity.split("-")[1]] += 1
+                else:
+                    label_representation[prediction.entity.split("-")[-1]] += 1
 
     return label_representation
 
@@ -7068,13 +7068,17 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
 
     for sample in data:
         for i in sample.expected_results.predictions:
-            if check_name(i.span.word, [country_economic_dict['High-income']]):
+            if isinstance(i, NERPrediction):
+                text = i.span.word
+            elif isinstance(i, SequenceLabel):
+                text = i.label
+            if check_name(text, [country_economic_dict['High-income']]):
                 country_economic_representation["high_income"] += 1
-            if check_name(i.span.word, [country_economic_dict['Low-income']]):
+            if check_name(text, [country_economic_dict['Low-income']]):
                 country_economic_representation["low_income"] += 1
-            if check_name(i.span.word, [country_economic_dict['Lower-middle-income']]):
+            if check_name(text, [country_economic_dict['Lower-middle-income']]):
                 country_economic_representation["lower_middle_income"] += 1
-            if check_name(i.span.word, [country_economic_dict['Upper-middle-income']]):
+            if check_name(text, [country_economic_dict['Upper-middle-income']]):
                 country_economic_representation["upper_middle_income"] += 1
 
     return country_economic_representation
@@ -7093,19 +7097,23 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
 
     for sample in data:
         for i in sample.expected_results.predictions:
-            if check_name(i.span.word, [religion_wise_names['Muslim']]):
+            if(isinstance(i, NERPrediction)):
+                text = i.span.word
+            elif(isinstance(i, SequenceLabel)):
+                text = i.label
+            if check_name(text, [religion_wise_names['Muslim']]):
                 religion_representation["muslim"] += 1
-            if check_name(i.span.word, [religion_wise_names['Hindu']]):
+            if check_name(text, [religion_wise_names['Hindu']]):
                 religion_representation["hindu"] += 1
-            if check_name(i.span.word, [religion_wise_names['Sikh']]):
+            if check_name(text, [religion_wise_names['Sikh']]):
                 religion_representation["sikh"] += 1
-            if check_name(i.span.word, [religion_wise_names['Parsi']]):
+            if check_name(text, [religion_wise_names['Parsi']]):
                 religion_representation["parsi"] += 1
-            if check_name(i.span.word, [religion_wise_names['Christian']]):
+            if check_name(text, [religion_wise_names['Christian']]):
                 religion_representation["christian"] += 1
-            if check_name(i.span.word, [religion_wise_names['Buddhist']]):
+            if check_name(text, [religion_wise_names['Buddhist']]):
                 religion_representation["buddhist"] += 1
-            if check_name(i.span.word, [religion_wise_names['Jain']]):
+            if check_name(text, [religion_wise_names['Jain']]):
                 religion_representation["jain"] += 1
 
     return religion_representation
@@ -7124,17 +7132,21 @@ def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
 
     for sample in data:
         for i in sample.expected_results.predictions:
-            if check_name(i.span.word, [white_names['first_names'], white_names['last_names']]):
+            if(isinstance(i, NERPrediction)):
+                text = i.span.word
+            elif(isinstance(i, SequenceLabel)):
+                text = i.label
+            if check_name(text, [white_names['first_names'], white_names['last_names']]):
                 ethnicity_representation["white"] += 1
-            if check_name(i.span.word, [black_names['first_names'], black_names['last_names']]):
+            if check_name(text, [black_names['first_names'], black_names['last_names']]):
                 ethnicity_representation["black"] += 1
-            if check_name(i.span.word, [hispanic_names['first_names'], hispanic_names['last_names']]):
+            if check_name(text, [hispanic_names['first_names'], hispanic_names['last_names']]):
                 ethnicity_representation["hispanic"] += 1
-            if check_name(i.span.word, [asian_names['first_names'], asian_names['last_names']]):
+            if check_name(text, [asian_names['first_names'], asian_names['last_names']]):
                 ethnicity_representation["asian"] += 1
-            if check_name(i.span.word, [inter_racial_names['last_names']]):
+            if check_name(text, [inter_racial_names['last_names']]):
                 ethnicity_representation["inter_racial"] += 1
-            if check_name(i.span.word, [native_american_names['last_names']]):
+            if check_name(text, [native_american_names['last_names']]):
                 ethnicity_representation["native_american"] += 1
 
     return ethnicity_representation
