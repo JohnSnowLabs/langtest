@@ -41,12 +41,13 @@ class BaseFairness(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[Sample], model: ModelFactory) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
         return NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
-        created_task = asyncio.create_task(cls.run(sample_list, model))
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+        created_task = asyncio.create_task(
+            cls.run(sample_list, model, **kwargs))
         return created_task
 
 
@@ -66,7 +67,7 @@ class MinGenderF1Score(BaseFairness):
     alias_name = "min_gender_f1_score"
 
     @staticmethod
-    def transform(data: List[Sample], model, params):
+    def transform(data: List[Sample], params):
         """
         Computes the minimum F1 score for the given data.
 
@@ -85,14 +86,26 @@ class MinGenderF1Score(BaseFairness):
                 "unknown": params["min_score"]
             }
 
-        gendered_data = get_gendered_data(data)
-
         samples = []
+        for key, val in min_scores.items():
+            sample = Sample(
+                original="-",
+                category="fairness",
+                test_type="min_gender_f1_score",
+                test_case=key,
+                expected_results=MinScoreOutput(min_score=val)
+            )
 
-        for key, val in gendered_data.items():
-            if key not in min_scores.keys():
-                continue
-            val = pd.Series(val, dtype="object")
+            samples.append(sample)
+        return samples
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        gendered_data = get_gendered_data(kwargs['raw_data'])
+
+        for sample in sample_list:
+
+            val = pd.Series(gendered_data[sample.test_case], dtype="object")
             try:
                 y_true = val.apply(
                     lambda x: [y.entity for y in x.expected_results.predictions])
@@ -104,11 +117,6 @@ class MinGenderF1Score(BaseFairness):
             y_pred = X_test.apply(model.predict_raw)
 
             valid_indices = y_true.apply(len) == y_pred.apply(len)
-            # length_mismatch = valid_indices.count()-valid_indices.sum()
-            # if length_mismatch > 0:
-            # print(f"{length_mismatch} predictions have different lenghts
-            # than dataset and will be ignored.\nPlease make sure dataset
-            # and model uses same tokenizer.")
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
 
@@ -121,18 +129,9 @@ class MinGenderF1Score(BaseFairness):
             else:
                 macro_f1_score = 1
 
-            sample = Sample(
-                original="-",
-                category="fairness",
-                test_type="min_gender_f1_score",
-                test_case=key,
-                expected_results=MinScoreOutput(min_score=min_scores[key]),
-                actual_results=MinScoreOutput(min_score=macro_f1_score),
-                state="done"
-            )
-
-            samples.append(sample)
-        return samples
+            sample.actual_results = MinScoreOutput(min_score=macro_f1_score)
+            sample.state = "done"
+        return sample_list
 
 
 class MaxGenderF1Score(BaseFairness):
@@ -151,7 +150,7 @@ class MaxGenderF1Score(BaseFairness):
     alias_name = "max_gender_f1_score"
 
     @staticmethod
-    def transform(data: List[Sample], model, params):
+    def transform(data: List[Sample], params):
         """
         Computes the gendered max F1 score tests for the given data.
 
@@ -170,14 +169,24 @@ class MaxGenderF1Score(BaseFairness):
                 "unknown": params["max_score"]
             }
 
-        gendered_data = get_gendered_data(data)
-
         samples = []
-        for key, val in gendered_data.items():
-            if key not in max_scores.keys():
-                continue
-            val = pd.Series(val, dtype="object")
+        for key, val in max_scores.items():
+            sample = Sample(
+                original="-",
+                category="fairness",
+                test_type="max_gender_f1_score",
+                test_case=key,
+                expected_results=MaxScoreOutput(max_score=val)
+            )
 
+            samples.append(sample)
+        return samples
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+        gendered_data = get_gendered_data(kwargs['raw_data'])
+
+        for sample in sample_list:
+            val = pd.Series(gendered_data[sample.test_case], dtype="object")
             try:
                 y_true = val.apply(
                     lambda x: [y.entity for y in x.expected_results.predictions])
@@ -185,17 +194,10 @@ class MaxGenderF1Score(BaseFairness):
                 y_true = val.apply(
                     lambda x: [y.label for y in x.expected_results.predictions])
             X_test = val.apply(lambda x: x.original)
-            y_true = pd.Series(val).apply(
-                lambda x: [y.entity for y in x.expected_results.predictions])
-            X_test = pd.Series(val).apply(lambda x: x.original)
+
             y_pred = X_test.apply(model.predict_raw)
 
             valid_indices = y_true.apply(len) == y_pred.apply(len)
-            # length_mismatch = valid_indices.count()-valid_indices.sum()
-            # if length_mismatch > 0:
-            # print(f"{length_mismatch} predictions have different
-            # lenghts than dataset and will be ignored.\nPlease make
-            # sure dataset and model uses same tokenizer.")
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
 
@@ -208,18 +210,9 @@ class MaxGenderF1Score(BaseFairness):
             else:
                 macro_f1_score = 0
 
-            sample = Sample(
-                original="-",
-                category="fairness",
-                test_type="max_gender_f1_score",
-                test_case=key,
-                expected_results=MaxScoreOutput(max_score=max_scores[key]),
-                actual_results=MaxScoreOutput(max_score=macro_f1_score),
-                state="done"
-            )
-
-            samples.append(sample)
-        return samples
+            sample.actual_results = MinScoreOutput(min_score=macro_f1_score)
+            sample.state = "done"
+        return sample_list
 
 
 def get_gendered_data(data):
