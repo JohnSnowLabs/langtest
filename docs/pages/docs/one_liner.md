@@ -39,7 +39,7 @@ h.generate().run().report()
         {% highlight python %}
 from nlptest import Harness
 
-# Create a Harness object
+# Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
 
 # Generate, run and get a report on your test cases
@@ -52,7 +52,7 @@ h.generate().run().report()
         {% highlight python %}
 from nlptest import Harness
 
-# Create a Harness object
+# Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
 
 # Generate, run and get a report on your test cases
