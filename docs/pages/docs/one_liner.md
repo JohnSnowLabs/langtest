@@ -65,12 +65,53 @@ h.generate().run().report()
 
 ### One Liner - Text Classification
 
-```python
+<div class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">John Snow Labs</a>
+    <a href="#" class="tab-btn">Hugging Face</a>
+    <a href="#" class="tab-btn">Spacy</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
 from nlptest import Harness
+
+# Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model='en.sentiment.imdb.glove', hub='johnsnowlabs')
 
-# Generate test cases, run them and view a report
+# Generate, run and get a report on your test cases
 h.generate().run().report()
-```
+{% endhighlight %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+from nlptest import Harness
+
+# Make sure to specify data='path_to_data' when using custom models
+h = Harness(task='text-classification', model='mrm8488/distilroberta-finetuned-tweets-hate-speech', hub='huggingface')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+from nlptest import Harness
+
+# Make sure to specify data='path_to_data' when using custom models
+h = Harness(task='text-classification', model='textcat_imdb', hub='spacy')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
 
 </div>
