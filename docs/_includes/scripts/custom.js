@@ -72,5 +72,5 @@ try {
     })
           
   }
-tabs('.tabs-wrapper', '.tabs-header', '.tab-btn', '.tabs-item', 'active');
+  tabs('.tabs-wrapper', '.tabs-header', '.tab-btn', '.tabs-item', 'active');
 } catch(e){}
