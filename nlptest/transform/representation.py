@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+import asyncio
+from typing import List
+from nlptest.modelhandler.modelhandler import ModelFactory
 from nlptest.utils.custom_types import Sample, MinScoreOutput
 from nlptest.utils.gender_classifier import GenderClassifier
 from .utils import (default_label_representation,
@@ -24,6 +27,7 @@ class BaseRepresentation(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output 
         based on the implemented representation measure.
     """
+    alias_name = None
 
     @staticmethod
     @abstractmethod
@@ -39,8 +43,17 @@ class BaseRepresentation(ABC):
         """
 
         return NotImplementedError
+    
+    @staticmethod
+    @abstractmethod
+    async def run(sample_list: List[Sample], model: ModelFactory) -> List[Sample]:
+        return NotImplementedError()
+    
+    @classmethod
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
+        created_task = asyncio.create_task(cls.run(sample_list, model))
+        return created_task
 
-    alias_name = None
 
 
 class GenderRepresentation(BaseRepresentation):

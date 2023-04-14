@@ -76,17 +76,16 @@ class TestFactory:
         return {cls.alias_name.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
 
     @staticmethod
-    def run(samples_list: List[Sample], model_handler: ModelFactory):
-        async_tests = TestFactory.async_run(samples_list, model_handler)
+    def run(samples_list: List[Sample], model_handler: ModelFactory,  **kwargs):
+        async_tests = TestFactory.async_run(samples_list, model_handler, **kwargs)
         temp_res = asyncio.run(async_tests)
         results = []
         for each in temp_res:
             results.extend(each.result())
-
         return results
 
     @classmethod
-    async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory):
+    async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
         hash_samples = {}
         for sample in samples_list:
             if sample.category not in hash_samples:
@@ -97,17 +96,17 @@ class TestFactory:
                 hash_samples[sample.category][sample.test_type].append(sample)
 
         all_categories = TestFactory.test_categories()
-        print(hash_samples.keys())
         tests = tqdm(hash_samples.keys(), desc="Running testcases...",
                      disable=TestFactory.is_augment)
         all_results = []
         for each in tests:
             tests.set_description(f"Running testcases... ({each})")
             values = hash_samples[each]
-            all_results.extend(
-                all_categories[each].run(values, model_handler)
-            )
-
+            category_output = all_categories[each].run(values, model_handler, **kwargs)
+            if  type(category_output) == list:
+                all_results.extend(category_output)
+            else:
+                all_results.append(category_output)
         return await asyncio.gather(*all_results)
 
 
@@ -140,11 +139,15 @@ class ITests(ABC):
         return NotImplementedError
 
     @classmethod
-    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory) -> List[Sample]:
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, **kwargs) -> List[Sample]:
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
-            tasks.append(supported_tests[test_name].async_run(samples, model))
+            test_output = supported_tests[test_name].async_run(samples, model, **kwargs)
+            if type(test_output) == list:
+                tasks.extend(test_output)
+            else:
+                tasks.append(test_output)
 
         return tasks
 
@@ -158,8 +161,7 @@ class RobustnessTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict = None,
-            model: ModelFactory = None
+            tests: Dict = None
     ) -> None:
         """
         Initializes a new instance of the `Robustness` class.
@@ -174,8 +176,7 @@ class RobustnessTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
-
+        
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -265,13 +266,11 @@ class BiasTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict = None,
-            model: ModelFactory = None
+            tests: Dict = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -468,13 +467,12 @@ class FairnessTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict,
-            model: ModelFactory
+            tests: Dict
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
+        # self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -502,7 +500,7 @@ class FairnessTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, self._model_handler,
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             params)
             for sample in transformed_samples:
                 sample.test_type = test_name
@@ -534,13 +532,11 @@ class AccuracyTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict,
-            model: ModelFactory
+            tests: Dict
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -576,18 +572,18 @@ class AccuracyTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.label for y in x.expected_results.predictions])
 
-            X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
-            y_pred = X_test.apply(self._model_handler.predict_raw)
+            # X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
+            # y_pred = X_test.apply(self._model_handler.predict_raw)
 
-            valid_indices = y_true.apply(len) == y_pred.apply(len)
-            y_true = y_true[valid_indices]
-            y_pred = y_pred[valid_indices]
+            # valid_indices = y_true.apply(len) == y_pred.apply(len)
+            # y_true = y_true[valid_indices]
+            # y_pred = y_pred[valid_indices]
 
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-            y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+            # y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
             transformed_samples = self.supported_tests[test_name].transform(
-                y_true, y_pred, params)
+                y_true, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -606,3 +602,30 @@ class AccuracyTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+    @classmethod
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, raw_data: List[Sample]):
+        try:
+            y_true = pd.Series(raw_data).apply(
+                lambda x: [y.entity for y in x.expected_results.predictions])
+        except:
+            y_true = pd.Series(raw_data).apply(
+                lambda x: [y.label for y in x.expected_results.predictions])
+
+        len(y_true)
+        X_test = pd.Series(raw_data).apply(lambda x: x.original)
+        y_pred = X_test.apply(model.predict_raw)
+
+        valid_indices = y_true.apply(len) == y_pred.apply(len)
+        y_true = y_true[valid_indices]
+        y_pred = y_pred[valid_indices]
+
+        y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
+        y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            tasks.append(
+                supported_tests[test_name].async_run(samples, y_true, y_pred))
+        return tasks

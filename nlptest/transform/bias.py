@@ -37,7 +37,7 @@ class BaseBias(ABC):
     
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[Sample], model: ModelFactory) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
         for sample in sample_list:
             if sample.state != "done":
                 sample.expected_results = model(sample.original)
@@ -46,8 +46,8 @@ class BaseBias(ABC):
         return sample_list
     
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
-        created_task = asyncio.create_task(cls.run(sample_list, model))
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         print(created_task.get_name())
         return created_task
 

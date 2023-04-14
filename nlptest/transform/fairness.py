@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
+import asyncio
 from typing import List
 
 import pandas as pd
 import numpy as np
 from sklearn.metrics import f1_score
+from nlptest.modelhandler.modelhandler import ModelFactory
 
 from nlptest.utils.custom_types import Sample, MinScoreOutput, MaxScoreOutput
 from nlptest.utils.gender_classifier import GenderClassifier
@@ -20,6 +22,7 @@ class BaseFairness(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an 
         output based on the implemented accuracy measure.
     """
+    alias_name = None
 
     @staticmethod
     @abstractmethod
@@ -36,7 +39,15 @@ class BaseFairness(ABC):
 
         return NotImplementedError
 
-    alias_name = None
+    @staticmethod
+    @abstractmethod
+    async def run(sample_list: List[Sample], model: ModelFactory) -> List[Sample]:
+        return NotImplementedError()
+
+    @classmethod
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory):
+        created_task = asyncio.create_task(cls.run(sample_list, model))
+        return created_task
 
 
 class MinGenderF1Score(BaseFairness):

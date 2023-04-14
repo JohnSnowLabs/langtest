@@ -150,7 +150,7 @@ class Harness:
         #     self.model,
         #     self.data
         # ).evaluate()
-        self._generated_results = TestFactory.run(self._testcases, self.model)
+        self._generated_results = TestFactory.run(self._testcases, self.model, raw_data=self.data)
         return self
 
     def report(self) -> pd.DataFrame:
