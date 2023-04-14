@@ -73,5 +73,4 @@ try {
           
   }
 tabs('.tabs-wrapper', '.tabs-header', '.tab-btn', '.tabs-item', 'active');
-//tabs('#one_liner_text_tab', '.tabs-header', '.tab-btn', '.tabs-item', 'active');
 } catch(e){}
