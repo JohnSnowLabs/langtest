@@ -38,11 +38,11 @@ class BaseAccuracy(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[Sample], y_true, y_pred) -> List[Sample]:
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred) -> List[MinScoreSample]:
         return NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample],  y_true, y_pred):
+    async def async_run(cls, sample_list: List[MinScoreSample],  y_true, y_pred):
         created_task = asyncio.create_task(cls.run(sample_list, y_true, y_pred))
         return created_task
 
