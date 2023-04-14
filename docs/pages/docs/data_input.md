@@ -50,7 +50,7 @@ For `CSV` files, we support different variations of the column names. They are s
 
 </div><div class="h3-box" markdown="1">
 
-### For Text-Classification
+### Supported Columns : Text-Classification
 
 {:.table2}
 | Supported "text" column names | Supported "label" column names   |  
@@ -59,7 +59,7 @@ For `CSV` files, we support different variations of the column names. They are s
 
 </div><div class="h3-box" markdown="1">
 
-### For NER
+### Supported Columns : NER
 
 {:.table2}
 | Supported "text" column names | Supported "ner" column names | Supported "pos" column names | Supported "chunk" column names | 
@@ -71,7 +71,7 @@ In the harness, we specify the data input in the following way:
 
 </div><div class="h3-box" markdown="1">
 
-### For NER
+### Sample Code block : NER
 
 ```python
 #Import Harness from the nlptest library
@@ -88,7 +88,7 @@ harness = Harness(
 
 </div><div class="h3-box" markdown="1">
 
-### For Text-Classification
+### Sample Code block : Text-Classification
 
 ```python
 #Import Harness from the nlptest library

@@ -19,7 +19,8 @@ The following table gives an overview of the different tutorial notebooks. We ha
 
 </div><div class="h3-box" markdown="1">
 
-### Tutorial Notebooks Overview
+<div class="heading" id="tutorials"> Tutorial Notebooks Overview </div>
+
 
 {:.table2}
 |Tutorial Description|Library|Task|Open In Colab|
@@ -34,6 +35,19 @@ The following table gives an overview of the different tutorial notebooks. We ha
 |End-to-End Workflow                        |Spacy          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/release%2F1.0.0/demo/tutorials/end-to-end-notebooks/Spacy_Real_World_Notebook.ipynb)|
 |End-to-End Workflow                        |Hugging Face          |NER    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/end-to-end-notebooks/HuggingFace_Real_World_Notebook.ipynb)|
 
+<style>
+  .heading {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
 
+  #tutorials {
+    color: #1E77B7;
+  }
+  
+</style>
 
 </div></div>
