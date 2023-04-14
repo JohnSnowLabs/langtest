@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## American to British
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks if the NLP model can handle input text with british accent. An accent dictionary is used to convert sentences into british accent.
 
 **alias_name:** `american_to_british`
@@ -18,6 +17,8 @@ american_to_british:
 
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 
+</div><div class="h3-box" markdown="1">
+
 #### Examples
 
 {:.table2}
@@ -26,5 +27,4 @@ american_to_british:
 |The technician analyzed your samples.|The technician analyzed your samples.|
 |What color is this?|What colour is this?|
 
-
-</div></div>
+</div>

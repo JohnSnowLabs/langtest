@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Min Religion Name Representation Count
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks the data regarding the sample counts of religions.
 
 **alias_name:** `min_religion_name_representation_count`
@@ -25,3 +24,5 @@ min_religion_name_representation_count:
 - **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->
+
+</div>

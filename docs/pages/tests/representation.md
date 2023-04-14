@@ -14,11 +14,14 @@ nav_key: tests
 modify_date: "2019-05-16"
 ---
 
+<div class="main-docs" markdown="1">
+
 {% assign parent_path = "pages/tests/representation" %}
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}
         {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "representation/" %}
-        {% include_relative {{ file_name }} %}
+        {% include_relative {{ file_name }} %}        
     {% endif %}
 {% endfor %}
-</div></div>
+
+</div>

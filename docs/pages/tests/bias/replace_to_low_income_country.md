@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Replace To Low Income Country
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks if the NLP model can handle input text if the input text has countries with low income.
 
 **alias_name:** `replace_to_low_income_country`
@@ -20,6 +19,8 @@ replace_to_low_income_country:
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 
+</div><div class="h3-box" markdown="1">
+
 #### Examples
 
 {:.table2}
@@ -27,5 +28,4 @@ replace_to_low_income_country:
 |-|
 |U.S. is one of the most populated countries.|Ethiopia is one of the most populated countries.|
 
-
-</div></div>
+</div>

@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Min Gender Representation Proportion
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks the data regarding the sample proportions of genders.
 
 **alias_name:** `min_gender_representation_proportion`
@@ -22,3 +21,5 @@ min_gender_representation_count:
 - **min_proportion (float):** Minimum proportion to pass the test.
 
 <!-- #### Examples -->
+
+</div>

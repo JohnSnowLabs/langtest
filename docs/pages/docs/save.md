@@ -10,7 +10,7 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-### Save
+<div class="heading" id="save"> Save </div>
 
 Harness class provides `save()` and `load()` pipeline for the loading and saving the test configuration, generated test cases and the test data so that it can be reused later.
       
@@ -21,5 +21,21 @@ h.save("path/to/saved_nlptest_folder")
 
 Harness will save generated test cases, nlptest configurations and test data. Later the saved folder can be used to test
  different NLP pipelines using `h.load()` method.
+
+ <style>
+  .heading {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 500;
+    padding-top: 10px;
+    padding-bottom: 20px;
+  }
+
+  #save {
+    color: #1E77B7;
+  }
+  
+</style>
+  
 
 </div></div>
