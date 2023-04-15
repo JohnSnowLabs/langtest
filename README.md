@@ -9,6 +9,8 @@
         <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" /></a>
     <a href="https://pypi.org/project/nlptest/" alt="PyPi downloads">
         <img src="https://static.pepy.tech/personalized-badge/nlptest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
+    <a href="https://anaconda.org/conda-forge/nlptest" alt="Conda Version">
+        <img src="https://img.shields.io/conda/vn/conda-forge/nlptest.svg?style=flat-square&color=blue&logo=conda-forge" /></a>
 </p>
 
 
