@@ -10,20 +10,40 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-**nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
+**nlptest** is an open-source Python library designed to help developers deliver 
+safe and effective Natural Language Processing (NLP) models.
 You can install **nlptest** using pip or conda.
 
 <div class="heading" id="installation"> Installation </div>
 
-```python 
-# Using PyPI
-pip install nlptest
+**Using PyPI**:
 
-# Using Conda
-conda install -c johnsnowlabs nlptest
+```sh
+pip install nlptest
 ```
 
-Whether you are using **John Snow Labs**, **Hugging Face**, or **Spacy** models, ``Harness`` has got you covered. You can test any **Text Classification** and **Named Entity Recognition (NER)** model using the ``Harness``. The library supports 50+ out of the box tests. These tests fall into robustness, accuracy, bias, representation and fairness test categories.
+**Using Conda**: 
+
+Download from johnsnowlabs or conda-forge channel.
+
+```sh
+# Optiona: A
+conda install -c johnsnowlabs nlptest
+
+# Optiona: B
+conda install -c conda-forge nlptest
+```
+
+> :bulb: Tip: The conda solver is slower than the mamba solver. Install mamba in the 
+> conda environment first. And then replace all `conda install` commands with 
+> `mamba install` to get a much faster installation of packages.
+> Install mamba as: `conda install -c conda-forge mamba`  
+
+Whether you are using **John Snow Labs**, **Hugging Face**, or **Spacy** models, 
+``Harness`` has got you covered. You can test any **Text Classification** and 
+**Named Entity Recognition (NER)** model using the ``Harness``. The library 
+supports 50+ out of the box tests. These tests fall into robustness, accuracy, 
+bias, representation and fairness test categories.
 
 
 <style>
@@ -42,6 +62,6 @@ Whether you are using **John Snow Labs**, **Hugging Face**, or **Spacy** models,
   #one-liners {
     color: #1E77B7;
   }
-  
+</style>  
 
 </div></div>
