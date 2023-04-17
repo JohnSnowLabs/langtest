@@ -140,9 +140,9 @@ class Harness:
             raise RuntimeError("Testcases are already generated, please call .run() and .report() next.")
 
         tests = self._config['tests']
-        for sample in self.data:
-            sample.expected_results = self.model(sample.original)
-        self._testcases = TestFactory.transform(self.data, tests)
+        # for sample in self.data:
+        #     sample.expected_results = self.model(sample.original)
+        self._testcases = TestFactory.transform(self.data, self.model, tests)
         return self
 
     def run(self) -> "Harness":

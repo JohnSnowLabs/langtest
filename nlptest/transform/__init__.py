@@ -26,7 +26,7 @@ class TestFactory:
     is_augment = False
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict) -> List[Result]:
+    def transform(data: List[Sample], model: ModelFactory, test_types: dict) -> List[Result]:
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -46,11 +46,16 @@ class TestFactory:
         all_categories = TestFactory.test_categories()
         tests = tqdm(test_types.keys(), desc="Generating testcases...",
                      disable=TestFactory.is_augment)
+        m_data = [sample.copy() for sample in data]
+        _ = [setattr(sample, 'expected_results', model(sample.original)) 
+                  for sample in m_data]
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             values = test_types[each]
             all_results.extend(
-                all_categories[each](data, values).transform()
+                all_categories[each](m_data, values).transform()
+                if each in ["robustness", "bias"]
+                else all_categories[each](data, values).transform()
             )
         return all_results
 
@@ -564,9 +569,8 @@ class AccuracyTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.label for y in x.expected_results.predictions])
 
+            y_true = y_true.explode().apply(lambda x: x.split("-")[-1] if isinstance(x, str) else x)
             y_true = y_true.dropna()
-            y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-            
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
             for sample in transformed_samples:

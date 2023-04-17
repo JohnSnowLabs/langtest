@@ -103,8 +103,9 @@ class MinPrecisionScore(BaseAccuracy):
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
         
-        for sample in sample_list:
+        for idx, sample in enumerate(sample_list):
             if sample.test_case not in df_metrics:
+                sample_list.pop(idx)
                 continue
             precision = df_metrics.get(sample.test_case)
             sample.actual_results=MinScoreOutput(min_score=precision['precision'])
@@ -170,8 +171,9 @@ class MinRecallScore(BaseAccuracy):
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
         
-        for sample in sample_list:
+        for idx, sample in enumerate(sample_list):
             if sample.test_case not in df_metrics:
+                sample_list.pop(idx)
                 continue
             precision = df_metrics.get(sample.test_case)
             sample.actual_results=MinScoreOutput(min_score=precision['recall'])
@@ -235,8 +237,9 @@ class MinF1Score(BaseAccuracy):
         df_metrics.pop("macro avg")
         df_metrics.pop("weighted avg")
         
-        for sample in sample_list:
+        for idx, sample in enumerate(sample_list):
             if sample.test_case not in df_metrics:
+                sample_list.pop(idx)
                 continue
             f1_scores = df_metrics.get(sample.test_case)
             sample.actual_results=MinScoreOutput(min_score=f1_scores['f1-score'])
