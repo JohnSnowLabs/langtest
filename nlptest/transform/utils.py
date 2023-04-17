@@ -17,7 +17,6 @@ DEFAULT_PERTURBATIONS = [
     "add_context",
     "add_contractions",
     "swap_entities",
-    "swap_cohyponyms",
     "replace_to_male_pronouns",
     "replace_to_female_pronouns",
     "replace_to_neutral_pronouns"
@@ -35,7 +34,6 @@ PERTURB_CLASS_MAP = {
     "add_context": 'AddContext',
     "add_contractions": 'AddContraction',
     "swap_entities": 'SwapEntities',
-    "swap_cohyponyms": 'SwapCohyponyms',
     "replace_to_male_pronouns": "GenderPronounBias",
     "replace_to_female_pronouns": "GenderPronounBias",
     "replace_to_neutral_pronouns": "GenderPronounBias"

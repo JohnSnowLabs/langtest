@@ -21,6 +21,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
+    SUPPORTED_TASKS = ["ner", "text-classification"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
@@ -36,7 +37,7 @@ class Harness:
     def __init__(
             self,
             model: Union[str, Any],
-            task: Optional[str] = "ner",
+            task: str,
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -56,6 +57,9 @@ class Harness:
         """
 
         super().__init__()
+
+        if(task not in self.SUPPORTED_TASKS):
+            raise ValueError(f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}")
         self.task = task
 
         if isinstance(model, str) and hub is None:
@@ -132,6 +136,8 @@ class Harness:
         """
         if self._config is None:
             raise RuntimeError("Please call .configure() first.")
+        if self._testcases is not None:
+            raise RuntimeError("Testcases are already generated, please call .run() and .report() next.")
 
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
@@ -310,7 +316,7 @@ class Harness:
             pickle.dump(self.data, writer)
 
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] = "ner",
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: str,
              hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset
