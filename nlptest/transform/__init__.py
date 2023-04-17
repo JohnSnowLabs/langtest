@@ -26,7 +26,7 @@ class TestFactory:
     is_augment = False
 
     @staticmethod
-    def transform(data: List[Sample], model: ModelFactory, test_types: dict) -> List[Result]:
+    def transform(data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -46,15 +46,13 @@ class TestFactory:
         all_categories = TestFactory.test_categories()
         tests = tqdm(test_types.keys(), desc="Generating testcases...",
                      disable=TestFactory.is_augment)
-        m_data = [sample.copy() for sample in data]
-        _ = [setattr(sample, 'expected_results', model(sample.original)) 
-                  for sample in m_data]
+        m_data = kwargs.get('m_data', None)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             values = test_types[each]
             all_results.extend(
                 all_categories[each](m_data, values).transform()
-                if each in ["robustness", "bias"]
+                if each in ["robustness", "bias"] and m_data
                 else all_categories[each](data, values).transform()
             )
         return all_results
