@@ -81,7 +81,7 @@ class NEROutput(BaseModel):
         """"""
         return len(self.predictions)
 
-    def __getitem__(self, item: Union[Span, int]) -> Optional[NERPrediction]:
+    def __getitem__(self, item: Union[Span, int]) -> Optional[Union[List[NERPrediction], NERPrediction]]:
         """"""
         if isinstance(item, int):
             return self.predictions[item]
@@ -90,6 +90,8 @@ class NEROutput(BaseModel):
                 if prediction.span == item:
                     return prediction
             return None
+        elif isinstance(item, slice):
+            return [self.predictions[i] for i in range(item.start, item.stop)]
 
     def to_str_list(self) -> str:
         """
