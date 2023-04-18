@@ -53,7 +53,7 @@ class BaseRobustness(ABC):
             List[Sample]: The transformed data based on the implemented robustness measure.
 
         """
-        progress = kwargs.get("progess_bar", False)
+        progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
                 sample.expected_results = model(sample.original)

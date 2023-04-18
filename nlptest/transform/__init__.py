@@ -122,7 +122,7 @@ class TestFactory:
         for each in hash_samples:
             values = hash_samples[each]
             category_output = all_categories[each].run(
-                values, model_handler, progess_bar=tests, **kwargs)
+                values, model_handler, progress_bar=tests, **kwargs)
             if type(category_output) == list:
                 all_results.extend(category_output)
             else:
