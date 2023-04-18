@@ -1,22 +1,20 @@
+from ..utils.custom_types import Result, Sample
+from .utils import (A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
+                    get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
+                    neutral_pronouns, religion_wise_names, white_names)
+from .robustness import BaseRobustness
+from .representation import BaseRepresentation
+from .bias import BaseBias
+from .fairness import BaseFairness
+from .accuracy import BaseAccuracy
+from ..modelhandler import ModelFactory
+import pandas as pd
+from tqdm import tqdm
+from typing import Dict, List
 from abc import ABC, abstractmethod
 import asyncio
 import nest_asyncio
 nest_asyncio.apply()
-from typing import Dict, List
-from tqdm import tqdm
-
-import pandas as pd
-
-from nlptest.modelhandler import ModelFactory
-from nlptest.transform.accuracy import BaseAccuracy
-from nlptest.transform.fairness import BaseFairness
-from .bias import BaseBias
-from .representation import BaseRepresentation
-from .robustness import BaseRobustness
-from .utils import (A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
-                    get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
-                    neutral_pronouns, religion_wise_names, white_names)
-from ..utils.custom_types import Result, Sample
 
 
 class TestFactory:
@@ -81,7 +79,16 @@ class TestFactory:
 
     @staticmethod
     def run(samples_list: List[Sample], model_handler: ModelFactory,  **kwargs):
-        async_tests = TestFactory.async_run(samples_list, model_handler, **kwargs)
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Args:
+            samples_list : List[Sample]
+            model_handler : ModelFactory
+
+        """
+        async_tests = TestFactory.async_run(
+            samples_list, model_handler, **kwargs)
         temp_res = asyncio.run(async_tests)
         results = []
         for each in temp_res:
@@ -90,6 +97,15 @@ class TestFactory:
 
     @classmethod
     async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
+
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Args:
+            samples_list : List[Sample]
+            model_handler : ModelFactory
+
+        """
         hash_samples = {}
         for sample in samples_list:
             if sample.category not in hash_samples:
@@ -106,8 +122,9 @@ class TestFactory:
         for each in tests:
             tests.set_description(f"Running testcases... ({each})")
             values = hash_samples[each]
-            category_output = all_categories[each].run(values, model_handler, **kwargs)
-            if  type(category_output) == list:
+            category_output = all_categories[each].run(
+                values, model_handler, **kwargs)
+            if type(category_output) == list:
                 all_results.extend(category_output)
             else:
                 all_results.append(category_output)
@@ -144,10 +161,24 @@ class ITests(ABC):
 
     @classmethod
     def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, **kwargs) -> List[Sample]:
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Args:
+            sample_list (Dict[str, List[Sample]]):
+                A dictionary mapping test scenario names to a list of `Sample` objects.
+            model (ModelFactory):
+                A `ModelFactory` object representing the model to be tested.
+
+        Returns:
+            List[Sample]: A list of `Sample` objects with the test results.
+
+        """
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
-            test_output = supported_tests[test_name].async_run(samples, model, **kwargs)
+            test_output = supported_tests[test_name].async_run(
+                samples, model, **kwargs)
             if type(test_output) == list:
                 tasks.extend(test_output)
             else:
@@ -180,7 +211,7 @@ class RobustnessTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        
+
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -232,8 +263,6 @@ class RobustnessTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-            #     if not TestFactory.is_augment:
-            #         sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -367,9 +396,6 @@ class BiasTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-                # if not TestFactory.is_augment:
-                #     sample.expected_results = self._model_handler(
-                #         sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -567,7 +593,8 @@ class AccuracyTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.label for y in x.expected_results.predictions])
 
-            y_true = y_true.explode().apply(lambda x: x.split("-")[-1] if isinstance(x, str) else x)
+            y_true = y_true.explode().apply(lambda x: x.split("-")
+                                            [-1] if isinstance(x, str) else x)
             y_true = y_true.dropna()
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
@@ -592,6 +619,15 @@ class AccuracyTestFactory(ITests):
 
     @classmethod
     def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, raw_data: List[Sample]):
+        """
+        Runs the accuracy tests on the given model and dataset.
+
+        Args:
+            sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
+            model (ModelFactory): The model to be tested.
+            raw_data (List[Sample]): The raw dataset.
+
+        """
         try:
             y_true = pd.Series(raw_data).apply(
                 lambda x: [y.entity for y in x.expected_results.predictions])

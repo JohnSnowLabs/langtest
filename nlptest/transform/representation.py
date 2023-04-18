@@ -51,6 +51,16 @@ class BaseRepresentation(ABC):
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+        """
+        Creates a task for the run method.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be used for the computation.
+
+        Returns:
+            asyncio.Task: The task for the run method.
+        """
         created_task = asyncio.create_task(
             cls.run(sample_list, model, **kwargs))
         return created_task
@@ -129,6 +139,18 @@ class GenderRepresentation(BaseRepresentation):
         return samples
 
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """
+        Computes the actual results for the Gender Representation test.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model factory object.
+
+        Returns:
+            List[Sample]: The list of samples with actual results.
+        
+        """
 
         classifier = GenderClassifier()
         genders = [classifier.predict(sample.original)
@@ -245,6 +267,17 @@ class EthnicityRepresentation(BaseRepresentation):
 
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
 
+        """ 
+        Computes the actual results for the enthicity representation test.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be used for evaluation.
+            
+        Returns:
+            List[Sample]: The list of samples with actual results.
+        """
+
         entity_representation = get_ethnicity_representation_dict(
             kwargs['raw_data'])
 
@@ -358,6 +391,17 @@ class LabelRepresentation(BaseRepresentation):
         return sample_list
 
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """
+        Computes the actual representation of the labels in the dataset.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be evaluated.
+        
+        Returns:
+            List[Sample]: Label Representation test results.
+        """
 
         entity_representation = get_label_representation_dict(
             kwargs['raw_data'])
@@ -477,6 +521,18 @@ class ReligionRepresentation(BaseRepresentation):
         return sample_list
 
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """
+        Computes the actual representation of religion names in the data.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be evaluated.
+        
+        Returns:
+            List[Sample]: Religion Representation test results.
+
+        """
         entity_representation = get_religion_name_representation_dict(
             kwargs['raw_data'])
 
@@ -590,6 +646,17 @@ class CountryEconomicRepresentation(BaseRepresentation):
         return sample_list
 
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+        """
+        Computes the actual results for the country economic representation test.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be used for evaluation.
+        
+        Returns:
+            List[Sample]: Country Economic Representation test results.
+
+        """
         entity_representation = get_country_economic_representation_dict(
             kwargs['raw_data'])
 
@@ -604,7 +671,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     min_score=actual_representation[sample.test_case])
                 sample.state = "done"
 
-            elif sample.test_type == "min_religion_name_representation_count":
+            elif sample.test_type == "min_country_economic_representation_count":
                 actual_representation = {
                     **default_economic_country_representation, **entity_representation}
 

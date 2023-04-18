@@ -45,6 +45,17 @@ class BaseFairness(ABC):
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+        """
+        Creates a task for the run method.
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for the computation.
+
+        Returns:
+            asyncio.Task: The task for the run method.
+            
+        """
         created_task = asyncio.create_task(
             cls.run(sample_list, model, **kwargs))
         return created_task
@@ -98,6 +109,18 @@ class MinGenderF1Score(BaseFairness):
         return samples
 
     async def run(sample_list: List[MinScoreSample], model: ModelFactory, **kwargs) -> List[MinScoreSample]:
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for the computation.
+        
+            
+        Returns:
+            List[MinScoreSample]: The transformed samples.
+
+        """
 
         gendered_data = get_gendered_data(kwargs['raw_data'])
 
@@ -180,6 +203,16 @@ class MaxGenderF1Score(BaseFairness):
         return samples
 
     async def run(sample_list: List[MaxScoreSample], model: ModelFactory, **kwargs) -> List[MaxScoreSample]:
+        """
+        Computes the gendered max F1 score tests for the given data.
+
+        Args:
+            sample_list (List[MaxScoreSample]): The input data to be transformed.
+            model (ModelFactory): The model to be tested.
+
+        Returns:
+            List[MaxScoreSample]: The transformed samples.
+        """
         gendered_data = get_gendered_data(kwargs['raw_data'])
 
         for sample in sample_list:
