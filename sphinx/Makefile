@@ -19,7 +19,7 @@ help:
 
 html: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	bash move_folders_for_gh.sh
+	bash move_folders_for_building_website.sh
 	rm -rf ../docs/api; mv _build/html ../docs/api
 
 %: Makefile
