@@ -171,11 +171,11 @@ class GenderRepresentation(BaseRepresentation):
                 progress.update(1)
             if sample.test_type == "min_gender_representation_proportion":
                 sample.actual_results = MinScoreOutput(
-                    min_score=gender_counts[sample.test_case]/total_samples)
+                    min_score=round(gender_counts[sample.test_case]/total_samples, 2))
                 sample.state = "done"
             elif sample.test_type == "min_gender_representation_count":
                 sample.actual_results = MinScoreOutput(
-                    min_score=gender_counts[sample.test_case])
+                    min_score=round(gender_counts[sample.test_case], 2))
                 sample.state = "done"
         return sample_list
 
@@ -293,14 +293,14 @@ class EthnicityRepresentation(BaseRepresentation):
                     **default_ehtnicity_representation, **entity_representation_proportion}
 
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
 
             elif sample.test_type == "min_ethnicity_name_representation_count":
                 actual_representation = {
                     **default_ehtnicity_representation, **entity_representation}
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
 
             if progress:
@@ -424,13 +424,13 @@ class LabelRepresentation(BaseRepresentation):
                 actual_representation = {
                     **default_label_representation, **entity_representation_proportion}
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
             elif sample.test_type == "min_label_representation_count":
                 actual_representation = {
                     **default_label_representation, **entity_representation}
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
             
                 
@@ -559,7 +559,7 @@ class ReligionRepresentation(BaseRepresentation):
                     **default_religion_representation, **entity_representation_proportion}
 
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
 
             elif sample.test_type == "min_religion_name_representation_count":
@@ -567,7 +567,7 @@ class ReligionRepresentation(BaseRepresentation):
                     **default_religion_representation, **entity_representation}
 
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
             
             if progress:
@@ -688,7 +688,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     **default_economic_country_representation, **entity_representation_proportion}
 
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
 
             elif sample.test_type == "min_country_economic_representation_count":
@@ -696,7 +696,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     **default_economic_country_representation, **entity_representation}
 
                 sample.actual_results = MinScoreOutput(
-                    min_score=actual_representation[sample.test_case])
+                    min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
             
             if progress:
