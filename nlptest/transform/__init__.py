@@ -116,14 +116,13 @@ class TestFactory:
                 hash_samples[sample.category][sample.test_type].append(sample)
 
         all_categories = TestFactory.test_categories()
-        tests = tqdm(hash_samples.keys(), desc="Running testcases...",
+        tests = tqdm(total=len(samples_list), desc="Running testcases... ",
                      disable=TestFactory.is_augment)
         all_results = []
-        for each in tests:
-            tests.set_description(f"Running testcases... ({each})")
+        for each in hash_samples:
             values = hash_samples[each]
             category_output = all_categories[each].run(
-                values, model_handler, **kwargs)
+                values, model_handler, progess_bar=tests, **kwargs)
             if type(category_output) == list:
                 all_results.extend(category_output)
             else:
@@ -425,8 +424,7 @@ class RepresentationTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict = None,
-            model: ModelFactory = None
+            tests: Dict = None
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
@@ -618,7 +616,7 @@ class AccuracyTestFactory(ITests):
         return tests
 
     @classmethod
-    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, raw_data: List[Sample]):
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, raw_data: List[Sample], **kwargs):
         """
         Runs the accuracy tests on the given model and dataset.
 
@@ -650,5 +648,5 @@ class AccuracyTestFactory(ITests):
         tasks = []
         for test_name, samples in sample_list.items():
             tasks.append(
-                supported_tests[test_name].async_run(samples, y_true, y_pred))
+                supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs))
         return tasks

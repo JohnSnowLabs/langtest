@@ -152,6 +152,8 @@ class GenderRepresentation(BaseRepresentation):
         
         """
 
+        progress = kwargs.get("progress_bar", False)
+
         classifier = GenderClassifier()
         genders = [classifier.predict(sample.original)
                    for sample in kwargs['raw_data']]
@@ -165,6 +167,8 @@ class GenderRepresentation(BaseRepresentation):
         total_samples = len(kwargs['raw_data'])
 
         for sample in sample_list:
+            if progress:
+                progress.update(1)
             if sample.test_type == "min_gender_representation_proportion":
                 sample.actual_results = MinScoreOutput(
                     min_score=gender_counts[sample.test_case]/total_samples)
@@ -173,7 +177,6 @@ class GenderRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=gender_counts[sample.test_case])
                 sample.state = "done"
-
         return sample_list
 
 
@@ -277,6 +280,7 @@ class EthnicityRepresentation(BaseRepresentation):
         Returns:
             List[Sample]: The list of samples with actual results.
         """
+        progress = kwargs.get("progress_bar", False)
 
         entity_representation = get_ethnicity_representation_dict(
             kwargs['raw_data'])
@@ -298,6 +302,9 @@ class EthnicityRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=actual_representation[sample.test_case])
                 sample.state = "done"
+
+            if progress:
+                progress.update(1)
 
         return sample_list
 
@@ -402,11 +409,15 @@ class LabelRepresentation(BaseRepresentation):
         Returns:
             List[Sample]: Label Representation test results.
         """
+        progress = kwargs.get("progress_bar", False)
 
         entity_representation = get_label_representation_dict(
             kwargs['raw_data'])
 
         for sample in sample_list:
+            if progress:
+                progress.update(1)
+                
             if sample.test_type == "min_label_representation_proportion":
                 entity_representation_proportion = get_entity_representation_proportions(
                     entity_representation)
@@ -421,7 +432,8 @@ class LabelRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=actual_representation[sample.test_case])
                 sample.state = "done"
-
+            
+                
         return sample_list
 
 
@@ -533,6 +545,9 @@ class ReligionRepresentation(BaseRepresentation):
             List[Sample]: Religion Representation test results.
 
         """
+
+        progress = kwargs.get("progress_bar", False)
+
         entity_representation = get_religion_name_representation_dict(
             kwargs['raw_data'])
 
@@ -554,7 +569,10 @@ class ReligionRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=actual_representation[sample.test_case])
                 sample.state = "done"
-
+            
+            if progress:
+                progress.update(1)
+                
         return sample_list
 
 
@@ -657,6 +675,8 @@ class CountryEconomicRepresentation(BaseRepresentation):
             List[Sample]: Country Economic Representation test results.
 
         """
+        progress = kwargs.get("progress_bar", False)
+
         entity_representation = get_country_economic_representation_dict(
             kwargs['raw_data'])
 
@@ -678,5 +698,8 @@ class CountryEconomicRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=actual_representation[sample.test_case])
                 sample.state = "done"
+            
+            if progress:
+                progress.update(1)
 
         return sample_list

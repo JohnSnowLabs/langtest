@@ -38,11 +38,11 @@ class BaseAccuracy(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred) -> List[MinScoreSample]:
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs) -> List[MinScoreSample]:
         return NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[MinScoreSample],  y_true, y_pred):
+    async def async_run(cls, sample_list: List[MinScoreSample],  y_true, y_pred, **kwargs):
         """ 
         Creates a task to run the accuracy measure.
 
@@ -53,7 +53,7 @@ class BaseAccuracy(ABC):
 
         """
         created_task = asyncio.create_task(
-            cls.run(sample_list, y_true, y_pred))
+            cls.run(sample_list, y_true, y_pred, **kwargs))
         return created_task
 
 
@@ -107,7 +107,7 @@ class MinPrecisionScore(BaseAccuracy):
             precision_samples.append(sample)
         return precision_samples
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
         """
         Computes the minimum precision score for the given data.
 
@@ -117,6 +117,7 @@ class MinPrecisionScore(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        progress = kwargs.get("progress_bar", False)
         df_metrics = classification_report(
             y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
@@ -124,8 +125,11 @@ class MinPrecisionScore(BaseAccuracy):
         df_metrics.pop("weighted avg")
 
         for idx, sample in enumerate(sample_list):
+            if progress:
+                progress.update(1)
             if sample.test_case not in df_metrics:
                 sample_list.pop(idx)
+                
                 continue
             precision = df_metrics.get(sample.test_case)
             sample.actual_results = MinScoreOutput(
@@ -185,7 +189,7 @@ class MinRecallScore(BaseAccuracy):
             rec_samples.append(sample)
         return rec_samples
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
         """
         Computes the minimum recall score for the given data.
 
@@ -195,6 +199,8 @@ class MinRecallScore(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        progress = kwargs.get("progress_bar", False)
+
         df_metrics = classification_report(
             y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
@@ -202,8 +208,11 @@ class MinRecallScore(BaseAccuracy):
         df_metrics.pop("weighted avg")
 
         for idx, sample in enumerate(sample_list):
+            if progress:
+                progress.update(1)
             if sample.test_case not in df_metrics:
                 sample_list.pop(idx)
+                
                 continue
             precision = df_metrics.get(sample.test_case)
             sample.actual_results = MinScoreOutput(
@@ -240,7 +249,7 @@ class MinF1Score(BaseAccuracy):
             List[MinScoreSample]: F1 score test results.
         """
 
-        labels = set(y_true)  # .union(set(y_pred))
+        labels = set(y_true)
 
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
@@ -263,7 +272,7 @@ class MinF1Score(BaseAccuracy):
             f1_samples.append(sample)
         return f1_samples
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
         """
         Computes the minimum F1 score for the given data.
 
@@ -273,6 +282,8 @@ class MinF1Score(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        progress = kwargs.get("progress_bar", False)
+
         df_metrics = classification_report(
             y_true, y_pred, output_dict=True, zero_division=0)
         df_metrics.pop("accuracy")
@@ -280,6 +291,9 @@ class MinF1Score(BaseAccuracy):
         df_metrics.pop("weighted avg")
 
         for idx, sample in enumerate(sample_list):
+            if progress:
+                progress.update(1)
+
             if sample.test_case not in df_metrics:
                 sample_list.pop(idx)
                 continue
@@ -330,7 +344,7 @@ class MinMicroF1Score(BaseAccuracy):
 
         return [sample]
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
         """
         Computes the minimum F1 score for the given data.
 
@@ -340,10 +354,15 @@ class MinMicroF1Score(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        progress = kwargs.get("progress_bar", False)
+
         f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
+            if progress:
+                progress.update(1)
+
         return sample_list
 
 
@@ -379,14 +398,14 @@ class MinMacroF1Score(BaseAccuracy):
         sample = MinScoreSample(
             original="-",
             category="accuracy",
-            test_type="min__macro_f1_score",
+            test_type="min_macro_f1_score",
             test_case="macro",
             expected_results=MinScoreOutput(min_score=min_score)
         )
 
         return [sample]
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
 
         """
         Computes the minimum F1 score for the given data.
@@ -397,10 +416,14 @@ class MinMacroF1Score(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        progress = kwargs.get("progress_bar", False)
+
         f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
+            if progress:
+                progress.update(1)
         return sample_list
 
 
@@ -443,7 +466,7 @@ class MinWeightedF1Score(BaseAccuracy):
 
         return [sample]
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
         """
         Computes the minimum F1 score for the given data.
 
@@ -453,8 +476,12 @@ class MinWeightedF1Score(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        progress = kwargs.get("progress_bar", False)
+
         f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
+            if progress:
+                progress.update(1)
         return sample_list

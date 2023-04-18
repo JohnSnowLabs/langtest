@@ -49,11 +49,14 @@ class BaseBias(ABC):
             List[Sample]: The transformed data based on the implemented bias measure.
 
         """
+        progress = kwargs.get("progess_bar", False)
         for sample in sample_list:
             if sample.state != "done":
                 sample.expected_results = model(sample.original)
                 sample.actual_results = model(sample.test_case)
                 sample.state = "done"
+            if progress:
+                progress.update(1)
         return sample_list
 
     @classmethod

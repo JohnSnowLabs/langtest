@@ -121,7 +121,7 @@ class MinGenderF1Score(BaseFairness):
             List[MinScoreSample]: The transformed samples.
 
         """
-
+        progress = kwargs.get("progress_bar", False)
         gendered_data = get_gendered_data(kwargs['raw_data'])
 
         for sample in sample_list:
@@ -152,6 +152,9 @@ class MinGenderF1Score(BaseFairness):
 
             sample.actual_results = MinScoreOutput(min_score=macro_f1_score)
             sample.state = "done"
+
+            if progress:
+                progress.update(1)
         return sample_list
 
 
@@ -213,6 +216,7 @@ class MaxGenderF1Score(BaseFairness):
         Returns:
             List[MaxScoreSample]: The transformed samples.
         """
+        progress = kwargs.get("progress_bar", False)
         gendered_data = get_gendered_data(kwargs['raw_data'])
 
         for sample in sample_list:
@@ -242,6 +246,8 @@ class MaxGenderF1Score(BaseFairness):
 
             sample.actual_results = MaxScoreOutput(max_score=macro_f1_score)
             sample.state = "done"
+            if progress:
+                progress.update(1)
         return sample_list
 
 
