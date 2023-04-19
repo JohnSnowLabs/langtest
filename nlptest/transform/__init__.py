@@ -299,11 +299,13 @@ class BiasTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict = None
+            tests: Dict = None,
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -434,11 +436,14 @@ class RepresentationTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict = None
+            tests: Dict = None,
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self.kwargs = kwargs
+
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -496,12 +501,13 @@ class FairnessTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict
+            tests: Dict,
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        # self._model_handler = model
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -561,11 +567,13 @@ class AccuracyTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict
+            tests: Dict,
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
