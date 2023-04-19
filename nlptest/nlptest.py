@@ -58,6 +58,8 @@ class Harness:
 
         super().__init__()
 
+        self.is_default = False
+
         if(task not in self.SUPPORTED_TASKS):
             raise ValueError(f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}")
         self.task = task
@@ -75,7 +77,7 @@ class Harness:
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("nlptest", "data/textcat_imdb")
-
+            self.is_default = True
             logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
@@ -140,7 +142,10 @@ class Harness:
             raise RuntimeError("Testcases are already generated, please call .run() and .report() next.")
 
         tests = self._config['tests']
-        self._testcases = TestFactory.transform(self.data, tests, self.model)
+        m_data = [sample.copy() for sample in self.data]
+        _ = [setattr(sample, 'expected_results', self.model(sample.original)) 
+                  for sample in m_data]
+        self._testcases = TestFactory.transform(self.data, tests, m_data=m_data)
         return self
 
     def run(self) -> "Harness":
@@ -153,11 +158,12 @@ class Harness:
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
-        self._generated_results = BaseRunner(
-            self._testcases,
-            self.model,
-            self.data
-        ).evaluate()
+        # self._generated_results = BaseRunner(
+        #     self._testcases,
+        #     self.model,
+        #     self.data
+        # ).evaluate()
+        self._generated_results = TestFactory.run(self._testcases, self.model, is_default = self.is_default, raw_data=self.data)
         return self
 
     def report(self) -> pd.DataFrame:
@@ -263,8 +269,7 @@ class Harness:
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report,
-            model=self.model
+            h_report=self.df_report
         ).fix(
             input_path=input_path,
             output_path=output_path,

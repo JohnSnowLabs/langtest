@@ -1,8 +1,5 @@
 import unittest
-
 import pandas as pd
-from johnsnowlabs import nlp
-
 from nlptest import Harness
 
 
@@ -10,7 +7,6 @@ class AccuracyTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         """"""
-        nlp.start()
 
         self.h_spacy = Harness(
             task="ner",

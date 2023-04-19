@@ -1,8 +1,11 @@
+import asyncio
 import random
 import re
 import numpy as np
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+
+from nlptest.modelhandler.modelhandler import ModelFactory
 
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
 from ..utils.custom_types import Sample, Span, Transformation
@@ -34,6 +37,48 @@ class BaseRobustness(ABC):
         """
 
         return NotImplementedError()
+
+    @staticmethod
+    @abstractmethod
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+        """
+        Abstract method that implements the robustness measure.
+        
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the robustness measure.
+        
+        Returns:
+            List[Sample]: The transformed data based on the implemented robustness measure.
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list:
+            if sample.state != "done":
+                sample.expected_results = model(sample.original)
+                sample.actual_results = model(sample.test_case)
+                sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
+    
+    @classmethod
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+        """
+        Creates a task to run the robustness measure.
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the robustness measure.
+
+        Returns:
+            asyncio.Task: The task that runs the robustness measure.
+
+        """
+        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        return created_task
 
 
 class UpperCase(BaseRobustness):
@@ -182,6 +227,7 @@ class AddTypo(BaseRobustness):
             List of sentences that typo introduced.
         """
         for sample in sample_list:
+            sample.category = "robustness"
             if len(sample.original) < 5:
                 sample.test_case = sample.original
                 continue
@@ -214,7 +260,6 @@ class AddTypo(BaseRobustness):
                 string[swap_idx + 1] = tmp
 
             sample.test_case = "".join(string)
-            sample.category = "robustness"
         return sample_list
 
 
@@ -246,6 +291,7 @@ class SwapEntities(BaseRobustness):
         assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
         for sample, sample_labels in zip(sample_list, labels):
+            sample.category = "robustness"
             if all([label == "O" for label in sample_labels]):
                 sample.test_case = sample.original
                 continue
@@ -288,7 +334,6 @@ class SwapEntities(BaseRobustness):
                     ignore=False
                 )
             ]
-            sample.category = "robustness"
         return sample_list
 
 class ConvertAccent(BaseRobustness):

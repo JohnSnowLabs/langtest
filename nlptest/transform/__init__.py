@@ -1,19 +1,20 @@
-from abc import ABC, abstractmethod
-from typing import Dict, List
-from tqdm import tqdm
-
-import pandas as pd
-
-from nlptest.modelhandler import ModelFactory
-from nlptest.transform.accuracy import BaseAccuracy
-from nlptest.transform.fairness import BaseFairness
-from .bias import BaseBias
-from .representation import BaseRepresentation
-from .robustness import BaseRobustness
+from ..utils.custom_types import Result, Sample
 from .utils import (A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
                     get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
                     neutral_pronouns, religion_wise_names, white_names)
-from ..utils.custom_types import Result, Sample
+from .robustness import BaseRobustness
+from .representation import BaseRepresentation
+from .bias import BaseBias
+from .fairness import BaseFairness
+from .accuracy import BaseAccuracy
+from ..modelhandler import ModelFactory
+import pandas as pd
+from tqdm import tqdm
+from typing import Dict, List
+from abc import ABC, abstractmethod
+import asyncio
+import nest_asyncio
+nest_asyncio.apply()
 
 
 class TestFactory:
@@ -23,7 +24,7 @@ class TestFactory:
     is_augment = False
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict, model: ModelFactory) -> List[Result]:
+    def transform(data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -41,12 +42,17 @@ class TestFactory:
         """
         all_results = []
         all_categories = TestFactory.test_categories()
-        tests = tqdm(test_types.keys(), desc="Generating testcases...", disable=TestFactory.is_augment)
+        tests = tqdm(test_types.keys(), desc="Generating testcases...",
+                     disable=TestFactory.is_augment)
+        m_data = kwargs.get('m_data', None)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
-            values = test_types[each]
+            sub_test_types = test_types[each]
+            
             all_results.extend(
-                all_categories[each](data, values, model).transform()
+                all_categories[each](m_data, sub_test_types, raw_data=data).transform()
+                if each in ["robustness", "bias"] and m_data
+                else all_categories[each](data, sub_test_types).transform()
             )
         return all_results
 
@@ -71,6 +77,58 @@ class TestFactory:
                 A dictionary mapping test class names to the available test scenarios for each class.
         """
         return {cls.alias_name.lower(): cls.available_tests() for cls in ITests.__subclasses__()}
+
+    @staticmethod
+    def run(samples_list: List[Sample], model_handler: ModelFactory,  **kwargs):
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Args:
+            samples_list : List[Sample]
+            model_handler : ModelFactory
+
+        """
+        async_tests = TestFactory.async_run(
+            samples_list, model_handler, **kwargs)
+        temp_res = asyncio.run(async_tests)
+        results = []
+        for each in temp_res:
+            results.extend(each.result())
+        return results
+
+    @classmethod
+    async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
+
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Args:
+            samples_list : List[Sample]
+            model_handler : ModelFactory
+
+        """
+        hash_samples = {}
+        for sample in samples_list:
+            if sample.category not in hash_samples:
+                hash_samples[sample.category] = {}
+            if sample.test_type not in hash_samples[sample.category]:
+                hash_samples[sample.category][sample.test_type] = [sample]
+            else:
+                hash_samples[sample.category][sample.test_type].append(sample)
+
+        all_categories = TestFactory.test_categories()
+        tests = tqdm(total=len(samples_list), desc="Running testcases... ",
+                     disable=TestFactory.is_augment)
+        all_results = []
+        for each in hash_samples:
+            values = hash_samples[each]
+            category_output = all_categories[each].run(
+                values, model_handler, progress_bar=tests, **kwargs)
+            if type(category_output) == list:
+                all_results.extend(category_output)
+            else:
+                all_results.append(category_output)
+        return await asyncio.gather(*all_results)
 
 
 class ITests(ABC):
@@ -101,6 +159,33 @@ class ITests(ABC):
         """
         return NotImplementedError
 
+    @classmethod
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, **kwargs) -> List[Sample]:
+        """
+        Runs the specified tests on the given data and returns a list of results.
+
+        Args:
+            sample_list (Dict[str, List[Sample]]):
+                A dictionary mapping test scenario names to a list of `Sample` objects.
+            model (ModelFactory):
+                A `ModelFactory` object representing the model to be tested.
+
+        Returns:
+            List[Sample]: A list of `Sample` objects with the test results.
+
+        """
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            test_output = supported_tests[test_name].async_run(
+                samples, model, **kwargs)
+            if type(test_output) == list:
+                tasks.extend(test_output)
+            else:
+                tasks.append(test_output)
+
+        return tasks
+
 
 class RobustnessTestFactory(ITests):
     """
@@ -112,9 +197,8 @@ class RobustnessTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict = None,
-            model: ModelFactory = None
+            **kwargs
     ) -> None:
-
         """
         Initializes a new instance of the `Robustness` class.
 
@@ -128,7 +212,7 @@ class RobustnessTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -146,9 +230,10 @@ class RobustnessTestFactory(ITests):
 
         if 'swap_entities' in self.tests:
             # TODO: check if we can get rid of pandas here
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
+            raw_data = self.kwargs.get('raw_data', self._data_handler)
+            df = pd.DataFrame({'text': [sample.original for sample in raw_data],
                                'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
+                                         for sample in raw_data]})
             params = self.tests['swap_entities']
             if len(params.get('parameters', {}).get('terminology', {})) == 0:
                 params['parameters'] = {}
@@ -161,7 +246,8 @@ class RobustnessTestFactory(ITests):
 
         if "british_to_american" in self.tests:
             self.tests['british_to_american']['parameters'] = {}
-            self.tests['british_to_american']['parameters']['accent_map'] = {v: k for k, v in A2B_DICT.items()}
+            self.tests['british_to_american']['parameters']['accent_map'] = {
+                v: k for k, v in A2B_DICT.items()}
 
         self._data_handler = data_handler
 
@@ -175,13 +261,17 @@ class RobustnessTestFactory(ITests):
         """
         all_samples = []
         for test_name, params in self.tests.items():
-            data_handler_copy = [x.copy() for x in self._data_handler]
+            if TestFactory.is_augment:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+            elif test_name in ["swap_entities"]:
+                data_handler_copy = [x.copy() for x in self.kwargs.get('raw_data', [])]
+            else:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+ 
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-                if not TestFactory.is_augment:
-                    sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -210,12 +300,12 @@ class BiasTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict = None,
-            model: ModelFactory = None
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -242,21 +332,25 @@ class BiasTestFactory(ITests):
             self.tests['replace_to_female_pronouns']['parameters'] = {}
             self.tests['replace_to_female_pronouns']['parameters']['pronouns_to_substitute'] = \
                 [item for sublist in list(male_pronouns.values()) for item in sublist] + \
-                [item for sublist in list(neutral_pronouns.values()) for item in sublist]
+                [item for sublist in list(neutral_pronouns.values())
+                 for item in sublist]
             self.tests['replace_to_female_pronouns']['parameters']['pronoun_type'] = 'female'
 
         if 'replace_to_neutral_pronouns' in self.tests:
             self.tests['replace_to_neutral_pronouns']['parameters'] = {}
             self.tests['replace_to_neutral_pronouns']['parameters']['pronouns_to_substitute'] = \
                 [item for sublist in list(female_pronouns.values()) for item in sublist] + \
-                [item for sublist in list(male_pronouns.values()) for item in sublist]
+                [item for sublist in list(male_pronouns.values())
+                 for item in sublist]
             self.tests['replace_to_neutral_pronouns']['parameters']['pronoun_type'] = 'neutral'
 
         for income_level in ['Low-income', 'Lower-middle-income', 'Upper-middle-income', 'High-income']:
             economic_level = income_level.replace("-", "_").lower()
             if f'replace_to_{economic_level}_country' in self.tests:
-                countries_to_exclude = [v for k, v in country_economic_dict.items() if k != income_level]
-                self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {}
+                countries_to_exclude = [
+                    v for k, v in country_economic_dict.items() if k != income_level]
+                self.tests[f"replace_to_{economic_level}_country"]['parameters'] = {
+                }
                 self.tests[f"replace_to_{economic_level}_country"]['parameters'][
                     'country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
                 self.tests[f"replace_to_{economic_level}_country"]['parameters']['chosen_country_names'] = \
@@ -264,8 +358,10 @@ class BiasTestFactory(ITests):
 
         for religion in religion_wise_names.keys():
             if f"replace_to_{religion.lower()}_names" in self.tests:
-                religion_to_exclude = [v for k, v in religion_wise_names.items() if k != religion]
-                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {}
+                religion_to_exclude = [
+                    v for k, v in religion_wise_names.items() if k != religion]
+                self.tests[f"replace_to_{religion.lower()}_names"]['parameters'] = {
+                }
                 self.tests[f"replace_to_{religion.lower()}_names"]['parameters'][
                     'names_to_substitute'] = get_substitution_names(religion_to_exclude)
                 self.tests[f"replace_to_{religion.lower()}_names"]['parameters']['chosen_names'] = religion_wise_names[
@@ -311,8 +407,6 @@ class BiasTestFactory(ITests):
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
                 sample.test_type = test_name
-                if not TestFactory.is_augment:
-                    sample.expected_results = self._model_handler(sample.original)
             all_samples.extend(transformed_samples)
         return all_samples
 
@@ -343,11 +437,13 @@ class RepresentationTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict = None,
-            model: ModelFactory = None
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self.kwargs = kwargs
+
         if not isinstance(self.tests, dict):
             raise ValueError(
                 f'Invalid test configuration! Tests can be '
@@ -373,7 +469,8 @@ class RepresentationTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(test_name, data_handler_copy, params)
+            transformed_samples = self.supported_tests[test_name].transform(
+                test_name, data_handler_copy, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -405,12 +502,12 @@ class FairnessTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict,
-            model: ModelFactory
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -438,7 +535,7 @@ class FairnessTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy, self._model_handler,
+            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             params)
             for sample in transformed_samples:
                 sample.test_type = test_name
@@ -471,12 +568,12 @@ class AccuracyTestFactory(ITests):
             self,
             data_handler: List[Sample],
             tests: Dict,
-            model: ModelFactory
+            **kwargs
     ) -> None:
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
-        self._model_handler = model
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -509,19 +606,14 @@ class AccuracyTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.entity for y in x.expected_results.predictions])
             except:
-                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
+                y_true = pd.Series(data_handler_copy).apply(
+                    lambda x: [y.label for y in x.expected_results.predictions])
 
-            X_test = pd.Series(data_handler_copy).apply(lambda x: x.original)
-            y_pred = X_test.apply(self._model_handler.predict_raw)
-
-            valid_indices = y_true.apply(len) == y_pred.apply(len)
-            y_true = y_true[valid_indices]
-            y_pred = y_pred[valid_indices]
-
-            y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-            y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-
-            transformed_samples = self.supported_tests[test_name].transform(y_true, y_pred, params)
+            y_true = y_true.explode().apply(lambda x: x.split("-")
+                                            [-1] if isinstance(x, str) else x)
+            y_true = y_true.dropna()
+            transformed_samples = self.supported_tests[test_name].transform(
+                y_true, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -540,3 +632,42 @@ class AccuracyTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+    @classmethod
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, raw_data: List[Sample], **kwargs):
+        """
+        Runs the accuracy tests on the given model and dataset.
+
+        Args:
+            sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
+            model (ModelFactory): The model to be tested.
+            raw_data (List[Sample]): The raw dataset.
+
+        """
+        try:
+            y_true = pd.Series(raw_data).apply(
+                lambda x: [y.entity for y in x.expected_results.predictions])
+        except:
+            y_true = pd.Series(raw_data).apply(
+                lambda x: [y.label for y in x.expected_results.predictions])
+
+        len(y_true)
+        X_test = pd.Series(raw_data).apply(lambda x: x.original)
+        y_pred = X_test.apply(model.predict_raw)
+
+        valid_indices = y_true.apply(len) == y_pred.apply(len)
+        y_true = y_true[valid_indices]
+        y_pred = y_pred[valid_indices]
+
+        y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
+        y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+
+        if kwargs['is_default']:
+             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
+
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            tasks.append(
+                supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs))
+        return tasks

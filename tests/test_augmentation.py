@@ -50,16 +50,10 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             'pass': [True, True, False, False]
         })
 
-        model = ModelFactory.load_model(
-            task='ner',
-            hub="huggingface",
-            path='dslim/bert-base-NER')
-
         augment = AugmentRobustness(
             task='ner',
             h_report=temp_df,
-            config=yaml.safe_load('tests/fixtures/config_ner.yaml'),
-            model=model
+            config=yaml.safe_load('tests/fixtures/config_ner.yaml')
         )
         augment.fix('tests/fixtures/train.conll',
                     'tests/fixtures/augmentated_train.conll')
@@ -80,16 +74,11 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             'pass': [True, True, False, False]
         })
 
-        model = ModelFactory.load_model(
-            task='ner',
-            hub="huggingface",
-            path='dslim/bert-base-NER')
 
         augment = AugmentRobustness(
             task='ner',
             h_report=temp_df,
-            config='tests/fixtures/config_ner.yaml',
-            model=model
+            config='tests/fixtures/config_ner.yaml'
         )
         augment.fix('tests/fixtures/train.conll',
                     'tests/fixtures/augmentated_train.conll')
