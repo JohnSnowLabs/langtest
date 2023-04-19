@@ -33,7 +33,7 @@ Here is a list of the different parameters that can be passed to the `Harness` c
 |**model**    |Pretrained pipeline or model from the corresponding hub, or path to a saved model from the corresponding hub, or PipelineModel object - see [Model Input](https://nlptest.org/docs/pages/docs/model_input) for more details
 |**data**     |Path to the data to be used for evaluation. Should be `.csv` for text classification, or `.conll` or `.txt` file in CoNLL format for NER - see [Data Input](https://nlptest.org/docs/pages/docs/data_input) for more details
 |**config**   |Path to the YAML file with configuration of tests to be performed
-|**hub**      |Hub (library) to use in back-end for loading model from model hub or path|
+|**hub**      |Hub (library) to use in back-end for loading model from public models hub or from path|
 
 
 </div></div>
