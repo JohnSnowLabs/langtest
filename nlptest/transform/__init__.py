@@ -661,7 +661,9 @@ class AccuracyTestFactory(ITests):
 
         y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
         y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-        y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
+
+        if kwargs['is_default']:
+             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
 
         supported_tests = cls.available_tests()
         tasks = []
