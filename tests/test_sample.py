@@ -1,5 +1,6 @@
 import unittest
-from nlptest.utils.custom_types import NEROutput, NERPrediction, Sample, Span, Transformation, NERSample
+
+from nlptest.utils.custom_types import NEROutput, NERPrediction, NERSample, Span, Transformation
 
 
 class TestNERSample(unittest.TestCase):
@@ -357,6 +358,88 @@ class TestNERSample(unittest.TestCase):
                     ignore=True
                 )
             ]
+        )
+        self.assertTrue(sample.is_pass())
+
+    def test_add_contraction_realignment(self):
+        """"""
+        sample = NERSample(
+            original="FIFA 's players ' status committee , meeting in Barcelona , decided that although the Udinese document was basically valid , it could not be legally protected .",
+            test_type='add_contraction',
+            test_case="FIFA 's players ' status committee , meeting in Barcelona , decided that although the Udinese document was basically valid , it couldn't be legally protected .",
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='ORG', span=Span(start=0, end=4, word='FIFA')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word="'")),
+                    NERPrediction(entity='O', span=Span(start=6, end=7, word='s')),
+                    NERPrediction(entity='O', span=Span(start=8, end=15, word='players')),
+                    NERPrediction(entity='O', span=Span(start=16, end=17, word="'")),
+                    NERPrediction(entity='O', span=Span(start=18, end=24, word='status')),
+                    NERPrediction(entity='O', span=Span(start=25, end=34, word='committee')),
+                    NERPrediction(entity='O', span=Span(start=35, end=36, word=',')),
+                    NERPrediction(entity='O', span=Span(start=37, end=44, word='meeting')),
+                    NERPrediction(entity='O', span=Span(start=45, end=47, word='in')),
+                    NERPrediction(entity='LOC', span=Span(start=48, end=57, word='Barcelona')),
+                    NERPrediction(entity='O', span=Span(start=58, end=59, word=',')),
+                    NERPrediction(entity='O', span=Span(start=60, end=67, word='decided')),
+                    NERPrediction(entity='O', span=Span(start=68, end=72, word='that')),
+                    NERPrediction(entity='O', span=Span(start=73, end=81, word='although')),
+                    NERPrediction(entity='O', span=Span(start=82, end=85, word='the')),
+                    NERPrediction(entity='MISC', span=Span(start=86, end=93, word='Udinese')),
+                    NERPrediction(entity='O', span=Span(start=94, end=102, word='document')),
+                    NERPrediction(entity='O', span=Span(start=103, end=106, word='was')),
+                    NERPrediction(entity='O', span=Span(start=107, end=116, word='basically')),
+                    NERPrediction(entity='O', span=Span(start=117, end=122, word='valid')),
+                    NERPrediction(entity='O', span=Span(start=123, end=124, word=',')),
+                    NERPrediction(entity='O', span=Span(start=125, end=127, word='it')),
+                    NERPrediction(entity='O', span=Span(start=128, end=133, word='could')),
+                    NERPrediction(entity='O', span=Span(start=134, end=137, word='not')),
+                    NERPrediction(entity='O', span=Span(start=138, end=140, word='be')),
+                    NERPrediction(entity='O', span=Span(start=141, end=148, word='legally')),
+                    NERPrediction(entity='O', span=Span(start=149, end=158, word='protected')),
+                    NERPrediction(entity='O', span=Span(start=159, end=160, word='.'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='ORG', span=Span(start=0, end=4, word='FIFA')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word="'")),
+                    NERPrediction(entity='O', span=Span(start=6, end=7, word='s')),
+                    NERPrediction(entity='O', span=Span(start=8, end=15, word='players')),
+                    NERPrediction(entity='O', span=Span(start=16, end=17, word="'")),
+                    NERPrediction(entity='O', span=Span(start=18, end=24, word='status')),
+                    NERPrediction(entity='O', span=Span(start=25, end=34, word='committee')),
+                    NERPrediction(entity='O', span=Span(start=35, end=36, word=',')),
+                    NERPrediction(entity='O', span=Span(start=37, end=44, word='meeting')),
+                    NERPrediction(entity='O', span=Span(start=45, end=47, word='in')),
+                    NERPrediction(entity='LOC', span=Span(start=48, end=57, word='Barcelona')),
+                    NERPrediction(entity='O', span=Span(start=58, end=59, word=',')),
+                    NERPrediction(entity='O', span=Span(start=60, end=67, word='decided')),
+                    NERPrediction(entity='O', span=Span(start=68, end=72, word='that')),
+                    NERPrediction(entity='O', span=Span(start=73, end=81, word='although')),
+                    NERPrediction(entity='O', span=Span(start=82, end=85, word='the')),
+                    NERPrediction(entity='MISC', span=Span(start=86, end=93, word='Udinese')),
+                    NERPrediction(entity='O', span=Span(start=94, end=102, word='document')),
+                    NERPrediction(entity='O', span=Span(start=103, end=106, word='was')),
+                    NERPrediction(entity='O', span=Span(start=107, end=116, word='basically')),
+                    NERPrediction(entity='O', span=Span(start=117, end=122, word='valid')),
+                    NERPrediction(entity='O', span=Span(start=123, end=124, word=',')),
+                    NERPrediction(entity='O', span=Span(start=125, end=127, word='it')),
+                    NERPrediction(entity='O', span=Span(start=128, end=136, word="couldn't")),
+                    NERPrediction(entity='O', span=Span(start=137, end=139, word='be')),
+                    NERPrediction(entity='O', span=Span(start=140, end=147, word='legally')),
+                    NERPrediction(entity='O', span=Span(start=148, end=157, word='protected')),
+                    NERPrediction(entity='O', span=Span(start=158, end=159, word='.'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=128, end=137, word='could not'),
+                    new_span=Span(start=128, end=136, word="couldn't"),
+                    ignore=False)
+            ],
+            category='robustness',
+            state='done'
         )
         self.assertTrue(sample.is_pass())
 

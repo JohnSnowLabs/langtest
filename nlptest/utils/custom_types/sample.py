@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Optional, Tuple, TypeVar
-
+from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
 
-from .helpers import Transformation
+from .helpers import Transformation, Span
 from .output import NEROutput, Result
 from .predictions import NERPrediction
 
@@ -140,7 +140,7 @@ class NERSample(BaseSample):
 
             realigned_results = []
             if hasattr(self.actual_results, "predictions"):
-                for actual_result in self.actual_results.predictions:
+                for actual_result in deepcopy(self.actual_results.predictions):
                     if actual_result in ignored_predictions:
                         continue
 
@@ -174,6 +174,26 @@ class NERSample(BaseSample):
 
         return self._realigned_spans
 
+    def _retrieve_multi_spans(self, span: Span) -> List[Span]:
+        """
+        Function in charge to perform realignment when a single 'Span' became multiple
+        ones.
+
+        Args:
+            span (Span):
+                the original span
+        Returns:
+             List[Span]:
+                the list of spans that correspond to the perturbed original one
+
+        """
+        for start_index in range(len(self.expected_results)):
+            if span.start == self.expected_results[start_index].span.start:
+                for end_index in range(start_index, len(self.expected_results)):
+                    if span.end == self.expected_results[end_index].span.end:
+                        return self.expected_results[start_index:end_index + 1]
+        return []
+
     def get_aligned_span_pairs(self) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
         """
         Returns:
@@ -193,9 +213,16 @@ class NERSample(BaseSample):
                 expected_prediction = self.expected_results[transformation.original_span]
                 actual_prediction = realigned_spans[transformation.original_span]
 
-                aligned_results.append((expected_prediction, actual_prediction))
-                expected_predictions_set.add(expected_prediction)
-                actual_predictions_set.add(actual_prediction)
+                if expected_prediction is None:
+                    expected_predictions = self._retrieve_multi_spans(transformation.original_span)
+                    for expected_prediction in expected_predictions:
+                        aligned_results.append((expected_prediction, actual_prediction))
+                        expected_predictions_set.add(expected_prediction)
+                        actual_predictions_set.add(actual_prediction)
+                else:
+                    aligned_results.append((expected_prediction, actual_prediction))
+                    expected_predictions_set.add(expected_prediction)
+                    actual_predictions_set.add(actual_prediction)
 
         # Retrieving predictions for spans from the original sentence
         for expected_prediction in self.expected_results.predictions:
@@ -221,7 +248,7 @@ class NERSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
-        return all([a == b for (a, b) in self.get_aligned_span_pairs()])
+        return all([a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity!= "O"])
 
 
 class SequenceClassificationSample(BaseSample):
