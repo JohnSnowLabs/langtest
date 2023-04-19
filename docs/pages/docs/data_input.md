@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: Data Inputs | NLP Test | John Snow Labs
-title: Data Inputs
+seotitle: Data Input | NLP Test | John Snow Labs
+title: Data Input
 key: docs-examples
 permalink: /docs/pages/docs/data_input
 modify_date: "2019-05-16"

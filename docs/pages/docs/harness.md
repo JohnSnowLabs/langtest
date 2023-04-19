@@ -12,17 +12,14 @@ header: true
 
 ### Harness Explained
 
-The Harness class is a testing class for Natural Language Processing (NLP) models. It evaluates the performance of a given NLP model on a given task using test data and generates a report with test results. Harness can be imported from the nlptest library in the following way.
+The Harness class is a testing class for Natural Language Processing models. It evaluates the performance of a given NLP model on a given task, dataset and test configuration. It allows users to **generate test cases**, **save and re-use them**, **create reports** and **augment** datasets based on test results.
 
 ```python
-#Import Harness from the nlptest library
+# Import Harness from the nlptest library
 from nlptest import Harness
-
 ```
 
-It imports the Harness class from within the module, that is designed to provide a blueprint or framework for conducting NLP testing, and that instances of the Harness class can be customized or configured for different testing scenarios or environments.
-
-Here is a list of the different parameters that can be passed to the `Harness` function:
+Here is a list of the different parameters that can be passed to the `Harness` class:
 
 </div><div class="h3-box" markdown="1">
 
@@ -30,13 +27,13 @@ Here is a list of the different parameters that can be passed to the `Harness` f
  
 
 {:.table2}
-| Parameter  | Description |  
+| Parameter   | Description |  
 | - | - | 
 |**task**     |Task for which the model is to be evaluated (text-classification or ner)|
-|**model**     |PipelineModel or path to a saved model or pretrained pipeline/model from hub.
-|**data**       |Path to the data that is to be used for evaluation. Can be .csv or .conll file in the CoNLL format 
-|**config**     |Configuration for the tests to be performed, specified in form of a YAML file.
-|**hub**       |model hub to load from the path. Required if model param is passed as path.|
+|**model**    |Pretrained pipeline or model from the corresponding hub, or path to a saved model from the corresponding hub, or PipelineModel object - see [Model Input](https://nlptest.org/docs/pages/docs/model_input) for more details
+|**data**     |Path to the data to be used for evaluation. Should be `.csv` for text classification, or `.conll` or `.txt` file in CoNLL format for NER - see [Data Input](https://nlptest.org/docs/pages/docs/data_input) for more details
+|**config**   |Path to the YAML file with configuration of tests to be performed
+|**hub**      |Hub (library) to use in back-end for loading model from model hub or path|
 
 
 </div></div>
