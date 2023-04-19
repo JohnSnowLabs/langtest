@@ -73,7 +73,6 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[British to American](robustness#british-to-american)                                                      |ner, text-classification     
 |[Robustness](robustness)		            |[Lowercase](robustness#lowercase)                                                                          |ner, text-classification     
 |[Robustness](robustness)		            |[Strip Punctuation](robustness#strip-punctuation)                                                          |ner, text-classification     
-|[Robustness](robustness)		            |[Swap Cohyponyms](robustness#swap-cohyponyms)                                                              |ner     
 |[Robustness](robustness)		            |[Swap Entities](robustness#swap-entities)                                                                  |ner     
 |[Robustness](robustness)		            |[Titlecase](robustness#titlecase)                                                                          |ner, text-classification     
 |[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |ner, text-classification     

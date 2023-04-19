@@ -17,13 +17,28 @@ You can install **nlptest** using pip or conda.
 
 <div class="heading" id="installation"> Installation </div>
 
-```python 
-# Using PyPI
-pip install nlptest
+**Using PyPI**:
 
-# Using Conda
-conda install -c johnsnowlabs nlptest
+```sh
+pip install nlptest
 ```
+
+**Using Conda**: 
+
+Download from johnsnowlabs or conda-forge channel.
+
+```sh
+# Optiona: A
+conda install -c johnsnowlabs nlptest
+
+# Optiona: B
+conda install -c conda-forge nlptest
+```
+
+> :bulb: Tip: The conda solver is slower than the mamba solver. Install mamba in the 
+> conda environment first. And then replace all `conda install` commands with 
+> `mamba install` to get a much faster installation of packages.
+> Install mamba as: `conda install -c conda-forge mamba`  
 
 The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more tasks coming soon.
 

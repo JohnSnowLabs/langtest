@@ -2,30 +2,31 @@ import unittest
 
 from nlptest.transform.robustness import *
 from nlptest.transform.utils import A2B_DICT
+from nlptest.utils.custom_types import SequenceClassificationSample
 
 
 class RobustnessTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.sentences = [
-            Sample(original="I live in London, United Kingdom since 2019"),
-            Sample(original="I cannot live in USA due to torandos caramelized")
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
+            SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
         ]
         self.sentences_with_punctuation = [
-            Sample(original="I live in London, United Kingdom since 2019."),
-            Sample(original="I cannot live in USA due to torandos caramelized!")
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019."),
+            SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized!")
         ]
         self.british_sentences = [
-            Sample(original="I live in London, United Kingdom since 2019"),
-            Sample(original="I cannot live in USA due to torandos caramelised")
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
+            SequenceClassificationSample(original="I cannot live in USA due to torandos caramelised")
         ]
         self.contraction_sentences = [
-            Sample(original="I live in London, United Kingdom since 2019"),
-            Sample(original="I can't live in USA due to torandos caramelized")
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
+            SequenceClassificationSample(original="I can't live in USA due to torandos caramelized")
         ]
         self.gendered_sentences = [
-            Sample(original="He lives in the USA."),
-            Sample(original="He lives in the USA and his cat is black.")
+            SequenceClassificationSample(original="He lives in the USA."),
+            SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
 
         self.labels = [

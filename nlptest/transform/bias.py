@@ -20,17 +20,17 @@ class BaseBias(ABC):
     alias_name = None
 
     @abstractmethod
-    def transform(self):
+    def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
         """
         Abstract method that implements the bias measure.
 
         Args:
-            data (List[Sample]): The input data to be transformed.
+            sample_list (List[Sample]): The input data to be transformed.
 
         Returns:
-            Any: The transformed data based on the implemented bias measure.
+            List[Sample]: The transformed data based on the implemented bias measure.
         """
-        return NotImplementedError
+        raise NotImplementedError()
 
 
 class GenderPronounBias(BaseBias):
@@ -45,12 +45,12 @@ class GenderPronounBias(BaseBias):
         """Replace pronouns to check the gender bias
 
         Args:
-            sample_list: List of sentences to apply perturbation.
-            pronouns_to_substitute: list of pronouns that need to be substituted.
-            pronoun_type: replacing pronoun type string ('male', 'female' or 'neutral')
+            sample_list (List[Sample]): List of sentences to apply perturbation.
+            pronouns_to_substitute (List[str]): list of pronouns that need to be substituted.
+            pronoun_type (str): replacing pronoun type string ('male', 'female' or 'neutral')
 
         Returns:
-            List of sentences with replaced pronouns
+            List[Sample]: List of sentences with replaced pronouns
         """
 
         for sample in sample_list:
@@ -113,12 +113,12 @@ class CountryEconomicBias(BaseBias):
     
 
         Args:
-            sample_list: List of sentences to apply perturbation.
-            country_names_to_substitute: list of country names that need to be substituted.
-            chosen_country_names: list of country names to replace with.
+            sample_list (List[Sample]): List of sentences to apply perturbation.
+            country_names_to_substitute (List[str]): list of country names that need to be substituted.
+            chosen_country_names (List[str]): list of country names to replace with.
 
         Returns:
-            List of sentences with replaced names
+            List[Sample]: List of sentences with replaced names
         """
 
         for sample in sample_list:
@@ -166,18 +166,18 @@ class EthnicityNameBias(BaseBias):
     ]
 
     @staticmethod
-    def transform(sample_list: List[Sample], names_to_substitute: List[str], chosen_ethnicity_names: List[str]) -> List[
-        Sample]:
+    def transform(sample_list: List[Sample], names_to_substitute: List[str], chosen_ethnicity_names: List[str]) \
+            -> List[Sample]:
         """Replace names to check the ethnicity bias
         Ethnicity Dataset Curated from the United States Census Bureau surveys
 
         Args:
-            sample_list: List of sentences to apply perturbation.
-            names_to_substitute: list of ethnicity names that need to be substituted.
-            chosen_ethnicity_names: list of ethnicity names to replace with.
+            sample_list (List[Sample]): List of sentences to apply perturbation.
+            names_to_substitute (List[str]): list of ethnicity names that need to be substituted.
+            chosen_ethnicity_names (List[str]): list of ethnicity names to replace with.
 
         Returns:
-            List of sentences with replaced names
+            List[Sample]: List of sentences with replaced names
         """
 
         for sample in sample_list:
@@ -221,16 +221,16 @@ class ReligionBias(BaseBias):
 
     @staticmethod
     def transform(sample_list: List[Sample], names_to_substitute: List[str], chosen_names: List[str]) -> List[Sample]:
-        """Replace  names to check the religion bias
-    
+        """
+        Replace  names to check the religion bias
 
         Args:
-            sample_list: List of sentences to apply perturbation.
-            names_to_substitute: list of names that need to be substituted.
-            chosen_names: list of names to replace with.
+            sample_list (List[Sample]): List of sentences to apply perturbation.
+            names_to_substitute (List[str]): list of names that need to be substituted.
+            chosen_names (List[str]): list of names to replace with.
 
         Returns:
-            List of sentences with replaced names
+            List[Sample]: List of sentences with replaced names
         """
 
         for sample in sample_list:

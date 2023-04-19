@@ -2,7 +2,7 @@ import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import pandas as pd
 import yaml
@@ -21,6 +21,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
+    SUPPORTED_TASKS = ["ner", "text-classification"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
@@ -35,8 +36,8 @@ class Harness:
 
     def __init__(
             self,
-            model: Union[str],
-            task: Optional[str] = "ner",
+            model: Union[str, Any],
+            task: str,
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None
@@ -56,9 +57,19 @@ class Harness:
         """
 
         super().__init__()
+
+        if(task not in self.SUPPORTED_TASKS):
+            raise ValueError(f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}")
         self.task = task
 
-        if data is None and (task, model, hub) in self.DEFAULTS_DATASET.keys():
+        if isinstance(model, str) and hub is None:
+            raise ValueError(f"When passing a string argument to the 'model' parameter, you must provide an argument "
+                             f"for the 'hub' parameter as well.")
+
+        if hub is not None and hub not in self.SUPPORTED_HUBS:
+            raise ValueError(f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}")
+        
+        if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
             self.data = DataFactory(data, task=self.task).load()
@@ -77,9 +88,6 @@ class Harness:
             self.data = DataFactory(data, task=self.task).load() if data is not None else None
 
         if isinstance(model, str):
-            if hub is None:
-                raise OSError(f"You need to pass the 'hub' parameter when passing a string as 'model'.")
-
             self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
         else:
             self.model = ModelFactory(task=task, model=model)
@@ -87,7 +95,7 @@ class Harness:
         if config is not None:
             self._config = self.configure(config)
         else:
-            logging.info(f"No configuration file was provided, loading default config.")
+            logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(resource_filename("nlptest", "data/config.yml"))
 
         self._testcases = None
@@ -128,6 +136,8 @@ class Harness:
         """
         if self._config is None:
             raise RuntimeError("Please call .configure() first.")
+        if self._testcases is not None:
+            raise RuntimeError("Testcases are already generated, please call .run() and .report() next.")
 
         tests = self._config['tests']
         self._testcases = TestFactory.transform(self.data, tests, self.model)
@@ -306,7 +316,7 @@ class Harness:
             pickle.dump(self.data, writer)
 
     @classmethod
-    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: Optional[str] = "ner",
+    def load(cls, save_dir: str, model: Union[str, 'ModelFactory'], task: str,
              hub: Optional[str] = None) -> 'Harness':
         """
         Loads a previously saved `Harness` from a given configuration and dataset

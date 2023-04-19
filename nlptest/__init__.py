@@ -1,7 +1,7 @@
 from .datahandler.datasource import DataFactory
 from .modelhandler.modelhandler import ModelFactory
 from .nlptest import Harness
-from .transform.perturbation import PerturbationFactory
+
 
 
 """
@@ -21,14 +21,10 @@ like access or download resources from cloud.
 DataFactory is for handling of like csv, json, conll ...
 >>> from nlptest import DataFactory
 
-Augumentation of NLP datasets like Perturbations(
-uppercase, lowercase, add_context, add_contractions) 
->>> from nlptest import PerturbationFactory
 
 """
 __all__ = [
     Harness,
     ModelFactory,
-    DataFactory,
-    PerturbationFactory
+    DataFactory
 ]
