@@ -248,7 +248,7 @@ class NERSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
-        return all([a == b for (a, b) in self.get_aligned_span_pairs() if a.entity != "O"])
+        return all([a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity!= "O"])
 
 
 class SequenceClassificationSample(BaseSample):
