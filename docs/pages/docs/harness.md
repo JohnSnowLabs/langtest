@@ -10,7 +10,7 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-### Harness Explained
+### Harness Class
 
 The Harness class is a testing class for Natural Language Processing models. It evaluates the performance of a given NLP model on a given task, dataset and test configuration. It allows users to **generate test cases**, **save and re-use them**, **create reports** and **augment** datasets based on test results.
 
