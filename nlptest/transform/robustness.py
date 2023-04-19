@@ -291,6 +291,7 @@ class SwapEntities(BaseRobustness):
         assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
         for sample, sample_labels in zip(sample_list, labels):
+            sample.category = "robustness"
             if all([label == "O" for label in sample_labels]):
                 sample.test_case = sample.original
                 continue
@@ -333,7 +334,6 @@ class SwapEntities(BaseRobustness):
                     ignore=False
                 )
             ]
-            sample.category = "robustness"
         return sample_list
 
 class ConvertAccent(BaseRobustness):

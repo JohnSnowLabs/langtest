@@ -47,11 +47,12 @@ class TestFactory:
         m_data = kwargs.get('m_data', None)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
-            values = test_types[each]
+            sub_test_types = test_types[each]
+            
             all_results.extend(
-                all_categories[each](m_data, values).transform()
+                all_categories[each](m_data, sub_test_types, raw_data=data).transform()
                 if each in ["robustness", "bias"] and m_data
-                else all_categories[each](data, values).transform()
+                else all_categories[each](data, sub_test_types).transform()
             )
         return all_results
 
@@ -195,7 +196,8 @@ class RobustnessTestFactory(ITests):
     def __init__(
             self,
             data_handler: List[Sample],
-            tests: Dict = None
+            tests: Dict = None,
+            **kwargs
     ) -> None:
         """
         Initializes a new instance of the `Robustness` class.
@@ -210,6 +212,7 @@ class RobustnessTestFactory(ITests):
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
+        self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
             raise ValueError(
@@ -227,9 +230,10 @@ class RobustnessTestFactory(ITests):
 
         if 'swap_entities' in self.tests:
             # TODO: check if we can get rid of pandas here
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
+            raw_data = self.kwargs.get('raw_data', self._data_handler)
+            df = pd.DataFrame({'text': [sample.original for sample in raw_data],
                                'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
+                                         for sample in raw_data]})
             params = self.tests['swap_entities']
             if len(params.get('parameters', {}).get('terminology', {})) == 0:
                 params['parameters'] = {}
@@ -257,7 +261,13 @@ class RobustnessTestFactory(ITests):
         """
         all_samples = []
         for test_name, params in self.tests.items():
-            data_handler_copy = [x.copy() for x in self._data_handler]
+            if TestFactory.is_augment:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+            elif test_name in ["swap_entities"]:
+                data_handler_copy = [x.copy() for x in self.kwargs.get('raw_data', [])]
+            else:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+ 
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
