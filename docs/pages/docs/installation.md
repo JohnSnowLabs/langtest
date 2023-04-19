@@ -36,7 +36,7 @@ conda install -c conda-forge nlptest
 ```
 
 > :bulb: The conda solver is slower than the mamba solver. Install mamba in the 
-> conda environment first. And then replace all `conda install` commands with 
+> conda environment first, then replace all `conda install` commands with 
 > `mamba install` to get a much faster installation of packages.
 > To install mamba: `conda install -c conda-forge mamba`  
 
