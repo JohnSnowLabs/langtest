@@ -40,7 +40,7 @@ conda install -c conda-forge nlptest
 > `mamba install` to get a much faster installation of packages.
 > To install mamba: `conda install -c conda-forge mamba`  
 
-The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more tasks and models coming soon.
+The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more models and test types coming soon.
 
 <style>
   .heading {
