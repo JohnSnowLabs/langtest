@@ -143,6 +143,7 @@ class MinGenderF1Score(BaseFairness):
 
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+            y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
 
             if len(y_true) > 0:
                 macro_f1_score = f1_score(
@@ -237,6 +238,7 @@ class MaxGenderF1Score(BaseFairness):
 
             y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
             y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+            y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
 
             if len(y_true) > 0:
                 macro_f1_score = f1_score(
