@@ -20,25 +20,32 @@ Supported data input formats are **`CoNLL`** and **`CSV`**. CoNLL dataset can on
 
 </div><div class="h3-box" markdown="1">
 
-### Sample CoNLL format
+### NER
+
+There are 2 options for datasets to test NER models: **`CoNLL`** or **`CSV`** datasets. Here are sample of what these may look like:
+
+#### CoNLL Format for NER
 
 ```bash
 LEICESTERSHIRE NNP B-NP B-ORG
-TAKE NNP I-NP O
-OVER IN B-PP O
-AT NNP B-NP O
-TOP NNP I-NP O
-AFTER NNP I-NP O
-INNINGS NNP I-NP O
-VICTORY NN I-NP O
-. . O O
+TAKE           NNP I-NP O
+OVER           IN  B-PP O
+AT             NNP B-NP O
+TOP            NNP I-NP O
+AFTER          NNP I-NP O
+INNINGS        NNP I-NP O
+VICTORY        NNP I-NP O
 ```
 
-</div><div class="h3-box" markdown="1">
+#### CSV Format for NER
 
-### Sample CSV format
+{:.table2}
+| Supported "text" column names | Supported "ner" column names | Supported "pos" column names | Supported "chunk" column names | 
+| - | - | 
+| ['text', 'sentences', 'sentence', 'sample'] |  ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'] |  ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'] | ['chunk_tags', 'chunk_tag'] |
 
-A sample CSV data input looks like the following : 
+
+#### Sample CSV Format for Text Classification
 
 {:.table2}
 | text | label  |  
@@ -59,12 +66,6 @@ For `CSV` files, we support different variations of the column names. They are s
 
 </div><div class="h3-box" markdown="1">
 
-### Supported Columns : NER
-
-{:.table2}
-| Supported "text" column names | Supported "ner" column names | Supported "pos" column names | Supported "chunk" column names | 
-| - | - | 
-| ['text', 'sentences', 'sentence', 'sample'] |  ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'] |  ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'] | ['chunk_tags', 'chunk_tag'] |
 
 
 In the harness, we specify the data input in the following way:
