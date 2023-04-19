@@ -3,6 +3,7 @@ import asyncio
 from typing import List
 from nlptest.modelhandler.modelhandler import ModelFactory
 from nlptest.utils.custom_types import Sample, MinScoreOutput, MinScoreSample
+from nlptest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
 from nlptest.utils.gender_classifier import GenderClassifier
 from .utils import (default_label_representation,
                     default_ehtnicity_representation,
@@ -337,12 +338,18 @@ class LabelRepresentation(BaseRepresentation):
             List[Sample]: Label Representation test results.
         """
         sample_list = []
+        labels = [s.expected_results.predictions for s in data]
+        if isinstance(data[0].expected_results, NEROutput):
+            labels = [x.entity for sentence in labels for x in sentence]
+        elif isinstance(data[0].expected_results, SequenceClassificationOutput):
+            labels = [x.label for sentence in labels for x in sentence]
+        labels = set(labels)
+        print(labels)
 
         if test == "min_label_representation_count":
 
             if not params:
-                expected_representation = {
-                    'O': 10, 'LOC': 10, 'PER': 10, 'MISC': 10, 'ORG': 10}
+                expected_representation = {k:10 for k in labels}
 
             else:
                 if isinstance(params['min_count'], dict):
@@ -350,7 +357,7 @@ class LabelRepresentation(BaseRepresentation):
 
                 elif isinstance(params['min_count'], int):
                     expected_representation = {
-                        key: params['min_count'] for key in default_label_representation}
+                        key: params['min_count'] for key in labels}
 
             for key, value in expected_representation.items():
                 sample = MinScoreSample(
@@ -364,8 +371,7 @@ class LabelRepresentation(BaseRepresentation):
 
         if test == "min_label_representation_proportion":
             if not params:
-                expected_representation = {
-                    'O': 0.16, 'LOC': 0.16, 'PER': 0.16, 'MISC': 0.16, 'ORG': 0.16}
+                expected_representation = {k:(1/len(k))*0.8 for k in labels}
 
             else:
                 if isinstance(params['min_proportion'], dict):
@@ -378,7 +384,7 @@ class LabelRepresentation(BaseRepresentation):
 
                 elif isinstance(params['min_proportion'], float):
                     expected_representation = {
-                        key: params['min_proportion'] for key in default_label_representation}
+                        key: params['min_proportion'] for key in labels}
                     if sum(expected_representation.values()) > 1:
                         print('''Sum of proportions cannot be greater than 1.
                         So min_label_representation_proportion test cannot run''')
