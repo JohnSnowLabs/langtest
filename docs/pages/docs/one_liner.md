@@ -14,6 +14,8 @@ With just one line of code, you can generate and run over 50 different test type
 
 ### One Liner - NER
 
+Try out the nlptest library on the following default model/dataset combinations for NER. **To run tests on any other model, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
+
 <div id="one_liner_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
     <a href="#" class="tab-btn">John Snow Labs</a>
@@ -64,6 +66,8 @@ h.generate().run().report()
 </div>
 
 ### One Liner - Text Classification
+
+Try out the nlptest library on the following default model/dataset combinations for Text Classification. **To run tests on any other model, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
