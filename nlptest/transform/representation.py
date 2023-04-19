@@ -340,7 +340,7 @@ class LabelRepresentation(BaseRepresentation):
         sample_list = []
         labels = [s.expected_results.predictions for s in data]
         if isinstance(data[0].expected_results, NEROutput):
-            labels = [x.entity for sentence in labels for x in sentence]
+            labels = [x.entity.split("-")[-1] for sentence in labels for x in sentence]
         elif isinstance(data[0].expected_results, SequenceClassificationOutput):
             labels = [x.label for sentence in labels for x in sentence]
         labels = set(labels)
@@ -421,20 +421,19 @@ class LabelRepresentation(BaseRepresentation):
             kwargs['raw_data'])
 
         for sample in sample_list:
+            print(sample)
             if progress:
                 progress.update(1)
                 
             if sample.test_type == "min_label_representation_proportion":
                 entity_representation_proportion = get_entity_representation_proportions(
                     entity_representation)
-                actual_representation = {
-                    **default_label_representation, **entity_representation_proportion}
+                actual_representation = { **entity_representation_proportion}
                 sample.actual_results = MinScoreOutput(
                     min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
             elif sample.test_type == "min_label_representation_count":
-                actual_representation = {
-                    **default_label_representation, **entity_representation}
+                actual_representation = { **entity_representation}
                 sample.actual_results = MinScoreOutput(
                     min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
