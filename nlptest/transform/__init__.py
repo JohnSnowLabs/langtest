@@ -48,12 +48,14 @@ class TestFactory:
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             sub_test_types = test_types[each]
-            
+
             all_results.extend(
-                all_categories[each](m_data, sub_test_types, raw_data=data).transform()
+                all_categories[each](m_data, sub_test_types,
+                                     raw_data=data).transform()
                 if each in ["robustness", "bias"] and m_data
                 else all_categories[each](data, sub_test_types).transform()
             )
+        tests.close()
         return all_results
 
     @classmethod
@@ -264,10 +266,11 @@ class RobustnessTestFactory(ITests):
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
             elif test_name in ["swap_entities"]:
-                data_handler_copy = [x.copy() for x in self.kwargs.get('raw_data', [])]
+                data_handler_copy = [x.copy()
+                                     for x in self.kwargs.get('raw_data', [])]
             else:
                 data_handler_copy = [x.copy() for x in self._data_handler]
- 
+
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
             for sample in transformed_samples:
@@ -663,7 +666,8 @@ class AccuracyTestFactory(ITests):
         y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
 
         if kwargs['is_default']:
-             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
+            y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else (
+                '0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
 
         supported_tests = cls.available_tests()
         tasks = []
