@@ -117,8 +117,9 @@ class AugmentRobustness(BaseAugmentaion):
         supported_tests = TestFactory.test_scenarios()
         suggest = self.suggestions(self.h_report)
         sum_propotion = suggest['proportion_increase'].sum()
-        if suggest.shape[0] <= 0:
-            return "Test metrics all have over 0.9 f1-score."
+        if suggest.shape[0] <= 0 or suggest.emtpy:
+            print("Test metrics all have passed.")
+            return None
 
         self.config = self._parameters_overrides(self.config, data)
 
