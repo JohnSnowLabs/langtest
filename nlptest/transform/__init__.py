@@ -9,7 +9,7 @@ from .fairness import BaseFairness
 from .accuracy import BaseAccuracy
 from ..modelhandler import ModelFactory
 import pandas as pd
-from tqdm import tqdm
+from tqdm.asyncio import tqdm
 from typing import Dict, List
 from abc import ABC, abstractmethod
 import asyncio
@@ -120,7 +120,7 @@ class TestFactory:
 
         all_categories = TestFactory.test_categories()
         tests = tqdm(total=len(samples_list), desc="Running testcases... ",
-                     disable=TestFactory.is_augment)
+                     position=0, disable=TestFactory.is_augment)
         all_results = []
         for each in hash_samples:
             values = hash_samples[each]
