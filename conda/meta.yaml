@@ -21,7 +21,6 @@ requirements:
     - python
   run:
     - python
-    - pip
     - numpy
     - pandas
     - scikit-learn
