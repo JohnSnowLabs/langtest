@@ -22,7 +22,7 @@ Supported data input formats are **`CoNLL`** and **`CSV`**. CoNLL dataset can on
 
 ### NER
 
-There are 2 options for datasets to test NER models: **`CoNLL`** or **`CSV`** datasets. Here are sample of what these may look like:
+There are 2 options for datasets to test NER models: **`CoNLL`** or **`CSV`** datasets. Here are some details of what these may look like:
 
 #### CoNLL Format for NER
 
@@ -37,6 +37,8 @@ INNINGS        NNP I-NP O
 VICTORY        NNP I-NP O
 ```
 
+</div><div class="h3-box" markdown="1">
+
 #### CSV Format for NER
 
 {:.table2}
@@ -44,8 +46,31 @@ VICTORY        NNP I-NP O
 | - | - | 
 | ['text', 'sentences', 'sentence', 'sample'] |  ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'] |  ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'] | ['chunk_tags', 'chunk_tag'] |
 
+</div><div class="h3-box" markdown="1">
 
-#### Sample CSV Format for Text Classification
+#### Passing a NER Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the nlptest library
+from nlptest import Harness
+harness = Harness(task='ner',
+                  model='en_core_web_sm',
+                  config='sample_config.yml',
+                  hub="spacy",
+                  data='sample.conll') #Either of the two formats can be specified.
+```
+
+</div><div class="h3-box" markdown="1">
+
+### Text Classification
+
+There is 1 option for datasets to test Text Classification models: **`CSV`** datasets. Here are some details of what these may look like:
+
+#### CSV Format for Text Classification
+
+Here's a sample dataset:
 
 {:.table2}
 | text | label  |  
@@ -55,10 +80,6 @@ VICTORY        NNP I-NP O
 
 For `CSV` files, we support different variations of the column names. They are shown below :
 
-</div><div class="h3-box" markdown="1">
-
-### Supported Columns : Text-Classification
-
 {:.table2}
 | Supported "text" column names | Supported "label" column names   |  
 | - | - | 
@@ -66,43 +87,18 @@ For `CSV` files, we support different variations of the column names. They are s
 
 </div><div class="h3-box" markdown="1">
 
+#### Passing a Text Classification Dataset to the Harness
 
-
-In the harness, we specify the data input in the following way:
-
-</div><div class="h3-box" markdown="1">
-
-### Sample Code block : NER
+In the Harness, we specify the data input in the following way:
 
 ```python
 #Import Harness from the nlptest library
 from nlptest import Harness
-harness = Harness(
-            task='ner',
-            model='en_core_web_sm',
-            config= 'sample_config.yml',
-            hub = "spacy",
-            data= 'sample.conll/sample.csv' #Either of the two formats can be specified.
-         
-        )
-```
-
-</div><div class="h3-box" markdown="1">
-
-### Sample Code block : Text-Classification
-
-```python
-#Import Harness from the nlptest library
-from nlptest import Harness
-harness = Harness(
-            task='text-classification',
-            model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
-            config= 'sample_config.yml',
-            hub = "huggingface",
-            data= 'sample.csv'  #CoNLL format not supported
-         
-        )
-
+harness = Harness(task='text-classification',
+                  model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
+                  config= 'sample_config.yml',
+                  hub = "huggingface",
+                  data= 'sample.csv')
 ```
 
 </div></div>
