@@ -14,6 +14,8 @@ nav_key: tests
 modify_date: "2019-05-16"
 ---
 
+<div class="main-docs" markdown="1">
+
 {% assign parent_path = "pages/tests/accuracy" %}
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}
@@ -21,3 +23,5 @@ modify_date: "2019-05-16"
         {% include_relative {{ file_name }} %}
     {% endif %}
 {% endfor %}
+
+</div>

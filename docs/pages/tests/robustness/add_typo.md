@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Add Typo
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks if the NLP model can handle input text with typos. A typo frequenct dictionary is used to apply most common typos to the input data.
 
 **alias_name:** `add_typo`
@@ -17,6 +16,8 @@ add_typo:
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 
+</div><div class="h3-box" markdown="1">
+
 #### Examples
 
 {:.table2}
@@ -25,5 +26,4 @@ add_typo:
 |The quick brown fox jumps over the lazy dog.|The wuick brown fox jumps over the fazy dog.|
 |Good morning|Good morninh|
 
-
-</div></div>
+</div>
