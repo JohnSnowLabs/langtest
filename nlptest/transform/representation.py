@@ -150,7 +150,7 @@ class GenderRepresentation(BaseRepresentation):
 
         Returns:
             List[Sample]: The list of samples with actual results.
-        
+
         """
 
         progress = kwargs.get("progress_bar", False)
@@ -277,7 +277,7 @@ class EthnicityRepresentation(BaseRepresentation):
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
             model (ModelFactory): The model to be used for evaluation.
-            
+
         Returns:
             List[Sample]: The list of samples with actual results.
         """
@@ -340,16 +340,16 @@ class LabelRepresentation(BaseRepresentation):
         sample_list = []
         labels = [s.expected_results.predictions for s in data]
         if isinstance(data[0].expected_results, NEROutput):
-            labels = [x.entity.split("-")[-1] for sentence in labels for x in sentence]
+            labels = [x.entity.split("-")[-1]
+                      for sentence in labels for x in sentence]
         elif isinstance(data[0].expected_results, SequenceClassificationOutput):
             labels = [x.label for sentence in labels for x in sentence]
         labels = set(labels)
-        print(labels)
 
         if test == "min_label_representation_count":
 
             if not params:
-                expected_representation = {k:10 for k in labels}
+                expected_representation = {k: 10 for k in labels}
 
             else:
                 if isinstance(params['min_count'], dict):
@@ -371,7 +371,7 @@ class LabelRepresentation(BaseRepresentation):
 
         if test == "min_label_representation_proportion":
             if not params:
-                expected_representation = {k:(1/len(k))*0.8 for k in labels}
+                expected_representation = {k: (1/len(k))*0.8 for k in labels}
 
             else:
                 if isinstance(params['min_proportion'], dict):
@@ -411,7 +411,7 @@ class LabelRepresentation(BaseRepresentation):
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
             model (ModelFactory): The model to be evaluated.
-        
+
         Returns:
             List[Sample]: Label Representation test results.
         """
@@ -421,24 +421,22 @@ class LabelRepresentation(BaseRepresentation):
             kwargs['raw_data'])
 
         for sample in sample_list:
-            print(sample)
             if progress:
                 progress.update(1)
-                
+
             if sample.test_type == "min_label_representation_proportion":
                 entity_representation_proportion = get_entity_representation_proportions(
                     entity_representation)
-                actual_representation = { **entity_representation_proportion}
+                actual_representation = {**entity_representation_proportion}
                 sample.actual_results = MinScoreOutput(
                     min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
             elif sample.test_type == "min_label_representation_count":
-                actual_representation = { **entity_representation}
+                actual_representation = {**entity_representation}
                 sample.actual_results = MinScoreOutput(
                     min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
-            
-                
+
         return sample_list
 
 
@@ -545,7 +543,7 @@ class ReligionRepresentation(BaseRepresentation):
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
             model (ModelFactory): The model to be evaluated.
-        
+
         Returns:
             List[Sample]: Religion Representation test results.
 
@@ -574,10 +572,10 @@ class ReligionRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
-            
+
             if progress:
                 progress.update(1)
-                
+
         return sample_list
 
 
@@ -675,7 +673,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
             model (ModelFactory): The model to be used for evaluation.
-        
+
         Returns:
             List[Sample]: Country Economic Representation test results.
 
@@ -703,7 +701,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                 sample.actual_results = MinScoreOutput(
                     min_score=round(actual_representation[sample.test_case], 2))
                 sample.state = "done"
-            
+
             if progress:
                 progress.update(1)
 
