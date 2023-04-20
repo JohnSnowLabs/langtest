@@ -115,9 +115,9 @@ class AugmentRobustness(BaseAugmentaion):
         data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
-        suggest = self.suggestions(self.h_report)
+        suggest: pd.DataFrame = self.suggestions(self.h_report)
         sum_propotion = suggest['proportion_increase'].sum()
-        if suggest.shape[0] <= 0 or suggest.emtpy:
+        if suggest.shape[0] <= 0 or suggest.empty:
             print("All tests have passed. Augmentation will not be applied in this case.")
             return None
 
