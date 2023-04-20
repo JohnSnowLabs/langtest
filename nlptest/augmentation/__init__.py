@@ -118,7 +118,7 @@ class AugmentRobustness(BaseAugmentaion):
         suggest = self.suggestions(self.h_report)
         sum_propotion = suggest['proportion_increase'].sum()
         if suggest.shape[0] <= 0 or suggest.emtpy:
-            print("Test metrics all have passed.")
+            print("All tests have passed. Augmentation will not be applied in this case.")
             return None
 
         self.config = self._parameters_overrides(self.config, data)
