@@ -17,12 +17,12 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 REQUIRED_PKGS = [
     'numpy',
     'pandas',
-    'wn',
     'scikit-learn',
     'transformers',
     'torch',
     'sentencepiece',
-    'pydantic'
+    'pydantic',
+    'nest-asyncio'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.

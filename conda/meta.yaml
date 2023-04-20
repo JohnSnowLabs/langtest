@@ -26,6 +26,7 @@ requirements:
     - pytorch
     - sentencepiece
     - pydantic
+    - nest-asyncio
 
 about:
   home: https://github.com/JohnSnowLabs/nlptest/
