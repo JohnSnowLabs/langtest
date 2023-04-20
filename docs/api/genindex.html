@@ -1,0 +1,1721 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; nlptest 1.0.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="static/documentation_options.js"></script>
+    <script src="static/doctools.js"></script>
+    <script src="static/sphinx_highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="icon" href="static/fav.ico"/>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="quick_start.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="autosummary/nlptest.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/JohnSnowLabs/nlptest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="quick_start.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="autosummary/nlptest.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/JohnSnowLabs/nlptest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.AccuracyTestFactory.html#nlptest.transform.AccuracyTestFactory.__init__">__init__() (AccuracyTestFactory method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContext.html#nlptest.transform.robustness.AddContext.__init__">(AddContext method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContraction.html#nlptest.transform.robustness.AddContraction.__init__">(AddContraction method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddPunctuation.html#nlptest.transform.robustness.AddPunctuation.__init__">(AddPunctuation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddTypo.html#nlptest.transform.robustness.AddTypo.__init__">(AddTypo method)</a>
+</li>
+        <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#id0">(AugmentRobustness method)</a>, <a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.__init__">[1]</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.BaseAccuracy.html#nlptest.transform.accuracy.BaseAccuracy.__init__">(BaseAccuracy method)</a>
+</li>
+        <li><a href="autosummary/nlptest.augmentation.BaseAugmentaion.html#nlptest.augmentation.BaseAugmentaion.__init__">(BaseAugmentaion method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.BaseBias.html#nlptest.transform.bias.BaseBias.__init__">(BaseBias method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.BaseFairness.html#nlptest.transform.fairness.BaseFairness.__init__">(BaseFairness method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.BaseFormatter.html#nlptest.datahandler.format.BaseFormatter.__init__">(BaseFormatter method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.BaseRepresentation.html#nlptest.transform.representation.BaseRepresentation.__init__">(BaseRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.BaseRobustness.html#nlptest.transform.robustness.BaseRobustness.__init__">(BaseRobustness method)</a>
+</li>
+        <li><a href="autosummary/nlptest.testrunner.BaseRunner.html#nlptest.testrunner.BaseRunner.__init__">(BaseRunner method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.__init__">(BaseSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.BiasTestFactory.html#nlptest.transform.BiasTestFactory.__init__">(BiasTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.datasource.ConllDataset.html#nlptest.datahandler.datasource.ConllDataset.__init__">(ConllDataset method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.ConvertAccent.html#nlptest.transform.robustness.ConvertAccent.__init__">(ConvertAccent method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.CountryEconomicBias.html#nlptest.transform.bias.CountryEconomicBias.__init__">(CountryEconomicBias method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.CountryEconomicRepresentation.html#nlptest.transform.representation.CountryEconomicRepresentation.__init__">(CountryEconomicRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.datasource.CSVDataset.html#nlptest.datahandler.datasource.CSVDataset.__init__">(CSVDataset method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.datasource.DataFactory.html#nlptest.datahandler.datasource.DataFactory.__init__">(DataFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.EthnicityNameBias.html#nlptest.transform.bias.EthnicityNameBias.__init__">(EthnicityNameBias method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.EthnicityRepresentation.html#nlptest.transform.representation.EthnicityRepresentation.__init__">(EthnicityRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.FairnessTestFactory.html#nlptest.transform.FairnessTestFactory.__init__">(FairnessTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.Formatter.html#nlptest.datahandler.format.Formatter.__init__">(Formatter method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.gender_classifier.GenderClassifier.html#nlptest.utils.gender_classifier.GenderClassifier.__init__">(GenderClassifier method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.GenderPronounBias.html#nlptest.transform.bias.GenderPronounBias.__init__">(GenderPronounBias method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.GenderRepresentation.html#nlptest.transform.representation.GenderRepresentation.__init__">(GenderRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.__init__">(Harness method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.ITests.html#nlptest.transform.ITests.__init__">(ITests method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.datasource.JSONDataset.html#nlptest.datahandler.datasource.JSONDataset.__init__">(JSONDataset method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.LabelRepresentation.html#nlptest.transform.representation.LabelRepresentation.__init__">(LabelRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.LowerCase.html#nlptest.transform.robustness.LowerCase.__init__">(LowerCase method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MaxGenderF1Score.html#nlptest.transform.fairness.MaxGenderF1Score.__init__">(MaxGenderF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput.__init__">(MaxScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.__init__">(MaxScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#nlptest.transform.accuracy.MinF1Score.__init__">(MinF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MinGenderF1Score.html#nlptest.transform.fairness.MinGenderF1Score.__init__">(MinGenderF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#nlptest.transform.accuracy.MinMacroF1Score.__init__">(MinMacroF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#nlptest.transform.accuracy.MinMicroF1Score.__init__">(MinMicroF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#nlptest.transform.accuracy.MinPrecisionScore.__init__">(MinPrecisionScore method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#nlptest.transform.accuracy.MinRecallScore.__init__">(MinRecallScore method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput.__init__">(MinScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.__init__">(MinScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#nlptest.transform.accuracy.MinWeightedF1Score.__init__">(MinWeightedF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory.__init__">(ModelFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.__init__">(NEROutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.NEROutputFormatter.html#nlptest.datahandler.format.NEROutputFormatter.__init__">(NEROutputFormatter method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction.__init__">(NERPrediction method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.__init__">(NERSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.__init__">(PretrainedModelForNER method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.__init__">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.__init__">[2]</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.__init__">(PretrainedModelForTextClassification method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.__init__">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.__init__">[2]</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.ReligionBias.html#nlptest.transform.bias.ReligionBias.__init__">(ReligionBias method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.ReligionRepresentation.html#nlptest.transform.representation.ReligionRepresentation.__init__">(ReligionRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RepresentationTestFactory.html#nlptest.transform.RepresentationTestFactory.__init__">(RepresentationTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RobustnessTestFactory.html#nlptest.transform.RobustnessTestFactory.__init__">(RobustnessTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.__init__">(SequenceClassificationOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.SequenceClassificationOutputFormatter.html#nlptest.datahandler.format.SequenceClassificationOutputFormatter.__init__">(SequenceClassificationOutputFormatter method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.__init__">(SequenceClassificationSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel.__init__">(SequenceLabel method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span.__init__">(Span method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.StripPunctuation.html#nlptest.transform.robustness.StripPunctuation.__init__">(StripPunctuation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.SwapEntities.html#nlptest.transform.robustness.SwapEntities.__init__">(SwapEntities method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory.__init__">(TestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.testrunner.TestRunner.html#nlptest.testrunner.TestRunner.__init__">(TestRunner method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.TitleCase.html#nlptest.transform.robustness.TitleCase.__init__">(TitleCase method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation.__init__">(Transformation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.UpperCase.html#nlptest.transform.robustness.UpperCase.__init__">(UpperCase method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.AccuracyTestFactory.html#nlptest.transform.AccuracyTestFactory">AccuracyTestFactory (class in nlptest.transform)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.AddContext.html#nlptest.transform.robustness.AddContext">AddContext (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.AddContraction.html#nlptest.transform.robustness.AddContraction">AddContraction (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.AddPunctuation.html#nlptest.transform.robustness.AddPunctuation">AddPunctuation (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.AddTypo.html#nlptest.transform.robustness.AddTypo">AddTypo (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.BaseAccuracy.html#nlptest.transform.accuracy.BaseAccuracy.alias_name">alias_name (BaseAccuracy attribute)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.bias.BaseBias.html#nlptest.transform.bias.BaseBias.alias_name">(BaseBias attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.BaseFairness.html#nlptest.transform.fairness.BaseFairness.alias_name">(BaseFairness attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.BaseRepresentation.html#nlptest.transform.representation.BaseRepresentation.alias_name">(BaseRepresentation attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.BaseRobustness.html#nlptest.transform.robustness.BaseRobustness.alias_name">(BaseRobustness attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.CountryEconomicRepresentation.html#nlptest.transform.representation.CountryEconomicRepresentation.alias_name">(CountryEconomicRepresentation attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.EthnicityRepresentation.html#nlptest.transform.representation.EthnicityRepresentation.alias_name">(EthnicityRepresentation attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.GenderRepresentation.html#nlptest.transform.representation.GenderRepresentation.alias_name">(GenderRepresentation attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.LabelRepresentation.html#nlptest.transform.representation.LabelRepresentation.alias_name">(LabelRepresentation attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MaxGenderF1Score.html#nlptest.transform.fairness.MaxGenderF1Score.alias_name">(MaxGenderF1Score attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#nlptest.transform.accuracy.MinF1Score.alias_name">(MinF1Score attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MinGenderF1Score.html#nlptest.transform.fairness.MinGenderF1Score.alias_name">(MinGenderF1Score attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#nlptest.transform.accuracy.MinMacroF1Score.alias_name">(MinMacroF1Score attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#nlptest.transform.accuracy.MinMicroF1Score.alias_name">(MinMicroF1Score attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#nlptest.transform.accuracy.MinPrecisionScore.alias_name">(MinPrecisionScore attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#nlptest.transform.accuracy.MinRecallScore.alias_name">(MinRecallScore attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#nlptest.transform.accuracy.MinWeightedF1Score.alias_name">(MinWeightedF1Score attribute)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.ReligionRepresentation.html#nlptest.transform.representation.ReligionRepresentation.alias_name">(ReligionRepresentation attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.transform.robustness.AddContext.html#nlptest.transform.robustness.AddContext.async_run">async_run() (AddContext class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContraction.html#nlptest.transform.robustness.AddContraction.async_run">(AddContraction class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddPunctuation.html#nlptest.transform.robustness.AddPunctuation.async_run">(AddPunctuation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddTypo.html#nlptest.transform.robustness.AddTypo.async_run">(AddTypo class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.BaseAccuracy.html#nlptest.transform.accuracy.BaseAccuracy.async_run">(BaseAccuracy class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.BaseBias.html#nlptest.transform.bias.BaseBias.async_run">(BaseBias class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.BaseFairness.html#nlptest.transform.fairness.BaseFairness.async_run">(BaseFairness class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.BaseRepresentation.html#nlptest.transform.representation.BaseRepresentation.async_run">(BaseRepresentation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.BaseRobustness.html#nlptest.transform.robustness.BaseRobustness.async_run">(BaseRobustness class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.ConvertAccent.html#nlptest.transform.robustness.ConvertAccent.async_run">(ConvertAccent class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.CountryEconomicBias.html#nlptest.transform.bias.CountryEconomicBias.async_run">(CountryEconomicBias class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.CountryEconomicRepresentation.html#nlptest.transform.representation.CountryEconomicRepresentation.async_run">(CountryEconomicRepresentation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.EthnicityNameBias.html#nlptest.transform.bias.EthnicityNameBias.async_run">(EthnicityNameBias class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.EthnicityRepresentation.html#nlptest.transform.representation.EthnicityRepresentation.async_run">(EthnicityRepresentation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.GenderPronounBias.html#nlptest.transform.bias.GenderPronounBias.async_run">(GenderPronounBias class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.GenderRepresentation.html#nlptest.transform.representation.GenderRepresentation.async_run">(GenderRepresentation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.LabelRepresentation.html#nlptest.transform.representation.LabelRepresentation.async_run">(LabelRepresentation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.LowerCase.html#nlptest.transform.robustness.LowerCase.async_run">(LowerCase class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MaxGenderF1Score.html#nlptest.transform.fairness.MaxGenderF1Score.async_run">(MaxGenderF1Score class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#nlptest.transform.accuracy.MinF1Score.async_run">(MinF1Score class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MinGenderF1Score.html#nlptest.transform.fairness.MinGenderF1Score.async_run">(MinGenderF1Score class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#nlptest.transform.accuracy.MinMacroF1Score.async_run">(MinMacroF1Score class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#nlptest.transform.accuracy.MinMicroF1Score.async_run">(MinMicroF1Score class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#nlptest.transform.accuracy.MinPrecisionScore.async_run">(MinPrecisionScore class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#nlptest.transform.accuracy.MinRecallScore.async_run">(MinRecallScore class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#nlptest.transform.accuracy.MinWeightedF1Score.async_run">(MinWeightedF1Score class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.ReligionBias.html#nlptest.transform.bias.ReligionBias.async_run">(ReligionBias class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.ReligionRepresentation.html#nlptest.transform.representation.ReligionRepresentation.async_run">(ReligionRepresentation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.StripPunctuation.html#nlptest.transform.robustness.StripPunctuation.async_run">(StripPunctuation class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.SwapEntities.html#nlptest.transform.robustness.SwapEntities.async_run">(SwapEntities class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory.async_run">(TestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.TitleCase.html#nlptest.transform.robustness.TitleCase.async_run">(TitleCase class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.UpperCase.html#nlptest.transform.robustness.UpperCase.async_run">(UpperCase class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.augment">augment() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness">AugmentRobustness (class in nlptest.augmentation)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.AccuracyTestFactory.html#nlptest.transform.AccuracyTestFactory.available_tests">available_tests() (AccuracyTestFactory class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.BiasTestFactory.html#nlptest.transform.BiasTestFactory.available_tests">(BiasTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.FairnessTestFactory.html#nlptest.transform.FairnessTestFactory.available_tests">(FairnessTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.ITests.html#nlptest.transform.ITests.available_tests">(ITests method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RepresentationTestFactory.html#nlptest.transform.RepresentationTestFactory.available_tests">(RepresentationTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RobustnessTestFactory.html#nlptest.transform.RobustnessTestFactory.available_tests">(RobustnessTestFactory class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.accuracy.BaseAccuracy.html#nlptest.transform.accuracy.BaseAccuracy">BaseAccuracy (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.augmentation.BaseAugmentaion.html#nlptest.augmentation.BaseAugmentaion">BaseAugmentaion (class in nlptest.augmentation)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.bias.BaseBias.html#nlptest.transform.bias.BaseBias">BaseBias (class in nlptest.transform.bias)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.fairness.BaseFairness.html#nlptest.transform.fairness.BaseFairness">BaseFairness (class in nlptest.transform.fairness)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.format.BaseFormatter.html#nlptest.datahandler.format.BaseFormatter">BaseFormatter (class in nlptest.datahandler.format)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.representation.BaseRepresentation.html#nlptest.transform.representation.BaseRepresentation">BaseRepresentation (class in nlptest.transform.representation)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.BaseRobustness.html#nlptest.transform.robustness.BaseRobustness">BaseRobustness (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.testrunner.BaseRunner.html#nlptest.testrunner.BaseRunner">BaseRunner (class in nlptest.testrunner)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample">BaseSample (class in nlptest.utils.custom_types.sample)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.BiasTestFactory.html#nlptest.transform.BiasTestFactory">BiasTestFactory (class in nlptest.transform)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.utils.check_name.html#nlptest.transform.utils.check_name">check_name() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.config">config (AugmentRobustness attribute)</a>
+</li>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.configure">configure() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.datasource.ConllDataset.html#nlptest.datahandler.datasource.ConllDataset">ConllDataset (class in nlptest.datahandler.datasource)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.construct">construct() (BaseSample class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput.construct">(MaxScoreOutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.construct">(MaxScoreSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput.construct">(MinScoreOutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.construct">(MinScoreSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.construct">(NEROutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction.construct">(NERPrediction class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.construct">(NERSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.construct">(SequenceClassificationOutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.construct">(SequenceClassificationSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel.construct">(SequenceLabel class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span.construct">(Span class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation.construct">(Transformation class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.robustness.ConvertAccent.html#nlptest.transform.robustness.ConvertAccent">ConvertAccent (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.copy">copy() (BaseSample method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput.copy">(MaxScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.copy">(MaxScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput.copy">(MinScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.copy">(MinScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.copy">(NEROutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction.copy">(NERPrediction method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.copy">(NERSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.copy">(SequenceClassificationOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.copy">(SequenceClassificationSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel.copy">(SequenceLabel method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span.copy">(Span method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation.copy">(Transformation method)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.transform.bias.CountryEconomicBias.html#nlptest.transform.bias.CountryEconomicBias">CountryEconomicBias (class in nlptest.transform.bias)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.representation.CountryEconomicRepresentation.html#nlptest.transform.representation.CountryEconomicRepresentation">CountryEconomicRepresentation (class in nlptest.transform.representation)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.utils.create_terminology.html#nlptest.transform.utils.create_terminology">create_terminology() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.datasource.CSVDataset.html#nlptest.datahandler.datasource.CSVDataset">CSVDataset (class in nlptest.datahandler.datasource)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.datahandler.datasource.DataFactory.html#nlptest.datahandler.datasource.DataFactory">DataFactory (class in nlptest.datahandler.datasource)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.dict">dict() (BaseSample method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput.dict">(MaxScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.dict">(MaxScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput.dict">(MinScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.dict">(MinScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.dict">(NEROutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction.dict">(NERPrediction method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.dict">(NERSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.dict">(SequenceClassificationOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.dict">(SequenceClassificationSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel.dict">(SequenceLabel method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span.dict">(Span method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation.dict">(Transformation method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.bias.EthnicityNameBias.html#nlptest.transform.bias.EthnicityNameBias">EthnicityNameBias (class in nlptest.transform.bias)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.representation.EthnicityRepresentation.html#nlptest.transform.representation.EthnicityRepresentation">EthnicityRepresentation (class in nlptest.transform.representation)</a>
+</li>
+      <li><a href="autosummary/nlptest.testrunner.BaseRunner.html#nlptest.testrunner.BaseRunner.evaluate">evaluate() (BaseRunner method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.testrunner.TestRunner.html#nlptest.testrunner.TestRunner.evaluate">(TestRunner method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.datahandler.datasource.DataFactory.html#nlptest.datahandler.datasource.DataFactory.export">export() (DataFactory method)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.datasource.ConllDataset.html#nlptest.datahandler.datasource.ConllDataset.export_data">export_data() (ConllDataset method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.datasource.CSVDataset.html#nlptest.datahandler.datasource.CSVDataset.export_data">(CSVDataset method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.datasource.JSONDataset.html#nlptest.datahandler.datasource.JSONDataset.export_data">(JSONDataset method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.FairnessTestFactory.html#nlptest.transform.FairnessTestFactory">FairnessTestFactory (class in nlptest.transform)</a>
+</li>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#id1">fix() (AugmentRobustness method)</a>, <a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.fix">[1]</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.augmentation.BaseAugmentaion.html#id0">(BaseAugmentaion method)</a>, <a href="autosummary/nlptest.augmentation.BaseAugmentaion.html#nlptest.augmentation.BaseAugmentaion.fix">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.datahandler.format.Formatter.html#nlptest.datahandler.format.Formatter">Formatter (class in nlptest.datahandler.format)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.gender_classifier.GenderClassifier.html#nlptest.utils.gender_classifier.GenderClassifier">GenderClassifier (class in nlptest.utils.gender_classifier)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.bias.GenderPronounBias.html#nlptest.transform.bias.GenderPronounBias">GenderPronounBias (class in nlptest.transform.bias)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.representation.GenderRepresentation.html#nlptest.transform.representation.GenderRepresentation">GenderRepresentation (class in nlptest.transform.representation)</a>
+</li>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.generate">generate() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.generated_results">generated_results() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.get_aligned_span_pairs">get_aligned_span_pairs() (NERSample method)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.utils.get_country_economic_representation_dict.html#nlptest.transform.utils.get_country_economic_representation_dict">get_country_economic_representation_dict() (in module nlptest.transform.utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.utils.get_entity_representation_proportions.html#nlptest.transform.utils.get_entity_representation_proportions">get_entity_representation_proportions() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.utils.get_ethnicity_representation_dict.html#nlptest.transform.utils.get_ethnicity_representation_dict">get_ethnicity_representation_dict() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.fairness.get_gendered_data.html#nlptest.transform.fairness.get_gendered_data">get_gendered_data() (in module nlptest.transform.fairness)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.utils.get_label_representation_dict.html#nlptest.transform.utils.get_label_representation_dict">get_label_representation_dict() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.utils.get_religion_name_representation_dict.html#nlptest.transform.utils.get_religion_name_representation_dict">get_religion_name_representation_dict() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.utils.get_substitution_names.html#nlptest.transform.utils.get_substitution_names">get_substitution_names() (in module nlptest.transform.utils)</a>
+</li>
+      <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.group_entities">group_entities() (PretrainedModelForNER method)</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.group_entities">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.h_report">h_report (AugmentRobustness attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness">Harness (class in nlptest.nlptest)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.ignored_predictions">ignored_predictions (NERSample property)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.irrelevant_transformations">irrelevant_transformations (BaseSample property)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.irrelevant_transformations">(MaxScoreSample property)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.irrelevant_transformations">(MinScoreSample property)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.irrelevant_transformations">(NERSample property)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.irrelevant_transformations">(SequenceClassificationSample property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.is_classifier">is_classifier() (PretrainedModelForTextClassification static method)</a>
+</li>
+      <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.is_ner_annotator">is_ner_annotator() (PretrainedModelForNER static method)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.ITests.html#nlptest.transform.ITests">ITests (class in nlptest.transform)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.json">json() (BaseSample method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput.json">(MaxScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.json">(MaxScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput.json">(MinScoreOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.json">(MinScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.json">(NEROutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction.json">(NERPrediction method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.json">(NERSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.json">(SequenceClassificationOutput method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.json">(SequenceClassificationSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel.json">(SequenceLabel method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span.json">(Span method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation.json">(Transformation method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.datahandler.datasource.JSONDataset.html#nlptest.datahandler.datasource.JSONDataset">JSONDataset (class in nlptest.datahandler.datasource)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.representation.LabelRepresentation.html#nlptest.transform.representation.LabelRepresentation">LabelRepresentation (class in nlptest.transform.representation)</a>
+</li>
+      <li><a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.labels">labels (PretrainedModelForTextClassification property)</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.labels">[1]</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.datasource.DataFactory.html#nlptest.datahandler.datasource.DataFactory.load">load() (DataFactory method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.load">(Harness class method)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.datahandler.datasource.ConllDataset.html#nlptest.datahandler.datasource.ConllDataset.load_data">load_data() (ConllDataset method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.datasource.CSVDataset.html#nlptest.datahandler.datasource.CSVDataset.load_data">(CSVDataset method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory.load_model">load_model() (ModelFactory class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.load_model">(PretrainedModelForNER class method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.load_model">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.load_model">[2]</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.load_model">(PretrainedModelForTextClassification class method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.load_model">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.load_model">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.transform.robustness.LowerCase.html#nlptest.transform.robustness.LowerCase">LowerCase (class in nlptest.transform.robustness)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.max_prop">max_prop (AugmentRobustness attribute)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.fairness.MaxGenderF1Score.html#nlptest.transform.fairness.MaxGenderF1Score">MaxGenderF1Score (class in nlptest.transform.fairness)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput">MaxScoreOutput (class in nlptest.utils.custom_types.output)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample">MaxScoreSample (class in nlptest.utils.custom_types.sample)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#nlptest.transform.accuracy.MinF1Score">MinF1Score (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.fairness.MinGenderF1Score.html#nlptest.transform.fairness.MinGenderF1Score">MinGenderF1Score (class in nlptest.transform.fairness)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#nlptest.transform.accuracy.MinMacroF1Score">MinMacroF1Score (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#nlptest.transform.accuracy.MinMicroF1Score">MinMicroF1Score (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#nlptest.transform.accuracy.MinPrecisionScore">MinPrecisionScore (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#nlptest.transform.accuracy.MinRecallScore">MinRecallScore (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput">MinScoreOutput (class in nlptest.utils.custom_types.output)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample">MinScoreSample (class in nlptest.utils.custom_types.sample)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#nlptest.transform.accuracy.MinWeightedF1Score">MinWeightedF1Score (class in nlptest.transform.accuracy)</a>
+</li>
+      <li><a href="autosummary/nlptest.modelhandler.transformers_modelhandler.html#nlptest.modelhandler.transformers_modelhandler.model">model (in module nlptest.modelhandler.transformers_modelhandler)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#id0">(PretrainedModelForNER attribute)</a>, <a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.model">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#id0">[2]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.model">[3]</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#id0">(PretrainedModelForTextClassification attribute)</a>, <a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.model">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.model">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory">ModelFactory (class in nlptest.modelhandler.modelhandler)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="autosummary/nlptest.html#module-nlptest">nlptest</a>
+</li>
+        <li><a href="autosummary/nlptest.augmentation.html#module-nlptest.augmentation">nlptest.augmentation</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.html#module-nlptest.datahandler">nlptest.datahandler</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.datasource.html#module-nlptest.datahandler.datasource">nlptest.datahandler.datasource</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.html#module-nlptest.datahandler.format">nlptest.datahandler.format</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.html#module-nlptest.modelhandler">nlptest.modelhandler</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.html#module-nlptest.modelhandler.jsl_modelhandler">nlptest.modelhandler.jsl_modelhandler</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.modelhandler.html#module-nlptest.modelhandler.modelhandler">nlptest.modelhandler.modelhandler</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.spacy_modelhandler.html#module-nlptest.modelhandler.spacy_modelhandler">nlptest.modelhandler.spacy_modelhandler</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.transformers_modelhandler.html#module-nlptest.modelhandler.transformers_modelhandler">nlptest.modelhandler.transformers_modelhandler</a>
+</li>
+        <li><a href="autosummary/nlptest.nlptest.html#module-nlptest.nlptest">nlptest.nlptest</a>
+</li>
+        <li><a href="autosummary/nlptest.testrunner.html#module-nlptest.testrunner">nlptest.testrunner</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.html#module-nlptest.transform">nlptest.transform</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.html#module-nlptest.transform.accuracy">nlptest.transform.accuracy</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.html#module-nlptest.transform.bias">nlptest.transform.bias</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.html#module-nlptest.transform.fairness">nlptest.transform.fairness</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.html#module-nlptest.transform.representation">nlptest.transform.representation</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.html#module-nlptest.transform.robustness">nlptest.transform.robustness</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.utils.html#module-nlptest.transform.utils">nlptest.transform.utils</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.html#module-nlptest.utils">nlptest.utils</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.html#module-nlptest.utils.custom_types">nlptest.utils.custom_types</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.html#module-nlptest.utils.custom_types.helpers">nlptest.utils.custom_types.helpers</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.html#module-nlptest.utils.custom_types.output">nlptest.utils.custom_types.output</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.html#module-nlptest.utils.custom_types.predictions">nlptest.utils.custom_types.predictions</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.html#module-nlptest.utils.custom_types.sample">nlptest.utils.custom_types.sample</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.gender_classifier.html#module-nlptest.utils.gender_classifier">nlptest.utils.gender_classifier</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.lib_manager.html#module-nlptest.utils.lib_manager">nlptest.utils.lib_manager</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput">NEROutput (class in nlptest.utils.custom_types.output)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.format.NEROutputFormatter.html#nlptest.datahandler.format.NEROutputFormatter">NEROutputFormatter (class in nlptest.datahandler.format)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction">NERPrediction (class in nlptest.utils.custom_types.predictions)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample">NERSample (class in nlptest.utils.custom_types.sample)</a>
+</li>
+      <li>
+    nlptest
+
+      <ul>
+        <li><a href="autosummary/nlptest.html#module-nlptest">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.augmentation
+
+      <ul>
+        <li><a href="autosummary/nlptest.augmentation.html#module-nlptest.augmentation">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.datahandler
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.html#module-nlptest.datahandler">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.datahandler.datasource
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.datasource.html#module-nlptest.datahandler.datasource">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.datahandler.format
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.format.html#module-nlptest.datahandler.format">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.modelhandler
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.html#module-nlptest.modelhandler">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.modelhandler.jsl_modelhandler
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.html#module-nlptest.modelhandler.jsl_modelhandler">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.modelhandler.modelhandler
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.modelhandler.html#module-nlptest.modelhandler.modelhandler">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.modelhandler.spacy_modelhandler
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.spacy_modelhandler.html#module-nlptest.modelhandler.spacy_modelhandler">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.modelhandler.transformers_modelhandler
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.transformers_modelhandler.html#module-nlptest.modelhandler.transformers_modelhandler">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.nlptest
+
+      <ul>
+        <li><a href="autosummary/nlptest.nlptest.html#module-nlptest.nlptest">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.testrunner
+
+      <ul>
+        <li><a href="autosummary/nlptest.testrunner.html#module-nlptest.testrunner">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.transform
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.html#module-nlptest.transform">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    nlptest.transform.accuracy
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.accuracy.html#module-nlptest.transform.accuracy">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.transform.bias
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.bias.html#module-nlptest.transform.bias">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.transform.fairness
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.fairness.html#module-nlptest.transform.fairness">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.transform.representation
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.representation.html#module-nlptest.transform.representation">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.transform.robustness
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.robustness.html#module-nlptest.transform.robustness">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.transform.utils
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.utils.html#module-nlptest.transform.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.html#module-nlptest.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.custom_types
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.html#module-nlptest.utils.custom_types">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.custom_types.helpers
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.html#module-nlptest.utils.custom_types.helpers">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.custom_types.output
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.html#module-nlptest.utils.custom_types.output">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.custom_types.predictions
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.html#module-nlptest.utils.custom_types.predictions">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.custom_types.sample
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.html#module-nlptest.utils.custom_types.sample">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.gender_classifier
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.gender_classifier.html#module-nlptest.utils.gender_classifier">module</a>
+</li>
+      </ul></li>
+      <li>
+    nlptest.utils.lib_manager
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.lib_manager.html#module-nlptest.utils.lib_manager">module</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.augmentation.BaseAugmentaion.html#nlptest.augmentation.BaseAugmentaion.None">None (BaseAugmentaion attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.gender_classifier.GenderClassifier.html#nlptest.utils.gender_classifier.GenderClassifier.predict">predict() (GenderClassifier method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory.predict">(ModelFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.predict">(PretrainedModelForNER method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.predict">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.predict">[2]</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.predict">(PretrainedModelForTextClassification method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.predict">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.predict">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.modelhandler.modelhandler.ModelFactory.html#nlptest.modelhandler.modelhandler.ModelFactory.predict_raw">predict_raw() (ModelFactory method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.predict_raw">(PretrainedModelForNER method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.predict_raw">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.predict_raw">[2]</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.predict_raw">(PretrainedModelForTextClassification method)</a>, <a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.predict_raw">[1]</a>, <a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.predict_raw">[2]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForNER">PretrainedModelForNER (class in nlptest.modelhandler.jsl_modelhandler)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER">(class in nlptest.modelhandler.spacy_modelhandler)</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER">(class in nlptest.modelhandler.transformers_modelhandler)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.jsl_modelhandler.PretrainedModelForTextClassification">PretrainedModelForTextClassification (class in nlptest.modelhandler.jsl_modelhandler)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.spacy_modelhandler.PretrainedModelForTextClassification">(class in nlptest.modelhandler.spacy_modelhandler)</a>
+</li>
+        <li><a href="autosummary/nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification.html#nlptest.modelhandler.transformers_modelhandler.PretrainedModelForTextClassification">(class in nlptest.modelhandler.transformers_modelhandler)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.datahandler.format.Formatter.html#nlptest.datahandler.format.Formatter.process">process() (Formatter static method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.realigned_spans">realigned_spans (NERSample property)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.relevant_transformations">relevant_transformations (BaseSample property)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.relevant_transformations">(MaxScoreSample property)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.relevant_transformations">(MinScoreSample property)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.relevant_transformations">(NERSample property)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.relevant_transformations">(SequenceClassificationSample property)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.transform.bias.ReligionBias.html#nlptest.transform.bias.ReligionBias">ReligionBias (class in nlptest.transform.bias)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.representation.ReligionRepresentation.html#nlptest.transform.representation.ReligionRepresentation">ReligionRepresentation (class in nlptest.transform.representation)</a>
+</li>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.report">report() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.RepresentationTestFactory.html#nlptest.transform.RepresentationTestFactory">RepresentationTestFactory (class in nlptest.transform)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.RobustnessTestFactory.html#nlptest.transform.RobustnessTestFactory">RobustnessTestFactory (class in nlptest.transform)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.AccuracyTestFactory.html#nlptest.transform.AccuracyTestFactory.run">run() (AccuracyTestFactory class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContext.html#nlptest.transform.robustness.AddContext.run">(AddContext static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContraction.html#nlptest.transform.robustness.AddContraction.run">(AddContraction static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddPunctuation.html#nlptest.transform.robustness.AddPunctuation.run">(AddPunctuation static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddTypo.html#nlptest.transform.robustness.AddTypo.run">(AddTypo static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.BaseBias.html#nlptest.transform.bias.BaseBias.run">(BaseBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.BaseRobustness.html#nlptest.transform.robustness.BaseRobustness.run">(BaseRobustness static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.BiasTestFactory.html#nlptest.transform.BiasTestFactory.run">(BiasTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.ConvertAccent.html#nlptest.transform.robustness.ConvertAccent.run">(ConvertAccent static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.CountryEconomicBias.html#nlptest.transform.bias.CountryEconomicBias.run">(CountryEconomicBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.CountryEconomicRepresentation.html#nlptest.transform.representation.CountryEconomicRepresentation.run">(CountryEconomicRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.EthnicityNameBias.html#nlptest.transform.bias.EthnicityNameBias.run">(EthnicityNameBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.EthnicityRepresentation.html#nlptest.transform.representation.EthnicityRepresentation.run">(EthnicityRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.FairnessTestFactory.html#nlptest.transform.FairnessTestFactory.run">(FairnessTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.GenderPronounBias.html#nlptest.transform.bias.GenderPronounBias.run">(GenderPronounBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.GenderRepresentation.html#nlptest.transform.representation.GenderRepresentation.run">(GenderRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.run">(Harness method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.ITests.html#nlptest.transform.ITests.run">(ITests class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.LabelRepresentation.html#nlptest.transform.representation.LabelRepresentation.run">(LabelRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.LowerCase.html#nlptest.transform.robustness.LowerCase.run">(LowerCase static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MaxGenderF1Score.html#nlptest.transform.fairness.MaxGenderF1Score.run">(MaxGenderF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#nlptest.transform.accuracy.MinF1Score.run">(MinF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MinGenderF1Score.html#nlptest.transform.fairness.MinGenderF1Score.run">(MinGenderF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#nlptest.transform.accuracy.MinMacroF1Score.run">(MinMacroF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#nlptest.transform.accuracy.MinMicroF1Score.run">(MinMicroF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#nlptest.transform.accuracy.MinPrecisionScore.run">(MinPrecisionScore method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#nlptest.transform.accuracy.MinRecallScore.run">(MinRecallScore method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#nlptest.transform.accuracy.MinWeightedF1Score.run">(MinWeightedF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.ReligionBias.html#nlptest.transform.bias.ReligionBias.run">(ReligionBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.ReligionRepresentation.html#nlptest.transform.representation.ReligionRepresentation.run">(ReligionRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RepresentationTestFactory.html#nlptest.transform.RepresentationTestFactory.run">(RepresentationTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RobustnessTestFactory.html#nlptest.transform.RobustnessTestFactory.run">(RobustnessTestFactory class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.StripPunctuation.html#nlptest.transform.robustness.StripPunctuation.run">(StripPunctuation static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.SwapEntities.html#nlptest.transform.robustness.SwapEntities.run">(SwapEntities static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory.run">(TestFactory static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.TitleCase.html#nlptest.transform.robustness.TitleCase.run">(TitleCase static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.UpperCase.html#nlptest.transform.robustness.UpperCase.run">(UpperCase static method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.save">save() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput">SequenceClassificationOutput (class in nlptest.utils.custom_types.output)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.format.SequenceClassificationOutputFormatter.html#nlptest.datahandler.format.SequenceClassificationOutputFormatter">SequenceClassificationOutputFormatter (class in nlptest.datahandler.format)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample">SequenceClassificationSample (class in nlptest.utils.custom_types.sample)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel">SequenceLabel (class in nlptest.utils.custom_types.predictions)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.sort_transformations">sort_transformations() (BaseSample class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.sort_transformations">(MaxScoreSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.sort_transformations">(MinScoreSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.sort_transformations">(NERSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.sort_transformations">(SequenceClassificationSample class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span">Span (class in nlptest.utils.custom_types.helpers)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.StripPunctuation.html#nlptest.transform.robustness.StripPunctuation">StripPunctuation (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#id2">suggestions() (AugmentRobustness method)</a>, <a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.suggestions">[1]</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.SwapEntities.html#nlptest.transform.robustness.SwapEntities">SwapEntities (class in nlptest.transform.robustness)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.augmentation.AugmentRobustness.html#nlptest.augmentation.AugmentRobustness.task">task (AugmentRobustness attribute)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory.test_categories">test_categories() (TestFactory class method)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory.test_scenarios">test_scenarios() (TestFactory class method)</a>
+</li>
+      <li><a href="autosummary/nlptest.nlptest.Harness.html#nlptest.nlptest.Harness.testcases">testcases() (Harness method)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory">TestFactory (class in nlptest.transform)</a>
+</li>
+      <li><a href="autosummary/nlptest.testrunner.TestRunner.html#nlptest.testrunner.TestRunner">TestRunner (class in nlptest.testrunner)</a>
+</li>
+      <li><a href="autosummary/nlptest.transform.robustness.TitleCase.html#nlptest.transform.robustness.TitleCase">TitleCase (class in nlptest.transform.robustness)</a>
+</li>
+      <li><a href="autosummary/nlptest.datahandler.format.BaseFormatter.html#nlptest.datahandler.format.BaseFormatter.to_conll">to_conll() (BaseFormatter static method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.format.NEROutputFormatter.html#nlptest.datahandler.format.NEROutputFormatter.to_conll">(NEROutputFormatter static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.SequenceClassificationOutputFormatter.html#nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_conll">(SequenceClassificationOutputFormatter static method)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.datahandler.format.BaseFormatter.html#nlptest.datahandler.format.BaseFormatter.to_csv">to_csv() (BaseFormatter static method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.datahandler.format.NEROutputFormatter.html#nlptest.datahandler.format.NEROutputFormatter.to_csv">(NEROutputFormatter static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.datahandler.format.SequenceClassificationOutputFormatter.html#nlptest.datahandler.format.SequenceClassificationOutputFormatter.to_csv">(SequenceClassificationOutputFormatter static method)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.to_dict">to_dict() (BaseSample method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.to_dict">(MaxScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.to_dict">(MinScoreSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.to_dict">(NERSample method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.to_dict">(SequenceClassificationSample method)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.to_str_list">to_str_list() (NEROutput method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.to_str_list">(SequenceClassificationOutput method)</a>
+</li>
+      </ul></li>
+      <li><a href="autosummary/nlptest.transform.AccuracyTestFactory.html#nlptest.transform.AccuracyTestFactory.transform">transform() (AccuracyTestFactory method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContext.html#nlptest.transform.robustness.AddContext.transform">(AddContext static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddContraction.html#nlptest.transform.robustness.AddContraction.transform">(AddContraction static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddPunctuation.html#nlptest.transform.robustness.AddPunctuation.transform">(AddPunctuation static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.AddTypo.html#nlptest.transform.robustness.AddTypo.transform">(AddTypo static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.BaseAccuracy.html#nlptest.transform.accuracy.BaseAccuracy.transform">(BaseAccuracy static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.BaseBias.html#nlptest.transform.bias.BaseBias.transform">(BaseBias method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.BaseFairness.html#nlptest.transform.fairness.BaseFairness.transform">(BaseFairness static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.BaseRepresentation.html#nlptest.transform.representation.BaseRepresentation.transform">(BaseRepresentation static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.BaseRobustness.html#nlptest.transform.robustness.BaseRobustness.transform">(BaseRobustness static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.BiasTestFactory.html#nlptest.transform.BiasTestFactory.transform">(BiasTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.ConvertAccent.html#nlptest.transform.robustness.ConvertAccent.transform">(ConvertAccent static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.CountryEconomicBias.html#nlptest.transform.bias.CountryEconomicBias.transform">(CountryEconomicBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.CountryEconomicRepresentation.html#nlptest.transform.representation.CountryEconomicRepresentation.transform">(CountryEconomicRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.EthnicityNameBias.html#nlptest.transform.bias.EthnicityNameBias.transform">(EthnicityNameBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.EthnicityRepresentation.html#nlptest.transform.representation.EthnicityRepresentation.transform">(EthnicityRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.FairnessTestFactory.html#nlptest.transform.FairnessTestFactory.transform">(FairnessTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.GenderPronounBias.html#nlptest.transform.bias.GenderPronounBias.transform">(GenderPronounBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.GenderRepresentation.html#nlptest.transform.representation.GenderRepresentation.transform">(GenderRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.ITests.html#nlptest.transform.ITests.transform">(ITests method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.LabelRepresentation.html#nlptest.transform.representation.LabelRepresentation.transform">(LabelRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.LowerCase.html#nlptest.transform.robustness.LowerCase.transform">(LowerCase static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MaxGenderF1Score.html#nlptest.transform.fairness.MaxGenderF1Score.transform">(MaxGenderF1Score static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#nlptest.transform.accuracy.MinF1Score.transform">(MinF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinF1Score.html#id0">(MinF1Score static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.fairness.MinGenderF1Score.html#nlptest.transform.fairness.MinGenderF1Score.transform">(MinGenderF1Score static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#nlptest.transform.accuracy.MinMacroF1Score.transform">(MinMacroF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMacroF1Score.html#id0">(MinMacroF1Score static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#nlptest.transform.accuracy.MinMicroF1Score.transform">(MinMicroF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinMicroF1Score.html#id0">(MinMicroF1Score static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#nlptest.transform.accuracy.MinPrecisionScore.transform">(MinPrecisionScore method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinPrecisionScore.html#id0">(MinPrecisionScore static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#nlptest.transform.accuracy.MinRecallScore.transform">(MinRecallScore method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinRecallScore.html#id0">(MinRecallScore static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#nlptest.transform.accuracy.MinWeightedF1Score.transform">(MinWeightedF1Score method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.accuracy.MinWeightedF1Score.html#id0">(MinWeightedF1Score static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.bias.ReligionBias.html#nlptest.transform.bias.ReligionBias.transform">(ReligionBias static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.representation.ReligionRepresentation.html#nlptest.transform.representation.ReligionRepresentation.transform">(ReligionRepresentation method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RepresentationTestFactory.html#nlptest.transform.RepresentationTestFactory.transform">(RepresentationTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.RobustnessTestFactory.html#nlptest.transform.RobustnessTestFactory.transform">(RobustnessTestFactory method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.StripPunctuation.html#nlptest.transform.robustness.StripPunctuation.transform">(StripPunctuation static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.SwapEntities.html#nlptest.transform.robustness.SwapEntities.transform">(SwapEntities static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.TestFactory.html#nlptest.transform.TestFactory.transform">(TestFactory static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.TitleCase.html#nlptest.transform.robustness.TitleCase.transform">(TitleCase static method)</a>
+</li>
+        <li><a href="autosummary/nlptest.transform.robustness.UpperCase.html#nlptest.transform.robustness.UpperCase.transform">(UpperCase static method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation">Transformation (class in nlptest.utils.custom_types.helpers)</a>
+</li>
+      <li><a href="autosummary/nlptest.utils.lib_manager.try_import_lib.html#nlptest.utils.lib_manager.try_import_lib">try_import_lib() (in module nlptest.utils.lib_manager)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.utils.custom_types.sample.BaseSample.html#nlptest.utils.custom_types.sample.BaseSample.update_forward_refs">update_forward_refs() (BaseSample class method)</a>
+
+      <ul>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MaxScoreOutput.html#nlptest.utils.custom_types.output.MaxScoreOutput.update_forward_refs">(MaxScoreOutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MaxScoreSample.html#nlptest.utils.custom_types.sample.MaxScoreSample.update_forward_refs">(MaxScoreSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.MinScoreOutput.html#nlptest.utils.custom_types.output.MinScoreOutput.update_forward_refs">(MinScoreOutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.MinScoreSample.html#nlptest.utils.custom_types.sample.MinScoreSample.update_forward_refs">(MinScoreSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.NEROutput.html#nlptest.utils.custom_types.output.NEROutput.update_forward_refs">(NEROutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.NERPrediction.html#nlptest.utils.custom_types.predictions.NERPrediction.update_forward_refs">(NERPrediction class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.NERSample.html#nlptest.utils.custom_types.sample.NERSample.update_forward_refs">(NERSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.output.SequenceClassificationOutput.html#nlptest.utils.custom_types.output.SequenceClassificationOutput.update_forward_refs">(SequenceClassificationOutput class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.sample.SequenceClassificationSample.html#nlptest.utils.custom_types.sample.SequenceClassificationSample.update_forward_refs">(SequenceClassificationSample class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.predictions.SequenceLabel.html#nlptest.utils.custom_types.predictions.SequenceLabel.update_forward_refs">(SequenceLabel class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Span.html#nlptest.utils.custom_types.helpers.Span.update_forward_refs">(Span class method)</a>
+</li>
+        <li><a href="autosummary/nlptest.utils.custom_types.helpers.Transformation.html#nlptest.utils.custom_types.helpers.Transformation.update_forward_refs">(Transformation class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autosummary/nlptest.transform.robustness.UpperCase.html#nlptest.transform.robustness.UpperCase">UpperCase (class in nlptest.transform.robustness)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, John Snow Labs.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
