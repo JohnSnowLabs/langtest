@@ -1,10 +1,9 @@
-package:
-  name: "nlptest"
-  version: 1.0.2
+{% set name = "nlptest" %}
+{% set version = "1.0.2" %}
 
-app:
-  entry: nlptest
-  summary: Deliver safe & effective NLP models in a few lines of code.
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
     fn: nlptest-1.0.2.tar.gz
@@ -12,9 +11,9 @@ source:
     sha256: 4d56528a2af3bbc335a98f81b105e21d8cfada220939efbe2d43ac8abae26b7a
 
 build:
-  noarch: generic
   number: 0
-  script: "python -m pip install . --no-deps -vv"
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
@@ -27,6 +26,7 @@ requirements:
     - transformers
     - pytorch
     - sentencepiece
+    - pydantic
 
 about:
   home: https://github.com/JohnSnowLabs/nlptest/
