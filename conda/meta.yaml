@@ -29,9 +29,6 @@ requirements:
     - pytorch
     - sentencepiece
 
-files:
-  - requirements.txt
-
 about:
   home: https://github.com/JohnSnowLabs/nlptest/
   license: Apache License 2.0
