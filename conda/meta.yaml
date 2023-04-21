@@ -23,7 +23,7 @@ requirements:
     - numpy
     - pandas
     - scikit-learn
-    - transformers
+    - transformers >4.11
     - pytorch
     - sentencepiece
     - pydantic
