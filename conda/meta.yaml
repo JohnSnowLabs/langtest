@@ -28,7 +28,6 @@ requirements:
     - sentencepiece
     - pydantic
     - nest-asyncio
-    - wn
 
 test:
   imports:
