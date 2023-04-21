@@ -6,8 +6,8 @@ package:
   version: {{ version }}
 
 source:
-    url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
-    sha256: a5c00fdd3675e774896b048d6eecd820844811885f0c4d563489c2ec76e1944d
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
+  sha256: a5c00fdd3675e774896b048d6eecd820844811885f0c4d563489c2ec76e1944d
 
 build:
   number: 0
@@ -17,6 +17,7 @@ build:
 requirements:
   host:
     - python >=3.7,<3.12
+    - pip
   run:
     - python >=3.7,<3.12
     - numpy
@@ -27,11 +28,41 @@ requirements:
     - sentencepiece
     - pydantic
     - nest-asyncio
+    - wn
+
+test:
+  imports:
+    - nlptest
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://github.com/JohnSnowLabs/nlptest/
-  license: Apache License 2.0
-  license_family: APACHE
+  summary: John Snow Labs provides a library for delivering safe & effective NLP models.
+  license: Apache-2.0
+  license_file: LICENSE
   license_url: https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE
-  description: John Snow Labs' NLP Test is a Python library for testing NLP models and datasets. It comes with over 50 tests covering fairness, robustness, accuracy, bias and representation for named entity recognition and text classification.
-  summary: Deliver safe & effective NLP models in a few lines of code.
+  description: |
+    `nlptest` is an open-source Python library designed to help developers
+    deliver safe and effective Natural Language Processing (NLP) models.
+
+    PyPI: [https://pypi.org/project/nlptest/](https://pypi.org/project/nlptest/)
+
+    ---
+    :fire: The conda-forge recipe was generated with [Conda-Forger App](https://sugatoray-conda-forger.streamlit.app/).
+    
+    :point_right: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sugatoray-conda-forger.streamlit.app/)
+    [_streamlit-conda-forger-app]: https://sugatoray-conda-forger.streamlit.app/
+
+  dev_url: https://github.com/JohnSnowLabs/nlptest/
+  doc_url: https://nlptest.org/docs/pages/docs/install
+
+extra:
+  recipe-maintainers:
+    - sugatoray
+    # maintainers from upstream
+    - johnsnowlab
+    - luca-martial
+    - ArshaanNazir
