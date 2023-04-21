@@ -2,10 +2,11 @@ numpy
 pandas
 scikit-learn
 transformers
-nltk
 torch
 sentencepiece
 pydantic==1.10.6
 spacy
-johnsnowlabs
+johnsnowlabs==4.3.5
 plotly
+asyncio
+nest-asyncio

@@ -64,11 +64,9 @@ class AugmentRobustness(BaseAugmentaion):
             Calculates suggestions for improving test performance based on a given report.
 
 
-
-
     """
 
-    def __init__(self, task, h_report, config, model, max_prop=0.5) -> None:
+    def __init__(self, task, h_report, config, max_prop=0.5) -> None:
         """
         Initializes an instance of MyClass with the specified parameters.
 
@@ -89,7 +87,6 @@ class AugmentRobustness(BaseAugmentaion):
         self.config = config
         self.h_report = h_report
         self.max_prop = max_prop
-        self.model = model
 
         if isinstance(self.config, str):
             with open(self.config) as fread:
@@ -118,10 +115,11 @@ class AugmentRobustness(BaseAugmentaion):
         data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
-        suggest = self.suggestions(self.h_report)
+        suggest: pd.DataFrame = self.suggestions(self.h_report)
         sum_propotion = suggest['proportion_increase'].sum()
-        if suggest.shape[0] <= 0:
-            return "Test metrics all have over 0.9 f1-score."
+        if suggest.shape[0] <= 0 or suggest.empty:
+            print("All tests have passed. Augmentation will not be applied in this case.")
+            return None
 
         self.config = self._parameters_overrides(self.config, data)
 
@@ -149,12 +147,12 @@ class AugmentRobustness(BaseAugmentaion):
                             test_type['robustness']['swap_entities']['parameters']['labels'] = [
                                 self.label[each]]
                         hash_map[each] = TestFactory.transform(
-                            [hash_map[each]], test_type, model=self.model)[0]
+                            [hash_map[each]], test_type)[0]
 
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
                     aug_data = TestFactory.transform(
-                        sample_data, test_type, model=self.model)
+                        sample_data, test_type)
                     fianl_aug_data.extend(aug_data)
         if inplace:
             fianl_aug_data = list(hash_map.values())

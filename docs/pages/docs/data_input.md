@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: Data Inputs | NLP Test | John Snow Labs
-title: Data Inputs
+seotitle: Data Input | NLP Test | John Snow Labs
+title: Data Input
 key: docs-examples
 permalink: /docs/pages/docs/data_input
 modify_date: "2019-05-16"
@@ -18,24 +18,59 @@ Supported data input formats are **`CoNLL`** and **`CSV`**. CoNLL dataset can on
 |**ner**     |CoNLL and CSV|
 |**text-classification**     |CSV
 
+</div><div class="h3-box" markdown="1">
 
-<div class="heading" id="NER"> Sample CoNLL format </div>
+### NER
+
+There are 2 options for datasets to test NER models: **`CoNLL`** or **`CSV`** datasets. Here are some details of what these may look like:
+
+#### CoNLL Format for NER
 
 ```bash
 LEICESTERSHIRE NNP B-NP B-ORG
-TAKE NNP I-NP O
-OVER IN B-PP O
-AT NNP B-NP O
-TOP NNP I-NP O
-AFTER NNP I-NP O
-INNINGS NNP I-NP O
-VICTORY NN I-NP O
-. . O O
+TAKE           NNP I-NP O
+OVER           IN  B-PP O
+AT             NNP B-NP O
+TOP            NNP I-NP O
+AFTER          NNP I-NP O
+INNINGS        NNP I-NP O
+VICTORY        NNP I-NP O
 ```
 
-<div class="heading" id="NER"> Sample CSV format </div>
+</div><div class="h3-box" markdown="1">
 
-A sample CSV data input looks like the following : 
+#### CSV Format for NER
+
+{:.table2}
+| Supported "text" column names | Supported "ner" column names | Supported "pos" column names | Supported "chunk" column names | 
+| - | - | 
+| ['text', 'sentences', 'sentence', 'sample'] |  ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'] |  ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'] | ['chunk_tags', 'chunk_tag'] |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a NER Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the nlptest library
+from nlptest import Harness
+harness = Harness(task='ner',
+                  model='en_core_web_sm',
+                  config='sample_config.yml',
+                  hub="spacy",
+                  data='sample.conll') #Either of the two formats can be specified.
+```
+
+</div><div class="h3-box" markdown="1">
+
+### Text Classification
+
+There is 1 option for datasets to test Text Classification models: **`CSV`** datasets. Here are some details of what these may look like:
+
+#### CSV Format for Text Classification
+
+Here's a sample dataset:
 
 {:.table2}
 | text | label  |  
@@ -45,68 +80,25 @@ A sample CSV data input looks like the following :
 
 For `CSV` files, we support different variations of the column names. They are shown below :
 
-<div class="heading" id="NER"> For Text-Classification </div>
-
 {:.table2}
 | Supported "text" column names | Supported "label" column names   |  
 | - | - | 
 | ['text', 'sentences', 'sentence', 'sample'] | ['label', 'labels ', 'class', 'classes'] |
 
+</div><div class="h3-box" markdown="1">
 
-<div class="heading" id="NER"> For NER </div>
+#### Passing a Text Classification Dataset to the Harness
 
-{:.table2}
-| Supported "text" column names | Supported "ner" column names | Supported "pos" column names | Supported "chunk" column names | 
-| - | - | 
-| ['text', 'sentences', 'sentence', 'sample'] |  ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'] |  ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'] | ['chunk_tags', 'chunk_tag'] |
-
-
-
-In the harness, we specify the data input in the following way:
-
-<div class="heading" id="NER"> For NER  </div>
+In the Harness, we specify the data input in the following way:
 
 ```python
 #Import Harness from the nlptest library
 from nlptest import Harness
-harness = Harness(
-            task='ner',
-            model='en_core_web_sm',
-            config= 'sample_config.yml',
-            hub = "spacy",
-            data= 'sample.conll/sample.csv' #Either of the two formats can be specified.
-         
-        )
+harness = Harness(task='text-classification',
+                  model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
+                  config= 'sample_config.yml',
+                  hub = "huggingface",
+                  data= 'sample.csv')
 ```
-
-<div class="heading" id="NER"> For Text-Classification  </div>
-
-```python
-#Import Harness from the nlptest library
-from nlptest import Harness
-harness = Harness(
-            task='text-classification',
-            model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
-            config= 'sample_config.yml',
-            hub = "huggingface",
-            data= 'sample.csv'  #CoNLL format not supported
-         
-        )
-
-```
-
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 20px;
-    padding-bottom: 20px;
-  }
-
-  #NER {
-    color: #1E77B7;
-    font-size: 16px;
-  }
 
 </div></div>

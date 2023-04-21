@@ -1,13 +1,14 @@
 import unittest
-from nlptest.utils.custom_types import NEROutput, NERPrediction, Sample, Span, Transformation
+
+from nlptest.utils.custom_types import NEROutput, NERPrediction, NERSample, Span, Transformation
 
 
-class TestSample(unittest.TestCase):
+class TestNERSample(unittest.TestCase):
     """"""
 
     def test_add_context_left(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
             test_case="Hello I do love KFC",
@@ -33,7 +34,7 @@ class TestSample(unittest.TestCase):
 
     def test_add_context_right(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
             test_case="I do love KFC Bye",
@@ -59,7 +60,7 @@ class TestSample(unittest.TestCase):
 
     def test_add_context_middle(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
             test_case="I do love a good KFC",
@@ -85,7 +86,7 @@ class TestSample(unittest.TestCase):
 
     def test_add_two_contexts(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
             test_case="Hello I do love a good KFC",
@@ -114,7 +115,7 @@ class TestSample(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
-        sample = Sample(
+        sample = NERSample(
             original="Attendance : 3,000",
             test_type="add_context",
             test_case="Hello Attendance : 3,000 Bye",
@@ -145,7 +146,7 @@ class TestSample(unittest.TestCase):
 
     def test_contraction(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I do not love KFC",
             test_type="contraction",
             test_case="I dont love KFC",
@@ -171,7 +172,7 @@ class TestSample(unittest.TestCase):
 
     def test_entity_swap(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I do love KFC",
             test_type="contraction",
             test_case="I do love McDonald",
@@ -195,7 +196,7 @@ class TestSample(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
-        sample = Sample(
+        sample = NERSample(
             original="I do love KFC",
             test_type="contraction",
             test_case="I do love Kentucky Fried Chicken",
@@ -219,7 +220,7 @@ class TestSample(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
-        sample = Sample(
+        sample = NERSample(
             original="I do love McDonald",
             test_type="contraction",
             test_case="I do love KFC",
@@ -245,7 +246,7 @@ class TestSample(unittest.TestCase):
 
     def test_two_entities_two_contexts(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="My name is Jules and I do love KFC",
             test_type="add_context",
             test_case="Hello my name is Jules and I do love a good KFC",
@@ -278,7 +279,7 @@ class TestSample(unittest.TestCase):
 
     def test_entity_to_ignore(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="China 1 0 0 1 0 2 0",
             test_type="add_context",
             test_case="Dated: 21/02/2022 China 1 0 0 1 0 2 0",
@@ -305,7 +306,7 @@ class TestSample(unittest.TestCase):
 
     def test_swap_entities(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="I live in India",
             test_type="swap_entities",
             test_case="I live in United States",
@@ -329,13 +330,126 @@ class TestSample(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
+    def test_trailing_whitespace_realignment(self):
+        """"""
+        sample = NERSample(
+            original='CRICKET - LARA ENDURES ANOTHER MISERABLE DAY .',
+            test_case='Good Morning CRICKET - LARA ENDURES ANOTHER MISERABLE DAY Reported .',
+            test_type='add_context',
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='DATE', span=Span(start=23, end=44, word='ANOTHER MISERABLE DAY'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='DATE', span=Span(start=36, end=66, word='ANOTHER MISERABLE DAY Reported'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=0, end=0, word=''),
+                    new_span=Span(start=0, end=13, word='Good Morning'),
+                    ignore=True
+                ),
+                Transformation(
+                    original_span=Span(start=58, end=58, word=''),
+                    new_span=Span(start=58, end=67, word='Reported '),
+                    ignore=True
+                )
+            ]
+        )
+        self.assertTrue(sample.is_pass())
 
-class TokenMismatch(unittest.TestCase):
+    def test_add_contraction_realignment(self):
+        """"""
+        sample = NERSample(
+            original="FIFA 's players ' status committee , meeting in Barcelona , decided that although the Udinese document was basically valid , it could not be legally protected .",
+            test_type='add_contraction',
+            test_case="FIFA 's players ' status committee , meeting in Barcelona , decided that although the Udinese document was basically valid , it couldn't be legally protected .",
+            expected_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='ORG', span=Span(start=0, end=4, word='FIFA')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word="'")),
+                    NERPrediction(entity='O', span=Span(start=6, end=7, word='s')),
+                    NERPrediction(entity='O', span=Span(start=8, end=15, word='players')),
+                    NERPrediction(entity='O', span=Span(start=16, end=17, word="'")),
+                    NERPrediction(entity='O', span=Span(start=18, end=24, word='status')),
+                    NERPrediction(entity='O', span=Span(start=25, end=34, word='committee')),
+                    NERPrediction(entity='O', span=Span(start=35, end=36, word=',')),
+                    NERPrediction(entity='O', span=Span(start=37, end=44, word='meeting')),
+                    NERPrediction(entity='O', span=Span(start=45, end=47, word='in')),
+                    NERPrediction(entity='LOC', span=Span(start=48, end=57, word='Barcelona')),
+                    NERPrediction(entity='O', span=Span(start=58, end=59, word=',')),
+                    NERPrediction(entity='O', span=Span(start=60, end=67, word='decided')),
+                    NERPrediction(entity='O', span=Span(start=68, end=72, word='that')),
+                    NERPrediction(entity='O', span=Span(start=73, end=81, word='although')),
+                    NERPrediction(entity='O', span=Span(start=82, end=85, word='the')),
+                    NERPrediction(entity='MISC', span=Span(start=86, end=93, word='Udinese')),
+                    NERPrediction(entity='O', span=Span(start=94, end=102, word='document')),
+                    NERPrediction(entity='O', span=Span(start=103, end=106, word='was')),
+                    NERPrediction(entity='O', span=Span(start=107, end=116, word='basically')),
+                    NERPrediction(entity='O', span=Span(start=117, end=122, word='valid')),
+                    NERPrediction(entity='O', span=Span(start=123, end=124, word=',')),
+                    NERPrediction(entity='O', span=Span(start=125, end=127, word='it')),
+                    NERPrediction(entity='O', span=Span(start=128, end=133, word='could')),
+                    NERPrediction(entity='O', span=Span(start=134, end=137, word='not')),
+                    NERPrediction(entity='O', span=Span(start=138, end=140, word='be')),
+                    NERPrediction(entity='O', span=Span(start=141, end=148, word='legally')),
+                    NERPrediction(entity='O', span=Span(start=149, end=158, word='protected')),
+                    NERPrediction(entity='O', span=Span(start=159, end=160, word='.'))
+                ]
+            ),
+            actual_results=NEROutput(
+                predictions=[
+                    NERPrediction(entity='ORG', span=Span(start=0, end=4, word='FIFA')),
+                    NERPrediction(entity='O', span=Span(start=5, end=6, word="'")),
+                    NERPrediction(entity='O', span=Span(start=6, end=7, word='s')),
+                    NERPrediction(entity='O', span=Span(start=8, end=15, word='players')),
+                    NERPrediction(entity='O', span=Span(start=16, end=17, word="'")),
+                    NERPrediction(entity='O', span=Span(start=18, end=24, word='status')),
+                    NERPrediction(entity='O', span=Span(start=25, end=34, word='committee')),
+                    NERPrediction(entity='O', span=Span(start=35, end=36, word=',')),
+                    NERPrediction(entity='O', span=Span(start=37, end=44, word='meeting')),
+                    NERPrediction(entity='O', span=Span(start=45, end=47, word='in')),
+                    NERPrediction(entity='LOC', span=Span(start=48, end=57, word='Barcelona')),
+                    NERPrediction(entity='O', span=Span(start=58, end=59, word=',')),
+                    NERPrediction(entity='O', span=Span(start=60, end=67, word='decided')),
+                    NERPrediction(entity='O', span=Span(start=68, end=72, word='that')),
+                    NERPrediction(entity='O', span=Span(start=73, end=81, word='although')),
+                    NERPrediction(entity='O', span=Span(start=82, end=85, word='the')),
+                    NERPrediction(entity='MISC', span=Span(start=86, end=93, word='Udinese')),
+                    NERPrediction(entity='O', span=Span(start=94, end=102, word='document')),
+                    NERPrediction(entity='O', span=Span(start=103, end=106, word='was')),
+                    NERPrediction(entity='O', span=Span(start=107, end=116, word='basically')),
+                    NERPrediction(entity='O', span=Span(start=117, end=122, word='valid')),
+                    NERPrediction(entity='O', span=Span(start=123, end=124, word=',')),
+                    NERPrediction(entity='O', span=Span(start=125, end=127, word='it')),
+                    NERPrediction(entity='O', span=Span(start=128, end=136, word="couldn't")),
+                    NERPrediction(entity='O', span=Span(start=137, end=139, word='be')),
+                    NERPrediction(entity='O', span=Span(start=140, end=147, word='legally')),
+                    NERPrediction(entity='O', span=Span(start=148, end=157, word='protected')),
+                    NERPrediction(entity='O', span=Span(start=158, end=159, word='.'))
+                ]
+            ),
+            transformations=[
+                Transformation(
+                    original_span=Span(start=128, end=137, word='could not'),
+                    new_span=Span(start=128, end=136, word="couldn't"),
+                    ignore=False)
+            ],
+            category='robustness',
+            state='done'
+        )
+        self.assertTrue(sample.is_pass())
+
+
+class TestTokenMismatch(unittest.TestCase):
     """"""
 
     def test_token_mismatch_hf(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C"
                      " championship match on Friday .",
             test_type="replace_to_female_pronouns",
@@ -414,7 +528,7 @@ class TokenMismatch(unittest.TestCase):
 
     def test_token_mismatch_hf2(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original='But China saw their luck desert them in the second match of the group , crashing to a surprise '
                      '2-0 defeat to newcomers Uzbekistan .',
             test_type='replace_to_female_pronouns',
@@ -502,7 +616,7 @@ class TokenMismatch(unittest.TestCase):
 
     def test_swap_entities_whole_sample(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original="Nadim Ladki",
             test_case="Ijaz Ahmad",
             expected_results=NEROutput(
@@ -524,7 +638,7 @@ class TokenMismatch(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
-        sample = Sample(
+        sample = NERSample(
             original="Nadim Ladki",
             test_case="John",
             expected_results=NEROutput(
@@ -546,7 +660,7 @@ class TokenMismatch(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
-        sample = Sample(
+        sample = NERSample(
             original="John",
             test_case="Nadim Ladki",
             expected_results=NEROutput(
@@ -570,7 +684,7 @@ class TokenMismatch(unittest.TestCase):
 
     def test_entity_nested_in_transformation(self):
         """"""
-        sample = Sample(
+        sample = NERSample(
             original='GOLF - ZIMBABWE OPEN SECOND ROUND SCORES .',
             test_type='replace_to_low_income_country',
             test_case='GOLF - Mozambique OPEN SECOND ROUND SCORES .',
@@ -606,7 +720,7 @@ class TokenMismatch(unittest.TestCase):
         )
         self.assertTrue(sample.is_pass())
 
-        sample = Sample(
+        sample = NERSample(
             original='GOLF - NEW ZIMBABWE OPEN SECOND ROUND SCORES .',
             test_type='replace_to_low_income_country',
             test_case='GOLF - NEW Mozambique OPEN SECOND ROUND SCORES .',

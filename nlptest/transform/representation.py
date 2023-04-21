@@ -1,5 +1,9 @@
 from abc import ABC, abstractmethod
-from nlptest.utils.custom_types import Sample, MinScoreOutput
+import asyncio
+from typing import List
+from nlptest.modelhandler.modelhandler import ModelFactory
+from nlptest.utils.custom_types import Sample, MinScoreOutput, MinScoreSample
+from nlptest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
 from nlptest.utils.gender_classifier import GenderClassifier
 from .utils import (default_label_representation,
                     default_ehtnicity_representation,
@@ -24,6 +28,7 @@ class BaseRepresentation(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output 
         based on the implemented representation measure.
     """
+    alias_name = None
 
     @staticmethod
     @abstractmethod
@@ -40,7 +45,26 @@ class BaseRepresentation(ABC):
 
         return NotImplementedError
 
-    alias_name = None
+    @staticmethod
+    @abstractmethod
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+        return NotImplementedError()
+
+    @classmethod
+    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+        """
+        Creates a task for the run method.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be used for the computation.
+
+        Returns:
+            asyncio.Task: The task for the run method.
+        """
+        created_task = asyncio.create_task(
+            cls.run(sample_list, model, **kwargs))
+        return created_task
 
 
 class GenderRepresentation(BaseRepresentation):
@@ -68,15 +92,7 @@ class GenderRepresentation(BaseRepresentation):
 
         Returns:
             List[Sample]: Gender Representation test results.
-        """    
-        classifier = GenderClassifier()
-        genders = [classifier.predict(sample.original) for sample in data]
-
-        gender_counts = {
-            "male": len([x for x in genders if x == "male"]),
-            "female": len([x for x in genders if x == "female"]),
-            "unknown": len([x for x in genders if x == "unknown"])
-        }
+        """
 
         samples = []
         if test == "min_gender_representation_count":
@@ -90,14 +106,12 @@ class GenderRepresentation(BaseRepresentation):
                 }
 
             for k, v in min_counts.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_gender_representation_count",
                     test_case=k,
-                    expected_results=MinScoreOutput(min_score=v),
-                    actual_results=MinScoreOutput(min_score=gender_counts[k]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=v)
                 )
                 samples.append(sample)
         elif test == "min_gender_representation_proportion":
@@ -114,20 +128,57 @@ class GenderRepresentation(BaseRepresentation):
                         '''Sum of proportions cannot be greater than 1. 
                         So min_gender_representation_proportion test cannot run.''')
 
-            total_samples = len(data)
             for k, v in min_proportions.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_gender_representation_proportion",
                     test_case=k,
-                    expected_results=MinScoreOutput(min_score=v),
-                    actual_results=MinScoreOutput(
-                        min_score=gender_counts[k]/total_samples),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=v)
                 )
                 samples.append(sample)
         return samples
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """
+        Computes the actual results for the Gender Representation test.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model factory object.
+
+        Returns:
+            List[Sample]: The list of samples with actual results.
+
+        """
+
+        progress = kwargs.get("progress_bar", False)
+
+        classifier = GenderClassifier()
+        genders = [classifier.predict(sample.original)
+                   for sample in kwargs['raw_data']]
+
+        gender_counts = {
+            "male": len([x for x in genders if x == "male"]),
+            "female": len([x for x in genders if x == "female"]),
+            "unknown": len([x for x in genders if x == "unknown"])
+        }
+
+        total_samples = len(kwargs['raw_data'])
+
+        for sample in sample_list:
+            if progress:
+                progress.update(1)
+            if sample.test_type == "min_gender_representation_proportion":
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(gender_counts[sample.test_case]/total_samples, 2))
+                sample.state = "done"
+            elif sample.test_type == "min_gender_representation_count":
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(gender_counts[sample.test_case], 2))
+                sample.state = "done"
+        return sample_list
 
 
 class EthnicityRepresentation(BaseRepresentation):
@@ -173,21 +224,13 @@ class EthnicityRepresentation(BaseRepresentation):
                     expected_representation = {
                         key: params['min_count'] for key in default_ehtnicity_representation}
 
-            entity_representation = get_ethnicity_representation_dict(data)
-
-            actual_representation = {
-                **default_ehtnicity_representation, **entity_representation}
-
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_ethnicity_name_representation_count",
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
 
@@ -213,24 +256,56 @@ class EthnicityRepresentation(BaseRepresentation):
                         So min_ethnicity_name_representation_proportion test cannot run''')
                         raise ValueError()
 
-            entity_representation = get_ethnicity_representation_dict(data)
-            entity_representation_proportion = get_entity_representation_proportions(
-                entity_representation)
-            actual_representation = {
-                **default_ehtnicity_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_ethnicity_name_representation_proportion",
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
+
+        return sample_list
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """ 
+        Computes the actual results for the enthicity representation test.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be used for evaluation.
+
+        Returns:
+            List[Sample]: The list of samples with actual results.
+        """
+        progress = kwargs.get("progress_bar", False)
+
+        entity_representation = get_ethnicity_representation_dict(
+            kwargs['raw_data'])
+
+        for sample in sample_list:
+            if sample.test_type == "min_ethnicity_name_representation_proportion":
+                entity_representation_proportion = get_entity_representation_proportions(
+                    entity_representation)
+                actual_representation = {
+                    **default_ehtnicity_representation, **entity_representation_proportion}
+
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+
+            elif sample.test_type == "min_ethnicity_name_representation_count":
+                actual_representation = {
+                    **default_ehtnicity_representation, **entity_representation}
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+
+            if progress:
+                progress.update(1)
 
         return sample_list
 
@@ -263,12 +338,18 @@ class LabelRepresentation(BaseRepresentation):
             List[Sample]: Label Representation test results.
         """
         sample_list = []
+        labels = [s.expected_results.predictions for s in data]
+        if isinstance(data[0].expected_results, NEROutput):
+            labels = [x.entity.split("-")[-1]
+                      for sentence in labels for x in sentence]
+        elif isinstance(data[0].expected_results, SequenceClassificationOutput):
+            labels = [x.label for sentence in labels for x in sentence]
+        labels = set(labels)
 
         if test == "min_label_representation_count":
 
             if not params:
-                expected_representation = {
-                    'O': 10, 'LOC': 10, 'PER': 10, 'MISC': 10, 'ORG': 10}
+                expected_representation = {k: 10 for k in labels}
 
             else:
                 if isinstance(params['min_count'], dict):
@@ -276,30 +357,21 @@ class LabelRepresentation(BaseRepresentation):
 
                 elif isinstance(params['min_count'], int):
                     expected_representation = {
-                        key: params['min_count'] for key in default_label_representation}
-
-            entity_representation = get_label_representation_dict(data)
-
-            actual_representation = {
-                **default_label_representation, **entity_representation}
+                        key: params['min_count'] for key in labels}
 
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_label_representation_count",
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
 
         if test == "min_label_representation_proportion":
             if not params:
-                expected_representation = {
-                    'O': 0.16, 'LOC': 0.16, 'PER': 0.16, 'MISC': 0.16, 'ORG': 0.16}
+                expected_representation = {k: (1/len(k))*0.8 for k in labels}
 
             else:
                 if isinstance(params['min_proportion'], dict):
@@ -312,31 +384,58 @@ class LabelRepresentation(BaseRepresentation):
 
                 elif isinstance(params['min_proportion'], float):
                     expected_representation = {
-                        key: params['min_proportion'] for key in default_label_representation}
+                        key: params['min_proportion'] for key in labels}
                     if sum(expected_representation.values()) > 1:
                         print('''Sum of proportions cannot be greater than 1.
                         So min_label_representation_proportion test cannot run''')
                         raise ValueError()
 
-            entity_representation = get_label_representation_dict(data)
-
-            entity_representation_proportion = get_entity_representation_proportions(
-                entity_representation)
-            actual_representation = {
-                **default_label_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
-                    test_type="min_label_representation_proportion",
+                    test_type=test,
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
+
+        return sample_list
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """
+        Computes the actual representation of the labels in the dataset.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be evaluated.
+
+        Returns:
+            List[Sample]: Label Representation test results.
+        """
+        progress = kwargs.get("progress_bar", False)
+
+        entity_representation = get_label_representation_dict(
+            kwargs['raw_data'])
+
+        for sample in sample_list:
+            if progress:
+                progress.update(1)
+
+            if sample.test_type == "min_label_representation_proportion":
+                entity_representation_proportion = get_entity_representation_proportions(
+                    entity_representation)
+                actual_representation = {**entity_representation_proportion}
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+            elif sample.test_type == "min_label_representation_count":
+                actual_representation = {**entity_representation}
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
 
         return sample_list
 
@@ -383,21 +482,13 @@ class ReligionRepresentation(BaseRepresentation):
                     expected_representation = {
                         key: params['min_count'] for key in default_religion_representation}
 
-            entity_representation = get_religion_name_representation_dict(data)
-
-            actual_representation = {
-                **default_religion_representation, **entity_representation}
-
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_religion_name_representation_count",
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
 
@@ -430,7 +521,7 @@ class ReligionRepresentation(BaseRepresentation):
                 **default_religion_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_religion_name_representation_proportion",
@@ -441,6 +532,49 @@ class ReligionRepresentation(BaseRepresentation):
                     state="done"
                 )
                 sample_list.append(sample)
+
+        return sample_list
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+
+        """
+        Computes the actual representation of religion names in the data.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be evaluated.
+
+        Returns:
+            List[Sample]: Religion Representation test results.
+
+        """
+
+        progress = kwargs.get("progress_bar", False)
+
+        entity_representation = get_religion_name_representation_dict(
+            kwargs['raw_data'])
+
+        for sample in sample_list:
+            if sample.test_type == "min_religion_name_representation_proportion":
+                entity_representation_proportion = get_entity_representation_proportions(
+                    entity_representation)
+                actual_representation = {
+                    **default_religion_representation, **entity_representation_proportion}
+
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+
+            elif sample.test_type == "min_religion_name_representation_count":
+                actual_representation = {
+                    **default_religion_representation, **entity_representation}
+
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+
+            if progress:
+                progress.update(1)
 
         return sample_list
 
@@ -487,22 +621,13 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     expected_representation = {
                         key: params['min_count'] for key in default_economic_country_representation}
 
-            entity_representation = get_country_economic_representation_dict(
-                data)
-
-            actual_representation = {
-                **default_economic_country_representation, **entity_representation}
-
             for key, value in expected_representation.items():
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_country_economic_representation_count",
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
 
@@ -528,24 +653,56 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         So min_country_economic_representation_proportion test cannot run''')
                         raise ValueError()
 
-            entity_representation = get_country_economic_representation_dict(
-                data)
-            entity_representation_proportion = get_entity_representation_proportions(
-                entity_representation)
-            actual_representation = {
-                **default_economic_country_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
 
-                sample = Sample(
+                sample = MinScoreSample(
                     original="-",
                     category="representation",
                     test_type="min_country_economic_representation_proportion",
                     test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
+                    expected_results=MinScoreOutput(min_score=value)
                 )
                 sample_list.append(sample)
+
+        return sample_list
+
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+        """
+        Computes the actual results for the country economic representation test.
+
+        Args:
+            sample_list (List[Sample]): The input data to be evaluated for representation test.
+            model (ModelFactory): The model to be used for evaluation.
+
+        Returns:
+            List[Sample]: Country Economic Representation test results.
+
+        """
+        progress = kwargs.get("progress_bar", False)
+
+        entity_representation = get_country_economic_representation_dict(
+            kwargs['raw_data'])
+
+        for sample in sample_list:
+            if sample.test_type == "min_country_economic_representation_proportion":
+                entity_representation_proportion = get_entity_representation_proportions(
+                    entity_representation)
+                actual_representation = {
+                    **default_economic_country_representation, **entity_representation_proportion}
+
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+
+            elif sample.test_type == "min_country_economic_representation_count":
+                actual_representation = {
+                    **default_economic_country_representation, **entity_representation}
+
+                sample.actual_results = MinScoreOutput(
+                    min_score=round(actual_representation[sample.test_case], 2))
+                sample.state = "done"
+
+            if progress:
+                progress.update(1)
 
         return sample_list

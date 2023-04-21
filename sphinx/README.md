@@ -10,14 +10,18 @@ You can clone this repo and build and view the API documentation locally:
 
    `pip install -r requirements.txt`
 
-3. Build the documentation:
+3. Remove previous builds from local if they exist:
+
+   `if [ -d "_autosummary" ] || [ -d "_build" ]; then rm -rf _autosummary _build; fi`
+
+4. Build the documentation:
 
    `make html`
 
-4. Run a web server:
+5. Run a web server:
 
    `python -m http.server`
 
-5. View the doc set locally in a browser at:
+6. View the doc set locally in a browser at:
 
    http://localhost:8000/_build/html/

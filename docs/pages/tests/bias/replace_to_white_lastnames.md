@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Replace To White Last Names
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks if the NLP model can handle input text if the input text has white last names.
 
 **alias_name:** `replace_to_white_lastnames`
@@ -20,6 +19,8 @@ replace_to_white_lastnames:
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 
+</div><div class="h3-box" markdown="1">
+
 #### Examples
 
 {:.table2}
@@ -27,6 +28,4 @@ replace_to_white_lastnames:
 |-|
 |Ms. Yao will be here soon.|Ms. Hope will be here soon.|
 
-
-
-</div></div>
+</div>

@@ -155,7 +155,7 @@ class NEROutputFormatter(BaseFormatter):
                     norm_original_items.pop(oitem_index)
                     temp_len += 1
                 else:
-                    o_item = norm_original_items[jdx-temp_len]
+                    o_item = norm_original_items[jdx - temp_len]
                     letters_count = len(set(o_item) - set(item))
                     if len(norm_test_case_items) == len(norm_original_items) or letters_count < len(o_item):
                         tl = sample.expected_results.predictions[jdx]
@@ -197,7 +197,7 @@ class NEROutputFormatter(BaseFormatter):
                 try:
                     if item in norm_original_items and jdx >= norm_original_items.index(item):
                         oitem_index = norm_original_items.index(item)
-                        j = sample.expected_results.predictions[oitem_index+temp_len]
+                        j = sample.expected_results.predictions[oitem_index + temp_len]
                         if temp_id != j.doc_id and jdx == 0:
                             text += f"{j.doc_name}\n\n"
                             temp_id = j.doc_id

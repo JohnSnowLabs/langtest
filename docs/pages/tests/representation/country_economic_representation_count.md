@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Min Country Economic Representation Count
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks the data regarding the sample counts of countries by economic levels.
 
 **alias_name:** `min_country_economic_representation_count`
@@ -22,3 +21,5 @@ min_country_economic_representation_count:
 - **min_count (int):** Minimum count to pass the test.
 
 <!-- #### Examples -->
+
+</div>

@@ -42,11 +42,14 @@ class PretrainedModelForNER(_ModelHandler):
         """
         aggregated_words = []
         for prediction in predictions:
-            if not prediction["word"].startswith("##"):
-                aggregated_words.append(prediction)
-            else:
+            if prediction["word"].startswith("##"):
                 aggregated_words[-1]["word"] += prediction["word"][2:]
                 aggregated_words[-1]["end"] = prediction["end"]
+            elif len(aggregated_words) > 0 and prediction["start"] == aggregated_words[-1]["end"]:
+                aggregated_words[-1]["word"] += prediction["word"]
+                aggregated_words[-1]["end"] = prediction["end"]
+            else:
+                aggregated_words.append(prediction)
         return aggregated_words
 
     @staticmethod
@@ -60,7 +63,8 @@ class PretrainedModelForNER(_ModelHandler):
                 tag, label
         """
         if entity_label.startswith("B-") or entity_label.startswith("I-"):
-            return entity_label.split("-")
+            marker, tag = entity_label.split("-")
+            return marker, tag
         return "I", "O"
 
     @staticmethod
@@ -118,7 +122,6 @@ class PretrainedModelForNER(_ModelHandler):
                 entity_group_disagg = [entity]
         if entity_group_disagg:
             entity_groups.append(self._group_sub_entities(entity_group_disagg))
-
         return entity_groups
 
     @classmethod

@@ -1,9 +1,8 @@
 
+<div class="h3-box" markdown="1">
+
 ## Min Recall Score
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-{:.h2-select}
 This test checks the recall score for each label. Test is passed if the recall score is higher than the configured min score.
 
 **alias_name:** `min_recall_score`
@@ -26,4 +25,4 @@ min_recall_score:
 
 <!-- #### Examples -->
 
-</div></div>
+</div>

@@ -10,7 +10,7 @@ modify_date: "2023-03-28"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-<div class="heading" id="generate-augmentation">Generating Augmentations</div>
+<div class="heading" id="generate-augmentation"> Generating Augmentations </div>
 
 
 The library provides a method called **`.augment()`** that facilitates the data augmentation process for training data. To use this method, you need to specify two parameters: **`input_path`**, which is the path to the original training dataset, and **`output_path`**, which is the path to save the augmented dataset. Additionally, there's an optional parameter **`inplace`**, which is a boolean that controls whether the original input file should be modified directly. By default, inplace is set to False. If True, the list of samples are modified in place. Otherwise, new samples are added to the input data. 

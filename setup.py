@@ -17,13 +17,12 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 REQUIRED_PKGS = [
     'numpy',
     'pandas',
-    'wn',
     'scikit-learn',
     'transformers',
-    'nltk',
     'torch',
     'sentencepiece',
-    'pydantic'
+    'pydantic',
+    'nest-asyncio'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -48,7 +47,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.0.1",  # Required
+    version="1.0.2",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
