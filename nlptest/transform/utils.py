@@ -6905,7 +6905,7 @@ neutral_pronouns = {'subjective_pronouns': ['per', 'they', 've', 'xe', 'ze', 'zi
 # add country economic dict
 country_economic_dict = {
     "High-income": ["Aruba", "Andorra", "U.A.E", "U.S.", "U.K.", "England", "Antigua and Barbuda", "Australia",
-                    "Austria", "Belgium", "Bahrain", "Bahamas, The", "Bermuda", "Barbados", "Brunei Darussalam",
+                    "Austria", "Belgium", "Bahrain", "Bahamas", "Bermuda", "Barbados", "Brunei Darussalam",
                     "Canada", "Switzerland", "Channel Islands", "Chile", "Curacao","Curaçao", "Cayman Islands", "Cyprus",
                     "Czech Republic", "Germany", "Denmark", "Spain", "Estonia", "Finland", "France", "Faroe Islands",
                     "United Kingdom", "Gibraltar", "Greece", "Greenland", "Guam", "Hong Kong", "Croatia",
@@ -6916,9 +6916,9 @@ country_economic_dict = {
                     "Oman", "Panama", "Poland", "Puerto Rico", "Portugal", "French Polynesia", "Qatar", "Romania",
                     "Saudi Arabia", "Singapore", "San Marino", "Slovak Republic", "Slovenia", "Sweden",
                     "Sint Maarten", "Seychelles", "Turks and Caicos Islands", "Trinidad and Tobago",
-                    "Taiwan, China", "Uruguay", "United States", "British Virgin Islands", "Virgin Islands"],
+                    "Taiwan", "Uruguay", "United States", "British Virgin Islands", "Virgin Islands"],
     "Low-income": ["Afghanistan", "Burundi", "Burkina Faso", "Central African Republic", "Congo", "Eritrea",
-                   "Ethiopia", "Guinea", "Gambia, The", "Guinea-Bissau", "Liberia", "Madagascar", "Mali", "Mozambique",
+                   "Ethiopia", "Guinea", "Gambia", "Guinea-Bissau", "Liberia", "Madagascar", "Mali", "Mozambique",
                    "Mtoalawi", "Niger", "Korea", "Rwanda", "Sudan", "Sierra Leone", "Somalia",
                    "South Sudan", "Syria", "Chad", "Togo", "Uganda", "Yemen", "Zambia"],
     "Lower-middle-income": ["Angola", "Benin", "Bangladesh", "Bolivia", "Bhutan", "Côte d'Ivoire", "Ivory Coast", "Cameroon",
