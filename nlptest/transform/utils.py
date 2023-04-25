@@ -6906,7 +6906,7 @@ neutral_pronouns = {'subjective_pronouns': ['per', 'they', 've', 'xe', 'ze', 'zi
 country_economic_dict = {
     "High-income": ["Aruba", "Andorra", "U.A.E", "U.S.", "U.K.", "England", "Antigua and Barbuda", "Australia",
                     "Austria", "Belgium", "Bahrain", "Bahamas, The", "Bermuda", "Barbados", "Brunei Darussalam",
-                    "Canada", "Switzerland", "Channel Islands", "Chile", "Curacao","Curaçao", "Cayman Islands", "Cyprus",
+                    "Canada", "Switzerland", "Channel Islands", "Chile", "Curacao", "Curaçao", "Cayman Islands", "Cyprus",
                     "Czech Republic", "Germany", "Denmark", "Spain", "Estonia", "Finland", "France", "Faroe Islands",
                     "United Kingdom", "Gibraltar", "Greece", "Greenland", "Guam", "Hong Kong", "Croatia",
                     "Hungary", "Isle of Man", "Ireland", "Iceland", "United Arab Emirates", "UAE", "Israel", "Italy",
