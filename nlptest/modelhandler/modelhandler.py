@@ -1,6 +1,7 @@
 import importlib
 from abc import ABC, abstractmethod
 from typing import List, Union
+import langchain
 
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
@@ -58,13 +59,20 @@ class ModelFactory:
 
         if module_name in ['pyspark', 'sparknlp', 'nlu']:
             model_handler = importlib.import_module(f'nlptest.modelhandler.jsl_modelhandler')
+            
+        elif module_name =="langchain":
+            model_handler = importlib.import_module(f'nlptest.modelhandler.llm_modelhandler')
+            
         else:
             model_handler = importlib.import_module(f'nlptest.modelhandler.{module_name}_modelhandler')
 
         if task == 'ner':
             self.model_class = model_handler.PretrainedModelForNER(model)
-        else:
+        elif task=="text-classification":
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
+        
+        else:
+            self.model_class = model_handler.PretrainedModelForQA(model)
 
     @classmethod
     def load_model(cls, task: str, hub: str, path: str) -> 'ModelFactory':
@@ -108,10 +116,16 @@ class ModelFactory:
                 raise ModuleNotFoundError("""Please install the spacy library by calling `pip install spacy`.
                 For in-depth instructions, head-over to https://spacy.io/usage""")
 
+        elif hub.lower() in (hub.lower() for hub in langchain.llms.__all__):
+            modelhandler_module = importlib.import_module(f'nlptest.modelhandler.llm_modelhandler')
+       
+           
         if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
         elif task == 'text-classifcation':
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(path)
+        else:
+            model_class = modelhandler_module.PretrainedModelForQA.load_model(path)
 
         return cls(
             model_class,
