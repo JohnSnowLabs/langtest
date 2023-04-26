@@ -28,9 +28,9 @@ class ModelFactory:
     A factory class for instantiating models.
     """
 
-    SUPPORTED_TASKS = ["ner", "text-classification"]
-    SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy']
-    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
+    SUPPORTED_TASKS = ["ner", "text-classification","question-answering"]
+    SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy','langchain']
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface','openai']
 
     def __init__(
             self,
