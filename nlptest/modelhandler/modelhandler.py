@@ -110,7 +110,7 @@ class ModelFactory:
 
         if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
-        else:
+        elif task == 'text-classifcation':
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(path)
 
         return cls(
