@@ -395,9 +395,9 @@ class JSONLDataset(_IDataset):
         self.task = task
 
     def load_data(self):
-        """Loads data from a CoNLL file.
+        """Loads data from a JSONL file.
         Returns:
-      
+            list[QASample]: Loaded text data.
         """
                
         data = []
