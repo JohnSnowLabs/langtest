@@ -93,6 +93,8 @@ class DataFactory:
         datasets_info = {
             'boolQ-test': script_dir[:-7]+'/boolQ/test.jsonl',
             'boolQ': script_dir[:-7]+'/boolQ/combined.jsonl',
+            'nq-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
+            'nq-open': script_dir[:-7]+'/NQ-open/combined.jsonl'
         }
         return datasets_info[dataset_name]
 
