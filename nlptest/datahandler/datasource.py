@@ -6,7 +6,7 @@ from typing import Dict, List
 
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
-    SequenceClassificationSample, SequenceLabel
+    SequenceClassificationSample, SequenceLabel, QASample
 
 
 class _IDataset(ABC):
@@ -376,3 +376,49 @@ class CSVDataset(_IDataset):
                 f"You can use following namespaces:\n{not_referenced_columns}"
             )
         return column_map
+
+
+class JSONLDataset(_IDataset):
+    """
+    Class to handle BoolQ dataset. Subclass of _IDataset.
+    """
+
+    def __init__(self, file_path: str, task: str) -> None:
+        """Initializes BOOLQDataset object.
+        Args:
+            file_path (str): Path to the data file.
+        """
+        super().__init__()
+        self._file_path = file_path
+
+        self.task = task
+
+    def load_data(self):
+        """Loads data from a CoNLL file.
+        Returns:
+      
+        """
+#         !wget https://dl.fbaipublicfiles.com/glue/superglue/data/v2/BoolQ.zip
+               
+        data = []
+        with jsonlines.open(self._file_path) as reader:
+                _data=[]
+                for obj in reader:
+                    _data.append(obj)
+        for item in  _data[0:10] :
+            data.append(
+                  QASample(original_question=item['question'], original_context=item['passage'])
+                        )
+
+        print(data)
+    
+    def export_data(self, data: List[Sample], output_path: str):
+        """
+        Exports the data to the corresponding format and saves it to 'output_path'.
+        Args:
+            data (List[Sample]):
+                data to export
+            output_path (str):
+                path to save the data to
+        """
+        raise NotImplementedError()
