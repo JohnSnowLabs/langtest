@@ -398,19 +398,15 @@ class JSONLDataset(_IDataset):
         Returns:
       
         """
-#         !wget https://dl.fbaipublicfiles.com/glue/superglue/data/v2/BoolQ.zip
                
         data = []
         with jsonlines.open(self._file_path) as reader:
-                _data=[]
-                for obj in reader:
-                    _data.append(obj)
-        for item in  _data[0:10] :
-            data.append(
-                  QASample(original_question=item['question'], original_context=item['passage'])
-                        )
-
-        print(data)
+            for item in reader:
+                data.append(
+                    QASample(original_question=item['question'], original_context=item.get('passage',"-"))
+                            )
+       
+        return data
     
     def export_data(self, data: List[Sample], output_path: str):
         """
