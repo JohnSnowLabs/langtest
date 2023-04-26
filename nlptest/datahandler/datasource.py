@@ -88,6 +88,13 @@ class DataFactory:
 
     @classmethod
     def _load_dataset(cls, dataset_name: str):
+        """
+        Args:
+            dataset_name (str): name of the dataset
+
+        Returns:
+            str: path to our data
+        """        
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
