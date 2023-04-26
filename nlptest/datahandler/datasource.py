@@ -1,6 +1,7 @@
 import csv
 import os
 import re
+import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
