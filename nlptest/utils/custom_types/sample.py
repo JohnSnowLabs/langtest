@@ -285,3 +285,42 @@ class MaxScoreSample(BaseSample):
 
 
 Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample, SequenceClassificationSample, NERSample)
+
+class BaseQASample(BaseModel):
+    """
+    Helper object storing the original text, the perturbed one and the corresponding
+    predictions for each of them.
+
+    The specificity here is that it is task-agnostic, one only needs to call access the `is_pass`
+    property to assess whether the `expected_results` and the `actual_results` are the same, regardless
+    the downstream task.nlptest/utils/custom_types.py
+
+    This way, to support a new task one only needs to create a `XXXOutput` model, overload the `__eq__`
+    operator and add the new model to the `Result` type variable.
+    """
+    original_question: str
+    original_context: str
+    test_type: str = None
+    perturbed_question: str = None
+    perturbed_context: str = None
+    expected_results: Result = None
+    actual_results: Result = None
+    transformations: List[Transformation] = None
+    category: str = None
+    state: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+ 
+
+
+
+class QASample(BaseQASample):
+    """"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.expected_results == self.actual_results
