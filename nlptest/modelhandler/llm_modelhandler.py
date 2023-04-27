@@ -1,31 +1,29 @@
-import langchain.llms as llms
-
+import langchain as lc
 from ..modelhandler.modelhandler import _ModelHandler
 
-all_models_hub = llms.__all__
 
 
+class PretrainedModelForQA(_ModelHandler):
 
-class PertrainedLlmModel(_ModelHandler):
-
-    def __init__(self, model: str, hub: str):
+    def __init__(self,  hub: str, model: str):
         self.model = model
         self.hub = hub
     
     @classmethod
-    def load_model(cls, model: str, hub: str, *args, **kwargs):
-        """Load and return SpaCy pipeline"""
+    def load_model(cls, hub: str, model, *args, **kwargs):
+        """"""
 
         try:
-            return getattr(llms, hub)(model_name=model, *args, **kwargs)
+            cls.model = getattr(lc, hub)(model_name=model, *args, **kwargs)
+            return cls.model
         except:
             raise ValueError(
-                f'''Model "{model}" is not found online or local.
+                f'''Model "{cls.model}" is not found online or local.
                 Please install langchain by pip install langchain''')
 
     def predict(self, text: str, *args, **kwargs):
-        pass
+        return self.model(text, *args, **kwargs)
 
     def __call__(self, text: str, *args, **kwargs):
         """Alias of the 'predict' method"""
-        return self.predict(text=text)
+        return self.predict(text=text, *args, **kwargs)

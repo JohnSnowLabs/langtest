@@ -22,7 +22,7 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification","question-answering"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs","openai"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs","OpenAI"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
@@ -92,7 +92,7 @@ class Harness:
         if isinstance(model, str):
             self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
         else:
-            self.model = ModelFactory(task=task, model=model)
+            self.model = ModelFactory(task=task, model=model, hub=hub)
 
         if config is not None:
             self._config = self.configure(config)
@@ -143,8 +143,15 @@ class Harness:
 
         tests = self._config['tests']
         m_data = [sample.copy() for sample in self.data]
-        _ = [setattr(sample, 'expected_results', self.model(sample.original)) 
-                  for sample in m_data]
+
+        if self.task in ["text-classification", "ner"]:
+            _ = [setattr(sample, 'expected_results', self.model(sample.original)) 
+                    for sample in m_data]
+        else:
+            _ = [setattr(sample, 'perturbed_question', self.model(sample.original_question)) 
+                    for sample in m_data]
+            _ = [setattr(sample, 'perturbed_context', self.model(sample.original_context)) 
+                    for sample in m_data]
         self._testcases = TestFactory.transform(self.data, tests, m_data=m_data)
         return self
 

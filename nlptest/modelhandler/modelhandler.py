@@ -31,12 +31,13 @@ class ModelFactory:
 
     SUPPORTED_TASKS = ["ner", "text-classification","question-answering"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp', 'nlu', 'transformers', 'spacy','langchain']
-    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface','openai']
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface','OpenAI']
 
     def __init__(
             self,
             model: str,
             task: str,
+            hub: str,
     ):
         """Initializes the ModelFactory object.
         Args:
@@ -72,10 +73,10 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
         
         else:
-            self.model_class = model_handler.PretrainedModelForQA(model)
+            self.model_class = model_handler.PretrainedModelForQA(hub, model)
 
     @classmethod
-    def load_model(cls, task: str, hub: str, path: str) -> 'ModelFactory':
+    def load_model(cls, task: str, hub: str, path: str, *args, **kwargs) -> 'ModelFactory':
         """Loads the model.
 
         Args:
@@ -125,11 +126,12 @@ class ModelFactory:
         elif task == 'text-classifcation':
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(path)
         else:
-            model_class = modelhandler_module.PretrainedModelForQA.load_model(path)
+            model_class = modelhandler_module.PretrainedModelForQA.load_model(hub, path, *args, **kwargs)
 
         return cls(
             model_class,
-            task
+            task,
+            hub
         )
 
     def predict(self, text: str, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
