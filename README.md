@@ -1,4 +1,4 @@
-# NLP Test: Deliver Safe & Effective Models
+# NLP Test: Deliver Safe & Effective Language Models
 
 <p align="center">
     <a href="https://github.com/JohnSnowLabs/nlptest/actions" alt="build">
