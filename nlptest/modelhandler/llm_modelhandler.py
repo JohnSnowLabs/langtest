@@ -10,15 +10,15 @@ class PretrainedModelForQA(_ModelHandler):
         self.hub = hub
     
     @classmethod
-    def load_model(cls, hub: str, model, *args, **kwargs):
+    def load_model(cls, hub: str, path:str, *args, **kwargs):
         """"""
 
         try:
-            cls.model = getattr(lc, hub)(model_name=model, *args, **kwargs)
+            cls.model = getattr(lc, hub)(model_name=path, *args, **kwargs)
             return cls.model
         except:
             raise ValueError(
-                f'''Model "{cls.model}" is not found online or local.
+                f'''Model "{path}" is not found online or local.
                 Please install langchain by pip install langchain''')
 
     def predict(self, text: str, *args, **kwargs):
