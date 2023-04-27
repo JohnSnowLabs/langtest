@@ -26,7 +26,7 @@ data:
        - title: Simple
          image: 
             src: assets/images/home/powerfull_one.svg
-         excerpt: Generate & run over 50 test types on the most popular NLP libraries & tasks with 1 line of code
+         excerpt: Generate & run over 50 test types on the most popular NLP frameworks & tasks with 1 line of code
        - title: Comprehensive
          image: 
             src: assets/images/home/elegant_python.svg
@@ -39,7 +39,7 @@ data:
    - title: Fully Integrated Workflow
      topimage: 
       - image:
-          src: assets/images/home/infographic_17_03_23_final_big.png
+          src: assets/images/home/nlptest_flow_graphic.png
 
    - title: 'Get Started'
      install: yes
