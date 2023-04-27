@@ -24,7 +24,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/nlptest/nlptest_flow_graphic.png)
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/nlptest/nlptest_flow_graphic.jpeg)
 
 ## Project's Website
 
@@ -34,9 +34,9 @@ Take a look at our official page for user documentation and examples: [nlptest.o
 
 - Generate & run over 50 test types with 1 line of code
 - Test all aspects of model quality: robustness, bias, representation, fairness and accuracy
-- Automatically augment training data based on test results
-- Support for popular NLP libraries: Spark NLP, Hugging Face Transformers & spaCy 
-- Support for popular NLP tasks: Named Entity Recognition and Text Classification
+- Automatically augment training data based on test results (for select models)
+- Support for popular NLP frameworks: Spark NLP, Hugging Face Transformers, OpenAI & spaCy 
+- Support for popular NLP tasks: Question Answering, Text Classification & Named Entity Recognition
 
 ## How To Use
 
@@ -79,7 +79,7 @@ We welcome all sorts of contributions:
 - Bug reports
 - Development and testing
 
-Feel free to clone the repo and submit pull-requests! You can also contribute by opening issues in this repo.
+Feel free to clone the repo and submit pull-requests! You can also contribute by simply opening an issue or discussion in this repo.
 
 ## Contributors
 
