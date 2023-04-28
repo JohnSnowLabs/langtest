@@ -122,8 +122,11 @@ h.generate().run().report()
                       {% highlight python %}
 from nlptest import Harness
 
+# Set API keys
+os.environ['OPENAI_API_KEY'] = 'xxx'
+
 # Create a Harness object
-h = Harness(task='question-answering', model='davinci-text', hub='openai')
+h = Harness(task='question-answering', model='text-davinci-003', hub='openai')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()

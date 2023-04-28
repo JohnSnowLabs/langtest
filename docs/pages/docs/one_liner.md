@@ -9,12 +9,12 @@ header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-With just one line of code, you can generate and run over 50 different test types to assess the quality of **John Snow Labs**, **Hugging Face**, and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER and Text Classification models, with support for many more models and test types coming soon.
+With just one line of code, you can generate and run over 50 different test types to assess the quality of **John Snow Labs**, **Hugging Face**, **OpenAI** and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER, Text Classification and Question Answering models, with support for many more models and test types actively being developed.
 </div> 
 
 ### One Liner - NER
 
-Try out the nlptest library on the following default model/dataset combinations for NER. **To run tests on any other model, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
+Try out the nlptest library on the following default model-dataset combinations for NER. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
 
 <div id="one_liner_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -67,7 +67,7 @@ h.generate().run().report()
 
 ### One Liner - Text Classification
 
-Try out the nlptest library on the following default model/dataset combinations for Text Classification. **To run tests on any other model, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
+Try out the nlptest library on the following default model-dataset combinations for Text Classification. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -109,6 +109,35 @@ from nlptest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model='textcat_imdb', hub='spacy')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+### One Liner - Question Answering
+
+Try out the nlptest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data_input).
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">OpenAI</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+from nlptest import Harness
+
+# Set API keys
+os.environ['OPENAI_API_KEY'] = 'xxx'
+
+# Create a Harness object
+h = Harness(task='question-answering', model='text-davinci-003', hub='openai')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
