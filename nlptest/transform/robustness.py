@@ -146,7 +146,12 @@ class TitleCase(BaseRobustness):
             List of sentences that titlecase robustness is applied.
         """
         for sample in sample_list:
-            sample.test_case = sample.original.title()
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = sample.original_question.title()
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = sample.original_context.title()
+            else:
+                sample.test_case = sample.original.title()
             sample.category = "robustness"
         return sample_list
 
