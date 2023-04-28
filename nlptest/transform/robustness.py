@@ -43,12 +43,12 @@ class BaseRobustness(ABC):
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
         """
         Abstract method that implements the robustness measure.
-        
+
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the robustness measure.
-        
+
         Returns:
             List[Sample]: The transformed data based on the implemented robustness measure.
 
@@ -56,13 +56,21 @@ class BaseRobustness(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                sample.expected_results = model(sample.original)
-                sample.actual_results = model(sample.test_case)
+                if 'original_context' in sample.__annotations__:
+                    user_prompt = kwargs['user_prompt'][kwargs['dataset_name']]
+                    original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
+                    perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
+                    sample.expected_results = model(original_prompt)
+                    sample.actual_results = model(perturbed_prompt)
+
+                else:
+                    sample.expected_results = model(sample.original)
+                    sample.actual_results = model(sample.test_case)
                 sample.state = "done"
             if progress:
                 progress.update(1)
         return sample_list
-    
+
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
         """
@@ -77,7 +85,8 @@ class BaseRobustness(ABC):
             asyncio.Task: The task that runs the robustness measure.
 
         """
-        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        created_task = asyncio.create_task(
+            cls.run(sample_list, model, **kwargs))
         return created_task
 
 
@@ -93,7 +102,12 @@ class UpperCase(BaseRobustness):
             List of sentences that uppercase robustness is applied.
         """
         for sample in sample_list:
-            sample.test_case = sample.original.upper()
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = sample.original_question.upper()
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = sample.original_context.upper()
+            else:
+                sample.test_case = sample.original.upper()
             sample.category = "robustness"
         return sample_list
 
@@ -110,7 +124,12 @@ class LowerCase(BaseRobustness):
             List of sentences that lowercase robustness is applied.
         """
         for sample in sample_list:
-            sample.test_case = sample.original.lower()
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = sample.original_question.lower()
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = sample.original_context.lower()
+            else:
+                sample.test_case = sample.original.lower()
             sample.category = "robustness"
         return sample_list
 
@@ -245,8 +264,10 @@ class AddTypo(BaseRobustness):
                         char_frequency = TYPO_FREQUENCY[char.lower()]
 
                         if sum(char_frequency) > 0:
-                            chosen_char = random.choices(idx_list, weights=char_frequency)
-                            difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
+                            chosen_char = random.choices(
+                                idx_list, weights=char_frequency)
+                            difference = ord(char.lower()) - \
+                                ord(char_list[chosen_char[0]])
                             char = chr(ord(char) - difference)
                             string[idx] = char
                     else:
@@ -283,12 +304,15 @@ class SwapEntities(BaseRobustness):
         """
 
         if terminology is None:
-            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, terminology should be passed!')
 
         if labels is None:
-            raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, labels should be passed!')
 
-        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
+        assert len(sample_list) == len(
+            labels), f"'labels' and 'sample_list' must have same lengths."
 
         for sample, sample_labels in zip(sample_list, labels):
             sample.category = "robustness"
@@ -298,7 +322,8 @@ class SwapEntities(BaseRobustness):
 
             sent_tokens = sample.original.split(' ')
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
+            ent_start_pos = np.array(
+                [1 if label[0] == 'B' else 0 for label in sample_labels])
             ent_idx, = np.where(ent_start_pos == 1)
 
             replace_idx = np.random.choice(ent_idx)
@@ -311,14 +336,16 @@ class SwapEntities(BaseRobustness):
                     else:
                         break
 
-            replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
+            replace_token = sent_tokens[replace_idx: replace_idx +
+                                        len(replace_idxs)]
             token_length = len(replace_token)
             replace_token = " ".join(replace_token)
 
             chosen_ent = random.choice(terminology[ent_type])
             replace_token_pos = re.search(replace_token, sample.original)
 
-            sample.test_case = sample.original.replace(replace_token, chosen_ent)
+            sample.test_case = sample.original.replace(
+                replace_token, chosen_ent)
             sample.transformations = [
                 Transformation(
                     original_span=Span(
@@ -335,6 +362,7 @@ class SwapEntities(BaseRobustness):
                 )
             ]
         return sample_list
+
 
 class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
@@ -361,11 +389,14 @@ class ConvertAccent(BaseRobustness):
 
                     for c in range(nb_occurrences):
                         span = re.search(token, replaced_string)
-                        replaced_string = re.sub(token, new_token, replaced_string, count=1)
+                        replaced_string = re.sub(
+                            token, new_token, replaced_string, count=1)
                         transformations.append(
                             Transformation(
-                                original_span=Span(start=span.start(), end=span.end(), word=token),
-                                new_span=Span(start=span.start(), end=span.end() + diff_len, word=new_token),
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=token),
+                                new_span=Span(
+                                    start=span.start(), end=span.end() + diff_len, word=new_token),
                                 ignore=False
                             )
                         )
@@ -408,12 +439,14 @@ class AddContext(BaseRobustness):
             transformations = []
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)
-                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                add_string = " ".join(add_tokens) if isinstance(
+                    add_tokens, list) else add_tokens
                 string = add_string + ' ' + sample.original
                 transformations.append(
                     Transformation(
                         original_span=Span(start=0, end=0, word=""),
-                        new_span=Span(start=0, end=len(add_string) + 1, word=add_string),
+                        new_span=Span(start=0, end=len(
+                            add_string) + 1, word=add_string),
                         ignore=True
                     )
                 )
@@ -422,7 +455,8 @@ class AddContext(BaseRobustness):
 
             if strategy == "end" or strategy == "combined":
                 add_tokens = random.choice(ending_context)
-                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                add_string = " ".join(add_tokens) if isinstance(
+                    add_tokens, list) else add_tokens
 
                 if sample.original[-1].isalnum():
                     from_start, from_end = len(string), len(string)
@@ -437,8 +471,10 @@ class AddContext(BaseRobustness):
 
                 transformations.append(
                     Transformation(
-                        original_span=Span(start=from_start, end=from_end, word=""),
-                        new_span=Span(start=to_start, end=to_end, word=string[to_start:to_end]),
+                        original_span=Span(
+                            start=from_start, end=from_end, word=""),
+                        new_span=Span(start=to_start, end=to_end,
+                                      word=string[to_start:to_end]),
                         ignore=True
                     )
                 )
@@ -466,7 +502,8 @@ class AddContraction(BaseRobustness):
               regex replace for contraction.
             """
             token = match.group(0)
-            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(token.lower()))
+            contracted_token = CONTRACTION_MAP.get(
+                token, CONTRACTION_MAP.get(token.lower()))
 
             is_upper_case = token[0]
             expanded_contraction = is_upper_case + contracted_token[1:]
@@ -477,16 +514,20 @@ class AddContraction(BaseRobustness):
             transformations = []
 
             for contraction in CONTRACTION_MAP:
-                search = re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL)
+                search = re.search(contraction, sample.original,
+                                   flags=re.IGNORECASE | re.DOTALL)
                 if search:
-                    new_string = CONTRACTION_MAP.get(search.group(), search.group())
+                    new_string = CONTRACTION_MAP.get(
+                        search.group(), search.group())
                     diff_len = len(new_string) - len(search.group())
                     replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                              flags=re.IGNORECASE | re.DOTALL)
                     transformations.append(
                         Transformation(
-                            original_span=Span(start=search.start(), end=search.end(), word=search.group()),
-                            new_span=Span(start=search.start(), end=search.end() + diff_len, word=new_string),
+                            original_span=Span(start=search.start(
+                            ), end=search.end(), word=search.group()),
+                            new_span=Span(start=search.start(
+                            ), end=search.end() + diff_len, word=new_string),
                             ignore=False
                         )
                     )

@@ -2,15 +2,16 @@ import langchain as lc
 from ..modelhandler.modelhandler import _ModelHandler
 
 
-
 class PretrainedModelForQA(_ModelHandler):
 
-    def __init__(self,  hub: str, model: str):
+    def __init__(self,  hub: str, model: str, *args, **kwargs):
         self.model = model
         self.hub = hub
-    
+        self.args = args
+        self.kwargs = kwargs
+
     @classmethod
-    def load_model(cls, hub: str, path:str, *args, **kwargs):
+    def load_model(cls, hub: str, path: str, *args, **kwargs):
         """"""
 
         try:

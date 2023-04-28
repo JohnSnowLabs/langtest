@@ -94,7 +94,7 @@ class DataFactory:
 
         Returns:
             str: path to our data
-        """        
+        """
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
@@ -427,7 +427,6 @@ class JSONLDataset(_IDataset):
         """
         super().__init__()
         self._file_path = file_path
-
         self.task = task
 
     def load_data(self):
@@ -441,7 +440,7 @@ class JSONLDataset(_IDataset):
             for item in reader:
                 data.append(
                     QASample(original_question=item['question'], original_context=item.get(
-                        'passage', "-"))
+                        'passage', "-"), task=self.task, dataset_name=self._file_path.split('/')[-2])
                 )
 
         return data

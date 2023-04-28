@@ -21,8 +21,8 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_TASKS = ["ner", "text-classification","question-answering"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs","OpenAI"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "OpenAI"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
@@ -60,8 +60,9 @@ class Harness:
 
         self.is_default = False
 
-        if(task not in self.SUPPORTED_TASKS):
-            raise ValueError(f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}")
+        if (task not in self.SUPPORTED_TASKS):
+            raise ValueError(
+                f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}")
         self.task = task
 
         if isinstance(model, str) and hub is None:
@@ -69,16 +70,19 @@ class Harness:
                              f"for the 'hub' parameter as well.")
 
         if hub is not None and hub not in self.SUPPORTED_HUBS:
-            raise ValueError(f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}")
-        
+            raise ValueError(
+                f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}")
+
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
-            data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
+            data_path = os.path.join(
+                "data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = resource_filename("nlptest", data_path)
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("nlptest", "data/textcat_imdb")
             self.is_default = True
-            logging.info(f"Default dataset '{(task, model, hub)}' successfully loaded.")
+            logging.info(
+                f"Default dataset '{(task, model, hub)}' successfully loaded.")
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
@@ -87,18 +91,23 @@ class Harness:
         elif isinstance(data, list):
             self.data = data
         else:
-            self.data = DataFactory(data, task=self.task).load() if data is not None else None
-
-        if isinstance(model, str):
-            self.model = ModelFactory.load_model(path=model, task=task, hub=hub)
-        else:
-            self.model = ModelFactory(task=task, model=model, hub=hub)
+            self.data = DataFactory(
+                data, task=self.task).load() if data is not None else None
 
         if config is not None:
             self._config = self.configure(config)
         else:
-            logging.info("No configuration file was provided, loading default config.")
-            self._config = self.configure(resource_filename("nlptest", "data/config.yml"))
+            logging.info(
+                "No configuration file was provided, loading default config.")
+            self._config = self.configure(
+                resource_filename("nlptest", "data/config.yml"))
+
+        if isinstance(model, str):
+            self.model = ModelFactory.load_model(
+                path=model, task=task, hub=hub, **self._config.get("model_parameters", {}))
+        else:
+            self.model = ModelFactory(
+                task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
 
         self._testcases = None
         self._generated_results = None
@@ -109,6 +118,7 @@ class Harness:
 
     def __repr__(self) -> str:
         return ""
+
     def __str__(self) -> str:
         return object.__repr__(self)
 
@@ -129,6 +139,7 @@ class Harness:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
+        os.environ.update(self._config.get('env_variables', {}))
         return self._config
 
     def generate(self) -> "Harness":
@@ -139,20 +150,17 @@ class Harness:
         if self._config is None:
             raise RuntimeError("Please call .configure() first.")
         if self._testcases is not None:
-            raise RuntimeError("Testcases are already generated, please call .run() and .report() next.")
+            raise RuntimeError(
+                "Testcases are already generated, please call .run() and .report() next.")
 
         tests = self._config['tests']
         m_data = [sample.copy() for sample in self.data]
 
         if self.task in ["text-classification", "ner"]:
-            _ = [setattr(sample, 'expected_results', self.model(sample.original)) 
-                    for sample in m_data]
-        else:
-            _ = [setattr(sample, 'perturbed_question', self.model(sample.original_question)) 
-                    for sample in m_data]
-            _ = [setattr(sample, 'perturbed_context', self.model(sample.original_context)) 
-                    for sample in m_data]
-        self._testcases = TestFactory.transform(self.data, tests, m_data=m_data)
+            _ = [setattr(sample, 'expected_results', self.model(sample.original))
+                 for sample in m_data]
+        self._testcases = TestFactory.transform(
+            self.data, tests, m_data=m_data)
         return self
 
     def run(self) -> "Harness":
@@ -165,12 +173,9 @@ class Harness:
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
-        # self._generated_results = BaseRunner(
-        #     self._testcases,
-        #     self.model,
-        #     self.data
-        # ).evaluate()
-        self._generated_results = TestFactory.run(self._testcases, self.model, is_default = self.is_default, raw_data=self.data)
+
+        self._generated_results = TestFactory.run(
+            self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("defaults", {}))
         return self
 
     def report(self) -> pd.DataFrame:
@@ -186,9 +191,10 @@ class Harness:
                                "calling the `.report()` method.")
 
         if isinstance(self._config, dict):
-            self.default_min_pass_dict = self._config['defaults'].get('min_pass_rate', 0.65)
+            self.default_min_pass_dict = self._config['defaults'].get(
+                'min_pass_rate', 0.65)
             self.min_pass_dict = {
-                j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in \
+                j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in
                 self._config['tests'].items() for j, k in v.items()
             }
 
@@ -199,8 +205,10 @@ class Harness:
 
         report = {}
         for test_type, value in summary.items():
-            pass_rate = summary[test_type]["true"] / (summary[test_type]["true"] + summary[test_type]["false"])
-            min_pass_rate = self.min_pass_dict.get(test_type, self.default_min_pass_dict)
+            pass_rate = summary[test_type]["true"] / \
+                (summary[test_type]["true"] + summary[test_type]["false"])
+            min_pass_rate = self.min_pass_dict.get(
+                test_type, self.default_min_pass_dict)
 
             if summary[test_type]['category'] == "Accuracy":
                 min_pass_rate = 1
@@ -215,10 +223,13 @@ class Harness:
             }
 
         df_report = pd.DataFrame.from_dict(report, orient="index")
-        df_report = df_report.reset_index().rename(columns={'index': 'test_type'})
+        df_report = df_report.reset_index().rename(
+            columns={'index': 'test_type'})
 
-        df_report['pass_rate'] = df_report['pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
-        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(lambda x: "{:.0f}%".format(x * 100))
+        df_report['pass_rate'] = df_report['pass_rate'].apply(
+            lambda x: "{:.0f}%".format(x * 100))
+        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
+            lambda x: "{:.0f}%".format(x * 100))
 
         col_to_move = 'category'
         first_column = df_report.pop('category')
@@ -237,14 +248,15 @@ class Harness:
             pd.DataFrame: Generated dataframe.
         """
         if self._generated_results is None:
-            logging.warning("Please run `Harness.run()` before calling `.generated_results()`.")
+            logging.warning(
+                "Please run `Harness.run()` before calling `.generated_results()`.")
             return
-        generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in self._generated_results])
+        generated_results_df = pd.DataFrame.from_dict(
+            [x.to_dict() for x in self._generated_results])
 
         return generated_results_df
 
     def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
-
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -271,8 +283,10 @@ class Harness:
             lambda x: str(x),
             self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
         if dtypes not in [['int64'] * 2, ['int32'] * 2]:
-            self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace("%", "").astype(int)
-            self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace("%", "").astype(int)
+            self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace(
+                "%", "").astype(int)
+            self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace(
+                "%", "").astype(int)
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
@@ -348,12 +362,14 @@ class Harness:
         """
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(f"File '{filename}' is missing to load a previously saved `Harness`.")
+                raise OSError(
+                    f"File '{filename}' is missing to load a previously saved `Harness`.")
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
 
-        harness = Harness(task=task, model=model, data=data, hub=hub, config=os.path.join(save_dir, "config.yaml"))
+        harness = Harness(task=task, model=model, data=data,
+                          hub=hub, config=os.path.join(save_dir, "config.yaml"))
         harness.generate()
 
         return harness
