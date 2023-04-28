@@ -171,31 +171,45 @@ class AddPunctuation(BaseRobustness):
 
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
-
-        for sample in sample_list:
-            if sample.original[-1] not in whitelist:
+        
+        def check_whitelist(text, whitelist):
+            if text[-1] not in whitelist:
                 chosen_punc = random.choice(whitelist)
-                sample.test_case = sample.original + chosen_punc
-                sample.transformations = [
-                    Transformation(
-                        original_span=Span(
-                            start=len(sample.original),
-                            end=len(sample.original),
-                            word=""
-                        ),
-                        new_span=Span(
-                            start=len(sample.original),
-                            end=len(sample.test_case),
-                            word=chosen_punc
-                        ),
-                        ignore=True
-                    )
-                ]
+                return text + chosen_punc
             else:
-                sample.test_case = sample.original
+                return text
+               
+        for sample in sample_list:
+            if "task" in sample.__annotations__:
+                 sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = check_whitelist(sample.original_context, whitelist)
+                                  
+            else:
+                    if sample.original[-1] not in whitelist:
+                        chosen_punc = random.choice(whitelist)
+                        sample.test_case = sample.original + chosen_punc
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=len(sample.original),
+                                    end=len(sample.original),
+                                    word=""
+                                ),
+                                new_span=Span(
+                                    start=len(sample.original),
+                                    end=len(sample.test_case),
+                                    word=chosen_punc
+                                ),
+                                ignore=True
+                            )
+                        ]
+                    else:
+                        sample.test_case = sample.original
+                        
             sample.category = "robustness"
         return sample_list
-
 
 class StripPunctuation(BaseRobustness):
     alias_name = "strip_punctuation"
