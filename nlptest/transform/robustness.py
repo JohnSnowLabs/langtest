@@ -278,13 +278,14 @@ class AddTypo(BaseRobustness):
         Returns:
             List of sentences that typo introduced.
         """
-        for sample in sample_list:
-            sample.category = "robustness"
-            if len(sample.original) < 5:
-                sample.test_case = sample.original
-                continue
 
-            string = list(sample.original)
+        def keyboard_typo(string):
+            
+            if len(string) < 5:
+                return string
+            
+            string = list(string)
+            
             if random.random() > 0.1:
                 idx_list = list(range(len(TYPO_FREQUENCY)))
                 char_list = list(TYPO_FREQUENCY.keys())
@@ -313,7 +314,20 @@ class AddTypo(BaseRobustness):
                 string[swap_idx] = string[swap_idx + 1]
                 string[swap_idx + 1] = tmp
 
-            sample.test_case = "".join(string)
+            return "".join(string)
+
+        for sample in sample_list:
+            sample.category = "robustness"
+
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = keyboard_typo(sample.original_question)
+                if "perturbed_context" in sample.__annotations__:
+                        sample.perturbed_context = keyboard_typo(sample.original_context)
+            
+            else:
+                
+                sample.test_case = keyboard_typo(sample.original)
+
         return sample_list
 
 
@@ -409,12 +423,12 @@ class ConvertAccent(BaseRobustness):
         Returns:
             List of sentences that perturbed with accent conversion.
         """
-        for sample in sample_list:
-            tokens = set(sample.original.split(' '))
-            replaced_string = sample.original
+        def convert_accent(string: str, accent_map: Dict[str, str]) -> str:
+            tokens = set(string.split(' '))
+            replaced_string = string
             transformations = []
 
-            for token in tokens:
+            for i, token in enumerate(tokens):
                 new_token = accent_map.get(token.lower(), token)
                 if new_token != token:
                     diff_len = len(new_token) - len(token)
@@ -433,8 +447,16 @@ class ConvertAccent(BaseRobustness):
                                 ignore=False
                             )
                         )
-            sample.test_case = replaced_string
-            sample.transformations = transformations
+            return replaced_string, transformations
+
+        for sample in sample_list:
+            
+            if 'task' in sample.__annotations__:
+                sample.perturbed_question, _ = convert_accent(sample.original_question, accent_map)
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context, _ = convert_accent(sample.original_context, accent_map)
+            else:
+                sample.test_case, sample.transformations = convert_accent(sample.original, accent_map)
             sample.category = "robustness"
 
         return sample_list
