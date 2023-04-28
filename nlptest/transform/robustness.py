@@ -471,49 +471,125 @@ class AddContext(BaseRobustness):
 
             transformations = []
             if strategy == "start" or strategy == "combined":
-                add_tokens = random.choice(starting_context)
-                add_string = " ".join(add_tokens) if isinstance(
-                    add_tokens, list) else add_tokens
-                string = add_string + ' ' + sample.original
-                transformations.append(
-                    Transformation(
-                        original_span=Span(start=0, end=0, word=""),
-                        new_span=Span(start=0, end=len(
-                            add_string) + 1, word=add_string),
-                        ignore=True
+                
+                if "task" in sample.__annotations__:
+                    
+                     add_tokens = random.choice(starting_context)
+                     add_string = " ".join(add_tokens) if isinstance(
+                         add_tokens, list) else add_tokens
+                     string_question = add_string + ' ' + sample.original_question
+                        
+                 
+                     if "perturbed_context" in sample.__annotations__:
+                        
+                        add_tokens = random.choice(starting_context)
+                        add_string = " ".join(add_tokens) if isinstance(
+                            add_tokens, list) else add_tokens
+                        string_context = add_string + ' ' + sample.original_context
+                      
+                else:
+                
+                    add_tokens = random.choice(starting_context)
+                    add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
+                    string = add_string + ' ' + sample.original
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=0, end=0, word=""),
+                            new_span=Span(start=0, end=len(
+                                add_string) + 1, word=add_string),
+                            ignore=True
+                        )
                     )
-                )
             else:
-                string = sample.original
+                if  "task" in sample.__annotations__:
+                    string_question = sample.original_question
+                    if "perturbed_context" in sample.__annotations__:
+                        string_context = sample.original_context
+                 
+                else:
+                    string = sample.original
 
             if strategy == "end" or strategy == "combined":
-                add_tokens = random.choice(ending_context)
-                add_string = " ".join(add_tokens) if isinstance(
-                    add_tokens, list) else add_tokens
+                
+                
+                if "task" in sample.__annotations__:
+                    
+                     add_tokens = random.choice(ending_context)
+                     add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
+                     
+                     if sample.original_question[-1].isalnum():
+                        
+                        from_start, from_end = len(string_question), len(string_question)
+                        to_start = from_start + 1
+                        to_end = to_start + len(add_string) + 1
+                        string_question = string_question + " " + add_string
+                        
+                     else:
+                        
+                        from_start, from_end = len(string_question[:-1]), len(string_question[:-1])
+                        to_start = from_start
+                        to_end = to_start + len(add_string) + 1
+                        string_question = string_question[:-1] + add_string + " " + string_question[-1]
+                    
+                 
+                 
+                     if "perturbed_context" in sample.__annotations__:
+                        
+                        add_tokens = random.choice(ending_context)
+                        add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
+                     
+                        if sample.original_context[-1].isalnum():
 
-                if sample.original[-1].isalnum():
-                    from_start, from_end = len(string), len(string)
-                    to_start = from_start + 1
-                    to_end = to_start + len(add_string) + 1
-                    string = string + " " + add_string
+                            from_start, from_end = len(string_context), len(string_context)
+                            to_start = from_start + 1
+                            to_end = to_start + len(add_string) + 1
+                            string_context = string_context + " " + add_string
+
+                        else:
+
+                            from_start, from_end = len(string_context[:-1]), len(string_context[:-1])
+                            to_start = from_start
+                            to_end = to_start + len(add_string) + 1
+                            string_context = string_context[:-1] + add_string + " " + string_context[-1]
+                
                 else:
-                    from_start, from_end = len(string[:-1]), len(string[:-1])
-                    to_start = from_start
-                    to_end = to_start + len(add_string) + 1
-                    string = string[:-1] + add_string + " " + string[-1]
+                    add_tokens = random.choice(ending_context)
+                    add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
 
-                transformations.append(
-                    Transformation(
-                        original_span=Span(
-                            start=from_start, end=from_end, word=""),
-                        new_span=Span(start=to_start, end=to_end,
-                                      word=string[to_start:to_end]),
-                        ignore=True
+                    if sample.original[-1].isalnum():
+                        from_start, from_end = len(string), len(string)
+                        to_start = from_start + 1
+                        to_end = to_start + len(add_string) + 1
+                        string = string + " " + add_string
+                    else:
+                        from_start, from_end = len(string[:-1]), len(string[:-1])
+                        to_start = from_start
+                        to_end = to_start + len(add_string) + 1
+                        string = string[:-1] + add_string + " " + string[-1]
+
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=from_start, end=from_end, word=""),
+                            new_span=Span(start=to_start, end=to_end,
+                                          word=string[to_start:to_end]),
+                            ignore=True
+                        )
                     )
-                )
+             
 
-            sample.test_case = string
-            sample.transformations = transformations
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = string_question
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = string_context
+            else:
+                sample.test_case = string
+                sample.transformations = transformations
+                
             sample.category = "robustness"
         return sample_list
 
