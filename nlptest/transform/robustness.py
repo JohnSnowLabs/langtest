@@ -542,29 +542,54 @@ class AddContraction(BaseRobustness):
             expanded_contraction = is_upper_case + contracted_token[1:]
             return expanded_contraction
 
-        for sample in sample_list:
-            replaced_string = sample.original
-            transformations = []
-
+        def search_contraction(text):
+            replaced_string = text
             for contraction in CONTRACTION_MAP:
-                search = re.search(contraction, sample.original,
-                                   flags=re.IGNORECASE | re.DOTALL)
-                if search:
-                    new_string = CONTRACTION_MAP.get(
-                        search.group(), search.group())
-                    diff_len = len(new_string) - len(search.group())
-                    replaced_string = re.sub(contraction, custom_replace, replaced_string,
-                                             flags=re.IGNORECASE | re.DOTALL)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=search.start(
-                            ), end=search.end(), word=search.group()),
-                            new_span=Span(start=search.start(
-                            ), end=search.end() + diff_len, word=new_string),
-                            ignore=False
-                        )
-                    )
-            sample.test_case = replaced_string
-            sample.transformations = transformations
+                        search = re.search(contraction, text,
+                                           flags=re.IGNORECASE | re.DOTALL)
+                        if search:
+                            new_string = CONTRACTION_MAP.get(
+                                search.group(), search.group())
+                            diff_len = len(new_string) - len(search.group())
+                            replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                                     flags=re.IGNORECASE | re.DOTALL)
+      
+                        return replaced_string
+            
+
+        for sample in sample_list:
+            
+            if "task" in sample.__annotations__:
+                 sample.perturbed_question = search_contraction(sample.original_question)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = search_contraction(sample.original_context)
+            
+            else:
+        
+                    replaced_string = sample.original
+                    transformations = []
+
+                    for contraction in CONTRACTION_MAP:
+                        search = re.search(contraction, sample.original,
+                                           flags=re.IGNORECASE | re.DOTALL)
+                        if search:
+                            new_string = CONTRACTION_MAP.get(
+                                search.group(), search.group())
+                          
+                            diff_len = len(new_string) - len(search.group())
+                            replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                                     flags=re.IGNORECASE | re.DOTALL)
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(start=search.start(
+                                    ), end=search.end(), word=search.group()),
+                                    new_span=Span(start=search.start(
+                                    ), end=search.end() + diff_len, word=new_string),
+                                    ignore=False
+                                )
+                            )
+                    sample.test_case = replaced_string
+                    sample.transformations = transformations
             sample.category = "robustness"
         return sample_list
