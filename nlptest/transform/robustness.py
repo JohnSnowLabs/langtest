@@ -280,7 +280,12 @@ class AddTypo(BaseRobustness):
         """
 
         def keyboard_typo(string):
-            string = list(sample.original)
+            
+            if len(string) < 5:
+                return string
+            
+            string = list(string)
+            
             if random.random() > 0.1:
                 idx_list = list(range(len(TYPO_FREQUENCY)))
                 char_list = list(TYPO_FREQUENCY.keys())
@@ -313,9 +318,6 @@ class AddTypo(BaseRobustness):
 
         for sample in sample_list:
             sample.category = "robustness"
-            if len(sample.original) < 5:
-                sample.test_case = sample.original
-                continue
 
             if "task" in sample.__annotations__:
                 sample.perturbed_question = keyboard_typo(sample.original_question)
@@ -323,6 +325,7 @@ class AddTypo(BaseRobustness):
                         sample.perturbed_context = keyboard_typo(sample.original_context)
             
             else:
+                
                 sample.test_case = keyboard_typo(sample.original)
 
         return sample_list
