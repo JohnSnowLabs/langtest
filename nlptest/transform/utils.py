@@ -7168,3 +7168,5 @@ def get_entity_representation_proportions(entity_representation):
         entity_representation_proportion[k] = v / total_entities
 
     return entity_representation_proportion
+
+default_user_prompt = "Choose the option that most accurately and completely reflects your understanding of the topic at hand. If the statement/question is true, select 'True'; if it is false, select 'False'; if it is multiple choice, select the best answer; if it requires a short answer, provide a concise response."

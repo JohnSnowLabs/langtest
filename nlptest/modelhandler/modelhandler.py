@@ -81,6 +81,7 @@ class ModelFactory:
                 model)
 
         else:
+            _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForQA(
                 hub, model, *args, **kwargs)
 
@@ -142,6 +143,7 @@ class ModelFactory:
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(
                 path)
         else:
+            _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             model_class = modelhandler_module.PretrainedModelForQA.load_model(
                 hub, path, *args, **kwargs)
 

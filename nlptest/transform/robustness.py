@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 from nlptest.modelhandler.modelhandler import ModelFactory
 
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -57,7 +57,7 @@ class BaseRobustness(ABC):
         for sample in sample_list:
             if sample.state != "done":
                 if 'original_context' in sample.__annotations__:
-                    user_prompt = kwargs['user_prompt'][kwargs['dataset_name']]
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt)
                     original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
                     perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
                     sample.expected_results = model(original_prompt)

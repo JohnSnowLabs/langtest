@@ -139,7 +139,6 @@ class Harness:
             with open(config, 'r') as yml:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
-        os.environ.update(self._config.get('env_variables', {}))
         return self._config
 
     def generate(self) -> "Harness":
@@ -175,7 +174,7 @@ class Harness:
                                "calling the `.run()` method.")
 
         self._generated_results = TestFactory.run(
-            self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("defaults", {}))
+            self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
         return self
 
     def report(self) -> pd.DataFrame:
@@ -191,11 +190,12 @@ class Harness:
                                "calling the `.report()` method.")
 
         if isinstance(self._config, dict):
-            self.default_min_pass_dict = self._config['defaults'].get(
+            self.default_min_pass_dict = self._config['tests']['defaults'].get(
                 'min_pass_rate', 0.65)
             self.min_pass_dict = {
                 j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in
-                self._config['tests'].items() for j, k in v.items()
+                self._config['tests'].items() for j, k in v.items() 
+                if isinstance(k, dict) and 'min_pass_rate' in k.keys()
             }
 
         summary = defaultdict(lambda: defaultdict(int))
