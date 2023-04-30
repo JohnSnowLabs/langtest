@@ -24,7 +24,8 @@ REQUIRED_PKGS = [
     'pydantic',
     'nest-asyncio',
     'jsonlines',
-    'langchain'
+    'langchain',
+    'openai'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
