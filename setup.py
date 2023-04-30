@@ -22,7 +22,8 @@ REQUIRED_PKGS = [
     'torch',
     'sentencepiece',
     'pydantic',
-    'nest-asyncio'
+    'nest-asyncio',
+    'jsonlines'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
