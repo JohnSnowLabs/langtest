@@ -23,7 +23,8 @@ REQUIRED_PKGS = [
     'sentencepiece',
     'pydantic',
     'nest-asyncio',
-    'jsonlines'
+    'jsonlines',
+    'langchain'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
