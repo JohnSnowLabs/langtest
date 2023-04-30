@@ -162,6 +162,8 @@ setup(
             "data/tweet/sample.csv",
             "data/conll/sample.conll",
             "data/textcat_imdb/*",
+            "data/boolQ/*",
+            "data/NQ-open/*",
             "data/textcat_imdb/*/*",
         ],
     },
