@@ -1,13 +1,13 @@
 import langchain as lc
 from ..modelhandler.modelhandler import _ModelHandler
 
-DEFAULT_HUB = {hub.lower(): hub for hub in lc.llms.__all__}
+DEFAULT_LLM_HUB = {hub.lower(): hub for hub in lc.llms.__all__}
 
 class PretrainedModelForQA(_ModelHandler):
 
     def __init__(self,  hub: str, model: str, *args, **kwargs):
         self.model = model
-        self.hub = DEFAULT_HUB[hub]
+        self.hub = DEFAULT_LLM_HUB[hub]
         self.kwargs = kwargs
 
     @classmethod
@@ -15,7 +15,7 @@ class PretrainedModelForQA(_ModelHandler):
         """"""
 
         try:
-            cls.model = getattr(lc, hub)(model_name=path, *args, **kwargs)
+            cls.model = getattr(lc, DEFAULT_LLM_HUB[hub])(model_name=path, *args, **kwargs)
             return cls.model
         except:
             raise ValueError(
