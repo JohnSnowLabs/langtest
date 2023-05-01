@@ -32,7 +32,7 @@ class ModelFactory:
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp',
                          'nlu', 'transformers', 'spacy', 'langchain']
-    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface', 'OpenAI']
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface', 'openai']
 
     def __init__(
             self,

@@ -22,7 +22,7 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "OpenAI"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai"]
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",

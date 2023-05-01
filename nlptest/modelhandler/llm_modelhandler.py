@@ -7,8 +7,7 @@ class PretrainedModelForQA(_ModelHandler):
 
     def __init__(self,  hub: str, model: str, *args, **kwargs):
         self.model = model
-        self.hub = hub
-        self.args = args
+        self.hub = DEFAULT_HUB[hub]
         self.kwargs = kwargs
 
     @classmethod
