@@ -134,10 +134,10 @@ Try out the nlptest library on the following default model-dataset combinations 
 from nlptest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = 'xxx'
+os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task='question-answering', model='text-davinci-003', hub='openai')
+h = Harness(task='question-answering', model='gpt-3.5-turbo', hub='openai', data='BoolQ-test')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
