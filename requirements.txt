@@ -10,3 +10,6 @@ johnsnowlabs==4.3.5
 plotly
 asyncio
 nest-asyncio
+jsonlines
+openai
+langchain
