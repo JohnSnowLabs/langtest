@@ -1,6 +1,7 @@
 import langchain as lc
 from ..modelhandler.modelhandler import _ModelHandler
 
+DEFAULT_HUB = {hub.lower(): hub for hub in lc.llms.__all__}
 
 class PretrainedModelForQA(_ModelHandler):
 
