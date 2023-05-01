@@ -76,14 +76,13 @@ class ModelFactory:
 
         if task == 'ner':
             self.model_class = model_handler.PretrainedModelForNER(model)
-        elif task == "text-classification":
-            self.model_class = model_handler.PretrainedModelForTextClassification(
-                model)
-
-        else:
+        elif task in ('question-answering'):
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForQA(
                 hub, model, *args, **kwargs)
+        else:
+            self.model_class = model_handler.PretrainedModelForTextClassification(
+                model)
 
     @classmethod
     def load_model(cls, task: str, hub: str, path: str, *args, **kwargs) -> 'ModelFactory':
@@ -139,13 +138,13 @@ class ModelFactory:
         if task == 'ner':
             model_class = modelhandler_module.PretrainedModelForNER.load_model(
                 path)
-        elif task == 'text-classifcation':
-            model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(
-                path)
-        else:
+        elif task in ('question-answering'):
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             model_class = modelhandler_module.PretrainedModelForQA.load_model(
                 hub, path, *args, **kwargs)
+        else:
+            model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(
+                path)
 
         return cls(
             model_class,
