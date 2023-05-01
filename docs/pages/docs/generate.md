@@ -63,6 +63,8 @@ h.configure(
  )
 ```
 
+</div><div class="h3-box" markdown="1">
+
 ### Generating Test Cases
 
 Generating the test cases based on the configuration is as simple as calling the following method:
@@ -70,6 +72,8 @@ Generating the test cases based on the configuration is as simple as calling the
 ```python
 h.generate()
 ```
+
+</div><div class="h3-box" markdown="1">
 
 ### Viewing Test Cases
 
@@ -87,7 +91,7 @@ A sample test cases dataframe looks like the one given below:
 | category  | test_type |  original | test_case | expected_result | 
 | - | - | - | - | - |
 |robustness| lowercase | I live in Berlin | i live in berlin | berlin: LOC |
-|robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | BERLIN: LOC] |
+|robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | BERLIN: LOC |
 
 
 </div></div>
