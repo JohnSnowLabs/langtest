@@ -57,7 +57,8 @@ class BaseRobustness(ABC):
         for sample in sample_list:
             if sample.state != "done":
                 if 'original_context' in sample.__annotations__:
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt)
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
                     perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
                     sample.expected_results = model(original_prompt)
