@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 from nlptest.modelhandler.modelhandler import ModelFactory
 
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt)
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -43,12 +43,12 @@ class BaseRobustness(ABC):
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
         """
         Abstract method that implements the robustness measure.
-        
+
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the robustness measure.
-        
+
         Returns:
             List[Sample]: The transformed data based on the implemented robustness measure.
 
@@ -56,13 +56,22 @@ class BaseRobustness(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                sample.expected_results = model(sample.original)
-                sample.actual_results = model(sample.test_case)
+                if 'original_context' in sample.__annotations__:
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
+                    perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
+                    sample.expected_results = model(original_prompt)
+                    sample.actual_results = model(perturbed_prompt)
+
+                else:
+                    sample.expected_results = model(sample.original)
+                    sample.actual_results = model(sample.test_case)
                 sample.state = "done"
             if progress:
                 progress.update(1)
         return sample_list
-    
+
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
         """
@@ -77,7 +86,8 @@ class BaseRobustness(ABC):
             asyncio.Task: The task that runs the robustness measure.
 
         """
-        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        created_task = asyncio.create_task(
+            cls.run(sample_list, model, **kwargs))
         return created_task
 
 
@@ -93,7 +103,12 @@ class UpperCase(BaseRobustness):
             List of sentences that uppercase robustness is applied.
         """
         for sample in sample_list:
-            sample.test_case = sample.original.upper()
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = sample.original_question.upper()
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = sample.original_context.upper()
+            else:
+                sample.test_case = sample.original.upper()
             sample.category = "robustness"
         return sample_list
 
@@ -110,7 +125,12 @@ class LowerCase(BaseRobustness):
             List of sentences that lowercase robustness is applied.
         """
         for sample in sample_list:
-            sample.test_case = sample.original.lower()
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = sample.original_question.lower()
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = sample.original_context.lower()
+            else:
+                sample.test_case = sample.original.lower()
             sample.category = "robustness"
         return sample_list
 
@@ -127,7 +147,12 @@ class TitleCase(BaseRobustness):
             List of sentences that titlecase robustness is applied.
         """
         for sample in sample_list:
-            sample.test_case = sample.original.title()
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = sample.original_question.title()
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = sample.original_context.title()
+            else:
+                sample.test_case = sample.original.title()
             sample.category = "robustness"
         return sample_list
 
@@ -147,31 +172,45 @@ class AddPunctuation(BaseRobustness):
 
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
-
-        for sample in sample_list:
-            if sample.original[-1] not in whitelist:
+        
+        def check_whitelist(text, whitelist):
+            if text[-1] not in whitelist:
                 chosen_punc = random.choice(whitelist)
-                sample.test_case = sample.original + chosen_punc
-                sample.transformations = [
-                    Transformation(
-                        original_span=Span(
-                            start=len(sample.original),
-                            end=len(sample.original),
-                            word=""
-                        ),
-                        new_span=Span(
-                            start=len(sample.original),
-                            end=len(sample.test_case),
-                            word=chosen_punc
-                        ),
-                        ignore=True
-                    )
-                ]
+                return text + chosen_punc
             else:
-                sample.test_case = sample.original
+                return text
+               
+        for sample in sample_list:
+            if "task" in sample.__annotations__:
+                 sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = check_whitelist(sample.original_context, whitelist)
+                                  
+            else:
+                    if sample.original[-1] not in whitelist:
+                        chosen_punc = random.choice(whitelist)
+                        sample.test_case = sample.original + chosen_punc
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=len(sample.original),
+                                    end=len(sample.original),
+                                    word=""
+                                ),
+                                new_span=Span(
+                                    start=len(sample.original),
+                                    end=len(sample.test_case),
+                                    word=chosen_punc
+                                ),
+                                ignore=True
+                            )
+                        ]
+                    else:
+                        sample.test_case = sample.original
+                        
             sample.category = "robustness"
         return sample_list
-
 
 class StripPunctuation(BaseRobustness):
     alias_name = "strip_punctuation"
@@ -190,26 +229,40 @@ class StripPunctuation(BaseRobustness):
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
 
-        for sample in sample_list:
-            if sample.original[-1] in whitelist:
-                sample.test_case = sample.original[:-1]
-                sample.transformations = [
-                    Transformation(
-                        original_span=Span(
-                            start=len(sample.original) - 1,
-                            end=len(sample.original),
-                            word=sample.original[-1:]
-                        ),
-                        new_span=Span(
-                            start=len(sample.test_case),
-                            end=len(sample.test_case),
-                            word=""
-                        ),
-                        ignore=True
-                    )
-                ]
+        def check_whitelist(text, whitelist):
+            if text[-1] in whitelist:
+                return text[:-1]
             else:
-                sample.test_case = sample.original
+                return text
+        
+        for sample in sample_list:
+            if "task" in sample.__annotations__:
+                 sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = check_whitelist(sample.original_context, whitelist)
+            
+            else: 
+           
+                if sample.original[-1] in whitelist:
+                    sample.test_case = sample.original[:-1]
+                    sample.transformations = [
+                        Transformation(
+                            original_span=Span(
+                                start=len(sample.original) - 1,
+                                end=len(sample.original),
+                                word=sample.original[-1:]
+                            ),
+                            new_span=Span(
+                                start=len(sample.test_case),
+                                end=len(sample.test_case),
+                                word=""
+                            ),
+                            ignore=True
+                        )
+                    ]
+                else:
+                    sample.test_case = sample.original
 
             sample.category = "robustness"
         return sample_list
@@ -226,13 +279,14 @@ class AddTypo(BaseRobustness):
         Returns:
             List of sentences that typo introduced.
         """
-        for sample in sample_list:
-            sample.category = "robustness"
-            if len(sample.original) < 5:
-                sample.test_case = sample.original
-                continue
 
-            string = list(sample.original)
+        def keyboard_typo(string):
+            
+            if len(string) < 5:
+                return string
+            
+            string = list(string)
+            
             if random.random() > 0.1:
                 idx_list = list(range(len(TYPO_FREQUENCY)))
                 char_list = list(TYPO_FREQUENCY.keys())
@@ -245,8 +299,10 @@ class AddTypo(BaseRobustness):
                         char_frequency = TYPO_FREQUENCY[char.lower()]
 
                         if sum(char_frequency) > 0:
-                            chosen_char = random.choices(idx_list, weights=char_frequency)
-                            difference = ord(char.lower()) - ord(char_list[chosen_char[0]])
+                            chosen_char = random.choices(
+                                idx_list, weights=char_frequency)
+                            difference = ord(char.lower()) - \
+                                ord(char_list[chosen_char[0]])
                             char = chr(ord(char) - difference)
                             string[idx] = char
                     else:
@@ -259,7 +315,20 @@ class AddTypo(BaseRobustness):
                 string[swap_idx] = string[swap_idx + 1]
                 string[swap_idx + 1] = tmp
 
-            sample.test_case = "".join(string)
+            return "".join(string)
+
+        for sample in sample_list:
+            sample.category = "robustness"
+
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = keyboard_typo(sample.original_question)
+                if "perturbed_context" in sample.__annotations__:
+                        sample.perturbed_context = keyboard_typo(sample.original_context)
+            
+            else:
+                
+                sample.test_case = keyboard_typo(sample.original)
+
         return sample_list
 
 
@@ -283,12 +352,15 @@ class SwapEntities(BaseRobustness):
         """
 
         if terminology is None:
-            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, terminology should be passed!')
 
         if labels is None:
-            raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
+            raise ValueError(
+                'In order to generate test cases for swap_entities, labels should be passed!')
 
-        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
+        assert len(sample_list) == len(
+            labels), f"'labels' and 'sample_list' must have same lengths."
 
         for sample, sample_labels in zip(sample_list, labels):
             sample.category = "robustness"
@@ -298,7 +370,8 @@ class SwapEntities(BaseRobustness):
 
             sent_tokens = sample.original.split(' ')
 
-            ent_start_pos = np.array([1 if label[0] == 'B' else 0 for label in sample_labels])
+            ent_start_pos = np.array(
+                [1 if label[0] == 'B' else 0 for label in sample_labels])
             ent_idx, = np.where(ent_start_pos == 1)
 
             replace_idx = np.random.choice(ent_idx)
@@ -311,14 +384,16 @@ class SwapEntities(BaseRobustness):
                     else:
                         break
 
-            replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
+            replace_token = sent_tokens[replace_idx: replace_idx +
+                                        len(replace_idxs)]
             token_length = len(replace_token)
             replace_token = " ".join(replace_token)
 
             chosen_ent = random.choice(terminology[ent_type])
             replace_token_pos = re.search(replace_token, sample.original)
 
-            sample.test_case = sample.original.replace(replace_token, chosen_ent)
+            sample.test_case = sample.original.replace(
+                replace_token, chosen_ent)
             sample.transformations = [
                 Transformation(
                     original_span=Span(
@@ -336,6 +411,7 @@ class SwapEntities(BaseRobustness):
             ]
         return sample_list
 
+
 class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
 
@@ -348,12 +424,12 @@ class ConvertAccent(BaseRobustness):
         Returns:
             List of sentences that perturbed with accent conversion.
         """
-        for sample in sample_list:
-            tokens = set(sample.original.split(' '))
-            replaced_string = sample.original
+        def convert_accent(string: str, accent_map: Dict[str, str]) -> str:
+            tokens = set(string.split(' '))
+            replaced_string = string
             transformations = []
 
-            for token in tokens:
+            for i, token in enumerate(tokens):
                 new_token = accent_map.get(token.lower(), token)
                 if new_token != token:
                     diff_len = len(new_token) - len(token)
@@ -361,16 +437,27 @@ class ConvertAccent(BaseRobustness):
 
                     for c in range(nb_occurrences):
                         span = re.search(token, replaced_string)
-                        replaced_string = re.sub(token, new_token, replaced_string, count=1)
+                        replaced_string = re.sub(
+                            token, new_token, replaced_string, count=1)
                         transformations.append(
                             Transformation(
-                                original_span=Span(start=span.start(), end=span.end(), word=token),
-                                new_span=Span(start=span.start(), end=span.end() + diff_len, word=new_token),
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=token),
+                                new_span=Span(
+                                    start=span.start(), end=span.end() + diff_len, word=new_token),
                                 ignore=False
                             )
                         )
-            sample.test_case = replaced_string
-            sample.transformations = transformations
+            return replaced_string, transformations
+
+        for sample in sample_list:
+            
+            if 'task' in sample.__annotations__:
+                sample.perturbed_question, _ = convert_accent(sample.original_question, accent_map)
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context, _ = convert_accent(sample.original_context, accent_map)
+            else:
+                sample.test_case, sample.transformations = convert_accent(sample.original, accent_map)
             sample.category = "robustness"
 
         return sample_list
@@ -407,44 +494,125 @@ class AddContext(BaseRobustness):
 
             transformations = []
             if strategy == "start" or strategy == "combined":
-                add_tokens = random.choice(starting_context)
-                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
-                string = add_string + ' ' + sample.original
-                transformations.append(
-                    Transformation(
-                        original_span=Span(start=0, end=0, word=""),
-                        new_span=Span(start=0, end=len(add_string) + 1, word=add_string),
-                        ignore=True
+                
+                if "task" in sample.__annotations__:
+                    
+                     add_tokens = random.choice(starting_context)
+                     add_string = " ".join(add_tokens) if isinstance(
+                         add_tokens, list) else add_tokens
+                     string_question = add_string + ' ' + sample.original_question
+                        
+                 
+                     if "perturbed_context" in sample.__annotations__:
+                        
+                        add_tokens = random.choice(starting_context)
+                        add_string = " ".join(add_tokens) if isinstance(
+                            add_tokens, list) else add_tokens
+                        string_context = add_string + ' ' + sample.original_context
+                      
+                else:
+                
+                    add_tokens = random.choice(starting_context)
+                    add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
+                    string = add_string + ' ' + sample.original
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=0, end=0, word=""),
+                            new_span=Span(start=0, end=len(
+                                add_string) + 1, word=add_string),
+                            ignore=True
+                        )
                     )
-                )
             else:
-                string = sample.original
+                if  "task" in sample.__annotations__:
+                    string_question = sample.original_question
+                    if "perturbed_context" in sample.__annotations__:
+                        string_context = sample.original_context
+                 
+                else:
+                    string = sample.original
 
             if strategy == "end" or strategy == "combined":
-                add_tokens = random.choice(ending_context)
-                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                
+                
+                if "task" in sample.__annotations__:
+                    
+                     add_tokens = random.choice(ending_context)
+                     add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
+                     
+                     if sample.original_question[-1].isalnum():
+                        
+                        from_start, from_end = len(string_question), len(string_question)
+                        to_start = from_start + 1
+                        to_end = to_start + len(add_string) + 1
+                        string_question = string_question + " " + add_string
+                        
+                     else:
+                        
+                        from_start, from_end = len(string_question[:-1]), len(string_question[:-1])
+                        to_start = from_start
+                        to_end = to_start + len(add_string) + 1
+                        string_question = string_question[:-1] + add_string + " " + string_question[-1]
+                    
+                 
+                 
+                     if "perturbed_context" in sample.__annotations__:
+                        
+                        add_tokens = random.choice(ending_context)
+                        add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
+                     
+                        if sample.original_context[-1].isalnum():
 
-                if sample.original[-1].isalnum():
-                    from_start, from_end = len(string), len(string)
-                    to_start = from_start + 1
-                    to_end = to_start + len(add_string) + 1
-                    string = string + " " + add_string
+                            from_start, from_end = len(string_context), len(string_context)
+                            to_start = from_start + 1
+                            to_end = to_start + len(add_string) + 1
+                            string_context = string_context + " " + add_string
+
+                        else:
+
+                            from_start, from_end = len(string_context[:-1]), len(string_context[:-1])
+                            to_start = from_start
+                            to_end = to_start + len(add_string) + 1
+                            string_context = string_context[:-1] + add_string + " " + string_context[-1]
+                
                 else:
-                    from_start, from_end = len(string[:-1]), len(string[:-1])
-                    to_start = from_start
-                    to_end = to_start + len(add_string) + 1
-                    string = string[:-1] + add_string + " " + string[-1]
+                    add_tokens = random.choice(ending_context)
+                    add_string = " ".join(add_tokens) if isinstance(
+                        add_tokens, list) else add_tokens
 
-                transformations.append(
-                    Transformation(
-                        original_span=Span(start=from_start, end=from_end, word=""),
-                        new_span=Span(start=to_start, end=to_end, word=string[to_start:to_end]),
-                        ignore=True
+                    if sample.original[-1].isalnum():
+                        from_start, from_end = len(string), len(string)
+                        to_start = from_start + 1
+                        to_end = to_start + len(add_string) + 1
+                        string = string + " " + add_string
+                    else:
+                        from_start, from_end = len(string[:-1]), len(string[:-1])
+                        to_start = from_start
+                        to_end = to_start + len(add_string) + 1
+                        string = string[:-1] + add_string + " " + string[-1]
+
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=from_start, end=from_end, word=""),
+                            new_span=Span(start=to_start, end=to_end,
+                                          word=string[to_start:to_end]),
+                            ignore=True
+                        )
                     )
-                )
+             
 
-            sample.test_case = string
-            sample.transformations = transformations
+            if "task" in sample.__annotations__:
+                sample.perturbed_question = string_question
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = string_context
+            else:
+                sample.test_case = string
+                sample.transformations = transformations
+                
             sample.category = "robustness"
         return sample_list
 
@@ -466,31 +634,61 @@ class AddContraction(BaseRobustness):
               regex replace for contraction.
             """
             token = match.group(0)
-            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(token.lower()))
+            contracted_token = CONTRACTION_MAP.get(
+                token, CONTRACTION_MAP.get(token.lower()))
 
             is_upper_case = token[0]
             expanded_contraction = is_upper_case + contracted_token[1:]
             return expanded_contraction
 
-        for sample in sample_list:
-            replaced_string = sample.original
-            transformations = []
-
+        def search_contraction(text):
+            replaced_string = text
             for contraction in CONTRACTION_MAP:
-                search = re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL)
-                if search:
-                    new_string = CONTRACTION_MAP.get(search.group(), search.group())
-                    diff_len = len(new_string) - len(search.group())
-                    replaced_string = re.sub(contraction, custom_replace, replaced_string,
-                                             flags=re.IGNORECASE | re.DOTALL)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=search.start(), end=search.end(), word=search.group()),
-                            new_span=Span(start=search.start(), end=search.end() + diff_len, word=new_string),
-                            ignore=False
-                        )
-                    )
-            sample.test_case = replaced_string
-            sample.transformations = transformations
+                        search = re.search(contraction, text,
+                                           flags=re.IGNORECASE | re.DOTALL)
+                        if search:
+                            new_string = CONTRACTION_MAP.get(
+                                search.group(), search.group())
+                            diff_len = len(new_string) - len(search.group())
+                            replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                                     flags=re.IGNORECASE | re.DOTALL)
+      
+                        return replaced_string
+            
+
+        for sample in sample_list:
+            
+            if "task" in sample.__annotations__:
+                 sample.perturbed_question = search_contraction(sample.original_question)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = search_contraction(sample.original_context)
+            
+            else:
+        
+                    replaced_string = sample.original
+                    transformations = []
+
+                    for contraction in CONTRACTION_MAP:
+                        search = re.search(contraction, sample.original,
+                                           flags=re.IGNORECASE | re.DOTALL)
+                        if search:
+                            new_string = CONTRACTION_MAP.get(
+                                search.group(), search.group())
+                          
+                            diff_len = len(new_string) - len(search.group())
+                            replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                                     flags=re.IGNORECASE | re.DOTALL)
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(start=search.start(
+                                    ), end=search.end(), word=search.group()),
+                                    new_span=Span(start=search.start(
+                                    ), end=search.end() + diff_len, word=new_string),
+                                    ignore=False
+                                )
+                            )
+                    sample.test_case = replaced_string
+                    sample.transformations = transformations
             sample.category = "robustness"
         return sample_list

@@ -15,10 +15,10 @@ class AccuracyTestCase(unittest.TestCase):
             hub="spacy"
         )
         self.h_spacy.configure(
-            {'defaults': {
-                'min_pass_rate': 0.65,
-            },
-                'tests': {
+                {'tests': {
+                    'defaults': {
+                        'min_pass_rate': 0.65,
+                    },
                     'accuracy': {
                         'min_f1_score': {
                             'min_score': 0.65

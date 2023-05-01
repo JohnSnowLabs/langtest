@@ -7168,3 +7168,8 @@ def get_entity_representation_proportions(entity_representation):
         entity_representation_proportion[k] = v / total_entities
 
     return entity_representation_proportion
+
+default_user_prompt = {
+    "boolq": "You are an intelligent bot and it is your responsibility to make sure that final answer can be only (True/False).\n Answer:",
+    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:"
+}

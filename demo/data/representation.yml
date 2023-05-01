@@ -1,6 +1,6 @@
-defaults:
-  min_pass_rate: 0.65 
 tests:
+    defaults:
+        min_pass_rate: 0.65 
     representation:
         min_label_representation_count:
             min_count: 
