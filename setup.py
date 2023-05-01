@@ -22,7 +22,10 @@ REQUIRED_PKGS = [
     'torch',
     'sentencepiece',
     'pydantic',
-    'nest-asyncio'
+    'nest-asyncio',
+    'jsonlines',
+    'langchain',
+    'openai'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -162,6 +165,8 @@ setup(
             "data/tweet/sample.csv",
             "data/conll/sample.conll",
             "data/textcat_imdb/*",
+            "data/boolQ/*",
+            "data/NQ-open/*",
             "data/textcat_imdb/*/*",
         ],
     },
