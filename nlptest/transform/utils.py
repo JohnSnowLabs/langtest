@@ -7170,6 +7170,6 @@ def get_entity_representation_proportions(entity_representation):
     return entity_representation_proportion
 
 default_user_prompt = {
-    "boolq": "You are an intelligent bot and it is your responsibility to make sure that final answer can be only (True/False).\n Answer:",
+    "boolq": "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
     "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:"
 }
