@@ -32,8 +32,6 @@ h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs', data='test.conl
 h.generate().run().report()
 ```
 
-</div><div class="h3-box" markdown="1">
-
 #### Custom Pipelines
 
 ```python
@@ -70,8 +68,6 @@ h = Harness(task='ner', model=ner_model_pipeline, hub='johnsnowlabs', data='test
 # Generate test cases, run them and view a report
 h.generate().run().report()
 ```
-
-</div><div class="h3-box" markdown="1">
 
 #### Locally Saved Models
 
