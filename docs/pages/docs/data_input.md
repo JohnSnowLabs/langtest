@@ -93,7 +93,7 @@ For `CSV` files, we support different variations of the column names. They are s
 In the Harness, we specify the data input in the following way:
 
 ```python
-#Import Harness from the nlptest library
+# Import Harness from the nlptest library
 from nlptest import Harness
 harness = Harness(task='text-classification',
                   model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
@@ -127,7 +127,7 @@ To test Question Answering models, the user is meant to select a benchmark datas
 In the Harness, we specify the data input in the following way:
 
 ```python
-#Import Harness from the nlptest library
+# Import Harness from the nlptest library
 from nlptest import Harness
 harness = Harness(task='question-answering',
                   model='gpt-3.5-turbo',

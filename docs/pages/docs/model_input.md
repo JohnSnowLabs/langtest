@@ -9,7 +9,7 @@ header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-For model inputs, we can pass either a pretrained model/pipeline from the hub or our own custom pipeline model, or path to a locally saved model.
+The `Harness` `model` parameter accepts either a pretrained model or pipeline from a given hub, a custom pipeline object, or a path to a locally saved model.
 
 ### John Snow Labs
 
