@@ -13,25 +13,32 @@ The `Harness` `model` parameter accepts either a pretrained model or pipeline fr
 
 ### John Snow Labs
 
-```python
+
+#### Pretrained Models
+
+```bash
 pip install johnsnowlabs
+```
+
+```python
 from johnsnowlabs import nlp
 ```
 
-Using a `Pretrained Model` in John Snow Labs.
-
 ```python
 from nlptest import Harness
-h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs')
+h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs', data='test.conll', config='config.yml')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
 ```
 
-Using a `Custom Pipeline` in John Snow Labs.
+</div><div class="h3-box" markdown="1">
+
+#### Custom Pipelines
 
 ```python
 spark = nlp.start()
+
 documentAssembler = nlp.DocumentAssembler()\
 		.setInputCol("text")\
 		.setOutputCol("document")
@@ -48,45 +55,33 @@ ner = nlp.NerDLModel.pretrained("ner_dl", 'en') \
 		.setInputCols(["document", "token", "embeddings"]) \
 		.setOutputCol("ner")
 
-ner_pipeline = nlp.Pipeline().setStages([
-				documentAssembler,
-				tokenizer,
-				embeddings,
-				ner
-    ])
+ner_pipeline = nlp.Pipeline().setStages([documentAssembler,
+                                         tokenizer,
+                                         embeddings,
+                                         ner])
 
 ner_model_pipeline = ner_pipeline.fit(spark.createDataFrame([[""]]).toDF("text"))
 
-
 from nlptest import Harness
-h = Harness(task='ner', model=ner_model_pipeline, data='test.conll', config='test.config')
-h.generate().run().report()
 
-
-```
-
-Using a `Locally Saved Model` in John Snow Labs .
-
-```python
-from nlptest import Harness
-h = Harness(task='ner', model='path/to/local_saved_model', hub='johnsnowlabs', data='test.conll', config='test.config')
+# Create test Harness
+h = Harness(task='ner', model=ner_model_pipeline, hub='johnsnowlabs', data='test.conll', config='config.yml')
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
 ```
 
-</div><div class="h3-box" markdown="1"> 	
+</div><div class="h3-box" markdown="1">
 
-### Spacy
+#### Locally Saved Models
 
-Using a `Pretrained Model` in Spacy.
 ```python
 from nlptest import Harness
 
-# Create a Harness object
-h = Harness('ner', model='en_core_web_sm', hub='spacy')
+# Create test Harness
+h = Harness(task='ner', model='path/to/local_saved_model', hub='johnsnowlabs', data='test.conll', config='config.yml')
 
-# Generate, run and get a report on your test cases
+# Generate test cases, run them and view a report
 h.generate().run().report()
 ```
 
@@ -94,16 +89,75 @@ h.generate().run().report()
 
 ### Hugging Face
 
-Using a `Pretrained Model` in Hugging Face.
+#### Pretrained Models
+
 ```python
 from nlptest import Harness
 
-# Create a Harness object
-h = Harness('ner', model='dslim/bert-base-NER', hub='huggingface')
+# Create test Harness
+h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface', data='test.conll', config='config.yml')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 ```
 
+#### Locally Saved Models
+
+```python
+from nlptest import Harness
+
+# Create test Harness
+h = Harness(task='text-classification', model='path/to/local_saved_model', hub='huggingface', data='test.csv', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div><div class="h3-box" markdown="1">
+
+### OpenAI
+
+Using any large language model from the [OpenAI API](https://platform.openai.com/docs/models/overview):
+
+```python
+from nlptest import Harness
+
+# Set API keys
+os.environ['OPENAI_API_KEY'] = ''
+
+# Create test Harness
+h = Harness(task='question-answering', model='gpt-3.5-turbo', hub='openai', data='BoolQ-test', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div><div class="h3-box" markdown="1">
+
+### Spacy
+
+#### Pretrained Models
+
+```python
+from nlptest import Harness
+
+# Create test Harness
+h = Harness(task='ner', model='en_core_web_sm', hub='spacy', data='test.conll', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+#### Locally Saved Models
+
+```python
+from nlptest import Harness
+
+# Create test Harness
+h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
 
 </div></div>
