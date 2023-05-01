@@ -65,17 +65,17 @@ The following tables give an overview of the different categories and tests.
 |[Representation](representation)		    |[Min Label Representation Proportion](representation#label-representation-proportion)                      |ner, text-classification     
 |[Representation](representation)		    |[Min Gender Representation Count](representation#religion-representation-count)                            |ner, text-classification       
 |[Representation](representation)		    |[Min Gender Representation Proportion](representation#religion-representation-proportion)                  |ner, text-classification     
-|[Robustness](robustness)		            |[Add Context](robustness#add-context)                                                                      |ner, text-classification     
-|[Robustness](robustness)		            |[Add Contraction](robustness#add-contraction)                                                              |ner, text-classification     
-|[Robustness](robustness)		            |[Add Punctuation](robustness#add-punctuation)                                                              |ner, text-classification     
-|[Robustness](robustness)		            |[Add Typo](robustness#add-typo)                                                                            |ner, text-classification       
-|[Robustness](robustness)		            |[American to British](robustness#american-to-british)                                                      |ner, text-classification     
-|[Robustness](robustness)		            |[British to American](robustness#british-to-american)                                                      |ner, text-classification     
-|[Robustness](robustness)		            |[Lowercase](robustness#lowercase)                                                                          |ner, text-classification     
-|[Robustness](robustness)		            |[Strip Punctuation](robustness#strip-punctuation)                                                          |ner, text-classification     
+|[Robustness](robustness)		            |[Add Context](robustness#add-context)                                                                      |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[Add Contraction](robustness#add-contraction)                                                              |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[Add Punctuation](robustness#add-punctuation)                                                              |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[Add Typo](robustness#add-typo)                                                                            |ner, text-classification, question-answering       
+|[Robustness](robustness)		            |[American to British](robustness#american-to-british)                                                      |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[British to American](robustness#british-to-american)                                                      |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[Lowercase](robustness#lowercase)                                                                          |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[Strip Punctuation](robustness#strip-punctuation)                                                          |ner, text-classification, question-answering     
 |[Robustness](robustness)		            |[Swap Entities](robustness#swap-entities)                                                                  |ner     
-|[Robustness](robustness)		            |[Titlecase](robustness#titlecase)                                                                          |ner, text-classification     
-|[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |ner, text-classification     
+|[Robustness](robustness)		            |[Titlecase](robustness#titlecase)                                                                          |ner, text-classification, question-answering     
+|[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |ner, text-classification, question-answering     
 
 
 </div></div>
