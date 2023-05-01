@@ -62,10 +62,5 @@ data:
       - text: Get Started Now
         url: docs/pages/docs/install
 
-   ##- title: Pandas
-     ##excerpt: NLU ships with many <b>NLP features</b>, pre-trained <b>models</b> and <b>pipelines</b> <div>It takes in Pandas and outputs <b>Pandas Dataframes</b></div><div>All in <b>one line</b></div>
-     ##pandas: yes
-     ##theme: dark
-
     
 ---

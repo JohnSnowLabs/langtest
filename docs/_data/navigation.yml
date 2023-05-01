@@ -26,7 +26,7 @@ docs-menu:
     children:
         - title: Harness Explained
           url: /docs/pages/docs/harness
-        - title:  Data Inputs
+        - title:  Data Input
           url:    /docs/pages/docs/data_input
         - title:  Model Input
           url:    /docs/pages/docs/model_input
