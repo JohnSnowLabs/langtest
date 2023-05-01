@@ -7169,4 +7169,7 @@ def get_entity_representation_proportions(entity_representation):
 
     return entity_representation_proportion
 
-default_user_prompt = "Choose the option that most accurately and completely reflects your understanding of the topic at hand. If the statement/question is true, select 'True'; if it is false, select 'False'; if it is multiple choice, select the best answer; if it requires a short answer, provide a concise response."
+default_user_prompt = {
+    "boolQ": "You are an intelligent bot and it is your responsibility to make sure that final answer can be only (True/False).\n Answer:",
+    "NQ": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:"
+}
