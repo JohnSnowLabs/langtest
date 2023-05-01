@@ -56,6 +56,7 @@ In the Harness, we specify the data input in the following way:
 ```python
 # Import Harness from the nlptest library
 from nlptest import Harness
+
 harness = Harness(task='ner',
                   model='en_core_web_sm',
                   config='config.yml',
@@ -95,6 +96,7 @@ In the Harness, we specify the data input in the following way:
 ```python
 # Import Harness from the nlptest library
 from nlptest import Harness
+
 harness = Harness(task='text-classification',
                   model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
                   config='config.yml',
@@ -129,6 +131,7 @@ In the Harness, we specify the data input in the following way:
 ```python
 # Import Harness from the nlptest library
 from nlptest import Harness
+
 harness = Harness(task='question-answering',
                   model='gpt-3.5-turbo',
                   config='config.yml',
