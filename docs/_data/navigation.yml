@@ -24,7 +24,7 @@ docs-menu:
   - title: Test Harness
     url: /docs/pages/docs/harness
     children:
-        - title: Harness Explained
+        - title: Harness
           url: /docs/pages/docs/harness
         - title:  Data Input
           url:    /docs/pages/docs/data_input
