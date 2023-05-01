@@ -98,11 +98,11 @@ class DataFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
-            'boolQ-test-tiny': script_dir[:-7]+'/boolQ/test-tiny.jsonl',
-            'boolQ-test': script_dir[:-7]+'/boolQ/test.jsonl',
-            'boolQ': script_dir[:-7]+'/boolQ/combined.jsonl',
-            'nq-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
-            'nq-open': script_dir[:-7]+'/NQ-open/combined.jsonl'
+            'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
+            'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
+            'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
+            'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
+            'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl'
         }
         return datasets_info[dataset_name]
 
