@@ -3,7 +3,7 @@
 
 ## Add Typo
 
-This test checks if the NLP model can handle input text with typos. A typo frequenct dictionary is used to apply most common typos to the input data.
+This test checks if the NLP model can handle input text with typos. A typo frequency dictionary is used to apply most common typos to the input data.
 
 **alias_name:** `add_typo`
 

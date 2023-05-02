@@ -20,4 +20,4 @@ class HuggingFaceTestCase(unittest.TestCase):
     def test_unsupported_task(self):
         # Raises with unsupported task to model Factory
         with self.assertRaises(AssertionError):
-            ModelFactory(self.models[0], self.tasks[1])
+            ModelFactory(self.models[0], self.tasks[1], hub="huggingface")

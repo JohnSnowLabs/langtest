@@ -21,7 +21,7 @@ copyright = '2023, John Snow Labs'
 author = 'John Snow Labs'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.2'
+release = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------

@@ -87,6 +87,7 @@ conda install -c johnsnowlabs nlptest
                 <div class="tabs-header">
                   <a href="#" class="tab-btn">John Snow Labs</a>
                   <a href="#" class="tab-btn">Hugging Face</a>
+                  <a href="#" class="tab-btn">OpenAI</a>
                   <a href="#" class="tab-btn">Spacy</a>
                 </div>
                 <div class="tabs-body">
@@ -110,6 +111,22 @@ from nlptest import Harness
 
 # Create a Harness object
 h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+                    </div>
+                  </div>
+                  <div class="tabs-item">
+                    <div class="highlight-box">
+                      {% highlight python %}
+from nlptest import Harness
+
+# Set API keys
+os.environ['OPENAI_API_KEY'] = ''
+
+# Create a Harness object
+h = Harness(task='question-answering', model='gpt-3.5-turbo', hub='openai', data='BoolQ-test')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()

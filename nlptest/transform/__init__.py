@@ -47,14 +47,15 @@ class TestFactory:
         m_data = kwargs.get('m_data', None)
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
-            sub_test_types = test_types[each]
+            if each in all_categories:
+                sub_test_types = test_types[each]
 
-            all_results.extend(
-                all_categories[each](m_data, sub_test_types,
-                                     raw_data=data).transform()
-                if each in ["robustness", "bias"] and m_data
-                else all_categories[each](data, sub_test_types).transform()
-            )
+                all_results.extend(
+                    all_categories[each](m_data, sub_test_types,
+                                        raw_data=data).transform()
+                    if each in ["robustness", "bias"] and m_data
+                    else all_categories[each](data, sub_test_types).transform()
+                )
         tests.close()
         return all_results
 

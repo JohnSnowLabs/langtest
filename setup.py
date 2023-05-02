@@ -22,7 +22,10 @@ REQUIRED_PKGS = [
     'torch',
     'sentencepiece',
     'pydantic',
-    'nest-asyncio'
+    'nest-asyncio',
+    'jsonlines',
+    'langchain',
+    'openai'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -47,7 +50,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.0.2",  # Required
+    version="1.1.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -162,6 +165,8 @@ setup(
             "data/tweet/sample.csv",
             "data/conll/sample.conll",
             "data/textcat_imdb/*",
+            "data/BoolQ/*",
+            "data/NQ-open/*",
             "data/textcat_imdb/*/*",
         ],
     },

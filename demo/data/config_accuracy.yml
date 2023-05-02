@@ -1,7 +1,7 @@
-defaults:
-  min_pass_rate: 0.65
-  min_representation: 50
 tests:
+  defaults:
+    min_pass_rate: 0.65
+    min_representation: 50
   accuracy:
     min_micro_f1_score:
       min_score: 0.5
