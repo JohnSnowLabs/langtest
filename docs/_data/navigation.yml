@@ -32,25 +32,25 @@ docs-menu:
           url:    /docs/pages/docs/model_input
 
 
-  - title:  Generate/Run Workflow
-    url:    /docs/pages/docs/generate
+  - title: Testing Workflow
+    url: /docs/pages/docs/generate
     children:
         - title: Generating Test Cases
           url: /docs/pages/docs/generate
-        - title:  Running Test Cases
-          url:    /docs/pages/docs/run
-        - title:  Report 
-          url:    /docs/pages/docs/report
+        - title: Running Test Cases
+          url: /docs/pages/docs/run
+        - title: Report
+          url: /docs/pages/docs/report
 
-  - title:  Save/Load Workflow
+  - title: Saving & Loading
     url: /docs/pages/docs/save
     children:
         - title: Save
           url: /docs/pages/docs/save
-        - title:  Load
-          url:    /docs/pages/docs/load    
+        - title: Load
+          url: /docs/pages/docs/load
   
-  - title: Augmentations
+  - title: Augmentation
     url: /docs/pages/docs/generate_augmentation
     children:
         - title: Generating Augmentations
