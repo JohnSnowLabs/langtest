@@ -10,8 +10,6 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-<div class="heading" id="save"> Save </div>
-
 The Harness class provides `save()` and `load()` methods to save and load test configurations, generated test cases and the test data so that it can be reused later.
       
 ```python
