@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: Save | NLP Docs | John Snow Labs
-title: Save/Load Workflow
+title: Saving Tests
 permalink: /docs/pages/docs/save
 key: docs-install
 modify_date: "2020-05-26"
