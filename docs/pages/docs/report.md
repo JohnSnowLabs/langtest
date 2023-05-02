@@ -17,7 +17,7 @@ It provides a convenient way to quickly evaluate the results of your tests and d
 ```python
 h.report()
 ```
-A sample report looks like the one given below:
+A sample report looks like this:
 
 {:.table2}
 | category  | test_type |  fail_count | pass_count | pass_rate |  minimum_pass_rate | pass |
