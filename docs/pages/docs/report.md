@@ -1,7 +1,7 @@
 ---
 layout: docs
-seotitle: Report | NLP Test | John Snow Labs
-title: Report
+seotitle: Retrieving Reports | NLP Test | John Snow Labs
+title: Retrieving Reports
 permalink: /docs/pages/docs/report
 key: docs-install
 modify_date: "2023-03-28"

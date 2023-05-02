@@ -39,7 +39,7 @@ docs-menu:
           url: /docs/pages/docs/generate
         - title: Running Test Cases
           url: /docs/pages/docs/run
-        - title: Report
+        - title: Retrieving Reports
           url: /docs/pages/docs/report
 
   - title: Saving & Loading
@@ -50,7 +50,7 @@ docs-menu:
         - title: Load
           url: /docs/pages/docs/load
   
-  - title: Augmentation
+  - title: Data Augmentation
     url: /docs/pages/docs/generate_augmentation
     children:
         - title: Generating Augmentations
