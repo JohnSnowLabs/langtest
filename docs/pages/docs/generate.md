@@ -47,9 +47,6 @@ h = Harness(task='text-classification', model='path/to/local_saved_model', hub='
 
 h.configure(
   {
-    'defaults': {
-      'min_pass_rate': 0.65
-    },
     'tests': {
       'defaults': {
           'min_pass_rate': 0.65
