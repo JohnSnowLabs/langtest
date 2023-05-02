@@ -18,10 +18,7 @@ You can clone this repo and build and view the API documentation locally:
 
    `make html`
 
-5. Run a web server:
+5. Deploy the full website locally and check the api page (`http://127.0.0.1:4000/api`)
 
-   `python -m http.server`
-
-6. View the doc set locally in a browser at:
-
-   http://localhost:8000/_build/html/
+   `cd ../docs/`
+   `bundle exec jekyll serve`
