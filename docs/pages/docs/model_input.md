@@ -21,10 +21,6 @@ pip install johnsnowlabs
 ```
 
 ```python
-from johnsnowlabs import nlp
-```
-
-```python
 from nlptest import Harness
 h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs', data='test.conll', config='config.yml')
 
@@ -35,6 +31,7 @@ h.generate().run().report()
 #### Custom Pipelines
 
 ```python
+from johnsnowlabs import nlp
 spark = nlp.start()
 
 documentAssembler = nlp.DocumentAssembler()\
