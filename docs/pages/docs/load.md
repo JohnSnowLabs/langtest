@@ -1,7 +1,7 @@
 ---
 layout: docs
 seotitle: Load | NLP Test | John Snow Labs
-title: Load
+title: Loading Tests
 permalink: /docs/pages/docs/load
 key: docs-install
 modify_date: "2020-05-26"
