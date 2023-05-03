@@ -17,7 +17,7 @@ class PretrainedModelForQA(_ModelHandler):
         try:
             cls.model = getattr(lc, DEFAULT_LLM_HUB[hub])(model_name=path, *args, **kwargs)
             return cls.model
-        except:
+        except ImportError:
             raise ValueError(
                 f'''Model "{path}" is not found online or local.
                 Please install langchain by pip install langchain''')
