@@ -2,11 +2,10 @@ import asyncio
 import random
 import re
 import numpy as np
+from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
-
 from nlptest.modelhandler.modelhandler import ModelFactory
-
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt)
 from ..utils.custom_types import Sample, Span, Transformation
 
@@ -691,4 +690,62 @@ class AddContraction(BaseRobustness):
                     sample.test_case = replaced_string
                     sample.transformations = transformations
             sample.category = "robustness"
+        return sample_list
+        
+class NumberToWord(BaseRobustness):
+    alias_name = "number_to_word"
+    infEng = engine()
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transform a list of strings to their equivalent verbal representation
+        of numbers present in the string.
+        Args:
+            sample_list: List of sentences to apply robustness.
+        Returns:
+            List of sentences that have numbers in their verbal representation.
+        """
+        for sample in sample_list:
+            results = []
+            trans = []
+            transformations = []
+            start_offset = 0
+            for token in sample.original.split():
+                if re.match(r'^\d+$', token):
+                    words = NumberToWord.infEng.number_to_words(int(token), wantlist=True)
+                    token_len = len(token) - 1
+                    new_words_len = len(' '.join(words)) - 1
+                    trans.extend(words)
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + token_len, word=token),
+                            new_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + new_words_len, word=' '.join(words)),
+                            ignore=False
+                        )
+                    )
+                else:
+                    match = re.match(r'^(\d+)([^\d\s]+)$', token)
+                    if match:
+                        # separate the numerical digit and the word without space
+                        words = NumberToWord.infEng.number_to_words(int(match.group(1)), wantlist=True)
+                        token_len = len(token) - 1
+                        new_words_len = len(' '.join(words + [match.group(2)])) - 1
+                        trans.extend(words)
+                        trans.append(match.group(2))
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + token_len, word=token),
+                                new_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + new_words_len, word=' '.join(words + [match.group(2)])),
+                                ignore=False
+                            )
+                        )
+                    else:
+                        trans.append(token)
+                start_offset = sample.original.find(token, start_offset) + len(token)
+                
+            results.append(" ".join(trans))
+            sample.test_case = " ".join(results)
+            sample.category = "robustness"
+            sample.transformations = transformations
         return sample_list
