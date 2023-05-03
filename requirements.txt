@@ -13,3 +13,4 @@ nest-asyncio
 jsonlines
 openai
 langchain
+inflect
