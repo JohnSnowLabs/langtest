@@ -1,5 +1,4 @@
 import unittest
-
 from nlptest.transform.robustness import *
 from nlptest.transform.utils import A2B_DICT
 from nlptest.utils.custom_types import SequenceClassificationSample
@@ -11,6 +10,10 @@ class RobustnessTestCase(unittest.TestCase):
         self.sentences = [
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
             SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
+        ]
+        self.number_sentences = [
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
+            SequenceClassificationSample(original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them")
         ]
         self.sentences_with_punctuation = [
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019."),
@@ -132,3 +135,23 @@ class RobustnessTestCase(unittest.TestCase):
             [len(sample.transformations) for sample in transformed_samples],
             [0, 1]
         )
+        
+    def test_number_to_word(self) -> None:
+        """"""
+        transformed_samples = NumberToWord.transform(self.number_sentences)
+        print(transformed_samples)
+        # Test that the transformed_samples sentences are in a list
+        self.assertIsInstance(transformed_samples, list)
+        # Test that the original sentences are modified
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+        # Test that only numbers have been replaced by their word form
+        for sample in transformed_samples:
+            original_words = sample.original.split()
+            transformed_words = sample.test_case.split()
+            for original_word, transformed_word in zip(original_words, transformed_words):
+                if original_word.isnumeric():
+                    self.assertTrue(transformed_word.isalpha())
+                # check that there are no numeric characters in the transformed sentence
+                else:
+                    self.assertTrue(not any(char.isdigit() for char in sample.test_case))
