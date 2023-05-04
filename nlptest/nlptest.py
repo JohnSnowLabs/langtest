@@ -157,7 +157,7 @@ class Harness:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
         self._testcases = TestFactory.transform(
-            self.data, tests, m_data=m_data)
+            self.task, self.data, tests, m_data=m_data)
         return self
 
     def run(self) -> "Harness":
