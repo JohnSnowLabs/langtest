@@ -11,7 +11,6 @@ from pkg_resources import resource_filename
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
-from .testrunner import BaseRunner
 from .transform import TestFactory
 
 
@@ -66,8 +65,8 @@ class Harness:
         self.task = task
 
         if isinstance(model, str) and hub is None:
-            raise ValueError(f"When passing a string argument to the 'model' parameter, you must provide an argument "
-                             f"for the 'hub' parameter as well.")
+            raise ValueError("When passing a string argument to the 'model' parameter, you must provide an argument "
+                             "for the 'hub' parameter as well.")
 
         if hub is not None and hub not in self.SUPPORTED_HUBS:
             raise ValueError(
@@ -81,13 +80,12 @@ class Harness:
             if model == "textcat_imdb":
                 model = resource_filename("nlptest", "data/textcat_imdb")
             self.is_default = True
-            logging.info(
-                f"Default dataset '{(task, model, hub)}' successfully loaded.")
+            logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
-                             f"passed is not among the default ones. You need to either specify the parameter 'data' "
-                             f"or use a default configuration.")
+            raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
+                             "passed is not among the default ones. You need to either specify the parameter 'data' "
+                             "or use a default configuration.")
         elif isinstance(data, list):
             self.data = data
         else:
@@ -136,7 +134,7 @@ class Harness:
         if type(config) == dict:
             self._config = config
         else:
-            with open(config, 'r') as yml:
+            with open(config, 'r', encoding="utf-8") as yml:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
         return self._config
@@ -280,7 +278,7 @@ class Harness:
         """
 
         dtypes = list(map(
-            lambda x: str(x),
+            str,
             self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
         if dtypes not in [['int64'] * 2, ['int32'] * 2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace(
@@ -332,13 +330,13 @@ class Harness:
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
 
-        with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
+        with open(os.path.join(save_dir, "config.yaml"), 'w', encoding="utf-8") as yml:
             yml.write(yaml.safe_dump(self._config_copy))
 
-        with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
+        with open(os.path.join(save_dir, "test_cases.pkl"), "wb", encoding="utf-8") as writer:
             pickle.dump(self._testcases, writer)
 
-        with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
+        with open(os.path.join(save_dir, "data.pkl"), "wb", encoding="utf-8") as writer:
             pickle.dump(self.data, writer)
 
     @classmethod
