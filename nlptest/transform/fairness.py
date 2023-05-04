@@ -74,6 +74,7 @@ class MinGenderF1Score(BaseFairness):
     """
 
     alias_name = "min_gender_f1_score"
+    supported_tasks = ["ner", "text-classification"]
 
     @staticmethod
     def transform(data: List[Sample], params):

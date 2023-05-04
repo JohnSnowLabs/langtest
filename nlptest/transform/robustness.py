@@ -22,6 +22,7 @@ class BaseRobustness(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification", "question-answering"]
 
     @staticmethod
     @abstractmethod

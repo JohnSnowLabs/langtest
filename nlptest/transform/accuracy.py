@@ -18,6 +18,7 @@ class BaseAccuracy(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification"]
 
     @staticmethod
     @abstractmethod

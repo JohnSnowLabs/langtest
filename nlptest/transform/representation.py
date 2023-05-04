@@ -453,6 +453,7 @@ class ReligionRepresentation(BaseRepresentation):
         "min_religion_name_representation_count",
         "min_religion_name_representation_proportion"
     ]
+    supported_tasks = ["ner", "text-classification"]
 
     def transform(test, data, params):
         """
