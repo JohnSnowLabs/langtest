@@ -153,7 +153,7 @@ class AugmentRobustness(BaseAugmentaion):
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
                     aug_data = TestFactory.transform(
-                        self.task
+                        self.task,
                         sample_data, test_type)
                     fianl_aug_data.extend(aug_data)
         if inplace:
