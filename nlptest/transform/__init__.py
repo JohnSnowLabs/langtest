@@ -48,14 +48,14 @@ class TestFactory:
 
         # Check test-task supportance
         for test_category in tests:
-            if test_category in all_categories:
+            if test_category in all_categories.keys():
                 sub_test_types = test_types[test_category]
                 for sub_test in sub_test_types:
                     supported = all_categories[test_category].available_tests()[sub_test].supported_tasks
                     if task not in supported:
                         raise ValueError(f"The test type \"{sub_test}\" is not supported for the task \"{task}\". \"{sub_test}\" only supports {supported}.")
-            elif test_category is not "defaults":
-                raise ValueError(f"The test category {test_category} does not exist. Available categories are: {all_categories}.")
+            elif test_category != "defaults":
+                raise ValueError(f"The test category {test_category} does not exist. Available categories are: {all_categories.keys()}.")
                 
         # Generate testcases
         for each in tests:
