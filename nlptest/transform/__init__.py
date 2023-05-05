@@ -42,22 +42,33 @@ class TestFactory:
         """
         all_results = []
         all_categories = TestFactory.test_categories()
-        print("GENERATING")
-        tests = test_types.keys()#tqdm(, desc="Generating testcases...",
-                    #  disable=TestFactory.is_augment)
+        tests = tqdm(test_types.keys(), desc="Generating testcases...",
+                     disable=TestFactory.is_augment)
         m_data = kwargs.get('m_data', None)
+
+        # Check test-task supportance
+        for test_category in tests:
+            if test_category in all_categories:
+                sub_test_types = test_types[test_category]
+                for sub_test in sub_test_types:
+                    supported = all_categories[test_category].available_tests()[sub_test].supported_tasks
+                    if task not in supported:
+                        raise ValueError(f"The test type \"{sub_test}\" is not supported for the task \"{task}\". \"{sub_test}\" only supports {supported}.")
+            elif test_category is not "defaults":
+                raise ValueError(f"The test category {test_category} does not exist. Available categories are: {all_categories}.")
+                
+        # Generate testcases
         for each in tests:
-            # tests.set_description(f"Generating testcases... ({each})")
+            tests.set_description(f"Generating testcases... ({each})")
             if each in all_categories:
                 sub_test_types = test_types[each]
-                print(all_categories[each].available_tests())
                 all_results.extend(
                     all_categories[each](m_data, sub_test_types,
                                         raw_data=data).transform()
                     if each in ["robustness", "bias"] and m_data
                     else all_categories[each](data, sub_test_types).transform()
                 )
-        # tests.close()
+        tests.close()
         return all_results
 
     @classmethod
