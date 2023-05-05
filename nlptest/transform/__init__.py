@@ -24,7 +24,7 @@ class TestFactory:
     is_augment = False
 
     @staticmethod
-    def transform(data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
+    def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
         """
         Runs the specified tests on the given data and returns a list of results.
 
@@ -45,11 +45,23 @@ class TestFactory:
         tests = tqdm(test_types.keys(), desc="Generating testcases...",
                      disable=TestFactory.is_augment)
         m_data = kwargs.get('m_data', None)
+
+        # Check test-task supportance
+        for test_category in tests:
+            if test_category in all_categories.keys():
+                sub_test_types = test_types[test_category]
+                for sub_test in sub_test_types:
+                    supported = all_categories[test_category].available_tests()[sub_test].supported_tasks
+                    if task not in supported:
+                        raise ValueError(f"The test type \"{sub_test}\" is not supported for the task \"{task}\". \"{sub_test}\" only supports {supported}.")
+            elif test_category != "defaults":
+                raise ValueError(f"The test category {test_category} does not exist. Available categories are: {all_categories.keys()}.")
+                
+        # Generate testcases
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             if each in all_categories:
                 sub_test_types = test_types[each]
-
                 all_results.extend(
                     all_categories[each](m_data, sub_test_types,
                                         raw_data=data).transform()
@@ -141,7 +153,7 @@ class ITests(ABC):
     alias_name = None
 
     @abstractmethod
-    def transform(cls):
+    def transform(self):
         """
         Runs the test and returns the results.
 
@@ -151,8 +163,9 @@ class ITests(ABC):
         """
         return NotImplementedError
 
+    @staticmethod
     @abstractmethod
-    def available_tests(cls):
+    def available_tests():
         """
         Returns a list of available test scenarios for the test class.
 
@@ -279,8 +292,8 @@ class RobustnessTestFactory(ITests):
             all_samples.extend(transformed_samples)
         return all_samples
 
-    @classmethod
-    def available_tests(cls) -> dict:
+    @staticmethod
+    def available_tests() -> dict:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -414,8 +427,8 @@ class BiasTestFactory(ITests):
             all_samples.extend(transformed_samples)
         return all_samples
 
-    @classmethod
-    def available_tests(cls) -> Dict:
+    @staticmethod
+    def available_tests() -> Dict:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -481,8 +494,8 @@ class RepresentationTestFactory(ITests):
 
         return all_samples
 
-    @classmethod
-    def available_tests(cls) -> Dict:
+    @staticmethod
+    def available_tests() -> Dict:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -546,8 +559,8 @@ class FairnessTestFactory(ITests):
             all_samples.extend(transformed_samples)
         return all_samples
 
-    @classmethod
-    def available_tests(cls) -> dict:
+    @staticmethod
+    def available_tests() -> dict:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -623,8 +636,8 @@ class AccuracyTestFactory(ITests):
             all_samples.extend(transformed_samples)
         return all_samples
 
-    @classmethod
-    def available_tests(cls) -> dict:
+    @staticmethod
+    def available_tests() -> dict:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
