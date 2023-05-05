@@ -333,10 +333,10 @@ class Harness:
         with open(os.path.join(save_dir, "config.yaml"), 'w', encoding="utf-8") as yml:
             yml.write(yaml.safe_dump(self._config_copy))
 
-        with open(os.path.join(save_dir, "test_cases.pkl"), "wb", encoding="utf-8") as writer:
+        with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:
             pickle.dump(self._testcases, writer)
 
-        with open(os.path.join(save_dir, "data.pkl"), "wb", encoding="utf-8") as writer:
+        with open(os.path.join(save_dir, "data.pkl"), "wb") as writer:
             pickle.dump(self.data, writer)
 
     @classmethod
