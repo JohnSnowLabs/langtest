@@ -22,6 +22,7 @@ class BaseFairness(ABC):
         output based on the implemented accuracy measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification"]
 
     @staticmethod
     @abstractmethod
@@ -74,7 +75,6 @@ class MinGenderF1Score(BaseFairness):
     """
 
     alias_name = "min_gender_f1_score"
-    supported_tasks = ["ner", "text-classification"]
 
     @staticmethod
     def transform(data: List[Sample], params):
