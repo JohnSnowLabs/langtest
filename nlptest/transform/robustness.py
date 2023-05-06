@@ -711,41 +711,30 @@ class NumberToWord(BaseRobustness):
             trans = []
             transformations = []
             start_offset = 0
-            for token in sample.original.split():
-                if re.match(r'^\d+$', token):
-                    words = NumberToWord.infEng.number_to_words(int(token), wantlist=True)
-                    token_len = len(token) - 1
-                    new_words_len = len(' '.join(words)) - 1
-                    trans.extend(words)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + token_len, word=token),
-                            new_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + new_words_len, word=' '.join(words)),
-                            ignore=False
-                        )
-                    )
+            for match in re.finditer(r'\d+(?:\.\d+)?', sample.original):
+                token = match.group()
+                if '.' in token:
+                    integer, decimal = map(int, token.split('.'))
+                    integer_words = NumberToWord.infEng.number_to_words(integer, wantlist=True)
+                    decimal_words = NumberToWord.infEng.number_to_words(decimal, wantlist=True)
+                    words = integer_words + ['point'] + decimal_words
                 else:
-                    match = re.match(r'^(\d+)([^\d\s]+)$', token)
-                    if match:
-                        # separate the numerical digit and the word without space
-                        words = NumberToWord.infEng.number_to_words(int(match.group(1)), wantlist=True)
-                        token_len = len(token) - 1
-                        new_words_len = len(' '.join(words + [match.group(2)])) - 1
-                        trans.extend(words)
-                        trans.append(match.group(2))
-                        transformations.append(
-                            Transformation(
-                                original_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + token_len, word=token),
-                                new_span=Span(start=sample.original.find(token, start_offset), end=sample.original.find(token, start_offset) + new_words_len, word=' '.join(words + [match.group(2)])),
-                                ignore=False
-                            )
-                        )
-                    else:
-                        trans.append(token)
-                start_offset = sample.original.find(token, start_offset) + len(token)
-                
-            results.append(" ".join(trans))
-            sample.test_case = " ".join(results)
+                    words = NumberToWord.infEng.number_to_words(int(token), wantlist=True)
+                token_len = len(token) - 1
+                new_words_len = len(' '.join(words)) - 1
+                trans.append(sample.original[start_offset:match.start()])
+                trans.append(' '.join(words))
+                start_offset = match.end()
+                transformations.append(
+                    Transformation(
+                        original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                        new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
+                        ignore=False
+                    )
+                )
+            trans.append(sample.original[start_offset:])
+            results.append(''.join(trans))
+            sample.test_case = ''.join(results)
             sample.category = "robustness"
             sample.transformations = transformations
         return sample_list
