@@ -139,7 +139,6 @@ class RobustnessTestCase(unittest.TestCase):
     def test_number_to_word(self) -> None:
         """"""
         transformed_samples = NumberToWord.transform(self.number_sentences)
-        print(transformed_samples)
         # Test that the transformed_samples sentences are in a list
         self.assertIsInstance(transformed_samples, list)
         # Test that the original sentences are modified
