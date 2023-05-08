@@ -1,8 +1,7 @@
 import importlib
-from abc import ABC, abstractmethod
-from typing import List, Union
 import langchain
-
+from typing import List, Union
+from abc import ABC, abstractmethod
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 
@@ -32,7 +31,7 @@ class ModelFactory:
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp',
                          'nlu', 'transformers', 'spacy', 'langchain']
-    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface', 'openai']
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface', 'openai', 'cohere', 'ai21'] #+ list(DEFAULT_LLM_HUB.keys())
 
     def __init__(
             self,
@@ -120,7 +119,7 @@ class ModelFactory:
                 modelhandler_module = importlib.import_module(
                     'nlptest.modelhandler.transformers_modelhandler')
             else:
-                raise ModuleNotFoundError("""Please install the transformers library by calling `pip install transformers`.
+                raise ModuleNotFoundError("""Please install the txransformers library by calling `pip install transformers`.
                 For in-depth instructions, head-over to https://huggingface.co/docs/transformers/installation""")
 
         elif hub == "spacy":
@@ -154,7 +153,7 @@ class ModelFactory:
             **kwargs
         )
 
-    def predict(self, text: str, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
+    def predict(self, text: Union[str, dict], **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
         """Perform predictions on input text.
 
         Args:
@@ -177,7 +176,7 @@ class ModelFactory:
         """
         return self.model_class.predict_raw(text)
 
-    def __call__(self, text: str, *args, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
+    def __call__(self, text: Union[str, dict], *args, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
         """Alias of the 'predict' method
 
         Args:

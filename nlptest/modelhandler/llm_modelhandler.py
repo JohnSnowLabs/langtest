@@ -1,7 +1,10 @@
-import langchain as lc
+import inspect
+from typing import Union
+import langchain.llms as lc
+from langchain import LLMChain, PromptTemplate
 from ..modelhandler.modelhandler import _ModelHandler
 
-DEFAULT_LLM_HUB = {hub.lower(): hub for hub in lc.llms.__all__}
+DEFAULT_LLM_HUB = {hub.lower(): hub for hub in lc.__all__}
 
 class PretrainedModelForQA(_ModelHandler):
 
@@ -15,16 +18,44 @@ class PretrainedModelForQA(_ModelHandler):
         """"""
 
         try:
-            cls.model = getattr(lc, DEFAULT_LLM_HUB[hub])(model_name=path, *args, **kwargs)
+            model = getattr(lc, DEFAULT_LLM_HUB[hub])
+            default_args = inspect.getfullargspec(model).kwonlyargs
+            # warning if model parameters are not passed to specfic model
+            if 'model' in default_args:
+                cls.model = model(model=path, *args, **kwargs)
+            else:
+                cls.model = model(model_name=path, *args, **kwargs)
             return cls.model
         except ImportError:
             raise ValueError(
                 f'''Model "{path}" is not found online or local.
                 Please install langchain by pip install langchain''')
 
-    def predict(self, text: str, *args, **kwargs):
-        return self.model(text, *args, **kwargs)
+    def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
+        prompt_template = PromptTemplate(**prompt)
+        llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+        return llmchain.run(**text)
 
-    def __call__(self, text: str, *args, **kwargs):
+    def __call__(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Alias of the 'predict' method"""
-        return self.predict(text=text, *args, **kwargs)
+        return self.predict(text, prompt, *args, **kwargs)
+    
+    def default_args(self, parameter: str, hub: str):
+
+        defaults_args = {
+            'ai21': {
+                'model_name': 'model',
+                'max_tokens': 'maxToken'
+            },
+            'anthropic': {
+                'model_name': 'model',
+                'max_tokens': 'max_tokens_to_sample'
+            },
+            'cohere': {
+                'model_name': 'model',
+                'max_tokens': 'max_tokens_to_sample'
+            }
+
+        }
+        return defaults_args[hub][parameter]
+
