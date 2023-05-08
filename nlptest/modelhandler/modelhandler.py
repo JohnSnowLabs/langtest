@@ -120,7 +120,7 @@ class ModelFactory:
                 modelhandler_module = importlib.import_module(
                     'nlptest.modelhandler.transformers_modelhandler')
             else:
-                raise ModuleNotFoundError("""Please install the txransformers library by calling `pip install transformers`.
+                raise ModuleNotFoundError("""Please install the transformers library by calling `pip install transformers`.
                 For in-depth instructions, head-over to https://huggingface.co/docs/transformers/installation""")
 
         elif hub == "spacy":
