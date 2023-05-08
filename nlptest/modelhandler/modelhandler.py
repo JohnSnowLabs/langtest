@@ -31,7 +31,8 @@ class ModelFactory:
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp',
                          'nlu', 'transformers', 'spacy', 'langchain']
-    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface', 'openai', 'cohere', 'ai21'] #+ list(DEFAULT_LLM_HUB.keys())
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
+    SUPPORTED_HUBS.extend([hub.lower() for hub in langchain.llms.__all__])
 
     def __init__(
             self,

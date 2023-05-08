@@ -3,6 +3,7 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Optional, Union, Any
+import langchain
 
 import pandas as pd
 import yaml
@@ -23,6 +24,7 @@ class Harness:
     """
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
+    SUPPORTED_HUBS.extend([hub.lower() for hub in langchain.llms.__all__])
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
