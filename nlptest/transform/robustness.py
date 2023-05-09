@@ -22,6 +22,7 @@ class BaseRobustness(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification", "question-answering"]
 
     @staticmethod
     @abstractmethod
@@ -137,7 +138,6 @@ class LowerCase(BaseRobustness):
                 sample.test_case = sample.original.lower()
             sample.category = "robustness"
         return sample_list
-
 
 class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
@@ -271,7 +271,6 @@ class StripPunctuation(BaseRobustness):
             sample.category = "robustness"
         return sample_list
 
-
 class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
@@ -335,9 +334,9 @@ class AddTypo(BaseRobustness):
 
         return sample_list
 
-
 class SwapEntities(BaseRobustness):
     alias_name = 'swap_entities'
+    supported_tasks = ["ner"]
 
     @staticmethod
     def transform(
@@ -415,7 +414,6 @@ class SwapEntities(BaseRobustness):
             ]
         return sample_list
 
-
 class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
 
@@ -465,7 +463,6 @@ class ConvertAccent(BaseRobustness):
             sample.category = "robustness"
 
         return sample_list
-
 
 class AddContext(BaseRobustness):
     alias_name = 'add_context'
@@ -619,7 +616,6 @@ class AddContext(BaseRobustness):
                 
             sample.category = "robustness"
         return sample_list
-
 
 class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'

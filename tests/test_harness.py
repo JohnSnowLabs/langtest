@@ -72,6 +72,17 @@ class HarnessTestCase(unittest.TestCase):
                 hub="huggingface"
             )
 
+    def test_unsupported_test_for_task(self):
+        """"""
+        with self.assertRaises(ValueError):
+            h = Harness(
+                task="text-classification",
+                model="textcat_imdb",
+                hub="spacy",
+                config={'tests':{'robustness':{'swap_entities':{'min_pass_rate':0.5}}}}
+            )
+            h.generate()
+
     def test_save(self):
         """"""
         save_dir = "/tmp/saved_harness_test"
