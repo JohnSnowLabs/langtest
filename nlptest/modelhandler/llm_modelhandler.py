@@ -22,7 +22,6 @@ class PretrainedModelForQA(_ModelHandler):
         try:
             model = getattr(lc, DEFAULT_LLM_HUB[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs
-            
             if 'model' in default_args:
                 cls.model = model(model=path, *args, **kwargs)
             else:
