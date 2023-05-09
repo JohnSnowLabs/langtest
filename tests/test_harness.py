@@ -148,7 +148,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
 
     def test_text_classification_hf(self):
         """"""
-        h = Harness(task="text-classification", model="mrm8488/distilroberta-finetuned-tweets-hate-speech",
+        h = Harness(task="text-classification", model="lvwerra/distilbert-imdb",
                     hub="huggingface")
         h.generate().run().report()
 
