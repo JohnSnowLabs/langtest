@@ -2191,7 +2191,7 @@ asian_names = {
                    "Jahan", "Chey", "Kamran", "Raval", "Miyata", "Garcha", "Mammen", "Demesa", "Dea", "Keomany", "Jia",
                    "Sao", "Sunkara", "Florendo", "Arai", "Yong", "Koga", "Taing", "Dimaano", "Ahuja", "Rawat",
                    "Khurshid", "Nam", "Sur", "Xiong", "Shroff", "Sibayan", "Marinas", "Qin", "Nuon", "Ullah", "Mandava",
-                   "Ojha", "Lor", "Pangilinan", "Shan", "Gopalakrishnan", "Bindra", "Bin", "Whang", "Ling", "Alo",
+                   "Ojha", "Lor", "Pangilinan", "Shan", "Gopalakrishnan", "Bindra", "Whang", "Ling", "Alo",
                    "Lach", "Senthil", "Uemura", "Dai", "Mangubat", "Waheed", "Alegado", "Mohanty", "Contractor", "Chum",
                    "Kassam", "Sen", "Tamang", "Kitamura", "Sar", "Nagao", "Mach", "Cao", "Grewal", "Tio", "Belen",
                    "Chhin", "Akiyama", "Sok", "Naveed", "Hasan", "Kamat", "Yadav", "Oishi", "Toh", "Nocon", "Piao",
@@ -2204,7 +2204,7 @@ asian_names = {
                    "Krishnaswamy", "Akhter", "Thiara", "Ung", "Seid", "Pham", "Agarwal", "Sieng", "Deasis", "Morikawa",
                    "Truong", "Jariwala", "Dee", "Kano", "Doung", "Sood", "Madriaga", "Huynh", "Dhawan", "Bibi",
                    "Kawasaki", "Saravanan", "Sarma", "Cong", "Papa", "Noorani", "Baskaran", "Ranjan", "Gohil",
-                   "Chandrasekaran", "Ok", "Thor", "Agrawal", "Matsunaga", "Iwasaki", "Fonua", "Pua", "Lall", "Lacson",
+                   "Chandrasekaran", "Thor", "Agrawal", "Matsunaga", "Iwasaki", "Fonua", "Pua", "Lall", "Lacson",
                    "Verghese", "Kelkar", "Abella", "Dhakal", "Pathak", "Zaheer", "Tian", "Sugihara", "Bandaru",
                    "Mahadeo", "Dah", "Hafiz", "Fatima", "Trias", "Nambiar", "Manabat", "Uchiyama", "Hirai", "Bien",
                    "Taw", "Pan", "Dasgupta", "Bakshi", "Kawaguchi", "Geng", "Madhavan", "Sangalang", "Sahu", "Vitug",
@@ -2218,8 +2218,8 @@ asian_names = {
                    "Tsukamoto", "Tangonan", "Poblete", "Parvez", "Kalsi", "Kuriakose", "Gilani", "Menor", "Wadhwa",
                    "Tran", "Pant", "Joo", "Shiu", "Hsia", "Tra", "Yamamoto", "Begum", "Durrant", "Gin", "Meng", "Zaw",
                    "Majeed", "Jun", "Sheth", "Chanthavong", "Chowdhary", "Rajani", "Hussain", "Javed", "Shek",
-                   "Manansala", "Gade", "Say", "Dhami", "Kharel", "Saxena", "Imam", "Neang", "Deocampo", "Bastola",
-                   "Walia", "Ding", "Roeun", "Aulakh", "Rahaman", "Meh", "Morioka", "Kurihara", "Tse", "Her", "Po",
+                   "Manansala", "Gade", "Dhami", "Kharel", "Saxena", "Imam", "Neang", "Deocampo", "Bastola",
+                   "Walia", "Ding", "Roeun", "Aulakh", "Rahaman", "Meh", "Morioka", "Kurihara", "Tse", "Po",
                    "Govindarajan", "Bian", "Pradhan", "Thaker", "Kota", "Tsang", "Reddy", "Cayanan", "Faisal",
                    "Santoso", "Leu", "Wong", "Joson", "Khaira", "Tha", "Mahtani", "Jeon", "Bacani", "Choudhary", "Ye",
                    "Phanthavong", "Samonte", "Hussaini", "Bhandal", "Bhimani", "Shimamoto", "Cachola", "Khatri", "Chu",
@@ -2271,7 +2271,7 @@ asian_names = {
                    "Ramachandran", "Staana", "Kumari", "Persaud", "Aye", "Sibal", "Bandyopadhyay", "Cu", "Sukhu",
                    "Surapaneni", "Ahluwalia", "Bu", "Perveen", "Eum", "Shyu", "Lu", "Liv", "Khoo", "Hsi", "Verma",
                    "Nakajima", "Nang", "Tieu", "Joh", "Zhuo", "Mikami", "Misra", "Khoja", "Jamal", "Pandian", "Virani",
-                   "Karki", "Lem", "Dau", "Raghavan", "Nabi", "Him", "Yee", "Okawa", "Myint", "Kalia", "Pha",
+                   "Karki", "Lem", "Dau", "Raghavan", "Nabi", "Yee", "Okawa", "Myint", "Kalia", "Pha",
                    "Deguzman", "Munir"]
 }
 
