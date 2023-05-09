@@ -711,15 +711,9 @@ class NumberToWord(BaseRobustness):
             trans = []
             transformations = []
             start_offset = 0
-            for match in re.finditer(r'\d+(?:\.\d+)?', sample.original):
+            for match in re.finditer(r'(?<!\S)(?!.*[^\d\s]\d)[\d.]+(?![\d:.])\b', sample.original):
                 token = match.group()
-                if '.' in token:
-                    integer, decimal = map(int, token.split('.'))
-                    integer_words = NumberToWord.infEng.number_to_words(integer, wantlist=True)
-                    decimal_words = NumberToWord.infEng.number_to_words(decimal, wantlist=True)
-                    words = integer_words + ['point'] + decimal_words
-                else:
-                    words = NumberToWord.infEng.number_to_words(int(token), wantlist=True)
+                words = NumberToWord.infEng.number_to_words(token, wantlist=True)
                 token_len = len(token) - 1
                 new_words_len = len(' '.join(words)) - 1
                 trans.append(sample.original[start_offset:match.start()])
