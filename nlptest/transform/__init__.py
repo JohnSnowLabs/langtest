@@ -1,3 +1,4 @@
+from nlptest.utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
 from ..utils.custom_types import Result, Sample
 from .utils import (A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
                     get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
@@ -619,12 +620,13 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            try:
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions])
-            except:
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.label for y in x.expected_results.predictions])
+            print()
+            if isinstance(data_handler_copy[0], NERSample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            elif isinstance(data_handler_copy[0], SequenceClassificationSample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
+            elif isinstance(data_handler_copy[0], QASample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
 
             y_true = y_true.explode().apply(lambda x: x.split("-")
                                             [-1] if isinstance(x, str) else x)
@@ -661,14 +663,14 @@ class AccuracyTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
-        try:
-            y_true = pd.Series(raw_data).apply(
-                lambda x: [y.entity for y in x.expected_results.predictions])
-        except:
-            y_true = pd.Series(raw_data).apply(
-                lambda x: [y.label for y in x.expected_results.predictions])
+        if isinstance(raw_data[0], NERSample):
+            y_true = pd.Series(raw_data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+        elif isinstance(raw_data[0], SequenceClassificationSample):
+            y_true = pd.Series(raw_data).apply(lambda x: [y.label for y in x.expected_results.predictions])
+        elif isinstance(raw_data[0], QASample):
+            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
 
-        len(y_true)
+        print(len(y_true))
         X_test = pd.Series(raw_data).apply(lambda x: x.original)
         y_pred = X_test.apply(model.predict_raw)
 

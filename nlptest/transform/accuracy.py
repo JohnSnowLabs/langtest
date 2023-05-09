@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from sklearn.metrics import classification_report, f1_score
 
 from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
-
+import evaluate
 
 class BaseAccuracy(ABC):
     """
@@ -63,7 +63,7 @@ class MinPrecisionScore(BaseAccuracy):
     Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
-        alias_name (str): The name "min_precision_score" for config.
+        alias_name (str): The name for config.
 
     Methods:
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
@@ -145,7 +145,7 @@ class MinRecallScore(BaseAccuracy):
     Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
-        alias_name (str): The name "min_precision_score" for config.
+        alias_name (str): The name for config.
 
     Methods:
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
@@ -228,7 +228,7 @@ class MinF1Score(BaseAccuracy):
     Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
-        alias_name (str): The name "min_precision_score" for config.
+        alias_name (str): The name for config.
 
     Methods:
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
@@ -372,7 +372,7 @@ class MinMacroF1Score(BaseAccuracy):
     Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
-        alias_name (str): The name "min_precision_score" for config.
+        alias_name (str): The name for config.
 
     Methods:
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
@@ -480,6 +480,71 @@ class MinWeightedF1Score(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
 
         f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
+        for sample in sample_list:
+            sample.actual_results = MinScoreOutput(min_score=f1)
+            sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
+
+class MinEMcore(BaseAccuracy):
+    """
+    Subclass of BaseAccuracy that implements the minimum precision score.
+
+    Attributes:
+        alias_name (str): The name for config.
+
+    Methods:
+        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+    """
+
+    alias_name = "exact_match"
+    supported_tasks = ["question-answering"]
+
+    @staticmethod
+    def transform(y_true, params):
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
+
+        Returns:
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+        """
+
+        min_score = params["min_score"]
+
+        sample = MinScoreSample(
+            original="-",
+            test_case="-",
+            category="accuracy",
+            test_type="min_macro_f1_score",
+            expected_results=MinScoreOutput(min_score=min_score)
+        )
+
+        return [sample]
+    
+    @staticmethod
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
+
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): List of samples to be transformed.
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        print(y_true)
+        return []
+
+        em = evaluate.load("exact_match", module_type="comparison")
+        results = em.compute(predictions1=y_true, predictions2=y_pred)["exact_match"]
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
