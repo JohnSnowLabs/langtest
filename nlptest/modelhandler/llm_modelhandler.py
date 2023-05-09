@@ -24,8 +24,10 @@ class PretrainedModelForQA(_ModelHandler):
             default_args = inspect.getfullargspec(model).kwonlyargs
             if 'model' in default_args:
                 cls.model = model(model=path, *args, **kwargs)
-            else:
+            elif 'model_name' in default_args:
                 cls.model = model(model_name=path, *args, **kwargs)
+            elif 'model_id' in default_args:
+                cls.model = model(model_id=path, *args, **kwargs)
             return cls.model
         except ImportError:
             raise ValueError(
