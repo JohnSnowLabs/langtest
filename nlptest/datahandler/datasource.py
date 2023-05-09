@@ -98,6 +98,8 @@ class DataFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
+            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
+            'BoolQ-dev': script_dir[:-7]+'/BoolQ/dev.jsonl',
             'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
             'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
             'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
@@ -441,8 +443,13 @@ class JSONLDataset(_IDataset):
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
                 data.append(
-                    QASample(original_question=item['question'], original_context=item.get(
-                        'passage', "-"), task=self.task, dataset_name=self._file_path.split('/')[-2])
+                    QASample(
+                        original_question = item['question'],
+                        original_context= item.get('passage', "-"),
+                        expected_results = item.get('answer', None),
+                        task=self.task,
+                        dataset_name=self._file_path.split('/')[-2]
+                        )
                 )
 
         return data
