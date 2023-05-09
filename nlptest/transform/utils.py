@@ -7071,6 +7071,11 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
+        else:
+            if "perturbed_context" in sample.__annotations__:  
+                words = sample.original_context.split()
+            else:
+                words = sample.original_question.split()
         for i in words:
             if check_name(i, [country_economic_dict['High-income']]):
                 country_economic_representation["high_income"] += 1
@@ -7101,6 +7106,11 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
+        else:
+            if "perturbed_context" in sample.__annotations__:  
+                words = sample.original_context.split()
+            else:
+                words = sample.original_question.split()
         for i in words:
             if check_name(i, [religion_wise_names['Muslim']]):
                 religion_representation["muslim"] += 1
@@ -7136,6 +7146,11 @@ def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
+        else:
+            if "perturbed_context" in sample.__annotations__:  
+                words = sample.original_context.split()
+            else:
+                words = sample.original_question.split()   
         for i in words:
             if check_name(i, [white_names['first_names'], white_names['last_names']]):
                 ethnicity_representation["white"] += 1
@@ -7165,7 +7180,10 @@ def get_entity_representation_proportions(entity_representation):
     total_entities = sum(entity_representation.values())
     entity_representation_proportion = {}
     for k, v in entity_representation.items():
-        entity_representation_proportion[k] = v / total_entities
+        if total_entities == 0:
+            entity_representation_proportion[k] = 0
+        else:
+            entity_representation_proportion[k] = v / total_entities
 
     return entity_representation_proportion
 
