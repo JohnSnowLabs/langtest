@@ -1,6 +1,6 @@
 from nlptest.utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
 from ..utils.custom_types import Result, Sample
-from .utils import (A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
+from .utils import ( default_user_prompt, A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
                     get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
                     neutral_pronouns, religion_wise_names, white_names)
 from .robustness import BaseRobustness
@@ -615,7 +615,6 @@ class AccuracyTestFactory(ITests):
             List[Sample]:
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
-        # TODO: get rid of pandas
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
@@ -665,21 +664,34 @@ class AccuracyTestFactory(ITests):
         """
         if isinstance(raw_data[0], NERSample):
             y_true = pd.Series(raw_data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
+            y_pred = X_test.apply(model.predict_raw)
+        
         elif isinstance(raw_data[0], SequenceClassificationSample):
             y_true = pd.Series(raw_data).apply(lambda x: [y.label for y in x.expected_results.predictions])
+            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
+            y_pred = X_test.apply(model.predict_raw)
+        
         elif isinstance(raw_data[0], QASample):
+            dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
+            user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+            
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data).apply(lambda sample: f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}")
+            y_pred = X_test.apply(model.predict_raw)
+            y_pred = y_pred.apply(lambda x: x.strip())
 
-        print(len(y_true))
-        X_test = pd.Series(raw_data).apply(lambda x: x.original)
-        y_pred = X_test.apply(model.predict_raw)
-
-        valid_indices = y_true.apply(len) == y_pred.apply(len)
-        y_true = y_true[valid_indices]
-        y_pred = y_pred[valid_indices]
-
-        y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-        y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
+        if isinstance(raw_data[0], NERSample):
+            valid_indices = y_true.apply(len) == y_pred.apply(len)
+            y_true = y_true[valid_indices]
+            y_pred = y_pred[valid_indices]
+        
+        y_true = y_true.explode()
+        y_pred = y_pred.explode()
+        
+        if isinstance(raw_data[0], NERSample):
+            y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+            y_true = y_true.apply(lambda x: x.split("-")[-1])
 
         if kwargs['is_default']:
             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else (
