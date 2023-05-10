@@ -1,12 +1,13 @@
 import csv
 import os
 import re
+import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
-    SequenceClassificationSample, SequenceLabel
+    SequenceClassificationSample, SequenceLabel, QASample
 
 
 class _IDataset(ABC):
@@ -53,18 +54,25 @@ class DataFactory:
         """
 
         self._file_path = file_path
-        self._class_map = {cls.__name__.replace('Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
+        self._class_map = {cls.__name__.replace(
+            'Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
         _, self.file_ext = os.path.splitext(self._file_path)
+        if len(self.file_ext) > 0:
+            self.file_ext = self.file_ext.replace('.', '')
+        else:
+            self._file_path = self._load_dataset(self._file_path)
+            _, self.file_ext = os.path.splitext(self._file_path)
         self.task = task
         self.init_cls = None
 
     def load(self) -> List[Sample]:
         """Loads the data for the correct Dataset type.
-        
+
         Returns:
             list[Sample]: Loaded text data.
         """
-        self.init_cls = self._class_map[self.file_ext.replace('.', '')](self._file_path, task=self.task)
+        self.init_cls = self._class_map[self.file_ext.replace(
+            '.', '')](self._file_path, task=self.task)
         return self.init_cls.load_data()
 
     def export(self, data: List[Sample], output_path: str):
@@ -77,6 +85,29 @@ class DataFactory:
                 path to save the data to
         """
         self.init_cls.export_data(data, output_path)
+
+    @classmethod
+    def _load_dataset(cls, dataset_name: str):
+        """
+        Args:
+            dataset_name (str): name of the dataset
+
+        Returns:
+            str: path to our data
+        """
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+        datasets_info = {
+            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
+            'BoolQ-dev': script_dir[:-7]+'/BoolQ/dev.jsonl',
+            'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
+            'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
+            'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
+            'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
+            'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
+            'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl'
+        }
+        return datasets_info[dataset_name]
 
 
 class ConllDataset(_IDataset):
@@ -93,7 +124,8 @@ class ConllDataset(_IDataset):
         self._file_path = file_path
 
         if task != 'ner':
-            raise ValueError(f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
+            raise ValueError(
+                f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
         self.task = task
 
     def load_data(self) -> List[NERSample]:
@@ -105,7 +137,8 @@ class ConllDataset(_IDataset):
         with open(self._file_path) as f:
             content = f.read()
             docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
-            docs = [i.strip() for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
+            docs = [i.strip() for i in re.split(
+                r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
                 sentences = doc.strip().split('\n\n')
@@ -132,17 +165,21 @@ class ConllDataset(_IDataset):
                                 start=cursor,
                                 end=cursor + len(split[0]),
                                 doc_id=d_id,
-                                doc_name=(docs_strings[d_id] if len(docs_strings) > 0 else ''),
+                                doc_name=(docs_strings[d_id] if len(
+                                    docs_strings) > 0 else ''),
                                 pos_tag=split[1],
                                 chunk_tag=split[2]
                             )
                         )
-                        cursor += len(split[0]) + 1  # +1 to account for the white space
+                        # +1 to account for the white space
+                        cursor += len(split[0]) + 1
 
-                    original = " ".join([label.span.word for label in ner_labels])
+                    original = " ".join(
+                        [label.span.word for label in ner_labels])
 
                     data.append(
-                        NERSample(original=original, expected_results=NEROutput(predictions=ner_labels))
+                        NERSample(original=original, expected_results=NEROutput(
+                            predictions=ner_labels))
                     )
 
         return data
@@ -159,7 +196,8 @@ class ConllDataset(_IDataset):
         temp_id = None
         otext = ""
         for i in data:
-            text, temp_id = Formatter.process(i, output_format='conll', temp_id=temp_id)
+            text, temp_id = Formatter.process(
+                i, output_format='conll', temp_id=temp_id)
             otext += text
 
         with open(output_path, "wb") as fwriter:
@@ -238,7 +276,8 @@ class CSVDataset(_IDataset):
             samples = []
             for sent_indx, row in enumerate(csv_reader):
                 if not self.column_map:
-                    self.column_map = self._match_column_names(list(row.keys()))
+                    self.column_map = self._match_column_names(
+                        list(row.keys()))
 
                 if self.task == 'ner':
                     samples.append(
@@ -265,7 +304,8 @@ class CSVDataset(_IDataset):
         otext = ""
         for i in data:
             if isinstance(i, NEROutput):
-                text, temp_id = Formatter.process(i, output_format='csv', temp_id=temp_id)
+                text, temp_id = Formatter.process(
+                    i, output_format='csv', temp_id=temp_id)
             else:
                 text = Formatter.process(i, output_format='csv')
             otext += text
@@ -368,7 +408,8 @@ class CSVDataset(_IDataset):
                 if c.lower() in reference_columns:
                     column_map[key] = c
 
-        not_referenced_columns = {k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
+        not_referenced_columns = {
+            k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
         if not_referenced_columns:
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
@@ -376,3 +417,45 @@ class CSVDataset(_IDataset):
                 f"You can use following namespaces:\n{not_referenced_columns}"
             )
         return column_map
+
+
+class JSONLDataset(_IDataset):
+    """
+    Class to handle BoolQ dataset. Subclass of _IDataset.
+    """
+
+    def __init__(self, file_path: str, task: str) -> None:
+        """Initializes BOOLQDataset object.
+        Args:
+            file_path (str): Path to the data file.
+        """
+        super().__init__()
+        self._file_path = file_path
+        self.task = task
+
+    def load_data(self):
+        """Loads data from a JSONL file.
+        Returns:
+            list[QASample]: Loaded text data.
+        """
+
+        data = []
+        with jsonlines.open(self._file_path) as reader:
+            for item in reader:
+                data.append(
+                    QASample(original_question=item['question'], original_context=item.get(
+                        'passage', "-"), task=self.task, dataset_name=self._file_path.split('/')[-2])
+                )
+
+        return data
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """
+        Exports the data to the corresponding format and saves it to 'output_path'.
+        Args:
+            data (List[Sample]):
+                data to export
+            output_path (str):
+                path to save the data to
+        """
+        raise NotImplementedError()

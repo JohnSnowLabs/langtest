@@ -6903,31 +6903,31 @@ neutral_pronouns = {'subjective_pronouns': ['per', 'they', 've', 'xe', 'ze', 'zi
 # add country economic dict
 country_economic_dict = {
     "High-income": ["Aruba", "Andorra", "U.A.E", "U.S.", "U.K.", "England", "Antigua and Barbuda", "Australia",
-                    "Austria", "Belgium", "Bahrain", "Bahamas, The", "Bermuda", "Barbados", "Brunei Darussalam",
-                    "Canada", "Switzerland", "Channel Islands", "Chile", "Cura\u00e7ao", "Cayman Islands", "Cyprus",
+                    "Austria", "Belgium", "Bahrain", "Bahamas", "Bermuda", "Barbados", "Brunei Darussalam",
+                    "Canada", "Switzerland", "Channel Islands", "Chile", "Curacao", "Curaçao", "Cayman Islands", "Cyprus",
                     "Czech Republic", "Germany", "Denmark", "Spain", "Estonia", "Finland", "France", "Faroe Islands",
-                    "United Kingdom", "Gibraltar", "Greece", "Greenland", "Guam", "Hong Kong SAR, China", "Croatia",
+                    "United Kingdom", "Gibraltar", "Greece", "Greenland", "Guam", "Hong Kong", "Croatia",
                     "Hungary", "Isle of Man", "Ireland", "Iceland", "United Arab Emirates", "UAE", "Israel", "Italy",
-                    "Japan", "St. Kitts and Nevis", "Korea, Rep.", "Kuwait", "Liechtenstein", "Lithuania", "Luxembourg",
-                    "Latvia", "Macao SAR, China", "St. Martin (French part)", "Monaco", "Malta",
+                    "Japan", "St. Kitts and Nevis", "South Korea", "Kuwait", "Liechtenstein", "Lithuania", "Luxembourg",
+                    "Latvia", "Macao", "St. Martin", "Monaco", "Malta",
                     "Northern Mariana Islands", "New Caledonia", "Netherlands", "Norway", "Nauru", "New Zealand",
                     "Oman", "Panama", "Poland", "Puerto Rico", "Portugal", "French Polynesia", "Qatar", "Romania",
                     "Saudi Arabia", "Singapore", "San Marino", "Slovak Republic", "Slovenia", "Sweden",
-                    "Sint Maarten (Dutch part)", "Seychelles", "Turks and Caicos Islands", "Trinidad and Tobago",
-                    "Taiwan, China", "Uruguay", "United States", "British Virgin Islands", "Virgin Islands (U.S.)"],
-    "Low-income": ["Afghanistan", "Burundi", "Burkina Faso", "Central African Republic", "Congo, Dem. Rep.", "Eritrea",
-                   "Ethiopia", "Guinea", "Gambia, The", "Guinea-Bissau", "Liberia", "Madagascar", "Mali", "Mozambique",
-                   "Mtoalawi", "Niger", "Korea, Dem. People's Rep.", "Rwanda", "Sudan", "Sierra Leone", "Somalia",
-                   "South Sudan", "Syrian Arab Republic", "Chad", "Togo", "Uganda", "Yemen, Rep.", "Zambia"],
-    "Lower-middle-income": ["Angola", "Benin", "Bangladesh", "Bolivia", "Bhutan", "C\u00f4te d\u2019Ivoire", "Cameroon",
-                            "Congo, Rep.", "Comoros", "Cabo Verde", "Djibouti", "Algeria", "Egypt, Arab Rep.",
-                            "Micronesia, Fed. Sts.", "Ghana", "Honduras", "Haiti", "Indonesia", "India",
-                            "Iran, Islamic Rep.", "Kenya", "Kyrgyz Republic", "Cambodia", "Kiribati", "Lao PDR",
+                    "Sint Maarten", "Seychelles", "Turks and Caicos Islands", "Trinidad and Tobago",
+                    "Taiwan", "Uruguay", "United States", "British Virgin Islands", "Virgin Islands"],
+    "Low-income": ["Afghanistan", "Burundi", "Burkina Faso", "Central African Republic", "Congo", "Eritrea",
+                   "Ethiopia", "Guinea", "Gambia", "Guinea-Bissau", "Liberia", "Madagascar", "Mali", "Mozambique",
+                   "Mtoalawi", "Niger", "North Korea", "Rwanda", "Sudan", "Sierra Leone", "Somalia",
+                   "South Sudan", "Syria", "Chad", "Togo", "Uganda", "Yemen", "Zambia"],
+    "Lower-middle-income": ["Angola", "Benin", "Bangladesh", "Bolivia", "Bhutan", "Côte d'Ivoire", "Ivory Coast", "Cameroon",
+                            "Congo", "Comoros", "Cabo Verde", "Djibouti", "Algeria", "Egypt",
+                            "Micronesia", "Ghana", "Honduras", "Haiti", "Indonesia", "India",
+                            "Iran", "Kenya", "Kyrgyz Republic", "Cambodia", "Kiribati", "Lao",
                             "Lebanon", "Sri Lanka", "Lesotho", "Morocco", "Myanmar", "Mongolia", "Mauritania",
                             "Nigeria", "Nicaragua", "Nepal", "Pakistan", "Philippines", "Papua New Guinea",
                             "West Bank and Gaza", "Senegal", "Solomon Islands", "El Salvador",
-                            "S\u00e3o Tom\u00e9 and Pr\u00edncipe", "Eswatini", "Tajikistan", "Timor-Leste", "Tunisia",
-                            "Tanzania", "Ukraine", "Uzbekistan", "Vietnam", "Vanuatu", "Samoa", "Zimbabwe"],
+                            "Saint Thomas and Prince", "São Tomé and Príncipe", "Eswatini", "Tajikistan", "Timor-Leste",
+                            "Tunisia", "Tanzania", "Ukraine", "Uzbekistan", "Vietnam", "Vanuatu", "Samoa", "Zimbabwe"],
     "Upper-middle-income": ["Albania", "Argentina", "Armenia", "American Samoa", "Azerbaijan", "Bulgaria",
                             "Bosnia and Herzegovina", "Belarus", "Belize", "Brazil", "Botswana", "China", "Colombia",
                             "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "Ecuador", "Fiji", "Gabon",
@@ -6935,7 +6935,7 @@ country_economic_dict = {
                             "Jordan", "Kazakhstan", "Libya", "St. Lucia", "Moldova", "Maldives", "Mexico",
                             "Marshall Islands", "North Macedonia", "Montenegro", "Mauritius", "Malaysia", "Namibia",
                             "Peru", "Palau", "Paraguay", "Russian Federation", "Serbia", "Suriname", "Thailand",
-                            "Turkmenistan", "Tonga", "T\u00fcrkiye", "Tuvalu", "St. Vincent and the Grenadines",
+                            "Turkmenistan", "Tonga", "Turkey", "Türkiye", "Tuvalu", "St. Vincent and the Grenadines",
                             "Kosovo", "South Africa"]}
 
 
@@ -7069,6 +7069,11 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
+        else:
+            if "perturbed_context" in sample.__annotations__:  
+                words = sample.original_context.split()
+            else:
+                words = sample.original_question.split()
         for i in words:
             if check_name(i, [country_economic_dict['High-income']]):
                 country_economic_representation["high_income"] += 1
@@ -7099,6 +7104,11 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
+        else:
+            if "perturbed_context" in sample.__annotations__:  
+                words = sample.original_context.split()
+            else:
+                words = sample.original_question.split()
         for i in words:
             if check_name(i, [religion_wise_names['Muslim']]):
                 religion_representation["muslim"] += 1
@@ -7134,6 +7144,11 @@ def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
+        else:
+            if "perturbed_context" in sample.__annotations__:  
+                words = sample.original_context.split()
+            else:
+                words = sample.original_question.split()   
         for i in words:
             if check_name(i, [white_names['first_names'], white_names['last_names']]):
                 ethnicity_representation["white"] += 1
@@ -7163,6 +7178,14 @@ def get_entity_representation_proportions(entity_representation):
     total_entities = sum(entity_representation.values())
     entity_representation_proportion = {}
     for k, v in entity_representation.items():
-        entity_representation_proportion[k] = v / total_entities
+        if total_entities == 0:
+            entity_representation_proportion[k] = 0
+        else:
+            entity_representation_proportion[k] = v / total_entities
 
     return entity_representation_proportion
+
+default_user_prompt = {
+    "boolq": "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
+    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:"
+}

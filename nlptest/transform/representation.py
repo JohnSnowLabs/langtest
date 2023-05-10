@@ -29,6 +29,7 @@ class BaseRepresentation(ABC):
         based on the implemented representation measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification","question-answering"]
 
     @staticmethod
     @abstractmethod
@@ -79,6 +80,8 @@ class GenderRepresentation(BaseRepresentation):
         "min_gender_representation_count",
         "min_gender_representation_proportion"
     ]
+    
+    supported_tasks = ["ner", "text-classification","question-answering"]
 
     def transform(test, data, params):
         """
@@ -154,30 +157,42 @@ class GenderRepresentation(BaseRepresentation):
         """
 
         progress = kwargs.get("progress_bar", False)
-
         classifier = GenderClassifier()
-        genders = [classifier.predict(sample.original)
-                   for sample in kwargs['raw_data']]
+        for sample in kwargs['raw_data']:
+            
+            if "task" in sample.__annotations__:
+                    if "perturbed_context" in sample.__annotations__:
+                         genders = [classifier.predict(sample.original_context)
+                           for sample in kwargs['raw_data']]
+                    else:
+                        genders = [classifier.predict(sample.original_question)
+                           for sample in kwargs['raw_data']]
+
+            else:
+                genders = [classifier.predict(sample.original)
+                           for sample in kwargs['raw_data']]
 
         gender_counts = {
-            "male": len([x for x in genders if x == "male"]),
-            "female": len([x for x in genders if x == "female"]),
-            "unknown": len([x for x in genders if x == "unknown"])
-        }
+               "male": len([x for x in genders if x == "male"]),
+               "female": len([x for x in genders if x == "female"]),
+               "unknown": len([x for x in genders if x == "unknown"])
+            }
 
         total_samples = len(kwargs['raw_data'])
 
         for sample in sample_list:
-            if progress:
+             if progress:
                 progress.update(1)
-            if sample.test_type == "min_gender_representation_proportion":
-                sample.actual_results = MinScoreOutput(
-                    min_score=round(gender_counts[sample.test_case]/total_samples, 2))
-                sample.state = "done"
-            elif sample.test_type == "min_gender_representation_count":
-                sample.actual_results = MinScoreOutput(
-                    min_score=round(gender_counts[sample.test_case], 2))
-                sample.state = "done"
+             
+             if sample.test_type == "min_gender_representation_proportion":
+                    sample.actual_results = MinScoreOutput(
+                        min_score=round(gender_counts[sample.test_case]/total_samples, 2))
+                    sample.state = "done"
+             
+             elif sample.test_type == "min_gender_representation_count":
+                    sample.actual_results = MinScoreOutput(
+                        min_score=round(gender_counts[sample.test_case], 2))
+                    sample.state = "done"
         return sample_list
 
 
@@ -195,6 +210,8 @@ class EthnicityRepresentation(BaseRepresentation):
         "min_ethnicity_name_representation_count",
         "min_ethnicity_name_representation_proportion"
     ]
+    
+    supported_tasks = ["ner", "text-classification","question-answering"]
 
     def transform(test, data, params):
         """
@@ -323,6 +340,8 @@ class LabelRepresentation(BaseRepresentation):
         "min_label_representation_count",
         "min_label_representation_proportion"
     ]
+    
+    supported_tasks = ["ner", "text-classification"]
 
     def transform(test, data, params):
         """
@@ -453,6 +472,7 @@ class ReligionRepresentation(BaseRepresentation):
         "min_religion_name_representation_count",
         "min_religion_name_representation_proportion"
     ]
+    supported_tasks = ["ner", "text-classification","question-answering"]
 
     def transform(test, data, params):
         """
@@ -592,6 +612,8 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_count",
         "min_country_economic_representation_proportion"
     ]
+    
+    supported_tasks = ["ner", "text-classification","question-answering"]
 
     def transform(test, data, params):
         """

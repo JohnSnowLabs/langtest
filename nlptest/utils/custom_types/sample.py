@@ -36,7 +36,8 @@ class BaseSample(BaseModel):
         Returns the dict version of sample.
         """
         expected_result = self.expected_results.to_str_list()
-        actual_result = self.actual_results.to_str_list() if self.actual_results is not None else None
+        actual_result = self.actual_results.to_str_list(
+        ) if self.actual_results is not None else None
 
         result = {
             'category': self.category,
@@ -155,11 +156,12 @@ class NERSample(BaseSample):
                             # the whole span needs to be shifted to the left
                             actual_result.span.shift(
                                 (transformation.new_span.start - transformation.original_span.start) +
-                                (transformation.new_span.end - transformation.original_span.end)
+                                (transformation.new_span.end -
+                                 transformation.original_span.end)
                             )
                         elif transformation.new_span.start >= actual_result.span.start and \
                                 transformation.new_span.end - int(
-                            transformation.new_span.ends_with_space) <= actual_result.span.end:
+                                    transformation.new_span.ends_with_space) <= actual_result.span.end:
                             # transformation nested in a span
                             actual_result.span.shift_end(
                                 transformation.new_span.end - transformation.original_span.end
@@ -167,7 +169,8 @@ class NERSample(BaseSample):
 
                     realigned_results.append(actual_result)
 
-                self._realigned_spans = NEROutput(predictions=realigned_results)
+                self._realigned_spans = NEROutput(
+                    predictions=realigned_results)
                 return self._realigned_spans
             else:
                 return self.actual_results
@@ -214,13 +217,16 @@ class NERSample(BaseSample):
                 actual_prediction = realigned_spans[transformation.original_span]
 
                 if expected_prediction is None:
-                    expected_predictions = self._retrieve_multi_spans(transformation.original_span)
+                    expected_predictions = self._retrieve_multi_spans(
+                        transformation.original_span)
                     for expected_prediction in expected_predictions:
-                        aligned_results.append((expected_prediction, actual_prediction))
+                        aligned_results.append(
+                            (expected_prediction, actual_prediction))
                         expected_predictions_set.add(expected_prediction)
                         actual_predictions_set.add(actual_prediction)
                 else:
-                    aligned_results.append((expected_prediction, actual_prediction))
+                    aligned_results.append(
+                        (expected_prediction, actual_prediction))
                     expected_predictions_set.add(expected_prediction)
                     actual_predictions_set.add(actual_prediction)
 
@@ -248,7 +254,7 @@ class NERSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
-        return all([a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity!= "O"])
+        return all([a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity != "O"])
 
 
 class SequenceClassificationSample(BaseSample):
@@ -284,4 +290,84 @@ class MaxScoreSample(BaseSample):
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
-Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample, SequenceClassificationSample, NERSample)
+Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample,
+                 SequenceClassificationSample, NERSample)
+
+
+class BaseQASample(BaseModel):
+    """
+    Helper object storing the original text, the perturbed one and the corresponding
+    predictions for each of them.
+
+    The specificity here is that it is task-agnostic, one only needs to call access the `is_pass`
+    property to assess whether the `expected_results` and the `actual_results` are the same, regardless
+    the downstream task.nlptest/utils/custom_types.py
+
+    This way, to support a new task one only needs to create a `XXXOutput` model, overload the `__eq__`
+    operator and add the new model to the `Result` type variable.
+    """
+    original_question: str
+    original_context: str
+    test_type: str = None
+    perturbed_question: str = None
+    perturbed_context: str = None
+    expected_results: Result = None
+    actual_results: Result = None
+    dataset_name: str = None
+    category: str = None
+    state: str = None
+    task: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+
+class QASample(BaseQASample):
+    """"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns the dict version of sample.
+        """
+        expected_result = self.expected_results
+        actual_result = self.actual_results
+
+        result = {
+            'category': self.category,
+            'test_type': self.test_type,
+            'original_question': self.original_question,
+            'original_context': self.original_context,
+            'perturbed_question': self.perturbed_question,
+            'perturbed_context': self.perturbed_context,
+        }
+
+        if actual_result is not None:
+            result.update({
+                'expected_result': expected_result,
+                'actual_result': actual_result,
+                'pass': self.is_pass()
+            })
+
+        return result
+
+    def is_pass(self) -> bool:
+        """"""
+        from langchain.evaluation.qa import QAEvalChain
+        from langchain.llms import OpenAI
+
+        eval_chain = QAEvalChain.from_llm(OpenAI(temperature=0))
+        graded_outputs = eval_chain.evaluate(
+            [{
+                "question": self.original_question,
+                "answer": self.expected_results}],
+            [
+                {
+                    "question": self.perturbed_question,
+                    "text": self.actual_results
+                }
+            ], question_key="question", prediction_key="text")
+
+        return graded_outputs[0]['text'].strip() == 'CORRECT'

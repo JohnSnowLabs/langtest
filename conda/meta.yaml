@@ -1,5 +1,5 @@
 {% set name = "nlptest" %}
-{% set version = "1.0.2" %}
+{% set version = "1.1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
-  sha256: a5c00fdd3675e774896b048d6eecd820844811885f0c4d563489c2ec76e1944d
+  sha256: 36579297e6e2ee9cbcc687ad7fb599b4c647935a2eb220aae7b3f4d0f7dc00ec
 
 build:
   number: 0
@@ -28,6 +28,9 @@ requirements:
     - sentencepiece
     - pydantic
     - nest-asyncio
+    - jsonlines
+    - langchain
+    - openai
 
 test:
   imports:
@@ -57,11 +60,3 @@ about:
 
   dev_url: https://github.com/JohnSnowLabs/nlptest/
   doc_url: https://nlptest.org/docs/pages/docs/install
-
-extra:
-  recipe-maintainers:
-    - sugatoray
-    # maintainers from upstream
-    - johnsnowlab
-    - luca-martial
-    - ArshaanNazir

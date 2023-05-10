@@ -22,6 +22,7 @@ class BaseFairness(ABC):
         output based on the implemented accuracy measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification"]
 
     @staticmethod
     @abstractmethod
