@@ -540,13 +540,11 @@ class MinEMcore(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        print(y_true)
-        return []
+        em = evaluate.load("exact_match")
+        result = em.compute(references=y_true, predictions=y_pred)["exact_match"]
 
-        em = evaluate.load("exact_match", module_type="comparison")
-        results = em.compute(predictions1=y_true, predictions2=y_pred)["exact_match"]
         for sample in sample_list:
-            sample.actual_results = MinScoreOutput(min_score=f1)
+            sample.actual_results = MinScoreOutput(min_score=result)
             sample.state = "done"
             if progress:
                 progress.update(1)
