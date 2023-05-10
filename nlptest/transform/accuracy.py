@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
-import asyncio
 from typing import Any, Dict, List
 
-from sklearn.metrics import classification_report, f1_score
-
-from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
+import asyncio
+import logging
 import evaluate
+
+from sklearn.metrics import classification_report, f1_score
+from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
 
 class BaseAccuracy(ABC):
     """
@@ -498,7 +499,7 @@ class MinEMcore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "exact_match"
+    alias_name = "min_exact_match_score"
     supported_tasks = ["question-answering"]
 
     @staticmethod
@@ -526,7 +527,7 @@ class MinEMcore(BaseAccuracy):
         )
 
         return [sample]
-    
+
     @staticmethod
     async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
 
@@ -540,9 +541,75 @@ class MinEMcore(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        em = evaluate.load("exact_match")
-        result = em.compute(references=y_true, predictions=y_pred)["exact_match"]
 
+        em = evaluate.load("exact_match")
+        y_true = [x[0] for x in y_true]
+        result = em.compute(references=y_true, predictions=y_pred)["exact_match"]
+        for sample in sample_list:
+            sample.actual_results = MinScoreOutput(min_score=result)
+            sample.state = "done"
+            if progress:
+                progress.update(1)
+                
+        return sample_list
+
+class MinBLEUcore(BaseAccuracy):
+    """
+    Subclass of BaseAccuracy that implements the minimum precision score.
+
+    Attributes:
+        alias_name (str): The name for config.
+
+    Methods:
+        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+    """
+
+    alias_name = "min_bleu_score"
+    supported_tasks = ["question-answering"]
+
+    @staticmethod
+    def transform(y_true, params):
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
+
+        Returns:
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+        """
+
+        min_score = params["min_score"]
+
+        sample = MinScoreSample(
+            original="-",
+            test_case="-",
+            category="accuracy",
+            test_type="min_bleu_score",
+            expected_results=MinScoreOutput(min_score=min_score)
+        )
+
+        return [sample]
+
+    @staticmethod
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
+
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): List of samples to be transformed.
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        em = evaluate.load("bleu")
+        result = em.compute(references=y_true, predictions=y_pred)
+        
+        return []
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=result)
             sample.state = "done"

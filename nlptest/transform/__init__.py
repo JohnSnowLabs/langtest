@@ -619,7 +619,6 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            print()
             if isinstance(data_handler_copy[0], NERSample):
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
             elif isinstance(data_handler_copy[0], SequenceClassificationSample):
@@ -666,6 +665,13 @@ class AccuracyTestFactory(ITests):
             y_true = pd.Series(raw_data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
             X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
             y_pred = X_test.apply(model.predict_raw)
+            valid_indices = y_true.apply(len) == y_pred.apply(len)
+            y_true = y_true[valid_indices]
+            y_pred = y_pred[valid_indices]
+            y_true = y_true.explode()
+            y_pred = y_pred.explode()
+            y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+            y_true = y_true.apply(lambda x: x.split("-")[-1])
         
         elif isinstance(raw_data[0], SequenceClassificationSample):
             y_true = pd.Series(raw_data).apply(lambda x: [y.label for y in x.expected_results.predictions])
@@ -680,24 +686,13 @@ class AccuracyTestFactory(ITests):
             X_test = pd.Series(raw_data).apply(lambda sample: f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}")
             y_pred = X_test.apply(model.predict_raw)
             y_pred = y_pred.apply(lambda x: x.strip())
-
-        if isinstance(raw_data[0], NERSample):
-            valid_indices = y_true.apply(len) == y_pred.apply(len)
-            y_true = y_true[valid_indices]
-            y_pred = y_pred[valid_indices]
         
-        y_true = y_true.explode()
-        y_pred = y_pred.explode()
-        
-        if isinstance(raw_data[0], NERSample):
-            y_pred = y_pred.apply(lambda x: x.split("-")[-1])
-            y_true = y_true.apply(lambda x: x.split("-")[-1])
-
         if kwargs['is_default']:
             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else (
                 '0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
 
         supported_tests = cls.available_tests()
+        
         tasks = []
         for test_name, samples in sample_list.items():
             tasks.append(
