@@ -24,6 +24,9 @@ class PretrainedModelForQA(_ModelHandler):
 
     def predict(self, text: str, *args, **kwargs):
         return self.model(text, *args, **kwargs)
+    
+    def predict_raw(self, text: str, *args, **kwargs):
+        return self.model(text, *args, **kwargs)
 
     def __call__(self, text: str, *args, **kwargs):
         """Alias of the 'predict' method"""
