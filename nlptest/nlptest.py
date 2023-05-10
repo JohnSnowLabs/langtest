@@ -11,10 +11,11 @@ from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
-from .modelhandler import ModelFactory
+from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 
 GLOBAL_MODEL = None
+
 class Harness:
     """ Harness is a testing class for NLP models.
 
@@ -23,7 +24,7 @@ class Harness:
     """
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
-    SUPPORTED_HUBS.extend([hub.lower() for hub in langchain.llms.__all__])
+    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",

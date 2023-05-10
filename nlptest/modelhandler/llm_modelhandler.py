@@ -3,16 +3,14 @@ from typing import Union
 import langchain.llms as lc
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
-from ..modelhandler.modelhandler import _ModelHandler
-
-DEFAULT_LLM_HUB = {hub.lower(): hub for hub in lc.__all__}
+from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
 
 class PretrainedModelForQA(_ModelHandler):
 
     def __init__(self,  hub: str, model: str, *args, **kwargs):
         self.model = model
-        self.hub = DEFAULT_LLM_HUB[hub]
+        self.hub = LANGCHAIN_HUBS[hub]
         self.kwargs = kwargs
 
     @classmethod
@@ -20,7 +18,7 @@ class PretrainedModelForQA(_ModelHandler):
         """"""
 
         try:
-            model = getattr(lc, DEFAULT_LLM_HUB[hub])
+            model = getattr(lc, LANGCHAIN_HUBS[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs
             if 'model' in default_args:
                 cls.model = model(model=path, *args, **kwargs)
