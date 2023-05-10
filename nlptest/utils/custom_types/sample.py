@@ -356,9 +356,9 @@ class QASample(BaseQASample):
     def is_pass(self) -> bool:
         """"""
         from langchain.evaluation.qa import QAEvalChain
-        from langchain.llms import OpenAI
+        from ...nlptest import GLOBAL_MODEL as llm_model
 
-        eval_chain = QAEvalChain.from_llm(OpenAI(temperature=0))
+        eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
         graded_outputs = eval_chain.evaluate(
             [{
                 "question": self.original_question,

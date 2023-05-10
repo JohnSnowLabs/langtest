@@ -14,7 +14,7 @@ from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory
 from .transform import TestFactory
 
-
+GLOBAL_MODEL = None
 class Harness:
     """ Harness is a testing class for NLP models.
 
@@ -108,7 +108,9 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-
+        
+        global GLOBAL_MODEL 
+        GLOBAL_MODEL = self.model
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None

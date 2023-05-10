@@ -28,6 +28,8 @@ class PretrainedModelForQA(_ModelHandler):
                 cls.model = model(model_name=path, *args, **kwargs)
             elif 'model_id' in default_args:
                 cls.model = model(model_id=path, *args, **kwargs)
+            elif 'repo_id' in default_args:
+                cls.model = model(repo_id=path, model_kwargs=kwargs)
             return cls.model
         except ImportError:
             raise ValueError(
