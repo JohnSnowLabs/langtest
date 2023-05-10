@@ -102,8 +102,9 @@ class GenderPronounBias(BaseBias):
             transformations = []
             replaced_string = sample.original
 
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    token.lower() in pronouns_to_substitute]
+            tokens_to_substitute = []
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in pronouns_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 if pronoun_type == "female":
@@ -125,6 +126,8 @@ class GenderPronounBias(BaseBias):
                         break
 
                 chosen_token = random.choice(chosen_dict[type_of_pronoun])
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -175,11 +178,14 @@ class CountryEconomicBias(BaseBias):
             transformations = []
             replaced_string = sample.original
 
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    token.lower() in [name.lower() for name in country_names_to_substitute]]
+            tokens_to_substitute = []
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in country_names_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_country_names)
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -236,11 +242,14 @@ class EthnicityNameBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    any(name.lower() == token.lower() for name in names_to_substitute)]
+            tokens_to_substitute = []
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in names_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_ethnicity_names)
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -292,11 +301,14 @@ class ReligionBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    any(name.lower() == token.lower() for name in names_to_substitute)]
+            tokens_to_substitute = []
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in names_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_names)
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
