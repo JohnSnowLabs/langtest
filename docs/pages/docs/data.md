@@ -1,10 +1,10 @@
 ---
 layout: docs
 header: true
-seotitle: Data Input | NLP Test | John Snow Labs
-title: Data Input
+seotitle: Data | NLP Test | John Snow Labs
+title: Data
 key: docs-examples
-permalink: /docs/pages/docs/data_input
+permalink: /docs/pages/docs/data
 modify_date: "2019-05-16"
 ---
 

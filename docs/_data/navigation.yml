@@ -26,10 +26,12 @@ docs-menu:
     children:
         - title: Harness
           url: /docs/pages/docs/harness
-        - title:  Data Input
-          url:    /docs/pages/docs/data_input
-        - title:  Model Input
-          url:    /docs/pages/docs/model_input
+        - title:  Data
+          url:    /docs/pages/docs/data
+        - title:  Model
+          url:    /docs/pages/docs/model
+        - title: Hub
+          url: /docs/pages/docs/hub
 
 
   - title: Testing Workflow
