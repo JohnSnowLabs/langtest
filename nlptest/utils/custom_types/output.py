@@ -117,4 +117,4 @@ class NEROutput(BaseModel):
         raise NotImplementedError()
 
 
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput, str)
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput, List[str], str)
