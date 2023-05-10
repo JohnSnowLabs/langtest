@@ -101,8 +101,6 @@ class GenderPronounBias(BaseBias):
             sample.category = "bias"
             transformations = []
             replaced_string = sample.original
-
-            tokens_to_substitute = []
             pattern = r'\b(?:' + '|'.join(re.escape(name) for name in pronouns_to_substitute) + r')(?!\w)'
             tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
@@ -177,8 +175,6 @@ class CountryEconomicBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-
-            tokens_to_substitute = []
             pattern = r'\b(?:' + '|'.join(re.escape(name) for name in country_names_to_substitute) + r')(?!\w)'
             tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
@@ -242,7 +238,6 @@ class EthnicityNameBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-            tokens_to_substitute = []
             pattern = r'\b(?:' + '|'.join(re.escape(name) for name in names_to_substitute) + r')(?!\w)'
             tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
@@ -301,7 +296,6 @@ class ReligionBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-            tokens_to_substitute = []
             pattern = r'\b(?:' + '|'.join(re.escape(name) for name in names_to_substitute) + r')(?!\w)'
             tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
