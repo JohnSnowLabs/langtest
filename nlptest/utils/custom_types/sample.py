@@ -317,6 +317,7 @@ class BaseQASample(BaseModel):
     category: str = None
     state: str = None
     task: str = None
+    test_case: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -371,3 +372,29 @@ class QASample(BaseQASample):
             ], question_key="question", prediction_key="text")
 
         return graded_outputs[0]['text'].strip() == 'CORRECT'
+
+
+class MinScoreQASample(QASample):
+    """"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.actual_results.min_score >= self.expected_results.min_score
+
+
+class MaxScoreQASample(QASample):
+    """"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.actual_results.max_score <= self.expected_results.max_score
+
+
+
+
