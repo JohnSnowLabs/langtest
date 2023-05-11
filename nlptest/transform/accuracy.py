@@ -519,8 +519,6 @@ class MinEMcore(BaseAccuracy):
         min_score = params["min_score"]
 
         sample = MinScoreSample(
-            original="-",
-            test_case="-",
             category="accuracy",
             test_type="min_macro_f1_score",
             expected_results=MinScoreOutput(min_score=min_score)
@@ -584,8 +582,6 @@ class MinBLEUcore(BaseAccuracy):
         min_score = params["min_score"]
 
         sample = MinScoreSample(
-            original="-",
-            test_case="-",
             category="accuracy",
             test_type="min_bleu_score",
             expected_results=MinScoreOutput(min_score=min_score)
@@ -649,8 +645,6 @@ class MinROUGEcore(BaseAccuracy):
         min_score = params["min_score"]
 
         sample = MinScoreSample(
-            original="-",
-            test_case="-",
             category="accuracy",
             test_type="min_bleu_score",
             expected_results=MinScoreOutput(min_score=min_score)

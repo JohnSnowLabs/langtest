@@ -252,7 +252,7 @@ class Harness:
         generated_results_df = pd.DataFrame.from_dict(
             [x.to_dict() for x in self._generated_results])
 
-        return generated_results_df
+        return generated_results_df.fillna('-')
 
     def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
         """
