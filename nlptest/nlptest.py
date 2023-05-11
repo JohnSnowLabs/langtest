@@ -177,7 +177,7 @@ class Harness:
                 return self
                   
         self._testcases = TestFactory.transform(
-            self.data, tests, m_data=m_data)
+           self.task, self.data, tests, m_data=m_data)
         return self
             
 
