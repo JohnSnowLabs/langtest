@@ -57,7 +57,7 @@ data:
         image:
           src: assets/images/home/SpaCy_logo.png
           url: https://spacy.io/
-          style: "padding: 18px;"
+          style: "padding: 29px;"
       - title:
         image:
           src: assets/images/home/OpenAI_Logo.png
