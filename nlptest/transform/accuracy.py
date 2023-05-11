@@ -608,13 +608,9 @@ class MinBLEUcore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
         em = evaluate.load("bleu")
         result = em.compute(references=y_true, predictions=y_pred)
-        print("pred")
-        for x in y_pred:
-            print(x)
-        print("true")
-        for x in y_true:
-            print(x)
-        print(result)
+        y_true = [[f'The answer is {y}' for y in x] for x in y_true]
+        y_pred = [f'The answer is {x}' for x in y_pred]
+        
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=result["bleu"])
             sample.state = "done"
@@ -633,7 +629,7 @@ class MinROUGEcore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_rouge_score"
+    alias_name = ["min_rouge1_score","min_rouge2_score","min_rougeL_score","min_rougeLsum_score"]
     supported_tasks = ["question-answering"]
 
     @staticmethod
@@ -677,18 +673,10 @@ class MinROUGEcore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
         em = evaluate.load("rouge")
         result = em.compute(references=y_true, predictions=y_pred)
-        print("pred")
-        for x in y_pred:
-            print(x)
-        print("true")
-        for x in y_true:
-            print(x)
-        print(result)
-        return []
+        
         for sample in sample_list:
-            sample.actual_results = MinScoreOutput(min_score=result)
+            sample.actual_results = MinScoreOutput(min_score=result[sample.test_type.split('_')[1]])
             sample.state = "done"
             if progress:
                 progress.update(1)
         return sample_list
-
