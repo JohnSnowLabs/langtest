@@ -6,7 +6,7 @@ from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 RENAME_HUBS = {
     'azureopenai': 'azure-openai',
-    'huggingfacehub': 'huggingface_inference_api'
+    'huggingfacehub': 'huggingface-inference-api'
 }
 
 LANGCHAIN_HUBS = {RENAME_HUBS.get(hub.lower(), hub.lower()) if hub.lower(
