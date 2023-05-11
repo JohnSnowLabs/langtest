@@ -110,7 +110,7 @@ class GenderRepresentation(BaseRepresentation):
 
             for key, value in min_counts.items():
                 
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -147,7 +147,7 @@ class GenderRepresentation(BaseRepresentation):
                         So min_gender_representation_proportion test cannot run.''')
 
             for key, value in min_proportions.items():
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -271,7 +271,7 @@ class EthnicityRepresentation(BaseRepresentation):
                         key: params['min_count'] for key in default_ehtnicity_representation}
 
             for key, value in expected_representation.items():
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -317,7 +317,7 @@ class EthnicityRepresentation(BaseRepresentation):
                         raise ValueError()
 
             for key, value in expected_representation.items(): 
-                 if (data[0].task)=='question-answering':
+                 if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -560,7 +560,7 @@ class ReligionRepresentation(BaseRepresentation):
                     
 
             for key, value in expected_representation.items():
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -611,7 +611,7 @@ class ReligionRepresentation(BaseRepresentation):
                 **default_religion_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
                 
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -727,7 +727,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         key: params['min_count'] for key in default_economic_country_representation}
 
             for key, value in expected_representation.items():
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
@@ -773,7 +773,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
 
             for key, value in expected_representation.items():
                 
-                if (data[0].task)=='question-answering':
+                if hasattr(data[0], 'task') and data[0].task == 'question-answering':
                     sample = MinScoreQASample(
                         original_question="-",
                         original_context="-",
