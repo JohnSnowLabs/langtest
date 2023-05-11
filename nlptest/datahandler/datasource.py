@@ -89,7 +89,9 @@ class DataFactory:
     @classmethod   
     def load_curated_bias(cls, tests_to_filter)-> List[Sample]:
         data = []
-        with jsonlines.open("bias.jsonl") as reader:
+        path = os.path.abspath(__file__)
+        bias_jsonl = os.path.dirname(path)[: -7]+"/BoolQ/bias.jsonl"
+        with jsonlines.open(bias_jsonl) as reader:
             for item in reader:
                 if item['test_type'] in tests_to_filter:
                     data.append(
