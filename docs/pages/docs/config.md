@@ -20,12 +20,17 @@ The configuration for the tests can be passed in the form of a YAML file to the 
 tests:
   defaults:
     min_pass_rate: 0.65
-
+    min_score: 0.8
   robustness:
     lowercase:
       min_pass_rate: 0.60
     uppercase:
       min_pass_rate: 0.60
+   bias:
+     replace_to_female_pronouns
+   accuracy:
+    min_f1_score:
+      min_score: 0.8
 ```
 
 ```python
@@ -48,11 +53,18 @@ h.configure(
     'tests': {
       'defaults': {
           'min_pass_rate': 0.65
+          'min_score': 0.8
       },
       'robustness': {
           'lowercase': { 'min_pass_rate': 0.60 }, 
           'uppercase': { 'min_pass_rate': 0.60 }
-        }
+        },
+      'bias': {
+          'replace_to_female_pronouns'
+        },
+      'accuracy': {
+          'min_f1_score'
+      }
       }
   }
  )
@@ -60,18 +72,28 @@ h.configure(
 
 </div><div class="h3-box" markdown="1">
 
-### Config for NER
+### Config for LLMs
 
+The configuration for LLM-related tests requires extra fields. These are .
 
-</div><div class="h3-box" markdown="1">
+#### Using the YAML Configuration File
 
-### Config for Text Classification
-
-
-</div><div class="h3-box" markdown="1">
-
-### Config for Question Answering
-
+```bash
+tests:
+  defaults:
+    min_pass_rate: 0.65
+    min_score: 0.8
+  robustness:
+    lowercase:
+      min_pass_rate: 0.60
+    uppercase:
+      min_pass_rate: 0.60
+   bias:
+     replace_to_female_pronouns
+   accuracy:
+    min_f1_score:
+      min_score: 0.8
+```
 
 </div><div class="h3-box" markdown="1">
 
