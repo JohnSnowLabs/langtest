@@ -687,10 +687,11 @@ class AccuracyTestFactory(ITests):
         elif isinstance(raw_data[0], QASample):
             dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
             user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+            prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
             
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
-            X_test = pd.Series(raw_data).apply(lambda sample: f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}")
-            y_pred = X_test.apply(model.predict_raw)
+            X_test = pd.Series(raw_data)
+            y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))
             y_pred = y_pred.apply(lambda x: x.strip())
         
         if kwargs['is_default']:
