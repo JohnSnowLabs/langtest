@@ -675,8 +675,11 @@ class AccuracyTestFactory(ITests):
         
         elif isinstance(raw_data[0], SequenceClassificationSample):
             y_true = pd.Series(raw_data).apply(lambda x: [y.label for y in x.expected_results.predictions])
+            y_true = y_true.apply(lambda x: x[0])
             X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
             y_pred = X_test.apply(model.predict_raw)
+            y_true = y_true.explode()
+            y_pred = y_pred.explode()
         
         elif isinstance(raw_data[0], QASample):
             dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
@@ -690,6 +693,7 @@ class AccuracyTestFactory(ITests):
         if kwargs['is_default']:
             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else (
                 '0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
+
 
         supported_tests = cls.available_tests()
         
