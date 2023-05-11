@@ -121,7 +121,7 @@ class GenderRepresentation(BaseRepresentation):
                         test_case=key,
                         expected_results=MinScoreOutput(min_score=value)
                     )
-                    sample_list.append(sample)
+                    samples.append(sample)
                     
                 else:
                     sample = MinScoreSample(
@@ -158,7 +158,7 @@ class GenderRepresentation(BaseRepresentation):
                         test_case=key,
                         expected_results=MinScoreOutput(min_score=value)
                     )
-                    sample_list.append(sample)
+                    samples.append(sample)
                     
                 else:
                     sample = MinScoreSample(
@@ -558,7 +558,6 @@ class ReligionRepresentation(BaseRepresentation):
                     expected_representation = {
                         key: params['min_count'] for key in default_religion_representation}
                     
-            min_gender_representation_proportion
 
             for key, value in expected_representation.items():
                 if (data[0].task)=='question-answering':
