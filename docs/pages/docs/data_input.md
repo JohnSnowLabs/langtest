@@ -116,6 +116,8 @@ To test Question Answering models, the user is meant to select a benchmark datas
 | Dataset  | Source | Description |
 | - | - | - |
 |**BoolQ** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Training, development & test set from the BoolQ dataset, containing 15,942 labeled examples
+|**BoolQ-dev** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Dev set from the BoolQ dataset, containing 3,270 labeled examples
+|**BoolQ-dev-tiny** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the dev set from the BoolQ dataset, containing 50 labeled examples
 |**BoolQ-test** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Test set from the BoolQ dataset, containing 3,245 labeled examples
 |**BoolQ-test-tiny** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples
 |**NQ-open** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples

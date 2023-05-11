@@ -14,3 +14,4 @@ jsonlines
 openai
 langchain
 evaluate
+inflect

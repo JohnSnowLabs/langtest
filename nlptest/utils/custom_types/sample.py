@@ -319,6 +319,7 @@ class BaseQASample(BaseModel):
     category: str = None
     state: str = None
     task: str = None
+    test_case: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -358,9 +359,9 @@ class QASample(BaseQASample):
     def is_pass(self) -> bool:
         """"""
         from langchain.evaluation.qa import QAEvalChain
-        from langchain.llms import OpenAI
+        from ...nlptest import GLOBAL_MODEL as llm_model
 
-        eval_chain = QAEvalChain.from_llm(OpenAI(temperature=0))
+        eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
         graded_outputs = eval_chain.evaluate(
             [{
                 "question": self.original_question,
@@ -373,3 +374,29 @@ class QASample(BaseQASample):
             ], question_key="question", prediction_key="text")
 
         return graded_outputs[0]['text'].strip() == 'CORRECT'
+
+
+class MinScoreQASample(QASample):
+    """"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.actual_results.min_score >= self.expected_results.min_score
+
+
+class MaxScoreQASample(QASample):
+    """"""
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.actual_results.max_score <= self.expected_results.max_score
+
+
+
+

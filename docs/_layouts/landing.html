@@ -153,6 +153,34 @@ h.generate().run().report()
         </div>
       {%- endif -%}
 
+      {%- if _section.trusted -%}
+          <div class="trusted_section">
+            <div class="grid--container">
+              {%- if _section.title -%}
+                <div class="grid">
+                  <div class="cell cell--12 cell--lg-12">
+                    <h2 class="h2_title">{{ _section.title }}</h2>
+                  </div>
+                </div>
+              {%- endif -%}
+              {%- if _section.children -%}              
+                <div class="grid grid--p-3 jcc">
+                  {%- for child in _section.children -%}
+                    <div class="cell cell--6 cell--md-4 cell--lg-3">
+                      <div class="feature-item sponsor">
+                        <a target="_blank" rel="nofollow" href="{{ child.image.url }}">
+                          <figure class="mx-auto df" style="{{ child.image.style }}">
+                            <img src="{{ child.image.src }}" />
+                          </figure>
+                        </a>
+                      </div>
+                    </div>
+                  {%- endfor-%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
 
 {%- if _section.outbox -%}
   <div class="grid--container outbox-section">

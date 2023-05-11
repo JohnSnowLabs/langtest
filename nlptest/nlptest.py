@@ -3,6 +3,7 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Optional, Union, Any
+import langchain
 
 import pandas as pd
 import yaml
@@ -10,9 +11,10 @@ from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
-from .modelhandler import ModelFactory
+from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 
+GLOBAL_MODEL = None
 
 class Harness:
     """ Harness is a testing class for NLP models.
@@ -21,13 +23,14 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
+    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
         ("ner", "ner.dl", "johnsnowlabs"): "conll/sample.conll",
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
-        ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
+        ("text-classification", "lvwerra/distilbert-imdb", "huggingface"):
             "tweet/sample.csv",
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
@@ -89,6 +92,7 @@ class Harness:
         elif isinstance(data, list):
             self.data = data
         else:
+            self.file_path = data
             self.data = DataFactory(
                 data, task=self.task).load() if data is not None else None
 
@@ -106,7 +110,9 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-
+        
+        global GLOBAL_MODEL 
+        GLOBAL_MODEL = self.model
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None
@@ -156,9 +162,28 @@ class Harness:
         if self.task in ["text-classification", "ner"]:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
+        elif self.task in ["question-answering"]:
+            if 'bias' in tests.keys():
+                if self.file_path.split('-')[0] =='BoolQ':
+                    tests_to_filter = tests['bias'].keys()
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != 'bias'}
+                        other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                        self._testcases.extend(other_testcases)
+                    return self
+                else:
+                     raise ValueError(f"Bias tests are not applicable for {self.file_path} dataset.")
+   
+            else:
+                self._testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    
+                return self
+                  
         self._testcases = TestFactory.transform(
-            self.task, self.data, tests, m_data=m_data)
+           self.task, self.data, tests, m_data=m_data)
         return self
+            
 
     def run(self) -> "Harness":
         """

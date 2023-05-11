@@ -36,10 +36,51 @@ data:
             src: assets/images/home/open_source.svg
          excerpt: The full code base is open under the Apache 2.0 license, designed for easy extension and AI community collaboration  
 
+           
    - title: Fully Integrated Workflow
      topimage: 
       - image:
           src: assets/images/home/nlptest_flow_graphic.png
+        
+   - trusted: yes
+     featureitem: sponsor
+     children:
+      - title:
+        image:
+          src: assets/images/home/jsl_logo.svg
+          url: https://www.johnsnowlabs.com/
+      - title:
+        image:
+          src: assets/images/home/hf-logo-with-title.svg 
+          url: https://huggingface.co/
+      - title:
+        image:
+          src: assets/images/home/spacy_logo.svg
+          url: https://spacy.io/
+          style: "padding: 41px;"
+      - title:
+        image:
+          src: assets/images/home/openai_logo.svg
+          url: https://openai.com/
+          style: "padding: 21px;"
+      - title:
+        image:
+          src: assets/images/home/cohere_logo.svg
+          url: https://cohere.com/
+          style: "padding: 10px;"
+      - title:
+        image:
+          src: https://assets-global.website-files.com/60fd4503684b466578c0d307/60ff0505b0dbe005faac0c84_AI21%20Logo.svg
+          url: https://www.ai21.com/
+      - title:
+        image:
+          src: assets/images/home/microsoft_azure_logo.svg
+          url: https://azure.microsoft.com/en-us/products/cognitive-services/openai-service
+          style: "padding: 16px;"
+      - title:
+        image:
+          src: assets/images/home/langchain.png
+          url: https://python.langchain.com/en/latest/index.html
 
    - title: 'Get Started'
      install: yes
@@ -62,5 +103,6 @@ data:
       - text: Get Started Now
         url: docs/pages/docs/install
 
+        
     
 ---

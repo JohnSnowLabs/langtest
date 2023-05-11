@@ -43,7 +43,10 @@ class TestFactory:
         """
         all_results = []
         all_categories = TestFactory.test_categories()
-        tests = tqdm(test_types.keys(), desc="Generating testcases...",
+        test_names = list(test_types.keys())
+        if 'defaults' in test_names:
+            test_names.pop(test_names.index("defaults"))
+        tests = tqdm(test_names, desc="Generating testcases...",
                      disable=TestFactory.is_augment)
         m_data = kwargs.get('m_data', None)
 

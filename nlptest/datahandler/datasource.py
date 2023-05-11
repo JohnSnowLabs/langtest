@@ -85,6 +85,22 @@ class DataFactory:
                 path to save the data to
         """
         self.init_cls.export_data(data, output_path)
+        
+    @classmethod   
+    def load_curated_bias(cls, tests_to_filter)-> List[Sample]:
+        data = []
+        path = os.path.abspath(__file__)
+        bias_jsonl = os.path.dirname(path)[: -7]+"/BoolQ/bias.jsonl"
+        with jsonlines.open(bias_jsonl) as reader:
+            for item in reader:
+                if item['test_type'] in tests_to_filter:
+                    data.append(
+                        QASample(original_question=item['original_question'], original_context=item.get(
+                            'original_context', "-"),perturbed_question=item['perturbed_question'], perturbed_context=item.get(
+                            'perturbed_context', "-"), task="question-answering", test_type = item['test_type'], category=item['category'], dataset_name="BoolQ")
+                    )
+
+        return data
 
     @classmethod
     def _load_dataset(cls, dataset_name: str):
