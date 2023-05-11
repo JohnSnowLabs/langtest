@@ -53,8 +53,16 @@ class BaseBias(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                sample.expected_results = model(sample.original)
-                sample.actual_results = model(sample.test_case)
+                if 'original_context' in sample.__annotations__:
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
+                    perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
+                    sample.expected_results = model(original_prompt)
+                    sample.actual_results = model(perturbed_prompt)  
+                else:
+                    sample.expected_results = model(sample.original)
+                    sample.actual_results = model(sample.test_case)
                 sample.state = "done"
             if progress:
                 progress.update(1)
