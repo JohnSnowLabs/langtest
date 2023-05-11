@@ -112,6 +112,8 @@ class DataFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
+            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
+            'BoolQ-dev': script_dir[:-7]+'/BoolQ/dev.jsonl',
             'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
             'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
             'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
