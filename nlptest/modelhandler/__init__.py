@@ -1,1 +1,1 @@
-from .modelhandler import ModelFactory
+from .modelhandler import ModelFactory, LANGCHAIN_HUBS

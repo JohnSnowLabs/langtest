@@ -3,6 +3,7 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Optional, Union, Any
+import langchain
 
 import pandas as pd
 import yaml
@@ -10,9 +11,10 @@ from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
-from .modelhandler import ModelFactory
+from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 
+GLOBAL_MODEL = None
 
 class Harness:
     """ Harness is a testing class for NLP models.
@@ -21,7 +23,8 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
+    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
@@ -107,7 +110,9 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-
+        
+        global GLOBAL_MODEL 
+        GLOBAL_MODEL = self.model
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None
