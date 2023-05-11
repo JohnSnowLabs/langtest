@@ -89,6 +89,7 @@ class Harness:
         elif isinstance(data, list):
             self.data = data
         else:
+            self.file_path = data
             self.data = DataFactory(
                 data, task=self.task).load() if data is not None else None
 
@@ -158,18 +159,23 @@ class Harness:
                  for sample in m_data]
         elif self.task in ["question-answering"]:
             if 'bias' in tests.keys():
-                tests_to_filter = tests['bias'].keys()
-                self._testcases = DataFactory.load_curated_bias(tests_to_filter)
-                if len(tests.keys()) > 2:
-                    tests = {k: v for k, v in tests.items() if k != 'bias'}
-                    other_testcases = TestFactory.transform(self.data, tests, m_data=m_data)
-                    self._testcases.extend(other_testcases)
-                return self                     
+                if self.file_path.split('-')[0] =='BoolQ':
+                    tests_to_filter = tests['bias'].keys()
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != 'bias'}
+                        other_testcases = TestFactory.transform(self.data, tests, m_data=m_data)
+                        self._testcases.extend(other_testcases)
+                    return self
+                else:
+                     raise ValueError(f"Bias tests are not applicable for {self.file_path} dataset.")
+   
             else:
                 self._testcases = TestFactory.transform(
-            self.data, tests, m_data=m_data)       
+            self.data, tests, m_data=m_data)
+                    
                 return self
-              
+                  
         self._testcases = TestFactory.transform(
             self.data, tests, m_data=m_data)
         return self
