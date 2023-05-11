@@ -25,7 +25,8 @@ REQUIRED_PKGS = [
     'nest-asyncio',
     'jsonlines',
     'langchain',
-    'openai'
+    'openai',
+    'evaluate'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
