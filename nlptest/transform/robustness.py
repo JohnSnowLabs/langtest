@@ -2,11 +2,10 @@ import asyncio
 import random
 import re
 import numpy as np
+from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
-
 from nlptest.modelhandler.modelhandler import ModelFactory
-
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt)
 from ..utils.custom_types import Sample, Span, Transformation
 
@@ -687,4 +686,45 @@ class AddContraction(BaseRobustness):
                     sample.test_case = replaced_string
                     sample.transformations = transformations
             sample.category = "robustness"
+        return sample_list
+        
+class NumberToWord(BaseRobustness):
+    alias_name = "number_to_word"
+    infEng = engine()
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transform a list of strings to their equivalent verbal representation
+        of numbers present in the string.
+        Args:
+            sample_list: List of sentences to apply robustness.
+        Returns:
+            List of sentences that have numbers in their verbal representation.
+        """
+        for sample in sample_list:
+            results = []
+            trans = []
+            transformations = []
+            start_offset = 0
+            for match in re.finditer(r'(?<!\S)\d+(\.\d+)?(?!\S)', sample.original):
+                token = match.group()
+                words = NumberToWord.infEng.number_to_words(token, wantlist=True)
+                token_len = len(token) - 1
+                new_words_len = len(' '.join(words)) - 1
+                trans.append(sample.original[start_offset:match.start()])
+                trans.append(' '.join(words))
+                start_offset = match.end()
+                transformations.append(
+                    Transformation(
+                        original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                        new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
+                        ignore=False
+                    )
+                )
+            trans.append(sample.original[start_offset:])
+            results.append(''.join(trans))
+            sample.test_case = ''.join(results)
+            sample.category = "robustness"
+            sample.transformations = transformations
         return sample_list

@@ -19,7 +19,8 @@ DEFAULT_PERTURBATIONS = [
     "swap_entities",
     "replace_to_male_pronouns",
     "replace_to_female_pronouns",
-    "replace_to_neutral_pronouns"
+    "replace_to_neutral_pronouns",
+    "number_to_word"
 ]
 
 PERTURB_CLASS_MAP = {
@@ -36,7 +37,8 @@ PERTURB_CLASS_MAP = {
     "swap_entities": 'SwapEntities',
     "replace_to_male_pronouns": "GenderPronounBias",
     "replace_to_female_pronouns": "GenderPronounBias",
-    "replace_to_neutral_pronouns": "GenderPronounBias"
+    "replace_to_neutral_pronouns": "GenderPronounBias",
+    "number_to_word": "NumberToWord"
 }
 
 # @formatter:off
