@@ -27,7 +27,7 @@ class Harness:
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
         ("ner", "ner.dl", "johnsnowlabs"): "conll/sample.conll",
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
-        ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
+        ("text-classification", "lvwerra/distilbert-imdb", "huggingface"):
             "tweet/sample.csv",
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
@@ -89,6 +89,7 @@ class Harness:
         elif isinstance(data, list):
             self.data = data
         else:
+            self.file_path = data
             self.data = DataFactory(
                 data, task=self.task).load() if data is not None else None
 
@@ -156,9 +157,28 @@ class Harness:
         if self.task in ["text-classification", "ner"]:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
+        elif self.task in ["question-answering"]:
+            if 'bias' in tests.keys():
+                if self.file_path.split('-')[0] =='BoolQ':
+                    tests_to_filter = tests['bias'].keys()
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != 'bias'}
+                        other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                        self._testcases.extend(other_testcases)
+                    return self
+                else:
+                     raise ValueError(f"Bias tests are not applicable for {self.file_path} dataset.")
+   
+            else:
+                self._testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    
+                return self
+                  
         self._testcases = TestFactory.transform(
-            self.task, self.data, tests, m_data=m_data)
+           self.task, self.data, tests, m_data=m_data)
         return self
+            
 
     def run(self) -> "Harness":
         """
