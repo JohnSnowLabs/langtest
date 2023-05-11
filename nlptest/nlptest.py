@@ -27,7 +27,7 @@ class Harness:
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
         ("ner", "ner.dl", "johnsnowlabs"): "conll/sample.conll",
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
-        ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
+        ("text-classification", "lvwerra/distilbert-imdb", "huggingface"):
             "tweet/sample.csv",
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
