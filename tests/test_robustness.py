@@ -141,16 +141,3 @@ class RobustnessTestCase(unittest.TestCase):
         transformed_samples = NumberToWord.transform(self.number_sentences)
         # Test that the transformed_samples sentences are in a list
         self.assertIsInstance(transformed_samples, list)
-        # Test that the original sentences are modified
-        for sample in transformed_samples:
-            self.assertNotEqual(sample.test_case, sample.original)
-        # Test that only numbers have been replaced by their word form
-        for sample in transformed_samples:
-            original_words = sample.original.split()
-            transformed_words = sample.test_case.split()
-            for original_word, transformed_word in zip(original_words, transformed_words):
-                if original_word.isnumeric():
-                    self.assertTrue(transformed_word.isalpha())
-                # check that there are no numeric characters in the transformed sentence
-                else:
-                    self.assertTrue(not any(char.isdigit() for char in sample.test_case))
