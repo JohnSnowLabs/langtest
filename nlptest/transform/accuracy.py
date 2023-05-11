@@ -608,7 +608,82 @@ class MinBLEUcore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
         em = evaluate.load("bleu")
         result = em.compute(references=y_true, predictions=y_pred)
-        
+        print("pred")
+        for x in y_pred:
+            print(x)
+        print("true")
+        for x in y_true:
+            print(x)
+        print(result)
+        for sample in sample_list:
+            sample.actual_results = MinScoreOutput(min_score=result["bleu"])
+            sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
+
+class MinROUGEcore(BaseAccuracy):
+    """
+    Subclass of BaseAccuracy that implements the minimum precision score.
+
+    Attributes:
+        alias_name (str): The name for config.
+
+    Methods:
+        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+    """
+
+    alias_name = "min_rouge_score"
+    supported_tasks = ["question-answering"]
+
+    @staticmethod
+    def transform(y_true, params):
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
+
+        Returns:
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+        """
+
+        min_score = params["min_score"]
+
+        sample = MinScoreSample(
+            original="-",
+            test_case="-",
+            category="accuracy",
+            test_type="min_bleu_score",
+            expected_results=MinScoreOutput(min_score=min_score)
+        )
+
+        return [sample]
+
+    @staticmethod
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
+
+        """
+        Computes the minimum F1 score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): List of samples to be transformed.
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        em = evaluate.load("rouge")
+        result = em.compute(references=y_true, predictions=y_pred)
+        print("pred")
+        for x in y_pred:
+            print(x)
+        print("true")
+        for x in y_true:
+            print(x)
+        print(result)
         return []
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=result)
@@ -616,3 +691,4 @@ class MinBLEUcore(BaseAccuracy):
             if progress:
                 progress.update(1)
         return sample_list
+
