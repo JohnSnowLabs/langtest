@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import asyncio
 from typing import List
 from nlptest.modelhandler.modelhandler import ModelFactory
-from nlptest.utils.custom_types import Sample, MinScoreOutput, MinScoreSample
+from nlptest.utils.custom_types import Sample, MinScoreOutput, MinScoreSample, MinScoreQASample
 from nlptest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
 from nlptest.utils.gender_classifier import GenderClassifier
 from .utils import (default_label_representation,
@@ -108,15 +108,30 @@ class GenderRepresentation(BaseRepresentation):
                     "unknown": params["min_count"]
                 }
 
-            for k, v in min_counts.items():
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_gender_representation_count",
-                    test_case=k,
-                    expected_results=MinScoreOutput(min_score=v)
-                )
-                samples.append(sample)
+            for key, value in min_counts.items():
+                
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_gender_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                    
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_gender_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    samples.append(sample)
         elif test == "min_gender_representation_proportion":
             min_proportions = {
                 "male": 0.26,
@@ -131,15 +146,29 @@ class GenderRepresentation(BaseRepresentation):
                         '''Sum of proportions cannot be greater than 1. 
                         So min_gender_representation_proportion test cannot run.''')
 
-            for k, v in min_proportions.items():
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_gender_representation_proportion",
-                    test_case=k,
-                    expected_results=MinScoreOutput(min_score=v)
-                )
-                samples.append(sample)
+            for key, value in min_proportions.items():
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_gender_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                    
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_gender_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    samples.append(sample)
         return samples
 
     async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
@@ -242,14 +271,28 @@ class EthnicityRepresentation(BaseRepresentation):
                         key: params['min_count'] for key in default_ehtnicity_representation}
 
             for key, value in expected_representation.items():
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_ethnicity_name_representation_count",
-                    test_case=key,
-                    expected_results=MinScoreOutput(min_score=value)
-                )
-                sample_list.append(sample)
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_ethnicity_name_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                     
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_ethnicity_name_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
 
         if test == "min_ethnicity_name_representation_proportion":
             if not params:
@@ -273,16 +316,29 @@ class EthnicityRepresentation(BaseRepresentation):
                         So min_ethnicity_name_representation_proportion test cannot run''')
                         raise ValueError()
 
-            for key, value in expected_representation.items():
-
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_ethnicity_name_representation_proportion",
-                    test_case=key,
-                    expected_results=MinScoreOutput(min_score=value)
-                )
-                sample_list.append(sample)
+            for key, value in expected_representation.items(): 
+                 if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_ethnicity_name_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                 
+                 else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_ethnicity_name_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
 
         return sample_list
 
@@ -501,16 +557,31 @@ class ReligionRepresentation(BaseRepresentation):
                 elif isinstance(params['min_count'], int):
                     expected_representation = {
                         key: params['min_count'] for key in default_religion_representation}
+                    
+            min_gender_representation_proportion
 
             for key, value in expected_representation.items():
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_religion_name_representation_count",
-                    test_case=key,
-                    expected_results=MinScoreOutput(min_score=value)
-                )
-                sample_list.append(sample)
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_religion_name_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_religion_name_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
 
         if test == "min_religion_name_representation_proportion":
             if not params:
@@ -540,18 +611,31 @@ class ReligionRepresentation(BaseRepresentation):
             actual_representation = {
                 **default_religion_representation, **entity_representation_proportion}
             for key, value in expected_representation.items():
-
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_religion_name_representation_proportion",
-                    test_case=key,
-                    expected_results=MinScoreOutput(min_score=value),
-                    actual_results=MinScoreOutput(
-                        min_score=actual_representation[key]),
-                    state="done"
-                )
-                sample_list.append(sample)
+                
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_religion_name_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_religion_name_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value),
+                        actual_results=MinScoreOutput(
+                            min_score=actual_representation[key]),
+                        state="done"
+                    )
+                    sample_list.append(sample)
 
         return sample_list
 
@@ -644,14 +728,27 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         key: params['min_count'] for key in default_economic_country_representation}
 
             for key, value in expected_representation.items():
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_country_economic_representation_count",
-                    test_case=key,
-                    expected_results=MinScoreOutput(min_score=value)
-                )
-                sample_list.append(sample)
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_country_economic_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_country_economic_representation_count",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
 
         if test == "min_country_economic_representation_proportion":
             if not params:
@@ -676,15 +773,29 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         raise ValueError()
 
             for key, value in expected_representation.items():
-
-                sample = MinScoreSample(
-                    original="-",
-                    category="representation",
-                    test_type="min_country_economic_representation_proportion",
-                    test_case=key,
-                    expected_results=MinScoreOutput(min_score=value)
-                )
-                sample_list.append(sample)
+                
+                if (data[0].task)=='question-answering':
+                    sample = MinScoreQASample(
+                        original_question="-",
+                        original_context="-",
+                        perturbed_question="-",
+                        perturbed_context="-",
+                        category="representation",
+                        test_type="min_country_economic_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
+                
+                else:
+                    sample = MinScoreSample(
+                        original="-",
+                        category="representation",
+                        test_type="min_country_economic_representation_proportion",
+                        test_case=key,
+                        expected_results=MinScoreOutput(min_score=value)
+                    )
+                    sample_list.append(sample)
 
         return sample_list
 
