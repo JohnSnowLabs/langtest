@@ -19,7 +19,7 @@ class BaseSample(BaseModel):
     This way, to support a new task one only needs to create a `XXXOutput` model, overload the `__eq__`
     operator and add the new model to the `Result` type variable.
     """
-    original: str
+    original: str = None
     test_type: str = None
     test_case: str = None
     expected_results: Result = None
@@ -39,14 +39,16 @@ class BaseSample(BaseModel):
         actual_result = self.actual_results.to_str_list(
         ) if self.actual_results is not None else None
 
+
         result = {
             'category': self.category,
             'test_type': self.test_type,
-            'original': self.original,
-            'test_case': self.test_case,
             'expected_result': expected_result,
         }
-
+        if self.original:
+            result['original'] = self.original
+        if self.test_case:
+            result['test_case']: self.test_case
         if actual_result is not None:
             result.update({
                 'actual_result': actual_result,

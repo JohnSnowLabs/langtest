@@ -26,7 +26,8 @@ REQUIRED_PKGS = [
     'jsonlines',
     'langchain',
     'openai',
-    'inflect'
+    'evaluate',
+    'inflect',
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.

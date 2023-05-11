@@ -458,9 +458,17 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
+                expected_results = item.get("answer_and_def_correct_predictions", item.get("answer", None))
+                if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
+
                 data.append(
-                    QASample(original_question=item['question'], original_context=item.get(
-                        'passage', "-"), task=self.task, dataset_name=self._file_path.split('/')[-2])
+                    QASample(
+                        original_question = item['question'],
+                        original_context= item.get('passage', "-"),
+                        expected_results = expected_results,
+                        task=self.task,
+                        dataset_name=self._file_path.split('/')[-2]
+                        )
                 )
 
         return data
