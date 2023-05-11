@@ -711,7 +711,7 @@ class NumberToWord(BaseRobustness):
             trans = []
             transformations = []
             start_offset = 0
-            for match in re.finditer(r'(?<!\S)(?!.*[^\d\s]\d)[\d.]+(?![\d:.])\b', sample.original):
+            for match in re.finditer(r'(?<!\S)\d+(\.\d+)?(?!\S)', sample.original):
                 token = match.group()
                 words = NumberToWord.infEng.number_to_words(token, wantlist=True)
                 token_len = len(token) - 1
