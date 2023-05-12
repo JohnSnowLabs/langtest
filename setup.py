@@ -18,7 +18,7 @@ REQUIRED_PKGS = [
     'numpy',
     'pandas',
     'scikit-learn',
-    'transformers',
+    'transformers<=4.28.1',
     'torch',
     'sentencepiece',
     'pydantic',
