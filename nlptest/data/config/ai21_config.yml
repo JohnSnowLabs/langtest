@@ -1,0 +1,14 @@
+# this section is only required for LLM models
+model_parameters:
+  temperature: 0.2
+  maxTokens: 64
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  robustness:
+    add_typo:
+      min_pass_rate: 0.70
+    lowercase:
+      min_pass_rate: 0.70
