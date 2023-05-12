@@ -691,7 +691,7 @@ class AccuracyTestFactory(ITests):
             prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
             
             if raw_data[0].expected_results is None:
-                raise logging.warning(f'The dataset {dataset_name} does not contain labels and accuracy tests cannot be run with it. Skipping the accuracy tests.')
+                logging.warning('The dataset %s does not contain labels and accuracy tests cannot be run with it. Skipping the accuracy tests.', dataset_name)
                 return []
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
