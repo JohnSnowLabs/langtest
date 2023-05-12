@@ -10,6 +10,7 @@ from .fairness import BaseFairness
 from .accuracy import BaseAccuracy
 from ..modelhandler import ModelFactory
 import pandas as pd
+import logging
 from tqdm.asyncio import tqdm
 from typing import Dict, List
 from abc import ABC, abstractmethod
@@ -689,6 +690,9 @@ class AccuracyTestFactory(ITests):
             user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
             prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
             
+            if raw_data[0].expected_results is None:
+                raise logging.warning(f'The dataset {dataset_name} does not contain labels and accuracy tests cannot be run with it. Skipping the accuracy tests.')
+                return []
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
             y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))

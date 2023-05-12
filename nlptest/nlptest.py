@@ -333,7 +333,7 @@ class Harness:
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
         final_df = final_df.reset_index(drop=True)
-        return final_df
+        return final_df.fillna('-')
 
     def save(self, save_dir: str) -> None:
         """
