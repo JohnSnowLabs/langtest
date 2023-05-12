@@ -28,6 +28,7 @@ REQUIRED_PKGS = [
     'openai',
     'evaluate',
     'inflect',
+    'rouge_score',
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
