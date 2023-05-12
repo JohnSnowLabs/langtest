@@ -53,7 +53,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.1.0",  # Required
+    version="1.2.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -171,6 +171,7 @@ setup(
             "data/BoolQ/*",
             "data/NQ-open/*",
             "data/textcat_imdb/*/*",
+            "data/config/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
