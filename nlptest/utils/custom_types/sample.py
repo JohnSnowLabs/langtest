@@ -43,7 +43,8 @@ class BaseSample(BaseModel):
         result = {
             'category': self.category,
             'test_type': self.test_type,
-        }   
+        }
+        
         if self.original is not None:
             result['original'] = self.original
         
@@ -51,6 +52,12 @@ class BaseSample(BaseModel):
             result['test_case'] = self.test_case
 
         result['expected_result'] = expected_result
+        
+        if actual_result is not None:
+            result.update({
+                'actual_result': actual_result,
+                'pass': self.is_pass()
+            })
 
         return result
 
