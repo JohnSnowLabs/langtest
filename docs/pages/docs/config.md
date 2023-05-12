@@ -74,11 +74,15 @@ h.configure(
 
 ### Config for LLMs
 
-The configuration for LLM-related tests requires extra fields. These are .
+The configuration for LLM-related tests requires extra fields. These are hub-specific and contain parameters passed to the LLM.
 
-#### Using the YAML Configuration File
+#### Example Config File: OpenAI
 
 ```bash
+model_parameters:
+  temperature: 0.2
+  max_tokens: 64
+
 tests:
   defaults:
     min_pass_rate: 0.65
@@ -88,11 +92,6 @@ tests:
       min_pass_rate: 0.60
     uppercase:
       min_pass_rate: 0.60
-   bias:
-     replace_to_female_pronouns
-   accuracy:
-    min_f1_score:
-      min_score: 0.8
 ```
 
 </div><div class="h3-box" markdown="1">
