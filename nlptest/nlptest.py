@@ -36,6 +36,14 @@ class Harness:
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
     }
 
+    DEFAULTS_CONFIG = {
+        'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
+        'openai': resource_filename("nlptest", "data/config/openai_config.yml"),
+        'cohere': resource_filename("nlptest", "data/config/cohere_config.yml"),
+        'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
+        'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
+    }
+
     def __init__(
             self,
             model: Union[str, Any],
@@ -98,6 +106,8 @@ class Harness:
 
         if config is not None:
             self._config = self.configure(config)
+        elif hub in self.DEFAULTS_CONFIG:
+            self._config = self.configure(self.DEFAULTS_CONFIG[hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
