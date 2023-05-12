@@ -100,6 +100,7 @@ class Harness:
         elif isinstance(data, list):
             self.data = data
         else:
+            self.file_path = data
             self.data = DataFactory(
                 data, task=self.task).load() if data is not None else None
 
@@ -171,9 +172,28 @@ class Harness:
         if self.task in ["text-classification", "ner"]:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
+        elif self.task in ["question-answering"]:
+            if 'bias' in tests.keys():
+                if self.file_path.split('-')[0] =='BoolQ':
+                    tests_to_filter = tests['bias'].keys()
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != 'bias'}
+                        other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                        self._testcases.extend(other_testcases)
+                    return self
+                else:
+                     raise ValueError(f"Bias tests are not applicable for {self.file_path} dataset.")
+   
+            else:
+                self._testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    
+                return self
+                  
         self._testcases = TestFactory.transform(
-            self.task, self.data, tests, m_data=m_data)
+           self.task, self.data, tests, m_data=m_data)
         return self
+            
 
     def run(self) -> "Harness":
         """
@@ -267,7 +287,7 @@ class Harness:
         generated_results_df = pd.DataFrame.from_dict(
             [x.to_dict() for x in self._generated_results])
 
-        return generated_results_df
+        return generated_results_df.fillna('-')
 
     def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
         """
@@ -323,7 +343,7 @@ class Harness:
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
         final_df = final_df.reset_index(drop=True)
-        return final_df
+        return final_df.fillna('-')
 
     def save(self, save_dir: str) -> None:
         """

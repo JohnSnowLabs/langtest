@@ -1,5 +1,6 @@
+from nlptest.utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
 from ..utils.custom_types import Result, Sample
-from .utils import (A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
+from .utils import ( default_user_prompt, A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
                     get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
                     neutral_pronouns, religion_wise_names, white_names)
 from .robustness import BaseRobustness
@@ -9,6 +10,7 @@ from .fairness import BaseFairness
 from .accuracy import BaseAccuracy
 from ..modelhandler import ModelFactory
 import pandas as pd
+import logging
 from tqdm.asyncio import tqdm
 from typing import Dict, List
 from abc import ABC, abstractmethod
@@ -617,17 +619,16 @@ class AccuracyTestFactory(ITests):
             List[Sample]:
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
-        # TODO: get rid of pandas
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            try:
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions])
-            except:
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.label for y in x.expected_results.predictions])
+            if isinstance(data_handler_copy[0], NERSample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            elif isinstance(data_handler_copy[0], SequenceClassificationSample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
+            elif isinstance(data_handler_copy[0], QASample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
 
             y_true = y_true.explode().apply(lambda x: x.split("-")
                                             [-1] if isinstance(x, str) else x)
@@ -664,29 +665,46 @@ class AccuracyTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
-        try:
-            y_true = pd.Series(raw_data).apply(
-                lambda x: [y.entity for y in x.expected_results.predictions])
-        except:
-            y_true = pd.Series(raw_data).apply(
-                lambda x: [y.label for y in x.expected_results.predictions])
-
-        len(y_true)
-        X_test = pd.Series(raw_data).apply(lambda x: x.original)
-        y_pred = X_test.apply(model.predict_raw)
-
-        valid_indices = y_true.apply(len) == y_pred.apply(len)
-        y_true = y_true[valid_indices]
-        y_pred = y_pred[valid_indices]
-
-        y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-        y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-
+        if isinstance(raw_data[0], NERSample):
+            y_true = pd.Series(raw_data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
+            y_pred = X_test.apply(model.predict_raw)
+            valid_indices = y_true.apply(len) == y_pred.apply(len)
+            y_true = y_true[valid_indices]
+            y_pred = y_pred[valid_indices]
+            y_true = y_true.explode()
+            y_pred = y_pred.explode()
+            y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+            y_true = y_true.apply(lambda x: x.split("-")[-1])
+        
+        elif isinstance(raw_data[0], SequenceClassificationSample):
+            y_true = pd.Series(raw_data).apply(lambda x: [y.label for y in x.expected_results.predictions])
+            y_true = y_true.apply(lambda x: x[0])
+            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
+            y_pred = X_test.apply(model.predict_raw)
+            y_true = y_true.explode()
+            y_pred = y_pred.explode()
+        
+        elif isinstance(raw_data[0], QASample):
+            dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
+            user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+            prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+            
+            if raw_data[0].expected_results is None:
+                logging.warning('The dataset %s does not contain labels and accuracy tests cannot be run with it. Skipping the accuracy tests.', dataset_name)
+                return []
+            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data)
+            y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))
+            y_pred = y_pred.apply(lambda x: x.strip())
+        
         if kwargs['is_default']:
             y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else (
                 '0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
 
+
         supported_tests = cls.available_tests()
+        
         tasks = []
         for test_name, samples in sample_list.items():
             tasks.append(

@@ -35,16 +35,20 @@ class PretrainedModelForQA(_ModelHandler):
                 Please install langchain by pip install langchain''')
         except ValidationError as e:
             error_msg = [err['loc'][0] for err in e.errors()]
-
             raise ConfigError(
                 f"\nPlease update model_parameters section in config.yml file for {path} model in {hub}.\nmodel_parameters:\n\t{error_msg[0]}: value \n\n{error_msg} is required field(s), please provide them in config.yml "
             )
+    
 
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         prompt_template = PromptTemplate(**prompt)
         llmchain = LLMChain(prompt=prompt_template, llm=self.model)
         return llmchain.run(**text)
 
+    def predict_raw(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
+        """Alias of the 'predict' method"""
+        return self.predict(text, prompt, *args, **kwargs)
+    
     def __call__(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Alias of the 'predict' method"""
         return self.predict(text, prompt, *args, **kwargs)
