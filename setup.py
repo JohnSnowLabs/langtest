@@ -18,14 +18,17 @@ REQUIRED_PKGS = [
     'numpy',
     'pandas',
     'scikit-learn',
-    'transformers',
+    'transformers<=4.28.1',
     'torch',
     'sentencepiece',
     'pydantic',
     'nest-asyncio',
     'jsonlines',
     'langchain',
-    'openai'
+    'openai',
+    'evaluate',
+    'inflect',
+    'rouge_score',
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
