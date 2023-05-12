@@ -60,9 +60,6 @@ class BaseRobustness(ABC):
                     dataset_name = sample.dataset_name.split('-')[0].lower()
                     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
-                    # original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
-                    # perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
-
                     sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
                     sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},

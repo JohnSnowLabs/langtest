@@ -56,10 +56,11 @@ class BaseBias(ABC):
                 if 'original_context' in sample.__annotations__:
                     dataset_name = sample.dataset_name.split('-')[0].lower()
                     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
-                    perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
-                    sample.expected_results = model(original_prompt)
-                    sample.actual_results = model(perturbed_prompt)  
+                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                    sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
                 else:
                     sample.expected_results = model(sample.original)
                     sample.actual_results = model(sample.test_case)
