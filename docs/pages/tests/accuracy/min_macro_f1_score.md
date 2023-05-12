@@ -7,6 +7,8 @@ This test checks the macro-f1 score. Test is passed if the macro-f1 score is hig
 
 **alias_name:** `min_macro_f1_score`
 
+**supported tasks:** `ner`, `text-classification`
+
 </div><div class="h3-box" markdown="1">
 
 #### Config
