@@ -76,6 +76,6 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Swap Entities](robustness#swap-entities)                                                                  |`ner`     
 |[Robustness](robustness)		            |[Titlecase](robustness#titlecase)                                                                          |`ner`, `text-classification`, `question-answering`     
 |[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |`ner`, `text-classification`, `question-answering`     
-
+|[Robustness](robustness)		            |[Number to Word](robustness#number-to-word)                                                                |`ner`, `text-classification`, `question-answering`     
 
 </div></div>
