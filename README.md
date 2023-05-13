@@ -103,3 +103,8 @@ NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowL
 </div>
 
 </div>
+
+| Обозначение | Описание | Пример регулярного выражения|
+|----:|:----:|:----------|
+| literal | Строка содержит символьный литерал literal | foo |
+| re1&#124;re2 | Строка содержит регулярные выражения `rel` или `re2` | foo&#124;bar |
