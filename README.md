@@ -95,5 +95,8 @@ NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowL
 
 
 
-| ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) |
-| ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) |
+
+|  |  | |
+|----:|:----:|:----------|
+| ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | Строка содержит символьный литерал literal | foo |
+| re1&#124;re2 | Строка содержит регулярные выражения `rel` или `re2` | foo&#124;bar |
