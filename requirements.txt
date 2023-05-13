@@ -1,7 +1,7 @@
 numpy
 pandas
 scikit-learn
-transformers
+transformers==4.28.1
 torch
 sentencepiece
 pydantic==1.10.6
@@ -13,3 +13,6 @@ nest-asyncio
 jsonlines
 openai
 langchain
+evaluate
+inflect
+rouge_score

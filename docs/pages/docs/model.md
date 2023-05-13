@@ -1,8 +1,8 @@
 ---
 layout: docs
-seotitle: Model Input | NLP Test | John Snow Labs
-title: Model Input
-permalink: /docs/pages/docs/model_input
+seotitle: Model | NLP Test | John Snow Labs
+title: Model
+permalink: /docs/pages/docs/model
 key: docs-install
 modify_date: "2020-05-26"
 header: true

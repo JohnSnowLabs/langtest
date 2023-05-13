@@ -3,6 +3,7 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Optional, Union, Any
+import langchain
 
 import pandas as pd
 import yaml
@@ -10,10 +11,10 @@ from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
-from .modelhandler import ModelFactory
-from .testrunner import BaseRunner
+from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 
+GLOBAL_MODEL = None
 
 class Harness:
     """ Harness is a testing class for NLP models.
@@ -22,16 +23,24 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai"]
+    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
+    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
         ("ner", "ner.dl", "johnsnowlabs"): "conll/sample.conll",
         ("ner", "ner_dl_bert", "johnsnowlabs"): "conll/sample.conll",
-        ("text-classification", "mrm8488/distilroberta-finetuned-tweets-hate-speech", "huggingface"):
-            "tweet/sample.csv",
+        ("text-classification", "lvwerra/distilbert-imdb", "huggingface"): "imdb/sample.csv",
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
+    }
+
+    DEFAULTS_CONFIG = {
+        'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
+        'openai': resource_filename("nlptest", "data/config/openai_config.yml"),
+        'cohere': resource_filename("nlptest", "data/config/cohere_config.yml"),
+        'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
+        'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
     }
 
     def __init__(
@@ -66,8 +75,8 @@ class Harness:
         self.task = task
 
         if isinstance(model, str) and hub is None:
-            raise ValueError(f"When passing a string argument to the 'model' parameter, you must provide an argument "
-                             f"for the 'hub' parameter as well.")
+            raise ValueError("When passing a string argument to the 'model' parameter, you must provide an argument "
+                             "for the 'hub' parameter as well.")
 
         if hub is not None and hub not in self.SUPPORTED_HUBS:
             raise ValueError(
@@ -81,21 +90,23 @@ class Harness:
             if model == "textcat_imdb":
                 model = resource_filename("nlptest", "data/textcat_imdb")
             self.is_default = True
-            logging.info(
-                f"Default dataset '{(task, model, hub)}' successfully loaded.")
+            logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(f"You haven't specified any value for the parameter 'data' and the configuration you "
-                             f"passed is not among the default ones. You need to either specify the parameter 'data' "
-                             f"or use a default configuration.")
+            raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
+                             "passed is not among the default ones. You need to either specify the parameter 'data' "
+                             "or use a default configuration.")
         elif isinstance(data, list):
             self.data = data
         else:
+            self.file_path = data
             self.data = DataFactory(
                 data, task=self.task).load() if data is not None else None
 
         if config is not None:
             self._config = self.configure(config)
+        elif hub in self.DEFAULTS_CONFIG:
+            self._config = self.configure(self.DEFAULTS_CONFIG[hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
@@ -108,7 +119,9 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-
+        
+        global GLOBAL_MODEL 
+        GLOBAL_MODEL = self.model
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None
@@ -136,7 +149,7 @@ class Harness:
         if type(config) == dict:
             self._config = config
         else:
-            with open(config, 'r') as yml:
+            with open(config, 'r', encoding="utf-8") as yml:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
         return self._config
@@ -158,9 +171,28 @@ class Harness:
         if self.task in ["text-classification", "ner"]:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
+        elif self.task in ["question-answering"]:
+            if 'bias' in tests.keys():
+                if self.file_path.split('-')[0] =='BoolQ':
+                    tests_to_filter = tests['bias'].keys()
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != 'bias'}
+                        other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                        self._testcases.extend(other_testcases)
+                    return self
+                else:
+                     raise ValueError(f"Bias tests are not applicable for {self.file_path} dataset.")
+   
+            else:
+                self._testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    
+                return self
+                  
         self._testcases = TestFactory.transform(
-            self.data, tests, m_data=m_data)
+           self.task, self.data, tests, m_data=m_data)
         return self
+            
 
     def run(self) -> "Harness":
         """
@@ -254,7 +286,7 @@ class Harness:
         generated_results_df = pd.DataFrame.from_dict(
             [x.to_dict() for x in self._generated_results])
 
-        return generated_results_df
+        return generated_results_df.fillna('-')
 
     def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
         """
@@ -280,7 +312,7 @@ class Harness:
         """
 
         dtypes = list(map(
-            lambda x: str(x),
+            str,
             self.df_report[['pass_rate', 'minimum_pass_rate']].dtypes.values.tolist()))
         if dtypes not in [['int64'] * 2, ['int32'] * 2]:
             self.df_report['pass_rate'] = self.df_report['pass_rate'].str.replace(
@@ -310,7 +342,7 @@ class Harness:
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
         final_df = final_df.reset_index(drop=True)
-        return final_df
+        return final_df.fillna('-')
 
     def save(self, save_dir: str) -> None:
         """
@@ -332,7 +364,7 @@ class Harness:
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
 
-        with open(os.path.join(save_dir, "config.yaml"), 'w') as yml:
+        with open(os.path.join(save_dir, "config.yaml"), 'w', encoding="utf-8") as yml:
             yml.write(yaml.safe_dump(self._config_copy))
 
         with open(os.path.join(save_dir, "test_cases.pkl"), "wb") as writer:

@@ -15,7 +15,7 @@ You can install **nlptest** using pip or conda.
 
 </div><div class="h3-box" markdown="1">
 
-<div class="heading" id="installation"> Installation </div>
+## Installation
 
 **Using PyPI**:
 
@@ -41,20 +41,5 @@ conda install -c conda-forge nlptest
 > To install mamba: `conda install -c conda-forge mamba`  
 
 The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, **OpenAI** and **Spacy** models. These tests fall into robustness, accuracy, bias, representation and fairness test categories for NER, Text Classification and Question Answering models, with support for many more models and test types actively being developed.
-
-<style>
-  .heading {
-    text-align: center;
-    font-size: 26px;
-    font-weight: 500;
-    padding-top: 10px;
-    padding-bottom: 20px;
-  }
-
-  #installation {
-    color: #1E77B7;
-  }
-  
-</style>
 
 </div></div>

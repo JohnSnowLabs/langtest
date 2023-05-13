@@ -2,11 +2,10 @@ import asyncio
 import random
 import re
 import numpy as np
+from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
-
 from nlptest.modelhandler.modelhandler import ModelFactory
-
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt)
 from ..utils.custom_types import Sample, Span, Transformation
 
@@ -22,6 +21,7 @@ class BaseRobustness(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification", "question-answering"]
 
     @staticmethod
     @abstractmethod
@@ -59,10 +59,11 @@ class BaseRobustness(ABC):
                 if 'original_context' in sample.__annotations__:
                     dataset_name = sample.dataset_name.split('-')[0].lower()
                     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
-                    perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
-                    sample.expected_results = model(original_prompt)
-                    sample.actual_results = model(perturbed_prompt)
+                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                    sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
 
                 else:
                     sample.expected_results = model(sample.original)
@@ -133,7 +134,6 @@ class LowerCase(BaseRobustness):
                 sample.test_case = sample.original.lower()
             sample.category = "robustness"
         return sample_list
-
 
 class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
@@ -267,7 +267,6 @@ class StripPunctuation(BaseRobustness):
             sample.category = "robustness"
         return sample_list
 
-
 class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
@@ -331,9 +330,9 @@ class AddTypo(BaseRobustness):
 
         return sample_list
 
-
 class SwapEntities(BaseRobustness):
     alias_name = 'swap_entities'
+    supported_tasks = ["ner"]
 
     @staticmethod
     def transform(
@@ -411,7 +410,6 @@ class SwapEntities(BaseRobustness):
             ]
         return sample_list
 
-
 class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
 
@@ -461,7 +459,6 @@ class ConvertAccent(BaseRobustness):
             sample.category = "robustness"
 
         return sample_list
-
 
 class AddContext(BaseRobustness):
     alias_name = 'add_context'
@@ -616,7 +613,6 @@ class AddContext(BaseRobustness):
             sample.category = "robustness"
         return sample_list
 
-
 class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'
 
@@ -691,4 +687,45 @@ class AddContraction(BaseRobustness):
                     sample.test_case = replaced_string
                     sample.transformations = transformations
             sample.category = "robustness"
+        return sample_list
+        
+class NumberToWord(BaseRobustness):
+    alias_name = "number_to_word"
+    infEng = engine()
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transform a list of strings to their equivalent verbal representation
+        of numbers present in the string.
+        Args:
+            sample_list: List of sentences to apply robustness.
+        Returns:
+            List of sentences that have numbers in their verbal representation.
+        """
+        for sample in sample_list:
+            results = []
+            trans = []
+            transformations = []
+            start_offset = 0
+            for match in re.finditer(r'(?<!\S)\d+(\.\d+)?(?!\S)', sample.original):
+                token = match.group()
+                words = NumberToWord.infEng.number_to_words(token, wantlist=True)
+                token_len = len(token) - 1
+                new_words_len = len(' '.join(words)) - 1
+                trans.append(sample.original[start_offset:match.start()])
+                trans.append(' '.join(words))
+                start_offset = match.end()
+                transformations.append(
+                    Transformation(
+                        original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                        new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
+                        ignore=False
+                    )
+                )
+            trans.append(sample.original[start_offset:])
+            results.append(''.join(trans))
+            sample.test_case = ''.join(results)
+            sample.category = "robustness"
+            sample.transformations = transformations
         return sample_list

@@ -1,0 +1,15 @@
+# this section is only required for LLM models
+model_parameters:
+  user_prompt: "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that."
+  temperature: 0.2
+  max_length: 64
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  robustness:
+    add_typo:
+      min_pass_rate: 0.70
+    lowercase:
+      min_pass_rate: 0.70

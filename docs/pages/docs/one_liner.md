@@ -95,7 +95,7 @@ h.generate().run().report()
 from nlptest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model='mrm8488/distilroberta-finetuned-tweets-hate-speech', hub='huggingface')
+h = Harness(task='text-classification', model='lvwerra/distilbert-imdb', hub='huggingface')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
