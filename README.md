@@ -92,10 +92,3 @@ We would like to acknowledge all contributors of this open-source community proj
 ## License
 
 NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
-
-
-
-
-| ![JSL](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/jsl.jpeg) | ![Hugging Face](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/hf.jpeg) | ![Spacy](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/spacy.jpeg) | ![OpenAI](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/openai.jpeg)|
-|----:|:----:|:----:|:----------|
-| ![Cohere](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/cohere.jpeg) | ![AI21](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/ai21.jpeg) | ![Azure](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/ma.jpeg) | ![langchain](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/readme/lc.jpeg) |
