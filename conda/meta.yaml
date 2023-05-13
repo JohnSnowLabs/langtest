@@ -1,5 +1,5 @@
 {% set name = "nlptest" %}
-{% set version = "1.1.0" %}
+{% set version = "1.2.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
-  sha256: 36579297e6e2ee9cbcc687ad7fb599b4c647935a2eb220aae7b3f4d0f7dc00ec
+  sha256: 0c8f3e5a8ea8b2333e7b4f740219bdcc275daf02cae45ce7342c7b9b63a8e049
 
 build:
   number: 0
@@ -23,7 +23,7 @@ requirements:
     - numpy
     - pandas
     - scikit-learn
-    - transformers >4.11
+    - transformers <=4.28.1
     - pytorch
     - sentencepiece
     - pydantic
@@ -31,6 +31,8 @@ requirements:
     - jsonlines
     - langchain
     - openai
+    - evaluate
+    - inflect
 
 test:
   imports:
