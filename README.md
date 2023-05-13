@@ -97,5 +97,5 @@ NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowL
 
 
 |![JSL](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg)|![Hugging Face](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/hf-logo-with-title.svg)|![Spacy](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/spacy_logo.svg)|![OpenAI](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/openai_logo.svg)|
-|----:|:----:|:----------|
+|----:|:----:|:----:|:----------|
 | ![Cohere](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/cohere_logo.svg) | ![AI21](https://assets-global.website-files.com/60fd4503684b466578c0d307/60ff0505b0dbe005faac0c84_AI21%20Logo.svg) | ![Azure](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/microsoft_azure_logo.svg) | ![langchain](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/langchain.png) |
