@@ -93,4 +93,18 @@ We would like to acknowledge all contributors of this open-source community proj
 
 NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
 
-12
+
+<div class="container">
+    <div class="sponsor" markdown="1">
+        ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg)
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+    }
+    .sponsor {
+        width: 25%;
+    }
+</style>
