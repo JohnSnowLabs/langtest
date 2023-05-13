@@ -58,6 +58,8 @@ data:
           src: assets/images/home/spacy_logo.svg
           url: https://spacy.io/
           style: "padding: 41px;"
+          width: "116px"
+          height: "50px"
       - title:
         image:
           src: assets/images/home/openai_logo.svg
@@ -77,6 +79,8 @@ data:
           src: assets/images/home/microsoft_azure_logo.svg
           url: https://azure.microsoft.com/en-us/products/cognitive-services/openai-service
           style: "padding: 16px;"
+          width: "160px"
+          height: "50px"
       - title:
         image:
           src: assets/images/home/langchain.png
