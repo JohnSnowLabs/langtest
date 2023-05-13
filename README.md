@@ -94,17 +94,6 @@ We would like to acknowledge all contributors of this open-source community proj
 NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
 
 
-<div style="display: flex;">
 
-<div style="width: 25%;">
-
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg)
-
-</div>
-
-</div>
-
-| Обозначение | Описание | Пример регулярного выражения|
-|----:|:----:|:----------|
-| literal | Строка содержит символьный литерал literal | foo |
-| re1&#124;re2 | Строка содержит регулярные выражения `rel` или `re2` | foo&#124;bar |
+| ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) |
+| ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) | ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg) |
