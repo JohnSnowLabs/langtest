@@ -96,6 +96,6 @@ NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowL
 
 <table>
     <tr>
-        <td>![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg)</td>
+        <td markdown="1">![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/home/jsl_logo.svg)</td>
     </tr>
 </table>
