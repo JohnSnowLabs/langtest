@@ -148,6 +148,5 @@ class RobustnessTestCase(unittest.TestCase):
 
     def test_common_OCR_mistakes_correction(self) -> None:
         """"""
-        
         transformed_samples = CommonOCRMistakesCorrection.transform(self.ocr_sentences)
         self.assertIsInstance(transformed_samples, list)
