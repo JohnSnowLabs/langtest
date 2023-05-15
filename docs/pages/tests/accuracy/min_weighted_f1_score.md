@@ -7,6 +7,8 @@ This test checks the weighted-f1 score. Test is passed if the weighted-f1 score 
 
 **alias_name:** `min_weighted_f1_score`
 
+**supported tasks:** `ner`, `text-classification`
+
 </div><div class="h3-box" markdown="1">
 
 #### Config

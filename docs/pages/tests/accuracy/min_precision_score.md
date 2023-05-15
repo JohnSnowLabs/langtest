@@ -7,6 +7,8 @@ This test checks the precision score for each label. Test is passed if the preci
 
 **alias_name:** `min_precision_score`
 
+**supported tasks:** `ner`, `text-classification`
+
 </div><div class="h3-box" markdown="1">
 
 #### Config
