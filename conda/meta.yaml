@@ -33,6 +33,7 @@ requirements:
     - openai
     - evaluate
     - inflect
+    - rouge-score
 
 test:
   imports:
