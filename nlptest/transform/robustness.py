@@ -6,8 +6,9 @@ from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict)
 from ..utils.custom_types import Sample, Span, Transformation
+from typing import List
 
 
 class BaseRobustness(ABC):
@@ -728,4 +729,49 @@ class NumberToWord(BaseRobustness):
             sample.test_case = ''.join(results)
             sample.category = "robustness"
             sample.transformations = transformations
+        return sample_list
+
+
+class CommonOCRMistakesCorrection(BaseRobustness):
+    alias_name = "common_OCR_mistakes_correction"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Correct common OCR mistakes in a list of samples.
+        Args:
+            sample_list: List of samples to apply OCR mistakes correction.
+        Returns:
+            List of samples with corrected OCR mistakes.
+        """
+        for sample in sample_list:
+            results = []
+            trans = []
+            transformations = []
+            start_offset = 0
+
+            for match in re.finditer(r'\S+', sample.original):
+                token = match.group()
+                corrected_token = ocr_typo_dict.get(token, token)
+
+                if corrected_token != token:
+                    trans.append(sample.original[start_offset:match.start()])
+                    trans.append(corrected_token)
+                    start_offset = match.end()
+
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=match.start(), end=match.end() - 1, word=token),
+                            new_span=Span(start=match.start(), end=match.start() + len(corrected_token), word=corrected_token),
+                            ignore=False
+                        )
+                    )
+
+            trans.append(sample.original[start_offset:])
+            results.append(''.join(trans))
+
+            sample.test_case = ''.join(results)
+            sample.category = "robustness"
+            sample.transformations = transformations
+
         return sample_list

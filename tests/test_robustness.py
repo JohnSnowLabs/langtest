@@ -31,7 +31,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="He lives in the USA."),
             SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
-
+        self.ocr_sentences = [
+            SequenceClassificationSample(original="A l1st of 1ittle th1ngs can make a 1arge impact."),
+            SequenceClassificationSample(original="I dilerentiate bctiveen dlfferent tf)e of mistakes.")
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -140,4 +143,11 @@ class RobustnessTestCase(unittest.TestCase):
         """"""
         transformed_samples = NumberToWord.transform(self.number_sentences)
         # Test that the transformed_samples sentences are in a list
+        self.assertIsInstance(transformed_samples, list)
+
+
+    def test_common_OCR_mistakes_correction(self) -> None:
+        """"""
+        
+        transformed_samples = CommonOCRMistakesCorrection.transform(self.ocr_sentences)
         self.assertIsInstance(transformed_samples, list)
