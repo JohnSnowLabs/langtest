@@ -157,9 +157,6 @@ class RobustnessTestCase(unittest.TestCase):
             [sample.test_case for sample in transformed_samples],
              expected_corrected_sentences
            )
-        # self.assertListEqual(sample.test_case, expected_sentence)
-        # for sample, expected_sentence in zip(transformed_samples, expected_corrected_sentences):
-        #     self.assertListEqual([sample.test_case], [expected_sentence])
 
 if __name__ == '__main__':
     unittest.main()

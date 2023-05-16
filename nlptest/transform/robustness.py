@@ -750,7 +750,7 @@ class CommonOCRMistakesCorrection(BaseRobustness):
             transformations = []
             start_offset = 0
 
-            for match in re.finditer(r'\S+', sample.original):
+            for match in re.finditer(r'[^,\s.!?]+', sample.original):
                 token = match.group()
                 corrected_token = ocr_typo_dict.get(token, token)
 
@@ -775,3 +775,4 @@ class CommonOCRMistakesCorrection(BaseRobustness):
             sample.transformations = transformations
 
         return sample_list
+
