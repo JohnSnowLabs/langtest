@@ -402,10 +402,9 @@ class MaxScoreQASample(QASample):
         return self.actual_results.max_score <= self.expected_results.max_score
     
 
-class XsumSample(BaseModel):
-    context: str
-    summary: str
-    testcase_context: str = None
+class SummarizationSample(BaseModel):
+    original_context: str = None
+    perturbed_context: str = None
     expected_summary: str = None
     actual_summary: str = None
     state: str = None
@@ -418,9 +417,8 @@ class XsumSample(BaseModel):
         Returns the dict version of sample.
         """
         result = {
-            'context': self.context,
-            'summary': self.summary,
-            'testcase_context': self.testcase_context,
+            'original_context': self.original_context,
+            'perturbed_context': self.perturbed_context,
             'expected_summary': self.expected_summary,
             'actual_summary': self.actual_summary,
         }
