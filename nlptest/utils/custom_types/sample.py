@@ -400,6 +400,40 @@ class MaxScoreQASample(QASample):
     def is_pass(self) -> bool:
         """"""
         return self.actual_results.max_score <= self.expected_results.max_score
+    
+
+class XsumSample(BaseModel):
+    context: str
+    summary: str
+    testcase_context: str = None
+    expected_summary: str = None
+    actual_summary: str = None
+    state: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns the dict version of sample.
+        """
+        result = {
+            'context': self.context,
+            'summary': self.summary,
+            'testcase_context': self.testcase_context,
+            'expected_summary': self.expected_summary,
+            'actual_summary': self.actual_summary,
+        }
+
+        return result
+    
+    def is_pass(self) -> bool:
+        """"""
+        return self.expected_summary == self.actual_summary
+    
+
+    
+
 
 
 
