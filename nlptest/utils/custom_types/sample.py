@@ -403,13 +403,16 @@ class MaxScoreQASample(QASample):
     
 
 class SummarizationSample(BaseModel):
-    original_context: str = None
-    perturbed_context: str = None
+    original: str = None
+    test_case: str = None
     expected_results: str = None
     actual_results: str = None
     state: str = None
     dataset_name: str = None
+    task: str = None
     category: str = None
+    test_type: str = None
+    transformations: List[Transformation] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -419,8 +422,8 @@ class SummarizationSample(BaseModel):
         Returns the dict version of sample.
         """
         result = {
-            'original_context': self.original_context,
-            'perturbed_context': self.perturbed_context,
+            'original': self.original,
+            'test_case': self.test_case,
             'expected_results': self.expected_results,
             'actual_results': self.actual_results,
         }
@@ -429,7 +432,7 @@ class SummarizationSample(BaseModel):
     
     def is_pass(self) -> bool:
         """"""
-        return self.actual_results == self.expected_results
+        return self.expected_results == self.actual_results
     
 
     

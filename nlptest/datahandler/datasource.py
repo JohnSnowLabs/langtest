@@ -476,7 +476,7 @@ class JSONLDataset(_IDataset):
                 elif (self.task=='summarization'):
                     data.append(
                     SummarizationSample(
-                        original_context = item['document'],
+                        original = item['document'],
                         expected_results = item['summary'],
                         task=self.task,
                         dataset_name=self._file_path.split('/')[-2]
