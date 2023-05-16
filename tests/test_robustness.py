@@ -32,8 +32,8 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
         self.ocr_sentences = [
-            SequenceClassificationSample(original="A l1st of 1ittle th1ngs can make a 1arge impact."),
-            SequenceClassificationSample(original="I dilerentiate bctiveen dlfferent tf)e of mistakes.")
+            SequenceClassificationSample(original="w^hatever happen, w^hicb is w^hite, w^ho owns the store, and w^hen do we goa1?"),
+            SequenceClassificationSample(original="The rcfource of the problem rcmain unknown, but we need to rcveal the rcsult soon?")
         ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
@@ -148,5 +148,18 @@ class RobustnessTestCase(unittest.TestCase):
 
     def test_common_OCR_mistakes_correction(self) -> None:
         """"""
+        expected_corrected_sentences = [ "whatever happen, which is white, who owns the store, and when do we goal?",
+                                    "The resource of the problem remain unknown, but we need to reveal the result soon?"]
         transformed_samples = CommonOCRMistakesCorrection.transform(self.ocr_sentences)
+        
         self.assertIsInstance(transformed_samples, list)
+        self.assertListEqual(
+            [sample.test_case for sample in transformed_samples],
+             expected_corrected_sentences
+           )
+        # self.assertListEqual(sample.test_case, expected_sentence)
+        # for sample, expected_sentence in zip(transformed_samples, expected_corrected_sentences):
+        #     self.assertListEqual([sample.test_case], [expected_sentence])
+
+if __name__ == '__main__':
+    unittest.main()
