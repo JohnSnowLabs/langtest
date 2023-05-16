@@ -408,6 +408,8 @@ class SummarizationSample(BaseModel):
     expected_results: str = None
     actual_results: str = None
     state: str = None
+    dataset_name: str = None
+    category: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
