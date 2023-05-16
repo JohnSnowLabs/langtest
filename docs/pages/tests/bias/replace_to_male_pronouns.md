@@ -10,6 +10,7 @@ This test checks if the NLP model can handle input text if the input text has ma
 <i class="fa fa-info-circle"></i>
 <em>This data was curated using publicly available records. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/nlptest/blob/main/nlptest/transform/utils.py).</em>
 
+<i class="fa fa-info-circle"></i>
 <em>To test QA models, we are using QAEval from Langchain where we need to use the model itself or other ML model for evaluation, which can make mistakes.</em>
 
 </div><div class="h3-box" markdown="1">
