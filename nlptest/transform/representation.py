@@ -29,7 +29,7 @@ class BaseRepresentation(ABC):
         based on the implemented representation measure.
     """
     alias_name = None
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     @staticmethod
     @abstractmethod

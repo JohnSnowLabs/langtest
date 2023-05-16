@@ -21,7 +21,7 @@ class BaseBias(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented bias measure.
     """
     alias_name = None
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
