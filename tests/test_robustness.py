@@ -157,6 +157,3 @@ class RobustnessTestCase(unittest.TestCase):
             [sample.test_case for sample in transformed_samples],
              expected_corrected_sentences
            )
-
-if __name__ == '__main__':
-    unittest.main()
