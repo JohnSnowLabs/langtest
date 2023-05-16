@@ -7,7 +7,7 @@ from typing import Dict, List
 
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
-    SequenceClassificationSample, SequenceLabel, QASample
+    SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
 
 
 class _IDataset(ABC):
@@ -121,7 +121,8 @@ class DataFactory:
             'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
             'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
             'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
-            'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl'
+            'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
+            'Xsum-test-tiny' : script_dir[:-7]+'/Xsum/Xsum-test-tiny.jsonl'
         }
         return datasets_info[dataset_name]
 
@@ -458,19 +459,32 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                expected_results = item.get("answer_and_def_correct_predictions", item.get("answer", None))
-                if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
+                if (self.task=='question-answering'):
+                    expected_results = item.get("answer_and_def_correct_predictions", item.get("answer", None))
+                    if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
 
-                data.append(
-                    QASample(
-                        original_question = item['question'],
-                        original_context= item.get('passage', "-"),
-                        expected_results = expected_results,
+                    data.append(
+                        QASample(
+                            original_question = item['question'],
+                            original_context= item.get('passage', "-"),
+                            expected_results = expected_results,
+                            task=self.task,
+                            dataset_name=self._file_path.split('/')[-2]
+                            )
+                    )
+
+                elif (self.task=='summarization'):
+                    data.append(
+                    SummarizationSample(
+                        original_context = item['document'],
+                        expected_results = item['summary'],
                         task=self.task,
                         dataset_name=self._file_path.split('/')[-2]
+                        
+                  
                         )
                 )
-
+                
         return data
 
     def export_data(self, data: List[Sample], output_path: str):

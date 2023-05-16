@@ -405,8 +405,8 @@ class MaxScoreQASample(QASample):
 class SummarizationSample(BaseModel):
     original_context: str = None
     perturbed_context: str = None
-    expected_summary: str = None
-    actual_summary: str = None
+    expected_results: str = None
+    actual_results: str = None
     state: str = None
 
     def __init__(self, **data):
@@ -419,15 +419,15 @@ class SummarizationSample(BaseModel):
         result = {
             'original_context': self.original_context,
             'perturbed_context': self.perturbed_context,
-            'expected_summary': self.expected_summary,
-            'actual_summary': self.actual_summary,
+            'expected_results': self.expected_results,
+            'actual_results': self.actual_results,
         }
 
         return result
     
     def is_pass(self) -> bool:
         """"""
-        return self.expected_summary == self.actual_summary
+        return self.actual_results == self.expected_results
     
 
     
