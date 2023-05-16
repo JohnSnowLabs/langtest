@@ -422,17 +422,19 @@ class SummarizationSample(BaseModel):
         Returns the dict version of sample.
         """
         result = {
+            'category': self.category,
+            'test_type': self.test_type,
             'original': self.original,
             'test_case': self.test_case,
-            'expected_results': self.expected_results,
-            'actual_results': self.actual_results,
+            'expected_result': self.expected_results,
+            'actual_result': self.actual_results,
         }
 
         return result
     
     def is_pass(self) -> bool:
         """"""
-        return self.expected_results == self.actual_results
+        return self.expected_result == self.actual_result
     
 
     
