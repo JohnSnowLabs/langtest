@@ -7071,11 +7071,14 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
-        else:
+        elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
                 words = sample.original_context.split()
             else:
-                words = sample.original_question.split()
+                words = sample.original_question.split()   
+        elif sample.task =='summarization':
+            words = sample.original.split()
+            
         for i in words:
             if check_name(i, [country_economic_dict['High-income']]):
                 country_economic_representation["high_income"] += 1
@@ -7106,11 +7109,14 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
-        else:
+        elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
                 words = sample.original_context.split()
             else:
-                words = sample.original_question.split()
+                words = sample.original_question.split()   
+        elif sample.task =='summarization':
+            words = sample.original.split()
+            
         for i in words:
             if check_name(i, [religion_wise_names['Muslim']]):
                 religion_representation["muslim"] += 1
@@ -7146,11 +7152,14 @@ def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
-        else:
+        elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
                 words = sample.original_context.split()
             else:
                 words = sample.original_question.split()   
+        elif sample.task =='summarization':
+            words = sample.original.split()
+            
         for i in words:
             if check_name(i, [white_names['first_names'], white_names['last_names']]):
                 ethnicity_representation["white"] += 1
