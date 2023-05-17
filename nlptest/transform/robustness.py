@@ -191,21 +191,22 @@ class AddPunctuation(BaseRobustness):
                     if sample.original[-1] not in whitelist:
                         chosen_punc = random.choice(whitelist)
                         sample.test_case = sample.original + chosen_punc
-                        sample.transformations = [
-                            Transformation(
-                                original_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.original),
-                                    word=""
-                                ),
-                                new_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.test_case),
-                                    word=chosen_punc
-                                ),
-                                ignore=True
-                            )
-                        ]
+                        if not "task" in sample.__annotations__:
+                            sample.transformations = [
+                                Transformation(
+                                    original_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.original),
+                                        word=""
+                                    ),
+                                    new_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.test_case),
+                                        word=chosen_punc
+                                    ),
+                                    ignore=True
+                                )
+                            ]
                     else:
                         sample.test_case = sample.original
                         
@@ -246,21 +247,22 @@ class StripPunctuation(BaseRobustness):
            
                 if sample.original[-1] in whitelist:
                     sample.test_case = sample.original[:-1]
-                    sample.transformations = [
-                        Transformation(
-                            original_span=Span(
-                                start=len(sample.original) - 1,
-                                end=len(sample.original),
-                                word=sample.original[-1:]
-                            ),
-                            new_span=Span(
-                                start=len(sample.test_case),
-                                end=len(sample.test_case),
-                                word=""
-                            ),
-                            ignore=True
-                        )
-                    ]
+                    if not "task" in sample.__annotations__:
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=len(sample.original) - 1,
+                                    end=len(sample.original),
+                                    word=sample.original[-1:]
+                                ),
+                                new_span=Span(
+                                    start=len(sample.test_case),
+                                    end=len(sample.test_case),
+                                    word=""
+                                ),
+                                ignore=True
+                            )
+                        ]
                 else:
                     sample.test_case = sample.original
 
@@ -393,21 +395,22 @@ class SwapEntities(BaseRobustness):
 
             sample.test_case = sample.original.replace(
                 replace_token, chosen_ent)
-            sample.transformations = [
-                Transformation(
-                    original_span=Span(
-                        start=replace_token_pos.start(),
-                        end=replace_token_pos.end(),
-                        word=replace_token
-                    ),
-                    new_span=Span(
-                        start=replace_token_pos.start(),
-                        end=replace_token_pos.start() + len(chosen_ent),
-                        word=chosen_ent
-                    ),
-                    ignore=False
-                )
-            ]
+            if not "task" in sample.__annotations__:
+                sample.transformations = [
+                    Transformation(
+                        original_span=Span(
+                            start=replace_token_pos.start(),
+                            end=replace_token_pos.end(),
+                            word=replace_token
+                        ),
+                        new_span=Span(
+                            start=replace_token_pos.start(),
+                            end=replace_token_pos.start() + len(chosen_ent),
+                            word=chosen_ent
+                        ),
+                        ignore=False
+                    )
+                ]
         return sample_list
 
 class ConvertAccent(BaseRobustness):
@@ -437,15 +440,16 @@ class ConvertAccent(BaseRobustness):
                         span = re.search(token, replaced_string)
                         replaced_string = re.sub(
                             token, new_token, replaced_string, count=1)
-                        transformations.append(
-                            Transformation(
-                                original_span=Span(
-                                    start=span.start(), end=span.end(), word=token),
-                                new_span=Span(
-                                    start=span.start(), end=span.end() + diff_len, word=new_token),
-                                ignore=False
+                        if not "task" in sample.__annotations__:
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(
+                                        start=span.start(), end=span.end(), word=token),
+                                    new_span=Span(
+                                        start=span.start(), end=span.end() + diff_len, word=new_token),
+                                    ignore=False
+                                )
                             )
-                        )
             return replaced_string, transformations
 
         for sample in sample_list:
@@ -513,14 +517,15 @@ class AddContext(BaseRobustness):
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
                     string = add_string + ' ' + sample.original
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=0, end=0, word=""),
-                            new_span=Span(start=0, end=len(
-                                add_string) + 1, word=add_string),
-                            ignore=True
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=0, end=0, word=""),
+                                new_span=Span(start=0, end=len(
+                                    add_string) + 1, word=add_string),
+                                ignore=True
+                            )
                         )
-                    )
             else:
                 if sample.task =='question-answering':
                     string_question = sample.original_question
@@ -590,16 +595,16 @@ class AddContext(BaseRobustness):
                         to_start = from_start
                         to_end = to_start + len(add_string) + 1
                         string = string[:-1] + add_string + " " + string[-1]
-
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=from_start, end=from_end, word=""),
-                            new_span=Span(start=to_start, end=to_end,
-                                          word=string[to_start:to_end]),
-                            ignore=True
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=from_start, end=from_end, word=""),
+                                new_span=Span(start=to_start, end=to_end,
+                                            word=string[to_start:to_end]),
+                                ignore=True
+                            )
                         )
-                    )
              
 
             if sample.task =='question-answering':
@@ -675,15 +680,16 @@ class AddContraction(BaseRobustness):
                             diff_len = len(new_string) - len(search.group())
                             replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                                      flags=re.IGNORECASE | re.DOTALL)
-                            transformations.append(
-                                Transformation(
-                                    original_span=Span(start=search.start(
-                                    ), end=search.end(), word=search.group()),
-                                    new_span=Span(start=search.start(
-                                    ), end=search.end() + diff_len, word=new_string),
-                                    ignore=False
+                            if not "task" in sample.__annotations__:
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=search.start(
+                                        ), end=search.end(), word=search.group()),
+                                        new_span=Span(start=search.start(
+                                        ), end=search.end() + diff_len, word=new_string),
+                                        ignore=False
+                                    )
                                 )
-                            )
                     sample.test_case = replaced_string
                     sample.transformations = transformations
             sample.category = "robustness"
@@ -716,13 +722,14 @@ class NumberToWord(BaseRobustness):
                 trans.append(sample.original[start_offset:match.start()])
                 trans.append(' '.join(words))
                 start_offset = match.end()
-                transformations.append(
-                    Transformation(
-                        original_span=Span(start=match.start(), end=match.end()-1, word=token),
-                        new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
-                        ignore=False
+                if not "task" in sample.__annotations__:
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                            new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
+                            ignore=False
+                        )
                     )
-                )
             trans.append(sample.original[start_offset:])
             results.append(''.join(trans))
             sample.test_case = ''.join(results)
