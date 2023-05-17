@@ -732,19 +732,19 @@ class NumberToWord(BaseRobustness):
         return sample_list
 
 
-
-
 class OCRTYPO(BaseRobustness):
     alias_name = "ocr_typo"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
         """
-        Correct common OCR mistakes in a list of samples.
+        Transforms the given sample list by introducing OCR typos.
+
         Args:
-            sample_list: List of samples to apply OCR mistakes correction.
+            sample_list (List[Sample]): The list of samples to transform.
+
         Returns:
-            List of samples with corrected OCR mistakes.
+            List[Sample]: The transformed list of samples.
         """
         for sample in sample_list:
             results = []
