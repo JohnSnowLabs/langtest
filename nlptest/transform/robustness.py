@@ -104,7 +104,7 @@ class UpperCase(BaseRobustness):
             List of sentences that uppercase robustness is applied.
         """
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = sample.original_question.upper()
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = sample.original_context.upper()
@@ -126,7 +126,7 @@ class LowerCase(BaseRobustness):
             List of sentences that lowercase robustness is applied.
         """
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = sample.original_question.lower()
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = sample.original_context.lower()
@@ -147,7 +147,7 @@ class TitleCase(BaseRobustness):
             List of sentences that titlecase robustness is applied.
         """
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = sample.original_question.title()
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = sample.original_context.title()
@@ -181,7 +181,7 @@ class AddPunctuation(BaseRobustness):
                 return text
                
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                  sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
                  
                  if "perturbed_context" in sample.__annotations__:
@@ -236,7 +236,7 @@ class StripPunctuation(BaseRobustness):
                 return text
         
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                  sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
                  
                  if "perturbed_context" in sample.__annotations__:
@@ -319,7 +319,7 @@ class AddTypo(BaseRobustness):
         for sample in sample_list:
             sample.category = "robustness"
 
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = keyboard_typo(sample.original_question)
                 if "perturbed_context" in sample.__annotations__:
                         sample.perturbed_context = keyboard_typo(sample.original_context)
@@ -450,7 +450,7 @@ class ConvertAccent(BaseRobustness):
 
         for sample in sample_list:
             
-            if 'task' in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question, _ = convert_accent(sample.original_question, accent_map)
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context, _ = convert_accent(sample.original_context, accent_map)
@@ -492,7 +492,7 @@ class AddContext(BaseRobustness):
             transformations = []
             if strategy == "start" or strategy == "combined":
                 
-                if "task" in sample.__annotations__:
+                if sample.task =='question-answering':
                     
                      add_tokens = random.choice(starting_context)
                      add_string = " ".join(add_tokens) if isinstance(
@@ -522,7 +522,7 @@ class AddContext(BaseRobustness):
                         )
                     )
             else:
-                if  "task" in sample.__annotations__:
+                if sample.task =='question-answering':
                     string_question = sample.original_question
                     if "perturbed_context" in sample.__annotations__:
                         string_context = sample.original_context
@@ -533,7 +533,7 @@ class AddContext(BaseRobustness):
             if strategy == "end" or strategy == "combined":
                 
                 
-                if "task" in sample.__annotations__:
+                if sample.task =='question-answering':
                     
                      add_tokens = random.choice(ending_context)
                      add_string = " ".join(add_tokens) if isinstance(
@@ -602,7 +602,7 @@ class AddContext(BaseRobustness):
                     )
              
 
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = string_question
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = string_context
@@ -654,7 +654,7 @@ class AddContraction(BaseRobustness):
 
         for sample in sample_list:
             
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                  sample.perturbed_question = search_contraction(sample.original_question)
                  
                  if "perturbed_context" in sample.__annotations__:
