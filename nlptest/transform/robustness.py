@@ -732,8 +732,10 @@ class NumberToWord(BaseRobustness):
         return sample_list
 
 
-class CommonOCRMistakesCorrection(BaseRobustness):
-    alias_name = "common_OCR_mistakes_correction"
+
+
+class OCRTYPO(BaseRobustness):
+    alias_name = "ocr_typo"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -752,7 +754,13 @@ class CommonOCRMistakesCorrection(BaseRobustness):
 
             for match in re.finditer(r'[^,\s.!?]+', sample.original):
                 token = match.group()
-                corrected_token = ocr_typo_dict.get(token, token)
+                corrected_token = None
+
+                possible_corrections = [key for key, value in ocr_typo_dict.items() if value == token]
+                if possible_corrections:
+                    corrected_token = random.choice(possible_corrections)
+                else:
+                    corrected_token = token
 
                 if corrected_token != token:
                     trans.append(sample.original[start_offset:match.start()])
@@ -766,6 +774,9 @@ class CommonOCRMistakesCorrection(BaseRobustness):
                             ignore=False
                         )
                     )
+                else:
+                    trans.append(sample.original[start_offset:match.end()])
+                    start_offset = match.end()
 
             trans.append(sample.original[start_offset:])
             results.append(''.join(trans))
@@ -775,4 +786,3 @@ class CommonOCRMistakesCorrection(BaseRobustness):
             sample.transformations = transformations
 
         return sample_list
-
