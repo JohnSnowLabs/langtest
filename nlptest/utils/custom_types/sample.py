@@ -412,7 +412,6 @@ class SummarizationSample(BaseModel):
     task: str = None
     category: str = None
     test_type: str = None
-    transformations: List[Transformation] = None
 
     def __init__(self, **data):
         super().__init__(**data)
