@@ -81,7 +81,7 @@ class GenderRepresentation(BaseRepresentation):
         "min_gender_representation_proportion"
     ]
     
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
@@ -240,7 +240,7 @@ class EthnicityRepresentation(BaseRepresentation):
         "min_ethnicity_name_representation_proportion"
     ]
     
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
@@ -528,7 +528,7 @@ class ReligionRepresentation(BaseRepresentation):
         "min_religion_name_representation_count",
         "min_religion_name_representation_proportion"
     ]
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
@@ -696,7 +696,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_proportion"
     ]
     
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
