@@ -53,14 +53,20 @@ class BaseBias(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                if 'original_context' in sample.__annotations__:
-                    dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                dataset_name = sample.dataset_name.split('-')[0].lower()
+                user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                if sample.task == "question-answering":
                     prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
                     sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
                     sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                elif sample.task == "summarization":
+                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                    sample.expected_results = model(text={'context':sample.original},
+                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
+                    sample.actual_results = model(text={'context':sample.original},
+                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
                 else:
                     sample.expected_results = model(sample.original)
                     sample.actual_results = model(sample.test_case)
