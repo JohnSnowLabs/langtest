@@ -189,7 +189,7 @@ class GenderRepresentation(BaseRepresentation):
         classifier = GenderClassifier()
         for sample in kwargs['raw_data']:
             
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                     if "perturbed_context" in sample.__annotations__:
                          genders = [classifier.predict(sample.original_context)
                            for sample in kwargs['raw_data']]
