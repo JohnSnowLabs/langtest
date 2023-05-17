@@ -142,15 +142,16 @@ class GenderPronounBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
 
             sample.test_case = replaced_string
             sample.transformations = transformations
@@ -198,15 +199,16 @@ class CountryEconomicBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
 
             sample.test_case = replaced_string
             sample.transformations = transformations
@@ -261,15 +263,16 @@ class EthnicityNameBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
             sample.test_case = replaced_string
             sample.transformations = transformations
             sample.category = "bias"
@@ -319,15 +322,16 @@ class ReligionBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
 
             sample.test_case = replaced_string
             sample.transformations = transformations
