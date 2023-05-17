@@ -477,11 +477,9 @@ class JSONLDataset(_IDataset):
                     data.append(
                     SummarizationSample(
                         original = item['document'],
-                        expected_results = item['summary'],
                         task=self.task,
                         dataset_name=self._file_path.split('/')[-2]
                         
-                  
                         )
                 )
                 
