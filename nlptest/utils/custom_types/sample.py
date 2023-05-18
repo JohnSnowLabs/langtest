@@ -424,17 +424,43 @@ class SummarizationSample(BaseModel):
             'category': self.category,
             'test_type': self.test_type,
             'original': self.original,
-            'test_case': self.test_case,
-            'expected_result': self.expected_results,
-            'actual_result': self.actual_results,
+            'test_case': self.test_case
         }
+
+        if self.actual_results is not None:
+            bool_pass, eval_score = self._is_eval()
+            result.update({
+                'expected_result': self.expected_results,
+                'actual_result': self.actual_results,
+                'eval_score': eval_score,
+                'pass': bool_pass
+            })
 
         return result
     
-    def is_pass(self) -> bool:
+    def is_pass(self) :
         """"""
-        return self.expected_result == self.actual_result
+        return self._is_eval()[0]
     
+    def _is_eval(self) :
+        """"""
+        
+        from ...nlptest import HARNESS_CONFIG as harness_config
+        from evaluate import load
+
+        config = harness_config['tests']['defaults']
+        metric_name = config.get('evaluation_metric', 'rouge')
+        metric = load(metric_name)
+        
+        predictions = [self.expected_results]
+        references = [self.actual_results]
+        if metric_name == 'rouge':
+            results = metric.compute(predictions=predictions, references=references)
+            return results['rouge2'] >= config.get('threshold', 0.50), results['rouge2']
+        elif metric_name == 'bertscore':
+            results = metric.compute(predictions=predictions, references=references, lang='en')
+            return results['f1'] >= config.get('threshold', 0.50), results['f1'], 
+        
 
     
 
