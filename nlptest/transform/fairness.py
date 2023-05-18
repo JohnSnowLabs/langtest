@@ -125,7 +125,7 @@ class MinGenderF1Score(BaseFairness):
 
         for sample in sample_list:
             data = gendered_data[sample.test_case]
-            if len(data) > 0:
+            if len(data[0]) > 0:
                 macro_f1_score = f1_score(data[0], data[1], average="macro", zero_division=0)
             else:
                 macro_f1_score = 1

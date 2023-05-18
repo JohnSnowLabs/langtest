@@ -605,7 +605,7 @@ class FairnessTestFactory(ITests):
         grouped_data = cls.get_gendered_data(raw_data)
 
         for gender, data in grouped_data.items():
-            if len(data[0]) == 0:
+            if len(data) == 0:
                 grouped_data[gender] = [[],[]]
             else:
                 if isinstance(data[0], NERSample):
