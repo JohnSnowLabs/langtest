@@ -7,7 +7,6 @@ from sklearn.metrics import f1_score
 from nlptest.modelhandler.modelhandler import ModelFactory
 
 from nlptest.utils.custom_types import MaxScoreOutput, MaxScoreSample, MinScoreOutput, MinScoreSample, Sample
-from nlptest.utils.gender_classifier import GenderClassifier
 
 
 class BaseFairness(ABC):
@@ -109,7 +108,7 @@ class MinGenderF1Score(BaseFairness):
             samples.append(sample)
         return samples
 
-    async def run(sample_list: List[MinScoreSample], model: ModelFactory, **kwargs) -> List[MinScoreSample]:
+    async def run(sample_list: List[MinScoreSample], gendered_data, **kwargs) -> List[MinScoreSample]:
         """
         Computes the minimum F1 score for the given data.
 
@@ -122,44 +121,20 @@ class MinGenderF1Score(BaseFairness):
             List[MinScoreSample]: The transformed samples.
 
         """
-        progress = kwargs.get("progress_bar", False)
-        gendered_data = get_gendered_data(kwargs['raw_data'])
-        is_default = kwargs['is_default']
+        # progress = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
-
-            val = pd.Series(gendered_data[sample.test_case], dtype="object")
-            try:
-                y_true = val.apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions])
-            except:
-                y_true = val.apply(
-                    lambda x: [y.label for y in x.expected_results.predictions])
-            X_test = val.apply(lambda x: x.original)
-
-            y_pred = X_test.apply(model.predict_raw)
-
-            valid_indices = y_true.apply(len) == y_pred.apply(len)
-            y_true = y_true[valid_indices]
-            y_pred = y_pred[valid_indices]
-
-            y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-            y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-
-            if is_default:
-                y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
-
-            if len(y_true) > 0:
-                macro_f1_score = f1_score(
-                    y_true, y_pred, average="macro", zero_division=0)
+            data = gendered_data[sample.test_case]
+            if len(data) > 0:
+                macro_f1_score = f1_score(data[0], data[1], average="macro", zero_division=0)
             else:
                 macro_f1_score = 1
 
             sample.actual_results = MinScoreOutput(min_score=macro_f1_score)
             sample.state = "done"
 
-            if progress:
-                progress.update(1)
+            # if progress:
+                # progress.update(1)
         return sample_list
 
 
@@ -259,16 +234,3 @@ class MaxGenderF1Score(BaseFairness):
                 progress.update(1)
         return sample_list
 
-
-def get_gendered_data(data):
-    """Split list of samples into gendered lists."""
-    data = pd.Series(data)
-    sentences = pd.Series([x.original for x in data])
-    classifier = GenderClassifier()
-    genders = sentences.apply(classifier.predict)
-    gendered_data = {
-        "male": data[genders == "male"].tolist(),
-        "female": data[genders == "female"].tolist(),
-        "unknown": data[genders == "unknown"].tolist(),
-    }
-    return gendered_data

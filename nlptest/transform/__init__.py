@@ -1,4 +1,5 @@
 from nlptest.utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
+from nlptest.utils.gender_classifier import GenderClassifier
 from ..utils.custom_types import Result, Sample
 from .utils import ( default_user_prompt, A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
                     get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
@@ -553,12 +554,23 @@ class FairnessTestFactory(ITests):
             List[Sample]:
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
-
         all_samples = []
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
-                                                                            params)
+
+            if isinstance(data_handler_copy[0], NERSample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+            elif isinstance(data_handler_copy[0], SequenceClassificationSample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
+            elif isinstance(data_handler_copy[0], QASample):
+                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
+
+            y_true = y_true.explode().apply(lambda x: x.split("-")
+                                            [-1] if isinstance(x, str) else x)
+            y_true = y_true.dropna()
+            params["test_name"] = test_name
+            transformed_samples = self.supported_tests[test_name].transform(
+                y_true, params)
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -571,13 +583,94 @@ class FairnessTestFactory(ITests):
 
         Returns:
             dict: A dictionary of test names and classes.
-
         """
         tests = {
             j: i for i in BaseFairness.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+    @classmethod
+    def run(cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, raw_data: List[Sample], **kwargs):
+        """
+        Runs the fairness tests on the given model and dataset.
+
+        Args:
+            sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
+            model (ModelFactory): The model to be tested.
+            raw_data (List[Sample]): The raw dataset.
+
+        """
+
+        grouped_data = cls.get_gendered_data(raw_data)
+
+        for gender, data in grouped_data.items():
+            if len(data[0]) == 0:
+                grouped_data[gender] = [[],[]]
+            else:
+                if isinstance(data[0], NERSample):
+                    y_true = pd.Series(data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
+                    X_test = pd.Series(data).apply(lambda sample: sample.original)
+                    y_pred = X_test.apply(model.predict_raw)
+                    valid_indices = y_true.apply(len) == y_pred.apply(len)
+                    y_true = y_true[valid_indices]
+                    y_pred = y_pred[valid_indices]
+                    y_true = y_true.explode()
+                    y_pred = y_pred.explode()
+                    y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+                    y_true = y_true.apply(lambda x: x.split("-")[-1])
+                
+                elif isinstance(data[0], SequenceClassificationSample):
+                    y_true = pd.Series(data).apply(lambda x: [y.label for y in x.expected_results.predictions])
+                    y_true = y_true.apply(lambda x: x[0])
+                    X_test = pd.Series(data).apply(lambda sample: sample.original)
+                    y_pred = X_test.apply(model.predict_raw)
+                    y_true = y_true.explode()
+                    y_pred = y_pred.explode()
+                
+                elif isinstance(data[0], QASample):
+                    dataset_name = data[0].dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    
+                    if data[0].expected_results is None:
+                        logging.warning('The dataset %s does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.', dataset_name)
+                        return []
+                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
+                    X_test = pd.Series(data)
+                    y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))
+                    y_pred = y_pred.apply(lambda x: x.strip())
+                
+                if kwargs['is_default']:
+                    y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else (
+                        '0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
+                
+                grouped_data[gender] = [y_true, y_pred]
+
+        supported_tests = cls.available_tests()
+        
+        tasks = []
+        for test_name, samples in sample_list.items():
+            tasks.append(
+                supported_tests[test_name].async_run(samples, grouped_data, **kwargs))
+        return tasks
+    
+    @staticmethod
+    def get_gendered_data(data):
+        """Split list of samples into gendered lists."""
+        data = pd.Series(data)
+        if isinstance(data[0], QASample):
+            sentences = data.apply(lambda x: f"{x.original_context} {x.original_question}")
+        else:
+            sentences = data.apply(lambda x: x.original)
+        classifier = GenderClassifier()
+        genders = sentences.apply(classifier.predict)
+        gendered_data = {
+            "male": data[genders == "male"].tolist(),
+            "female": data[genders == "female"].tolist(),
+            "unknown": data[genders == "unknown"].tolist(),
+        }
+        return gendered_data
 
 
 class AccuracyTestFactory(ITests):
@@ -666,6 +759,7 @@ class AccuracyTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
+
         if isinstance(raw_data[0], NERSample):
             y_true = pd.Series(raw_data).apply(lambda x: [y.entity for y in x.expected_results.predictions])
             X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
