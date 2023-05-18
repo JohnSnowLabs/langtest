@@ -146,11 +146,11 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
 
 
-    def test_common_OCR_mistakes_correction(self) -> None:
+    def test_add_ocr_typo(self) -> None:
         """"""
         expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
                                         "Anyone c^an j0in o^ur communitv gardcn."]
-        transformed_samples = OCRTYPO.transform(self.ocr_sentences)
+        transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
         
         self.assertIsInstance(transformed_samples, list)
         self.assertListEqual(

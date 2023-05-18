@@ -732,8 +732,8 @@ class NumberToWord(BaseRobustness):
         return sample_list
 
 
-class OCRTYPO(BaseRobustness):
-    alias_name = "ocr_typo"
+class AddOcrTypo(BaseRobustness):
+    alias_name = "add_ocr_typo"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:

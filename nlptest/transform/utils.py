@@ -21,7 +21,7 @@ DEFAULT_PERTURBATIONS = [
     "replace_to_female_pronouns",
     "replace_to_neutral_pronouns",
     "number_to_word"
-    "ocr_typo"
+    "add_ocr_typo"
 ]
 
 PERTURB_CLASS_MAP = {
@@ -40,7 +40,7 @@ PERTURB_CLASS_MAP = {
     "replace_to_female_pronouns": "GenderPronounBias",
     "replace_to_neutral_pronouns": "GenderPronounBias",
     "number_to_word": "NumberToWord",
-    "ocr_typo": "OCRTYPO"
+    "add_ocr_typo": "AddOcrTypo"
 }
 
 # @formatter:off
