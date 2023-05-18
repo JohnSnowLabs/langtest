@@ -40,7 +40,7 @@ class BaseFairness(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs) -> List[Sample]:
+    async def run(sample_list: List[MinScoreSample], categorised_data, **kwargs) -> List[Sample]:
         return NotImplementedError()
 
     @classmethod
@@ -107,7 +107,8 @@ class MinGenderF1Score(BaseFairness):
 
             samples.append(sample)
         return samples
-
+    
+    @staticmethod
     async def run(sample_list: List[MinScoreSample], gendered_data, **kwargs) -> List[MinScoreSample]:
         """
         Computes the minimum F1 score for the given data.
@@ -138,12 +139,12 @@ class MinGenderF1Score(BaseFairness):
         return sample_list
 
 
-class MinGenderF1Score(BaseFairness):
+class MaxGenderF1Score(BaseFairness):
     """
     Subclass of BaseFairness that implements the maximum F1 score.
 
     Attributes:
-        alias_name (str): The name "max_f1" identifying the maximum F1 score.
+        alias_name (str): The name to be used in config.
 
     Methods:
         transform(data: List[Sample]) -> Any: Transforms the input data into 
@@ -185,6 +186,7 @@ class MinGenderF1Score(BaseFairness):
             samples.append(sample)
         return samples
 
+    @staticmethod
     async def run(sample_list: List[MaxScoreSample], gendered_data, **kwargs) -> List[MaxScoreSample]:
         """
         Computes the maximum F1 score for the given data.
