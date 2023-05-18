@@ -715,30 +715,47 @@ class NumberToWord(BaseRobustness):
         Returns:
             List of sentences that have numbers in their verbal representation.
         """
-        for sample in sample_list:
-            results = []
-            trans = []
-            transformations = []
-            start_offset = 0
-            for match in re.finditer(r'(?<!\S)\d+(\.\d+)?(?!\S)', sample.original):
-                token = match.group()
-                words = NumberToWord.infEng.number_to_words(token, wantlist=True)
-                token_len = len(token) - 1
-                new_words_len = len(' '.join(words)) - 1
-                trans.append(sample.original[start_offset:match.start()])
-                trans.append(' '.join(words))
-                start_offset = match.end()
-                if not "task" in sample.__annotations__:
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=match.start(), end=match.end()-1, word=token),
-                            new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
-                            ignore=False
+        
+        def convert_numbers(regex,text):
+                results = []
+                trans = []
+                transformations = []
+                start_offset = 0
+                
+                for match in re.finditer(regex, text):
+                    token = match.group()
+                    words = NumberToWord.infEng.number_to_words(token, wantlist=True)
+                    token_len = len(token) - 1
+                    new_words_len = len(' '.join(words)) - 1
+                    trans.append(text[start_offset:match.start()])
+                    trans.append(' '.join(words))
+                    start_offset = match.end()
+                    if not "task" in sample.__annotations__:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                                new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
+                                ignore=False
+                            )
                         )
-                    )
-            trans.append(sample.original[start_offset:])
-            results.append(''.join(trans))
-            sample.test_case = ''.join(results)
-            sample.category = "robustness"
-            sample.transformations = transformations
+                
+                trans.append(text[start_offset:])
+                results.append(''.join(trans))
+                if not "task" in sample.__annotations__:
+                    sample.transformations = transformations
+                sample.category = "robustness"
+                
+                return ''.join(results)
+        
+        for sample in sample_list:     
+            if sample.task =='question-answering':
+                 sample.perturbed_question = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original_question)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original_context)
+                                
+            else:           
+                sample.test_case = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original)
+           
+                
         return sample_list
