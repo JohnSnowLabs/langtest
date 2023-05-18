@@ -121,7 +121,7 @@ class MinGenderF1Score(BaseFairness):
             List[MinScoreSample]: The transformed samples.
 
         """
-        # progress = kwargs.get("progress_bar", False)
+        progress = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
             data = gendered_data[sample.test_case]
@@ -133,21 +133,21 @@ class MinGenderF1Score(BaseFairness):
             sample.actual_results = MinScoreOutput(min_score=macro_f1_score)
             sample.state = "done"
 
-            # if progress:
-                # progress.update(1)
+            if progress:
+                progress.update(1)
         return sample_list
 
 
-class MaxGenderF1Score(BaseFairness):
+class MinGenderF1Score(BaseFairness):
     """
     Subclass of BaseFairness that implements the maximum F1 score.
 
     Attributes:
-        alias_name (str): The name identifying the test.
+        alias_name (str): The name "max_f1" identifying the maximum F1 score.
 
     Methods:
-        transform(data: List[Sample]) -> List[Sample]: Transforms the 
-        input data into an output samples.
+        transform(data: List[Sample]) -> Any: Transforms the input data into 
+        an output based on the maximum F1 score.
     """
 
     alias_name = "max_gender_f1_score"
@@ -155,13 +155,13 @@ class MaxGenderF1Score(BaseFairness):
     @staticmethod
     def transform(data: List[Sample], params):
         """
-        Computes the gendered max F1 score tests for the given data.
+        Computes the maximum F1 score for the given data.
 
         Args:
             data (List[Sample]): The input data to be transformed.
 
         Returns:
-            List[Sample]: The transformed samples.
+            Any: The transformed data based on the maximum F1 score.
         """
         if isinstance(params["max_score"], dict):
             max_scores = params["max_score"]
@@ -185,52 +185,31 @@ class MaxGenderF1Score(BaseFairness):
             samples.append(sample)
         return samples
 
-    async def run(sample_list: List[MaxScoreSample], model: ModelFactory, **kwargs) -> List[MaxScoreSample]:
+    async def run(sample_list: List[MaxScoreSample], gendered_data, **kwargs) -> List[MaxScoreSample]:
         """
-        Computes the gendered max F1 score tests for the given data.
+        Computes the maximum F1 score for the given data.
 
         Args:
             sample_list (List[MaxScoreSample]): The input data to be transformed.
-            model (ModelFactory): The model to be tested.
-
+            model (ModelFactory): The model to be used for the computation.
+        
+            
         Returns:
             List[MaxScoreSample]: The transformed samples.
+
         """
         progress = kwargs.get("progress_bar", False)
-        gendered_data = get_gendered_data(kwargs['raw_data'])
-        is_default = kwargs['is_default']
 
         for sample in sample_list:
-            val = pd.Series(gendered_data[sample.test_case], dtype="object")
-            try:
-                y_true = val.apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions])
-            except:
-                y_true = val.apply(
-                    lambda x: [y.label for y in x.expected_results.predictions])
-            X_test = val.apply(lambda x: x.original)
-
-            y_pred = X_test.apply(model.predict_raw)
-
-            valid_indices = y_true.apply(len) == y_pred.apply(len)
-            y_true = y_true[valid_indices]
-            y_pred = y_pred[valid_indices]
-
-            y_true = y_true.explode().apply(lambda x: x.split("-")[-1])
-            y_pred = y_pred.explode().apply(lambda x: x.split("-")[-1])
-
-            if is_default:
-                y_pred = y_pred.apply(lambda x: '1' if x in ['pos', 'LABEL_1', 'POS'] else ('0' if x in ['neg', 'LABEL_0', 'NEG'] else x))
-
-            if len(y_true) > 0:
-                macro_f1_score = f1_score(
-                    y_true, y_pred, average="macro", zero_division=0)
+            data = gendered_data[sample.test_case]
+            if len(data[0]) > 0:
+                macro_f1_score = f1_score(data[0], data[1], average="macro", zero_division=0)
             else:
-                macro_f1_score = 0
+                macro_f1_score = 1
 
             sample.actual_results = MaxScoreOutput(max_score=macro_f1_score)
             sample.state = "done"
+
             if progress:
                 progress.update(1)
         return sample_list
-
