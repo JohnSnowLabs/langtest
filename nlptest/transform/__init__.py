@@ -633,6 +633,7 @@ class AccuracyTestFactory(ITests):
             y_true = y_true.explode().apply(lambda x: x.split("-")
                                             [-1] if isinstance(x, str) else x)
             y_true = y_true.dropna()
+            params["test_name"] = test_name
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
             for sample in transformed_samples:
