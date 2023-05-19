@@ -7127,8 +7127,6 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
 
     return religion_representation
 
-    return religion_representation
-
 
 def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
