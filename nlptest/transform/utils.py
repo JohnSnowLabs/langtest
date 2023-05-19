@@ -7068,26 +7068,29 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
 
     for sample in data:
         if isinstance(sample.expected_results, NEROutput):
-            words = [x.span.word for x in sample.expected_results.predictions]
+            words = [x.span.word.lower() for x in sample.expected_results.predictions]  
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
-            words = sample.original.split()
+            words = set(sample.original.replace('.', '').lower().split())
         elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
-                words = sample.original_context.split()
+                words = set(sample.original_context.replace('.', '').lower().split())
             else:
-                words = sample.original_question.split()   
+                words = set(sample.original_question.replace('.', '').lower().split())
         elif sample.task =='summarization':
-            words = sample.original.split()
-            
-        for i in words:
-            if check_name(i, [country_economic_dict['High-income']]):
-                country_economic_representation["high_income"] += 1
-            if check_name(i, [country_economic_dict['Low-income']]):
-                country_economic_representation["low_income"] += 1
-            if check_name(i, [country_economic_dict['Lower-middle-income']]):
-                country_economic_representation["lower_middle_income"] += 1
-            if check_name(i, [country_economic_dict['Upper-middle-income']]):
-                country_economic_representation["upper_middle_income"] += 1
+             words = set(sample.original.replace('.', '').lower().split())
+
+        for income, countries in country_economic_dict.items():
+            for country in countries:
+                country_words = set(country.lower().split()) 
+                if country_words.issubset(words):    
+                    if income=='High-income':
+                        country_economic_representation["high_income"] += 1
+                    elif income=='Lower-middle-income':
+                        country_economic_representation["low_income"] += 1
+                    elif income=='Low-income':
+                        country_economic_representation["low_income"] += 1
+                    elif income=='Upper-middle-income':
+                        country_economic_representation["upper_middle_income"] += 1
 
     return country_economic_representation
 
