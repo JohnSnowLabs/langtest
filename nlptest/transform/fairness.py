@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 import asyncio
 from typing import List
 
+import evaluate
 import pandas as pd
 from sklearn.metrics import f1_score
 from nlptest.modelhandler.modelhandler import ModelFactory
 
 from nlptest.utils.custom_types import MaxScoreOutput, MaxScoreSample, MinScoreOutput, MinScoreSample, Sample
+from nlptest.utils.custom_types.sample import QASample
 
 
 class BaseFairness(ABC):
@@ -21,7 +23,7 @@ class BaseFairness(ABC):
         output based on the implemented accuracy measure.
     """
     alias_name = None
-    supported_tasks = ["ner", "text-classification"]
+    supported_tasks = ["ner", "text-classification", "question-answering"]
 
     @staticmethod
     @abstractmethod
@@ -123,11 +125,16 @@ class MinGenderF1Score(BaseFairness):
 
         """
         progress = kwargs.get("progress_bar", False)
+        task = kwargs.get("task", None)
 
         for sample in sample_list:
             data = gendered_data[sample.test_case]
             if len(data[0]) > 0:
-                macro_f1_score = f1_score(data[0], data[1], average="macro", zero_division=0)
+                if task == QASample:
+                    em = evaluate.load("f1")
+                    macro_f1_score = em.compute(references=data[0], predictions=data[1], average="macro")
+                else:
+                    macro_f1_score = f1_score([x[0] for x in data[0]], data[1], average="macro", zero_division=0)
             else:
                 macro_f1_score = 1
 
@@ -201,11 +208,16 @@ class MaxGenderF1Score(BaseFairness):
 
         """
         progress = kwargs.get("progress_bar", False)
+        task = kwargs.get("task", None)
 
         for sample in sample_list:
             data = gendered_data[sample.test_case]
             if len(data[0]) > 0:
-                macro_f1_score = f1_score(data[0], data[1], average="macro", zero_division=0)
+                if task == QASample:
+                    em = evaluate.load("f1")
+                    macro_f1_score = em.compute(references=data[0], predictions=data[1], average="macro")
+                else:
+                    macro_f1_score = f1_score(data[0], data[1], average="macro", zero_division=0)
             else:
                 macro_f1_score = 1
 

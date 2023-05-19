@@ -649,6 +649,7 @@ class FairnessTestFactory(ITests):
 
         supported_tests = cls.available_tests()
         
+        kwargs["task"] = type(QASample)
         tasks = []
         for test_name, samples in sample_list.items():
             tasks.append(
