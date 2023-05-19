@@ -100,6 +100,7 @@ class BaseSample(BaseModel):
 class NERSample(BaseSample):
     """"""
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
+    task: str = "ner"
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
 
     def __init__(self, **data):
@@ -265,6 +266,8 @@ class NERSample(BaseSample):
 
 class SequenceClassificationSample(BaseSample):
     """"""
+
+    task: str = "text-classification"
 
     def __init__(self, **data):
         super().__init__(**data)
