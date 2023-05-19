@@ -122,7 +122,7 @@ class DataFactory:
             'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
             'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
             'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
-            'Xsum-test-tiny' : script_dir[:-7]+'/Xsum/Xsum-test-tiny.jsonl'
+            'Xsum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl'
         }
         return datasets_info[dataset_name]
 
