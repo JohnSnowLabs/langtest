@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Add Typo
+## Add Ocr Typo
 
 This test checks if the NLP model can handle input text with common ocr typos. A ocr typo dictionary is used to apply most common ocr typos to the input data.
 
@@ -11,7 +11,7 @@ This test checks if the NLP model can handle input text with common ocr typos. A
 
 #### Config
 ```yaml
-add_typo:
+add_ocr_typo:
     min_pass_rate: 0.7
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
