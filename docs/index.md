@@ -81,6 +81,26 @@ data:
         image:
           src: assets/images/home/langchain.png
           url: https://python.langchain.com/en/latest/index.html
+      - title:
+        image:
+          src: assets/images/home/databricks_logo.png
+          url: https://huggingface.co/databricks
+          style: "padding: 10px;"
+      - title:
+        image:
+          src: assets/images/home/openassistant_logo.svg
+          url: https://open-assistant.io/
+          style: "padding: 30px;"
+      - title:
+        image:
+          src: assets/images/home/meta_logo.svg
+          url: https://github.com/facebookresearch/llama
+          style: "padding: 24px;"
+      - title:
+         image:
+           src: assets/images/home/bloom_logo.png
+           url: https://bigscience.huggingface.co/
+           style: "padding: 10px;"
 
    - title: 'Get Started'
      install: yes
