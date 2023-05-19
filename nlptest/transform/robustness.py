@@ -199,7 +199,7 @@ class AddPunctuation(BaseRobustness):
                     if sample.original[-1] not in whitelist:
                         chosen_punc = random.choice(whitelist)
                         sample.test_case = sample.original + chosen_punc
-                        if not "task" in sample.__annotations__:
+                        if sample.task == "ner":
                             sample.transformations = [
                                 Transformation(
                                     original_span=Span(
@@ -255,7 +255,7 @@ class StripPunctuation(BaseRobustness):
            
                 if sample.original[-1] in whitelist:
                     sample.test_case = sample.original[:-1]
-                    if not "task" in sample.__annotations__:
+                    if sample.task == "ner":
                         sample.transformations = [
                             Transformation(
                                 original_span=Span(
@@ -403,7 +403,7 @@ class SwapEntities(BaseRobustness):
 
             sample.test_case = sample.original.replace(
                 replace_token, chosen_ent)
-            if not "task" in sample.__annotations__:
+            if sample.task == "ner":
                 sample.transformations = [
                     Transformation(
                         original_span=Span(
@@ -448,7 +448,7 @@ class ConvertAccent(BaseRobustness):
                         span = re.search(token, replaced_string)
                         replaced_string = re.sub(
                             token, new_token, replaced_string, count=1)
-                        if not "task" in sample.__annotations__:
+                        if sample.task == "ner":
                             transformations.append(
                                 Transformation(
                                     original_span=Span(
@@ -525,7 +525,7 @@ class AddContext(BaseRobustness):
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
                     string = add_string + ' ' + sample.original
-                    if not "task" in sample.__annotations__:
+                    if sample.task == "ner":
                         transformations.append(
                             Transformation(
                                 original_span=Span(start=0, end=0, word=""),
@@ -603,7 +603,7 @@ class AddContext(BaseRobustness):
                         to_start = from_start
                         to_end = to_start + len(add_string) + 1
                         string = string[:-1] + add_string + " " + string[-1]
-                    if not "task" in sample.__annotations__:
+                    if sample.task == "ner":
                         transformations.append(
                             Transformation(
                                 original_span=Span(
@@ -674,7 +674,6 @@ class AddContraction(BaseRobustness):
                          sample.perturbed_context = search_contraction(sample.original_context)
             
             else:
-        
                     replaced_string = sample.original
                     transformations = []
 
@@ -688,7 +687,7 @@ class AddContraction(BaseRobustness):
                             diff_len = len(new_string) - len(search.group())
                             replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                                      flags=re.IGNORECASE | re.DOTALL)
-                            if not "task" in sample.__annotations__:
+                            if sample.task == "ner":
                                 transformations.append(
                                     Transformation(
                                         original_span=Span(start=search.start(
@@ -732,7 +731,7 @@ class NumberToWord(BaseRobustness):
                     trans.append(text[start_offset:match.start()])
                     trans.append(' '.join(words))
                     start_offset = match.end()
-                    if not "task" in sample.__annotations__:
+                    if sample.task == "ner":
                         transformations.append(
                             Transformation(
                                 original_span=Span(start=match.start(), end=match.end()-1, word=token),
@@ -743,7 +742,7 @@ class NumberToWord(BaseRobustness):
                 
                 trans.append(text[start_offset:])
                 results.append(''.join(trans))
-                if not "task" in sample.__annotations__:
+                if sample.task == "ner":
                     sample.transformations = transformations
                 sample.category = "robustness"
                 

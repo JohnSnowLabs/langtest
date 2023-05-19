@@ -207,7 +207,7 @@ class CountryEconomicBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    if sample.task in "ner":
+                    if sample.task == "ner":
                         transformations.append(
                             Transformation(
                                 original_span=Span(
