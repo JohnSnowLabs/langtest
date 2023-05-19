@@ -467,7 +467,10 @@ class ConvertAccent(BaseRobustness):
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context, _ = convert_accent(sample.original_context, accent_map)
             else:
-                sample.test_case, sample.transformations = convert_accent(sample.original, accent_map)
+                if sample.task in ("ner", "text-classification"):
+                    sample.test_case, sample.transformations = convert_accent(sample.original, accent_map)
+                else:
+                    sample.test_case = convert_accent(sample.original, accent_map)[0]
             sample.category = "robustness"
 
         return sample_list
@@ -621,8 +624,9 @@ class AddContext(BaseRobustness):
                     sample.perturbed_context = string_context
             else:
                 sample.test_case = string
-                sample.transformations = transformations
-                
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                                  
             sample.category = "robustness"
         return sample_list
 
@@ -698,7 +702,8 @@ class AddContraction(BaseRobustness):
                                     )
                                 )
                     sample.test_case = replaced_string
-                    sample.transformations = transformations
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
             sample.category = "robustness"
         return sample_list
         
