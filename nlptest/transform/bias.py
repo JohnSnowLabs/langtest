@@ -162,7 +162,8 @@ class GenderPronounBias(BaseBias):
                         )
 
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
 
         return sample_list
 
@@ -219,7 +220,8 @@ class CountryEconomicBias(BaseBias):
                         )
 
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
             sample.category = "bias"
 
         return sample_list
@@ -282,7 +284,8 @@ class EthnicityNameBias(BaseBias):
                             )
                         )
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
             sample.category = "bias"
 
         return sample_list
@@ -342,7 +345,8 @@ class ReligionBias(BaseBias):
                         )
 
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
             sample.category = "bias"
 
         return sample_list
