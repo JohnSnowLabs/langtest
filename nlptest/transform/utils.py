@@ -7065,6 +7065,13 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
 
     country_economic_representation = {"high_income": 0, "low_income": 0, "lower_middle_income": 0,
                                        "upper_middle_income": 0}
+    
+    income_mapping = {
+    "High-income": "high_income",
+    "Lower-middle-income": "low_income",
+    "Low-income": "low_income",
+    "Upper-middle-income": "upper_middle_income"
+    }
 
     for sample in data:
         if isinstance(sample.expected_results, NEROutput):
@@ -7083,14 +7090,7 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
             for country in countries:
                 country_words = set(country.lower().split()) 
                 if country_words.issubset(words):    
-                    if income=='High-income':
-                        country_economic_representation["high_income"] += 1
-                    elif income=='Lower-middle-income':
-                        country_economic_representation["low_income"] += 1
-                    elif income=='Low-income':
-                        country_economic_representation["low_income"] += 1
-                    elif income=='Upper-middle-income':
-                        country_economic_representation["upper_middle_income"] += 1
+                    country_economic_representation[income_mapping[income]] += 1
 
     return country_economic_representation
 
@@ -7105,7 +7105,7 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
 
     religion_representation = {'muslim': 0, 'hindu': 0, 'sikh': 0, 'christian': 0, 'jain': 0, 'buddhist': 0, 'parsi': 0}
-
+    religions = ['Muslim', 'Hindu', 'Sikh', 'Parsi', 'Christian', 'Buddhist', 'Jain']
 
     for sample in data:
         if isinstance(sample.expected_results, NEROutput):
@@ -7121,20 +7121,11 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = sample.original.split()
             
         for i in words:
-            if check_name(i, [religion_wise_names['Muslim']]):
-                religion_representation["muslim"] += 1
-            if check_name(i, [religion_wise_names['Hindu']]):
-                religion_representation["hindu"] += 1
-            if check_name(i, [religion_wise_names['Sikh']]):
-                religion_representation["sikh"] += 1
-            if check_name(i, [religion_wise_names['Parsi']]):
-                religion_representation["parsi"] += 1
-            if check_name(i, [religion_wise_names['Christian']]):
-                religion_representation["christian"] += 1
-            if check_name(i, [religion_wise_names['Buddhist']]):
-                religion_representation["buddhist"] += 1
-            if check_name(i, [religion_wise_names['Jain']]):
-                religion_representation["jain"] += 1
+            for religion in religions:
+                if check_name(i, [religion_wise_names[religion]]):
+                    religion_representation[religion.lower()] += 1
+
+    return religion_representation
 
     return religion_representation
 
