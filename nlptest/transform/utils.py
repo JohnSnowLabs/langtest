@@ -7067,26 +7067,32 @@ def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, in
 
     country_economic_representation = {"high_income": 0, "low_income": 0, "lower_middle_income": 0,
                                        "upper_middle_income": 0}
+    
+    income_mapping = {
+    "High-income": "high_income",
+    "Lower-middle-income": "low_income",
+    "Low-income": "low_income",
+    "Upper-middle-income": "upper_middle_income"
+    }
 
     for sample in data:
         if isinstance(sample.expected_results, NEROutput):
-            words = [x.span.word for x in sample.expected_results.predictions]
+            words = [x.span.word.lower() for x in sample.expected_results.predictions]  
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
-            words = sample.original.split()
-        else:
+            words = set(sample.original.replace('.', '').lower().split())
+        elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
-                words = sample.original_context.split()
+                words = set(sample.original_context.replace('.', '').lower().split())
             else:
-                words = sample.original_question.split()
-        for i in words:
-            if check_name(i, [country_economic_dict['High-income']]):
-                country_economic_representation["high_income"] += 1
-            if check_name(i, [country_economic_dict['Low-income']]):
-                country_economic_representation["low_income"] += 1
-            if check_name(i, [country_economic_dict['Lower-middle-income']]):
-                country_economic_representation["lower_middle_income"] += 1
-            if check_name(i, [country_economic_dict['Upper-middle-income']]):
-                country_economic_representation["upper_middle_income"] += 1
+                words = set(sample.original_question.replace('.', '').lower().split())
+        elif sample.task =='summarization':
+             words = set(sample.original.replace('.', '').lower().split())
+
+        for income, countries in country_economic_dict.items():
+            for country in countries:
+                country_words = set(country.lower().split()) 
+                if country_words.issubset(words):    
+                    country_economic_representation[income_mapping[income]] += 1
 
     return country_economic_representation
 
@@ -7101,33 +7107,25 @@ def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
     """
 
     religion_representation = {'muslim': 0, 'hindu': 0, 'sikh': 0, 'christian': 0, 'jain': 0, 'buddhist': 0, 'parsi': 0}
-
+    religions = ['Muslim', 'Hindu', 'Sikh', 'Parsi', 'Christian', 'Buddhist', 'Jain']
 
     for sample in data:
         if isinstance(sample.expected_results, NEROutput):
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
-        else:
+        elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
                 words = sample.original_context.split()
             else:
-                words = sample.original_question.split()
+                words = sample.original_question.split()   
+        elif sample.task =='summarization':
+            words = sample.original.split()
+            
         for i in words:
-            if check_name(i, [religion_wise_names['Muslim']]):
-                religion_representation["muslim"] += 1
-            if check_name(i, [religion_wise_names['Hindu']]):
-                religion_representation["hindu"] += 1
-            if check_name(i, [religion_wise_names['Sikh']]):
-                religion_representation["sikh"] += 1
-            if check_name(i, [religion_wise_names['Parsi']]):
-                religion_representation["parsi"] += 1
-            if check_name(i, [religion_wise_names['Christian']]):
-                religion_representation["christian"] += 1
-            if check_name(i, [religion_wise_names['Buddhist']]):
-                religion_representation["buddhist"] += 1
-            if check_name(i, [religion_wise_names['Jain']]):
-                religion_representation["jain"] += 1
+            for religion in religions:
+                if check_name(i, [religion_wise_names[religion]]):
+                    religion_representation[religion.lower()] += 1
 
     return religion_representation
 
@@ -7148,11 +7146,14 @@ def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
             words = [x.span.word for x in sample.expected_results.predictions]
         elif isinstance(sample.expected_results, SequenceClassificationOutput):
             words = sample.original.split()
-        else:
+        elif sample.task =='question-answering':
             if "perturbed_context" in sample.__annotations__:  
                 words = sample.original_context.split()
             else:
                 words = sample.original_question.split()   
+        elif sample.task =='summarization':
+            words = sample.original.split()
+            
         for i in words:
             if check_name(i, [white_names['first_names'], white_names['last_names']]):
                 ethnicity_representation["white"] += 1
@@ -7191,7 +7192,8 @@ def get_entity_representation_proportions(entity_representation):
 
 default_user_prompt = {
     "boolq": "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
-    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:"
+    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:",
+    "xsum": "You are an intelligent Context summarizer. Please read the following context  carefully. After understanding its content, create a concise summary, capturing the essential themes and key details."
 }
 
 

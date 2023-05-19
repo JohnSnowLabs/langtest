@@ -171,7 +171,8 @@ setup(
             "data/BoolQ/*",
             "data/NQ-open/*",
             "data/textcat_imdb/*/*",
-            "data/config/*"
+            "data/config/*",
+            "data/Xsum/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

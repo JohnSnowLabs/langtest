@@ -15,6 +15,7 @@ from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 
 GLOBAL_MODEL = None
+HARNESS_CONFIG = None
 
 class Harness:
     """ Harness is a testing class for NLP models.
@@ -22,7 +23,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
@@ -122,6 +123,10 @@ class Harness:
         
         global GLOBAL_MODEL 
         GLOBAL_MODEL = self.model
+
+        global HARNESS_CONFIG
+        HARNESS_CONFIG = self._config
+        
         self._testcases = None
         self._generated_results = None
         self.accuracy_results = None

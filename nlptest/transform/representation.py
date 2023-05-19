@@ -29,7 +29,7 @@ class BaseRepresentation(ABC):
         based on the implemented representation measure.
     """
     alias_name = None
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     @staticmethod
     @abstractmethod
@@ -81,7 +81,7 @@ class GenderRepresentation(BaseRepresentation):
         "min_gender_representation_proportion"
     ]
     
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
@@ -189,7 +189,7 @@ class GenderRepresentation(BaseRepresentation):
         classifier = GenderClassifier()
         for sample in kwargs['raw_data']:
             
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                     if "perturbed_context" in sample.__annotations__:
                          genders = [classifier.predict(sample.original_context)
                            for sample in kwargs['raw_data']]
@@ -240,7 +240,7 @@ class EthnicityRepresentation(BaseRepresentation):
         "min_ethnicity_name_representation_proportion"
     ]
     
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
@@ -528,7 +528,7 @@ class ReligionRepresentation(BaseRepresentation):
         "min_religion_name_representation_count",
         "min_religion_name_representation_proportion"
     ]
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
@@ -696,7 +696,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_proportion"
     ]
     
-    supported_tasks = ["ner", "text-classification","question-answering"]
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     def transform(test, data, params):
         """
