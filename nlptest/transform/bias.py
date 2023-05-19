@@ -150,7 +150,7 @@ class GenderPronounBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    if sample.task == "ner":
+                    if sample.task in ("ner", "text-classification"):
                         transformations.append(
                             Transformation(
                                 original_span=Span(
@@ -207,7 +207,7 @@ class CountryEconomicBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    if sample.task == "ner":
+                    if sample.task in ("ner", "text-classification"):
                         transformations.append(
                             Transformation(
                                 original_span=Span(
@@ -271,7 +271,7 @@ class EthnicityNameBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    if sample.task == "ner":
+                    if sample.task in ("ner", "text-classification"):
                         transformations.append(
                             Transformation(
                                 original_span=Span(
@@ -330,7 +330,7 @@ class ReligionBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    if sample.task == "ner":
+                    if sample.task in ("ner", "text-classification"):
                         transformations.append(
                             Transformation(
                                 original_span=Span(
