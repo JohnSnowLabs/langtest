@@ -31,7 +31,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="He lives in the USA."),
             SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
-
+        self.ocr_sentences = [
+            SequenceClassificationSample(original="This organization's art can win tough acts."),    
+            SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -141,3 +144,16 @@ class RobustnessTestCase(unittest.TestCase):
         transformed_samples = NumberToWord.transform(self.number_sentences)
         # Test that the transformed_samples sentences are in a list
         self.assertIsInstance(transformed_samples, list)
+
+
+    def test_add_ocr_typo(self) -> None:
+        """"""
+        expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
+                                        "Anyone c^an j0in o^ur communitv gardcn."]
+        transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
+        
+        self.assertIsInstance(transformed_samples, list)
+        self.assertListEqual(
+            [sample.test_case for sample in transformed_samples],
+             expected_corrected_sentences
+           )
