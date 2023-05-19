@@ -56,9 +56,9 @@ class BaseRobustness(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                dataset_name = sample.dataset_name.split('-')[0].lower()
-                user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                 if sample.task == 'question-answering':
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
                     sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
@@ -66,6 +66,8 @@ class BaseRobustness(ABC):
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
 
                 elif sample.task == 'summarization':
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
                     sample.expected_results = model(text={'context':sample.original},
                                                      prompt={"template":prompt_template, 'input_variables':["context"]})
