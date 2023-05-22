@@ -58,6 +58,8 @@ data:
           src: assets/images/home/spacy_logo.svg
           url: https://spacy.io/
           style: "padding: 41px;"
+          width: "116px"
+          height: "84px"
       - title:
         image:
           src: assets/images/home/openai_logo.svg
@@ -77,10 +79,32 @@ data:
           src: assets/images/home/microsoft_azure_logo.svg
           url: https://azure.microsoft.com/en-us/products/cognitive-services/openai-service
           style: "padding: 16px;"
+          width: "200px"
+          height: "60px"
       - title:
         image:
           src: assets/images/home/langchain.png
           url: https://python.langchain.com/en/latest/index.html
+      - title:
+        image:
+          src: assets/images/home/databricks_logo.png
+          url: https://huggingface.co/databricks
+          style: "padding: 10px;"
+      - title:
+        image:
+          src: assets/images/home/openassistant_logo.svg
+          url: https://open-assistant.io/
+          style: "padding: 39px;"
+      - title:
+        image:
+          src: assets/images/home/meta_logo.svg
+          url: https://github.com/facebookresearch/llama
+          style: "padding: 24px;"
+      - title:
+        image:
+          src: assets/images/home/bloom_logo.png
+          url: https://bigscience.huggingface.co/
+          style: "padding: 10px;"
 
    - title: 'Get Started'
      install: yes
