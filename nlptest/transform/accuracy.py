@@ -646,14 +646,14 @@ class MinROUGEcore(BaseAccuracy):
 
         sample = MinScoreSample(
             category="accuracy",
-            test_type="min_bleu_score",
+            test_type=params["test_name"],
             expected_results=MinScoreOutput(min_score=min_score)
         )
 
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred,**kwargs):
 
         """
         Computes the minimum F1 score for the given data.
