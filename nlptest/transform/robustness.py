@@ -806,7 +806,7 @@ class AddOcrTypo(BaseRobustness):
                     if sample.task in ("ner", "text-classification"):
                         transformations.append(
                             Transformation(
-                                original_span=Span(start=match.start(), end=match.end() - 1, word=token),
+                                original_span=Span(start=match.start(), end=match.end(), word=token),
                                 new_span=Span(start=match.start(), end=match.start() + len(corrected_token),
                                             word=corrected_token),
                                 ignore=False
