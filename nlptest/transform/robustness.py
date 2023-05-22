@@ -783,7 +783,7 @@ class AddOcrTypo(BaseRobustness):
             List[Sample]: The transformed list of samples.
         """
 
-        def ocr_typo(regex, text, sample):
+        def ocr_typo(regex, text):
             results = []
             trans = []
             transformations = []
@@ -803,25 +803,22 @@ class AddOcrTypo(BaseRobustness):
                     trans.append(text[start_offset:match.start()])
                     trans.append(corrected_token)
                     start_offset = match.end()
-
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=match.start(), end=match.end() - 1, word=token),
-                            new_span=Span(start=match.start(), end=match.start() + len(corrected_token),
-                                          word=corrected_token),
-                            ignore=False
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=match.start(), end=match.end() - 1, word=token),
+                                new_span=Span(start=match.start(), end=match.start() + len(corrected_token),
+                                            word=corrected_token),
+                                ignore=False
+                            )
                         )
-                    )
                 else:
                     trans.append(text[start_offset:match.end()])
                     start_offset = match.end()
 
             trans.append(text[start_offset:])
             results.append(''.join(trans))
-
             perturbed_text = ''.join(results)
-
-            sample.test_case = perturbed_text
             sample.category = "robustness"
             if sample.task in ("ner", "text-classification"):
                 sample.transformations = transformations
@@ -830,12 +827,12 @@ class AddOcrTypo(BaseRobustness):
 
         for sample in sample_list:
             if sample.task == 'question-answering':
-                sample.perturbed_question = ocr_typo(r'[^,\s.!?]+', sample.original_question, sample)
+                sample.perturbed_question = ocr_typo(r'[^,\s.!?]+', sample.original_question)
 
                 if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = ocr_typo(r'[^,\s.!?]+', sample.original_context, sample)
+                    sample.perturbed_context = ocr_typo(r'[^,\s.!?]+', sample.original_context)
 
             else:
-                sample.test_case = ocr_typo(r'[^,\s.!?]+', sample.original, sample)
+                sample.test_case = ocr_typo(r'[^,\s.!?]+', sample.original)
 
         return sample_list
