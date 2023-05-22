@@ -117,10 +117,6 @@ class UpperCase(BaseRobustness):
             List of sentences that uppercase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
-            # if sample.task =='question-answering':
-            #     sample.perturbed_question = sample.original_question.upper()
-            #     if "perturbed_context" in sample.__annotations__:
-            #         sample.perturbed_context = sample.original_context.upper()
             if isinstance(sample, str):
                 sample_list[idx] = sample.upper()
             else:
@@ -140,14 +136,12 @@ class LowerCase(BaseRobustness):
         Returns:
             List of sentences that lowercase robustness is applied.
         """
-        for sample in sample_list:
-            if sample.task =='question-answering':
-                sample.perturbed_question = sample.original_question.lower()
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = sample.original_context.lower()
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = sample.lower()
             else:
                 sample.test_case = sample.original.lower()
-            sample.category = "robustness"
+                sample.category = "robustness"
         return sample_list
 
 class TitleCase(BaseRobustness):
@@ -161,14 +155,12 @@ class TitleCase(BaseRobustness):
         Returns:
             List of sentences that titlecase robustness is applied.
         """
-        for sample in sample_list:
-            if sample.task =='question-answering':
-                sample.perturbed_question = sample.original_question.title()
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = sample.original_context.title()
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = sample.title()
             else:
                 sample.test_case = sample.original.title()
-            sample.category = "robustness"
+                sample.category = "robustness"
         return sample_list
 
 
