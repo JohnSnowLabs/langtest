@@ -94,7 +94,7 @@ data:
         image:
           src: assets/images/home/openassistant_logo.svg
           url: https://open-assistant.io/
-          style: "padding: 30px;"
+          style: "padding: 39px;"
       - title:
         image:
           src: assets/images/home/meta_logo.svg
