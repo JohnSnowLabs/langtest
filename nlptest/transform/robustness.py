@@ -6,7 +6,7 @@ from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY ,ocr_typo_dict)
 from ..utils.custom_types import Sample, Span, Transformation
 from typing import List
 
@@ -57,27 +57,31 @@ class BaseRobustness(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                if sample.task == 'question-answering':
-                    dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
-                    sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
-                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
-                    sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
-                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                # if sample.task == 'question-answering':
+                #     dataset_name = sample.dataset_name.split('-')[0].lower()
+                #     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                #     prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                #     sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
+                #                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                #     sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
+                #                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
 
-                elif sample.task == 'summarization':
-                    dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
-                    sample.expected_results = model(text={'context':sample.original},
-                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
-                    sample.actual_results = model(text={'context':sample.original},
-                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
+                # elif sample.task == 'summarization':
+                #     dataset_name = sample.dataset_name.split('-')[0].lower()
+                #     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                #     prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                #     sample.expected_results = model(text={'context':sample.original},
+                #                                      prompt={"template":prompt_template, 'input_variables':["context"]})
+                #     sample.actual_results = model(text={'context':sample.original},
+                #                                      prompt={"template":prompt_template, 'input_variables':["context"]})
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
                 else:
                     sample.expected_results = model(sample.original)
                     sample.actual_results = model(sample.test_case)
-                sample.state = "done"
+                    sample.state = "done"
             if progress:
                 progress.update(1)
         return sample_list
@@ -112,14 +116,16 @@ class UpperCase(BaseRobustness):
         Returns:
             List of sentences that uppercase robustness is applied.
         """
-        for sample in sample_list:
-            if sample.task =='question-answering':
-                sample.perturbed_question = sample.original_question.upper()
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = sample.original_context.upper()
+        for idx, sample in enumerate(sample_list):
+            # if sample.task =='question-answering':
+            #     sample.perturbed_question = sample.original_question.upper()
+            #     if "perturbed_context" in sample.__annotations__:
+            #         sample.perturbed_context = sample.original_context.upper()
+            if isinstance(sample, str):
+                sample_list[idx] = sample.upper()
             else:
                 sample.test_case = sample.original.upper()
-            sample.category = "robustness"
+                sample.category = "robustness"
         return sample_list
 
 

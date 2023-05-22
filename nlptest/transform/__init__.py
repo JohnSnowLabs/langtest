@@ -1,4 +1,4 @@
-from nlptest.utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
+from ..utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
 from ..utils.custom_types import Result, Sample
 from .utils import ( default_user_prompt, A2B_DICT, asian_names, black_names, country_economic_dict, create_terminology, female_pronouns,
                     get_substitution_names, hispanic_names, inter_racial_names, male_pronouns, native_american_names,
@@ -24,6 +24,7 @@ class TestFactory:
     A factory class for creating and running different types of tests on data.
     """
     is_augment = False
+    task: str = None
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
@@ -45,6 +46,8 @@ class TestFactory:
         all_results = []
         all_categories = TestFactory.test_categories()
         test_names = list(test_types.keys())
+        if TestFactory.task is None:
+            TestFactory.task = task
         if 'defaults' in test_names:
             test_names.pop(test_names.index("defaults"))
         tests = tqdm(test_names, desc="Generating testcases...",
@@ -290,8 +293,21 @@ class RobustnessTestFactory(ITests):
             else:
                 data_handler_copy = [x.copy() for x in self._data_handler]
 
-            transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
-                                                                            **params.get('parameters', {}))
+            test_func = self.supported_tests[test_name].transform
+
+            if TestFactory.task in ('question-answering', 'summarization'):
+                _ = [
+                    sample.transform(test_func, params.get('parameters', {}))
+                    if hasattr(sample, 'transform') else sample
+                    for sample in data_handler_copy
+                ]
+                transformed_samples = data_handler_copy
+
+            else:
+                transformed_samples = test_func(
+                    data_handler_copy,
+                    **params.get('parameters', {})
+                )
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
