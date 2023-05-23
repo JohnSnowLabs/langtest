@@ -171,6 +171,6 @@ harness = Harness(task='summarization',
                   model='gpt-3.5-turbo',
                   config='config.yml',
                   hub ='openai',
-                  data='XSum-test')
+                  data='XSum-test-tiny')
 ```
 </div></div>
