@@ -500,7 +500,7 @@ class MinEMcore(BaseAccuracy):
     """
 
     alias_name = "min_exact_match_score"
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
     def transform(y_true, params):
@@ -563,7 +563,7 @@ class MinBLEUcore(BaseAccuracy):
     """
 
     alias_name = "min_bleu_score"
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
     def transform(y_true, params):
@@ -626,7 +626,7 @@ class MinROUGEcore(BaseAccuracy):
     """
 
     alias_name = ["min_rouge1_score","min_rouge2_score","min_rougeL_score","min_rougeLsum_score"]
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
     def transform(y_true, params):
