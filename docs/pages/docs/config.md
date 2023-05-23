@@ -98,7 +98,7 @@ tests:
 ```bash
 model_parameters:
   temperature: 0.2
-  max_tokens: 64
+  max_tokens: 200
 
 tests:
   defaults:
