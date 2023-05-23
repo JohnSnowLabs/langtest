@@ -290,8 +290,12 @@ class Harness:
             return
         generated_results_df = pd.DataFrame.from_dict(
             [x.to_dict() for x in self._generated_results])
+        if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
+            generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
 
-        return generated_results_df.fillna('-')
+        generated_results_df=generated_results_df[generated_results_df.columns.drop("pass").to_list() + ["pass"]]
+
+        return generated_results_df.fillna("-")
 
     def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
         """

@@ -23,7 +23,7 @@ class BaseFairness(ABC):
         output based on the implemented accuracy measure.
     """
     alias_name = None
-    supported_tasks = ["ner", "text-classification", "question-answering"]
+    supported_tasks = ["ner", "text-classification", "question-answering", "summarization"]
 
     @staticmethod
     @abstractmethod
@@ -100,7 +100,7 @@ class MinGenderF1Score(BaseFairness):
         samples = []
         for key, val in min_scores.items():
             sample = MinScoreSample(
-                original="-",
+                original=None,
                 category="fairness",
                 test_type="min_gender_f1_score",
                 test_case=key,
@@ -183,7 +183,7 @@ class MaxGenderF1Score(BaseFairness):
         samples = []
         for key, val in max_scores.items():
             sample = MaxScoreSample(
-                original="-",
+                original=None,
                 category="fairness",
                 test_type="max_gender_f1_score",
                 test_case=key,
