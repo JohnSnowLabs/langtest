@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
 from .helpers import Transformation, Span
@@ -417,7 +417,7 @@ class MaxScoreQASample(QASample):
 class SummarizationSample(BaseModel):
     original: str = None
     test_case: str = None
-    expected_results: str = None
+    expected_results: Union[str, List] = None
     actual_results: str = None
     state: str = None
     dataset_name: str = None

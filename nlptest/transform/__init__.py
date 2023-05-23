@@ -562,7 +562,7 @@ class FairnessTestFactory(ITests):
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
             elif isinstance(data_handler_copy[0], SequenceClassificationSample):
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
-            elif isinstance(data_handler_copy[0], QASample):
+            elif data_handler_copy[0].task in ["question-answering", "summarization"]:
                 y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
 
             y_true = y_true.explode().apply(lambda x: x.split("-")
@@ -628,17 +628,28 @@ class FairnessTestFactory(ITests):
                     y_true = y_true.explode()
                     y_pred = y_pred.explode()
                 
-                elif isinstance(data[0], QASample):
+                elif data[0].task == "question-answering":
                     dataset_name = data[0].dataset_name.split('-')[0].lower()
                     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
                     
                     if data[0].expected_results is None:
-                        logging.warning('The dataset %s does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.', dataset_name)
-                        return []
+                        raise RuntimeError(f'The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.')
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
                     y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))
+                    y_pred = y_pred.apply(lambda x: x.strip())
+
+                elif data[0].task == "summarization":
+                    dataset_name = data[0].dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                    if data[0].expected_results is None:
+                        raise RuntimeError(f'The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.')
+                        
+                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
+                    X_test = pd.Series(data)
+                    y_pred = X_test.apply(lambda sample: model(text={'context':sample.original}, prompt={"template":prompt_template, 'input_variables':["context"]}))
                     y_pred = y_pred.apply(lambda x: x.strip())
                 
                 if kwargs['is_default']:
@@ -717,15 +728,15 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            if isinstance(data_handler_copy[0], NERSample):
+            if data_handler_copy[0].task=="ner":
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
-            elif isinstance(data_handler_copy[0], SequenceClassificationSample):
-                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions])
-            elif isinstance(data_handler_copy[0], QASample):
-                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
+                y_true = y_true.explode().apply(lambda x: x.split("-")
+                                                [-1] if isinstance(x, str) else x)
+            elif data_handler_copy[0].task=="text-classification":
+                y_true = pd.Series(data_handler_copy).apply(lambda x: [y.label for y in x.expected_results.predictions]).explode()
+            elif data_handler_copy[0].task=="question-answering" or data_handler_copy[0].task=="summarization":
+                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results).explode()
 
-            y_true = y_true.explode().apply(lambda x: x.split("-")
-                                            [-1] if isinstance(x, str) else x)
             y_true = y_true.dropna()
             params["test_name"] = test_name
             transformed_samples = self.supported_tests[test_name].transform(
@@ -781,17 +792,28 @@ class AccuracyTestFactory(ITests):
             y_true = y_true.explode()
             y_pred = y_pred.explode()
         
-        elif isinstance(raw_data[0], QASample):
+        elif raw_data[0].task=="question-answering":
             dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
             user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
             prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
             
             if raw_data[0].expected_results is None:
-                logging.warning('The dataset %s does not contain labels and accuracy tests cannot be run with it. Skipping the accuracy tests.', dataset_name)
-                return []
+                        raise RuntimeError(f'The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.')
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
             y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))
+            y_pred = y_pred.apply(lambda x: x.strip())
+        
+        elif raw_data[0].task=="summarization":
+            dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
+            user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+            prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+            if raw_data[0].expected_results is None:
+                raise RuntimeError(f'The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.')
+                        
+            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data)
+            y_pred = X_test.apply(lambda sample: model(text={'context':sample.original}, prompt={"template":prompt_template, 'input_variables':["context"]}))
             y_pred = y_pred.apply(lambda x: x.strip())
         
         if kwargs['is_default']:
