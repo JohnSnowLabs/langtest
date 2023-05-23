@@ -177,11 +177,11 @@ class Harness:
         if self.task in ["text-classification", "ner"]:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
-        elif self.task in ["question-answering"]:
+        elif self.task in ("question-answering","summarization"):
             if 'bias' in tests.keys():
-                if self.file_path.split('-')[0] =='BoolQ':
+                if self.file_path.split('-')[0] in ('BoolQ','XSum'):
                     tests_to_filter = tests['bias'].keys()
-                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter,self.file_path.split('-')[0])
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != 'bias'}
                         other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
@@ -291,8 +291,12 @@ class Harness:
             return
         generated_results_df = pd.DataFrame.from_dict(
             [x.to_dict() for x in self._generated_results])
+        if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
+            generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
 
-        return generated_results_df.fillna('-')
+        generated_results_df=generated_results_df[generated_results_df.columns.drop("pass").to_list() + ["pass"]]
+
+        return generated_results_df.fillna("-")
 
     def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
         """

@@ -16,4 +16,4 @@ langchain
 evaluate
 inflect
 rouge_score
-typing_extensions<4.6.0
+typing-extensions < 4.6.0

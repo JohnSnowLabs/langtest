@@ -500,7 +500,7 @@ class MinEMcore(BaseAccuracy):
     """
 
     alias_name = "min_exact_match_score"
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
     def transform(y_true, params):
@@ -563,7 +563,7 @@ class MinBLEUcore(BaseAccuracy):
     """
 
     alias_name = "min_bleu_score"
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
     def transform(y_true, params):
@@ -626,7 +626,7 @@ class MinROUGEcore(BaseAccuracy):
     """
 
     alias_name = ["min_rouge1_score","min_rouge2_score","min_rougeL_score","min_rougeLsum_score"]
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
     def transform(y_true, params):
@@ -646,14 +646,14 @@ class MinROUGEcore(BaseAccuracy):
 
         sample = MinScoreSample(
             category="accuracy",
-            test_type="min_bleu_score",
+            test_type=params["test_name"],
             expected_results=MinScoreOutput(min_score=min_score)
         )
 
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred,**kwargs):
 
         """
         Computes the minimum F1 score for the given data.
