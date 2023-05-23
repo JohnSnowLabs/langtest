@@ -29,12 +29,12 @@ The following tables give an overview of the different categories and tests.
 |[Accuracy](accuracy)		                |[Min Precision Score](accuracy#min-precision-score)                                                        |`ner`, `text-classification`       
 |[Accuracy](accuracy)		                |[Min Recall Score](accuracy#min-recall-score)                                                              |`ner`, `text-classification`     
 |[Accuracy](accuracy)		                |[Min Weighted-F1 Score](accuracy#min-weighted-f1-score)                                                    |`ner`, `text-classification`
-|[Accuracy](accuracy)		                |[Min Exact Match Score](accuracy#min-exact=match-score)                                                    |`question-answering`
-|[Accuracy](accuracy)		                |[Min BLEU Score](accuracy#min-bleu-score)                                                                  |`question-answering`
-|[Accuracy](accuracy)		                |[Min Rouge1 Score](accuracy#min-rouge1-score)                                                              |`question-answering`
-|[Accuracy](accuracy)		                |[Min Rouge2 Score](accuracy#min-rouge2-score)                                                              |`question-answering`
-|[Accuracy](accuracy)		                |[Min RougeL Score](accuracy#min-rougel-score)                                                              |`question-answering`
-|[Accuracy](accuracy)		                |[Min RougeLsum Score](accuracy#min-rougelsum-score)                                                        |`question-answering`       
+|[Accuracy](accuracy)		                |[Min Exact Match Score](accuracy#min-exact=match-score)                                                    |`question-answering`, `summarization`
+|[Accuracy](accuracy)		                |[Min BLEU Score](accuracy#min-bleu-score)                                                                  |`question-answering`, `summarization`
+|[Accuracy](accuracy)		                |[Min Rouge1 Score](accuracy#min-rouge1-score)                                                              |`question-answering`, `summarization`
+|[Accuracy](accuracy)		                |[Min Rouge2 Score](accuracy#min-rouge2-score)                                                              |`question-answering`, `summarization`
+|[Accuracy](accuracy)		                |[Min RougeL Score](accuracy#min-rougel-score)                                                              |`question-answering`, `summarization`
+|[Accuracy](accuracy)		                |[Min RougeLsum Score](accuracy#min-rougelsum-score)                                                        |`question-answering`, `summarization`       
 |[Bias](bias)		                        |[Replace To Asian First Names](bias#replace-to-asian-firstnames)                                           |`ner`, `text-classification`      
 |[Bias](bias)		                        |[Replace To Asian Last Names](bias#replace-to-asian-lastnames)                                             |`ner`, `text-classification`        
 |[Bias](bias)		                        |[Replace To Black First Names](bias#replace-to-black-firstnames)                                           |`ner`, `text-classification`      
@@ -61,27 +61,27 @@ The following tables give an overview of the different categories and tests.
 |[Bias](bias)		                        |[Replace To White Last Names](bias#replace-to-white-lastnames)                                             |`ner`, `text-classification`        
 |[Fairness](fairness)		                |[Max Gender F1 Score](fairness#max-gender-f1-score)                                                        |`ner`, `text-classification`       
 |[Fairness](fairness)		                |[Min Gender F1 Score](fairness#min-gender-f1-score)                                                        |`ner`, `text-classification`       
-|[Representation](representation)		    |[Min Country Economic Representation Count](representation#country-economic-representation-count)          |`ner`, `text-classification`, `question-answering`       
-|[Representation](representation)		    |[Min Country Economic Representation Proportion](representation#country-economic-representation-proportion)|`ner`, `text-classification`, `question-answering`         
-|[Representation](representation)		    |[Min Ethnicity Representation Count](representation#ethnicity-representation-count)                        |`ner`, `text-classification`, `question-answering`         
-|[Representation](representation)		    |[Min Ethnicity Representation Proportion](representation#ethnicity-representation-proportion)              |`ner`, `text-classification`, `question-answering`       
-|[Representation](representation)		    |[Min Gender Representation Count](representation#gender-representation-count)                              |`ner`, `text-classification`, `question-answering`       
-|[Representation](representation)		    |[Min Gender Representation Proportion](representation#gender-representation-proportion)                    |`ner`, `text-classification`, `question-answering`         
-|[Representation](representation)		    |[Min Label Representation Count](representation#label-representation-count)                                |`ner`, `text-classification`, `question-answering`         
-|[Representation](representation)		    |[Min Label Representation Proportion](representation#label-representation-proportion)                      |`ner`, `text-classification`, `question-answering`       
-|[Representation](representation)		    |[Min Gender Representation Count](representation#religion-representation-count)                            |`ner`, `text-classification`, `question-answering`         
-|[Representation](representation)		    |[Min Gender Representation Proportion](representation#religion-representation-proportion)                  |`ner`, `text-classification`, `question-answering`       
-|[Robustness](robustness)		            |[Add Context](robustness#add-context)                                                                      |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Add Contraction](robustness#add-contraction)                                                              |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Add Punctuation](robustness#add-punctuation)                                                              |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Add Typo](robustness#add-typo)                                                                            |`ner`, `text-classification`, `question-answering`       
-|[Robustness](robustness)		            |[American to British](robustness#american-to-british)                                                      |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[British to American](robustness#british-to-american)                                                      |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Lowercase](robustness#lowercase)                                                                          |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Strip Punctuation](robustness#strip-punctuation)                                                          |`ner`, `text-classification`, `question-answering`     
+|[Representation](representation)		    |[Min Country Economic Representation Count](representation#country-economic-representation-count)          |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Country Economic Representation Proportion](representation#country-economic-representation-proportion)|`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Ethnicity Representation Count](representation#ethnicity-representation-count)                        |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Ethnicity Representation Proportion](representation#ethnicity-representation-proportion)              |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Gender Representation Count](representation#gender-representation-count)                              |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Gender Representation Proportion](representation#gender-representation-proportion)                    |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Label Representation Count](representation#label-representation-count)                                |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Label Representation Proportion](representation#label-representation-proportion)                      |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Gender Representation Count](representation#religion-representation-count)                            |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Gender Representation Proportion](representation#religion-representation-proportion)                  |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Robustness](robustness)		            |[Add Context](robustness#add-context)                                                                      |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Add Contraction](robustness#add-contraction)                                                              |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Add Punctuation](robustness#add-punctuation)                                                              |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Add Typo](robustness#add-typo)                                                                            |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Robustness](robustness)		            |[American to British](robustness#american-to-british)                                                      |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[British to American](robustness#british-to-american)                                                      |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Lowercase](robustness#lowercase)                                                                          |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Strip Punctuation](robustness#strip-punctuation)                                                          |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Swap Entities](robustness#swap-entities)                                                                  |`ner`     
-|[Robustness](robustness)		            |[Titlecase](robustness#titlecase)                                                                          |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Number to Word](robustness#number-to-word)                                                                |`ner`, `text-classification`, `question-answering`     
-|[Robustness](robustness)		            |[Add OCR Typo](robustness#add-ocr-typo)                                                                |`ner`, `text-classification`, `question-answering`
+|[Robustness](robustness)		            |[Titlecase](robustness#titlecase)                                                                          |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Number to Word](robustness#number-to-word)                                                                |`ner`, `text-classification`, `question-answering`, `summarization`     
+|[Robustness](robustness)		            |[Add OCR Typo](robustness#add-ocr-typo)                                                                |`ner`, `text-classification`, `question-answering`, `summarization`
 </div></div>

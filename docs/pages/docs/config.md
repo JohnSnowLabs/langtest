@@ -76,7 +76,7 @@ h.configure(
 
 The configuration for LLM-related tests requires extra fields. These are hub-specific and contain parameters passed to the LLM.
 
-#### Example Config File: OpenAI
+#### Example Config File: Question Answering
 
 ```bash
 model_parameters:
@@ -93,7 +93,26 @@ tests:
     uppercase:
       min_pass_rate: 0.60
 ```
+#### Example Config File: Summarization
 
+```bash
+model_parameters:
+  temperature: 0.2
+  max_tokens: 64
+
+tests:
+  defaults:
+    min_pass_rate: 0.65
+    evaluation_metric:
+      rogue:
+        threshold: 0.5
+
+  robustness:
+    lowercase:
+      min_pass_rate: 0.60
+    uppercase:
+      min_pass_rate: 0.60
+```
 </div><div class="h3-box" markdown="1">
 
 </div></div>
