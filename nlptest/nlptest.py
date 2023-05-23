@@ -176,11 +176,11 @@ class Harness:
         if self.task in ["text-classification", "ner"]:
             _ = [setattr(sample, 'expected_results', self.model(sample.original))
                  for sample in m_data]
-        elif self.task in ["question-answering"]:
+        elif self.task in ("question-answering","summarization"):
             if 'bias' in tests.keys():
-                if self.file_path.split('-')[0] =='BoolQ':
+                if self.file_path.split('-')[0] in ('BoolQ','XSum'):
                     tests_to_filter = tests['bias'].keys()
-                    self._testcases = DataFactory.load_curated_bias(tests_to_filter)
+                    self._testcases = DataFactory.load_curated_bias(tests_to_filter,self.file_path.split('-')[0])
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != 'bias'}
                         other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
