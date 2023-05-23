@@ -7196,7 +7196,20 @@ default_user_prompt = {
     "xsum": "You are an intelligent Context summarizer. Please read the following context  carefully. After understanding its content, create a concise summary, capturing the essential themes and key details."
 }
 
-
+qa_prompt_template ="""
+You are a distinguished professor known for your expertise in meticulously grading students' answers to questions. Your extensive knowledge and experience make you the go-to authority in your field.
+You have been entrusted with the evaluation of the following question:
+{query}
+Presented below is the indisputably correct answer:
+{answer}
+Your responsibility is to thoroughly scrutinize the predicted answer provided by a student:
+{result}
+Remember, your response should consist of a single word only. You have two choices: "CORRECT" or "INCORRECT".
+When you are convinced that the answer is absolutely accurate, respond with "CORRECT". In the event that it is unequivocally incorrect, respond with "INCORRECT". It is essential that you strictly adhere to this guideline.
+Employ a meticulous, step-by-step approach to meticulously appraise the answer's factual integrity.
+Furthermore, you are expected to evaluate the degree of similarity between the correct answer and the predicted answer, quantifying how closely they align.
+Your comprehensive assessment will play a crucial role in determining the student's performance.
+"""
 
 ocr_typo_dict =    {'tle': 'the', 
                     'Tle': 'The', 
