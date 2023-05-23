@@ -123,9 +123,6 @@ class Harness:
         
         global GLOBAL_MODEL 
         GLOBAL_MODEL = self.model
-
-        global HARNESS_CONFIG
-        HARNESS_CONFIG = self._config
         
         self._testcases = None
         self._generated_results = None
@@ -157,6 +154,10 @@ class Harness:
             with open(config, 'r', encoding="utf-8") as yml:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
+        
+        global HARNESS_CONFIG
+        HARNESS_CONFIG = self._config
+
         return self._config
 
     def generate(self) -> "Harness":
