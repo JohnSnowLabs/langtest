@@ -4,8 +4,8 @@ scikit-learn
 transformers==4.28.1
 torch
 sentencepiece
-pydantic==1.10.6
-spacy==3.5.2
+pydantic==1.10.7
+spacy==3.5.3
 johnsnowlabs==4.3.5
 plotly
 asyncio
