@@ -68,7 +68,7 @@ The following tables give an overview of the different categories and tests.
 |[Fairness](fairness)		                |[Max Gender Rouge1 Score](fairness#max-gender-rouge1-score)                                                |`question-answering`, `summarization`        
 |[Fairness](fairness)		                |[Max Gender Rouge2 Score](fairness#max-gender-rouge2-score)                                                |`question-answering`, `summarization`        
 |[Fairness](fairness)		                |[Max Gender RougeL Score](fairness#max-gender-rougeL-score)                                                |`question-answering`, `summarization`        
-|[Fairness](fairness)		                |[Max Gender RougeLSum Score](fairness#max-gender-rougeLsum-score)                                          |`ner`, `text-classification`, `question-answering`, `summarization`        
+|[Fairness](fairness)		                |[Max Gender RougeLSum Score](fairness#max-gender-rougeLsum-score)                                          |`question-answering`, `summarization`        
 |[Representation](representation)		    |[Min Country Economic Representation Count](representation#country-economic-representation-count)          |`ner`, `text-classification`, `question-answering`, `summarization`       
 |[Representation](representation)		    |[Min Country Economic Representation Proportion](representation#country-economic-representation-proportion)|`ner`, `text-classification`, `question-answering`, `summarization`         
 |[Representation](representation)		    |[Min Ethnicity Representation Count](representation#ethnicity-representation-count)                        |`ner`, `text-classification`, `question-answering`, `summarization`         
