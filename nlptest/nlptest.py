@@ -294,7 +294,10 @@ class Harness:
         if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
             generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
 
-        generated_results_df=generated_results_df[generated_results_df.columns.drop("pass").to_list() + ["pass"]]
+
+        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result", "actual_result", "pass"]
+        columns = [c for c in column_order if c in generated_results_df.columns]
+        generated_results_df=generated_results_df[columns]
 
         return generated_results_df.fillna("-")
 
@@ -349,14 +352,15 @@ class Harness:
             pd.DataFrame:
                 testcases formatted into a pd.DataFrame
         """
-        final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
-                                                                             axis=1)
-        if "test_case" in final_df.columns and "original_question" in final_df.columns:
-            final_df['original_question'].update(final_df.pop('test_case'))
+        testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
+        testcases_df = testcases_df.reset_index(drop=True)
 
         
-        final_df = final_df.reset_index(drop=True)
-        return final_df.fillna('-')
+        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
+        columns = [c for c in column_order if c in testcases_df.columns]
+        testcases_df=testcases_df[columns]
+
+        return testcases_df.fillna('-')
 
     def save(self, save_dir: str) -> None:
         """
