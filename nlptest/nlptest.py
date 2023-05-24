@@ -352,10 +352,15 @@ class Harness:
             pd.DataFrame:
                 testcases formatted into a pd.DataFrame
         """
-        final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
-                                                                             axis=1)
-        final_df = final_df.reset_index(drop=True)
-        return final_df.fillna('-')
+        testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
+        testcases_df = testcases_df.reset_index(drop=True)
+
+        
+        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
+        columns = [c for c in column_order if c in testcases_df.columns]
+        testcases_df=testcases_df[columns]
+
+        return testcases_df.fillna('-')
 
     def save(self, save_dir: str) -> None:
         """
