@@ -284,6 +284,8 @@ class MinScoreSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
+        if self.actual_results is None:
+            return False
         return self.actual_results.min_score >= self.expected_results.min_score
 
 
@@ -295,6 +297,8 @@ class MaxScoreSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
+        if self.actual_results is None:
+            return False
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
