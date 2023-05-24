@@ -29,6 +29,7 @@ REQUIRED_PKGS = [
     'evaluate',
     'inflect',
     'rouge_score',
+    'typing-extensions < 4.6.0'
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -53,7 +54,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.2.0",  # Required
+    version="1.3.0.rc.1",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
