@@ -667,7 +667,6 @@ class MinROUGEcore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
         em = evaluate.load("rouge")
         result = em.compute(references=y_true, predictions=y_pred)
-        
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=result[sample.test_type.split('_')[1]])
             sample.state = "done"
