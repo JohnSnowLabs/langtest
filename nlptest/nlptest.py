@@ -351,6 +351,10 @@ class Harness:
         """
         final_df = pd.DataFrame([x.to_dict() for x in self._testcases]).drop(["pass", "actual_result"], errors="ignore",
                                                                              axis=1)
+        if "test_case" in final_df.columns and "original_question" in final_df.columns:
+            final_df['original_question'].update(final_df.pop('test_case'))
+
+        
         final_df = final_df.reset_index(drop=True)
         return final_df.fillna('-')
 
