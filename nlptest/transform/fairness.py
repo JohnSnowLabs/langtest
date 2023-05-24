@@ -212,7 +212,7 @@ class MaxGenderF1Score(BaseFairness):
             else:
                 macro_f1_score = 1
 
-            sample.actual_results = MinScoreOutput(min_score=macro_f1_score)
+            sample.actual_results = MaxScoreOutput(max_score=macro_f1_score)
             sample.state = "done"
 
             if progress:
