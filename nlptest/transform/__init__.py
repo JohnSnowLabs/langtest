@@ -556,7 +556,7 @@ class FairnessTestFactory(ITests):
         """
         all_samples = []
 
-        if self._data_handler[0].actual_results is None:
+        if self._data_handler[0].expected_results is None:
             raise RuntimeError('This dataset does not contain labels and fairness tests cannot be run with it.')
 
         for test_name, params in self.tests.items():
@@ -730,7 +730,7 @@ class AccuracyTestFactory(ITests):
         """
         all_samples = []
 
-        if self._data_handler[0].actual_results is None:
+        if self._data_handler[0].expected_results is None:
             raise RuntimeError('This dataset does not contain labels and accuracy tests cannot be run with it.')
         
         for test_name, params in self.tests.items():
