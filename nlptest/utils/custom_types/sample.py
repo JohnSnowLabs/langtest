@@ -489,11 +489,13 @@ class SummarizationSample(BaseModel):
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
     
     def transform(self, func, params, **kwargs):
+        """"""
         sens = [self.original]
-        self.test_case = func(sens, **params, **kwargs)
+        self.test_case= func(sens, **params, **kwargs)[0]
         self.category = func.__module__.split('.')[-1]
 
     def run(self, model, **kwargs):
+        """"""
         dataset_name = self.dataset_name.split('-')[0].lower()
         user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
         prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
