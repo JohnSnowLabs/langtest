@@ -293,9 +293,10 @@ class Harness:
             [x.to_dict() for x in self._generated_results])
         if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
             generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
+        
 
 
-        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result", "actual_result", "pass"]
+        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result", "actual_result", "eval_score", "pass"]
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df=generated_results_df[columns]
 
@@ -354,7 +355,8 @@ class Harness:
         """
         testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
         testcases_df = testcases_df.reset_index(drop=True)
-
+        if "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
+            testcases_df['original_question'].update(testcases_df.pop('test_case'))
         
         column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
         columns = [c for c in column_order if c in testcases_df.columns]
