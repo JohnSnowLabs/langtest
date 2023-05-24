@@ -294,7 +294,10 @@ class Harness:
         if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
             generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
 
-        generated_results_df=generated_results_df[generated_results_df.columns.drop("pass").to_list() + ["pass"]]
+
+        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result", "actual_result", "pass"]
+        columns = [c for c in column_order if c in generated_results_df.columns]
+        generated_results_df=generated_results_df[columns]
 
         return generated_results_df.fillna("-")
 
