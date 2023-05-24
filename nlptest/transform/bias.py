@@ -114,12 +114,11 @@ class GenderPronounBias(BaseBias):
             List[Sample]: List of sentences with replaced pronouns
         """
 
-        for sample in sample_list:
-            sample.category = "bias"
+        def gender_pronoun_bias(string, pronouns_to_substitute, pronoun_type):
             transformations = []
-            replaced_string = sample.original
+            replaced_string = string
             pattern = r'\b(?:' + '|'.join(re.escape(name) for name in pronouns_to_substitute) + r')(?!\w)'
-            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
+            tokens_to_substitute = re.findall(pattern, string, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 if pronoun_type == "female":
@@ -160,11 +159,22 @@ class GenderPronounBias(BaseBias):
                                 ignore=False
                             )
                         )
+            
+            return replaced_string, transformations
 
-            sample.test_case = replaced_string
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations
 
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = gender_pronoun_bias(
+                    sample, pronouns_to_substitute, pronoun_type
+                )
+            else:
+                sample.test_case, transformations = gender_pronoun_bias(
+                    sample.original, pronouns_to_substitute, pronoun_type
+                )
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "bias"             
         return sample_list
 
 
