@@ -53,22 +53,10 @@ class BaseBias(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":      
-                if sample.task == "question-answering":
-                    dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
-                    sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
-                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
-                    sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
-                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
-                elif sample.task == "summarization":
-                    dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
-                    sample.expected_results = model(text={'context':sample.original},
-                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
-                    sample.actual_results = model(text={'context':sample.original},
-                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
                 else:
                     sample.expected_results = model(sample.original)
                     sample.actual_results = model(sample.test_case)
@@ -201,11 +189,11 @@ class CountryEconomicBias(BaseBias):
             List[Sample]: List of sentences with replaced names
         """
 
-        for sample in sample_list:
+        def country_economic_bias(string, country_names_to_substitute, chosen_country_names):
             transformations = []
-            replaced_string = sample.original
+            replaced_string = string
             pattern = r'\b(?:' + '|'.join(re.escape(name) for name in country_names_to_substitute) + r')(?!\w)'
-            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
+            tokens_to_substitute = re.findall(pattern, string, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_country_names)
@@ -228,11 +216,21 @@ class CountryEconomicBias(BaseBias):
                                 ignore=False
                             )
                         )
+            
+            return replaced_string, transformations
 
-            sample.test_case = replaced_string
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations
-            sample.category = "bias"
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = country_economic_bias(
+                    sample, country_names_to_substitute, chosen_country_names
+                )
+            else:
+                sample.test_case, transformations = country_economic_bias(
+                    sample.original, country_names_to_substitute, chosen_country_names
+                )
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "bias"
 
         return sample_list
 

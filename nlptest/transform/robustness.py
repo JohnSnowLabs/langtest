@@ -635,20 +635,19 @@ class NumberToWord(BaseRobustness):
 
             trans.append(text[start_offset:])
             results.append(''.join(trans))
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations
-            sample.category = "robustness"
 
-            return ''.join(results)
+            return ''.join(results), trans
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 sample_list[idx] = convert_numbers(
                     r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample)
             else:
-                sample.test_case = convert_numbers(
+                sample.test_case, transformations = convert_numbers(
                     r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original)
-
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
         return sample_list
 
 
@@ -666,13 +665,13 @@ class AddOcrTypo(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples.
         """
-        for sample in sample_list:
+        def add_ocr_typo(string):
             results = []
             trans = []
             transformations = []
             start_offset = 0
 
-            for match in re.finditer(r'[^,\s.!?]+', sample.original):
+            for match in re.finditer(r'[^,\s.!?]+', string):
                 token = match.group()
                 corrected_token = None
 
@@ -684,7 +683,7 @@ class AddOcrTypo(BaseRobustness):
                     corrected_token = token
 
                 if corrected_token != token:
-                    trans.append(sample.original[start_offset:match.start()])
+                    trans.append(string[start_offset:match.start()])
                     trans.append(corrected_token)
                     start_offset = match.end()
 
@@ -698,14 +697,21 @@ class AddOcrTypo(BaseRobustness):
                         )
                     )
                 else:
-                    trans.append(sample.original[start_offset:match.end()])
+                    trans.append(string[start_offset:match.end()])
                     start_offset = match.end()
 
-            trans.append(sample.original[start_offset:])
+            trans.append(string[start_offset:])
             results.append(''.join(trans))
 
-            sample.test_case = ''.join(results)
-            sample.category = "robustness"
-            sample.transformations = transformations
+            return ''.join(results), trans
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = add_ocr_typo(sample)
+            else:
+                results, transformations = add_ocr_typo(sample.original)
+                sample.test_case = ''.join(results)
+                sample.category = "robustness"
+                sample.transformations = transformations
 
         return sample_list
