@@ -36,7 +36,7 @@ class ModelFactory:
     A factory class for instantiating models.
     """
 
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp',
                          'nlu', 'transformers', 'spacy', 'langchain']
     SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
@@ -88,6 +88,12 @@ class ModelFactory:
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForQA(
                 hub, model, *args, **kwargs)
+        elif task in ('summarization'):
+             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
+             
+             self.model_class = model_handler.PretrainedModelForSummarization(
+                hub, model, *args, **kwargs)
+             
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(
                 model)
@@ -150,6 +156,11 @@ class ModelFactory:
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             model_class = modelhandler_module.PretrainedModelForQA.load_model(
                 hub, path, *args, **kwargs)
+        elif task in ('summarization'):
+            _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
+            model_class = modelhandler_module.PretrainedModelForSummarization.load_model(
+                hub, path, *args, **kwargs)
+             
         else:
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(
                 path)

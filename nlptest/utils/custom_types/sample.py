@@ -1,7 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
-
 from .helpers import Transformation, Span
 from .output import NEROutput, Result
 from .predictions import NERPrediction
@@ -100,6 +99,7 @@ class BaseSample(BaseModel):
 class NERSample(BaseSample):
     """"""
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
+    task: str = "ner"
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
 
     def __init__(self, **data):
@@ -266,6 +266,8 @@ class NERSample(BaseSample):
 class SequenceClassificationSample(BaseSample):
     """"""
 
+    task: str = "text-classification"
+
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -282,6 +284,8 @@ class MinScoreSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
+        if self.actual_results is None:
+            return False
         return self.actual_results.min_score >= self.expected_results.min_score
 
 
@@ -293,6 +297,8 @@ class MaxScoreSample(BaseSample):
 
     def is_pass(self) -> bool:
         """"""
+        if self.actual_results is None:
+            return False
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
@@ -361,24 +367,49 @@ class QASample(BaseQASample):
         return result
 
     def is_pass(self) -> bool:
-        """"""
-        from langchain.evaluation.qa import QAEvalChain
-        from ...nlptest import GLOBAL_MODEL as llm_model
 
-        eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
-        graded_outputs = eval_chain.evaluate(
-            [{
-                "question": self.original_question,
-                "answer": self.expected_results}],
-            [
-                {
+        from ...nlptest import GLOBAL_MODEL as llm_model
+        from langchain.evaluation.qa import QAEvalChain
+        from ...transform .utils import qa_prompt_template
+        from langchain.prompts import PromptTemplate
+
+        """"""
+        if (self.dataset_name) !='BoolQ' :
+            PROMPT = PromptTemplate(input_variables=["query", "answer", "result"], template=qa_prompt_template)
+            eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model, prompt=PROMPT)
+            inputs = [{
+                    "question": self.original_question,
+                    "answer": self.expected_results
+            }]
+
+            predictions = [{
                     "question": self.perturbed_question,
                     "text": self.actual_results
-                }
-            ], question_key="question", prediction_key="text")
+            }]
+
+            graded_outputs = eval_chain.evaluate(
+                inputs,
+                predictions,
+                question_key="question",
+                answer_key="answer",
+                prediction_key="text"
+            )
+        else:
+            eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
+            graded_outputs = eval_chain.evaluate(
+                [{
+                    "question": self.original_question,
+                    "answer": self.expected_results}],
+                [
+                    {
+                        "question": self.perturbed_question,
+                        "text": self.actual_results
+                    }
+                ], question_key="question", prediction_key="text")
+
+   
 
         return graded_outputs[0]['text'].strip() == 'CORRECT'
-
 
 class MinScoreQASample(QASample):
     """"""
@@ -400,7 +431,64 @@ class MaxScoreQASample(QASample):
     def is_pass(self) -> bool:
         """"""
         return self.actual_results.max_score <= self.expected_results.max_score
+    
 
+class SummarizationSample(BaseModel):
+    original: str = None
+    test_case: str = None
+    expected_results: Union[str, List] = None
+    actual_results: str = None
+    state: str = None
+    dataset_name: str = None
+    task: str = None
+    category: str = None
+    test_type: str = None
 
+    def __init__(self, **data):
+        super().__init__(**data)
 
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Returns the dict version of sample.
+        """
+        result = {
+            'category': self.category,
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case': self.test_case
+        }
 
+        if self.actual_results is not None:
+            bool_pass, eval_score = self._is_eval()
+            result.update({
+                'expected_result': self.expected_results,
+                'actual_result': self.actual_results,
+                'eval_score': eval_score,
+                'pass': bool_pass
+            })
+
+        return result
+    
+    def is_pass(self) :
+        """"""
+        return self._is_eval()[0]
+    
+    def _is_eval(self) :
+        """"""
+        
+        from ...nlptest import HARNESS_CONFIG as harness_config
+        from evaluate import load
+
+        config = harness_config['tests']['defaults']
+        metric_name = config.get('evaluation_metric', 'rouge')
+        metric = load(metric_name)
+        
+        predictions = [self.expected_results]
+        references = [self.actual_results]
+        if metric_name == 'rouge':
+            results = metric.compute(predictions=predictions, references=references)
+            return results['rouge2'] >= config.get('threshold', 0.50), results['rouge2']
+        elif metric_name == 'bertscore':
+            results = metric.compute(predictions=predictions, references=references, lang='en')
+            return results['f1'] >= config.get('threshold', 0.50), results['f1'], 
+        

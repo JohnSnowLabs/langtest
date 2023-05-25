@@ -6,6 +6,9 @@ This test provides a convenient way to convert numerical values in text into the
 
 **alias_name:** `number_to_word`
 
+<i class="fa fa-info-circle"></i>
+<em>To test QA models, we are using QAEval from Langchain where we need to use the model itself or other ML model for evaluation, which can make mistakes.</em>
+
 </div><div class="h3-box" markdown="1">
 
 #### Config
