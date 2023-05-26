@@ -665,13 +665,14 @@ class AddOcrTypo(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples.
         """
-        def add_ocr_typo(string):
+
+        def ocr_typo(regex, text):
             results = []
             trans = []
             transformations = []
             start_offset = 0
 
-            for match in re.finditer(r'[^,\s.!?]+', string):
+            for match in re.finditer(regex, text):
                 token = match.group()
                 corrected_token = None
 
@@ -683,7 +684,7 @@ class AddOcrTypo(BaseRobustness):
                     corrected_token = token
 
                 if corrected_token != token:
-                    trans.append(string[start_offset:match.start()])
+                    trans.append(text[start_offset:match.start()])
                     trans.append(corrected_token)
                     start_offset = match.end()
 
@@ -697,21 +698,21 @@ class AddOcrTypo(BaseRobustness):
                         )
                     )
                 else:
-                    trans.append(string[start_offset:match.end()])
+                    trans.append(sample.original[start_offset:match.end()])
                     start_offset = match.end()
 
-            trans.append(string[start_offset:])
+            trans.append(text[start_offset:])
             results.append(''.join(trans))
 
             return ''.join(results), trans
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx], _ = add_ocr_typo(sample)
+                sample_list[idx], _ = ocr_typo(r'[^,\s.!?]+', sample)
             else:
-                results, transformations = add_ocr_typo(sample.original)
-                sample.test_case = ''.join(results)
+                sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
                 sample.category = "robustness"
-                sample.transformations = transformations
 
         return sample_list

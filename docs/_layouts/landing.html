@@ -170,7 +170,7 @@ h.generate().run().report()
                       <div class="feature-item sponsor">
                         <a target="_blank" rel="nofollow" href="{{ child.image.url }}">
                           <figure class="mx-auto df" style="{{ child.image.style }}">
-                            <img src="{{ child.image.src }}" />
+                            <img {% if child.image.width %} width="{{ child.image.width }}" {% endif %} {% if child.image.height %} height="{{ child.image.height }}" {% endif %} src="{{ child.image.src }}" />
                           </figure>
                         </a>
                       </div>

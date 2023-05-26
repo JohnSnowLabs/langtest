@@ -1,5 +1,5 @@
 {% set name = "nlptest" %}
-{% set version = "1.2.0" %}
+{% set version = "1.3.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
-  sha256: 0c8f3e5a8ea8b2333e7b4f740219bdcc275daf02cae45ce7342c7b9b63a8e049
+  sha256: d4cfdc0b4c55c351b8bf752dc9ec2c6aaf09fd6ea1c58adee6f4931a54e0ca26
 
 build:
   number: 0
@@ -34,6 +34,9 @@ requirements:
     - evaluate
     - inflect
     - rouge-score
+    - typing-extensions <4.6.0
+    - sympy
+    - pillow
 
 test:
   imports:

@@ -7193,10 +7193,23 @@ def get_entity_representation_proportions(entity_representation):
 default_user_prompt = {
     "boolq": "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
     "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:",
-    "xsum": "You are an intelligent Context summarizer. Please read the following context  carefully. After understanding its content, create a concise summary, capturing the essential themes and key details."
+    "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit."
 }
 
-
+qa_prompt_template ="""
+You are a distinguished professor known for your expertise in meticulously grading students' answers to questions. Your extensive knowledge and experience make you the go-to authority in your field.
+You have been entrusted with the evaluation of the following question:
+{query}
+Presented below is the indisputably correct answer:
+{answer}
+Your responsibility is to thoroughly scrutinize the predicted answer provided by a student:
+{result}
+Remember, your response should consist of a single word only. You have two choices: "CORRECT" or "INCORRECT".
+When you are convinced that the answer is absolutely accurate, respond with "CORRECT". In the event that it is unequivocally incorrect, respond with "INCORRECT". It is essential that you strictly adhere to this guideline.
+Employ a meticulous, step-by-step approach to meticulously appraise the answer's factual integrity.
+Furthermore, you are expected to evaluate the degree of similarity between the correct answer and the predicted answer, quantifying how closely they align.
+Your comprehensive assessment will play a crucial role in determining the student's performance.
+"""
 
 ocr_typo_dict =    {'tle': 'the', 
                     'Tle': 'The', 
