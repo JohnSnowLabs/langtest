@@ -123,16 +123,18 @@ class DataFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
-            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
             'BoolQ-dev': script_dir[:-7]+'/BoolQ/dev.jsonl',
-            'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
-            'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
+            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
             'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
-            'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
+            'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
+            'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
             'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
+            'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
             'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
-            'XSum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
             'XSum-test' : script_dir[:-7]+'/Xsum/XSum-test.jsonl',
+            'XSum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
+            'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
+            'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
         }
         return datasets_info[dataset_name]
 
@@ -476,7 +478,7 @@ class JSONLDataset(_IDataset):
                     data.append(
                         QASample(
                             original_question = item['question'],
-                            original_context= item.get('passage', "-"),
+                            original_context= item.get('passage', item.get("context", "-")),
                             expected_results = expected_results,
                             task=self.task,
                             dataset_name=self._file_path.split('/')[-2]
