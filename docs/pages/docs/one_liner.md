@@ -166,7 +166,7 @@ from nlptest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task='summarization', model='gpt-3.5-turbo', hub='openai', data='XSum-test-tiny')
+h = Harness(task='summarization', model='text-davinci-002', hub='openai', data='XSum-test-tiny')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
