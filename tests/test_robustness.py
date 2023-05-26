@@ -11,6 +11,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
             SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
         ]
+        self.abbreviation_sentences = [
+            SequenceClassificationSample(original="Please respond as soon as possible for the party tonight"),
+            SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
+        ]                
         self.number_sentences = [
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
             SequenceClassificationSample(original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them")
@@ -157,3 +161,9 @@ class RobustnessTestCase(unittest.TestCase):
             [sample.test_case for sample in transformed_samples],
              expected_corrected_sentences
            )
+        
+    def test_abbreviation_insertion(self) -> None:
+        """"""
+        transformed_samples = AbbreviationInsertionEN.transform(self.sentences)
+        # Test that the transformed_samples sentences are in a list
+        self.assertIsInstance(transformed_samples, list)
