@@ -22,6 +22,7 @@ DEFAULT_PERTURBATIONS = [
     "replace_to_neutral_pronouns",
     "number_to_word"
     "add_ocr_typo"
+    "insert_abbreviation"
 ]
 
 PERTURB_CLASS_MAP = {
@@ -40,7 +41,8 @@ PERTURB_CLASS_MAP = {
     "replace_to_female_pronouns": "GenderPronounBias",
     "replace_to_neutral_pronouns": "GenderPronounBias",
     "number_to_word": "NumberToWord",
-    "add_ocr_typo": "AddOcrTypo"
+    "add_ocr_typo": "AddOcrTypo",
+    "insert_abbreviation" : "AbbreviationInsertionEN"
 }
 
 # @formatter:off
@@ -11948,6 +11950,7 @@ ocr_typo_dict =    {'tle': 'the',
                     'zſhe' : 'she',
                     'zſhould' : 'should',
                     'zſit' : 'sit'}
+
 abbreviation_dict = {
     "AFG": [
         "afghanistan"

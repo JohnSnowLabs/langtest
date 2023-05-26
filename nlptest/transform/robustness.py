@@ -838,7 +838,7 @@ class AddOcrTypo(BaseRobustness):
         return sample_list
     
 class AbbreviationInsertionEN(BaseRobustness):
-    alias_name = "abbreviation_insertion"
+    alias_name = "insert_abbreviation"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
