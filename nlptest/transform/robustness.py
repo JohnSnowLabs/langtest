@@ -694,7 +694,7 @@ class AddContraction(BaseRobustness):
             sample.category = "robustness"
         return sample_list
 
-class Dyslexia_Word_Swap(BaseRobustness):
+class DyslexiaWordSwap(BaseRobustness):
     alias_name = "dyslexia_word_swap"
     
     @staticmethod
@@ -739,6 +739,5 @@ class Dyslexia_Word_Swap(BaseRobustness):
                     sample.perturbed_context = generate(sample.original_context)
             else:
                 sample.test_case = generate(sample.original)
-                if sample.test_case==None: print(sample)
             sample.category = "robustness"
         return sample_list
