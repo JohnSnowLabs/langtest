@@ -138,7 +138,7 @@ class RobustnessTestCase(unittest.TestCase):
 
     def test_dyslexia_swap(self) -> None:
         """"""
-        transformed_samples = Dyslexia_Word_Swap.transform(self.sentences)
+        transformed_samples = DyslexiaWordSwap.transform(self.sentences)
         self.assertIsInstance(transformed_samples, list)
         self.assertListEqual(
             [sample.test_case for sample in transformed_samples],
