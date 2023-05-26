@@ -35,6 +35,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="This organization's art can win tough acts."),    
             SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
         ]
+        self.add_slangify = [
+            SequenceClassificationSample(original="Obviously, money are a great stimulus but people might go to crazy about it."),    
+            SequenceClassificationSample(original="It was totally excellent but useless bet.")                                                                                        
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -151,6 +155,19 @@ class RobustnessTestCase(unittest.TestCase):
         expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
                                         "Anyone c^an j0in o^ur communitv gardcn."]
         transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
+        
+        self.assertIsInstance(transformed_samples, list)
+        self.assertListEqual(
+            [sample.test_case for sample in transformed_samples],
+             expected_corrected_sentences
+           )
+        
+    def test_add_slangify_typo(self) -> None:
+        """"""
+        expected_corrected_sentences =["Obvs, readies are a beezer stimulus but peeps might go to barking about it.",
+                                        "It was totes smashing but crappy punt."]
+        transformed_samples = AddSlangifyTypo.transform(self.add_slangify)
+        self.assertIsInstance(transformed_samples, list)
         
         self.assertIsInstance(transformed_samples, list)
         self.assertListEqual(

@@ -6,9 +6,12 @@ from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives)
 from ..utils.custom_types import Sample, Span, Transformation
 from typing import List
+import itertools
+import random
+import spacy
 
 
 class BaseRobustness(ABC):
@@ -836,3 +839,96 @@ class AddOcrTypo(BaseRobustness):
                 sample.test_case = ocr_typo(r'[^,\s.!?]+', sample.original)
 
         return sample_list
+
+class AddSlangifyTypo(BaseRobustness):
+    alias_name = "add_slangify_typo"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by adding slang words.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+
+        def slangifyToken(token, modified_toks, Dictionary, probReplace, isCap, transformations, start_offset):
+            if token.lower() in Dictionary[0]:
+                repDecision = (random.uniform(0, 1) <= probReplace)
+
+                if repDecision:
+                    replacements = [i for i, x in enumerate(Dictionary[0]) if x == token.lower()]
+                    chosen_index = random.choice(replacements)
+                    temp = Dictionary[1][chosen_index]
+
+                    if isCap:
+                        temp = temp[0].upper() + temp[1:]
+
+                    if temp != token:
+                        original_span = Span(start=start_offset, end=start_offset + len(token), word=token)
+                        new_span = Span(start=start_offset, end=start_offset + len(temp), word=temp)
+                        transformations.append(Transformation(original_span=original_span, new_span=new_span, ignore=False))
+                        start_offset += len(temp) - len(token)
+
+                    modified_toks.append(temp)
+                    return start_offset, True
+
+            return start_offset, False
+
+        def slangify(text, probReplace=0.8, seed=42, max_outputs=1):
+            random.seed(seed)
+            perturbed_texts = []
+
+            slang_nouns = list(map(list, zip(*Slang_Nouns)))
+            slang_adverbs = list(map(list, zip(*Slang_Adverbs)))
+            slang_adjectives = list(map(list, zip(*Slang_Adjectives)))
+
+            for _ in itertools.repeat(None, max_outputs):
+                modified_toks = []
+                tokens = re.findall(r'\w+|[^\w\s]|[\s]+', text)  # Include punctuation marks and consecutive spaces as separate tokens
+                transformations = []
+                results = []
+                start_offset = 0
+
+                for token in tokens:
+                    isCap = token[0].isupper()
+
+                    start_offset, transformed = slangifyToken(token, modified_toks, slang_nouns, probReplace, isCap, transformations, start_offset)
+                    if not transformed:
+                        start_offset, transformed = slangifyToken(token, modified_toks, slang_adverbs, probReplace, isCap, transformations, start_offset)
+                        if not transformed:
+                            start_offset, transformed = slangifyToken(token, modified_toks, slang_adjectives, probReplace, isCap, transformations, start_offset)
+                            if not transformed:
+                                modified_toks.append(token)
+                                start_offset += len(token)
+
+                modified_toks = "".join(modified_toks)
+                results.append(modified_toks)
+                perturbed_text = ''.join(results)
+                sample.category = "robustness"
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+
+                perturbed_texts.append(perturbed_text)
+
+            return perturbed_texts
+
+        for sample in sample_list:
+            if sample.task == 'question-answering':
+                sample.perturbed_question = slangify(sample.original_question)[0]
+
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = slangify(sample.original_context)[0]
+
+            else:
+                perturbed_texts = slangify(sample.original)
+                if perturbed_texts:
+                    sample.test_case = perturbed_texts[0]
+                else:
+                    sample.test_case = sample.original  # Use the original sentence if no transformation was applied
+
+        return sample_list
+
