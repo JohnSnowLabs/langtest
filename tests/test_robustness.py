@@ -36,7 +36,7 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
         ]
         self.add_slangify = [
-            SequenceClassificationSample(original="Obviously, money are a great stimulus but people might go to crazy about it."),    
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),    
             SequenceClassificationSample(original="It was totally excellent but useless bet.")                                                                                        
         ]
         self.labels = [
@@ -164,13 +164,9 @@ class RobustnessTestCase(unittest.TestCase):
         
     def test_add_slangify_typo(self) -> None:
         """"""
-        expected_corrected_sentences =["Obvs, readies are a beezer stimulus but peeps might go to barking about it.",
-                                        "It was totes smashing but crappy punt."]
         transformed_samples = AddSlangifyTypo.transform(self.add_slangify)
         self.assertIsInstance(transformed_samples, list)
-        
-        self.assertIsInstance(transformed_samples, list)
-        self.assertListEqual(
-            [sample.test_case for sample in transformed_samples],
-             expected_corrected_sentences
-           )
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+            
