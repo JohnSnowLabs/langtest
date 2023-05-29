@@ -135,6 +135,8 @@ class DataFactory:
             'XSum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
             'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
             'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
+            'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
+            'HellaSwag-test-tiny' : script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
         }
         return datasets_info[dataset_name]
 
