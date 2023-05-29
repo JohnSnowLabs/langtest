@@ -843,6 +843,13 @@ class AddSlangifyTypo(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by adding slang words.
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
         def slangify_typo(text):
             slang_words = [
                 list(map(list, zip(*Slang_Nouns))),
@@ -876,15 +883,16 @@ class AddSlangifyTypo(BaseRobustness):
                             end_index = start_index + len(token)
                             modified_toks.append(temp)
                             new_word_length = len(temp)
-                            transformations.append(
-                                Transformation(
-                                    original_span=Span(start=start_index, end=end_index, word=token),
-                                    new_span=Span(start=start_index, end=start_index + new_word_length,
-                                                  word=temp),
-                                    ignore=False
+                            if sample.task in ("ner", "text-classification"):
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=start_index, end=end_index, word=token),
+                                        new_span=Span(start=start_index, end=start_index + new_word_length,
+                                                    word=temp),
+                                        ignore=False
+                                    )
                                 )
-                            )
-                            start_offset = end_index
+                                start_offset = end_index
                         else:
                             modified_toks.append(token)
 
@@ -895,22 +903,20 @@ class AddSlangifyTypo(BaseRobustness):
                     modified_toks.append(token)
 
             modified_text = "".join(modified_toks)
-            return modified_text, transformations
+            sample.category = "robustness"
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
+            return modified_text
 
         for sample in sample_list:
             if sample.task == 'question-answering':
-                perturbed_text, transformations = slangify_typo(sample.original_question)
-                sample.perturbed_question = perturbed_text
+                sample.perturbed_question = slangify_typo(sample.original_question)
 
-                if hasattr(sample, "perturbed_context"):
-                    perturbed_context, _ = slangify_typo(sample.original_context)
-                    sample.perturbed_context = perturbed_context
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = slangify_typo(sample.original_context)
 
             else:
-                perturbed_text, transformations = slangify_typo(sample.original)
-                sample.test_case = perturbed_text
+                sample.test_case = slangify_typo(sample.original)
 
-            sample.transformations = transformations
-            sample.category = "robustness"
 
         return sample_list
