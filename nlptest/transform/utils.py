@@ -22,7 +22,7 @@ DEFAULT_PERTURBATIONS = [
     "replace_to_neutral_pronouns",
     "number_to_word"
     "add_ocr_typo"
-    "insert_abbreviation"
+    "add_abbreviation"
 ]
 
 PERTURB_CLASS_MAP = {
@@ -42,7 +42,7 @@ PERTURB_CLASS_MAP = {
     "replace_to_neutral_pronouns": "GenderPronounBias",
     "number_to_word": "NumberToWord",
     "add_ocr_typo": "AddOcrTypo",
-    "insert_abbreviation": "AbbreviationInsertion"
+    "add_abbreviation": "AbbreviationInsertion"
 }
 
 # @formatter:off
