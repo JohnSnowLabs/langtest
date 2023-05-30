@@ -5,9 +5,7 @@ import asyncio
 import logging
 import evaluate
 from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
-from nlptest.utils.util_metrics import classification_report
-
-f1_metric = evaluate.load("f1")
+from nlptest.utils.util_metrics import classification_report, calculate_f1_score
 
 class BaseAccuracy(ABC):
     """
@@ -122,7 +120,7 @@ class MinPrecisionScore(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
         df_metrics = classification_report(
-            y_true, y_pred)
+            y_true, y_pred,zero_division=0)
         df_metrics.pop("macro avg")
        
 
@@ -204,7 +202,7 @@ class MinRecallScore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
 
         df_metrics = classification_report(
-            y_true, y_pred)
+            y_true, y_pred,zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -285,7 +283,7 @@ class MinF1Score(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
 
         df_metrics = classification_report(
-            y_true, y_pred)
+            y_true, y_pred,zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -354,7 +352,8 @@ class MinMicroF1Score(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
         
-        f1 = f1_metric.compute(predictions=y_pred, references=y_true, average="micro")
+        f1 = calculate_f1_score(y_true, y_pred, average="micro",zero_division=0)
+        
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
@@ -416,7 +415,7 @@ class MinMacroF1Score(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        f1 = f1_metric.compute(predictions=y_pred, references=y_true, average="macro")
+        f1 = calculate_f1_score(y_true, y_pred, average="macro",zero_division=0)
         
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
@@ -476,7 +475,7 @@ class MinWeightedF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        f1 = f1_metric.compute(predictions=y_pred, references=y_true, average="weighted")
+        f1 = calculate_f1_score(y_true, y_pred, average="weighted",zero_division=0)
         
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
