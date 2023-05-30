@@ -31,6 +31,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="He lives in the USA."),
             SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
+        self.dyslexia_sentences = [
+            SequenceClassificationSample(original="I live in London, United Kingdom cents 2019"),
+            SequenceClassificationSample(original="I canknot live in USA due too torandos caramelized")
+        ]
         self.ocr_sentences = [
             SequenceClassificationSample(original="This organization's art can win tough acts."),    
             SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
@@ -137,6 +141,15 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertEqual(
             [len(sample.transformations) for sample in transformed_samples],
             [0, 1]
+        )
+
+    def test_dyslexia_swap(self) -> None:
+        """"""
+        transformed_samples = DyslexiaWordSwap.transform(self.sentences)
+        self.assertIsInstance(transformed_samples, list)
+        self.assertListEqual(
+            [sample.test_case for sample in transformed_samples],
+            [sample.original for sample in self.dyslexia_sentences]
         )
         
     def test_number_to_word(self) -> None:

@@ -6943,6 +6943,54 @@ country_economic_dict = {
                             "Kosovo", "South Africa"]}
 
 
+#Dyslexia Map Words Dictionary
+
+dyslexia_map = {
+
+  "similar": 
+   { "of": "off",
+    "lose": "loose",
+    "than": "then",
+    "though": "through",
+    "well": "will",
+    "air": "hair"
+   },
+  "verbs": {
+    "would": "could",
+    "might": "would"
+  },
+  "homophones": {
+    "heir": "air",
+    "your": "you're",
+    "write": "right",
+    "four": "for",
+    "here": "hear",
+    "hi": "high",
+    "hour": "our",
+    "no": "know",
+    "height": "knight",
+    "knot": "not",
+    "see": "sea",
+    "since": "cents",
+    "some": "sum",
+    "ate": "eight",
+    "mate": "malt",
+    "merry": "marry",
+    "meet": "meat",
+    "son": "sun",
+    "sight": "site",
+    "one": "won",
+    "wait": "weight",
+    "wear": "where",
+    "bye": "by",
+    "by": "buy",
+    "to": "too",
+    "there": "their"
+  }
+}
+
+
+
 def get_substitution_names(values_list: List[List[str]]) -> List[str]:
     """ Helper function to get list of substitution names
 
