@@ -121,7 +121,7 @@ h.generate().run().report()
 
 ### One Liner - Question Answering
 
-Try out the nlptest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data_input).
+Try out the nlptest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -138,6 +138,35 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task='question-answering', model='gpt-3.5-turbo', hub='openai', data='BoolQ-test')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+### One Liner - Summarization
+
+Try out the nlptest library on the following default model-dataset combinations for Summarization. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data).
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">OpenAI</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+from nlptest import Harness
+
+# Set API keys
+os.environ['OPENAI_API_KEY'] = ''
+
+# Create a Harness object
+h = Harness(task='summarization', model='text-davinci-002', hub='openai', data='XSum-test-tiny')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
