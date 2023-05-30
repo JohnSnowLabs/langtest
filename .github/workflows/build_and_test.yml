@@ -43,7 +43,7 @@ jobs:
           scikit-learn transformers==4.28.1 torch sentencepiece \
           pydantic==1.10.6 spacy johnsnowlabs==4.3.5 \
           asyncio nest-asyncio jsonlines openai langchain evaluate \
-          inflect rouge_score 'typing-extension <4.6.0'
+          inflect rouge_score
 
       - name: Lint with flake8
         run: |
