@@ -55,16 +55,14 @@ class BaseBias(ABC):
             if sample.state != "done":      
                 if sample.task == "question-answering":
                     dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
                     sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
                 elif sample.task == "summarization":
                     dataset_name = sample.dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                    prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     sample.expected_results = model(text={'context':sample.original},
                                                      prompt={"template":prompt_template, 'input_variables':["context"]})
                     sample.actual_results = model(text={'context':sample.original},
