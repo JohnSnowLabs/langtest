@@ -4,10 +4,8 @@ from typing import Any, Dict, List
 import asyncio
 import logging
 import evaluate
-
-from sklearn.metrics import classification_report
-
 from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
+from nlptest.utils.util_metrics import classification_report
 
 f1_metric = evaluate.load("f1")
 
@@ -125,9 +123,8 @@ class MinPrecisionScore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
         df_metrics = classification_report(
             y_true, y_pred, output_dict=True, zero_division=0)
-        df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
-        df_metrics.pop("weighted avg")
+       
 
         for idx, sample in enumerate(sample_list):
             if progress:
@@ -208,9 +205,7 @@ class MinRecallScore(BaseAccuracy):
 
         df_metrics = classification_report(
             y_true, y_pred, output_dict=True, zero_division=0)
-        df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
-        df_metrics.pop("weighted avg")
 
         for idx, sample in enumerate(sample_list):
             if progress:
@@ -291,9 +286,7 @@ class MinF1Score(BaseAccuracy):
 
         df_metrics = classification_report(
             y_true, y_pred, output_dict=True, zero_division=0)
-        df_metrics.pop("accuracy")
         df_metrics.pop("macro avg")
-        df_metrics.pop("weighted avg")
 
         for idx, sample in enumerate(sample_list):
             if progress:
