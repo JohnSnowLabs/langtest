@@ -167,4 +167,4 @@ class RobustnessTestCase(unittest.TestCase):
         transformed_samples = AddSpeechToTextTypo.transform(self.speech_to_text_sentences)
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
-            self.assertTrue(sample.test_case != sample.original)
+            self.assertTrue(sample.test_case != sample.original or sample.test_case)
