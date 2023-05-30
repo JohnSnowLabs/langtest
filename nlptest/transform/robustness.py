@@ -1,7 +1,6 @@
 import asyncio
 import random
 import re
-import numpy as np
 from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
@@ -380,11 +379,10 @@ class SwapEntities(BaseRobustness):
 
             sent_tokens = sample.original.split(' ')
 
-            ent_start_pos = np.array(
-                [1 if label[0] == 'B' else 0 for label in sample_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            replace_idx = np.random.choice(ent_idx)
+            ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
+            ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
+    
+            replace_idx = random.choice(ent_idx)
             ent_type = sample_labels[replace_idx][2:]
             replace_idxs = [replace_idx]
             if replace_idx < len(sample_labels) - 1:
