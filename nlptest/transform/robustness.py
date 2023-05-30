@@ -513,8 +513,13 @@ class AddContext(BaseRobustness):
             if isinstance(sample, str):
                 sample_list[idx], _ = context(sample, strategy)
             else:
-                sample.test_case, sample.transformations = context(
-                    sample.original, strategy)
+                if sample.task in ("ner", "text-classification"):
+                    sample.test_case, sample.transformations = context(
+                        sample.original, strategy)
+                else:
+                    sample.test_case = context(
+                        sample.original, strategy)[0]
+                    
                 sample.category = "robustness"
         return sample_list
 
