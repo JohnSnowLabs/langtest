@@ -2,12 +2,12 @@ import asyncio
 import random
 import re
 import numpy as np
-from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict, abbreviation_dict)
 from ..utils.custom_types import Sample, Span, Transformation
+from ..utils.number_to_word import engine
 from typing import List
 
 
@@ -709,7 +709,7 @@ class AddContraction(BaseRobustness):
         
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
-    infEng = engine()
+    num = engine()
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -730,7 +730,7 @@ class NumberToWord(BaseRobustness):
                 
                 for match in re.finditer(regex, text):
                     token = match.group()
-                    words = NumberToWord.infEng.number_to_words(token, wantlist=True)
+                    words = NumberToWord.num.number_to_words(token, wantlist=True)
                     token_len = len(token) - 1
                     new_words_len = len(' '.join(words)) - 1
                     trans.append(text[start_offset:match.start()])
