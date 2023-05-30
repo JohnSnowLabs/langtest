@@ -41,7 +41,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest numpy pandas \
           scikit-learn transformers==4.28.1 torch sentencepiece \
-          pydantic==1.10.6 spacy johnsnowlabs==4.3.5 plotly \
+          pydantic==1.10.6 spacy johnsnowlabs==4.3.5 \
           asyncio nest-asyncio jsonlines openai langchain evaluate \
           inflect rouge_score typing-extensions < 4.6.0
 
