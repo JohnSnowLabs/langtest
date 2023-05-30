@@ -6,7 +6,7 @@ import pandas as pd
 from nlptest.modelhandler.modelhandler import ModelFactory
 
 from nlptest.utils.custom_types import MaxScoreOutput, MaxScoreSample, MinScoreOutput, MinScoreSample, Sample
-f1_metric = evaluate.load("f1")
+from nlptest.utils.util_metrics import calculate_f1_score
 
 class BaseFairness(ABC):
     """
@@ -127,7 +127,7 @@ class MinGenderF1Score(BaseFairness):
         for sample in sample_list:
             data = gendered_data[sample.test_case]
             if len(data[0]) > 0:
-                macro_f1_score = f1_metric.compute(predictions=data[1], references=[x[0] for x in data[0]], average="macro")  
+                macro_f1_score = calculate_f1_score([x[0] for x in data[0]], data[1], average="macro", zero_division=0)  
             else:
                 macro_f1_score = 1
 
@@ -206,7 +206,7 @@ class MaxGenderF1Score(BaseFairness):
         for sample in sample_list:
             data = gendered_data[sample.test_case]
             if len(data[0]) > 0:
-                macro_f1_score = f1_metric.compute(predictions=data[1], references=[x[0] for x in data[0]], average="macro")
+                macro_f1_score = calculate_f1_score([x[0] for x in data[0]], data[1], average="macro", zero_division=0)
             else:
                 macro_f1_score = 1
 
@@ -290,7 +290,7 @@ class MinGenderRougeScore(BaseFairness):
                     em = evaluate.load("rouge")
                     macro_f1_score = em.compute(references=data[0], predictions=data[1])[sample.test_type.split('_')[2]]
                 else:
-                    macro_f1_score = f1_metric.compute(predictions=data[1], references=[x[0] for x in data[0]], average="macro")
+                    macro_f1_score = calculate_f1_score([x[0] for x in data[0]], data[1], average="macro", zero_division=0)
             else:
                 macro_f1_score = 1
 
@@ -373,7 +373,7 @@ class MaxGenderRougeScore(BaseFairness):
                     em = evaluate.load("rouge")
                     rouge_score = em.compute(references=data[0], predictions=data[1])[sample.test_type.split('_')[2]]
                 else:
-                    rouge_score = f1_metric.compute(predictions=data[1], references=[x[0] for x in data[0]], average="macro")
+                    rouge_score = calculate_f1_score([x[0] for x in data[0]], data[1], average="macro", zero_division=0)
             else:
                 rouge_score = 1
 
