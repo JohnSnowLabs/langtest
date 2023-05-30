@@ -122,7 +122,7 @@ class MinPrecisionScore(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
         df_metrics = classification_report(
-            y_true, y_pred, output_dict=True, zero_division=0)
+            y_true, y_pred)
         df_metrics.pop("macro avg")
        
 
@@ -204,7 +204,7 @@ class MinRecallScore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
 
         df_metrics = classification_report(
-            y_true, y_pred, output_dict=True, zero_division=0)
+            y_true, y_pred)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -285,7 +285,7 @@ class MinF1Score(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
 
         df_metrics = classification_report(
-            y_true, y_pred, output_dict=True, zero_division=0)
+            y_true, y_pred)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
