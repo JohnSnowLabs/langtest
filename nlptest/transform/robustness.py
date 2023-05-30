@@ -754,13 +754,13 @@ class NumberToWord(BaseRobustness):
         
         for sample in sample_list:     
             if sample.task =='question-answering':
-                 sample.perturbed_question = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original_question)
+                 sample.perturbed_question = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original_question)
                  
                  if "perturbed_context" in sample.__annotations__:
-                         sample.perturbed_context = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original_context)
+                         sample.perturbed_context = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original_context)
                                 
             else:           
-                sample.test_case = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original)
+                sample.test_case = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
            
                 
         return sample_list
