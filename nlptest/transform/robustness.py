@@ -421,8 +421,8 @@ class ConvertAccent(BaseRobustness):
                         span = re.search(token, replaced_string)
                         replaced_string = re.sub(
                             token, new_token, replaced_string, count=1)
-                        if sample.task in ("ner", "text-classification"):
-                            transformations.append(
+                        
+                        transformations.append(
                                 Transformation(
                                     original_span=Span(
                                         start=span.start(), end=span.end(), word=token),
@@ -442,8 +442,8 @@ class ConvertAccent(BaseRobustness):
                     sample.test_case, sample.transformations = convert_accent(
                         sample.original, accent_map)
                 else:
-                    sample.test_case = convert_accent(
-                        sample.original, accent_map)[0]
+                    sample.test_case, _ = convert_accent(
+                        sample.original, accent_map)
                 sample.category = "robustness"
 
         return sample_list
@@ -513,12 +513,13 @@ class AddContext(BaseRobustness):
             if isinstance(sample, str):
                 sample_list[idx], _ = context(sample, strategy)
             else:
+                print(sample)
                 if sample.task in ("ner", "text-classification"):
                     sample.test_case, sample.transformations = context(
                         sample.original, strategy)
                 else:
-                    sample.test_case = context(
-                        sample.original, strategy)[0]
+                    sample.test_case, _ = context(
+                        sample.original, strategy)
                     
                 sample.category = "robustness"
         return sample_list
