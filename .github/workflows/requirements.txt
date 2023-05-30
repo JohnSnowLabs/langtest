@@ -7,7 +7,6 @@ sentencepiece
 pydantic==1.10.6
 spacy
 johnsnowlabs==4.3.5
-plotly
 asyncio
 nest-asyncio
 jsonlines
