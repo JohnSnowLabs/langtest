@@ -6,9 +6,9 @@ from .output import NEROutput, Result
 from .predictions import NERPrediction
 
 default_user_prompt = {
-    "boolq": "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
-    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:",
-    "xsum": "You are an intelligent Context summarizer. Please read the following context  carefully. After understanding its content, create a concise summary, capturing the essential themes and key details."
+    "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
+    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Context: {context}\n Question: {question}\n Answer:",
+    "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: "
 }
 
 
@@ -348,8 +348,7 @@ class BaseQASample(BaseModel):
     
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split('-')[0].lower()
-        user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-        prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+        prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
 
         self.expected_results = model(text={'context':self.original_context, 'question': self.original_question},
                                                      prompt={"template":prompt_template, 'input_variables':["context", "question"]})
@@ -525,8 +524,7 @@ class SummarizationSample(BaseModel):
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split('-')[0].lower()
-        user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-        prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+        prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
         self.expected_results = model(text={'context':self.original},
                                             prompt={"template":prompt_template, 'input_variables':["context"]})
         self.actual_results = model(text={'context':self.test_case},

@@ -89,6 +89,7 @@ class BaseRobustness(ABC):
         return created_task
 
 
+
 class UpperCase(BaseRobustness):
     alias_name = "uppercase"
 

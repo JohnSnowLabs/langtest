@@ -650,8 +650,7 @@ class FairnessTestFactory(ITests):
                 
                 elif data[0].task == "question-answering":
                     dataset_name = data[0].dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     
                     if data[0].expected_results is None:
                         raise RuntimeError(f'The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.')
@@ -662,8 +661,7 @@ class FairnessTestFactory(ITests):
 
                 elif data[0].task == "summarization":
                     dataset_name = data[0].dataset_name.split('-')[0].lower()
-                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                    prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                     if data[0].expected_results is None:
                         raise RuntimeError(f'The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests.')
                         
@@ -818,8 +816,7 @@ class AccuracyTestFactory(ITests):
         
         elif raw_data[0].task=="question-answering":
             dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
-            user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-            prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+            prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
             
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
@@ -828,8 +825,7 @@ class AccuracyTestFactory(ITests):
         
         elif raw_data[0].task=="summarization":
             dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
-            user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-            prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+            prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
                         
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
