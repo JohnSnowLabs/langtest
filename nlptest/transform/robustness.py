@@ -731,15 +731,14 @@ class NumberToWord(BaseRobustness):
                 for match in re.finditer(regex, text):
                     token = match.group()
                     words = NumberToWord.num.number_to_words(token, wantlist=True)
-                    token_len = len(token) - 1
-                    new_words_len = len(' '.join(words)) - 1
+                    new_words_len = len(' '.join(words))
                     trans.append(text[start_offset:match.start()])
                     trans.append(' '.join(words))
                     start_offset = match.end()
                     if sample.task in ("ner", "text-classification"):
                         transformations.append(
                             Transformation(
-                                original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                                original_span=Span(start=match.start(), end=match.end(), word=token),
                                 new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
                                 ignore=False
                             )
