@@ -1,9 +1,16 @@
 import importlib
-from abc import ABC, abstractmethod
-from typing import List, Union
 import langchain
-
+from typing import List, Union
+from abc import ABC, abstractmethod
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+
+RENAME_HUBS = {
+    'azureopenai': 'azure-openai',
+    'huggingfacehub': 'huggingface-inference-api'
+}
+
+LANGCHAIN_HUBS = {RENAME_HUBS.get(hub.lower(), hub.lower()) if hub.lower(
+) in RENAME_HUBS else hub.lower(): hub for hub in langchain.llms.__all__}
 
 
 class _ModelHandler(ABC):
@@ -29,10 +36,11 @@ class ModelFactory:
     A factory class for instantiating models.
     """
 
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp',
                          'nlu', 'transformers', 'spacy', 'langchain']
-    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface', 'openai']
+    SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
+    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
 
     def __init__(
             self,
@@ -80,6 +88,12 @@ class ModelFactory:
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForQA(
                 hub, model, *args, **kwargs)
+        elif task in ('summarization'):
+             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
+             
+             self.model_class = model_handler.PretrainedModelForSummarization(
+                hub, model, *args, **kwargs)
+             
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(
                 model)
@@ -131,7 +145,7 @@ class ModelFactory:
                 raise ModuleNotFoundError("""Please install the spacy library by calling `pip install spacy`.
                 For in-depth instructions, head-over to https://spacy.io/usage""")
 
-        elif hub.lower() in (hub.lower() for hub in langchain.llms.__all__):
+        elif hub.lower() in LANGCHAIN_HUBS:
             modelhandler_module = importlib.import_module(
                 f'nlptest.modelhandler.llm_modelhandler')
 
@@ -142,6 +156,11 @@ class ModelFactory:
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             model_class = modelhandler_module.PretrainedModelForQA.load_model(
                 hub, path, *args, **kwargs)
+        elif task in ('summarization'):
+            _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
+            model_class = modelhandler_module.PretrainedModelForSummarization.load_model(
+                hub, path, *args, **kwargs)
+             
         else:
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(
                 path)
@@ -154,7 +173,7 @@ class ModelFactory:
             **kwargs
         )
 
-    def predict(self, text: str, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
+    def predict(self, text: Union[str, dict], **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
         """Perform predictions on input text.
 
         Args:
@@ -177,7 +196,7 @@ class ModelFactory:
         """
         return self.model_class.predict_raw(text)
 
-    def __call__(self, text: str, *args, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
+    def __call__(self, text: Union[str, dict], *args, **kwargs) -> Union[NEROutput, SequenceClassificationOutput]:
         """Alias of the 'predict' method
 
         Args:

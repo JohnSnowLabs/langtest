@@ -7,7 +7,7 @@ from typing import Dict, List
 
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
-    SequenceClassificationSample, SequenceLabel, QASample
+    SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
 
 
 class _IDataset(ABC):
@@ -85,6 +85,31 @@ class DataFactory:
                 path to save the data to
         """
         self.init_cls.export_data(data, output_path)
+        
+    @classmethod   
+    def load_curated_bias(cls, tests_to_filter, file_path)-> List[Sample]:
+        data = []
+        path = os.path.abspath(__file__)
+        if file_path=='BoolQ':
+            bias_jsonl = os.path.dirname(path)[: -7]+"/BoolQ/bias.jsonl"
+            with jsonlines.open(bias_jsonl) as reader:
+                for item in reader:
+                    if item['test_type'] in tests_to_filter:
+                        data.append(
+                            QASample(original_question=item['original_question'], original_context=item.get(
+                                'original_context', "-"),perturbed_question=item['perturbed_question'], perturbed_context=item.get(
+                                'perturbed_context', "-"), task="question-answering", test_type = item['test_type'], category=item['category'], dataset_name="BoolQ")
+                        )
+        elif file_path=='XSum':
+            bias_jsonl = os.path.dirname(path)[: -7]+"/Xsum/bias.jsonl"
+            with jsonlines.open(bias_jsonl) as reader:
+                for item in reader:
+                    if item['test_type'] in tests_to_filter:           
+                        data.append(
+                            SummarizationSample(original=item['original'], test_case=item['test_case'], task="summarization", test_type = item['test_type'], category=item['category'], dataset_name="XSum"))
+            
+
+        return data
 
     @classmethod
     def _load_dataset(cls, dataset_name: str):
@@ -98,12 +123,16 @@ class DataFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
+            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
+            'BoolQ-dev': script_dir[:-7]+'/BoolQ/dev.jsonl',
             'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
             'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
             'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
             'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
             'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
-            'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl'
+            'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
+            'XSum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
+            'XSum-test' : script_dir[:-7]+'/Xsum/XSum-test.jsonl',
         }
         return datasets_info[dataset_name]
 
@@ -440,11 +469,32 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                data.append(
-                    QASample(original_question=item['question'], original_context=item.get(
-                        'passage', "-"), task=self.task, dataset_name=self._file_path.split('/')[-2])
-                )
+                if (self.task=='question-answering'):
+                    expected_results = item.get("answer_and_def_correct_predictions", item.get("answer", None))
+                    if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
 
+                    data.append(
+                        QASample(
+                            original_question = item['question'],
+                            original_context= item.get('passage', "-"),
+                            expected_results = expected_results,
+                            task=self.task,
+                            dataset_name=self._file_path.split('/')[-2]
+                            )
+                    )
+
+                elif (self.task=='summarization'):
+                    expected_results = item.get("summary",None)
+                    if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
+                    data.append(
+                    SummarizationSample(
+                        original = item['document'],
+                        expected_results=expected_results,
+                        task=self.task,
+                        dataset_name=self._file_path.split('/')[-2]
+                        )
+                )
+                
         return data
 
     def export_data(self, data: List[Sample], output_path: str):

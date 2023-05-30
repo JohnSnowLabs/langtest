@@ -3,13 +3,13 @@ import asyncio
 import random
 import re
 import numpy as np
+from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
-
 from nlptest.modelhandler.modelhandler import ModelFactory
-
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt, dyslexia_map)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt, dyslexia_map, ocr_typo_dict)
 from ..utils.custom_types import Sample, Span, Transformation
+from typing import List
 
 
 class BaseRobustness(ABC):
@@ -23,6 +23,7 @@ class BaseRobustness(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification", "question-answering","summarization"]
 
     @staticmethod
     @abstractmethod
@@ -57,14 +58,23 @@ class BaseRobustness(ABC):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                if 'original_context' in sample.__annotations__:
+                if sample.task == 'question-answering':
                     dataset_name = sample.dataset_name.split('-')[0].lower()
                     user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
-                    original_prompt = f"Context: {sample.original_context}\nQuestion: {sample.original_question}\n {user_prompt}"
-                    perturbed_prompt = f"Context: {sample.perturbed_context}\nQuestion: {sample.perturbed_question}\n {user_prompt}"
-                    sample.expected_results = model(original_prompt)
-                    sample.actual_results = model(perturbed_prompt)
+                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                    sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
 
+                elif sample.task == 'summarization':
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                    sample.expected_results = model(text={'context':sample.original},
+                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
+                    sample.actual_results = model(text={'context':sample.original},
+                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
                 else:
                     sample.expected_results = model(sample.original)
                     sample.actual_results = model(sample.test_case)
@@ -104,7 +114,7 @@ class UpperCase(BaseRobustness):
             List of sentences that uppercase robustness is applied.
         """
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = sample.original_question.upper()
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = sample.original_context.upper()
@@ -126,7 +136,7 @@ class LowerCase(BaseRobustness):
             List of sentences that lowercase robustness is applied.
         """
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = sample.original_question.lower()
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = sample.original_context.lower()
@@ -134,7 +144,6 @@ class LowerCase(BaseRobustness):
                 sample.test_case = sample.original.lower()
             sample.category = "robustness"
         return sample_list
-
 
 class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
@@ -148,7 +157,7 @@ class TitleCase(BaseRobustness):
             List of sentences that titlecase robustness is applied.
         """
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = sample.original_question.title()
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = sample.original_context.title()
@@ -182,7 +191,7 @@ class AddPunctuation(BaseRobustness):
                 return text
                
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                  sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
                  
                  if "perturbed_context" in sample.__annotations__:
@@ -192,21 +201,22 @@ class AddPunctuation(BaseRobustness):
                     if sample.original[-1] not in whitelist:
                         chosen_punc = random.choice(whitelist)
                         sample.test_case = sample.original + chosen_punc
-                        sample.transformations = [
-                            Transformation(
-                                original_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.original),
-                                    word=""
-                                ),
-                                new_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.test_case),
-                                    word=chosen_punc
-                                ),
-                                ignore=True
-                            )
-                        ]
+                        if sample.task in ("ner", "text-classification"):
+                            sample.transformations = [
+                                Transformation(
+                                    original_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.original),
+                                        word=""
+                                    ),
+                                    new_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.test_case),
+                                        word=chosen_punc
+                                    ),
+                                    ignore=True
+                                )
+                            ]
                     else:
                         sample.test_case = sample.original
                         
@@ -237,7 +247,7 @@ class StripPunctuation(BaseRobustness):
                 return text
         
         for sample in sample_list:
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                  sample.perturbed_question = check_whitelist(sample.original_question, whitelist)
                  
                  if "perturbed_context" in sample.__annotations__:
@@ -247,27 +257,27 @@ class StripPunctuation(BaseRobustness):
            
                 if sample.original[-1] in whitelist:
                     sample.test_case = sample.original[:-1]
-                    sample.transformations = [
-                        Transformation(
-                            original_span=Span(
-                                start=len(sample.original) - 1,
-                                end=len(sample.original),
-                                word=sample.original[-1:]
-                            ),
-                            new_span=Span(
-                                start=len(sample.test_case),
-                                end=len(sample.test_case),
-                                word=""
-                            ),
-                            ignore=True
-                        )
-                    ]
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=len(sample.original) - 1,
+                                    end=len(sample.original),
+                                    word=sample.original[-1:]
+                                ),
+                                new_span=Span(
+                                    start=len(sample.test_case),
+                                    end=len(sample.test_case),
+                                    word=""
+                                ),
+                                ignore=True
+                            )
+                        ]
                 else:
                     sample.test_case = sample.original
 
             sample.category = "robustness"
         return sample_list
-
 
 class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
@@ -321,7 +331,7 @@ class AddTypo(BaseRobustness):
         for sample in sample_list:
             sample.category = "robustness"
 
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = keyboard_typo(sample.original_question)
                 if "perturbed_context" in sample.__annotations__:
                         sample.perturbed_context = keyboard_typo(sample.original_context)
@@ -332,9 +342,9 @@ class AddTypo(BaseRobustness):
 
         return sample_list
 
-
 class SwapEntities(BaseRobustness):
     alias_name = 'swap_entities'
+    supported_tasks = ["ner"]
 
     @staticmethod
     def transform(
@@ -395,23 +405,23 @@ class SwapEntities(BaseRobustness):
 
             sample.test_case = sample.original.replace(
                 replace_token, chosen_ent)
-            sample.transformations = [
-                Transformation(
-                    original_span=Span(
-                        start=replace_token_pos.start(),
-                        end=replace_token_pos.end(),
-                        word=replace_token
-                    ),
-                    new_span=Span(
-                        start=replace_token_pos.start(),
-                        end=replace_token_pos.start() + len(chosen_ent),
-                        word=chosen_ent
-                    ),
-                    ignore=False
-                )
-            ]
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = [
+                    Transformation(
+                        original_span=Span(
+                            start=replace_token_pos.start(),
+                            end=replace_token_pos.end(),
+                            word=replace_token
+                        ),
+                        new_span=Span(
+                            start=replace_token_pos.start(),
+                            end=replace_token_pos.start() + len(chosen_ent),
+                            word=chosen_ent
+                        ),
+                        ignore=False
+                    )
+                ]
         return sample_list
-
 
 class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
@@ -440,29 +450,32 @@ class ConvertAccent(BaseRobustness):
                         span = re.search(token, replaced_string)
                         replaced_string = re.sub(
                             token, new_token, replaced_string, count=1)
-                        transformations.append(
-                            Transformation(
-                                original_span=Span(
-                                    start=span.start(), end=span.end(), word=token),
-                                new_span=Span(
-                                    start=span.start(), end=span.end() + diff_len, word=new_token),
-                                ignore=False
+                        if sample.task in ("ner", "text-classification"):
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(
+                                        start=span.start(), end=span.end(), word=token),
+                                    new_span=Span(
+                                        start=span.start(), end=span.end() + diff_len, word=new_token),
+                                    ignore=False
+                                )
                             )
-                        )
             return replaced_string, transformations
 
         for sample in sample_list:
             
-            if 'task' in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question, _ = convert_accent(sample.original_question, accent_map)
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context, _ = convert_accent(sample.original_context, accent_map)
             else:
-                sample.test_case, sample.transformations = convert_accent(sample.original, accent_map)
+                if sample.task in ("ner", "text-classification"):
+                    sample.test_case, sample.transformations = convert_accent(sample.original, accent_map)
+                else:
+                    sample.test_case = convert_accent(sample.original, accent_map)[0]
             sample.category = "robustness"
 
         return sample_list
-
 
 class AddContext(BaseRobustness):
     alias_name = 'add_context'
@@ -496,7 +509,7 @@ class AddContext(BaseRobustness):
             transformations = []
             if strategy == "start" or strategy == "combined":
                 
-                if "task" in sample.__annotations__:
+                if sample.task =='question-answering':
                     
                      add_tokens = random.choice(starting_context)
                      add_string = " ".join(add_tokens) if isinstance(
@@ -517,16 +530,17 @@ class AddContext(BaseRobustness):
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
                     string = add_string + ' ' + sample.original
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(start=0, end=0, word=""),
-                            new_span=Span(start=0, end=len(
-                                add_string) + 1, word=add_string),
-                            ignore=True
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=0, end=0, word=""),
+                                new_span=Span(start=0, end=len(
+                                    add_string) + 1, word=add_string),
+                                ignore=True
+                            )
                         )
-                    )
             else:
-                if  "task" in sample.__annotations__:
+                if sample.task =='question-answering':
                     string_question = sample.original_question
                     if "perturbed_context" in sample.__annotations__:
                         string_context = sample.original_context
@@ -537,7 +551,7 @@ class AddContext(BaseRobustness):
             if strategy == "end" or strategy == "combined":
                 
                 
-                if "task" in sample.__annotations__:
+                if sample.task =='question-answering':
                     
                      add_tokens = random.choice(ending_context)
                      add_string = " ".join(add_tokens) if isinstance(
@@ -594,29 +608,29 @@ class AddContext(BaseRobustness):
                         to_start = from_start
                         to_end = to_start + len(add_string) + 1
                         string = string[:-1] + add_string + " " + string[-1]
-
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=from_start, end=from_end, word=""),
-                            new_span=Span(start=to_start, end=to_end,
-                                          word=string[to_start:to_end]),
-                            ignore=True
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=from_start, end=from_end, word=""),
+                                new_span=Span(start=to_start, end=to_end,
+                                            word=string[to_start:to_end]),
+                                ignore=True
+                            )
                         )
-                    )
              
 
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                 sample.perturbed_question = string_question
                 if "perturbed_context" in sample.__annotations__:
                     sample.perturbed_context = string_context
             else:
                 sample.test_case = string
-                sample.transformations = transformations
-                
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                                  
             sample.category = "robustness"
         return sample_list
-
 
 class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'
@@ -659,14 +673,13 @@ class AddContraction(BaseRobustness):
 
         for sample in sample_list:
             
-            if "task" in sample.__annotations__:
+            if sample.task =='question-answering':
                  sample.perturbed_question = search_contraction(sample.original_question)
                  
                  if "perturbed_context" in sample.__annotations__:
                          sample.perturbed_context = search_contraction(sample.original_context)
             
             else:
-        
                     replaced_string = sample.original
                     transformations = []
 
@@ -680,17 +693,19 @@ class AddContraction(BaseRobustness):
                             diff_len = len(new_string) - len(search.group())
                             replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                                      flags=re.IGNORECASE | re.DOTALL)
-                            transformations.append(
-                                Transformation(
-                                    original_span=Span(start=search.start(
-                                    ), end=search.end(), word=search.group()),
-                                    new_span=Span(start=search.start(
-                                    ), end=search.end() + diff_len, word=new_string),
-                                    ignore=False
+                            if sample.task in ("ner", "text-classification"):
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=search.start(
+                                        ), end=search.end(), word=search.group()),
+                                        new_span=Span(start=search.start(
+                                        ), end=search.end() + diff_len, word=new_string),
+                                        ignore=False
+                                    )
                                 )
-                            )
                     sample.test_case = replaced_string
-                    sample.transformations = transformations
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
             sample.category = "robustness"
         return sample_list
 
@@ -740,4 +755,133 @@ class DyslexiaWordSwap(BaseRobustness):
             else:
                 sample.test_case = generate(sample.original)
             sample.category = "robustness"
+        return sample_list
+        
+class NumberToWord(BaseRobustness):
+    alias_name = "number_to_word"
+    infEng = engine()
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transform a list of strings to their equivalent verbal representation
+        of numbers present in the string.
+        Args:
+            sample_list: List of sentences to apply robustness.
+        Returns:
+            List of sentences that have numbers in their verbal representation.
+        """
+        
+        def convert_numbers(regex,text):
+                results = []
+                trans = []
+                transformations = []
+                start_offset = 0
+                
+                for match in re.finditer(regex, text):
+                    token = match.group()
+                    words = NumberToWord.infEng.number_to_words(token, wantlist=True)
+                    token_len = len(token) - 1
+                    new_words_len = len(' '.join(words)) - 1
+                    trans.append(text[start_offset:match.start()])
+                    trans.append(' '.join(words))
+                    start_offset = match.end()
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=match.start(), end=match.end()-1, word=token),
+                                new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
+                                ignore=False
+                            )
+                        )
+                
+                trans.append(text[start_offset:])
+                results.append(''.join(trans))
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+                
+                return ''.join(results)
+        
+        for sample in sample_list:     
+            if sample.task =='question-answering':
+                 sample.perturbed_question = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original_question)
+                 
+                 if "perturbed_context" in sample.__annotations__:
+                         sample.perturbed_context = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original_context)
+                                
+            else:           
+                sample.test_case = convert_numbers(r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original)
+           
+                
+        return sample_list
+
+
+class AddOcrTypo(BaseRobustness):
+    alias_name = "add_ocr_typo"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by introducing OCR typos.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+
+        def ocr_typo(regex, text):
+            results = []
+            trans = []
+            transformations = []
+            start_offset = 0
+
+            for match in re.finditer(regex, text):
+                token = match.group()
+                corrected_token = None
+
+                possible_corrections = [key for key, value in ocr_typo_dict.items() if value == token]
+                if possible_corrections:
+                    corrected_token = random.choice(possible_corrections)
+                else:
+                    corrected_token = token
+
+                if corrected_token != token:
+                    trans.append(text[start_offset:match.start()])
+                    trans.append(corrected_token)
+                    start_offset = match.end()
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=match.start(), end=match.end(), word=token),
+                                new_span=Span(start=match.start(), end=match.start() + len(corrected_token),
+                                            word=corrected_token),
+                                ignore=False
+                            )
+                        )
+                else:
+                    trans.append(text[start_offset:match.end()])
+                    start_offset = match.end()
+
+            trans.append(text[start_offset:])
+            results.append(''.join(trans))
+            perturbed_text = ''.join(results)
+            sample.category = "robustness"
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
+
+            return perturbed_text
+
+        for sample in sample_list:
+            if sample.task == 'question-answering':
+                sample.perturbed_question = ocr_typo(r'[^,\s.!?]+', sample.original_question)
+
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = ocr_typo(r'[^,\s.!?]+', sample.original_context)
+
+            else:
+                sample.test_case = ocr_typo(r'[^,\s.!?]+', sample.original)
+
         return sample_list

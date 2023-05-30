@@ -7,6 +7,8 @@ This test checks the recall score for each label. Test is passed if the recall s
 
 **alias_name:** `min_recall_score`
 
+**supported tasks:** `ner`, `text-classification`
+
 </div><div class="h3-box" markdown="1">
 
 #### Config

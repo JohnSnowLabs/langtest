@@ -36,10 +36,75 @@ data:
             src: assets/images/home/open_source.svg
          excerpt: The full code base is open under the Apache 2.0 license, designed for easy extension and AI community collaboration  
 
+           
    - title: Fully Integrated Workflow
      topimage: 
       - image:
           src: assets/images/home/nlptest_flow_graphic.png
+        
+   - trusted: yes
+     featureitem: sponsor
+     children:
+      - title:
+        image:
+          src: assets/images/home/jsl_logo.svg
+          url: https://www.johnsnowlabs.com/
+      - title:
+        image:
+          src: assets/images/home/hf-logo-with-title.svg 
+          url: https://huggingface.co/
+      - title:
+        image:
+          src: assets/images/home/spacy_logo.svg
+          url: https://spacy.io/
+          style: "padding: 41px;"
+          width: "116px"
+          height: "84px"
+      - title:
+        image:
+          src: assets/images/home/openai_logo.svg
+          url: https://openai.com/
+          style: "padding: 21px;"
+      - title:
+        image:
+          src: assets/images/home/cohere_logo.svg
+          url: https://cohere.com/
+          style: "padding: 10px;"
+      - title:
+        image:
+          src: https://assets-global.website-files.com/60fd4503684b466578c0d307/60ff0505b0dbe005faac0c84_AI21%20Logo.svg
+          url: https://www.ai21.com/
+      - title:
+        image:
+          src: assets/images/home/microsoft_azure_logo.svg
+          url: https://azure.microsoft.com/en-us/products/cognitive-services/openai-service
+          style: "padding: 16px;"
+          width: "200px"
+          height: "60px"
+      - title:
+        image:
+          src: assets/images/home/langchain.png
+          url: https://python.langchain.com/en/latest/index.html
+      - title:
+        image:
+          src: assets/images/home/databricks_logo.png
+          url: https://huggingface.co/databricks
+          style: "padding: 10px;"
+      - title:
+        image:
+          src: assets/images/home/openassistant_logo.svg
+          url: https://open-assistant.io/
+          style: "padding: 39px;"
+      - title:
+        image:
+          src: assets/images/home/meta_logo.svg
+          url: https://github.com/facebookresearch/llama
+          style: "padding: 24px;"
+      - title:
+        image:
+          src: assets/images/home/bloom_logo.png
+          url: https://bigscience.huggingface.co/
+          style: "padding: 10px;"
 
    - title: 'Get Started'
      install: yes
@@ -62,5 +127,6 @@ data:
       - text: Get Started Now
         url: docs/pages/docs/install
 
+        
     
 ---

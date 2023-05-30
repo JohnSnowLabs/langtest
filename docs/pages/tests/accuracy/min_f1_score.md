@@ -7,6 +7,8 @@ This test checks the f1 score for each label. Test is passed if the f1 score is 
 
 **alias_name:** `min_f1_score`
 
+**supported tasks:** `ner`, `text-classification`
+
 </div><div class="h3-box" markdown="1">
 
 #### Config

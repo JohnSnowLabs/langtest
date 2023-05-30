@@ -1,10 +1,10 @@
 ---
 layout: docs
 header: true
-seotitle: Data Input | NLP Test | John Snow Labs
-title: Data Input
+seotitle: Data | NLP Test | John Snow Labs
+title: Data
 key: docs-examples
-permalink: /docs/pages/docs/data_input
+permalink: /docs/pages/docs/data
 modify_date: "2019-05-16"
 ---
 
@@ -18,6 +18,7 @@ Supported data input formats are task-dependent. For `ner` and `text-classificat
 |**ner**     |CoNLL and CSV|
 |**text-classification**     |CSV
 |**question-answering**     |Select list of benchmark datasets
+|**summarization**     |Select list of benchmark datasets
 
 </div><div class="h3-box" markdown="1">
 
@@ -116,8 +117,10 @@ To test Question Answering models, the user is meant to select a benchmark datas
 | Dataset  | Source | Description |
 | - | - | - |
 |**BoolQ** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Training, development & test set from the BoolQ dataset, containing 15,942 labeled examples
-|**BoolQ-test** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Test set from the BoolQ dataset, containing 3,245 labeled examples
-|**BoolQ-test-tiny** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples
+|**BoolQ-dev** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Dev set from the BoolQ dataset, containing 3,270 labeled examples
+|**BoolQ-dev-tiny** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the dev set from the BoolQ dataset, containing 50 labeled examples
+|**BoolQ-test** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Test set from the BoolQ dataset, containing 3,245 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.
+|**BoolQ-test-tiny** | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.
 |**NQ-open** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples
 |**NQ-open-test** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples
 |**NQ-open-test-tiny** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples
@@ -139,4 +142,35 @@ harness = Harness(task='question-answering',
                   data='BoolQ-test')
 ```
 
+</div><div class="h3-box" markdown="1">
+
+### Summarization
+
+To test Summarization models, the user is meant to select a benchmark dataset from the following list:
+
+#### Benchmark Datasets
+
+{:.table2}
+| Dataset  | Source | Description |
+| - | - | - |
+|**XSum** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples
+|**XSum-test** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples
+|**XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Summarization Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the nlptest library
+from nlptest import Harness
+
+harness = Harness(task='summarization',
+                  model='text-davinci-002',
+                  config='config.yml',
+                  hub ='openai',
+                  data='XSum-test-tiny')
+```
 </div></div>

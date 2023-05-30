@@ -6,7 +6,7 @@ from typing import List
 
 from nlptest.modelhandler.modelhandler import ModelFactory
 
-from .utils import female_pronouns, male_pronouns, neutral_pronouns
+from .utils import female_pronouns, male_pronouns, neutral_pronouns, default_user_prompt
 from ..utils.custom_types import Sample, Span, Transformation
 
 
@@ -21,6 +21,7 @@ class BaseBias(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented bias measure.
     """
     alias_name = None
+    supported_tasks = ["ner", "text-classification","question-answering","summarization"]
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
@@ -51,9 +52,26 @@ class BaseBias(ABC):
         """
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
-            if sample.state != "done":
-                sample.expected_results = model(sample.original)
-                sample.actual_results = model(sample.test_case)
+            if sample.state != "done":      
+                if sample.task == "question-answering":
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    prompt_template = """Context: {context}\nQuestion: {question}\n """ + user_prompt
+                    sample.expected_results = model(text={'context':sample.original_context, 'question': sample.original_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                    sample.actual_results = model(text={'context':sample.perturbed_context, 'question': sample.perturbed_question},
+                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+                elif sample.task == "summarization":
+                    dataset_name = sample.dataset_name.split('-')[0].lower()
+                    user_prompt = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+                    prompt_template =  user_prompt + """Context: {context}\n\n Summary: """
+                    sample.expected_results = model(text={'context':sample.original},
+                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
+                    sample.actual_results = model(text={'context':sample.original},
+                                                     prompt={"template":prompt_template, 'input_variables':["context"]})
+                else:
+                    sample.expected_results = model(sample.original)
+                    sample.actual_results = model(sample.test_case)
                 sample.state = "done"
             if progress:
                 progress.update(1)
@@ -100,9 +118,8 @@ class GenderPronounBias(BaseBias):
             sample.category = "bias"
             transformations = []
             replaced_string = sample.original
-
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    token.lower() in pronouns_to_substitute]
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in pronouns_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 if pronoun_type == "female":
@@ -124,6 +141,8 @@ class GenderPronounBias(BaseBias):
                         break
 
                 chosen_token = random.choice(chosen_dict[type_of_pronoun])
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -131,18 +150,20 @@ class GenderPronounBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
 
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
 
         return sample_list
 
@@ -173,12 +194,13 @@ class CountryEconomicBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    token.lower() in [name.lower() for name in country_names_to_substitute]]
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in country_names_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_country_names)
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -186,18 +208,20 @@ class CountryEconomicBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
 
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
             sample.category = "bias"
 
         return sample_list
@@ -235,11 +259,13 @@ class EthnicityNameBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    any(name.lower() == token.lower() for name in names_to_substitute)]
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in names_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_ethnicity_names)
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -247,17 +273,19 @@ class EthnicityNameBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
             sample.category = "bias"
 
         return sample_list
@@ -291,11 +319,13 @@ class ReligionBias(BaseBias):
         for sample in sample_list:
             transformations = []
             replaced_string = sample.original
-            tokens_to_substitute = [token for token in sample.original.split(' ') if
-                                    any(name.lower() == token.lower() for name in names_to_substitute)]
+            pattern = r'\b(?:' + '|'.join(re.escape(name) for name in names_to_substitute) + r')(?!\w)'
+            tokens_to_substitute = re.findall(pattern, sample.original, flags=re.IGNORECASE)
 
             for replace_token in tokens_to_substitute:
                 chosen_token = random.choice(chosen_names)
+                if replace_token.endswith('.') :
+                    replace_token = replace_token.strip(replace_token[-1])
                 regex = r'\b{}\b'.format(replace_token)
                 diff_len = len(chosen_token) - len(replace_token)
                 nb_occurrences = len(re.findall(regex, replaced_string))
@@ -303,18 +333,20 @@ class ReligionBias(BaseBias):
                     span = re.search(regex, replaced_string)
                     replaced_string = re.sub(
                         regex, chosen_token, replaced_string, count=1)
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=span.start(), end=span.end(), word=replace_token),
-                            new_span=Span(start=span.start(), end=span.end(
-                            ) + diff_len, word=chosen_token),
-                            ignore=False
+                    if sample.task in ("ner", "text-classification"):
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(
+                                    start=span.start(), end=span.end(), word=replace_token),
+                                new_span=Span(start=span.start(), end=span.end(
+                                ) + diff_len, word=chosen_token),
+                                ignore=False
+                            )
                         )
-                    )
 
             sample.test_case = replaced_string
-            sample.transformations = transformations
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations
             sample.category = "bias"
 
         return sample_list

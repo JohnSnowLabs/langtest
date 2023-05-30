@@ -1,8 +1,8 @@
 ---
 layout: docs
-seotitle: Model Input | NLP Test | John Snow Labs
-title: Model Input
-permalink: /docs/pages/docs/model_input
+seotitle: Model | NLP Test | John Snow Labs
+title: Model
+permalink: /docs/pages/docs/model
 key: docs-install
 modify_date: "2020-05-26"
 header: true
@@ -152,5 +152,66 @@ h = Harness(task='text-classification', model='path/to/local_saved_model', hub='
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 ```
+<div class="h3-box" markdown="1">
+
+### Cohere
+
+#### Pretrained Models
+
+```python
+from nlptest import Harness
+
+# Set API keys
+os.environ["COHERE_API_KEY"] = "<YOUR_API_KEY>"
+
+# Create test Harness
+h = Harness(task="question-answering", hub="cohere", model="command-xlarge-nightly", data='BoolQ-test', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div>
+
+### AI21
+
+#### Pretrained Models
+
+```python
+from nlptest import Harness
+
+# Set API keys
+os.environ["AI21_API_KEY"] = "<YOUR_API_KEY>"
+
+# Create test Harness
+h = Harness(task="question-answering", hub="ai21", model="j2-jumbo-instruct", data='BoolQ-test-tiny', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+<div class="h3-box" markdown="1">
+
+### Azure OpenAI
+
+#### Pretrained Models
+
+```python
+from nlptest import Harness
+
+# Set API keys
+os.environ["OPENAI_API_KEY"] = "<API_KEY>"
+openai.api_type = "azure"
+openai.api_base = "<ENDPOINT>"
+openai.api_version = "2022-12-01"
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Create test Harness
+h = Harness(task="question-answering", hub="azure-openai", model="text-davinci-003", data='BoolQ-test-tiny', config='config.yml')
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div>
 
 </div></div>

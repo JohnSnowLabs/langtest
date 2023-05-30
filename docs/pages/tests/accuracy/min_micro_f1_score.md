@@ -7,6 +7,8 @@ This test checks the micro-f1 score. Test is passed if the micro-f1 score is hig
 
 **alias_name:** `min_micro_f1_score`
 
+**supported tasks:** `ner`, `text-classification`
+
 </div><div class="h3-box" markdown="1">
 
 #### Config

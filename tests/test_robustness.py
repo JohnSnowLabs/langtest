@@ -1,5 +1,4 @@
 import unittest
-
 from nlptest.transform.robustness import *
 from nlptest.transform.utils import A2B_DICT
 from nlptest.utils.custom_types import SequenceClassificationSample
@@ -11,6 +10,10 @@ class RobustnessTestCase(unittest.TestCase):
         self.sentences = [
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
             SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
+        ]
+        self.number_sentences = [
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
+            SequenceClassificationSample(original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them")
         ]
         self.sentences_with_punctuation = [
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019."),
@@ -31,6 +34,10 @@ class RobustnessTestCase(unittest.TestCase):
         self.dyslexia_sentences = [
             SequenceClassificationSample(original="I live in London, United Kingdom cents 2019"),
             SequenceClassificationSample(original="I canknot live in USA due too torandos caramelized")
+        ]
+        self.ocr_sentences = [
+            SequenceClassificationSample(original="This organization's art can win tough acts."),    
+            SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
         ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
@@ -144,3 +151,22 @@ class RobustnessTestCase(unittest.TestCase):
             [sample.test_case for sample in transformed_samples],
             [sample.original for sample in self.dyslexia_sentences]
         )
+        
+    def test_number_to_word(self) -> None:
+        """"""
+        transformed_samples = NumberToWord.transform(self.number_sentences)
+        # Test that the transformed_samples sentences are in a list
+        self.assertIsInstance(transformed_samples, list)
+
+
+    def test_add_ocr_typo(self) -> None:
+        """"""
+        expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
+                                        "Anyone c^an j0in o^ur communitv gardcn."]
+        transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
+        
+        self.assertIsInstance(transformed_samples, list)
+        self.assertListEqual(
+            [sample.test_case for sample in transformed_samples],
+             expected_corrected_sentences
+           )
