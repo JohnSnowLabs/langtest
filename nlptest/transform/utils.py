@@ -1,8 +1,7 @@
-from collections import defaultdict
-from typing import Dict, List
-
+import re
 import pandas as pd
-
+from typing import Dict, List
+from collections import defaultdict
 from nlptest.utils.custom_types import NERPrediction, Sample, SequenceLabel, NEROutput, SequenceClassificationOutput
 
 DEFAULT_PERTURBATIONS = [
@@ -16818,3 +16817,85 @@ abbreviation_dict = {
         "zero tolerance"
     ]
 }
+
+nth = {
+    0: "th",
+    1: "st",
+    2: "nd",
+    3: "rd",
+    4: "th",
+    5: "th",
+    6: "th",
+    7: "th",
+    8: "th",
+    9: "th",
+    11: "th",
+    12: "th",
+    13: "th",}
+
+ordinal = dict(
+    ty="tieth",
+    one="first",
+    two="second",
+    three="third",
+    five="fifth",
+    eight="eighth",
+    nine="ninth",
+    twelve="twelfth",
+)
+
+unit = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+
+teen = [
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+]
+ten = [
+    "",
+    "",
+    "twenty",
+    "thirty",
+    "forty",
+    "fifty",
+    "sixty",
+    "seventy",
+    "eighty",
+    "ninety",
+]
+mill = [
+    " ",
+    " thousand",
+    " million",
+    " billion",
+    " trillion",
+    " quadrillion",
+    " quintillion",
+    " sextillion",
+    " septillion",
+    " octillion",
+    " nonillion",
+    " decillion",
+]
+
+nth_suff = set(nth.values())
+ordinal_suff = re.compile(fr"({'|'.join(ordinal)})\Z")
+
+NON_DIGIT = re.compile(r"\D")
+WHITESPACES_COMMA = re.compile(r"\s+,")
+COMMA_WORD = re.compile(r", (\S+)\s+\Z")
+WHITESPACES = re.compile(r"\s+")
+DIGIT_GROUP = re.compile(r"(\d)")
+TWO_DIGITS = re.compile(r"(\d)(\d)")
+THREE_DIGITS = re.compile(r"(\d)(\d)(\d)")
+THREE_DIGITS_WORD = re.compile(r"(\d)(\d)(\d)(?=\D*\Z)")
+TWO_DIGITS_WORD = re.compile(r"(\d)(\d)(?=\D*\Z)")
+ONE_DIGIT_WORD = re.compile(r"(\d)(?=\D*\Z)")
+FOUR_DIGIT_COMMA = re.compile(r"(\d)(\d{3}(?:,|\Z))")
