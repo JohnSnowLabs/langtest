@@ -5,8 +5,11 @@ import asyncio
 import logging
 import evaluate
 
-from sklearn.metrics import classification_report, f1_score
+from sklearn.metrics import classification_report
+
 from nlptest.utils.custom_types import MinScoreOutput, MinScoreSample
+
+f1_metric = evaluate.load("f1")
 
 class BaseAccuracy(ABC):
     """
@@ -357,8 +360,8 @@ class MinMicroF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-
-        f1 = f1_score(y_true, y_pred, average="micro", zero_division=0)
+        
+        f1 = f1_metric.compute(predictions=y_pred, references=y_true, average="micro")
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
@@ -420,7 +423,8 @@ class MinMacroF1Score(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
+        f1 = f1_metric.compute(predictions=y_pred, references=y_true, average="macro")
+        
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
@@ -479,8 +483,8 @@ class MinWeightedF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-
-        f1 = f1_score(y_true, y_pred, average="weighted", zero_division=0)
+        f1 = f1_metric.compute(predictions=y_pred, references=y_true, average="weighted")
+        
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
