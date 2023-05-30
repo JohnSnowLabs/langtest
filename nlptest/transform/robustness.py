@@ -626,9 +626,8 @@ class NumberToWord(BaseRobustness):
                 new_words_len = len(' '.join(words)) - 1
                 trans.append(text[start_offset:match.start()])
                 trans.append(' '.join(words))
-                start_offset = match.end()
-                if sample.task in ("ner", "text-classification"):
-                    transformations.append(
+                start_offset = match.end()  
+                transformations.append(
                         Transformation(
                             original_span=Span(
                                 start=match.start(), end=match.end()-1, word=token),
@@ -692,7 +691,6 @@ class AddOcrTypo(BaseRobustness):
                     trans.append(text[start_offset:match.start()])
                     trans.append(corrected_token)
                     start_offset = match.end()
-
                     transformations.append(
                         Transformation(
                             original_span=Span(
@@ -703,7 +701,7 @@ class AddOcrTypo(BaseRobustness):
                         )
                     )
                 else:
-                    trans.append(sample.original[start_offset:match.end()])
+                    trans.append(text[start_offset:match.end()])
                     start_offset = match.end()
 
             trans.append(text[start_offset:])
