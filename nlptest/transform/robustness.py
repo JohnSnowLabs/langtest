@@ -850,15 +850,3 @@ class AddSpeechToTextTypo(BaseRobustness):
 
         return sample_list
 
-
-        # for sample in sample_list:
-        #     if sample.task == 'question-answering':
-        #         sample.perturbed_question = convertToSimilarHarmony(sample.original_question)
-
-        #         if "perturbed_context" in sample.__annotations__:
-        #             sample.perturbed_context = convertToSimilarHarmony(sample.original_context)
-
-        #     else:
-        #         sample.test_case = convertToSimilarHarmony(sample.original)
-
-        # return sample_list
