@@ -8,6 +8,8 @@ from .predictions import NERPrediction
 default_user_prompt = {
     "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
     "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Context: {context}\n Question: {question}\n Answer:",
+    "narrativeqa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context.",
+    "hellaswag":"You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n {context} {question}",
     "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: "
 }
 
@@ -349,11 +351,17 @@ class BaseQASample(BaseModel):
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split('-')[0].lower()
         prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+        if self.original_context is not None:
+            original_text = {'context':self.original_context, 'question': self.original_question}
+            perturbed_text = {'context':self.perturbed_context, 'question': self.perturbed_question}
+            prompt = {"template":prompt_template, 'input_variables':["context", "question"]}
+        else:
+            original_text = {'question': self.original_question}
+            perturbed_text = {'question': self.perturbed_question}
+            prompt = {"template":prompt_template, 'input_variables':["question"]}
 
-        self.expected_results = model(text={'context':self.original_context, 'question': self.original_question},
-                                                     prompt={"template":prompt_template, 'input_variables':["context", "question"]})
-        self.actual_results = model(text={'context':self.perturbed_context, 'question': self.perturbed_question},
-                                            prompt={"template":prompt_template, 'input_variables':["context", "question"]})
+        self.expected_results = model(text=original_text, prompt=prompt)
+        self.actual_results = model(text=perturbed_text, prompt=prompt)
         
         return True
 
