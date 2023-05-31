@@ -22,6 +22,7 @@ DEFAULT_PERTURBATIONS = [
     "replace_to_neutral_pronouns",
     "number_to_word"
     "add_ocr_typo"
+    "add_abbreviation"
 ]
 
 PERTURB_CLASS_MAP = {
@@ -40,7 +41,8 @@ PERTURB_CLASS_MAP = {
     "replace_to_female_pronouns": "GenderPronounBias",
     "replace_to_neutral_pronouns": "GenderPronounBias",
     "number_to_word": "NumberToWord",
-    "add_ocr_typo": "AddOcrTypo"
+    "add_ocr_typo": "AddOcrTypo",
+    "add_abbreviation": "AbbreviationInsertion"
 }
 
 # @formatter:off
@@ -7191,10 +7193,9 @@ def get_entity_representation_proportions(entity_representation):
     return entity_representation_proportion
 
 default_user_prompt = {
-    "boolq": "I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
-    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Answer:",
-    "narrativeqa": "I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context.",
-    "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit."
+    "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
+    "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Context: {context}\n Question: {question}\n Answer:",
+    "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: "
 }
 
 qa_prompt_template ="""
@@ -11949,3 +11950,4871 @@ ocr_typo_dict =    {'tle': 'the',
                     'zſhe' : 'she',
                     'zſhould' : 'should',
                     'zſit' : 'sit'}
+abbreviation_dict = {
+    "AFG": [
+        "afghanistan"
+    ],
+    "ALA": [
+        "aland islands"
+    ],
+    "ALB": [
+        "albania"
+    ],
+    "DZA": [
+        "algeria"
+    ],
+    "ASM": [
+        "american samoa"
+    ],
+    "AND": [
+        "andorra"
+    ],
+    "AGO": [
+        "angola"
+    ],
+    "AIA": [
+        "anguilla"
+    ],
+    "ATA": [
+        "antarctica"
+    ],
+    "ATG": [
+        "antigua and barbuda"
+    ],
+    "ARG": [
+        "argentina"
+    ],
+    "ARM": [
+        "armenia"
+    ],
+    "ABW": [
+        "aruba"
+    ],
+    "AUS": [
+        "australia"
+    ],
+    "AUT": [
+        "austria"
+    ],
+    "AZE": [
+        "azerbaijan"
+    ],
+    "BHS": [
+        "bahamas"
+    ],
+    "BHR": [
+        "bahrain"
+    ],
+    "BGD": [
+        "bangladesh"
+    ],
+    "BRB": [
+        "barbados"
+    ],
+    "BLR": [
+        "belarus"
+    ],
+    "BEL": [
+        "belgium"
+    ],
+    "BLZ": [
+        "belize"
+    ],
+    "BEN": [
+        "benin"
+    ],
+    "BMU": [
+        "bermuda"
+    ],
+    "BTN": [
+        "bhutan"
+    ],
+    "BOL": [
+        "bolivia"
+    ],
+    "BIH": [
+        "bosnia and herzegovina"
+    ],
+    "BWA": [
+        "botswana"
+    ],
+    "BVT": [
+        "bouvet island"
+    ],
+    "BRA": [
+        "brazil"
+    ],
+    "VGB": [
+        "british virgin islands"
+    ],
+    "IOT": [
+        "british indian ocean territory"
+    ],
+    "BRN": [
+        "brunei darussalam"
+    ],
+    "BGR": [
+        "bulgaria"
+    ],
+    "BFA": [
+        "burkina faso"
+    ],
+    "BDI": [
+        "burundi"
+    ],
+    "KHM": [
+        "cambodia"
+    ],
+    "CMR": [
+        "cameroon"
+    ],
+    "CAN": [
+        "canada"
+    ],
+    "CPV": [
+        "cape verde"
+    ],
+    "CYM": [
+        "cayman islands"
+    ],
+    "CAF": [
+        "central african republic"
+    ],
+    "TCD": [
+        "chad"
+    ],
+    "CHL": [
+        "chile"
+    ],
+    "CHN": [
+        "china"
+    ],
+    "HKG": [
+        "hong kong, sar china"
+    ],
+    "MAC": [
+        "macao, sar china"
+    ],
+    "CXR": [
+        "christmas island"
+    ],
+    "CCK": [
+        "cocos (keeling) islands"
+    ],
+    "COL": [
+        "colombia"
+    ],
+    "COM": [
+        "comoros"
+    ],
+    "COG": [
+        "congo (brazzaville)"
+    ],
+    "COD": [
+        "congo, (kinshasa)"
+    ],
+    "COK": [
+        "cook islands"
+    ],
+    "CRI": [
+        "costa rica"
+    ],
+    "CIV": [
+        "côte d'ivoire"
+    ],
+    "HRV": [
+        "croatia"
+    ],
+    "CUB": [
+        "cuba"
+    ],
+    "CYP": [
+        "cyprus"
+    ],
+    "CZE": [
+        "czech republic"
+    ],
+    "DNK": [
+        "denmark"
+    ],
+    "DJI": [
+        "djibouti"
+    ],
+    "DMA": [
+        "dominica"
+    ],
+    "DOM": [
+        "dominican republic"
+    ],
+    "ECU": [
+        "ecuador"
+    ],
+    "EGY": [
+        "egypt"
+    ],
+    "SLV": [
+        "el salvador"
+    ],
+    "GNQ": [
+        "equatorial guinea"
+    ],
+    "ERI": [
+        "eritrea"
+    ],
+    "EST": [
+        "estonia"
+    ],
+    "ETH": [
+        "ethiopia"
+    ],
+    "FLK": [
+        "falkland islands (malvinas)"
+    ],
+    "FRO": [
+        "faroe islands"
+    ],
+    "FJI": [
+        "fiji"
+    ],
+    "FIN": [
+        "finland"
+    ],
+    "FRA": [
+        "france"
+    ],
+    "GUF": [
+        "french guiana"
+    ],
+    "PYF": [
+        "french polynesia"
+    ],
+    "ATF": [
+        "french southern territories"
+    ],
+    "GAB": [
+        "gabon"
+    ],
+    "GMB": [
+        "gambia"
+    ],
+    "GEO": [
+        "georgia"
+    ],
+    "DEU": [
+        "germany"
+    ],
+    "GHA": [
+        "ghana"
+    ],
+    "GIB": [
+        "gibraltar"
+    ],
+    "GRC": [
+        "greece"
+    ],
+    "GRL": [
+        "greenland"
+    ],
+    "GRD": [
+        "grenada"
+    ],
+    "GLP": [
+        "guadeloupe"
+    ],
+    "GUM": [
+        "guam"
+    ],
+    "GTM": [
+        "guatemala"
+    ],
+    "GGY": [
+        "guernsey"
+    ],
+    "GIN": [
+        "guinea"
+    ],
+    "GNB": [
+        "guinea-bissau"
+    ],
+    "GUY": [
+        "guyana"
+    ],
+    "HTI": [
+        "haiti"
+    ],
+    "HMD": [
+        "heard and mcdonald islands"
+    ],
+    "HND": [
+        "honduras"
+    ],
+    "HUN": [
+        "hungary"
+    ],
+    "ISL": [
+        "iceland"
+    ],
+    "IND": [
+        "india"
+    ],
+    "IDN": [
+        "indonesia"
+    ],
+    "IRQ": [
+        "iran"
+    ],
+    "IRL": [
+        "ireland"
+    ],
+    "IMN": [
+        "isle of man"
+    ],
+    "ISR": [
+        "israel"
+    ],
+    "ITA": [
+        "italy"
+    ],
+    "JAM": [
+        "jamaica"
+    ],
+    "JPN": [
+        "japan"
+    ],
+    "JEY": [
+        "jersey"
+    ],
+    "JOR": [
+        "jordan"
+    ],
+    "KAZ": [
+        "kazakhstan"
+    ],
+    "KEN": [
+        "kenya"
+    ],
+    "KIR": [
+        "kiribati"
+    ],
+    "PRK": [
+        "north korea"
+    ],
+    "KOR": [
+        "south korea"
+    ],
+    "KWT": [
+        "kuwait"
+    ],
+    "KGZ": [
+        "kyrgyzstan"
+    ],
+    "LAO": [
+        "lao pdr"
+    ],
+    "LVA": [
+        "latvia"
+    ],
+    "LBN": [
+        "lebanon"
+    ],
+    "LSO": [
+        "lesotho"
+    ],
+    "LBR": [
+        "liberia"
+    ],
+    "LBY": [
+        "libya"
+    ],
+    "LIE": [
+        "liechtenstein"
+    ],
+    "LTU": [
+        "lithuania"
+    ],
+    "LUX": [
+        "luxembourg"
+    ],
+    "MKD": [
+        "macedonia"
+    ],
+    "MDG": [
+        "madagascar"
+    ],
+    "MWI": [
+        "malawi"
+    ],
+    "MYS": [
+        "malaysia"
+    ],
+    "MDV": [
+        "maldives"
+    ],
+    "MLI": [
+        "mali"
+    ],
+    "MLT": [
+        "malta"
+    ],
+    "MHL": [
+        "marshall islands"
+    ],
+    "MTQ": [
+        "martinique"
+    ],
+    "MRT": [
+        "mauritania"
+    ],
+    "MUS": [
+        "mauritius"
+    ],
+    "MYT": [
+        "mayotte"
+    ],
+    "MEX": [
+        "mexico"
+    ],
+    "FSM": [
+        "micronesia"
+    ],
+    "MDA": [
+        "moldova"
+    ],
+    "MCO": [
+        "monaco"
+    ],
+    "MNG": [
+        "mongolia"
+    ],
+    "MNE": [
+        "montenegro"
+    ],
+    "MSR": [
+        "montserrat"
+    ],
+    "MAR": [
+        "morocco"
+    ],
+    "MOZ": [
+        "mozambique"
+    ],
+    "MMR": [
+        "myanmar"
+    ],
+    "NAM": [
+        "namibia"
+    ],
+    "NRU": [
+        "nauru"
+    ],
+    "NPL": [
+        "nepal"
+    ],
+    "NLD": [
+        "netherlands"
+    ],
+    "ANT": [
+        "netherlands antilles"
+    ],
+    "NCL": [
+        "new caledonia"
+    ],
+    "NZL": [
+        "new zealand"
+    ],
+    "NIC": [
+        "nicaragua"
+    ],
+    "NER": [
+        "niger"
+    ],
+    "NGA": [
+        "nigeria"
+    ],
+    "NIU": [
+        "niue"
+    ],
+    "NFK": [
+        "norfolk island"
+    ],
+    "MNP": [
+        "northern mariana islands"
+    ],
+    "NOR": [
+        "norway"
+    ],
+    "OMN": [
+        "oman"
+    ],
+    "PAK": [
+        "pakistan"
+    ],
+    "PLW": [
+        "palau"
+    ],
+    "PSE": [
+        "palestinian territory"
+    ],
+    "PAN": [
+        "panama"
+    ],
+    "PNG": [
+        "papua new guinea"
+    ],
+    "PRY": [
+        "paraguay"
+    ],
+    "PER": [
+        "peru"
+    ],
+    "PHL": [
+        "philippines"
+    ],
+    "PCN": [
+        "pitcairn"
+    ],
+    "POL": [
+        "poland"
+    ],
+    "PRT": [
+        "portugal"
+    ],
+    "PRI": [
+        "puerto rico"
+    ],
+    "QAT": [
+        "qatar"
+    ],
+    "REU": [
+        "reunion"
+    ],
+    "ROU": [
+        "romania"
+    ],
+    "RUS": [
+        "russian federation"
+    ],
+    "RWA": [
+        "rwanda"
+    ],
+    "BLM": [
+        "saint-barthelemy"
+    ],
+    "SHN": [
+        "saint helena"
+    ],
+    "KNA": [
+        "saint kitts and nevis"
+    ],
+    "LCA": [
+        "saint lucia"
+    ],
+    "MAF": [
+        "saint-martin"
+    ],
+    "SPM": [
+        "saint pierre and miquelon"
+    ],
+    "VCT": [
+        "saint vincent and grenadines"
+    ],
+    "WSM": [
+        "samoa"
+    ],
+    "SMR": [
+        "san marino"
+    ],
+    "STP": [
+        "sao tome and principe"
+    ],
+    "SAU": [
+        "saudi arabia"
+    ],
+    "SEN": [
+        "senegal"
+    ],
+    "SRB": [
+        "serbia"
+    ],
+    "SYC": [
+        "seychelles"
+    ],
+    "SLE": [
+        "sierra leone"
+    ],
+    "SGP": [
+        "singapore"
+    ],
+    "SVK": [
+        "slovakia"
+    ],
+    "SVN": [
+        "slovenia"
+    ],
+    "SLB": [
+        "solomon islands"
+    ],
+    "SOM": [
+        "somalia"
+    ],
+    "ZAF": [
+        "south africa"
+    ],
+    "SGS": [
+        "south georgia and the south sandwich islands"
+    ],
+    "SSD": [
+        "south sudan"
+    ],
+    "ESP": [
+        "spain"
+    ],
+    "LKA": [
+        "sri lanka"
+    ],
+    "SDN": [
+        "sudan"
+    ],
+    "SUR": [
+        "suriname"
+    ],
+    "SJM": [
+        "svalbard and jan mayen islands"
+    ],
+    "SWZ": [
+        "swaziland"
+    ],
+    "SWE": [
+        "sweden"
+    ],
+    "CHE": [
+        "switzerland"
+    ],
+    "SY": [
+        "syria"
+    ],
+    "TWN": [
+        "taiwan"
+    ],
+    "TJK": [
+        "tajikistan"
+    ],
+    "TZA": [
+        "tanzania"
+    ],
+    "THA": [
+        "thailand"
+    ],
+    "TLS": [
+        "timor-leste"
+    ],
+    "TGO": [
+        "togo"
+    ],
+    "TKL": [
+        "tokelau"
+    ],
+    "TON": [
+        "tonga"
+    ],
+    "TTO": [
+        "trinidad and tobago"
+    ],
+    "TUN": [
+        "tunisia"
+    ],
+    "TUR": [
+        "turkey"
+    ],
+    "TKM": [
+        "turkmenistan"
+    ],
+    "TCA": [
+        "turks and caicos islands"
+    ],
+    "TUV": [
+        "tuvalu"
+    ],
+    "UGA": [
+        "uganda"
+    ],
+    "UKR": [
+        "ukraine"
+    ],
+    "ARE": [
+        "united arab emirates"
+    ],
+    "GBR": [
+        "united kingdom"
+    ],
+    "USA": [
+        "united states of america"
+    ],
+    "UMI": [
+        "us minor outlying islands"
+    ],
+    "URY": [
+        "uruguay"
+    ],
+    "UZB": [
+        "uzbekistan"
+    ],
+    "VUT": [
+        "vanuatu"
+    ],
+    "VEN": [
+        "venezuela"
+    ],
+    "VNM": [
+        "viet nam"
+    ],
+    "VIR": [
+        "virgin islands"
+    ],
+    "WLF": [
+        "wallis and futuna islands"
+    ],
+    "ESH": [
+        "western sahara"
+    ],
+    "YEM": [
+        "yemen"
+    ],
+    "ZMB": [
+        "zambia"
+    ],
+    "ZWE": [
+        "zimbabwe"
+    ],
+    "1st": [
+        "first"
+    ],
+    "2nd": [
+        "second"
+    ],
+    "3rd": [
+        "third"
+    ],
+    "4th": [
+        "fourth"
+    ],
+    "5th": [
+        "fifth"
+    ],
+    "6th": [
+        "sixth"
+    ],
+    "7th": [
+        "seventh"
+    ],
+    "8th": [
+        "eighth"
+    ],
+    "9th": [
+        "ninth"
+    ],
+    "10th": [
+        "tenth"
+    ],
+    "Jan.": [
+        "january"
+    ],
+    "Feb.": [
+        "february"
+    ],
+    "Mar.": [
+        "march"
+    ],
+    "Apr.": [
+        "april"
+    ],
+    "Jun.": [
+        "june"
+    ],
+    "Jul.": [
+        "july"
+    ],
+    "Aug.": [
+        "august"
+    ],
+    "Sept.": [
+        "september"
+    ],
+    "Oct.": [
+        "october"
+    ],
+    "Nov.": [
+        "november"
+    ],
+    "Dec.": [
+        "december."
+    ],
+    "Sun.": [
+        "sunday"
+    ],
+    "Mon.": [
+        "monday"
+    ],
+    "Tues.": [
+        "tuesday"
+    ],
+    "Wed.": [
+        "wednesday"
+    ],
+    "Thurs.": [
+        "thursday"
+    ],
+    "Fri.": [
+        "friday"
+    ],
+    "Sat.": [
+        "saturday"
+    ],
+    "hr": [
+        "hour"
+    ],
+    "hrs": [
+        "hours"
+    ],
+    "min": [
+        "minute"
+    ],
+    "mins": [
+        "minutes"
+    ],
+    "AA": [
+        "alcoholics anonymous"
+    ],
+    "B2B": [
+        "business-to-business"
+    ],
+    "B2C": [
+        "business-to-consumer"
+    ],
+    "Cad": [
+        "canadian"
+    ],
+    "WOW": [
+        "world of Warcraft"
+    ],
+    "rofl": [
+        "rolling on floor laughing"
+    ],
+    "stfu": [
+        "shut the freak up"
+    ],
+    "lemeno": [
+        "let me know"
+    ],
+    "Ilu": [
+        "i love you"
+    ],
+    "yolo": [
+        "you only live once"
+    ],
+    "smh": [
+        "shaking my head"
+    ],
+    "lmfao": [
+        "laughing my freaking ass off"
+    ],
+    "nm": [
+        "nice meld"
+    ],
+    "Ikr": [
+        "i know, right ?"
+    ],
+    "ofc": [
+        "of course"
+    ],
+    "#?": [
+        "i don't understand what you mean"
+    ],
+    "Q4U": [
+        "i have a question for you"
+    ],
+    ";s": [
+        "gentle warning"
+    ],
+    "^^": [
+        "read message"
+    ],
+    "<3": [
+        "sideways heart"
+    ],
+    "</3": [
+        "broken heart"
+    ],
+    "<3333": [
+        "love"
+    ],
+    "ateotd": [
+        "at the end of the day"
+    ],
+    ".02": [
+        "my two cents worth"
+    ],
+    "#1tg (,) 2tg": [
+        "number of items needed for win"
+    ],
+    "1up": [
+        "extra life"
+    ],
+    "121": [
+        "one-to-one"
+    ],
+    "l33t": [
+        "elite"
+    ],
+    "1432": [
+        "i love you too"
+    ],
+    "14aa41": [
+        "one for all and all for one"
+    ],
+    "182": [
+        "i hate you"
+    ],
+    "19": [
+        "zero hand"
+    ],
+    "10m": [
+        "ten man"
+    ],
+    "tx": [
+        "thanks"
+    ],
+    "ty": [
+        "thank you"
+    ],
+    "1ce": [
+        "Once"
+    ],
+    "1Dr": [
+        "i wonder"
+    ],
+    "1nam": [
+        "one in a million"
+    ],
+    "2": [
+        "to"
+    ],
+    "20": [
+        "location"
+    ],
+    "2ez": [
+        "too easy"
+    ],
+    "2g2bt": [
+        "too good to be true"
+    ],
+    "2m2h": [
+        "too much too handle"
+    ],
+    "tmth": [
+        "too much to handle"
+    ],
+    "tmi": [
+        "too much information"
+    ],
+    "2mor": [
+        "tomorrow"
+    ],
+    "2nte": [
+        "tonight"
+    ],
+    "4": [
+        "for"
+    ],
+    "411": [
+        "information"
+    ],
+    "Idunno": [
+        "i don't know"
+    ],
+    "lgh": [
+        "lets get high"
+    ],
+    "420": [
+        "marijuana"
+    ],
+    "4ao": [
+        "for adults only"
+    ],
+    "fcol": [
+        "for crying out loud"
+    ],
+    "4eae": [
+        "forever and ever"
+    ],
+    "4eva": [
+        "forever"
+    ],
+    "4nr": [
+        "foreigner"
+    ],
+    "4sale": [
+        "for sale"
+    ],
+    "^5": [
+        "high-five"
+    ],
+    "555": [
+        "sobbing crying"
+    ],
+    "55555": [
+        "laughing"
+    ],
+    "hawt": [
+        "attractive"
+    ],
+    "7k": [
+        "sick"
+    ],
+    "81": [
+        "hells angels"
+    ],
+    "ova": [
+        "over"
+    ],
+    "88": [
+        "hugs and kisses"
+    ],
+    "9": [
+        "parent is watching"
+    ],
+    "*s*": [
+        "smile"
+    ],
+    "*w*": [
+        "wink"
+    ],
+    "a3": [
+        "anytime anywhere anyplace"
+    ],
+    "aa": [
+        "ask about"
+    ],
+    "amof": [
+        "as a matter of fact"
+    ],
+    "aaf": [
+        "as a friend"
+    ],
+    "aak": [
+        "alive and kicking"
+    ],
+    "aamoi": [
+        "as a matter of interest"
+    ],
+    "aap": [
+        "always a pleasure"
+    ],
+    "aar": [
+        "at any rate"
+    ],
+    "aas": [
+        "alive and smiling"
+    ],
+    "aashta": [
+        "as always sheldon has the answer"
+    ],
+    "aatk": [
+        "always at the keyboard"
+    ],
+    "aayf": [
+        "as always your friend"
+    ],
+    "abbr": [
+        "abbreviation"
+    ],
+    "abc": [
+        "already been chewed"
+    ],
+    "abd": [
+        "already been done"
+    ],
+    "abt": [
+        "about"
+    ],
+    "abt2": [
+        "about to"
+    ],
+    "abta": [
+        "good-bye"
+    ],
+    "abu": [
+        "all bugged up"
+    ],
+    "ac": [
+        "acceptable content"
+    ],
+    "acc": [
+        "anyone can come"
+    ],
+    "acd": [
+        "alt/control/delete"
+    ],
+    "acdnt": [
+        "accident"
+    ],
+    "ace": [
+        "marijuana cigarette"
+    ],
+    "ack": [
+        "acknowledge"
+    ],
+    "acpt": [
+        "accept"
+    ],
+    "acqstn": [
+        "acquisition"
+    ],
+    "adad": [
+        "another day another dollar"
+    ],
+    "adbb": [
+        "all done bye-bye"
+    ],
+    "adr": [
+        "address"
+    ],
+    "adih": [
+        "another day in hell"
+    ],
+    "adip": [
+        "another day in paradise"
+    ],
+    "adminr": [
+        "administrator"
+    ],
+    "adn": [
+        "any day now"
+    ],
+    "ae": [
+        "area effect"
+    ],
+    "aeap": [
+        "as early as possible"
+    ],
+    "af": [
+        "aggression factor"
+    ],
+    "afc": [
+        "away from computer"
+    ],
+    "afaiaa": [
+        "as far as i am aware"
+    ],
+    "afaic": [
+        "as far as i am concerned"
+    ],
+    "afaik": [
+        "as far as i know"
+    ],
+    "afaiui": [
+        "as far as i understand it"
+    ],
+    "afap": [
+        "as far as possible"
+    ],
+    "affa": [
+        "angels forever forever angels"
+    ],
+    "afj": [
+        "april fool's joke"
+    ],
+    "afk": [
+        "away from keyboard"
+    ],
+    "afz": [
+        "acronym free zone"
+    ],
+    "afpoe": [
+        "a fresh pair of eyes"
+    ],
+    "agi": [
+        "agility"
+    ],
+    "ah": [
+        "at home"
+    ],
+    "aiamu": [
+        "and i am a money's uncle"
+    ],
+    "aight": [
+        "alright"
+    ],
+    "air": [
+        "as i remember"
+    ],
+    "aisb": [
+        "as i said before"
+    ],
+    "aisi": [
+        "as i see it"
+    ],
+    "aitr": [
+        "adult in the room"
+    ],
+    "aka": [
+        "also known as"
+    ],
+    "alcon": [
+        "all concerned"
+    ],
+    "alol": [
+        "actually laughing out loud"
+    ],
+    "ama": [
+        "ask me anything"
+    ],
+    "amap": [
+        "as much as possible"
+    ],
+    "ambw": [
+        "all my best wishes"
+    ],
+    "aml": [
+        "all my love"
+    ],
+    "amzn": [
+        "amazing"
+    ],
+    "a/n": [
+        "author's note"
+    ],
+    "ao": [
+        "anarchy online"
+    ],
+    "aoc": [
+        "available on cell"
+    ],
+    "aoe": [
+        "area of effect"
+    ],
+    "aom": [
+        "age of mythology"
+    ],
+    "aota": [
+        "all of the above"
+    ],
+    "aoyp": [
+        "angel on your pillow"
+    ],
+    "apac": [
+        "all praise and credit"
+    ],
+    "app": [
+        "appreciate"
+    ],
+    "aqap": [
+        "as quiet as possible"
+    ],
+    "arc": [
+        "archive"
+    ],
+    "are": [
+        "acronym rich environment"
+    ],
+    "arg": [
+        "argument"
+    ],
+    "asig": [
+        "and so it goes"
+    ],
+    "asap": [
+        "as soon as possible"
+    ],
+    "asl": [
+        "age/sex/location"
+    ],
+    "asla": [
+        "age/sex/location/availability"
+    ],
+    "at": [
+        "at your terminal"
+    ],
+    "atb": [
+        "all the best"
+    ],
+    "atm": [
+        "at the moment"
+    ],
+    "atsits": [
+        "all the stars in the sky"
+    ],
+    "atsl": [
+        "along the same line"
+    ],
+    "awc": [
+        "after awhile crocodile"
+    ],
+    "aweso": [
+        "awesome"
+    ],
+    "awol": [
+        "absent without leave"
+    ],
+    "aydy": [
+        "are you done yet ?"
+    ],
+    "aybabtu": [
+        "all your base are belong to us"
+    ],
+    "ayec": [
+        "at your earliest convenience"
+    ],
+    "ayor": [
+        "at your own risk"
+    ],
+    "aysos": [
+        "are you stupid or something ?"
+    ],
+    "ays": [
+        "are you stupid ?"
+    ],
+    "rut": [
+        "are you there ?"
+    ],
+    "aytmtb": [
+        "and you're telling me this because"
+    ],
+    "ayv": [
+        "are you vertical ?"
+    ],
+    "ayw": [
+        "as you wish"
+    ],
+    "azn": [
+        "asian"
+    ],
+    "b": [
+        "be"
+    ],
+    "b&": [
+        "banned"
+    ],
+    "b2w": [
+        "back to work"
+    ],
+    "b8": [
+        "bait"
+    ],
+    "b9": [
+        "boss is watching"
+    ],
+    "boyf": [
+        "boyfriend"
+    ],
+    "b/g": [
+        "background"
+    ],
+    "b4": [
+        "before"
+    ],
+    "bfn": [
+        "bye for now"
+    ],
+    "bag": [
+        "busting a gut"
+    ],
+    "ba": [
+        "bad ass"
+    ],
+    "bae": [
+        "baby"
+    ],
+    "bafo": [
+        "best and final offer"
+    ],
+    "bak": [
+        "back at keyboard"
+    ],
+    "bam": [
+        "below average mentality"
+    ],
+    "bamf": [
+        "bad ass mother fucker"
+    ],
+    "bao": [
+        "be aware of"
+    ],
+    "bas": [
+        "big butt smile"
+    ],
+    "basic": [
+        "anything mainstream"
+    ],
+    "basor": [
+        "breathing a sigh of relief"
+    ],
+    "bau": [
+        "business as usual"
+    ],
+    "bay": [
+        "back at ya"
+    ],
+    "bb": [
+        "big brother"
+    ],
+    "bbc": [
+        "big bad challenge"
+    ],
+    "bbiab": [
+        "be back in a bit"
+    ],
+    "bbiaf": [
+        "be back in a few"
+    ],
+    "bbiam": [
+        "be back in a minute"
+    ],
+    "bbias": [
+        "be back in a sec"
+    ],
+    "bbl": [
+        "be back later"
+    ],
+    "bbn": [
+        "bye bye now"
+    ],
+    "bbq": [
+        "barbeque"
+    ],
+    "bbs": [
+        "be back soon"
+    ],
+    "bbt": [
+        "be back tomorrow"
+    ],
+    "cos": [
+        "because"
+    ],
+    "bc": [
+        "be cool"
+    ],
+    "bcnu": [
+        "be seeing you"
+    ],
+    "bco": [
+        "big crush on"
+    ],
+    "bcoy": [
+        "big crush on you"
+    ],
+    "bd": [
+        "big deal"
+    ],
+    "cakeday": [
+        "birthday"
+    ],
+    "bdn": [
+        "big darn number"
+    ],
+    "beg": [
+        "big evil grin"
+    ],
+    "belf": [
+        "blood elf"
+    ],
+    "bf": [
+        "best friend"
+    ],
+    "bfaw": [
+        "best friend at work"
+    ],
+    "bf2": [
+        "battlefield 2"
+    ],
+    "bff": [
+        "best friends forever"
+    ],
+    "bffl": [
+        "best friends for life"
+    ],
+    "bfflnmw": [
+        "best friends for life no matter what"
+    ],
+    "bfd": [
+        "big freaking deal"
+    ],
+    "bfg": [
+        "big freaking grin"
+    ],
+    "bffn": [
+        "best friend for now"
+    ],
+    "bg": [
+        "big grin"
+    ],
+    "bgwm": [
+        "be gentle with me"
+    ],
+    "bhl8": [
+        "be home late"
+    ],
+    "bib": [
+        "boss is back"
+    ],
+    "bibo": [
+        "beer in, beer out"
+    ],
+    "bic": [
+        "butt in chair"
+    ],
+    "bif": [
+        "before i forget"
+    ],
+    "bih": [
+        "burn in hell"
+    ],
+    "bil": [
+        "brother in law"
+    ],
+    "bio": [
+        "bathroom break"
+    ],
+    "bion": [
+        "believe it or not"
+    ],
+    "bioya": [
+        "blow it out your ass"
+    ],
+    "bioyn": [
+        "blow it out your nose"
+    ],
+    "bis": [
+        "best in slot"
+    ],
+    "bisflatm": [
+        "boy, i sure feel like a turquoise monkey !"
+    ],
+    "bitmt": [
+        "but in the meantime"
+    ],
+    "bl": [
+        "belly laugh"
+    ],
+    "blnt": [
+        "better luck next time"
+    ],
+    "bloke": [
+        "man"
+    ],
+    "bm": [
+        "bite me"
+    ],
+    "bme": [
+        "based on my experience"
+    ],
+    "bm&y": [
+        "between me and you"
+    ],
+    "bob": [
+        "back off bitch"
+    ],
+    "bn": [
+        "bad news"
+    ],
+    "boe": [
+        "bind on equip"
+    ],
+    "bohica": [
+        "bend over here it comes again"
+    ],
+    "bol": [
+        "best of luck"
+    ],
+    "bom": [
+        "butt of mine"
+    ],
+    "bolo": [
+        "be on the look out"
+    ],
+    "booms": [
+        "bored out of my skull"
+    ],
+    "bop": [
+        "bind on pickup"
+    ],
+    "bosmkl": [
+        "bending over smacking my knee laughing"
+    ],
+    "bot": [
+        "be on that"
+    ],
+    "bms": [
+        "broke my scale"
+    ],
+    "bplm": [
+        "big person little mind"
+    ],
+    "brb": [
+        "be right back"
+    ],
+    "br": [
+        "best regards"
+    ],
+    "brbb": [
+        "be right back bitch"
+    ],
+    "brnc": [
+        "be right back nature calls"
+    ],
+    "zzzz": [
+        "sleeping"
+    ],
+    "brh": [
+        "be right here"
+    ],
+    "brt": [
+        "be right there"
+    ],
+    "bsf": [
+        "but seriously folks"
+    ],
+    "bst": [
+        "best"
+    ],
+    "bsod": [
+        "blue screen of death"
+    ],
+    "bsts": [
+        "better safe than sorry"
+    ],
+    "bt": [
+        "between technologies"
+    ],
+    "bta": [
+        "but then again"
+    ],
+    "btdt": [
+        "been there done that"
+    ],
+    "btw": [
+        "by the way"
+    ],
+    "btycl": [
+        "bootycall"
+    ],
+    "bubu": [
+        "most beautiful of women"
+    ],
+    "burn": [
+        "used to reference an insult"
+    ],
+    "buff": [
+        "changed and is now stronger"
+    ],
+    "bwl": [
+        "bursting with laughter"
+    ],
+    "byob": [
+        "build your own burger"
+    ],
+    "byoc": [
+        "bring your own computer"
+    ],
+    "byod": [
+        "bring your own device"
+    ],
+    "byoh": [
+        "bat you on the head"
+    ],
+    "byop": [
+        "bring your own paint"
+    ],
+    "bytm": [
+        "better you than me"
+    ],
+    "c&g": [
+        "chuckle & grin"
+    ],
+    "c4n": [
+        "ciao for now"
+    ],
+    "cad": [
+        "control + alt + delete"
+    ],
+    "cam": [
+        "camera"
+    ],
+    "cb": [
+        "crazy bitch"
+    ],
+    "cd9": [
+        "parents are around"
+    ],
+    "cfs": [
+        "care for secret ?"
+    ],
+    "cfy": [
+        "calling for you"
+    ],
+    "chk": [
+        "check"
+    ],
+    "cico": [
+        "coffee in, coffee out"
+    ],
+    "cid": [
+        "consider it done"
+    ],
+    "clab": [
+        "crying like a baby"
+    ],
+    "cld": [
+        "could"
+    ],
+    "clk": [
+        "click"
+    ],
+    "cm": [
+        "call me"
+    ],
+    "cmap": [
+        "cover my ass partner"
+    ],
+    "cmb": [
+        "call me back"
+    ],
+    "cmgr": [
+        "community manager"
+    ],
+    "cmiiw": [
+        "correct me if i'm wrong"
+    ],
+    "cmon": [
+        "come on"
+    ],
+    "cnp": [
+        "continued in next post"
+    ],
+    "cob": [
+        "close of business"
+    ],
+    "coh": [
+        "city of heroes"
+    ],
+    "c/p": [
+        "cross post"
+    ],
+    "cp": [
+        "chat post"
+    ],
+    "cre8": [
+        "create"
+    ],
+    "crz": [
+        "crazy"
+    ],
+    "craft": [
+        "can't remember a freaking thing"
+    ],
+    "crb": [
+        "come right back"
+    ],
+    "crbt": [
+        "crying really big tears"
+    ],
+    "crit": [
+        "critical hit"
+    ],
+    "crs": [
+        "can't remember stuff"
+    ],
+    "csg": [
+        "chuckle, snicker, grin"
+    ],
+    "csl": [
+        "can't stop laughing"
+    ],
+    "css": [
+        "counter-strike source"
+    ],
+    "ct": [
+        "can't talk"
+    ],
+    "ctc": [
+        "care to chat ?"
+    ],
+    "cthu": [
+        "cracking the heck up"
+    ],
+    "ctn": [
+        "can't talk now"
+    ],
+    "cto": [
+        "check this out"
+    ],
+    "cu": [
+        "see you too"
+    ],
+    "cya": [
+        "see you"
+    ],
+    "cua": [
+        "see you around"
+    ],
+    "syl": [
+        "see you later"
+    ],
+    "cula": [
+        "see you later alligator"
+    ],
+    "cumid": [
+        "see you in my dreams"
+    ],
+    "curlo": [
+        "see you around like a donut"
+    ],
+    "cwd": [
+        "comment when done"
+    ],
+    "cwot": [
+        "complete waste of time"
+    ],
+    "cwyl": [
+        "chat with you later"
+    ],
+    "cx": [
+        "correction"
+    ],
+    "cye": [
+        "check your e-mail"
+    ],
+    "cyep": [
+        "close your eyes partner"
+    ],
+    "cyo": [
+        "see you online"
+    ],
+    "d46?": [
+        "down for sex?"
+    ],
+    "da": [
+        "the"
+    ],
+    "dae": [
+        "does anyone else ?"
+    ],
+    "wtf": [
+        "what the fuck ?"
+    ],
+    "dam": [
+        "don't annoy me"
+    ],
+    "daoc": [
+        "dark age of camelot"
+    ],
+    "dbau": [
+        "doing business as usual"
+    ],
+    "dbeyr": [
+        "don't believe everything you read"
+    ],
+    "dc": [
+        "disconnect"
+    ],
+    "degt": [
+        "darling daughter"
+    ],
+    "dd": [
+        "due diligence"
+    ],
+    "ddg": [
+        "drop dead gorgeous"
+    ],
+    "deez": [
+        "nutz"
+    ],
+    "derp": [
+        "silly"
+    ],
+    "df": [
+        "don't even go there"
+    ],
+    "dfl": [
+        "dead freaking last"
+    ],
+    "dfntly": [
+        "definitely"
+    ],
+    "dga": [
+        "don't go anywhere"
+    ],
+    "dgaf": [
+        "don't give a freak"
+    ],
+    "dgt": [
+        "don't go there"
+    ],
+    "dgtg": [
+        "don't go there, girlfriend"
+    ],
+    "dgyf": [
+        "dang, girl you fine"
+    ],
+    "dh": [
+        "dear husband"
+    ],
+    "dhu": [
+        "dinosaur hugs"
+    ],
+    "diik": [
+        "darned if i know"
+    ],
+    "diku": [
+        "do i know you ?"
+    ],
+    "dilligaf": [
+        "do i look like i give a freak ?"
+    ],
+    "dilligas": [
+        "do i look like i give a sugar ?"
+    ],
+    "dis": [
+        "did i say ?"
+    ],
+    "dityid": [
+        "did i tell you i'm distressed ?"
+    ],
+    "diy": [
+        "do it yourself"
+    ],
+    "dkdc": [
+        "don't know, don't care"
+    ],
+    "dkp": [
+        "dragon kill points"
+    ],
+    "dl": [
+        "dead link"
+    ],
+    "dltbbb": [
+        "don't let the bed bugs bite"
+    ],
+    "dm": [
+        "dungeon master"
+    ],
+    "dmno": [
+        "dude man no offense"
+    ],
+    "dmy": [
+        "don't mess yourself"
+    ],
+    "dn": [
+        "down"
+    ],
+    "Dnc": [
+        "i do not understand"
+    ],
+    "dnr": [
+        "dinner"
+    ],
+    "dnt": [
+        "don't"
+    ],
+    "d00d": [
+        "dude"
+    ],
+    "doe": [
+        "daughter of eve"
+    ],
+    "dorbs": [
+        "adorable"
+    ],
+    "dot": [
+        "damage over time"
+    ],
+    "downvote": [
+        "voting negatively on a thread using reddit s voting system"
+    ],
+    "dps": [
+        "damage per second"
+    ],
+    "dqmot": [
+        "don't quote me on this"
+    ],
+    "dr": [
+        "didn't read"
+    ],
+    "ds": [
+        "dear son"
+    ],
+    "dtr": [
+        "define the relationship"
+    ],
+    "dtrt": [
+        "do the right thing"
+    ],
+    "dts": [
+        "don't think so"
+    ],
+    "dttd": [
+        "don't touch that dial"
+    ],
+    "dupe": [
+        "duplicate"
+    ],
+    "dur": [
+        "do you remember ?"
+    ],
+    "dv8": [
+        "deviate"
+    ],
+    "dw": [
+        "dear wife"
+    ],
+    "dwf": [
+        "divorced white female"
+    ],
+    "dwm": [
+        "divorced white male"
+    ],
+    "dxnry": [
+        "dictionary"
+    ],
+    "dynwutb": [
+        "do you know what you are talking about ?"
+    ],
+    "dyfi": [
+        "did you find it ?"
+    ],
+    "dyfm": [
+        "dude, you fascinate me"
+    ],
+    "dyjhiw": [
+        "don't you just hate it when"
+    ],
+    "dyor": [
+        "do your own research"
+    ],
+    "e": [
+        "enemy"
+    ],
+    "e1": [
+        "everyone"
+    ],
+    "e123": [
+        "easy as one, two, three"
+    ],
+    "e2eg": [
+        "ear to ear grin"
+    ],
+    "eak": [
+        "eating at keyboard"
+    ],
+    "ebkac": [
+        "error between keyboard and chair"
+    ],
+    "ed": [
+        "erase display"
+    ],
+    "ef4t": [
+        "effort"
+    ],
+    "eg": [
+        "evil grin"
+    ],
+    "ei": [
+        "eat it"
+    ],
+    "eip": [
+        "editing in progress"
+    ],
+    "elsw": [
+        "elsewhere"
+    ],
+    "eli5": [
+        "explain like i'm 5"
+    ],
+    "em": [
+        "e-mail"
+    ],
+    "ema": [
+        "e-mail address"
+    ],
+    "embar": [
+        "embarassing"
+    ],
+    "emfbi": [
+        "excuse me for jumping in"
+    ],
+    "emsg": [
+        "e-mail message"
+    ],
+    "enuf": [
+        "enough"
+    ],
+    "eod": [
+        "end of discussion"
+    ],
+    "eol": [
+        "end of life"
+    ],
+    "eom": [
+        "end of message"
+    ],
+    "eos": [
+        "end of show"
+    ],
+    "eot": [
+        "end of transmission"
+    ],
+    "eq": [
+        "everquest"
+    ],
+    "erp": [
+        "erotic role-play"
+    ],
+    "es": [
+        "erase screen"
+    ],
+    "esad": [
+        "eat *s* and die !"
+    ],
+    "eta": [
+        "edited to add"
+    ],
+    "eva": [
+        "ever"
+    ],
+    "evo": [
+        "evolution"
+    ],
+    "ewg": [
+        "evil wicked grin"
+    ],
+    "ewi": [
+        "emailing while intoxicated"
+    ],
+    "ott": [
+        "over the top"
+    ],
+    "eyc": [
+        "excitable, yet calm"
+    ],
+    "ezy": [
+        "easy"
+    ],
+    "f": [
+        "female"
+    ],
+    "f2f": [
+        "face to face"
+    ],
+    "f2p": [
+        "free to play"
+    ],
+    "f4f": [
+        "follow for follow"
+    ],
+    "faak": [
+        "falling asleep at keyboard"
+    ],
+    "fab": [
+        "fabulous"
+    ],
+    "facepalm": [
+        "smacking your forehead with your palm"
+    ],
+    "faf": [
+        "funny as freak"
+    ],
+    "fly": [
+        "family"
+    ],
+    "faq": [
+        "frequently asked questions"
+    ],
+    "fay": [
+        "freak all you"
+    ],
+    "fb": [
+        "facebook"
+    ],
+    "fbb": [
+        "facebook bitch"
+    ],
+    "fbc": [
+        "facebook chat"
+    ],
+    "fbf": [
+        "fat boy food"
+    ],
+    "fbfr": [
+        "facebook friend"
+    ],
+    "fbm": [
+        "fine by me"
+    ],
+    "fbo": [
+        "facebook official"
+    ],
+    "fbow": [
+        "for better or worse"
+    ],
+    "fc": [
+        "full card"
+    ],
+    "feelsbadman": [
+        "a social meme that means to feel negative."
+    ],
+    "feelsbatman": [
+        "a social meme taking “feelsbadman” to the extreme"
+    ],
+    "feelsgoodman": [
+        "a social meme that means to feel positive"
+    ],
+    "feitctaj": [
+        "freak 'em if they can't take a joke"
+    ],
+    "ff": [
+        "follow friday"
+    ],
+    "ffa": [
+        "free for all"
+    ],
+    "ffs": [
+        "for freak'sakes"
+    ],
+    "ficcl": [
+        "frankly i couldn't care a less"
+    ],
+    "fif": [
+        "freak i'm funny"
+    ],
+    "fiik": [
+        "freaked if i know"
+    ],
+    "fiiooh": [
+        "forget it, i'm out of here"
+    ],
+    "fil": [
+        "father in law"
+    ],
+    "fimh": [
+        "forever in my heart"
+    ],
+    "finna": [
+        "going to"
+    ],
+    "finsta": [
+        "a second instagram account"
+    ],
+    "fish": [
+        "first in, still here"
+    ],
+    "fitb": [
+        "fill in the blank"
+    ],
+    "fml": [
+        "freak my life"
+    ],
+    "fomc": [
+        "falling off my chair"
+    ],
+    "fomo": [
+        "fear of missing out"
+    ],
+    "foad": [
+        "freak off and die"
+    ],
+    "foaf": [
+        "friend of a friend"
+    ],
+    "fomcl": [
+        "falling off my chair laughing"
+    ],
+    "frt": [
+        "for real though"
+    ],
+    "ftbomh": [
+        "from the bottom of my heart"
+    ],
+    "ftfy": [
+        "fixed that for you"
+    ],
+    "ftl": [
+        "for the loss"
+    ],
+    "ftw": [
+        "for the win"
+    ],
+    "fu": [
+        "freak you"
+    ],
+    "fubar": [
+        "fouled up beyond all recognition"
+    ],
+    "fubb": [
+        "fouled up beyond belief"
+    ],
+    "fud": [
+        "face up deal"
+    ],
+    "futab": [
+        "feet up, take a break"
+    ],
+    "fw": [
+        "forward"
+    ],
+    "fwb": [
+        "friend with benefits"
+    ],
+    "fwiw": [
+        "for what it's worth"
+    ],
+    "fwm": [
+        "fine with me"
+    ],
+    "fwp": [
+        "first world problems"
+    ],
+    "fye": [
+        "fire, something that is cool"
+    ],
+    "fyeo": [
+        "for your eyes only"
+    ],
+    "fya": [
+        "for your amusement"
+    ],
+    "fyi": [
+        "for your information"
+    ],
+    "g": [
+        "giggle"
+    ],
+    "g+": [
+        "google+"
+    ],
+    "g/f": [
+        "girlfriend"
+    ],
+    "gtsy": [
+        "great to see you"
+    ],
+    "gtg": [
+        "got to go"
+    ],
+    "g2gicyal8er": [
+        "got to go i'll see you later"
+    ],
+    "g2r": [
+        "got to run"
+    ],
+    "g2tu": [
+        "got to tellg4c"
+    ],
+    "g9": [
+        "genius"
+    ],
+    "ga": [
+        "go ahead"
+    ],
+    "gac": [
+        "get a clue"
+    ],
+    "gafc": [
+        "get a freaking clue"
+    ],
+    "gal": [
+        "get a life"
+    ],
+    "gank": [
+        "unfair player kill"
+    ],
+    "gas": [
+        "greetings and salutations"
+    ],
+    "gb": [
+        "goodbye"
+    ],
+    "gbtw": [
+        "get back to work"
+    ],
+    "gbu": [
+        "god bless you"
+    ],
+    "gud": [
+        "good"
+    ],
+    "gd/r": [
+        "grinning, ducking, and running"
+    ],
+    "gfi": [
+        "go for it"
+    ],
+    "gf": [
+        "girl friend"
+    ],
+    "gfn": [
+        "gone for now"
+    ],
+    "gg": [
+        "brother"
+    ],
+    "gga": [
+        "good game, all"
+    ],
+    "gge1": [
+        "good game everyone"
+    ],
+    "ggu2": [
+        "good game you too"
+    ],
+    "ggmsot": [
+        "gotta get me some of that"
+    ],
+    "ggoh": [
+        "gotta get outa here"
+    ],
+    "ggp": [
+        "got to go pee"
+    ],
+    "gh": [
+        "good hand"
+    ],
+    "giar": [
+        "give it a rest"
+    ],
+    "gic": [
+        "gift in crib"
+    ],
+    "gigo": [
+        "garbage in, garbage out"
+    ],
+    "girl": [
+        "guy in real life"
+    ],
+    "gj": [
+        "good job"
+    ],
+    "gl": [
+        "good luck"
+    ],
+    "gl2u": [
+        "good luck to you"
+    ],
+    "gla": [
+        "good luck all"
+    ],
+    "gl/hf": [
+        "good luck, have fun"
+    ],
+    "gle1": [
+        "good luck everyone"
+    ],
+    "glng": [
+        "good luck next game"
+    ],
+    "gmba": [
+        "giggling my butt off"
+    ],
+    "gmta": [
+        "great minds think alike"
+    ],
+    "gmv": [
+        "got my vote"
+    ],
+    "gnite": [
+        "good night"
+    ],
+    "gna": [
+        "good night all"
+    ],
+    "gne1": [
+        "good night everyone"
+    ],
+    "gnsd": [
+        "good night, sweet dreams"
+    ],
+    "goat": [
+        "greatest of all times"
+    ],
+    "goi": [
+        "get over it"
+    ],
+    "gol": [
+        "giggling out loud"
+    ],
+    "gomb": [
+        "get off my back"
+    ],
+    "gpoy": [
+        "gratuitous picture of yourself"
+    ],
+    "gr8": [
+        "great"
+    ],
+    "gr8est": [
+        "greatest"
+    ],
+    "gratz": [
+        "congratulations"
+    ],
+    "grl": [
+        "girl"
+    ],
+    "grwg": [
+        "get right with god"
+    ],
+    "gr&d": [
+        "grinning, running and ducking"
+    ],
+    "gs": [
+        "good split"
+    ],
+    "gt": [
+        "good try"
+    ],
+    "gtfo": [
+        "get the freak out"
+    ],
+    "gtfoh": [
+        "get the freak outta here"
+    ],
+    "gtm": [
+        "giggling to myself"
+    ],
+    "gtrm": [
+        "going to read mail"
+    ],
+    "gwhtlc": [
+        "glad we had this little chat"
+    ],
+    "h": [
+        "hug"
+    ],
+    "h8": [
+        "hate"
+    ],
+    "h8ttu": [
+        "hate to be you"
+    ],
+    "hago": [
+        "have a good one"
+    ],
+    "hak": [
+        "hug and kiss"
+    ],
+    "halp": [
+        "help"
+    ],
+    "hbu": [
+        "how about you ?"
+    ],
+    "xoxoxo": [
+        "hugs & kisses"
+    ],
+    "h2cus": [
+        "hope to see you soon"
+    ],
+    "hagn": [
+        "have a good night"
+    ],
+    "hand": [
+        "have a nice day"
+    ],
+    "hb": [
+        "hug back"
+    ],
+    "h-bday": [
+        "happy birthday"
+    ],
+    "hf": [
+        "have fun"
+    ],
+    "hfac": [
+        "holy flipping animal crackers"
+    ],
+    "h-fday": [
+        "happy father's day"
+    ],
+    "hhis": [
+        "head hanging in shame"
+    ],
+    "hifw": [
+        "how i felt when"
+    ],
+    "hl": [
+        "half life"
+    ],
+    "h-mday": [
+        "happy mother's day"
+    ],
+    "hmu": [
+        "hit me up"
+    ],
+    "hnl": [
+        "(w)hole another level"
+    ],
+    "hoas": [
+        "hold on a second"
+    ],
+    "hp": [
+        "hit points / health points"
+    ],
+    "hru": [
+        "how are you ?"
+    ],
+    "hth": [
+        "hope this helps"
+    ],
+    "hub": [
+        "head up butt"
+    ],
+    "huya": [
+        "head up your butt"
+    ],
+    "hv": [
+        "have"
+    ],
+    "hvh": [
+        "heroic violet hold"
+    ],
+    "hw": [
+        "homework"
+    ],
+    "hyfr": [
+        "hell yeah, freaking right !"
+    ],
+    "I2": [
+        "i too"
+    ],
+    "i2": [
+        "me too"
+    ],
+    "Ia8": [
+        "i already ate"
+    ],
+    "Iaaa": [
+        "i am an accountant"
+    ],
+    "Iaad": [
+        "i am a doctor"
+    ],
+    "Iaal": [
+        "i am a lawyer"
+    ],
+    "iac": [
+        "in any case"
+    ],
+    "iae": [
+        "in any event"
+    ],
+    "Ianac": [
+        "i am not a crook"
+    ],
+    "Ianal": [
+        "i am not a lawyer"
+    ],
+    "Iao": [
+        "i am out"
+    ],
+    "ib": [
+        "i'm back"
+    ],
+    "Ic": [
+        "i see"
+    ],
+    "Icam": [
+        "i couldn't agree more"
+    ],
+    "icbw": [
+        "it could be worse"
+    ],
+    "Icedi": [
+        "i can't even discuss it"
+    ],
+    "Icfilwu": [
+        "i could fall in love with you"
+    ],
+    "icymi": [
+        "in case you missed it"
+    ],
+    "Idbi": [
+        "i don't believe it"
+    ],
+    "Idc": [
+        "i don't care"
+    ],
+    "Idgaf": [
+        "i don't give a freak"
+    ],
+    "Idts": [
+        "i don't think so"
+    ],
+    "Ifyp": [
+        "i feel your pain"
+    ],
+    "ig": [
+        "instagram"
+    ],
+    "Ig2R": [
+        "i got to run"
+    ],
+    "Ight": [
+        "i got high tonight"
+    ],
+    "ign": [
+        "i've got nothing"
+    ],
+    "Igp": [
+        "i got to go pee"
+    ],
+    "Ihni": [
+        "i have no idea"
+    ],
+    "iirc": [
+        "if i remember correctly"
+    ],
+    "iiio": [
+        "intel inside idiot outside"
+    ],
+    "Ik": [
+        "i know"
+    ],
+    "ilbl8": [
+        "i'll be late"
+    ],
+    "Ilum": [
+        "i love you man"
+    ],
+    "Ilysm": [
+        "i love you so much"
+    ],
+    "im": [
+        "instant message"
+    ],
+    "imao": [
+        "in my arrogant opinion"
+    ],
+    "imho": [
+        "in my humble opinion"
+    ],
+    "imnsho": [
+        "in my not so humble opinion"
+    ],
+    "imo": [
+        "in my opinion"
+    ],
+    "Ims": [
+        "i am sorry"
+    ],
+    "Imsb": [
+        "i am so bored"
+    ],
+    "Imtm": [
+        "i am the man"
+    ],
+    "Imu": [
+        "i miss you"
+    ],
+    "inal": [
+        "i'm not a lawyer"
+    ],
+    "inc": [
+        "incoming"
+    ],
+    "inspoo": [
+        "inspiration"
+    ],
+    "inv": [
+        "invite"
+    ],
+    "iomh": [
+        "in over my head"
+    ],
+    "iow": [
+        "in other words"
+    ],
+    "irl": [
+        "in real life"
+    ],
+    "Irmc": [
+        "i rest my case"
+    ],
+    "Isly": [
+        "i still love you"
+    ],
+    "iso": [
+        "in search of"
+    ],
+    "itam": [
+        "it's the accounting man"
+    ],
+    "itt": [
+        "in this thread"
+    ],
+    "Ityk": [
+        "i thought you knew"
+    ],
+    "iyss": [
+        "if you say so"
+    ],
+    "Iwalu": [
+        "i will always love you"
+    ],
+    "Iwawo": [
+        "i want a way out"
+    ],
+    "iwiam": [
+        "idiot wrapped in a moron"
+    ],
+    "Iwsn": [
+        "i want sex now"
+    ],
+    "iykwim": [
+        "if you know what i mean"
+    ],
+    "iyo": [
+        "in your opinion"
+    ],
+    "Iyq": [
+        "i like you"
+    ],
+    "yr": [
+        "yeah right"
+    ],
+    "jas": [
+        "just a second"
+    ],
+    "jam": [
+        "just a minute"
+    ],
+    "jc": [
+        "just checking"
+    ],
+    "jdi": [
+        "just do it"
+    ],
+    "jelly": [
+        "jealous"
+    ],
+    "jff": [
+        "just for fun"
+    ],
+    "jfgi": [
+        "just freaking google it"
+    ],
+    "jic": [
+        "just in case"
+    ],
+    "jj": [
+        "just joking"
+    ],
+    "jja": [
+        "just joking around"
+    ],
+    "jkz": [
+        "just kidding"
+    ],
+    "jlmk": [
+        "just let me know"
+    ],
+    "jmo": [
+        "just my opinion"
+    ],
+    "jp": [
+        "jackpot"
+    ],
+    "jt": [
+        "just teasing"
+    ],
+    "jtlyk": [
+        "just to let you know"
+    ],
+    "jv": [
+        "joint venture"
+    ],
+    "jw": [
+        "just wondering"
+    ],
+    "ok": [
+        "okay"
+    ],
+    "kk": [
+        "knock knock"
+    ],
+    "kt": [
+        "katie"
+    ],
+    "kb": [
+        "kick butt"
+    ],
+    "kdfu": [
+        "cracking the da freak up"
+    ],
+    "kewl": [
+        "cool"
+    ],
+    "Keya": [
+        "i will key you later"
+    ],
+    "keyme": [
+        "key me when you get in"
+    ],
+    "kfy": [
+        "kiss for you"
+    ],
+    "kia": [
+        "know it all"
+    ],
+    "kir": [
+        "keep it real"
+    ],
+    "kiss": [
+        "keep it simple stupid"
+    ],
+    "kit": [
+        "keep in touch"
+    ],
+    "kma": [
+        "kiss my ass"
+    ],
+    "kmk": [
+        "kiss my keister"
+    ],
+    "kms": [
+        "killing myself"
+    ],
+    "kmt": [
+        "kiss my tushie"
+    ],
+    "koc": [
+        "kiss on cheek"
+    ],
+    "kol": [
+        "key opinion leader"
+    ],
+    "koreaboo": [
+        "obsessed with korean culture"
+    ],
+    "kos": [
+        "kill on sight"
+    ],
+    "kow": [
+        "knock on wood"
+    ],
+    "kotc": [
+        "kiss on the cheek"
+    ],
+    "kotd": [
+        "kicks of the day"
+    ],
+    "kotl": [
+        "kiss on the lips"
+    ],
+    "knim": [
+        "know what i mean ?"
+    ],
+    "nowl": [
+        "knowledge"
+    ],
+    "kpc": [
+        "keeping parents clueless"
+    ],
+    "ks": [
+        "kill then steal"
+    ],
+    "ksc": [
+        "kind of chuckle"
+    ],
+    "kutgw": [
+        "keep up the good work"
+    ],
+    "kys": [
+        "kill yourself"
+    ],
+    "l2g": [
+        "love to go"
+    ],
+    "l2k": [
+        "like to come"
+    ],
+    "l2p": [
+        "learn to play"
+    ],
+    "l4l": [
+        "like for like"
+    ],
+    "l8r": [
+        "later"
+    ],
+    "l8rg8r": [
+        "later gator"
+    ],
+    "lab": [
+        "life's a bitch"
+    ],
+    "lbay": [
+        "laughing back at you"
+    ],
+    "lbs": [
+        "laughing but serious"
+    ],
+    "lbvs": [
+        "laughing but very serious"
+    ],
+    "ld": [
+        "long distance"
+    ],
+    "ldo": [
+        "like duh obviously"
+    ],
+    "lerk": [
+        "leaving easy reach of keyboard"
+    ],
+    "lfd": [
+        "left for day"
+    ],
+    "lfg": [
+        "looking for guard"
+    ],
+    "lfm": [
+        "looking for more"
+    ],
+    "lhsx": [
+        "lets have sex"
+    ],
+    "lhm": [
+        "lord help me"
+    ],
+    "lho": [
+        "laughing head off"
+    ],
+    "li": [
+        "linkedin"
+    ],
+    "lic": [
+        "like i care"
+    ],
+    "lik": [
+        "liquor"
+    ],
+    "limt": [
+        "laugh in my tummy"
+    ],
+    "lit": [
+        "extremely intoxicated"
+    ],
+    "lls": [
+        "laughing like silly"
+    ],
+    "lmao": [
+        "laughing my ass off"
+    ],
+    "lmbo": [
+        "laughing my butt off"
+    ],
+    "lmirl": [
+        "lets meet in real life"
+    ],
+    "lmmfao": [
+        "laughing my mother freaking ass off"
+    ],
+    "lmnk": [
+        "leave my name out"
+    ],
+    "lms": [
+        "like my status"
+    ],
+    "lnt": [
+        "lost in translation"
+    ],
+    "loa": [
+        "list of acronyms"
+    ],
+    "lol": [
+        "laugh out loud"
+    ],
+    "lolo": [
+        "lots of love"
+    ],
+    "lolh": [
+        "laughing out loud hysterically"
+    ],
+    "lolwtf": [
+        "laughing out loud (saying) what the freak ?"
+    ],
+    "loti": [
+        "laughing on the inside"
+    ],
+    "lotr": [
+        "lord of the rings"
+    ],
+    "lqtm": [
+        "laughing quietly to myself"
+    ],
+    "lshmbh": [
+        "laugh so hard my belly hurts"
+    ],
+    "lsv": [
+        "language sex and violence"
+    ],
+    "ltd": [
+        "living the dream"
+    ],
+    "ltlwdls": [
+        "let's twist like we did last summer"
+    ],
+    "ltns": [
+        "long time no see"
+    ],
+    "ltod": [
+        "laptop of death"
+    ],
+    "lts": [
+        "laughing to self"
+    ],
+    "lult": [
+        "love you long time"
+    ],
+    "lulz": [
+        "joke"
+    ],
+    "lvm": [
+        "left voice mail"
+    ],
+    "lwos": [
+        "laughing without smiling"
+    ],
+    "ly": [
+        "love ya"
+    ],
+    "lylas": [
+        "love you like a sis"
+    ],
+    "lylc": [
+        "love you like crazy"
+    ],
+    "lysm": [
+        "love you so much"
+    ],
+    "m$": [
+        "microsoft"
+    ],
+    "m8": [
+        "mate"
+    ],
+    "momboy": [
+        "mamma's boy"
+    ],
+    "mbs": [
+        "mom behind shoulder"
+    ],
+    "mc": [
+        "merry christmas"
+    ],
+    "mdiac": [
+        "my dad is a cop"
+    ],
+    "mego": [
+        "my eyes glaze over"
+    ],
+    "meh": [
+        "just okay"
+    ],
+    "mehh": [
+        "sigh"
+    ],
+    "mez": [
+        "mesmerize"
+    ],
+    "mfi": [
+        "mad for it"
+    ],
+    "mfw": [
+        "my face when"
+    ],
+    "mgb": [
+        "may god bless"
+    ],
+    "mgmt": [
+        "management"
+    ],
+    "mhoty": [
+        "my hat is off to you"
+    ],
+    "mirl": [
+        "meet in real life"
+    ],
+    "mkay": [
+        "mmm okay"
+    ],
+    "mlm": [
+        "give the middle finger"
+    ],
+    "sis": [
+        "snickering in silence"
+    ],
+    "mmk": [
+        "okay ?"
+    ],
+    "mnc": [
+        "mother nature calls"
+    ],
+    "mnsg": [
+        "mensaje"
+    ],
+    "mod": [
+        "modification"
+    ],
+    "morf": [
+        "male or female ?"
+    ],
+    "moo": [
+        "my own opinion"
+    ],
+    "moos": [
+        "member of the opposite sex"
+    ],
+    "mos": [
+        "mother over shoulder"
+    ],
+    "moss": [
+        "member of same sex"
+    ],
+    "mp": [
+        "mana points"
+    ],
+    "mr.(number)": [
+        "mr.3 would be a 3-year old son"
+    ],
+    "mrt": [
+        "modified retweet"
+    ],
+    "mrw": [
+        "my reaction when"
+    ],
+    "msg": [
+        "message"
+    ],
+    "mtf": [
+        "more to follow"
+    ],
+    "mtfbwu": [
+        "may the force be with you"
+    ],
+    "mu": [
+        "miss you"
+    ],
+    "muah": [
+        "multiple unsuccessful attempts at humor"
+    ],
+    "musm": [
+        "miss you so much"
+    ],
+    "x": [
+        "kiss"
+    ],
+    "myo": [
+        "mind your own"
+    ],
+    "myob": [
+        "mind your own business"
+    ],
+    "n00b": [
+        "newbie"
+    ],
+    "n1": [
+        "nice one"
+    ],
+    "n2m": [
+        "nothing too much"
+    ],
+    "nadt": [
+        "not a darn thing"
+    ],
+    "nalopkt": [
+        "not a lot of people know that"
+    ],
+    "nana": [
+        "not now no need"
+    ],
+    "n/a": [
+        "not applicable"
+    ],
+    "nbd": [
+        "no big deal"
+    ],
+    "nbfab": [
+        "no bad for a beginner"
+    ],
+    "nc": [
+        "nice crib"
+    ],
+    "nd": [
+        "nice double"
+    ],
+    "ne": [
+        "any"
+    ],
+    "ne1": [
+        "anyone"
+    ],
+    "nerf": [
+        "changed and is now weaker"
+    ],
+    "nfm": [
+        "not for me"
+    ],
+    "ngl": [
+        "not gonna lie"
+    ],
+    "nfs": [
+        "not for sale"
+    ],
+    "nfw": [
+        "not for work"
+    ],
+    "nfws": [
+        "not for work safe"
+    ],
+    "nh": [
+        "nice hand"
+    ],
+    "nifoc": [
+        "naked in front of computer"
+    ],
+    "nigi": [
+        "now i get it"
+    ],
+    "nimby": [
+        "not in my back yard"
+    ],
+    "nirok": [
+        "not in reach of keyboard"
+    ],
+    "nlt": [
+        "no later than"
+    ],
+    "nmh": [
+        "not much here"
+    ],
+    "nmjc": [
+        "nothing much just chilling"
+    ],
+    "nmu": [
+        "not much you ?"
+    ],
+    "no1": [
+        "no one"
+    ],
+    "noob": [
+        "bad at games"
+    ],
+    "noyb": [
+        "none of your business"
+    ],
+    "np": [
+        "no problem"
+    ],
+    "npc": [
+        "non-playing character"
+    ],
+    "nqt": [
+        "newly qualified teacher"
+    ],
+    "nr": [
+        "nice roll"
+    ],
+    "nrn": [
+        "no reply necessary"
+    ],
+    "ns": [
+        "nice split"
+    ],
+    "nsa": [
+        "no strings attached"
+    ],
+    "nsfl": [
+        "not safe for life"
+    ],
+    "nsfw": [
+        "not safe for work"
+    ],
+    "nsisr": [
+        "not sure if spelled right"
+    ],
+    "nt": [
+        "nice try"
+    ],
+    "nthing": [
+        "nothing"
+    ],
+    "nvr": [
+        "never"
+    ],
+    "nw": [
+        "no way"
+    ],
+    "nwo": [
+        "no way out"
+    ],
+    "o4u": [
+        "only for you"
+    ],
+    "o": [
+        "hugs"
+    ],
+    "oa": [
+        "online auctions"
+    ],
+    "oatus": [
+        "on a totally unrelated subject"
+    ],
+    "ob": [
+        "oh brother"
+    ],
+    "obv": [
+        "obviously"
+    ],
+    "og": [
+        "original gangster"
+    ],
+    "ogim": [
+        "oh god, it's monday"
+    ],
+    "oh": [
+        "overheard"
+    ],
+    "zomg": [
+        "oh my god"
+    ],
+    "oi": [
+        "operator indisposed"
+    ],
+    "oib": [
+        "oh, i'm back"
+    ],
+    "oic": [
+        "oh, i see"
+    ],
+    "oj": [
+        "only joking"
+    ],
+    "ol": [
+        "old lady"
+    ],
+    "oll": [
+        "online love"
+    ],
+    "om": [
+        "oh my"
+    ],
+    "omaa": [
+        "oh my aching ass"
+    ],
+    "omdb": [
+        "over my dead body"
+    ],
+    "omfg": [
+        "oh my freaking god"
+    ],
+    "omg": [
+        "oh my gosh"
+    ],
+    "omgyg2bk": [
+        "oh my god, you got to be kidding"
+    ],
+    "omgys": [
+        "oh my gosh you suck"
+    ],
+    "oms": [
+        "on my soul"
+    ],
+    "omw": [
+        "on my way"
+    ],
+    "onl": [
+        "online"
+    ],
+    "oo": [
+        "over and out"
+    ],
+    "ooc": [
+        "out of character"
+    ],
+    "ooh": [
+        "out of here"
+    ],
+    "oomf": [
+        "one of my followers"
+    ],
+    "ootd": [
+        "outfit of the day"
+    ],
+    "ooto": [
+        "out of the office"
+    ],
+    "op": [
+        "on phone"
+    ],
+    "orly": [
+        "oh really ?"
+    ],
+    "os": [
+        "operating system"
+    ],
+    "ot": [
+        "off topic"
+    ],
+    "otb": [
+        "off to bed"
+    ],
+    "otfl": [
+        "on the floor laughing"
+    ],
+    "otl": [
+        "out to lunch"
+    ],
+    "otoh": [
+        "on the other hand"
+    ],
+    "otp": [
+        "one true pairing; two people you would love to see as a couple"
+    ],
+    "ottomh": [
+        "off the top of my head"
+    ],
+    "otw": [
+        "off to work"
+    ],
+    "oyo": [
+        "on your own"
+    ],
+    "p": [
+        "partner"
+    ],
+    "p2p": [
+        "pay to play"
+    ],
+    "p911": [
+        "parents coming into room alert"
+    ],
+    "pap": [
+        "post a picture"
+    ],
+    "pat": [
+        "patrol"
+    ],
+    "prw": [
+        "people are watching"
+    ],
+    "pbook": [
+        "phonebook"
+    ],
+    "pc": [
+        "player character"
+    ],
+    "pcm": [
+        "please call me"
+    ],
+    "pda": [
+        "personal display of affection"
+    ],
+    "pdh": [
+        "pretty darn happy"
+    ],
+    "pds": [
+        "please don't shoot"
+    ],
+    "pdq": [
+        "pretty darn quick"
+    ],
+    "ppl": [
+        "people"
+    ],
+    "pft": [
+        "pretty freaking tight"
+    ],
+    "pic": [
+        "picture"
+    ],
+    "pics": [
+        "pictures"
+    ],
+    "pip": [
+        "peeing in pants"
+    ],
+    "pir": [
+        "parents in room"
+    ],
+    "piss": [
+        "put in some sugar"
+    ],
+    "pita": [
+        "pain in the ass"
+    ],
+    "pkmn": [
+        "pokemon"
+    ],
+    "pl8": [
+        "plate"
+    ],
+    "pld": [
+        "played"
+    ],
+    "plmk": [
+        "please let me know"
+    ],
+    "plz": [
+        "please"
+    ],
+    "plu": [
+        "people like us"
+    ],
+    "plztlme": [
+        "please tell me"
+    ],
+    "pm": [
+        "private message"
+    ],
+    "pmfi": [
+        "pardon me for interrupting"
+    ],
+    "pmfji": [
+        "pardon me for jumping in"
+    ],
+    "pmsl": [
+        "pee myself laughing"
+    ],
+    "poahf": [
+        "put on a happy face"
+    ],
+    "poidh": [
+        "picture or it didn't happen"
+    ],
+    "pos": [
+        "parent over shoulder"
+    ],
+    "pot": [
+        "potion"
+    ],
+    "potd": [
+        "photo of the day"
+    ],
+    "pov": [
+        "privately owned vehicle"
+    ],
+    "ppu": [
+        "pending pick-up"
+    ],
+    "presh": [
+        "precious"
+    ],
+    "prolly": [
+        "probably"
+    ],
+    "proggy": [
+        "computer program"
+    ],
+    "porn": [
+        "pornography"
+    ],
+    "prt": [
+        "please retweet"
+    ],
+    "psa": [
+        "public service announcement"
+    ],
+    "psos": [
+        "parent standing over shoulder"
+    ],
+    "psp": [
+        "playstation portable"
+    ],
+    "pst": [
+        "please send tell"
+    ],
+    "ptfo": [
+        "pass the freak out"
+    ],
+    "ptiypasi": [
+        "put that in your pipe and smoke it"
+    ],
+    "ptl": [
+        "praise the lord"
+    ],
+    "ptmm": [
+        "please tell me more"
+    ],
+    "pto": [
+        "parent teacher organization"
+    ],
+    "pug": [
+        "pick up group"
+    ],
+    "pve": [
+        "player vs enemy, player versus environment"
+    ],
+    "pvp": [
+        "player versus player"
+    ],
+    "pwn": [
+        "own"
+    ],
+    "pxt": [
+        "please explain that"
+    ],
+    "pu": [
+        "that stinks !"
+    ],
+    "puks": [
+        "pick up kids"
+    ],
+    "pyt": [
+        "pretty young thing"
+    ],
+    "pz": [
+        "peace"
+    ],
+    "pza": [
+        "pizza"
+    ],
+    "q": [
+        "queue"
+    ],
+    "qc": [
+        "quality control"
+    ],
+    "qfe": [
+        "question for everyone"
+    ],
+    "qfi": [
+        "quoted for irony"
+    ],
+    "qft": [
+        "quoted for truth"
+    ],
+    "qik": [
+        "quick"
+    ],
+    "ql": [
+        "quit laughing"
+    ],
+    "qotd": [
+        "quote of the day"
+    ],
+    "q_q": [
+        "crying eyes"
+    ],
+    "qq": [
+        "quick question"
+    ],
+    "qsl": [
+        "reply"
+    ],
+    "qso": [
+        "conversation"
+    ],
+    "qt": [
+        "cutie"
+    ],
+    "qtpi": [
+        "cutie pie"
+    ],
+    "r": [
+        "are"
+    ],
+    "r8": [
+        "rate"
+    ],
+    "rbay": [
+        "right back at you"
+    ],
+    "rfn": [
+        "right freaking now"
+    ],
+    "Rgr": [
+        "i agree"
+    ],
+    "rhip": [
+        "rank has its privileges"
+    ],
+    "rip": [
+        "rest in peace"
+    ],
+    "rl": [
+        "real life"
+    ],
+    "rly": [
+        "really"
+    ],
+    "rme": [
+        "rolling my eyes"
+    ],
+    "rmlb": [
+        "read my lips baby"
+    ],
+    "rmmm": [
+        "read my mail man"
+    ],
+    "roflcopter": [
+        "rolling on floor laughing and spinning around"
+    ],
+    "roflmao": [
+        "rolling on the floor, laughing my ass off"
+    ],
+    "rotfl": [
+        "rolling on the floor laughing"
+    ],
+    "rotfluts": [
+        "rolling on the floor laughing unable to speak"
+    ],
+    "rs": [
+        "runescape"
+    ],
+    "rsn": [
+        "real soon now"
+    ],
+    "rt": [
+        "retweet"
+    ],
+    "rtbs": [
+        "reason to be single"
+    ],
+    "rtfm": [
+        "read the freaking manual"
+    ],
+    "rtfq": [
+        "read the freaking question"
+    ],
+    "rthx": [
+        "thanks for the rt"
+    ],
+    "rtms": [
+        "read the manual, stupid"
+    ],
+    "rtntn": [
+        "retention"
+    ],
+    "rtrctv": [
+        "retroactive"
+    ],
+    "rtrmt": [
+        "retirement"
+    ],
+    "rtsm": [
+        "read the stupid manual"
+    ],
+    "rtwfq": [
+        "read the whole freaking question"
+    ],
+    "ru": [
+        "are you ?"
+    ],
+    "rumof": [
+        "are you male or female ?"
+    ],
+    "ruok": [
+        "are you okay ?"
+    ],
+    "rx": [
+        "prescriptions"
+    ],
+    "rw": [
+        "real world"
+    ],
+    "ryo": [
+        "roll your own"
+    ],
+    "rys": [
+        "are you single ?"
+    ],
+    "s2r": [
+        "send to receive"
+    ],
+    "s2s": [
+        "sorry to say"
+    ],
+    "s4l": [
+        "spam for life"
+    ],
+    "sal": [
+        "such a laugh"
+    ],
+    "sat": [
+        "sorry about that"
+    ],
+    "savage": [
+        "shockingly careless expression or response to an event or message"
+    ],
+    "sb": [
+        "smiling back"
+    ],
+    "sbia": [
+        "standing back in amazement"
+    ],
+    "sbt": [
+        "sorry 'bout that"
+    ],
+    "sc": [
+        "stay cool"
+    ],
+    "sd": [
+        "sweet dreams"
+    ],
+    "sdmb": [
+        "sweet dreams, my baby"
+    ],
+    "senpai": [
+        "someone older than you"
+    ],
+    "seo": [
+        "search engine optimization"
+    ],
+    "sete": [
+        "smiling ear-to-ear"
+    ],
+    "selfie": [
+        "a photo that is taken of oneself for social media sharing"
+    ],
+    "sfaik": [
+        "so far as i know"
+    ],
+    "sh": [
+        "same here"
+    ],
+    "su": [
+        "shut up"
+    ],
+    "shid": [
+        "slapping head in disgust"
+    ],
+    "ship": [
+        "wishing two people were in a relationship"
+    ],
+    "sicnr": [
+        "sorry, i could'nt resist"
+    ],
+    "sig2r": [
+        "sorry, i got to run"
+    ],
+    "sihth": [
+        "stupidity is hard to take"
+    ],
+    "simyc": [
+        "sorry i missed your call"
+    ],
+    "sir": [
+        "strike it rich"
+    ],
+    "sit": [
+        "stay in touch"
+    ],
+    "sitd": [
+        "still in the dark"
+    ],
+    "sjw": [
+        "social justice warrior"
+    ],
+    "sk8": [
+        "skate"
+    ],
+    "sk8ng": [
+        "skating"
+    ],
+    "sk8r": [
+        "skater"
+    ],
+    "sk8rboi": [
+        "skater boy"
+    ],
+    "slap": [
+        "sounds like a plan"
+    ],
+    "slay": [
+        "to succeed at something"
+    ],
+    "sm": [
+        "social media"
+    ],
+    "smazed": [
+        "smoky haze"
+    ],
+    "smexi": [
+        "sexy mexican"
+    ],
+    "smhid": [
+        "scratching my head in disbelief"
+    ],
+    "snafu": [
+        "situation normal all fouled up"
+    ],
+    "snert": [
+        "snot nosed egotistical rude teenager"
+    ],
+    "snr": [
+        "streaks and recents"
+    ],
+    "so": [
+        "significant other"
+    ],
+    "soab": [
+        "son of a bitch"
+    ],
+    "s’ok": [
+        "it's okay"
+    ],
+    "sol": [
+        "sooner or later"
+    ],
+    "somy": [
+        "sick of me yet ?"
+    ],
+    "sorg": [
+        "straight or gay ?"
+    ],
+    "Sos": [
+        "i need help"
+    ],
+    "sos": [
+        "son of sam"
+    ],
+    "sot": [
+        "short of time"
+    ],
+    "sotmg": [
+        "short of time, must go"
+    ],
+    "sowm": [
+        "someone with me"
+    ],
+    "spk": [
+        "speak"
+    ],
+    "srsly": [
+        "seriously"
+    ],
+    "spst": [
+        "same place, same time"
+    ],
+    "spto": [
+        "spoke to"
+    ],
+    "sq": [
+        "square"
+    ],
+    "sry": [
+        "sorry"
+    ],
+    "ss": [
+        "so sorry"
+    ],
+    "ssdd": [
+        "same stuff, different day"
+    ],
+    "ssif": [
+        "so stupid it's funny"
+    ],
+    "ssinf": [
+        "so stupid it's not funny"
+    ],
+    "st&d": [
+        "stop texting and drive"
+    ],
+    "stan": [
+        "fan of someone"
+    ],
+    "str8": [
+        "straight"
+    ],
+    "stw": [
+        "search the web"
+    ],
+    "suitm": [
+        "see you in the morning"
+    ],
+    "zup": [
+        "what's up"
+    ],
+    "suth": [
+        "so used to haters"
+    ],
+    "suyf": [
+        "shut up you fool"
+    ],
+    "swag": [
+        "scientific wild ass guess"
+    ],
+    "swak": [
+        "sent with a kiss"
+    ],
+    "swalk": [
+        "sealed with a loving kiss"
+    ],
+    "swat": [
+        "scientific wild butt guess"
+    ],
+    "swl": [
+        "screaming with laughter"
+    ],
+    "swmbo": [
+        "she who must be obeyed"
+    ],
+    "sys": [
+        "see you soon"
+    ],
+    "sux": [
+        "it sucks"
+    ],
+    "syy": [
+        "shut your yapper"
+    ],
+    "t+": [
+        "think positive"
+    ],
+    "t4bu": [
+        "thanks for being you"
+    ],
+    "tht": [
+        "think happy thoughts"
+    ],
+    "ta": [
+        "thanks a lot"
+    ],
+    "tafn": [
+        "that's all for now"
+    ],
+    "tam": [
+        "tomorro a.m."
+    ],
+    "tank": [
+        "really strong"
+    ],
+    "tanked": [
+        "owned"
+    ],
+    "tanking": [
+        "owning"
+    ],
+    "tarfu": [
+        "things are really fouled up"
+    ],
+    "tau": [
+        "thinking about you"
+    ],
+    "taumualu": [
+        "thinking about you miss you always love you"
+    ],
+    "tba": [
+        "to be announced"
+    ],
+    "tbag": [
+        "process of disgracing a corpse, taunting a fragged/killed player"
+    ],
+    "tbbh": [
+        "to be brutally honest"
+    ],
+    "tbc": [
+        "to be continued"
+    ],
+    "tbd": [
+        "to be determined"
+    ],
+    "tbh": [
+        "to be honest"
+    ],
+    "tbl": [
+        "text back later"
+    ],
+    "tbt": [
+        "throwback thursday"
+    ],
+    "tc": [
+        "take care"
+    ],
+    "tcb": [
+        "take care of business"
+    ],
+    "tcoy": [
+        "take care of yourself"
+    ],
+    "td": [
+        "tower defense"
+    ],
+    "tdtm": [
+        "talk dirty to me"
+    ],
+    "tea": [
+        "gossip"
+    ],
+    "tff": [
+        "too freaking funny"
+    ],
+    "tfs": [
+        "thanks for sharing"
+    ],
+    "tftf": [
+        "thanks for the follow"
+    ],
+    "tfti": [
+        "thanks for the invitation"
+    ],
+    "tftt": [
+        "thanks for this tweet"
+    ],
+    "tg": [
+        "thank goodness"
+    ],
+    "tgif": [
+        "thank god it's friday"
+    ],
+    "thnq": [
+        "thank-you"
+    ],
+    "thot": [
+        "that whore over there"
+    ],
+    "tia": [
+        "thanks in advance"
+    ],
+    "tiad": [
+        "tomorrow is another day"
+    ],
+    "tic": [
+        "tongue-in-cheek"
+    ],
+    "til": [
+        "today i learned"
+    ],
+    "tilis": [
+        "tell it like it is"
+    ],
+    "tir": [
+        "teacher in room"
+    ],
+    "ttyl": [
+        "talk to you later"
+    ],
+    "tl": [
+        "too long"
+    ],
+    "tl;dr": [
+        "too long; didn't read"
+    ],
+    "tm": [
+        "trust me"
+    ],
+    "tma": [
+        "take my advice"
+    ],
+    "tmb": [
+        "tweet me back"
+    ],
+    "tmot": [
+        "trust me on this"
+    ],
+    "tmyl": [
+        "tell me your location"
+    ],
+    "tmwfi": [
+        "take my word for it"
+    ],
+    "tnstaafl": [
+        "there's no such thing as a free lunch"
+    ],
+    "tnt": [
+        "til next time"
+    ],
+    "toj": [
+        "tears of joy"
+    ],
+    "tos": [
+        "terms of service"
+    ],
+    "ttly": [
+        "totally"
+    ],
+    "toy": [
+        "thinking of you"
+    ],
+    "tpm": [
+        "tomorrow p.m."
+    ],
+    "tptb": [
+        "the powers that be"
+    ],
+    "tsh": [
+        "tripping so hard"
+    ],
+    "tsnf": [
+        "that's so not fair"
+    ],
+    "tstb": [
+        "the sooner, the better"
+    ],
+    "tt": [
+        "trending topic"
+    ],
+    "ttfn": [
+        "ta ta for now"
+    ],
+    "tttt": [
+        "these things take time"
+    ],
+    "tui": [
+        "turning you in"
+    ],
+    "yeet": [
+        "excitement"
+    ],
+    "twss": [
+        "that's what she said"
+    ],
+    "ttg": [
+        "time to go"
+    ],
+    "ttyafn": [
+        "talk to you awhile from now"
+    ],
+    "ttys": [
+        "talk to you soon"
+    ],
+    "tyfc": [
+        "thank you for charity"
+    ],
+    "tyfyc": [
+        "thank you for your comment"
+    ],
+    "tys": [
+        "told you so"
+    ],
+    "tyt": [
+        "take your time"
+    ],
+    "tyso": [
+        "thank you so much"
+    ],
+    "tyafy": [
+        "thank you and freak you"
+    ],
+    "tyvm": [
+        "thank you very much"
+    ],
+    "u": [
+        "you"
+    ],
+    "^urs": [
+        "up yours"
+    ],
+    "ycmu": [
+        "you crack me up"
+    ],
+    "udi": [
+        "unidentified drinking injury"
+    ],
+    "udm": [
+        "you the man"
+    ],
+    "uds": [
+        "ugly domestic scene"
+    ],
+    "ufb": [
+        "un freaking believable"
+    ],
+    "ufn": [
+        "until further notice"
+    ],
+    "ufwm": [
+        "you freaking with me ?"
+    ],
+    "ugtbk": [
+        "you've got to be kidding"
+    ],
+    "uhgtbsm": [
+        "you have got to be s#$t*ing me !"
+    ],
+    "uktr": [
+        "you know that's right"
+    ],
+    "ul": [
+        "upload"
+    ],
+    "u-l": [
+        "you will"
+    ],
+    "una": [
+        "use no acronyms"
+    ],
+    "un4tun8": [
+        "unfortunate"
+    ],
+    "unblefble": [
+        "unbelievable"
+    ],
+    "uncrtn": [
+        "uncertain"
+    ],
+    "unpc": [
+        "not politically correct"
+    ],
+    "up2u": [
+        "up to you"
+    ],
+    "uok": [
+        "are you ok ?"
+    ],
+    "ur": [
+        "you're"
+    ],
+    "ur2ys4me": [
+        "you are too wise for me"
+    ],
+    "ura*": [
+        "you are a star"
+    ],
+    "urh": [
+        "you are hot"
+    ],
+    "ursktm": [
+        "you are so kind to me"
+    ],
+    "urtm": [
+        "you are the man"
+    ],
+    "urw": [
+        "you are welcome"
+    ],
+    "usbca": [
+        "until something better comes along"
+    ],
+    "usu": [
+        "usually"
+    ],
+    "ut": [
+        "unreal tournament"
+    ],
+    "yttl": [
+        "you take too long"
+    ],
+    "utm": [
+        "you tell me"
+    ],
+    "uv": [
+        "unpleasant visual"
+    ],
+    "yw": [
+        "you're welcome"
+    ],
+    "ux": [
+        "user experience"
+    ],
+    "v": [
+        "very"
+    ],
+    "veggie": [
+        "vegetarian"
+    ],
+    "vat": [
+        "value added tax"
+    ],
+    "vbl": [
+        "visible bra line"
+    ],
+    "vbs": [
+        "very big smile"
+    ],
+    "vc": [
+        "voice chat"
+    ],
+    "veg": [
+        "very evil grin"
+    ],
+    "vff": [
+        "very freaking funny"
+    ],
+    "vfm": [
+        "value for money"
+    ],
+    "vgc": [
+        "very good condition"
+    ],
+    "vgg": [
+        "very good game"
+    ],
+    "vgh": [
+        "very good hand"
+    ],
+    "vip": [
+        "very important person"
+    ],
+    "vm": [
+        "voice mail"
+    ],
+    "vn": [
+        "very nice"
+    ],
+    "vnh": [
+        "very nice hand"
+    ],
+    "voip": [
+        "voice over internet protocol"
+    ],
+    "vsc": [
+        "very soft chuckle"
+    ],
+    "vsf": [
+        "very sad face"
+    ],
+    "vwd": [
+        "very well done"
+    ],
+    "vwp": [
+        "very well played"
+    ],
+    "w@?": [
+        "what ?"
+    ],
+    "wat": [
+        "what"
+    ],
+    "wb": [
+        "welcome back"
+    ],
+    "w/b": [
+        "write back"
+    ],
+    "w3": [
+        "www"
+    ],
+    "w8": [
+        "wait"
+    ],
+    "wah": [
+        "working at home"
+    ],
+    "waj": [
+        "what a jerk"
+    ],
+    "wam": [
+        "wait a minute"
+    ],
+    "wan2": [
+        "want to ?"
+    ],
+    "wan2tlk": [
+        "want to talk"
+    ],
+    "warez": [
+        "pirated software"
+    ],
+    "was": [
+        "wild ass guess"
+    ],
+    "wawa": [
+        "where are we at ?"
+    ],
+    "wuf": [
+        "where are you from ?"
+    ],
+    "wbs": [
+        "write back soon"
+    ],
+    "wbu": [
+        "what about you ?"
+    ],
+    "wc": [
+        "who cares"
+    ],
+    "wca": [
+        "who cares anyway"
+    ],
+    "whateves": [
+        "whatever"
+    ],
+    "wkd": [
+        "weekend"
+    ],
+    "webo": [
+        "webopedia"
+    ],
+    "weebo": [
+        "obsessed with of japanese culture"
+    ],
+    "wep": [
+        "weapon"
+    ],
+    "wibni": [
+        "wouldn't it be nice if"
+    ],
+    "wdalyic": [
+        "who died and left you in charge"
+    ],
+    "wdyk": [
+        "what do you know ?"
+    ],
+    "wgaca": [
+        "what do you think ?"
+    ],
+    "wfm": [
+        "works for me"
+    ],
+    "wiifm": [
+        "what's in it for me ?"
+    ],
+    "wisp": [
+        "winning is so pleasurable"
+    ],
+    "witp": [
+        "what is the point ?"
+    ],
+    "witw": [
+        "what in the world"
+    ],
+    "wiu": [
+        "wrap it up"
+    ],
+    "wk": [
+        "week"
+    ],
+    "wrt": [
+        "with regard to"
+    ],
+    "wl": [
+        "whatta loser"
+    ],
+    "w/o": [
+        "without"
+    ],
+    "woa": [
+        "work of art"
+    ],
+    "woke": [
+        "people who are aware of current social issues and politics"
+    ],
+    "wombat": [
+        "waste of money brains and time"
+    ],
+    "wrk": [
+        "work"
+    ],
+    "wru": [
+        "where are you ?"
+    ],
+    "wru@": [
+        "where are you at ?"
+    ],
+    "wyd": [
+        "what are you doing ?"
+    ],
+    "wtb": [
+        "want to buy"
+    ],
+    "wtfe": [
+        "what the freak ever"
+    ],
+    "wtfo": [
+        "what the freak ? over."
+    ],
+    "wtg": [
+        "way to go"
+    ],
+    "wtgp": [
+        "want to go private"
+    ],
+    "wth": [
+        "what the heck ?"
+    ],
+    "wtm": [
+        "who's the man ?"
+    ],
+    "wts": [
+        "want to sell ?"
+    ],
+    "wtt": [
+        "want to trade ?"
+    ],
+    "wysiwyg": [
+        "what you see is what you get"
+    ],
+    "wuw": [
+        "what you want ?"
+    ],
+    "wuu2": [
+        "what are you up to ?"
+    ],
+    "wuz": [
+        "was"
+    ],
+    "wwjd": [
+        "what would judd do ?"
+    ],
+    "wwnc": [
+        "will wonders never cease"
+    ],
+    "wwyc": [
+        "write when you can"
+    ],
+    "wycm": [
+        "will you call me ?"
+    ],
+    "wygam": [
+        "when you get a minute"
+    ],
+    "wyham": [
+        "when you have a minute"
+    ],
+    "wylei": [
+        "when you least expect it"
+    ],
+    "wywh": [
+        "wish you were here"
+    ],
+    "x-1-10": [
+        "exciting"
+    ],
+    "x!": [
+        "a typical woman"
+    ],
+    "xd": [
+        "devilish smile"
+    ],
+    "xme": [
+        "excuse me"
+    ],
+    "xlnt": [
+        "excellent"
+    ],
+    "xlr8": [
+        "going faster"
+    ],
+    "xpost": [
+        "cross-post"
+    ],
+    "xyl": [
+        "ex-young lady"
+    ],
+    "yf": [
+        "wife"
+    ],
+    "xyz": [
+        "examine your zipper"
+    ],
+    "y?": [
+        "why ?"
+    ],
+    "y": [
+        "yawn"
+    ],
+    "y2k": [
+        "you're too kind"
+    ],
+    "yaa": [
+        "yet another acronym"
+    ],
+    "yaba": [
+        "yet another bloody acronym"
+    ],
+    "yarly": [
+        "ya, really ?"
+    ],
+    "yas": [
+        "praise"
+    ],
+    "ybic": [
+        "your brother in christ"
+    ],
+    "ybs": [
+        "you'll be sorry"
+    ],
+    "ycdbwycid": [
+        "you can't do business when your computer is down"
+    ],
+    "ycht": [
+        "you can have them"
+    ],
+    "ycliu": [
+        "you can look it up"
+    ],
+    "yct": [
+        "your comment to"
+    ],
+    "yd": [
+        "yesterday"
+    ],
+    "yg": [
+        "young gentleman"
+    ],
+    "ygg": [
+        "you go girl"
+    ],
+    "ygtbkm": [
+        "you've got to be kidding me"
+    ],
+    "ygtr": [
+        "you got that right"
+    ],
+    "yhbt": [
+        "you have been trolled"
+    ],
+    "yhbw": [
+        "you have been warned"
+    ],
+    "yhl": [
+        "you have lost"
+    ],
+    "yiu": [
+        "yes, i understand"
+    ],
+    "ykw": [
+        "you know what"
+    ],
+    "ykwycd": [
+        "you know what you can do"
+    ],
+    "yl": [
+        "young lady"
+    ],
+    "ymmv": [
+        "your mileage may vary"
+    ],
+    "ynk": [
+        "you never know"
+    ],
+    "yryocc": [
+        "you're running your own cuckoo clock"
+    ],
+    "ysic": [
+        "your sister in christ"
+    ],
+    "ysyd": [
+        "yeah sure you do"
+    ],
+    "yt": [
+        "you there ?"
+    ],
+    "ytb": [
+        "youth talk back"
+    ],
+    "ytg": [
+        "you're the greatest"
+    ],
+    "ywhnb": [
+        "yes, we have no bananas"
+    ],
+    "ywhol": [
+        "yelling “woohoo” out loud"
+    ],
+    "ywsyls": [
+        "you win some, you lose some"
+    ],
+    "z": [
+        "said"
+    ],
+    "z%": [
+        "zoo"
+    ],
+    "zh": [
+        "sleeping hour"
+    ],
+    "zot": [
+        "zero tolerance"
+    ]
+}

@@ -153,7 +153,7 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 {:.table2}
 | Dataset  | Source | Description |
 | - | - | - |
-|**Xsum** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples
+|**XSum** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples
 |**XSum-test** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples
 |**XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples
 
@@ -168,7 +168,7 @@ In the Harness, we specify the data input in the following way:
 from nlptest import Harness
 
 harness = Harness(task='summarization',
-                  model='gpt-3.5-turbo',
+                  model='text-davinci-002',
                   config='config.yml',
                   hub ='openai',
                   data='XSum-test-tiny')

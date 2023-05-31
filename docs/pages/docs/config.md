@@ -103,7 +103,7 @@ model_parameters:
 tests:
   defaults:
     min_pass_rate: 0.75
-    evaluation_metric: 'rogue'
+    evaluation_metric: 'rouge'
     threshold: 0.5
 
   robustness:
