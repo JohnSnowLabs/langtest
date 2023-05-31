@@ -598,7 +598,7 @@ class AddContraction(BaseRobustness):
 
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
-    infEng = engine()
+    num = engine()
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -619,7 +619,7 @@ class NumberToWord(BaseRobustness):
                 
                 for match in re.finditer(regex, text):
                     token = match.group()
-                    words = NumberToWord.infEng.number_to_words(token, wantlist=True)
+                    words = NumberToWord.num.number_to_words(token, wantlist=True)
                     new_words_len = len(' '.join(words))
                     trans.append(text[start_offset:match.start()])
                     trans.append(' '.join(words))
