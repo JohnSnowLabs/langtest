@@ -158,7 +158,6 @@ class RobustnessTestCase(unittest.TestCase):
         expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
                                         "Anyone c^an j0in o^ur communitv gardcn."]
         transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
-        
         self.assertIsInstance(transformed_samples, list)
         self.assertListEqual(
             [sample.test_case for sample in transformed_samples],
