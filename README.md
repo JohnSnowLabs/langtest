@@ -32,11 +32,28 @@ Take a look at our official page for user documentation and examples: [nlptest.o
 
 ## Key Features
 
-- Generate & run over 50 test types with 1 line of code
-- Test all aspects of model quality: robustness, bias, representation, fairness and accuracy
-- Automatically augment training data based on test results (for select models)
-- Support for popular NLP frameworks: Spark NLP, Hugging Face Transformers, OpenAI, spaCy, Cohere, and many more 
-- Support for popular NLP tasks: Question Answering, Text Classification & Named Entity Recognition
+- Generate and execute more than 50 distinct types of tests only  with 1 line of code
+- Ensure these tests comprehensively evaluate various aspects of model quality, including:
+    - Robustness 
+    - Bias 
+    - Representation
+    - Fairness 
+    - Accuracy
+- Enable automatic augmentation of training data based on the results obtained from the tests - for selected models
+- Provide seamless integration with popular NLP frameworks, including:
+    - Spark NLP 
+    - Hugging Face 
+    - Transformers
+    - OpenAI
+    - spaCy 
+    - Cohere 
+    - Azure-OpenAI
+    - Ai21
+- Support for popular NLP tasks: 
+    - Question Answering
+    - Summarization 
+    - Named Entity Recognition
+    - Text Classification 
 
 ## How To Use
 
