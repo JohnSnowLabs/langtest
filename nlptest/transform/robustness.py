@@ -640,7 +640,7 @@ class NumberToWord(BaseRobustness):
             trans.append(text[start_offset:])
             results.append(''.join(trans))
 
-            return ''.join(results), trans
+            return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
@@ -707,7 +707,7 @@ class AddOcrTypo(BaseRobustness):
             trans.append(text[start_offset:])
             results.append(''.join(trans))
 
-            return ''.join(results), trans
+            return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
