@@ -694,7 +694,7 @@ class AddOcrTypo(BaseRobustness):
                     transformations.append(
                         Transformation(
                             original_span=Span(
-                                start=match.start(), end=match.end() - 1, word=token),
+                                start=match.start(), end=match.end(), word=token),
                             new_span=Span(start=match.start(), end=match.start(
                             ) + len(corrected_token), word=corrected_token),
                             ignore=False
@@ -836,20 +836,29 @@ class AddSpeechToTextTypo(BaseRobustness):
                         converted_sentence.append(word)
 
             perturbed_text = ''.join(converted_sentence)
-            sample.category = "robustness"
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations
-            
-            return perturbed_text
 
-        for sample in sample_list:
-            if sample.task == 'question-answering':
-                sample.perturbed_question = convertToSimilarHarmony(sample.original_question)
+            return perturbed_text ,transformations
 
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = convertToSimilarHarmony(sample.original_context)
-
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ =convertToSimilarHarmony(sample)
             else:
-                sample.test_case = convertToSimilarHarmony(sample.original)
+                sample.test_case, transformations = convertToSimilarHarmony(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
 
         return sample_list
+
+
+        # for sample in sample_list:
+        #     if sample.task == 'question-answering':
+        #         sample.perturbed_question = convertToSimilarHarmony(sample.original_question)
+
+        #         if "perturbed_context" in sample.__annotations__:
+        #             sample.perturbed_context = convertToSimilarHarmony(sample.original_context)
+
+        #     else:
+        #         sample.test_case = convertToSimilarHarmony(sample.original)
+
+        # return sample_list
