@@ -598,7 +598,7 @@ class AddContraction(BaseRobustness):
 
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
-    num = engine()
+    infEng = engine()
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -610,44 +610,45 @@ class NumberToWord(BaseRobustness):
         Returns:
             List of sentences that have numbers in their verbal representation.
         """
-        
-        def convert_numbers(regex,text):
-                results = []
-                trans = []
-                transformations = []
-                start_offset = 0
-                
-                for match in re.finditer(regex, text):
-                    token = match.group()
-                    words = NumberToWord.num.number_to_words(token, wantlist=True)
-                    new_words_len = len(' '.join(words))
-                    trans.append(text[start_offset:match.start()])
-                    trans.append(' '.join(words))
-                    start_offset = match.end()
-                    if sample.task in ("ner", "text-classification"):
-                        transformations.append(
-                            Transformation(
-                                original_span=Span(start=match.start(), end=match.end(), word=token),
-                                new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
-                                ignore=False
-                            )
+
+        def convert_numbers(regex, text):
+            results = []
+            trans = []
+            transformations = []
+            start_offset = 0
+
+            for match in re.finditer(regex, text):
+                token = match.group()
+                words = NumberToWord.infEng.number_to_words(
+                    token, wantlist=True)
+                new_words_len = len(' '.join(words))
+                trans.append(text[start_offset:match.start()])
+                trans.append(' '.join(words))
+                start_offset = match.end()  
+                transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(), end=match.end(), word=token),
+                            new_span=Span(start=match.start(), end=match.start(
+                            )+new_words_len, word=' '.join(words)),
+                            ignore=False
                         )
-                trans.append(text[start_offset:])
-                results.append(''.join(trans))
+                    )
+
+            trans.append(text[start_offset:])
+            results.append(''.join(trans))
+
+            return ''.join(results), transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
+            else:
+                sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
-                return ''.join(results)
-
-        for sample in sample_list:     
-            if sample.task =='question-answering':
-                 sample.perturbed_question = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original_question)  
-                 if "perturbed_context" in sample.__annotations__:
-                         sample.perturbed_context = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original_context)                
-            else:           
-                sample.test_case = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
         return sample_list
-
 
 class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
@@ -701,7 +702,7 @@ class AddOcrTypo(BaseRobustness):
             trans.append(text[start_offset:])
             results.append(''.join(trans))
 
-            return ''.join(results), trans
+            return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
@@ -752,20 +753,15 @@ class AbbreviationInsertion(BaseRobustness):
                                         ignore=False
                                     )
                                 ) 
-            sample.category = "robustness"
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations 
-            return perturbed_text
- 
-        for sample in sample_list:
-            if sample.task == 'question-answering':
-                sample.perturbed_question = insert_abbreviation(sample.original_question)
+            return perturbed_text, transformations
 
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = insert_abbreviation(sample.original_context)
-
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = insert_abbreviation(sample)
             else:
-                sample.test_case = insert_abbreviation(sample.original)
-            sample.category = "robustness"
-
-        return sample_list 
+                sample.test_case, transformations = insert_abbreviation(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+        
+        return sample_list
