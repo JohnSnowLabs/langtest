@@ -327,7 +327,7 @@ class BaseQASample(BaseModel):
     operator and add the new model to the `Result` type variable.
     """
     original_question: str
-    original_context: str
+    original_context: Optional[str]
     test_type: str = None
     perturbed_question: str = None
     perturbed_context: str = None

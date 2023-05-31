@@ -101,7 +101,9 @@ class UpperCase(BaseRobustness):
             List of sentences that uppercase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = sample.upper()
             else:
                 sample.test_case = sample.original.upper()
@@ -121,7 +123,9 @@ class LowerCase(BaseRobustness):
             List of sentences that lowercase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = sample.lower()
             else:
                 sample.test_case = sample.original.lower()
@@ -141,7 +145,9 @@ class TitleCase(BaseRobustness):
             List of sentences that titlecase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = sample.title()
             else:
                 sample.test_case = sample.original.title()
@@ -173,7 +179,9 @@ class AddPunctuation(BaseRobustness):
                 return text
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = check_whitelist(sample, whitelist)
             else:
                 if sample.original[-1] not in whitelist:
@@ -225,7 +233,9 @@ class StripPunctuation(BaseRobustness):
                 return text
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = check_whitelist(sample, whitelist)
             else:
                 if sample.original[-1] in whitelist:
@@ -303,7 +313,9 @@ class AddTypo(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
 
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = keyboard_typo(sample)
             else:
                 sample.category = "robustness"
@@ -434,7 +446,9 @@ class ConvertAccent(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
 
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx], _ = convert_accent(sample, accent_map)
             else:
                 if sample.task in ("ner", "text-classification"):
@@ -509,7 +523,9 @@ class AddContext(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
 
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx], _ = context(sample, strategy)
             else:
                 if sample.task in ("ner", "text-classification"):
@@ -563,7 +579,9 @@ class AddContraction(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
 
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = search_contraction(sample)
             else:
                 replaced_string = sample.original
@@ -642,7 +660,9 @@ class NumberToWord(BaseRobustness):
             return ''.join(results), trans
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx] = convert_numbers(
                     r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample)
             else:
@@ -709,7 +729,9 @@ class AddOcrTypo(BaseRobustness):
             return ''.join(results), trans
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if sample is None:
+                continue
+            elif isinstance(sample, str):
                 sample_list[idx], _ = ocr_typo(r'[^,\s.!?]+', sample)
             else:
                 sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)

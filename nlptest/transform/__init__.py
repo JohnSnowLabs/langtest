@@ -826,7 +826,8 @@ class AccuracyTestFactory(ITests):
             if raw_data[0].original_context is not None:
                 y_pred = X_test.apply(lambda sample: model(text={'context':sample.original_context, 'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["context", "question"]}))
             else:
-                y_pred = X_test.apply(lambda sample: model(text={'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["question"]}))            y_pred = y_pred.apply(lambda x: x.strip())
+                y_pred = X_test.apply(lambda sample: model(text={'question': sample.original_question}, prompt={"template":prompt_template, 'input_variables':["question"]}))
+            y_pred = y_pred.apply(lambda x: x.strip())
 
         elif raw_data[0].task=="summarization":
             dataset_name = raw_data[0].dataset_name.split('-')[0].lower()
