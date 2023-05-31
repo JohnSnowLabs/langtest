@@ -133,6 +133,9 @@ class DataFactory:
             'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
             'XSum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
             'XSum-test' : script_dir[:-7]+'/Xsum/XSum-test.jsonl',
+            'OpenBookQA-test' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
+            'OpenBookQA-train' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-train.jsonl',
+            'OpenBookQA-dev' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-dev.jsonl',
         }
         return datasets_info[dataset_name]
 
