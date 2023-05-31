@@ -480,7 +480,7 @@ class JSONLDataset(_IDataset):
                     data.append(
                         QASample(
                             original_question = item['question'],
-                            original_context= item.get('passage', item.get("context", "-")),
+                            original_context= item.get('passage', item.get("context", None)),
                             expected_results = expected_results,
                             task=self.task,
                             dataset_name=self._file_path.split('/')[-2]
