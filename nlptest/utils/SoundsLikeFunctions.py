@@ -21,7 +21,7 @@ class G2p(object):
             return prons
 g2p = G2p()
         
-class Word_Functions():
+class Word_Functions:
 
 
     def pronunciation(term, generate=False, dictionary=CMU_dict):
@@ -44,7 +44,7 @@ class Word_Functions():
         pron = [p for sublist in search_pron for p in sublist]  # flatten list of lists into one list
         return pron
 
-class Pronunciation_Functions():
+class Pronunciation_Functions:
     def generate_pronunciation(text):
         
         if text not in CMU_dict:
@@ -53,7 +53,7 @@ class Pronunciation_Functions():
             return CMU_dict[text]
 
 
-class Phone_Functions():
+class Phone_Functions:
 
     def unstressed_phone(phone):
         """Takes a phone and removes the stress marker if it exists"""
@@ -63,7 +63,7 @@ class Phone_Functions():
             return phone[:-1]
 
 
-class Search():
+class Search:
 
     def perfectHomophones(Search_Term, generate=False, dictionary=CMU_dict):
         """

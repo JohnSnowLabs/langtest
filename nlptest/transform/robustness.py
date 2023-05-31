@@ -1,12 +1,11 @@
 import asyncio
 import random
 import re
-import numpy as np
 from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict, abbreviation_dict)
 from ..utils.custom_types import Sample, Span, Transformation
 from typing import List
 import string
@@ -380,11 +379,10 @@ class SwapEntities(BaseRobustness):
 
             sent_tokens = sample.original.split(' ')
 
-            ent_start_pos = np.array(
-                [1 if label[0] == 'B' else 0 for label in sample_labels])
-            ent_idx, = np.where(ent_start_pos == 1)
-
-            replace_idx = np.random.choice(ent_idx)
+            ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
+            ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
+    
+            replace_idx = random.choice(ent_idx)
             ent_type = sample_labels[replace_idx][2:]
             replace_idxs = [replace_idx]
             if replace_idx < len(sample_labels) - 1:
@@ -836,6 +834,63 @@ class AddOcrTypo(BaseRobustness):
                 sample.test_case = ocr_typo(r'[^,\s.!?]+', sample.original)
 
         return sample_list
+    
+class AbbreviationInsertion(BaseRobustness):
+    alias_name = "add_abbreviation"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by inserting abbreviations.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+
+        def insert_abbreviation(text):
+            perturbed_text = text
+            transformations = [] 
+
+            for abbreviation, expansions in abbreviation_dict.items():
+                for expansion in expansions:
+                    pattern = r"(?i)\b" + re.escape(expansion) + r"\b"
+                    corrected_token = abbreviation
+                    perturbed_text = re.sub(pattern, corrected_token, perturbed_text)
+                    matches = re.finditer(pattern, text)
+                    for match in matches:
+                        start = match.start()
+                        end = match.end()
+                        token = text[start:end]
+                        if corrected_token != token:
+                            if sample.task in ("ner", "text-classification"):
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=start, end=end, word=token),
+                                        new_span=Span(start=start, end=start + len(corrected_token), word=corrected_token),
+                                        ignore=False
+                                    )
+                                ) 
+            sample.category = "robustness"
+            if sample.task in ("ner", "text-classification"):
+                sample.transformations = transformations 
+            return perturbed_text
+ 
+        for sample in sample_list:
+            if sample.task == 'question-answering':
+                sample.perturbed_question = insert_abbreviation(sample.original_question)
+
+                if "perturbed_context" in sample.__annotations__:
+                    sample.perturbed_context = insert_abbreviation(sample.original_context)
+
+            else:
+                sample.test_case = insert_abbreviation(sample.original)
+            sample.category = "robustness"
+
+        return sample_list 
+
     
 class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"

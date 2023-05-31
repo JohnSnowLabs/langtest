@@ -1,6 +1,5 @@
 import os
 from typing import List, Union, Dict, Tuple
-import numpy as np
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
