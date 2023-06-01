@@ -492,3 +492,41 @@ class SummarizationSample(BaseModel):
             results = metric.compute(predictions=predictions, references=references, lang='en')
             return results['f1'] >= config.get('threshold', 0.50), results['f1'], 
         
+
+class ToxicitySample(BaseModel):
+    prompt: str = None
+    test_case: str = None
+    expected_results: Union[str, List] = None
+    actual_results: str = None
+    
+    state: str = None
+    dataset_name: str = None
+    task: str = None
+    category: str = None
+    test_type: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        
+        result = {
+            'category': self.category,
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case': self.test_case
+        }
+
+        if self.actual_results is not None:
+            result.update({
+                'expected_result': self.expected_results,
+                'actual_result': self.actual_results,
+                'pass': self.is_pass()
+            })
+        
+        return result
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.expected_results == self.actual_results
+    

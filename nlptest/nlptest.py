@@ -23,7 +23,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization", "toxicity"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
