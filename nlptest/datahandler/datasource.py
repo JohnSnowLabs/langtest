@@ -137,6 +137,10 @@ class DataFactory:
             'TruthfulQA-test' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
             'TruthfulQA-tiny' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-tiny.jsonl',
             'TruthfulQA-train' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-train.jsonl',
+            'MMLU-dev-tiny' : script_dir[:-7]+'/MMLU/MMLU-dev-tiny.jsonl',
+            'MMLU-test-tiny' : script_dir[:-7]+'/MMLU/MMLU-test-tiny.jsonl',
+            'MMLU-val-tiny' : script_dir[:-7]+'/MMLU/MMLU-val-tiny.jsonl',
+
         }
         return datasets_info[dataset_name]
 
