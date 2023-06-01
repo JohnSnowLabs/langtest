@@ -13,6 +13,5 @@ jsonlines
 openai
 langchain
 evaluate
-inflect
 rouge_score
 typing-extensions < 4.6.0

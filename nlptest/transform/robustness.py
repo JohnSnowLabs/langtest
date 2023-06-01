@@ -1,14 +1,15 @@
 import asyncio
 import random
 import re
-from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict, abbreviation_dict)
 from ..utils.custom_types import Sample, Span, Transformation
+from ..utils.number_to_word import engine
 from typing import List
-
+import string
+from ..utils.SoundsLikeFunctions import Search
 
 class BaseRobustness(ABC):
     """
@@ -621,15 +622,14 @@ class NumberToWord(BaseRobustness):
                 token = match.group()
                 words = NumberToWord.infEng.number_to_words(
                     token, wantlist=True)
-                token_len = len(token) - 1
-                new_words_len = len(' '.join(words)) - 1
+                new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
                 trans.append(' '.join(words))
                 start_offset = match.end()  
                 transformations.append(
                         Transformation(
                             original_span=Span(
-                                start=match.start(), end=match.end()-1, word=token),
+                                start=match.start(), end=match.end(), word=token),
                             new_span=Span(start=match.start(), end=match.start(
                             )+new_words_len, word=' '.join(words)),
                             ignore=False
@@ -639,20 +639,17 @@ class NumberToWord(BaseRobustness):
             trans.append(text[start_offset:])
             results.append(''.join(trans))
 
-            return ''.join(results), trans
+            return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = convert_numbers(
-                    r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample)
+                sample_list[idx] = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
             else:
-                sample.test_case, transformations = convert_numbers(
-                    r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original)
+                sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
         return sample_list
-
 
 class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
@@ -693,7 +690,7 @@ class AddOcrTypo(BaseRobustness):
                     transformations.append(
                         Transformation(
                             original_span=Span(
-                                start=match.start(), end=match.end() - 1, word=token),
+                                start=match.start(), end=match.end(), word=token),
                             new_span=Span(start=match.start(), end=match.start(
                             ) + len(corrected_token), word=corrected_token),
                             ignore=False
@@ -706,7 +703,7 @@ class AddOcrTypo(BaseRobustness):
             trans.append(text[start_offset:])
             results.append(''.join(trans))
 
-            return ''.join(results), trans
+            return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
@@ -757,20 +754,89 @@ class AbbreviationInsertion(BaseRobustness):
                                         ignore=False
                                     )
                                 ) 
-            sample.category = "robustness"
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations 
-            return perturbed_text
- 
-        for sample in sample_list:
-            if sample.task == 'question-answering':
-                sample.perturbed_question = insert_abbreviation(sample.original_question)
+            return perturbed_text, transformations
 
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = insert_abbreviation(sample.original_context)
-
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = insert_abbreviation(sample)
             else:
-                sample.test_case = insert_abbreviation(sample.original)
-            sample.category = "robustness"
+                sample.test_case, transformations = insert_abbreviation(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+        
+        return sample_list
+   
+class AddSpeechToTextTypo(BaseRobustness):
+    alias_name = "add_speech_to_text_typo"
 
-        return sample_list 
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by introducing typos simulating speech-to-text errors.
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+        def convertToSimilarHarmony(sentence):
+            words = re.findall(r"\w+(?:'\w+)*|\W", sentence)
+            converted_sentence = []
+            transformations = []
+            index_offset = 0
+
+            for word in words:
+                if word.isspace() or all(ch in string.punctuation for ch in word):
+                    converted_sentence.append(word)  # Preserve space and punctuation in the reconstructed sentence
+                else:
+                    try:
+                        similar_words = Search.perfectHomophones(word)
+                        if similar_words:
+                            original_case = word[0].isupper()
+                            similar_word = random.choice(similar_words)
+                            if original_case and similar_word[0].islower():
+                                similar_word = similar_word.capitalize()
+                            elif not original_case and similar_word[0].isupper():
+                                similar_word = similar_word.lower()
+
+                            if similar_word.lower() == word.lower():
+                                similar_word = word
+
+                            if similar_word != word:
+                                start_index = sentence.index(word, index_offset)
+                                end_index = start_index + len(word)
+                                converted_sentence.append(similar_word)
+                                new_word_length = len(similar_word)
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=start_index, end=end_index, word=word),
+                                        new_span=Span(start=start_index, end=start_index + new_word_length,
+                                                      word=similar_word),
+                                        ignore=False
+                                    )
+                                )
+                                index_offset = end_index
+                            else:
+                                converted_sentence.append(word)
+
+                        else:
+                            converted_sentence.append(word)
+
+                    except ValueError:
+                        converted_sentence.append(word)
+
+            perturbed_text = ''.join(converted_sentence)
+
+            return perturbed_text ,transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ =convertToSimilarHarmony(sample)
+            else:
+                sample.test_case, transformations = convertToSimilarHarmony(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+

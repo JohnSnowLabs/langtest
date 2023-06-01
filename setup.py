@@ -27,7 +27,6 @@ REQUIRED_PKGS = [
     'langchain',
     'openai',
     'evaluate',
-    'inflect',
     'rouge_score',
     'typing-extensions < 4.6.0'
 ]
