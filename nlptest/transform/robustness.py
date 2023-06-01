@@ -1,12 +1,12 @@
 import asyncio
 import random
 import re
-from inflect import engine
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict, abbreviation_dict)
 from ..utils.custom_types import Sample, Span, Transformation
+from ..utils.number_to_word import engine
 from typing import List
 import string
 from ..utils.SoundsLikeFunctions import Search
@@ -622,15 +622,14 @@ class NumberToWord(BaseRobustness):
                 token = match.group()
                 words = NumberToWord.infEng.number_to_words(
                     token, wantlist=True)
-                token_len = len(token) - 1
-                new_words_len = len(' '.join(words)) - 1
+                new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
                 trans.append(' '.join(words))
                 start_offset = match.end()  
                 transformations.append(
                         Transformation(
                             original_span=Span(
-                                start=match.start(), end=match.end()-1, word=token),
+                                start=match.start(), end=match.end(), word=token),
                             new_span=Span(start=match.start(), end=match.start(
                             )+new_words_len, word=' '.join(words)),
                             ignore=False
@@ -644,16 +643,13 @@ class NumberToWord(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = convert_numbers(
-                    r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample)
+                sample_list[idx] = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
             else:
-                sample.test_case, transformations = convert_numbers(
-                    r'(?<!\S)\d+(\.\d+)?(\.)?(?=(\s|\n|$))', sample.original)
+                sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
         return sample_list
-
 
 class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
@@ -758,25 +754,19 @@ class AbbreviationInsertion(BaseRobustness):
                                         ignore=False
                                     )
                                 ) 
-            sample.category = "robustness"
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = transformations 
-            return perturbed_text
- 
-        for sample in sample_list:
-            if sample.task == 'question-answering':
-                sample.perturbed_question = insert_abbreviation(sample.original_question)
+            return perturbed_text, transformations
 
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = insert_abbreviation(sample.original_context)
-
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = insert_abbreviation(sample)
             else:
-                sample.test_case = insert_abbreviation(sample.original)
-            sample.category = "robustness"
-
-        return sample_list 
-
-    
+                sample.test_case, transformations = insert_abbreviation(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+        
+        return sample_list
+   
 class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
