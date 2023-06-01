@@ -39,6 +39,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="This organization's art can win tough acts."),    
             SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
         ]
+        self.speech_to_text_sentences = [
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),    
+            SequenceClassificationSample(original="This organization's art can win tough acts.")                                                                                        
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -154,7 +158,6 @@ class RobustnessTestCase(unittest.TestCase):
         expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
                                         "Anyone c^an j0in o^ur communitv gardcn."]
         transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
-        
         self.assertIsInstance(transformed_samples, list)
         self.assertListEqual(
             [sample.test_case for sample in transformed_samples],
@@ -165,3 +168,11 @@ class RobustnessTestCase(unittest.TestCase):
         """"""
         transformed_samples = AbbreviationInsertion.transform(self.abbreviation_sentences)
         self.assertIsInstance(transformed_samples, list)           
+
+
+    def test_add_speech_to_text_typo(self) -> None:
+        """"""
+        transformed_samples = AddSpeechToTextTypo.transform(self.speech_to_text_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertTrue(sample.test_case != sample.original or sample.test_case)
