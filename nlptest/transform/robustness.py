@@ -8,7 +8,8 @@ from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_ty
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import engine
 from typing import List
-
+import string
+from ..utils.SoundsLikeFunctions import Search
 
 class BaseRobustness(ABC):
     """
@@ -765,3 +766,77 @@ class AbbreviationInsertion(BaseRobustness):
                 sample.category = "robustness"
         
         return sample_list
+   
+class AddSpeechToTextTypo(BaseRobustness):
+    alias_name = "add_speech_to_text_typo"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by introducing typos simulating speech-to-text errors.
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+        def convertToSimilarHarmony(sentence):
+            words = re.findall(r"\w+(?:'\w+)*|\W", sentence)
+            converted_sentence = []
+            transformations = []
+            index_offset = 0
+
+            for word in words:
+                if word.isspace() or all(ch in string.punctuation for ch in word):
+                    converted_sentence.append(word)  # Preserve space and punctuation in the reconstructed sentence
+                else:
+                    try:
+                        similar_words = Search.perfectHomophones(word)
+                        if similar_words:
+                            original_case = word[0].isupper()
+                            similar_word = random.choice(similar_words)
+                            if original_case and similar_word[0].islower():
+                                similar_word = similar_word.capitalize()
+                            elif not original_case and similar_word[0].isupper():
+                                similar_word = similar_word.lower()
+
+                            if similar_word.lower() == word.lower():
+                                similar_word = word
+
+                            if similar_word != word:
+                                start_index = sentence.index(word, index_offset)
+                                end_index = start_index + len(word)
+                                converted_sentence.append(similar_word)
+                                new_word_length = len(similar_word)
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=start_index, end=end_index, word=word),
+                                        new_span=Span(start=start_index, end=start_index + new_word_length,
+                                                      word=similar_word),
+                                        ignore=False
+                                    )
+                                )
+                                index_offset = end_index
+                            else:
+                                converted_sentence.append(word)
+
+                        else:
+                            converted_sentence.append(word)
+
+                    except ValueError:
+                        converted_sentence.append(word)
+
+            perturbed_text = ''.join(converted_sentence)
+
+            return perturbed_text ,transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ =convertToSimilarHarmony(sample)
+            else:
+                sample.test_case, transformations = convertToSimilarHarmony(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+
