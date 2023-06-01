@@ -1,7 +1,7 @@
 import evaluate
 from ..utils.custom_types import Sample
 from typing import List
-toxicity_metric = evaluate.load("toxicity")
+toxicity_metric = evaluate.load("toxicity",module_type="measurement")
 
 class BaseToxicity:
 
@@ -23,8 +23,8 @@ class PromptToxicity(BaseToxicity):
 
     def transform(sample_list: List[Sample]) -> List[Sample]:
         for sample in sample_list:
-            sample.prompt_toxicity = toxicity_metric(sample.prompt)
-            
+            sample.prompt_toxicity = toxicity_metric.compute(predictions=[sample.prompt])
+        
         sample.test_type = "offensive"
         sample.category = "toxicity"
         
