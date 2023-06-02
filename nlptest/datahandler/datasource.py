@@ -132,6 +132,10 @@ class DataFactory:
             'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
             'XSum-test-tiny': script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
             'XSum-test': script_dir[:-7]+'/Xsum/XSum-test.jsonl',
+            'TruthfulQA-combined' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-combined.jsonl',
+            'TruthfulQA-test' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
+            'TruthfulQA-tiny' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-tiny.jsonl',
+            'TruthfulQA-train' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-train.jsonl',
             'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl',
         }
         return datasets_info[dataset_name]
