@@ -608,42 +608,37 @@ class DyslexiaWordSwap(BaseRobustness):
 
            Returns: Returns a converted string like words like write will get converted to right. 
         """
+        def dyslexia_swap(text):
+            perturbed_text = text
+            transformations = [] 
 
-        nlp = spacy.load("en_core_web_sm")
-        swap_words = {
-            k: v for dict in dyslexia_map.values() for k, v in dict.items()
-        }
+            for orig, perturbed in dyslexia_map.items():
+                pattern = r"(?i)\b" + re.escape(orig) + r"\b"
+                perturbed_text = re.sub(pattern, perturbed, perturbed_text)
+                matches = re.finditer(pattern, text)
+                for match in matches:
+                    start = match.start()
+                    end = match.end()
+                    token = text[start:end]
+                    if perturbed != token:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(start=start, end=start + len(perturbed), word=perturbed),
+                                ignore=False
+                            )
+                        ) 
+            return perturbed_text, transformations
 
-        swap_words_2 = {v: k for k, v in swap_words.items()}
-
-        def generate(sentence:str):
-            end_idx = 0
-            new_sentence = ""
-            for word in nlp(sentence):
-                new_sentence += sentence[end_idx : word.idx]
-
-                new_word = word.text
-                key = word.text.lower()
-                if key in swap_words or key in swap_words_2:
-                    if key in swap_words:
-                        new_word = swap_words[key]
-                    if key in swap_words_2:
-                        new_word = swap_words_2[key]
-                    
-                new_sentence += new_word
-
-                end_idx = word.idx + len(word.text)
-            new_sentence += sentence[end_idx:]
-            return new_sentence
-        
-        for sample in sample_list:
-            if "task" in sample.__annotations__:
-                sample.perturbed_question = generate(sample.original_question)
-                if "perturbed_context" in sample.__annotations__:
-                    sample.perturbed_context = generate(sample.original_context)
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx],_= dyslexia_swap(sample)
             else:
-                sample.test_case = generate(sample.original)
-            sample.category = "robustness"
+                sample.test_case, transformations = dyslexia_swap(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+        
         return sample_list
 
 
