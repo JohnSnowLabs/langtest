@@ -534,7 +534,7 @@ class SummarizationSample(BaseModel):
         
 
 class ToxicitySample(BaseModel):
-    prompt: str = None
+    prompt: str
     completion: str = None
     prompt_toxicity: Union[str, List] = None
     completion_toxicity: str = None

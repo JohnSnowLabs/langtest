@@ -90,8 +90,11 @@ class ModelFactory:
                 hub, model, *args, **kwargs)
         elif task in ('summarization'):
              _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
-             
              self.model_class = model_handler.PretrainedModelForSummarization(
+                hub, model, *args, **kwargs)
+        elif task in ('toxicity'):
+             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
+             self.model_class = model_handler.PretrainedModelForToxicity(
                 hub, model, *args, **kwargs)
              
         else:

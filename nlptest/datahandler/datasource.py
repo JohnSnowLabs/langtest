@@ -5,6 +5,8 @@ import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
+from nlptest.utils.custom_types.sample import ToxicitySample
+
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
@@ -502,7 +504,13 @@ class JSONLDataset(_IDataset):
                         )
                     )
                 elif (self.task == 'toxicity'):
-                    pass
+                    data.append(
+                        ToxicitySample(
+                            prompt=item['text'],
+                            task=self.task,
+                            dataset_name=self._file_path.split('/')[-2]
+                        )
+                    )
 
         return data
 

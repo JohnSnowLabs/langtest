@@ -38,7 +38,6 @@ class PretrainedModelForQA(_ModelHandler):
             raise ConfigError(
                 f"\nPlease update model_parameters section in config.yml file for {path} model in {hub}.\nmodel_parameters:\n\t{error_msg[0]}: value \n\n{error_msg} is required field(s), please provide them in config.yml "
             )
-    
 
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         prompt_template = PromptTemplate(**prompt)
@@ -48,7 +47,7 @@ class PretrainedModelForQA(_ModelHandler):
     def predict_raw(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Alias of the 'predict' method"""
         return self.predict(text, prompt, *args, **kwargs)
-    
+
     def __call__(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Alias of the 'predict' method"""
         return self.predict(text, prompt, *args, **kwargs)
@@ -63,5 +62,10 @@ class ConfigError(BaseException):
     def __str__(self):
         return self.message
 
+
 class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
+    pass
+
+
+class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
     pass
