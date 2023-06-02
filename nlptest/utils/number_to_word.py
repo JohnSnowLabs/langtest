@@ -16,9 +16,14 @@ from typing import (
     Any,
 )
 
-
 Word = Annotated[str, Field(min_length=1)]
-Falsish = Any  # ideally, falsish would only validate on bool(value) is False
+Falsish = Any 
+
+STDOUT_ON = False
+
+def print3(txt: str) -> None:
+    if STDOUT_ON:
+        print(txt)
 
 class BadChunkingOptionError(Exception):
     pass
@@ -26,14 +31,59 @@ class BadChunkingOptionError(Exception):
 class NumOutOfRangeError(Exception):
     pass
 
-STDOUT_ON = False
-def print3(txt: str) -> None:
-    if STDOUT_ON:
-        print(txt)
-
-class engine:
+class ConvertNumberToWord:
     def __init__(self) -> None:
         self.mill_count = 0
+        
+    def millfn(self, ind: int = 0) -> str:
+        if ind >= len(mill):
+            print3("Number out of range")
+            raise NumOutOfRangeError
+        return mill[ind]
+    
+    def tenfn(self, tens: int, units: int, mindex: int = 0) -> str:
+        if tens != 1:
+            tens_part = ten[tens]
+            hyphen = "-" if tens and units else ""
+            unit_part = unit[units]
+            mill_part = self.millfn(mindex)
+            return f"{tens_part}{hyphen}{unit_part}{mill_part}"
+        return f"{teen[units]}{mill[mindex]}"
+    
+    def group1sub(self, mo: Match) -> str:
+        units = int(mo.group(1))
+        if units == 1:
+            return f" {self.number_args['one']}, "
+        elif units:
+            return f"{unit[units]}, "
+        else:
+            return f" {self.number_args['zero']}, "
+
+    def group1bsub(self, mo: Match) -> str:
+        units = int(mo.group(1))
+        if units:
+            return f"{unit[units]}, "
+        else:
+            return f" {self.number_args['zero']}, "
+
+    def group2sub(self, mo: Match) -> str:
+        tens = int(mo.group(1))
+        units = int(mo.group(2))
+        if tens:
+            return f"{self.tenfn(tens, units)}, "
+        if units:
+            return f" {self.number_args['zero']} {unit[units]}, "
+        return f" {self.number_args['zero']} {self.number_args['zero']}, "
+
+    def group3sub(self, mo: Match) -> str:
+        hundreds = int(mo.group(1))
+        tens = int(mo.group(2))
+        units = int(mo.group(3))
+        number_args = self.number_args
+        hunword = f" {number_args['one']}" if hundreds == 1 else str(unit[hundreds]) if hundreds else f" {number_args['zero']}"
+        tenword = self.tenfn(tens, units) if tens else f" {number_args['zero']} {unit[units]}" if units else f" {number_args['zero']} {number_args['zero']}"
+        return f"{hunword} {tenword}, "
+    
     def number_to_words( 
         self,
         num: Union[Number, Word],
@@ -47,145 +97,117 @@ class engine:
         threshold: Optional[int] = None,
     ) -> Union[str, List[str]]:
         """
-        Return a number in words.
+    Return a number in words.
 
-        group = 1, 2 or 3 to group numbers before turning into words
-        comma: define comma
+    Args:
+        num (Union[Number, Word]): The number to convert to words.
+        wantlist (bool, optional): Whether to return a list of words instead of a single string. Defaults to False.
+        group (int, optional): The grouping option for numbers. Can be 1, 2, or 3. Defaults to 0.
+        comma (Union[Falsish, str], optional): The comma separator. Defaults to ",".
+        andword (str, optional): The word for 'and'. Can be set to '' for no 'and'. Defaults to "and".
+        zero (str, optional): The word for '0'. Defaults to "zero".
+        one (str, optional): The word for '1'. Defaults to "one".
+        decimal (Union[Falsish, str], optional): The word for the decimal point. Defaults to "point".
+        threshold (Optional[int], optional): Numbers above this threshold will not be turned into words. Defaults to None.
 
-        andword:
-            word for 'and'. Can be set to ''.
-            e.g. "one hundred and one" vs "one hundred one"
+    Returns:
+        Union[str, List[str]]: The number in words as a string or a list of words.
 
-        zero: word for '0'
-        one: word for '1'
-        decimal: word for decimal point
-        threshold: numbers above threshold not turned into words
-
-        parameters not remembered from last call. Departure from Perl version.
-        """
-        self._number_args = {"andword": andword, "zero": zero, "one": one}
+    Notes:
+        - Parameters are not remembered from the last call (departure from Perl version).
+    """
+        self.number_args = {"andword": andword, "zero": zero, "one": one}
         num = str(num)
 
         # Handle "stylistic" conversions (up to a given threshold)...
         if threshold is not None and float(num) > threshold:
             spnum = num.split(".", 1)
             while comma:
-                (spnum[0], n) = FOUR_DIGIT_COMMA.subn(r"\1,\2", spnum[0])
+                spnum[0], n = FOUR_DIGIT_COMMA.subn(r"\1,\2", spnum[0])
                 if n == 0:
                     break
             try:
                 return f"{spnum[0]}.{spnum[1]}"
             except IndexError:
                 return str(spnum[0])
-
+        
         if group < 0 or group > 3:
             raise BadChunkingOptionError
+
         nowhite = num.lstrip()
-        if nowhite[0] == "+":
-            sign = "plus"
-        elif nowhite[0] == "-":
-            sign = "minus"
-        else:
-            sign = ""
+        sign = "plus" if nowhite.startswith("+") else "minus" if nowhite.startswith("-") else ""
 
         if num in nth_suff:
             num = zero
 
-        myord = num[-2:] in nth_suff
+        myord = num.endswith(tuple(nth_suff))
         if myord:
             num = num[:-2]
+
         finalpoint = False
+
         if decimal:
-            if group != 0:
-                chunks = num.split(".")
-            else:
-                chunks = num.split(".", 1)
-            if chunks[-1] == "":  # remove blank string if nothing after decimal
-                chunks = chunks[:-1]
-                finalpoint = True  # add 'point' to end of output
+            chunks = num.split(".", 1) if group == 0 else num.split(".")
+            finalpoint = chunks[-1] == ""
+            if finalpoint:
+                chunks.pop()
+
         else:
             chunks = [num]
 
-        first: Union[int, str, bool] = 1
-        loopstart = 0
-
-        if chunks[0] == "":
-            first = 0
-            if len(chunks) > 1:
-                loopstart = 1
+        first = 1 if chunks[0] else 0
+        loopstart = 1 if not first and len(chunks) > 1 else 0
 
         for i in range(loopstart, len(chunks)):
-            chunk = chunks[i]
-            # remove all non numeric \D
-            chunk = NON_DIGIT.sub("", chunk)
-            if chunk == "":
-                chunk = "0"
+            chunk = NON_DIGIT.sub("", chunks[i] or "0")
 
-            if group == 0 and (first == 0 or first == ""):
+            if group == 0 and (not first or first == ""):
                 chunk = self.enword(chunk, 1)
             else:
                 chunk = self.enword(chunk, group)
 
-            if chunk[-2:] == ", ":
-                chunk = chunk[:-2]
+            chunk = chunk.rstrip(", ")
             chunk = WHITESPACES_COMMA.sub(",", chunk)
-
             if group == 0 and first:
                 chunk = COMMA_WORD.sub(f" {andword} \\1", chunk)
             chunk = WHITESPACES.sub(" ", chunk)
-            # chunk = re.sub(r"(\A\s|\s\Z)", self.blankfn, chunk)
             chunk = chunk.strip()
+
             if first:
                 first = ""
+
             chunks[i] = chunk
 
         numchunks = []
         if first != 0:
             numchunks = chunks[0].split(f"{comma} ")
 
-        if myord and numchunks:
-            # TODO: can this be just one re as it is in perl?
-            mo = ordinal_suff.search(numchunks[-1])
-            if mo:
-                numchunks[-1] = ordinal_suff.sub(ordinal[mo.group(1)], numchunks[-1])
+            if myord and numchunks:
+                last_chunk = numchunks[-1]
+                mo = ordinal_suff.search(last_chunk)
+                numchunks[-1] = ordinal_suff.sub(ordinal.get(mo.group(1), ""), last_chunk) if mo else last_chunk + "th"
+
+            for chunk in chunks[1:]:
+                numchunks.append(decimal)
+                numchunks.extend(chunk.split(f"{comma} "))
+
+            if finalpoint:
+                numchunks.append(decimal)
+
+            if wantlist:
+                numchunks = [sign] + numchunks if sign else numchunks
+                return numchunks
+            elif group:
+                signout = f"{sign} " if sign else ""
+                return f"{signout}{', '.join(numchunks)}"
             else:
-                numchunks[-1] += "th"
-
-        for chunk in chunks[1:]:
-            numchunks.append(decimal)
-            numchunks.extend(chunk.split(f"{comma} "))
-
-        if finalpoint:
-            numchunks.append(decimal)
-
-        # wantlist: Perl list context. can explicitly specify in Python
-        if wantlist:
-            if sign:
-                numchunks = [sign] + numchunks
-            return numchunks
-        elif group:
-            signout = f"{sign} " if sign else ""
-            return f"{signout}{', '.join(numchunks)}"
-        else:
-            signout = f"{sign} " if sign else ""
-            num = f"{signout}{numchunks.pop(0)}"
-            if decimal is None:
-                first = True
-            else:
-                first = not num.endswith(decimal)
-            for nc in numchunks:
-                if nc == decimal:
-                    num += f" {nc}"
-                    first = 0
-                elif first:
-                    num += f"{comma} {nc}"
-                else:
-                    num += f" {nc}"
-            return num
+                signout = f"{sign} " if sign else ""
+                num = f"{signout}{numchunks.pop(0)}"
+                first = True if decimal is None else not num.endswith(decimal)
+                num += "".join([f" {nc}" if not first else f"{comma} {nc}" if nc == decimal else f" {nc}" for nc in numchunks])
+                return num
+            
     def enword(self, num: str, group: int) -> str:
-            # import pdb
-            # pdb.set_trace()
-
             if group == 1:
                 num = DIGIT_GROUP.sub(self.group1sub, num)
             elif group == 2:
@@ -196,19 +218,21 @@ class engine:
                 num = TWO_DIGITS.sub(self.group2sub, num, 1)
                 num = DIGIT_GROUP.sub(self.group1sub, num, 1)
             elif int(num) == 0:
-                num = self._number_args["zero"]
+                return self.number_args["zero"]
             elif int(num) == 1:
-                num = self._number_args["one"]
-            else:
-                num = num.lstrip().lstrip("0")
-                self.mill_count = 0
-                # surely there's a better way to do the next bit
+                return self.number_args["one"]
+
+            num = num.lstrip().lstrip("0")
+            self.mill_count = 0
+            while True:
                 mo = THREE_DIGITS_WORD.search(num)
-                while mo:
-                    num = THREE_DIGITS_WORD.sub(self.hundsub, num, 1)
-                    mo = THREE_DIGITS_WORD.search(num)
-                num = TWO_DIGITS_WORD.sub(self.tensub, num, 1)
-                num = ONE_DIGIT_WORD.sub(self.unitsub, num, 1)
+                if not mo:
+                    break
+                num = THREE_DIGITS_WORD.sub(self.hundsub, num, 1)
+
+            num = TWO_DIGITS_WORD.sub(self.tensub, num, 1)
+            num = ONE_DIGIT_WORD.sub(self.unitsub, num, 1)
+
             return num
     def hundsub(self, mo: Match) -> str:
             ret = self.hundfn(
@@ -216,6 +240,7 @@ class engine:
             )
             self.mill_count += 1
             return ret
+    
     def millfn(self, ind: int = 0) -> str:
             if ind > len(mill) - 1:
                 print3("number out of range")
@@ -225,13 +250,10 @@ class engine:
     def unitfn(self, units: int, mindex: int = 0) -> str:
         return f"{unit[units]}{self.millfn(mindex)}"
 
-    def tenfn(self, tens, units, mindex=0) -> str:
+    def tenfn(self, tens: int, units: int, mindex: int = 0) -> str:
         if tens != 1:
             tens_part = ten[tens]
-            if tens and units:
-                hyphen = "-"
-            else:
-                hyphen = ""
+            hyphen = "-" if tens and units else ""
             unit_part = unit[units]
             mill_part = self.millfn(mindex)
             return f"{tens_part}{hyphen}{unit_part}{mill_part}"
@@ -239,8 +261,7 @@ class engine:
 
     def hundfn(self, hundreds: int, tens: int, units: int, mindex: int) -> str:
         if hundreds:
-            andword = f" {self._number_args['andword']} " if tens or units else ""
-            # use unit not unitfn as simpler
+            andword = f" {self.number_args['andword']} " if tens or units else ""
             return (
                 f"{unit[hundreds]} hundred{andword}"
                 f"{self.tenfn(tens, units)}{self.millfn(mindex)}, "
@@ -248,6 +269,7 @@ class engine:
         if tens or units:
             return f"{self.tenfn(tens, units)}{self.millfn(mindex)}, "
         return ""
+    
     def tensub(self, mo: Match) -> str:
         return f"{self.tenfn(int(mo.group(1)), int(mo.group(2)), self.mill_count)}, "
     def unitsub(self, mo: Match) -> str:

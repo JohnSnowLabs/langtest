@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives)
 from ..utils.custom_types import Sample, Span, Transformation
-from ..utils.number_to_word import engine
+from ..utils.number_to_word import ConvertNumberToWord 
 from typing import List
 import string
 from ..utils.SoundsLikeFunctions import Search
@@ -599,7 +599,7 @@ class AddContraction(BaseRobustness):
 
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
-    infEng = engine()
+    num = ConvertNumberToWord()
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -620,8 +620,7 @@ class NumberToWord(BaseRobustness):
 
             for match in re.finditer(regex, text):
                 token = match.group()
-                words = NumberToWord.infEng.number_to_words(
-                    token, wantlist=True)
+                words = NumberToWord.num.number_to_words(token, wantlist=True)
                 new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
                 trans.append(' '.join(words))
@@ -630,20 +629,18 @@ class NumberToWord(BaseRobustness):
                         Transformation(
                             original_span=Span(
                                 start=match.start(), end=match.end(), word=token),
-                            new_span=Span(start=match.start(), end=match.start(
-                            )+new_words_len, word=' '.join(words)),
+                            new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
                             ignore=False
                         )
                     )
-
+                
             trans.append(text[start_offset:])
             results.append(''.join(trans))
-
             return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
+                sample_list[idx], _ = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
             else:
                 sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
                 if sample.task in ("ner", "text-classification"):

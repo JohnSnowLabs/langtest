@@ -156,7 +156,6 @@ class RobustnessTestCase(unittest.TestCase):
         transformed_samples = NumberToWord.transform(self.number_sentences)
         self.assertIsInstance(transformed_samples, list)
 
-
     def test_add_ocr_typo(self) -> None:
         """"""
         expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
@@ -171,8 +170,7 @@ class RobustnessTestCase(unittest.TestCase):
     def test_abbreviation_insertion(self) -> None:
         """"""
         transformed_samples = AbbreviationInsertion.transform(self.abbreviation_sentences)
-        self.assertIsInstance(transformed_samples, list)           
-
+        self.assertIsInstance(transformed_samples, list)  
 
     def test_add_speech_to_text_typo(self) -> None:
         """"""
