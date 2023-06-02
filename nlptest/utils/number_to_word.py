@@ -178,9 +178,9 @@ class ConvertNumberToWord:
 
             chunks[i] = chunk
 
-            numchunks = []
-            if first != 0:
-                numchunks = chunks[0].split(f"{comma} ")
+        numchunks = []
+        if first != 0:
+            numchunks = chunks[0].split(f"{comma} ")
 
             if myord and numchunks:
                 last_chunk = numchunks[-1]
