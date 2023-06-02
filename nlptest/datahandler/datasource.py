@@ -148,8 +148,9 @@ class DataFactory:
             'OpenBookQA-dev-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-dev-tiny.jsonl',
             'Quac-val' : script_dir[:-7]+'/Quac/Quac-val.jsonl',
             'Quac-val-tiny' : script_dir[:-7]+'/Quac/Quac-val-tiny.jsonl',
+            'Quac-train' : script_dir[:-7]+'/Quac/Quac-train.jsonl',
+            'Quac-train-tiny' : script_dir[:-7]+'/Quac/Quac-train-tiny.jsonl',
         }
-
         return datasets_info[dataset_name]
 
 
