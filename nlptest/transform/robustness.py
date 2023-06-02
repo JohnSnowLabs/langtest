@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives)
 from ..utils.custom_types import Sample, Span, Transformation
-from ..utils.number_to_word import ConvertNumberToWord
+from ..utils.number_to_word import ConvertNumberToWord 
 from typing import List
 import string
 from ..utils.SoundsLikeFunctions import Search
