@@ -213,5 +213,24 @@ h.generate().run().report()
 ```
 
 </div>
+<div class="h3-box" markdown="1">
+
+### Huggingface Inference-Api
+
+#### Pretrained Models
+
+```python
+from nlptest import Harness
+
+# Set API keys
+os.environ["HUGGINGFACEHUB_API_TOKEN"] = "<API_TOKEN>"
+
+# Create test Harness
+h = Harness(task="question-answering", hub="huggingface-inference-api", model="google/flan-t5-small", data='BoolQ-test-tiny')
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div>
 
 </div></div>
