@@ -614,7 +614,7 @@ class DyslexiaWordSwap(BaseRobustness):
 
             for orig, perturbed in dyslexia_map.items():
                 pattern = r"(?i)\b" + re.escape(orig) + r"\b"
-                perturbed_text = re.sub(pattern, perturbed, perturbed_text)
+                perturbed_text = re.sub(pattern, "__TEMP__" + perturbed, perturbed_text)
                 matches = re.finditer(pattern, text)
                 for match in matches:
                     start = match.start()
@@ -628,6 +628,7 @@ class DyslexiaWordSwap(BaseRobustness):
                                 ignore=False
                             )
                         ) 
+            perturbed_text = perturbed_text.replace( "__TEMP__", "")
             return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
