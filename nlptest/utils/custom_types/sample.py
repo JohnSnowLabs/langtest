@@ -400,7 +400,7 @@ class QASample(BaseQASample):
         from langchain.prompts import PromptTemplate
 
         """"""
-        if self.dataset_name not in ['BoolQ', 'TruthfulQA']:
+        if self.dataset_name not in ['BoolQ', 'TruthfulQA', 'Quac']:
             PROMPT = PromptTemplate(input_variables=["query", "answer", "result"], template=qa_prompt_template)
             eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model, prompt=PROMPT)
             inputs = [{
