@@ -4,7 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict, abbreviation_dict)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives)
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import ConvertNumberToWord
 from typing import List
@@ -743,6 +743,7 @@ class AbbreviationInsertion(BaseRobustness):
                         end = match.end()
                         token = text[start:end]
                         if corrected_token != token:
+                    
                             transformations.append(
                                 Transformation(
                                     original_span=Span(start=start, end=end, word=token),
@@ -835,4 +836,86 @@ class AddSpeechToTextTypo(BaseRobustness):
                 sample.category = "robustness"
 
         return sample_list
+
+
+class AddSlangifyTypo(BaseRobustness):
+    alias_name = "add_slangify_typo"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by adding slang words.
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+        def slangify_typo(text):
+            slang_words = [
+                list(map(list, zip(*Slang_Nouns))),
+                list(map(list, zip(*Slang_Adverbs))),
+                list(map(list, zip(*Slang_Adjectives)))
+            ]
+
+            modified_toks = []
+            tokens = re.findall(r"\w+(?:[-']\w+)*|[^\w\s]|[\s]+", text)    # Include hyphenated and possessive words as single tokens
+            transformations = []
+            start_offset = 0
+
+            for token in tokens:
+                if token.isspace() or all(ch in string.punctuation for ch in token):
+                    modified_toks.append(token)  # Preserve space and punctuation in the reconstructed text
+                    continue    
+                is_cap = token[0].isupper()
+                replaced = False
+
+                for slang in slang_words:
+                    if token.lower() in slang[0]:
+                        replacements = [i for i, x in enumerate(slang[0]) if x == token.lower()]
+                        chosen_index = random.choice(replacements)
+                        temp = slang[1][chosen_index]
+
+                        if is_cap:
+                            temp = temp[0].upper() + temp[1:]
+
+                        if temp != token:
+                            start_index = text.index(token, start_offset)
+                            end_index = start_index + len(token)
+                            modified_toks.append(temp)
+                            new_word_length = len(temp)
+                            if sample.task in ("ner", "text-classification"):
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=start_index, end=end_index, word=token),
+                                        new_span=Span(start=start_index, end=start_index + new_word_length,
+                                                    word=temp),
+                                        ignore=False
+                                    )
+                                )
+                                start_offset = end_index
+                        else:
+                            modified_toks.append(token)
+
+                        replaced = True
+                        break
+
+                if not replaced:
+                    modified_toks.append(token)
+
+            modified_text = "".join(modified_toks)
+
+            return modified_text,transformations
+        
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ =slangify_typo(sample)
+            else:
+                sample.test_case, transformations = slangify_typo(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+    
 

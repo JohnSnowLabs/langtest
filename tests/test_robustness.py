@@ -43,6 +43,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),    
             SequenceClassificationSample(original="This organization's art can win tough acts.")                                                                                        
         ]
+        self.add_slangify = [
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),    
+            SequenceClassificationSample(original="It was totally excellent but useless bet.")                                                                                        
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -176,3 +180,12 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertTrue(sample.test_case != sample.original or sample.test_case)
+        
+    def test_add_slangify_typo(self) -> None:
+        """"""
+        transformed_samples = AddSlangifyTypo.transform(self.add_slangify)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+            
