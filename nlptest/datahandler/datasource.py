@@ -141,6 +141,12 @@ class DataFactory:
             'MMLU-test-tiny' : script_dir[:-7]+'/MMLU/MMLU-test-tiny.jsonl',
             'MMLU-val-tiny' : script_dir[:-7]+'/MMLU/MMLU-val-tiny.jsonl',
 
+            'OpenBookQA-test' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
+            'OpenBookQA-train' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-train.jsonl',
+            'OpenBookQA-dev' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-dev.jsonl',
+            'OpenBookQA-test-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test-tiny.jsonl',
+            'OpenBookQA-train-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-train-tiny.jsonl',
+            'OpenBookQA-dev-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-dev-tiny.jsonl',
         }
         return datasets_info[dataset_name]
 

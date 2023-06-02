@@ -11,8 +11,7 @@ default_user_prompt = {
     "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
     "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Context: {context}\n Question: {question}\n Answer:",
     "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
-}
-
+    "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:" }
 
 class BaseSample(BaseModel):
     """
