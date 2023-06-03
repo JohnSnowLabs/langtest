@@ -4,9 +4,9 @@ import re
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict, abbreviation_dict)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives)
 from ..utils.custom_types import Sample, Span, Transformation
-from ..utils.number_to_word import engine
+from ..utils.number_to_word import ConvertNumberToWord 
 from typing import List
 import string
 from ..utils.SoundsLikeFunctions import Search
@@ -599,7 +599,7 @@ class AddContraction(BaseRobustness):
 
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
-    infEng = engine()
+    num = ConvertNumberToWord()
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -620,8 +620,7 @@ class NumberToWord(BaseRobustness):
 
             for match in re.finditer(regex, text):
                 token = match.group()
-                words = NumberToWord.infEng.number_to_words(
-                    token, wantlist=True)
+                words = NumberToWord.num.number_to_words(token, wantlist=True)
                 new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
                 trans.append(' '.join(words))
@@ -630,20 +629,18 @@ class NumberToWord(BaseRobustness):
                         Transformation(
                             original_span=Span(
                                 start=match.start(), end=match.end(), word=token),
-                            new_span=Span(start=match.start(), end=match.start(
-                            )+new_words_len, word=' '.join(words)),
+                            new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
                             ignore=False
                         )
                     )
-
+                
             trans.append(text[start_offset:])
             results.append(''.join(trans))
-
             return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
+                sample_list[idx], _ = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
             else:
                 sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
                 if sample.task in ("ner", "text-classification"):
@@ -746,19 +743,19 @@ class AbbreviationInsertion(BaseRobustness):
                         end = match.end()
                         token = text[start:end]
                         if corrected_token != token:
-                            if sample.task in ("ner", "text-classification"):
-                                transformations.append(
-                                    Transformation(
-                                        original_span=Span(start=start, end=end, word=token),
-                                        new_span=Span(start=start, end=start + len(corrected_token), word=corrected_token),
-                                        ignore=False
-                                    )
-                                ) 
+                    
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(start=start, end=end, word=token),
+                                    new_span=Span(start=start, end=start + len(corrected_token), word=corrected_token),
+                                    ignore=False
+                                )
+                            ) 
             return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = insert_abbreviation(sample)
+                sample_list[idx],_= insert_abbreviation(sample)
             else:
                 sample.test_case, transformations = insert_abbreviation(sample.original)
                 if sample.task in ("ner", "text-classification"):
@@ -839,4 +836,86 @@ class AddSpeechToTextTypo(BaseRobustness):
                 sample.category = "robustness"
 
         return sample_list
+
+
+class AddSlangifyTypo(BaseRobustness):
+    alias_name = "add_slangify_typo"
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """
+        Transforms the given sample list by adding slang words.
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+        def slangify_typo(text):
+            slang_words = [
+                list(map(list, zip(*Slang_Nouns))),
+                list(map(list, zip(*Slang_Adverbs))),
+                list(map(list, zip(*Slang_Adjectives)))
+            ]
+
+            modified_toks = []
+            tokens = re.findall(r"\w+(?:[-']\w+)*|[^\w\s]|[\s]+", text)    # Include hyphenated and possessive words as single tokens
+            transformations = []
+            start_offset = 0
+
+            for token in tokens:
+                if token.isspace() or all(ch in string.punctuation for ch in token):
+                    modified_toks.append(token)  # Preserve space and punctuation in the reconstructed text
+                    continue    
+                is_cap = token[0].isupper()
+                replaced = False
+
+                for slang in slang_words:
+                    if token.lower() in slang[0]:
+                        replacements = [i for i, x in enumerate(slang[0]) if x == token.lower()]
+                        chosen_index = random.choice(replacements)
+                        temp = slang[1][chosen_index]
+
+                        if is_cap:
+                            temp = temp[0].upper() + temp[1:]
+
+                        if temp != token:
+                            start_index = text.index(token, start_offset)
+                            end_index = start_index + len(token)
+                            modified_toks.append(temp)
+                            new_word_length = len(temp)
+                            if sample.task in ("ner", "text-classification"):
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=start_index, end=end_index, word=token),
+                                        new_span=Span(start=start_index, end=start_index + new_word_length,
+                                                    word=temp),
+                                        ignore=False
+                                    )
+                                )
+                                start_offset = end_index
+                        else:
+                            modified_toks.append(token)
+
+                        replaced = True
+                        break
+
+                if not replaced:
+                    modified_toks.append(token)
+
+            modified_text = "".join(modified_toks)
+
+            return modified_text,transformations
+        
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ =slangify_typo(sample)
+            else:
+                sample.test_case, transformations = slangify_typo(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+    
 

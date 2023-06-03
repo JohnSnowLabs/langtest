@@ -9,9 +9,11 @@ default_user_prompt = {
     "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
     "nq": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Context: {context}\n Question: {question}\n Answer:",
     "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
-    "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Context: {context}\n Question: {question}\n Answer:"
+    "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Context: {context}\n Question: {question}\n Answer:",
+    "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:" ,
+    "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers. Please read the context below carefully, which contains information relevant to the questions. For each question, provide the corresponding answers using above context . Context: {context}\n Question: {question}\n Answer:",
 }
-
 
 class BaseSample(BaseModel):
     """
@@ -398,7 +400,7 @@ class QASample(BaseQASample):
         from langchain.prompts import PromptTemplate
 
         """"""
-        if self.dataset_name not in ['BoolQ', 'TruthfulQA']:
+        if self.dataset_name not in ['BoolQ', 'TruthfulQA', 'Quac']:
             PROMPT = PromptTemplate(input_variables=["query", "answer", "result"], template=qa_prompt_template)
             eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model, prompt=PROMPT)
             inputs = [{
