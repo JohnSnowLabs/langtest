@@ -172,8 +172,14 @@ setup(
             "data/NQ-open/*",
             "data/textcat_imdb/*/*",
             "data/config/*",
-            "data/Xsum/*"
-            "data/HellaSwag/*"
+            "data/Xsum/*",
+            "data/HellaSwag/*",
+            "data/toxicity/*",
+            "data/TruthfulQA/*",
+            "data/Quac/*",
+            "data/OpenBookQA/*",
+            "data/MMLU/*",
+            
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
