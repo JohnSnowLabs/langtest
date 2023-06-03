@@ -13,6 +13,7 @@ default_user_prompt = {
     "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:" ,
     "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers. Please read the context below carefully, which contains information relevant to the questions. For each question, provide the corresponding answers using above context . Context: {context}\n Question: {question}\n Answer:",
+    "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. Answer:",
 }
 
 class BaseSample(BaseModel):
