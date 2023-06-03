@@ -151,7 +151,9 @@ class DataFactory:
             'Quac-val-tiny' : script_dir[:-7]+'/Quac/Quac-val-tiny.jsonl',
             'Quac-train' : script_dir[:-7]+'/Quac/Quac-train.jsonl',
             'Quac-train-tiny' : script_dir[:-7]+'/Quac/Quac-train-tiny.jsonl',
-            'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl'
+            'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl',
+            'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
+            'HellaSwag-test-tiny' : script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
         }
         return datasets_info[dataset_name]
 
@@ -467,11 +469,11 @@ class CSVDataset(_IDataset):
 
 class JSONLDataset(_IDataset):
     """
-    Class to handle BoolQ dataset. Subclass of _IDataset.
+    Class to handle JSONL datasets. Subclass of _IDataset.
     """
 
     def __init__(self, file_path: str, task: str) -> None:
-        """Initializes BOOLQDataset object.
+        """Initializes JSONLDataset object.
         Args:
             file_path (str): Path to the data file.
         """

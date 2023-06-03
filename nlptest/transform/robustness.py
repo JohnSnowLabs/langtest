@@ -1,10 +1,11 @@
+import spacy
 import asyncio
 import random
 import re
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
-from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives)
+from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives, dyslexia_map)
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import ConvertNumberToWord 
 from typing import List
@@ -597,6 +598,51 @@ class AddContraction(BaseRobustness):
         return sample_list
 
 
+class DyslexiaWordSwap(BaseRobustness):
+    alias_name = "dyslexia_word_swap"
+    
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """Converts the string by changing some similar words from the dictonary(dyslexia_map) and outputs a string. 
+           Args: sample_list: List of sentences to process.
+
+           Returns: Returns a converted string like words like write will get converted to right. 
+        """
+        def dyslexia_swap(text):
+            perturbed_text = text
+            transformations = [] 
+
+            for orig, perturbed in dyslexia_map.items():
+                pattern = r"(?i)\b" + re.escape(orig) + r"\b"
+                perturbed_text = re.sub(pattern, "__TEMP__" + perturbed, perturbed_text)
+                matches = re.finditer(pattern, text)
+                for match in matches:
+                    start = match.start()
+                    end = match.end()
+                    token = text[start:end]
+                    if perturbed != token:
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(start=start, end=start + len(perturbed), word=perturbed),
+                                ignore=False
+                            )
+                        ) 
+            perturbed_text = perturbed_text.replace( "__TEMP__", "")
+            return perturbed_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx],_= dyslexia_swap(sample)
+            else:
+                sample.test_case, transformations = dyslexia_swap(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+        
+        return sample_list
+
+
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
     num = ConvertNumberToWord()
@@ -917,5 +963,3 @@ class AddSlangifyTypo(BaseRobustness):
                 sample.category = "robustness"
 
         return sample_list
-    
-

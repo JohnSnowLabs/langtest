@@ -35,17 +35,21 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="He lives in the USA."),
             SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
+        self.dyslexia_sentences = [
+            SequenceClassificationSample(original="I live in London of United Kingdom."),
+            SequenceClassificationSample(original="I would like that.")
+        ]
         self.ocr_sentences = [
-            SequenceClassificationSample(original="This organization's art can win tough acts."),    
-            SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
+            SequenceClassificationSample(original="This organization's art can win tough acts."),
+            SequenceClassificationSample(original="Anyone can join our community garden.")
         ]
         self.speech_to_text_sentences = [
-            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),    
-            SequenceClassificationSample(original="This organization's art can win tough acts.")                                                                                        
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),
+            SequenceClassificationSample(original="This organization's art can win tough acts.")
         ]
         self.add_slangify = [
-            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),    
-            SequenceClassificationSample(original="It was totally excellent but useless bet.")                                                                                        
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),
+            SequenceClassificationSample(original="It was totally excellent but useless bet.")
         ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
@@ -150,6 +154,13 @@ class RobustnessTestCase(unittest.TestCase):
             [len(sample.transformations) for sample in transformed_samples],
             [0, 1]
         )
+
+    def test_dyslexia_swap(self) -> None:
+        """"""
+        transformed_samples = DyslexiaWordSwap.transform(self.dyslexia_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertTrue(sample.test_case != sample.original or sample.test_case)
         
     def test_number_to_word(self) -> None:
         """"""
