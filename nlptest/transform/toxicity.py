@@ -20,7 +20,7 @@ class BaseToxicity(ABC):
     @staticmethod
     @abstractmethod
     async def run(sample_list: List[Sample], model, *args, **kwargs):
-        progress = kwargs.get("progress", False)
+        progress = kwargs.get("progress_bar", False)
         global toxicity_metric
         for sample in sample_list:
             if sample.state != "done":
