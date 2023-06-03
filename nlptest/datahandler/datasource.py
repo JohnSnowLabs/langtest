@@ -5,6 +5,8 @@ import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
+from nlptest.utils.custom_types.sample import ToxicitySample
+
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
@@ -85,29 +87,28 @@ class DataFactory:
                 path to save the data to
         """
         self.init_cls.export_data(data, output_path)
-        
-    @classmethod   
-    def load_curated_bias(cls, tests_to_filter, file_path)-> List[Sample]:
+
+    @classmethod
+    def load_curated_bias(cls, tests_to_filter, file_path) -> List[Sample]:
         data = []
         path = os.path.abspath(__file__)
-        if file_path=='BoolQ':
+        if file_path == 'BoolQ':
             bias_jsonl = os.path.dirname(path)[: -7]+"/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
                     if item['test_type'] in tests_to_filter:
                         data.append(
                             QASample(original_question=item['original_question'], original_context=item.get(
-                                'original_context', "-"),perturbed_question=item['perturbed_question'], perturbed_context=item.get(
-                                'perturbed_context', "-"), task="question-answering", test_type = item['test_type'], category=item['category'], dataset_name="BoolQ")
+                                'original_context', "-"), perturbed_question=item['perturbed_question'], perturbed_context=item.get(
+                                'perturbed_context', "-"), task="question-answering", test_type=item['test_type'], category=item['category'], dataset_name="BoolQ")
                         )
-        elif file_path=='XSum':
+        elif file_path == 'XSum':
             bias_jsonl = os.path.dirname(path)[: -7]+"/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item['test_type'] in tests_to_filter:           
+                    if item['test_type'] in tests_to_filter:
                         data.append(
-                            SummarizationSample(original=item['original'], test_case=item['test_case'], task="summarization", test_type = item['test_type'], category=item['category'], dataset_name="XSum"))
-            
+                            SummarizationSample(original=item['original'], test_case=item['test_case'], task="summarization", test_type=item['test_type'], category=item['category'], dataset_name="XSum"))
 
         return data
 
@@ -131,8 +132,8 @@ class DataFactory:
             'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
             'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
             'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
-            'XSum-test-tiny' : script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
-            'XSum-test' : script_dir[:-7]+'/Xsum/XSum-test.jsonl',
+            'XSum-test-tiny': script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
+            'XSum-test': script_dir[:-7]+'/Xsum/XSum-test.jsonl',
             'TruthfulQA-combined' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-combined.jsonl',
             'TruthfulQA-test' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
             'TruthfulQA-tiny' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-tiny.jsonl',
@@ -150,6 +151,7 @@ class DataFactory:
             'Quac-val-tiny' : script_dir[:-7]+'/Quac/Quac-val-tiny.jsonl',
             'Quac-train' : script_dir[:-7]+'/Quac/Quac-train.jsonl',
             'Quac-train-tiny' : script_dir[:-7]+'/Quac/Quac-train-tiny.jsonl',
+            'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl',
             'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
             'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
             'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
@@ -490,32 +492,43 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                if (self.task=='question-answering'):
-                    expected_results = item.get("answer_and_def_correct_predictions", item.get("answer", None))
-                    if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
+                if (self.task == 'question-answering'):
+                    expected_results = item.get(
+                        "answer_and_def_correct_predictions", item.get("answer", None))
+                    if isinstance(expected_results, str) or isinstance(expected_results, bool):
+                        expected_results = [str(expected_results)]
 
                     data.append(
                         QASample(
-                            original_question = item['question'],
-                            original_context= item.get('passage', "-"),
-                            expected_results = expected_results,
+                            original_question=item['question'],
+                            original_context=item.get('passage', "-"),
+                            expected_results=expected_results,
                             task=self.task,
                             dataset_name=self._file_path.split('/')[-2]
-                            )
+                        )
                     )
 
-                elif (self.task=='summarization'):
-                    expected_results = item.get("summary",None)
-                    if isinstance(expected_results, str) or isinstance(expected_results, bool): expected_results = [str(expected_results)]
+                elif (self.task == 'summarization'):
+                    expected_results = item.get("summary", None)
+                    if isinstance(expected_results, str) or isinstance(expected_results, bool):
+                        expected_results = [str(expected_results)]
                     data.append(
-                    SummarizationSample(
-                        original = item['document'],
-                        expected_results=expected_results,
-                        task=self.task,
-                        dataset_name=self._file_path.split('/')[-2]
+                        SummarizationSample(
+                            original=item['document'],
+                            expected_results=expected_results,
+                            task=self.task,
+                            dataset_name=self._file_path.split('/')[-2]
                         )
-                )
-                
+                    )
+                elif (self.task == 'toxicity'):
+                    data.append(
+                        ToxicitySample(
+                            prompt=item['text'],
+                            task=self.task,
+                            dataset_name=self._file_path.split('/')[-2]
+                        )
+                    )
+
         return data
 
     def export_data(self, data: List[Sample], output_path: str):

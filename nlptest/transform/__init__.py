@@ -9,6 +9,7 @@ from .representation import BaseRepresentation
 from .bias import BaseBias
 from .fairness import BaseFairness
 from .accuracy import BaseAccuracy
+from .toxicity import BaseToxicity
 from ..modelhandler import ModelFactory
 import pandas as pd
 import logging
@@ -844,3 +845,69 @@ class AccuracyTestFactory(ITests):
             tasks.append(
                 supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs))
         return tasks
+
+class ToxicityTestFactory(ITests):
+    """
+    A class for performing toxicity tests on a given dataset.
+    """
+    alias_name = "toxicity"
+
+    def __init__(
+            self,
+            data_handler: List[Sample],
+            tests: Dict,
+            **kwargs
+    ) -> None:
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(
+                f'Invalid test configuration! Tests can be '
+                f'[1] dictionary of test name and corresponding parameters.'
+            )
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = (set(self.tests) - set(self.supported_tests))
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                f'Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}')
+
+    def transform(self) -> List[Sample]:
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns:
+            List[Sample]:
+                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
+        all_samples=[]
+        for test_name, params in self.tests.items():
+            data_handler_copy = [x.copy() for x in self._data_handler]
+            test_func = self.supported_tests[test_name].transform
+            transformed_samples = test_func(
+                    data_handler_copy,
+                    **params.get('parameters', {})
+                )
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+        tests = {
+            j: i for i in BaseToxicity.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests

@@ -170,10 +170,14 @@ setup(
             "data/textcat_imdb/*",
             "data/BoolQ/*",
             "data/NQ-open/*",
-            "data/textcat_imdb/*/*",
             "data/config/*",
-            "data/Xsum/*"
-            "data/HellaSwag/*"
+            "data/Xsum/*",
+            "data/HellaSwag/*",
+            "data/toxicity/*",
+            "data/TruthfulQA/*",
+            "data/Quac/*",
+            "data/OpenBookQA/*",
+            "data/MMLU/*",
             "data/NarrativeQA/*"
         ],
     },
