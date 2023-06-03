@@ -355,7 +355,10 @@ class Harness:
         """
         testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
         testcases_df = testcases_df.reset_index(drop=True)
-        if "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
+        if "prompt" in testcases_df.columns:
+            return testcases_df.fillna('-')
+        
+        elif "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
             testcases_df['original_question'].update(testcases_df.pop('test_case'))
         
         column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
