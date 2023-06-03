@@ -21,15 +21,17 @@ class BaseToxicity(ABC):
     @abstractmethod
     async def run(sample_list: List[Sample], model, *args, **kwargs):
         progress = kwargs.get("progress", False)
+        global toxicity_metric
         for sample in sample_list:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, *args, **kwargs)
                     if sample_status:
+                        sample.completion_toxicity = toxicity_metric.compute(
+                            predictions=[sample.completion])['toxicity'][0]
                         sample.state = "done"
                 else:
                     sample.completion = model(sample.prompt)
-                    global toxicity_metric
                     sample.completion_toxicity = toxicity_metric.compute(
                         predictions=[sample.completion])['toxicity'][0]
                     sample.state = "done"

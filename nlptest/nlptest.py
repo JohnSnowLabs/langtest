@@ -296,7 +296,9 @@ class Harness:
         
 
 
-        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result", "actual_result", "eval_score", "pass"]
+        column_order = ["category", "test_type", "original", "prompt", "original_context",
+                         "original_question", "completion", "test_case", "perturbed_context", "perturbed_question", 
+                         "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score", "pass"]
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df=generated_results_df[columns]
 
