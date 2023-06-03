@@ -150,6 +150,8 @@ class DataFactory:
             'Quac-val-tiny' : script_dir[:-7]+'/Quac/Quac-val-tiny.jsonl',
             'Quac-train' : script_dir[:-7]+'/Quac/Quac-train.jsonl',
             'Quac-train-tiny' : script_dir[:-7]+'/Quac/Quac-train-tiny.jsonl',
+            'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
+            'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
             'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
             'HellaSwag-test-tiny' : script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
         }

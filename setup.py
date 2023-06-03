@@ -174,6 +174,7 @@ setup(
             "data/config/*",
             "data/Xsum/*"
             "data/HellaSwag/*"
+            "data/NarrativeQA/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
