@@ -1,29 +1,32 @@
 import evaluate
+from abc import ABC, abstractmethod
 from ..utils.custom_types import Sample
 from typing import List
 
 
-class BaseToxicity:
+class BaseToxicity(ABC):
     alias_name = None
     supported_tasks = ["toxicity"]
 
-
+    @staticmethod
+    @abstractmethod
     def transform(self):
-        pass
+        return NotImplementedError()
 
-    async def async_run(self):
-        pass
-
+    @staticmethod
+    @abstractmethod
     async def run(self):
-        pass
+        return NotImplementedError()
+
+    @classmethod
+    async def async_run(cls):
+        return NotImplementedError()
+
 
 
 class PromptToxicity(BaseToxicity):
     alias_name = "offensive"
     
-
-    def __init__(self, text):
-        self.text = text
 
     def transform(sample_list: List[Sample]) -> List[Sample]:
         toxicity_metric = evaluate.load("toxicity",module_type="measurement")
@@ -34,8 +37,8 @@ class PromptToxicity(BaseToxicity):
         
         return sample_list
 
-    async def async_run(self):
-        
+    async def async_run(self, sample_list: List[Sample], model, *args, **kwargs):
+
         return self.transform()
 
     def run(self):
