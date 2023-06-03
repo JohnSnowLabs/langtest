@@ -570,3 +570,10 @@ class ToxicitySample(BaseModel):
         """"""
         return self.completion_toxicity <= self.prompt_toxicity
     
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split('-')[0].lower()
+        prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
+        self.completion = model(text={'context':self.prompt},
+                                            prompt={"template":prompt_template, 'input_variables':["context"]})
+        return True
