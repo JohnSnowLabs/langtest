@@ -173,6 +173,7 @@ setup(
             "data/textcat_imdb/*/*",
             "data/config/*",
             "data/Xsum/*"
+            "data/HellaSwag/*"
             "data/NarrativeQA/*"
         ],
     },
