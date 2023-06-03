@@ -554,12 +554,12 @@ class ToxicitySample(BaseModel):
             'category': self.category,
             'test_type': self.test_type,
             'prompt': self.prompt,
-            'completion': self.completion
+            'prompt_toxicity': self.prompt_toxicity
         }
 
         if self.completion_toxicity is not None:
             result.update({
-                'prompt_toxicity': self.prompt_toxicity,
+                'completion': self.completion,
                 'completion_toxicity': self.completion_toxicity,
                 'pass': self.is_pass()
             })
