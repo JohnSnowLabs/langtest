@@ -173,6 +173,7 @@ setup(
             "data/textcat_imdb/*/*",
             "data/config/*",
             "data/Xsum/*"
+            "data/NarrativeQA/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
