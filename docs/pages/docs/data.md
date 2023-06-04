@@ -127,6 +127,9 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**TruthfulQA-train** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Training set from the TruthfulQA dataset, containing 817 questions that span 38 categories, including health, law, finance and politics.
 |**TruthfulQA-test** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Testing set from the TruthfulQA dataset, containing 164 question and answer examples.
 |**TruthfulQA-tiny** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Truncated version of TruthfulQA dataset which contains 50 question answer examples
+|**MMLU-dev-tiny** | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) | Development set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the dev set.
+|**MMLU-test-tiny** | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) | Test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the test set.
+|**MMLU-val-tiny** | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) | Val set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the val set.
 
 </div><div class="h3-box" markdown="1">
 
