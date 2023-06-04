@@ -124,6 +124,9 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**NQ-open** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples
 |**NQ-open-test** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples
 |**NQ-open-test-tiny** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples
+|**TruthfulQA-train** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Training set from the TruthfulQA dataset, containing 817 questions that span 38 categories, including health, law, finance and politics.
+|**TruthfulQA-test** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Testing set from the TruthfulQA dataset, containing 164 question and answer examples.
+|**TruthfulQA-tiny** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Truncated version of TruthfulQA dataset which contains 50 question answer examples
 
 </div><div class="h3-box" markdown="1">
 
