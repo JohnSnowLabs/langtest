@@ -883,7 +883,7 @@ class AddSpeechToTextTypo(BaseRobustness):
 
 
 class AddSlangifyTypo(BaseRobustness):
-    alias_name = "add_slangify_typo"
+    alias_name = "add_slangs"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
