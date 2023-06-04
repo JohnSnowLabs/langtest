@@ -733,9 +733,8 @@ class AddOcrTypo(BaseRobustness):
                     transformations.append(
                         Transformation(
                             original_span=Span(
-                                start=match.start(), end=match.end(), word=token),
-                            new_span=Span(start=match.start(), end=match.start(
-                            ) + len(corrected_token), word=corrected_token),
+                            start=match.start(), end=match.end(), word=token),
+                            new_span=Span(start=match.start(), end=match.start() + len(corrected_token), word=corrected_token),
                             ignore=False
                         )
                     )
@@ -801,7 +800,7 @@ class AbbreviationInsertion(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx],_= insert_abbreviation(sample)
+                sample_list[idx], _ = insert_abbreviation(sample)
             else:
                 sample.test_case, transformations = insert_abbreviation(sample.original)
                 if sample.task in ("ner", "text-classification"):
@@ -870,7 +869,7 @@ class AddSpeechToTextTypo(BaseRobustness):
 
             perturbed_text = ''.join(converted_sentence)
 
-            return perturbed_text ,transformations
+            return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
@@ -929,16 +928,15 @@ class AddSlangifyTypo(BaseRobustness):
                             end_index = start_index + len(token)
                             modified_toks.append(temp)
                             new_word_length = len(temp)
-                            if sample.task in ("ner", "text-classification"):
-                                transformations.append(
-                                    Transformation(
-                                        original_span=Span(start=start_index, end=end_index, word=token),
-                                        new_span=Span(start=start_index, end=start_index + new_word_length,
-                                                    word=temp),
-                                        ignore=False
-                                    )
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(start=start_index, end=end_index, word=token),
+                                    new_span=Span(start=start_index, end=start_index + new_word_length,
+                                                word=temp),
+                                    ignore=False
                                 )
-                                start_offset = end_index
+                            )
+                            start_offset = end_index
                         else:
                             modified_toks.append(token)
 
@@ -950,7 +948,7 @@ class AddSlangifyTypo(BaseRobustness):
 
             modified_text = "".join(modified_toks)
 
-            return modified_text,transformations
+            return modified_text, transformations
         
 
         for idx, sample in enumerate(sample_list):
