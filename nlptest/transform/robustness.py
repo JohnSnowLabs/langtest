@@ -1,4 +1,3 @@
-import spacy
 import asyncio
 import random
 import re
