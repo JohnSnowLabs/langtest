@@ -138,8 +138,14 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**HellaSwag-test-tiny** | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/) | Truncated version of the test set from the hellaswag dataset with 50 examples.
 |**QuAC-train** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) | Training set from the QuAC dataset with 11567 examples for modeling, understanding, and participating in information seeking dialog.
 |**QuAC-train-tiny** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) |Truncated version of the train set from the QuAC dataset with 50 examples.
-|**QuAC-val** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) | Validation set from the QUAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog.
+|**QuAC-val** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) | Validation set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog.
 |**QuAC-val-tiny** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) | Truncated version of the val set from the QuAC dataset with 50 examples.
+|**OpenBookQA-train** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Training set from the OpenBookQA dataset, containing 5,957 multiple-choice elementary-level science questions.
+|**OpenBookQA-train-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the Train set from the OpenBookQA dataset, containing 50 multiple-choice examples.
+|**OpenBookQA-test** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions
+|**OpenBookQA-test-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.
+|**OpenBookQA-dev** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Dev set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions.
+|**OpenBookQA-dev-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the dev set from the OpenBookQA dataset, containing 50.
 
 </div><div class="h3-box" markdown="1">
 
