@@ -92,5 +92,9 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Number to Word](robustness#number-to-word)                                                                |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Add OCR Typo](robustness#add-ocr-typo)                                                                    |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Dyslexia Word Swap](robustness#dyslexia-word-swap)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Add Slangs](robustness#add-slangs)                                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Speech to Text typos](robustness#add-speech-to-text-typo)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Insert Abbreviations](robustness#add-abbreviation)                                                            |`ner`, `text-classification`, `question-answering`, `summarization`
 
 </div></div>
