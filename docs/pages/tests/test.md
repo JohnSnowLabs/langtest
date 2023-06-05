@@ -68,17 +68,17 @@ The following tables give an overview of the different categories and tests.
 |[Fairness](fairness)		                |[Max Gender Rouge1 Score](fairness#max-gender-rouge1-score)                                                |`question-answering`, `summarization`        
 |[Fairness](fairness)		                |[Max Gender Rouge2 Score](fairness#max-gender-rouge2-score)                                                |`question-answering`, `summarization`        
 |[Fairness](fairness)		                |[Max Gender RougeL Score](fairness#max-gender-rougeL-score)                                                |`question-answering`, `summarization`        
-|[Fairness](fairness)		                |[Max Gender RougeLSum Score](fairness#max-gender-rougeLsum-score)                                          |`question-answering`, `summarization`        
-|[Representation](representation)		    |[Min Country Economic Representation Count](representation#country-economic-representation-count)          |`ner`, `text-classification`, `question-answering`, `summarization`       
-|[Representation](representation)		    |[Min Country Economic Representation Proportion](representation#country-economic-representation-proportion)|`ner`, `text-classification`, `question-answering`, `summarization`         
-|[Representation](representation)		    |[Min Ethnicity Representation Count](representation#ethnicity-representation-count)                        |`ner`, `text-classification`, `question-answering`, `summarization`         
-|[Representation](representation)		    |[Min Ethnicity Representation Proportion](representation#ethnicity-representation-proportion)              |`ner`, `text-classification`, `question-answering`, `summarization`       
-|[Representation](representation)		    |[Min Gender Representation Count](representation#gender-representation-count)                              |`ner`, `text-classification`, `question-answering`, `summarization`       
-|[Representation](representation)		    |[Min Gender Representation Proportion](representation#gender-representation-proportion)                    |`ner`, `text-classification`, `question-answering`, `summarization`         
-|[Representation](representation)		    |[Min Label Representation Count](representation#label-representation-count)                                |`ner`, `text-classification`         
-|[Representation](representation)		    |[Min Label Representation Proportion](representation#label-representation-proportion)                      |`ner`, `text-classification`       
-|[Representation](representation)		    |[Min Gender Representation Count](representation#religion-representation-count)                            |`ner`, `text-classification`, `question-answering`, `summarization`         
-|[Representation](representation)		    |[Min Gender Representation Proportion](representation#religion-representation-proportion)                  |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Fairness](fairness)		                |[Max Gender RougeLSum Score](fairness#max-gender-rougeLsum-score)                                          |`question-answering`, `summarization` 
+|[Representation](representation)		    |[Min Country Economic Representation Count](representation#min-country-economic-representation-count)          |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Country Economic Representation Proportion](representation#min-country-economic-representation-proportion)|`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Ethnicity Representation Count](representation#min-ethnicity-representation-count)                        |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Ethnicity Representation Proportion](representation#min-ethnicity-representation-proportion)              |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Gender Representation Count](representation#min-gender-representation-count)                              |`ner`, `text-classification`, `question-answering`, `summarization`       
+|[Representation](representation)		    |[Min Gender Representation Proportion](representation#min-gender-representation-proportion)                    |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Label Representation Count](representation#min-label-representation-count)                                |`ner`, `text-classification`         
+|[Representation](representation)		    |[Min Label Representation Proportion](representation#min-label-representation-proportion)                      |`ner`, `text-classification`       
+|[Representation](representation)		    |[Min Religion Name Representation Count](representation#min-religion-name-representation-count)                            |`ner`, `text-classification`, `question-answering`, `summarization`         
+|[Representation](representation)		    |[Min Religion Name Representation Proportion](representation#min-religion-name-representation-proportion)           |`ner`, `text-classification`, `question-answering`, `summarization`      
 |[Robustness](robustness)		            |[Add Context](robustness#add-context)                                                                      |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Add Contraction](robustness#add-contraction)                                                              |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Add Punctuation](robustness#add-punctuation)                                                              |`ner`, `text-classification`, `question-answering`, `summarization`     
@@ -92,5 +92,10 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Uppercase](robustness#uppercase)                                                                          |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Number to Word](robustness#number-to-word)                                                                |`ner`, `text-classification`, `question-answering`, `summarization`     
 |[Robustness](robustness)		            |[Add OCR Typo](robustness#add-ocr-typo)                                                                    |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Dyslexia Word Swap](robustness#dyslexia-word-swap)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Add Slangs](robustness#add-slangs)                                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Speech to Text typos](robustness#add-speech-to-text-typo)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Insert Abbreviations](robustness#add-abbreviation)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Toxicity](toxicity)		            |[Offensive](toxicity#Offensive)                                                        |`toxicity`
 
 </div></div>

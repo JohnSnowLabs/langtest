@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Add Ocr Typo
+## Add OCR Typo
 
 This test checks if the NLP model can handle input text with common ocr typos. A ocr typo dictionary is used to apply most common ocr typos to the input data.
 
