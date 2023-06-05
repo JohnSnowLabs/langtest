@@ -17,7 +17,6 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 REQUIRED_PKGS = [
     'numpy',
     'pandas',
-    'scikit-learn',
     'transformers<=4.28.1',
     'torch',
     'sentencepiece',
@@ -28,7 +27,7 @@ REQUIRED_PKGS = [
     'openai',
     'evaluate',
     'rouge_score',
-    'typing-extensions < 4.6.0'
+    'typing-extensions < 4.6.0' #Remove it once spacy issue is resolved
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
