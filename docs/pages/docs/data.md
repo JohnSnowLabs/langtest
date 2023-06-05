@@ -195,4 +195,31 @@ harness = Harness(task='summarization',
                   hub ='openai',
                   data='XSum-test-tiny')
 ```
+### Toxicity
+
+This test checks the toxicity of the completion., the user is meant to select a benchmark dataset from the following list:
+
+#### Benchmark Datasets
+
+{:.table2}
+| Dataset  | Source | Description |
+| - | - | - |
+|**toxicity-test-tiny** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples.
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Toxicity Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the nlptest library
+from nlptest import Harness
+
+harness = Harness(task='toxicity',
+                  model='text-davinci-002',
+                  hub='openai',
+                  data='toxicity-test-tiny')
+```
+
 </div></div>

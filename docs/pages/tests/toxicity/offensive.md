@@ -7,8 +7,6 @@ This test checks the toxicity of the completion.
 
 **alias_name:** `offensive`
 
-<i class="fa fa-info-circle"></i>
-
 </div><div class="h3-box" markdown="1">
 
 #### Config
