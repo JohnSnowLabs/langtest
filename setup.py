@@ -24,7 +24,6 @@ REQUIRED_PKGS = [
     'nest-asyncio',
     'jsonlines',
     'langchain',
-    'openai',
     'evaluate',
     'rouge_score',
     'typing-extensions < 4.6.0' #Remove it once spacy issue is resolved
