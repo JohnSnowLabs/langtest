@@ -3,6 +3,7 @@ import evaluate
 from abc import ABC, abstractmethod
 from ..utils.custom_types import Sample
 from typing import List
+toxicity_metric = None
 
 
 class BaseToxicity(ABC):
@@ -47,8 +48,8 @@ class BaseToxicity(ABC):
 
 class PromptToxicity(BaseToxicity):
     alias_name = "offensive"
-
     def transform(sample_list: List[Sample]) -> List[Sample]:
+        global toxicity_metric
         toxicity_metric = evaluate.load("toxicity", module_type="measurement")
         for sample in sample_list:
             sample.prompt_toxicity = toxicity_metric.compute(
