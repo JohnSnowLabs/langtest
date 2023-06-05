@@ -138,6 +138,7 @@ class DataFactory:
             'TruthfulQA-test' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
             'TruthfulQA-test-tiny' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test-tiny.jsonl',
             'MMLU-test-tiny' : script_dir[:-7]+'/MMLU/MMLU-test-tiny.jsonl',
+            'MMLU-test' : script_dir[:-7]+'/MMLU/MMLU-test.jsonl',
             'OpenBookQA-test' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
             'OpenBookQA-test-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test-tiny.jsonl',
             'Quac-test' : script_dir[:-7]+'/Quac/Quac-test.jsonl',
