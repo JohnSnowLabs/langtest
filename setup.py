@@ -167,7 +167,7 @@ setup(
             "data/imdb/sample.csv",
             "data/tweet/sample.csv",
             "data/conll/sample.conll",
-            "data/textcat_imdb/*",
+            "data/textcat_imdb/*/*",
             "data/BoolQ/*",
             "data/NQ-open/*",
             "data/config/*",
