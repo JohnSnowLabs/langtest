@@ -164,6 +164,7 @@ setup(
             "data/config.yml",
             "data/imdb/sample.csv",
             "data/tweet/sample.csv",
+            "data/textcat_imdb/*",
             "data/conll/sample.conll",
             "data/textcat_imdb/*/*",
             "data/BoolQ/*",
