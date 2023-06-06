@@ -17,7 +17,6 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 REQUIRED_PKGS = [
     'numpy',
     'pandas',
-    'scikit-learn',
     'transformers<=4.28.1',
     'torch',
     'sentencepiece',
@@ -25,11 +24,9 @@ REQUIRED_PKGS = [
     'nest-asyncio',
     'jsonlines',
     'langchain',
-    'openai',
     'evaluate',
-    'inflect',
     'rouge_score',
-    'typing-extensions < 4.6.0'
+    'typing-extensions < 4.6.0' #Remove it once spacy issue is resolved
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -54,7 +51,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.3.0",  # Required
+    version="1.4.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -167,13 +164,20 @@ setup(
             "data/config.yml",
             "data/imdb/sample.csv",
             "data/tweet/sample.csv",
-            "data/conll/sample.conll",
             "data/textcat_imdb/*",
+            "data/conll/sample.conll",
+            "data/textcat_imdb/*/*",
             "data/BoolQ/*",
             "data/NQ-open/*",
-            "data/textcat_imdb/*/*",
             "data/config/*",
-            "data/Xsum/*"
+            "data/Xsum/*",
+            "data/HellaSwag/*",
+            "data/toxicity/*",
+            "data/TruthfulQA/*",
+            "data/Quac/*",
+            "data/OpenBookQA/*",
+            "data/MMLU/*",
+            "data/NarrativeQA/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

@@ -11,6 +11,10 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
             SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
         ]
+        self.abbreviation_sentences = [
+            SequenceClassificationSample(original="Please respond as soon as possible for the party tonight"),
+            SequenceClassificationSample(original="I cannot live in USA due to torandos caramelized")
+        ]        
         self.number_sentences = [
             SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
             SequenceClassificationSample(original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them")
@@ -31,9 +35,21 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="He lives in the USA."),
             SequenceClassificationSample(original="He lives in the USA and his cat is black.")
         ]
+        self.dyslexia_sentences = [
+            SequenceClassificationSample(original="I live in London of United Kingdom."),
+            SequenceClassificationSample(original="I would like that.")
+        ]
         self.ocr_sentences = [
-            SequenceClassificationSample(original="This organization's art can win tough acts."),    
-            SequenceClassificationSample(original="Anyone can join our community garden.")                                                                                        
+            SequenceClassificationSample(original="This organization's art can win tough acts."),
+            SequenceClassificationSample(original="Anyone can join our community garden.")
+        ]
+        self.speech_to_text_sentences = [
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),
+            SequenceClassificationSample(original="This organization's art can win tough acts.")
+        ]
+        self.add_slangify = [
+            SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),
+            SequenceClassificationSample(original="It was totally excellent but useless bet.")
         ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
@@ -138,22 +154,47 @@ class RobustnessTestCase(unittest.TestCase):
             [len(sample.transformations) for sample in transformed_samples],
             [0, 1]
         )
+
+    def test_dyslexia_swap(self) -> None:
+        """"""
+        transformed_samples = DyslexiaWordSwap.transform(self.dyslexia_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertTrue(sample.test_case != sample.original or sample.test_case)
         
     def test_number_to_word(self) -> None:
         """"""
         transformed_samples = NumberToWord.transform(self.number_sentences)
-        # Test that the transformed_samples sentences are in a list
         self.assertIsInstance(transformed_samples, list)
-
 
     def test_add_ocr_typo(self) -> None:
         """"""
         expected_corrected_sentences = [ "Tbis organization's a^rt c^an w^in tougb acts.",
                                         "Anyone c^an j0in o^ur communitv gardcn."]
         transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
-        
         self.assertIsInstance(transformed_samples, list)
         self.assertListEqual(
             [sample.test_case for sample in transformed_samples],
              expected_corrected_sentences
            )
+        
+    def test_abbreviation_insertion(self) -> None:
+        """"""
+        transformed_samples = AbbreviationInsertion.transform(self.abbreviation_sentences)
+        self.assertIsInstance(transformed_samples, list)  
+
+    def test_add_speech_to_text_typo(self) -> None:
+        """"""
+        transformed_samples = AddSpeechToTextTypo.transform(self.speech_to_text_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertTrue(sample.test_case != sample.original or sample.test_case)
+        
+    def test_add_slangify_typo(self) -> None:
+        """"""
+        transformed_samples = AddSlangifyTypo.transform(self.add_slangify)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+            

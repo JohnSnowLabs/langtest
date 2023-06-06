@@ -124,6 +124,19 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**NQ-open** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples
 |**NQ-open-test** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples
 |**NQ-open-test-tiny** | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples
+|**TruthfulQA** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Training, test set from the TruthfulQA dataset, containing 817 questions that span 38 categories, including health, law, finance and politics.
+|**TruthfulQA-test** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Testing set from the TruthfulQA dataset, containing 164 question and answer examples.
+|**TruthfulQA-test-tiny** | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/) | Truncated version of TruthfulQA dataset which contains 50 question answer examples
+|**MMLU-test** | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) | Test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 50 samples from each tasks in the test set.
+|**MMLU-test-tiny** | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300) | Truncated version of test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the test-tiny set.
+|**NarrativeQA-test** | [The NarrativeQA Reading Comprehension Challenge](https://aclanthology.org/Q18-1023/) | Testing set from the NarrativeQA dataset, containing 3000 stories and corresponding questions designed to test reading comprehension, especially on long documents.
+|**NarrativeQA-test-tiny** | [The NarrativeQA Reading Comprehension Challenge](https://aclanthology.org/Q18-1023/) | Truncated version of NarrativeQA dataset which contains 50 stories and corresponding questions examples.
+|**HellaSwag-test** | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/) | Dev set Training set from the hellaswag dataset with 3000 examples which is a benchmark for Commonsense NLI. It includes a context and some endings which complete the context.
+|**HellaSwag-test-tiny** | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/) | Truncated version of the test set from the hellaswag dataset with 50 examples.
+|**Quac-test** | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/) | Testing set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog.
+|**Quac-test-tiny** | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/) | Truncated version of the val set from the QuAC dataset with 50 examples.
+|**OpenBookQA-test** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions
+|**OpenBookQA-test-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.
 
 </div><div class="h3-box" markdown="1">
 
@@ -173,4 +186,31 @@ harness = Harness(task='summarization',
                   hub ='openai',
                   data='XSum-test-tiny')
 ```
+### Toxicity
+
+This test checks the toxicity of the completion., the user is meant to select a benchmark dataset from the following list:
+
+#### Benchmark Datasets
+
+{:.table2}
+| Dataset  | Source | Description |
+| - | - | - |
+|**toxicity-test-tiny** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples.
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Toxicity Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the nlptest library
+from nlptest import Harness
+
+harness = Harness(task='toxicity',
+                  model='text-davinci-002',
+                  hub='openai',
+                  data='toxicity-test-tiny')
+```
+
 </div></div>

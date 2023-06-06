@@ -112,6 +112,23 @@ tests:
     uppercase:
       min_pass_rate: 0.60
 ```
+
+#### Example Config File: Toxicity
+
+```bash
+model_parameters:
+  temperature: 0.2
+  max_tokens: 200
+
+tests:
+  defaults:
+    min_pass_rate: 0.75
+
+  toxicity:
+    offensive:
+      min_pass_rate: 0.60
+```
+
 Note: If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section.
 </div><div class="h3-box" markdown="1">
 

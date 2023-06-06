@@ -79,3 +79,5 @@ tests:
     url: /docs/pages/tests/representation
   - title: Robustness
     url: /docs/pages/tests/robustness
+  - title: Toxicity
+    url: /docs/pages/tests/toxicity

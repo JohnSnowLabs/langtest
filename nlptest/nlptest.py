@@ -23,7 +23,7 @@ class Harness:
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization", "toxicity"]
     SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
@@ -37,11 +37,16 @@ class Harness:
     }
 
     DEFAULTS_CONFIG = {
-        'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
-        'openai': resource_filename("nlptest", "data/config/openai_config.yml"),
-        'cohere': resource_filename("nlptest", "data/config/cohere_config.yml"),
-        'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
-        'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
+        'hubs': {
+            'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
+            'openai': resource_filename("nlptest", "data/config/openai_config.yml"),
+            'cohere': resource_filename("nlptest", "data/config/cohere_config.yml"),
+            'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
+            'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
+        },
+        'task':{
+            'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml")
+        }
     }
 
     def __init__(
@@ -106,8 +111,11 @@ class Harness:
 
         if config is not None:
             self._config = self.configure(config)
-        elif hub in self.DEFAULTS_CONFIG:
-            self._config = self.configure(self.DEFAULTS_CONFIG[hub])
+        elif hub in self.DEFAULTS_CONFIG['hubs']:
+            if task in self.DEFAULTS_CONFIG['task']:
+                self._config = self.configure(self.DEFAULTS_CONFIG['task'][task])
+            else:
+                self._config = self.configure(self.DEFAULTS_CONFIG['hubs'][hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
@@ -296,7 +304,9 @@ class Harness:
         
 
 
-        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result", "actual_result", "eval_score", "pass"]
+        column_order = ["category", "test_type", "original", "prompt", "original_context",
+                         "original_question", "completion", "test_case", "perturbed_context", "perturbed_question", 
+                         "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score", "pass"]
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df=generated_results_df[columns]
 
@@ -355,7 +365,10 @@ class Harness:
         """
         testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
         testcases_df = testcases_df.reset_index(drop=True)
-        if "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
+        if "prompt" in testcases_df.columns:
+            return testcases_df.fillna('-')
+        
+        elif "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
             testcases_df['original_question'].update(testcases_df.pop('test_case'))
         
         column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]

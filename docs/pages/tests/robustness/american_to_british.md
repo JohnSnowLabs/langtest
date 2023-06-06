@@ -8,7 +8,6 @@ This test checks if the NLP model can handle input text with british accent. An 
 **alias_name:** `american_to_british`
 
 <i class="fa fa-info-circle"></i>
-
 <em>To test QA models, we are using QAEval from Langchain where we need to use the model itself or other ML model for evaluation, which can make mistakes.</em>
 
 </div><div class="h3-box" markdown="1">
