@@ -37,11 +37,16 @@ class Harness:
     }
 
     DEFAULTS_CONFIG = {
-        'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
-        'openai': resource_filename("nlptest", "data/config/openai_config.yml"),
-        'cohere': resource_filename("nlptest", "data/config/cohere_config.yml"),
-        'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
-        'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
+        'hubs': {
+            'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
+            'openai': resource_filename("nlptest", "data/config/openai_config.yml"),
+            'cohere': resource_filename("nlptest", "data/config/cohere_config.yml"),
+            'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
+            'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
+        },
+        'task':{
+            'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml")
+        }
     }
 
     def __init__(
@@ -106,8 +111,11 @@ class Harness:
 
         if config is not None:
             self._config = self.configure(config)
-        elif hub in self.DEFAULTS_CONFIG:
-            self._config = self.configure(self.DEFAULTS_CONFIG[hub])
+        elif hub in self.DEFAULTS_CONFIG['hubs']:
+            if task in self.DEFAULTS_CONFIG['task']:
+                self._config = self.configure(self.DEFAULTS_CONFIG['task'][task])
+            else:
+                self._config = self.configure(self.DEFAULTS_CONFIG['hubs'][hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
