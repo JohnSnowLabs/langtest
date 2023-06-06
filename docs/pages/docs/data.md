@@ -133,8 +133,8 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**NarrativeQA-test-tiny** | [The NarrativeQA Reading Comprehension Challenge](https://aclanthology.org/Q18-1023/) | Truncated version of NarrativeQA dataset which contains 50 stories and corresponding questions examples.
 |**HellaSwag-test** | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/) | Dev set Training set from the hellaswag dataset with 3000 examples which is a benchmark for Commonsense NLI. It includes a context and some endings which complete the context.
 |**HellaSwag-test-tiny** | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/) | Truncated version of the test set from the hellaswag dataset with 50 examples.
-|**QuAC-test** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) | Testing set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog.
-|**QuAC-test-tiny** | [QuAC: Question Answering in Context](https://aclanthology.org/D18-1241/) | Truncated version of the val set from the QuAC dataset with 50 examples.
+|**Quac-test** | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/) | Testing set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog.
+|**Quac-test-tiny** | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/) | Truncated version of the val set from the QuAC dataset with 50 examples.
 |**OpenBookQA-test** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions
 |**OpenBookQA-test-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.
 
