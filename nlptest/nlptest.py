@@ -2,7 +2,7 @@ import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Optional, Union, Any
+from typing import Dict, List, Optional, Union, Any
 import langchain
 
 import pandas as pd
@@ -312,7 +312,7 @@ class Harness:
 
         return generated_results_df.fillna("-")
 
-    def augment(self, input_path: str, output_path: str, inplace: bool = False) -> "Harness":
+    def augment(self, input_path: str, output_path: str, custom_proportions: Union[Dict, List] = None, inplace: bool = False) -> "Harness":
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -346,7 +346,8 @@ class Harness:
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
-            h_report=self.df_report
+            h_report=self.df_report,
+            custom_props=custom_proportions
         ).fix(
             input_path=input_path,
             output_path=output_path,
