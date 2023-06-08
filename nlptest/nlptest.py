@@ -347,7 +347,7 @@ class Harness:
             task=self.task,
             config=self._config,
             h_report=self.df_report,
-            custom_props=custom_proportions
+            custom_proportions=custom_proportions
         ).fix(
             input_path=input_path,
             output_path=output_path,

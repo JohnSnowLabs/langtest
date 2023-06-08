@@ -66,7 +66,7 @@ class AugmentRobustness(BaseAugmentaion):
 
     """
 
-    def __init__(self, task, h_report, config, custom_props=None, max_prop=0.5) -> None:
+    def __init__(self, task, h_report, config, custom_proportions=None, max_prop=0.5) -> None:
         """
         Initializes an instance of MyClass with the specified parameters.
 
@@ -87,7 +87,7 @@ class AugmentRobustness(BaseAugmentaion):
         self.config = config
         self.h_report = h_report
         self.max_prop = max_prop
-        self.custom_props = custom_props
+        self.custom_proportions = custom_proportions
 
         if isinstance(self.config, str):
             with open(self.config) as fread:
