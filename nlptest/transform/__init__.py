@@ -30,7 +30,7 @@ class TestFactory:
     
     @staticmethod
     def get_custom_json(file,name):
-        global custom_data ,new_name
+        
         custom_data=file 
         new_name=name
         if new_name in (
@@ -106,6 +106,42 @@ class TestFactory:
                     native_american_names['last_names'] += last_names
                 elif name == 'inter_racial_names':
                     inter_racial_names['last_names'] += last_names
+
+        elif new_name in (
+        "replace_to_male_pronouns",
+        "replace_to_female_pronouns",
+        "replace_to_neutral_pronouns"):
+            for data_dict in custom_data:
+                if 'name' not in data_dict:
+                    raise ValueError("Invalid JSON format. 'name' key is missing.")
+
+                name = data_dict['name']
+                pronouns = {
+                    'subjective_pronouns': [],
+                    'objective_pronouns': [],
+                    'reflexive_pronouns': [],
+                    'possessive_pronouns': []
+                }
+
+                for key in pronouns.keys():
+                    if key in data_dict:
+                        pronouns[key] += data_dict[key]
+
+                if name == 'female_pronouns':
+                    female_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
+                    female_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
+                    female_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
+                    female_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
+                elif name == 'male_pronouns':
+                    male_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
+                    male_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
+                    male_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
+                    male_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
+                elif name == 'neutral_pronouns':
+                    neutral_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
+                    neutral_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
+                    neutral_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
+                    neutral_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
