@@ -38,10 +38,10 @@ class TestFactory:
         "replace_to_low_income_country",
         "replace_to_upper_middle_income_country",
         "replace_to_lower_middle_income_country"):  
-            
+            valid_names = ("High-income","Low-income","Lower-middle-income","Upper-middle-income")
             # Validate the schema
             if not set(custom_data.keys()).issubset(set(country_economic_dict.keys())):
-                raise ValueError("Invalid schema. JSON keys do not match the existing data dictionary.")
+                raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
             # Append values to existing keys
             for key, values in custom_data.items():
@@ -56,9 +56,10 @@ class TestFactory:
         "replace_to_parsi_names",
         "replace_to_buddhist_names"
         ):
+            valid_names = ("Muslim","Hindu","Buddhist","Jain","Christian","Sikh","Parsi")
             # Validate the schema
             if not set(custom_data.keys()).issubset(set(religion_wise_names.keys())):
-                raise ValueError("Invalid schema. JSON keys do not match the existing data dictionary.")
+                raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
             # Append values to existing keys
             for key, values in custom_data.items():
@@ -75,6 +76,14 @@ class TestFactory:
         "replace_to_asian_lastnames",
         "replace_to_native_american_lastnames",
         "replace_to_inter_racial_lastnames"):
+            valid_names = (
+                'white_names',
+                'black_names',
+                'hispanic_names',
+                'asian_names',
+                'native_american_names',
+                'inter_racial_names')
+
             for data_dict in custom_data:
                 if 'name' not in data_dict:
                     raise ValueError("Invalid JSON format. 'name' key is missing.")
@@ -89,6 +98,9 @@ class TestFactory:
                     raise ValueError("Invalid 'first_names' format in the JSON file.")
                 if not isinstance(last_names, list):
                     raise ValueError("Invalid 'last_names' format in the JSON file.")
+
+                if name not in valid_names:
+                    raise ValueError(f"Invalid 'name' value '{name}'. It should be one of: {', '.join(valid_names)}.")
 
                 if name == 'white_names':
                     white_names['first_names'] += first_names
@@ -111,21 +123,23 @@ class TestFactory:
         "replace_to_male_pronouns",
         "replace_to_female_pronouns",
         "replace_to_neutral_pronouns"):
+            valid_names = ('female_pronouns', 'male_pronouns', 'neutral_pronouns')
+
             for data_dict in custom_data:
                 if 'name' not in data_dict:
                     raise ValueError("Invalid JSON format. 'name' key is missing.")
-
+                
                 name = data_dict['name']
-                pronouns = {
-                    'subjective_pronouns': [],
-                    'objective_pronouns': [],
-                    'reflexive_pronouns': [],
-                    'possessive_pronouns': []
-                }
+                
+                if name not in valid_names:
+                    raise ValueError(f"Invalid 'name' value '{name}'. It should be one of: {', '.join(valid_names)}.")
 
-                for key in pronouns.keys():
-                    if key in data_dict:
-                        pronouns[key] += data_dict[key]
+                pronouns = {
+                    'subjective_pronouns': data_dict.get('subjective_pronouns', []),
+                    'objective_pronouns': data_dict.get('objective_pronouns', []),
+                    'reflexive_pronouns': data_dict.get('reflexive_pronouns', []),
+                    'possessive_pronouns': data_dict.get('possessive_pronouns', [])
+                }
 
                 if name == 'female_pronouns':
                     female_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
@@ -142,6 +156,7 @@ class TestFactory:
                     neutral_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
                     neutral_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
                     neutral_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
+
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
