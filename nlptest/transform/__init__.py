@@ -27,6 +27,24 @@ class TestFactory:
     """
     is_augment = False
     task: str = None
+    
+    @staticmethod
+    def get_custom_json(file,name):
+        global custom_data ,new_name
+        custom_data=file 
+        new_name=name
+        if new_name in (
+        "replace_to_high_income_country",
+        "replace_to_low_income_country",
+        "replace_to_upper_middle_income_country",
+        "replace_to_lower_middle_income_country"):  
+            # Validate the schema
+            if not set(custom_data.keys()).issubset(set(country_economic_dict.keys())):
+                raise ValueError("Invalid schema. JSON keys do not match the existing data dictionary.")
+
+            # Append values to existing keys
+            for key, values in custom_data.items():
+                country_economic_dict[key] += values
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
