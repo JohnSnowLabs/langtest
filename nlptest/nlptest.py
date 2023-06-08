@@ -13,6 +13,7 @@ from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
+import json
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -438,3 +439,21 @@ class Harness:
         harness.generate()
 
         return harness
+    @staticmethod
+    def load_custom_data_from_json(file_path: str, name: str = None):
+        """Load custom data from a JSON file and store it in a class variable.
+
+        Args:
+            file_path (str): Path to the JSON file.
+            name (str, optional): Name parameter. Defaults to None.
+        """
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        # Validate the data format if needed
+        # ...
+
+        if not name:
+            name = None
+
+        TestFactory.get_custom_json(data, name)
