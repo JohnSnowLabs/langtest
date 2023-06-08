@@ -74,7 +74,6 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             'pass': [True, True, False, False]
         })
 
-
         augment = AugmentRobustness(
             task='ner',
             h_report=temp_df,
@@ -110,6 +109,23 @@ class AugmentRobustnessTestCase(unittest.TestCase):
 
         harness.augment('tests/fixtures/train.conll',
                         'tests/fixtures/augmentated_train.conll', inplace=True)
+        is_file_exist = pl.Path(
+            'tests/fixtures/augmentated_train.conll').is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_custom_proportions_augment_harness(self):
+        """"""
+        harness = Harness(**self.params['huggingface_ner'])
+        self.assertIsInstance(harness, Harness)
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+
+        proportions = {'uppercase': 0.5, 'lowercase': 0.5}
+
+        harness.augment('tests/fixtures/train.conll',
+                        'tests/fixtures/augmentated_train.conll',
+                        custom_proportions=proportions, inplace=True)
+
         is_file_exist = pl.Path(
             'tests/fixtures/augmentated_train.conll').is_file()
         self.assertTrue(is_file_exist)

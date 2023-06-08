@@ -186,13 +186,13 @@ class AugmentRobustness(BaseAugmentaion):
         """
         report['ratio'] = report['pass_rate'] / report['minimum_pass_rate']
 
-        if self.custom_props and isinstance(self.custom_props, dict):
+        if self.custom_proportions and isinstance(self.custom_proportions, dict):
             report['proportion_increase'] = report['test_type'].map(
-                self.custom_props)
-        elif self.custom_props and isinstance(self.custom_props, list):
+                self.custom_proportions)
+        elif self.custom_proportions and isinstance(self.custom_proportions, list):
             report['proportion_increase'] = report['ratio'].apply(
                 self._proportion_values)
-            report = report[report['test_type'].isin(self.custom_props)]
+            report = report[report['test_type'].isin(self.custom_proportions)]
         else:
             report['proportion_increase'] = report['ratio'].apply(
                 self._proportion_values)
