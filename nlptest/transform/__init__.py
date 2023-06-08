@@ -38,6 +38,7 @@ class TestFactory:
         "replace_to_low_income_country",
         "replace_to_upper_middle_income_country",
         "replace_to_lower_middle_income_country"):  
+            
             # Validate the schema
             if not set(custom_data.keys()).issubset(set(country_economic_dict.keys())):
                 raise ValueError("Invalid schema. JSON keys do not match the existing data dictionary.")
@@ -45,6 +46,66 @@ class TestFactory:
             # Append values to existing keys
             for key, values in custom_data.items():
                 country_economic_dict[key] += values
+
+        elif new_name in (
+        "replace_to_muslim_names",
+        "replace_to_hindu_names",
+        "replace_to_christian_names",
+        "replace_to_sikh_names",
+        "replace_to_jain_names",
+        "replace_to_parsi_names",
+        "replace_to_buddhist_names"
+        ):
+            # Validate the schema
+            if not set(custom_data.keys()).issubset(set(religion_wise_names.keys())):
+                raise ValueError("Invalid schema. JSON keys do not match the existing data dictionary.")
+
+            # Append values to existing keys
+            for key, values in custom_data.items():
+                religion_wise_names[key] += values
+
+        elif new_name in (
+        "replace_to_white_firstnames",
+        "replace_to_black_firstnames",
+        "replace_to_hispanic_firstnames",
+        "replace_to_asian_firstnames",
+        "replace_to_white_lastnames",
+        "replace_to_black_lastnames",
+        "replace_to_hispanic_lastnames",
+        "replace_to_asian_lastnames",
+        "replace_to_native_american_lastnames",
+        "replace_to_inter_racial_lastnames"):
+            for data_dict in custom_data:
+                if 'name' not in data_dict:
+                    raise ValueError("Invalid JSON format. 'name' key is missing.")
+
+                name = data_dict['name']
+                first_names = data_dict.get('first_names', [])
+                last_names = data_dict.get('last_names', [])
+
+                if not isinstance(name, str):
+                    raise ValueError("Invalid 'name' format in the JSON file.")
+                if not isinstance(first_names, list):
+                    raise ValueError("Invalid 'first_names' format in the JSON file.")
+                if not isinstance(last_names, list):
+                    raise ValueError("Invalid 'last_names' format in the JSON file.")
+
+                if name == 'white_names':
+                    white_names['first_names'] += first_names
+                    white_names['last_names'] += last_names
+                elif name == 'black_names':
+                    black_names['first_names'] += first_names
+                    black_names['last_names'] += last_names
+                elif name == 'hispanic_names':
+                    hispanic_names['first_names'] += first_names
+                    hispanic_names['last_names'] += last_names
+                elif name == 'asian_names':
+                    asian_names['first_names'] += first_names
+                    asian_names['last_names'] += last_names
+                elif name == 'native_american_names':
+                    native_american_names['last_names'] += last_names
+                elif name == 'inter_racial_names':
+                    inter_racial_names['last_names'] += last_names
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
