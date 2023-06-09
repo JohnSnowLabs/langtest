@@ -125,12 +125,20 @@ class Harness:
         if isinstance(model, str):
             self.model = ModelFactory.load_model(
                 path=model, task=task, hub=hub, **self._config.get("model_parameters", {}))
+            
+        elif isinstance(model, dict):
+            model_dict = {}
+            for k, v in model.items():
+                model_dict[k] = ModelFactory.load_model(task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
+            self.model = model_dict
+            
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
         
         global GLOBAL_MODEL 
-        GLOBAL_MODEL = self.model
+        if not isinstance(model, dict):
+            GLOBAL_MODEL = self.model
         
         self._testcases = None
         self._generated_results = None
@@ -439,3 +447,74 @@ class Harness:
         harness.generate()
 
         return harness
+    
+    def compare_models(self) -> pd.DataFrame:
+            if self._config is None:
+                raise RuntimeError("Please call .configure() first.")
+            if self._testcases is not None:
+                raise RuntimeError(
+                    "Testcases are already generated, please call .run() and .report() next.")
+
+            tests = self._config['tests']
+            testcases={}
+            generated_results={}
+            m_data = [sample.copy() for sample in self.data]
+            df_final_report = pd.DataFrame()
+            if self.task in ["text-classification", "ner"]:
+                if isinstance(self.model, dict):
+                    for k, v in self.model.items():
+                        _ = [setattr(sample, 'expected_results', v(sample.original)) for sample in m_data]
+                        testcases[k] = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                        generated_results[k] = TestFactory.run(testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+                        if isinstance(self._config, dict):
+                            self.default_min_pass_dict = self._config['tests']['defaults'].get(
+                                'min_pass_rate', 0.65)
+                            self.min_pass_dict = {
+                                j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in
+                                self._config['tests'].items() for j, k in v.items() 
+                                if isinstance(k, dict) and 'min_pass_rate' in k.keys()
+                            }
+
+                        summary = defaultdict(lambda: defaultdict(int))
+                        for sample in generated_results[k]:
+                            summary[sample.test_type]['category'] = sample.category
+                            summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+
+                        report = {}
+                        for test_type, value in summary.items():
+                            pass_rate = summary[test_type]["true"] / \
+                                (summary[test_type]["true"] + summary[test_type]["false"])
+                            min_pass_rate = self.min_pass_dict.get(
+                                test_type, self.default_min_pass_dict)
+
+                            if summary[test_type]['category'] == "Accuracy":
+                                min_pass_rate = 1
+
+                            report[test_type] = {
+                                "model_name": k,
+                                "category": summary[test_type]['category'],
+                                "fail_count": summary[test_type]["false"],
+                                "pass_count": summary[test_type]["true"],
+                                "pass_rate": pass_rate,
+                                "minimum_pass_rate": min_pass_rate,
+                                "pass": pass_rate >= min_pass_rate
+                            }
+
+                        df_report = pd.DataFrame.from_dict(report, orient="index")
+                        df_report = df_report.reset_index().rename(
+                            columns={'index': 'test_type'})
+
+                        df_report['pass_rate'] = df_report['pass_rate'].apply(
+                            lambda x: "{:.0f}%".format(x * 100))
+                        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
+                            lambda x: "{:.0f}%".format(x * 100))
+
+                        col_to_move = 'category'
+                        first_column = df_report.pop('category')
+                        df_report.insert(0, col_to_move, first_column)
+                        df_report = df_report.reset_index(drop=True)
+
+                        df_report = df_report.fillna("-")
+                        df_final_report = pd.concat([df_final_report, df_report])
+                        
+                return df_final_report
