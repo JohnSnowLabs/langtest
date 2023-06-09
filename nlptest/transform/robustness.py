@@ -478,34 +478,34 @@ class AddContext(BaseRobustness):
                     f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}.")
 
             transformations = []
+            
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)
                 add_string = " ".join(add_tokens) if isinstance(
                     add_tokens, list) else add_tokens
-                string = add_string + ' ' + string
-                transformations.append(
-                    Transformation(
-                        original_span=Span(start=0, end=0, word=""),
-                        new_span=Span(start=0, end=len(
-                            add_string) + 1, word=add_string),
-                        ignore=True
+                if string != "-":
+                    string = add_string + ' ' + string
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(start=0, end=0, word=""),
+                            new_span=Span(start=0, end=len(add_string) + 1, word=add_string),
+                            ignore=True
+                        )
                     )
-                )
-
             if strategy == "end" or strategy == "combined":
                 add_tokens = random.choice(ending_context)
                 add_string = " ".join(add_tokens) if isinstance(
                     add_tokens, list) else add_tokens
-                string = string + ' ' + add_string
-                transformations.append(
-                    Transformation(
-                        original_span=Span(
+                if string != "-":
+                    string = string + ' ' + add_string
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
                             start=len(string) - 1, end=len(string), word=""),
-                        new_span=Span(start=len(string), end=len(string) + len(
-                            add_string) + 1, word=add_string),
-                        ignore=True
+                            new_span=Span(start=len(string), end=len(string) + len(add_string) + 1, word=add_string),
+                            ignore=True
+                        )
                     )
-                )
             return string, transformations
 
         for idx, sample in enumerate(sample_list):
