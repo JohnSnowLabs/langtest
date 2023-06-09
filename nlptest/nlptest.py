@@ -450,4 +450,4 @@ class Harness:
         with open(file_path, 'r') as f:
             data = json.load(f)
 
-        TestFactory.add_custom_data(data, test_name)
+        TestFactory.call_add_custom_bias(data, test_name)
