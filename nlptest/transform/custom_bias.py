@@ -2,10 +2,24 @@ from .utils import (
     asian_names, black_names, country_economic_dict, hispanic_names, inter_racial_names, male_pronouns,
     native_american_names, neutral_pronouns, religion_wise_names, white_names, female_pronouns
 )
-from .bias import *
 
 def add_custom_data(file, name):
-    if name in CountryEconomicBias.alias_name:
+    print(type(file))
+    """
+    Adds custom data to the corresponding bias dictionaries based on the specified name.
+
+    Args:
+        file (dict or list): The data to be added.
+        name (str): The type of bias dictionary to update. It should be one of the following:
+            - "Country Economic Bias"
+            - "Religion Bias"
+            - "Ethnicity Name Bias"
+            - "Gender Pronoun Bias"
+
+    Raises:
+        ValueError: If the specified `name` is invalid or if the provided data has an invalid format or contains invalid keys.
+    """
+    if name == "Country Economic Bias":
         valid_names = country_economic_dict.keys()
 
         # Validate the schema
@@ -17,7 +31,9 @@ def add_custom_data(file, name):
             unique_values = set(values)
             country_economic_dict[key] = list(set(country_economic_dict[key]) | unique_values)
 
-    elif name in ReligionBias.alias_name:
+        
+
+    elif name == "Religion Bias":
         valid_names = religion_wise_names.keys()
 
         # Validate the schema
@@ -29,7 +45,7 @@ def add_custom_data(file, name):
             unique_values = set(values)
             religion_wise_names[key] = list(set(religion_wise_names[key]) | unique_values)
 
-    elif name in EthnicityNameBias.alias_name:
+    elif name == "Ethnicity Name Bias":
         valid_names = (
             'white_names',
             'black_names',
@@ -60,24 +76,21 @@ def add_custom_data(file, name):
                 raise ValueError(f"Invalid keys in the JSON for '{name}'. "
                                 f"Only the following keys are allowed: 'name', 'first_names', 'last_names'.")
 
-            if name == 'white_names':
-                white_names['first_names'].extend(list(set(first_names) - set(white_names['first_names'])))
-                white_names['last_names'].extend(list(set(last_names) - set(white_names['last_names'])))
-            elif name == 'black_names':
-                black_names['first_names'].extend(list(set(first_names) - set(black_names['first_names'])))
-                black_names['last_names'].extend(list(set(last_names) - set(black_names['last_names'])))
-            elif name == 'hispanic_names':
-                hispanic_names['first_names'].extend(list(set(first_names) - set(hispanic_names['first_names'])))
-                hispanic_names['last_names'].extend(list(set(last_names) - set(hispanic_names['last_names'])))
-            elif name == 'asian_names':
-                asian_names['first_names'].extend(list(set(first_names) - set(asian_names['first_names'])))
-                asian_names['last_names'].extend(list(set(last_names) - set(asian_names['last_names'])))
-            elif name == 'native_american_names':
-                native_american_names['last_names'].extend(list(set(last_names) - set(native_american_names['last_names'])))
-            elif name == 'inter_racial_names':
-                inter_racial_names['last_names'].extend(list(set(last_names) - set(inter_racial_names['last_names'])))
+            bias_dict = {
+                'white_names': white_names,
+                'black_names': black_names,
+                'hispanic_names': hispanic_names,
+                'asian_names': asian_names,
+                'native_american_names': native_american_names,
+                'inter_racial_names': inter_racial_names
+            }
 
-    elif name in GenderPronounBias.alias_name:
+            if name in bias_dict:
+                bias = bias_dict[name]
+                bias['first_names'].extend(set(first_names) - set(bias['first_names']))
+                bias['last_names'].extend(set(last_names) - set(bias['last_names']))
+
+    elif name == "Gender Pronoun Bias":
         valid_names = ('female_pronouns', 'male_pronouns', 'neutral_pronouns')
 
         for data_dict in file:
@@ -110,18 +123,18 @@ def add_custom_data(file, name):
                     f"Only the following keys are allowed: "
                     "'name', 'subjective_pronouns', 'objective_pronouns', 'reflexive_pronouns', 'possessive_pronouns'.")
 
-            if name == 'female_pronouns':
-                female_pronouns['subjective_pronouns'] += list(set(pronouns['subjective_pronouns']) - set(female_pronouns['subjective_pronouns']))
-                female_pronouns['objective_pronouns'] += list(set(pronouns['objective_pronouns']) - set(female_pronouns['objective_pronouns']))
-                female_pronouns['reflexive_pronouns'] += list(set(pronouns['reflexive_pronouns']) - set(female_pronouns['reflexive_pronouns']))
-                female_pronouns['possessive_pronouns'] += list(set(pronouns['possessive_pronouns']) - set(female_pronouns['possessive_pronouns']))
-            elif name == 'male_pronouns':
-                male_pronouns['subjective_pronouns'] += list(set(pronouns['subjective_pronouns']) - set(male_pronouns['subjective_pronouns']))
-                male_pronouns['objective_pronouns'] += list(set(pronouns['objective_pronouns']) - set(male_pronouns['objective_pronouns']))
-                male_pronouns['reflexive_pronouns'] += list(set(pronouns['reflexive_pronouns']) - set(male_pronouns['reflexive_pronouns']))
-                male_pronouns['possessive_pronouns'] += list(set(pronouns['possessive_pronouns']) - set(male_pronouns['possessive_pronouns']))
-            elif name == 'neutral_pronouns':
-                neutral_pronouns['subjective_pronouns'] += list(set(pronouns['subjective_pronouns']) - set(neutral_pronouns['subjective_pronouns']))
-                neutral_pronouns['objective_pronouns'] += list(set(pronouns['objective_pronouns']) - set(neutral_pronouns['objective_pronouns']))
-                neutral_pronouns['reflexive_pronouns'] += list(set(pronouns['reflexive_pronouns']) - set(neutral_pronouns['reflexive_pronouns']))
-                neutral_pronouns['possessive_pronouns'] += list(set(pronouns['possessive_pronouns']) - set(neutral_pronouns['possessive_pronouns']))
+            bias_dict = {
+                'female_pronouns': female_pronouns,
+                'male_pronouns': male_pronouns,
+                'neutral_pronouns': neutral_pronouns
+            }
+
+            if name in bias_dict:
+                bias = bias_dict[name]
+                bias['subjective_pronouns'].extend(set(pronouns['subjective_pronouns']) - set(bias['subjective_pronouns']))
+                bias['objective_pronouns'].extend(set(pronouns['objective_pronouns']) - set(bias['objective_pronouns']))
+                bias['reflexive_pronouns'].extend(set(pronouns['reflexive_pronouns']) - set(bias['reflexive_pronouns']))
+                bias['possessive_pronouns'].extend(set(pronouns['possessive_pronouns']) - set(bias['possessive_pronouns']))
+
+    else:
+        raise ValueError(f"Invalid 'test_name' value '{name}'. It should be one of: Country Economic Bias, Religion Bias, Ethnicity Name Bias, Gender Pronoun Bias.")
