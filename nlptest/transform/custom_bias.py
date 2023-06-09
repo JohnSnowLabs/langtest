@@ -12,9 +12,10 @@ def add_custom_data(file, name):
         if not set(file.keys()).issubset(valid_names):
             raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
-        # Append values to existing keys
+        # Append unique values to existing keys
         for key, values in file.items():
-            country_economic_dict[key] += values
+            unique_values = set(values)
+            country_economic_dict[key] = list(set(country_economic_dict[key]) | unique_values)
 
     elif name in ReligionBias.alias_name:
         valid_names = religion_wise_names.keys()
@@ -23,9 +24,10 @@ def add_custom_data(file, name):
         if not set(file.keys()).issubset(valid_names):
             raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
-        # Append values to existing keys
+        # Append unique values to existing keys
         for key, values in file.items():
-            religion_wise_names[key] += values
+            unique_values = set(values)
+            religion_wise_names[key] = list(set(religion_wise_names[key]) | unique_values)
 
     elif name in EthnicityNameBias.alias_name:
         valid_names = (
@@ -56,24 +58,24 @@ def add_custom_data(file, name):
 
             if set(data_dict.keys()) - {'name', 'first_names', 'last_names'}:
                 raise ValueError(f"Invalid keys in the JSON for '{name}'. "
-                                 f"Only the following keys are allowed: 'name', 'first_names', 'last_names'.")
+                                f"Only the following keys are allowed: 'name', 'first_names', 'last_names'.")
 
             if name == 'white_names':
-                white_names['first_names'] += first_names
-                white_names['last_names'] += last_names
+                white_names['first_names'].extend(list(set(first_names) - set(white_names['first_names'])))
+                white_names['last_names'].extend(list(set(last_names) - set(white_names['last_names'])))
             elif name == 'black_names':
-                black_names['first_names'] += first_names
-                black_names['last_names'] += last_names
+                black_names['first_names'].extend(list(set(first_names) - set(black_names['first_names'])))
+                black_names['last_names'].extend(list(set(last_names) - set(black_names['last_names'])))
             elif name == 'hispanic_names':
-                hispanic_names['first_names'] += first_names
-                hispanic_names['last_names'] += last_names
+                hispanic_names['first_names'].extend(list(set(first_names) - set(hispanic_names['first_names'])))
+                hispanic_names['last_names'].extend(list(set(last_names) - set(hispanic_names['last_names'])))
             elif name == 'asian_names':
-                asian_names['first_names'] += first_names
-                asian_names['last_names'] += last_names
+                asian_names['first_names'].extend(list(set(first_names) - set(asian_names['first_names'])))
+                asian_names['last_names'].extend(list(set(last_names) - set(asian_names['last_names'])))
             elif name == 'native_american_names':
-                native_american_names['last_names'] += last_names
+                native_american_names['last_names'].extend(list(set(last_names) - set(native_american_names['last_names'])))
             elif name == 'inter_racial_names':
-                inter_racial_names['last_names'] += last_names
+                inter_racial_names['last_names'].extend(list(set(last_names) - set(inter_racial_names['last_names'])))
 
     elif name in GenderPronounBias.alias_name:
         valid_names = ('female_pronouns', 'male_pronouns', 'neutral_pronouns')
@@ -109,17 +111,17 @@ def add_custom_data(file, name):
                     "'name', 'subjective_pronouns', 'objective_pronouns', 'reflexive_pronouns', 'possessive_pronouns'.")
 
             if name == 'female_pronouns':
-                female_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
-                female_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
-                female_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
-                female_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
+                female_pronouns['subjective_pronouns'] += list(set(pronouns['subjective_pronouns']) - set(female_pronouns['subjective_pronouns']))
+                female_pronouns['objective_pronouns'] += list(set(pronouns['objective_pronouns']) - set(female_pronouns['objective_pronouns']))
+                female_pronouns['reflexive_pronouns'] += list(set(pronouns['reflexive_pronouns']) - set(female_pronouns['reflexive_pronouns']))
+                female_pronouns['possessive_pronouns'] += list(set(pronouns['possessive_pronouns']) - set(female_pronouns['possessive_pronouns']))
             elif name == 'male_pronouns':
-                male_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
-                male_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
-                male_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
-                male_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
+                male_pronouns['subjective_pronouns'] += list(set(pronouns['subjective_pronouns']) - set(male_pronouns['subjective_pronouns']))
+                male_pronouns['objective_pronouns'] += list(set(pronouns['objective_pronouns']) - set(male_pronouns['objective_pronouns']))
+                male_pronouns['reflexive_pronouns'] += list(set(pronouns['reflexive_pronouns']) - set(male_pronouns['reflexive_pronouns']))
+                male_pronouns['possessive_pronouns'] += list(set(pronouns['possessive_pronouns']) - set(male_pronouns['possessive_pronouns']))
             elif name == 'neutral_pronouns':
-                neutral_pronouns['subjective_pronouns'] += pronouns['subjective_pronouns']
-                neutral_pronouns['objective_pronouns'] += pronouns['objective_pronouns']
-                neutral_pronouns['reflexive_pronouns'] += pronouns['reflexive_pronouns']
-                neutral_pronouns['possessive_pronouns'] += pronouns['possessive_pronouns']
+                neutral_pronouns['subjective_pronouns'] += list(set(pronouns['subjective_pronouns']) - set(neutral_pronouns['subjective_pronouns']))
+                neutral_pronouns['objective_pronouns'] += list(set(pronouns['objective_pronouns']) - set(neutral_pronouns['objective_pronouns']))
+                neutral_pronouns['reflexive_pronouns'] += list(set(pronouns['reflexive_pronouns']) - set(neutral_pronouns['reflexive_pronouns']))
+                neutral_pronouns['possessive_pronouns'] += list(set(pronouns['possessive_pronouns']) - set(neutral_pronouns['possessive_pronouns']))
