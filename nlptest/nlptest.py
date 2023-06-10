@@ -56,8 +56,8 @@ class Harness:
             hub: Optional[str] = None,
             data: Optional[str] = None,
             config: Optional[Union[str, dict]] = None,
-            feature_column: Optional[str]="text",
-            target_column: Optional[str]= "label",  
+            feature_column: Optional[str]= None,
+            target_column: Optional[str]= None,  
             split:Optional[str]= "test", 
             subset:Optional[str]= None,        
             

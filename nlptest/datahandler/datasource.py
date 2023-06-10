@@ -556,7 +556,7 @@ class HuggingFaceDataset(_IDataset):
         """
         self.dataset_name = dataset_name
 
-    def load_data(self, feature_column: str = None, target_column: str = None, split: str = 'test', subset: str = None) -> List[Sample]:
+    def load_data(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
         """
         Load the specified split from the dataset library.
 
