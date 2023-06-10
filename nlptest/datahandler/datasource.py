@@ -588,3 +588,58 @@ class HuggingFaceDataset(_IDataset):
             samples.append(sample)
 
         return samples
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """
+        Exports the data to the corresponding format and saves it to 'output_path'.
+
+        Args:
+            data (List[Sample]):
+                Data to export.
+            output_path (str):
+                Path to save the data to.
+        """
+        with open(output_path, "w") as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(list(self.COLUMN_NAMES['text-classification'].keys()))
+            for sample in data:
+                row = self._sample_to_row(sample)
+                csv_writer.writerow(row)
+
+    def _row_to_sample(self, row: Dict[str, str]) -> Sample:
+        """
+        Convert a row from the dataset into a Sample for text classification.
+
+        Args:
+            row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object.
+        """
+        input_column = next((col for col in self.COLUMN_NAMES['text-classification']['text'] if col in row), None)
+        output_column = next((col for col in self.COLUMN_NAMES['text-classification']['label'] if col in row), None)
+
+        original = row.get(input_column, '')
+        label = SequenceLabel(label=row.get(output_column, ''), score=1)
+
+        return SequenceClassificationSample(
+            original=original,
+            expected_results=SequenceClassificationOutput(predictions=[label])
+        )
+
+    def _sample_to_row(self, sample: Sample) -> List[str]:
+        """
+        Convert a Sample object into a row for exporting.
+
+        Args:
+            sample (Sample):
+                Sample object to convert.
+
+        Returns:
+            List[str]:
+                Row formatted as a list of strings.
+        """
+        row = [sample.original, sample.expected_results.predictions[0].label]
+        return row
