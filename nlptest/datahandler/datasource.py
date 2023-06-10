@@ -539,6 +539,12 @@ class HuggingFaceDataset(_IDataset):
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
+    COLUMN_NAMES = {
+        'text-classification': {
+            'text': ['text', 'sentences', 'sentence', 'sample'],
+            'label': ['label', 'labels', 'class', 'classes']
+        }
+    }
 
     def __init__(self, dataset_name: str):
         """
@@ -549,12 +555,6 @@ class HuggingFaceDataset(_IDataset):
                 Name of the dataset to load.
         """
         self.dataset_name = dataset_name
-        self.COLUMN_NAMES = {
-            'text-classification': {
-                'text': ['text', 'sentences', 'sentence', 'sample'],
-                'label': ['label', 'labels', 'class', 'classes']
-            }
-        }
 
     def load_data(self, feature_column: str = None, target_column: str = None, split: str = 'test', subset: str = None) -> List[Sample]:
         """
@@ -582,11 +582,7 @@ class HuggingFaceDataset(_IDataset):
         if feature_column and target_column:
             dataset = dataset.map(lambda example: {'text': example[feature_column], 'label': example[target_column]})
 
-        samples = []
-        for data_row in dataset:
-            sample = self._row_to_sample(data_row)
-            samples.append(sample)
-
+        samples = [self._row_to_sample(example) for example in dataset]
         return samples
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -606,23 +602,23 @@ class HuggingFaceDataset(_IDataset):
                 row = self._sample_to_row(sample)
                 csv_writer.writerow(row)
 
-    def _row_to_sample(self, row: Dict[str, str]) -> Sample:
+    def _row_to_sample(self, data_row: Dict[str, str]) -> Sample:
         """
         Convert a row from the dataset into a Sample for text classification.
 
         Args:
-            row (Dict[str, str]):
+            data_row (Dict[str, str]):
                 Single row of the dataset.
 
         Returns:
             Sample:
                 Row formatted into a Sample object.
         """
-        input_column = next((col for col in self.COLUMN_NAMES['text-classification']['text'] if col in row), None)
-        output_column = next((col for col in self.COLUMN_NAMES['text-classification']['label'] if col in row), None)
+        input_column = next((col for col in self.COLUMN_NAMES['text-classification']['text'] if col in data_row), None)
+        output_column = next((col for col in self.COLUMN_NAMES['text-classification']['label'] if col in data_row), None)
 
-        original = row.get(input_column, '')
-        label = SequenceLabel(label=row.get(output_column, ''), score=1)
+        original = data_row.get(input_column, '')
+        label = SequenceLabel(label=data_row.get(output_column, ''), score=1)
 
         return SequenceClassificationSample(
             original=original,
