@@ -10,6 +10,7 @@ from nlptest.utils.custom_types.sample import ToxicitySample
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
+from datasets import load_dataset
 
 
 class _IDataset(ABC):
@@ -533,3 +534,57 @@ class JSONLDataset(_IDataset):
                 path to save the data to
         """
         raise NotImplementedError()
+
+class HuggingFaceDataset(_IDataset):
+    """
+    Example dataset class that loads data using the Hugging Face dataset library.
+    """
+
+    def __init__(self, dataset_name: str):
+        """
+        Initialize the HuggingFaceDataset class.
+
+        Args:
+            dataset_name (str):
+                Name of the dataset to load.
+        """
+        self.dataset_name = dataset_name
+        self.COLUMN_NAMES = {
+            'text-classification': {
+                'text': ['text', 'sentences', 'sentence', 'sample'],
+                'label': ['label', 'labels', 'class', 'classes']
+            }
+        }
+
+    def load_data(self, feature_column: str = None, target_column: str = None, split: str = 'test', subset: str = None) -> List[Sample]:
+        """
+        Load the specified split from the dataset library.
+
+        Args:
+            feature_column (str):
+                Name of the feature_column column.
+            target_column (str):
+                Name of the target_column column.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects.
+        """
+        if subset:
+            dataset = load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = load_dataset(self.dataset_name, split=split)
+
+        if feature_column and target_column:
+            dataset = dataset.map(lambda example: {'text': example[feature_column], 'label': example[target_column]})
+
+        samples = []
+        for data_row in dataset:
+            sample = self._row_to_sample(data_row)
+            samples.append(sample)
+
+        return samples
