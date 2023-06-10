@@ -10,7 +10,7 @@ import yaml
 from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
-from .datahandler.datasource import DataFactory
+from .datahandler.datasource import DataFactory,HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 
@@ -55,7 +55,12 @@ class Harness:
             task: str,
             hub: Optional[str] = None,
             data: Optional[str] = None,
-            config: Optional[Union[str, dict]] = None
+            config: Optional[Union[str, dict]] = None,
+            feature_column: Optional[str]="text",
+            target_column: Optional[str]= "label",  
+            split:Optional[str]= "test", 
+            subset:Optional[str]= None,        
+            
     ):
         """
         Initialize the Harness object.
@@ -98,6 +103,9 @@ class Harness:
             self.is_default = True
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
+        elif data is not None and hub=="huggingface"and task=="text-classification":
+                self.data =  HuggingFaceDataset(data).load_data(feature_column,target_column,split,subset) if data is not None else None
+                
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "
