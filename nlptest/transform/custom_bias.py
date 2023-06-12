@@ -4,7 +4,7 @@ from .utils import (
 )
 
 def add_custom_data(file, name):
-    print(type(file))
+
     """
     Adds custom data to the corresponding bias dictionaries based on the specified name.
 
