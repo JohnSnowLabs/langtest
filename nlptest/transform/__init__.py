@@ -32,8 +32,19 @@ class TestFactory:
 # Additional operations can be performed here using the validated data
 
     @staticmethod
-    def call_add_custom_bias(file, name,append):
-        add_custom_data(file, name,append)
+    def call_add_custom_bias(data, name, append):
+        """
+        Add custom bias to the given data.
+
+        Args:
+            data (list): The data to which the custom bias will be added.
+            name (str): The name of the custom bias.
+            append (bool): Indicates whether to append the custom bias or replace the existing bias.
+
+        Returns:
+            None
+        """
+        add_custom_data(data, name, append)
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:

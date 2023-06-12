@@ -440,14 +440,15 @@ class Harness:
 
         return harness
     @staticmethod
-    def custom_bias(file_path: str, test_name: str = None, append:bool=False):
-            """Load custom data from a JSON file and store it in a class variable.
+    def custom_bias(file_path: str, test_name: str = None, append: bool = False):
+        """Load custom data from a JSON file and store it in a class variable.
 
-            Args:
-                file_path (str): Path to the JSON file.
-                name (str, optional): Name parameter. Defaults to None.
-            """
-            with open(file_path, 'r') as f:
-                data = json.load(f)
+        Args:
+            file_path (str): Path to the JSON file.
+            test_name (str, optional): Name parameter. Defaults to None.
+            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
+        """
+        with open(file_path, 'r') as f:
+            data = json.load(f)
 
-            TestFactory.call_add_custom_bias(data, test_name, append)
+        TestFactory.call_add_custom_bias(data, test_name, append)

@@ -3,12 +3,12 @@ from .utils import (
     native_american_names, neutral_pronouns, religion_wise_names, white_names, female_pronouns
 )
 
-def add_custom_data(file, name, append):
+def add_custom_data(data, name, append):
     """
     Adds custom data to the corresponding bias dictionaries based on the specified name.
 
     Args:
-        file (dict or list): The data to be added.
+        data (dict or list): The data to be added.
         name (str): The type of bias dictionary to update. It should be one of the following:
             - "Country Economic Bias"
             - "Religion Bias"
@@ -23,34 +23,34 @@ def add_custom_data(file, name, append):
         valid_names = country_economic_dict.keys()
 
         # Validate the schema
-        if not set(file.keys()).issubset(valid_names):
+        if not set(data.keys()).issubset(valid_names):
             raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
         if append:
             # Append unique values to existing keys
-            for key, values in file.items():
+            for key, values in data.items():
                 unique_values = set(values)
                 country_economic_dict[key] = list(set(country_economic_dict[key]) | unique_values)
         else:
             # Overwrite the keys' values
-            for key, values in file.items():
+            for key, values in data.items():
                 country_economic_dict[key] = values
 
     elif name == "Religion Bias":
         valid_names = religion_wise_names.keys()
 
         # Validate the schema
-        if not set(file.keys()).issubset(valid_names):
+        if not set(data.keys()).issubset(valid_names):
             raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
         if append:
             # Append unique values to existing keys
-            for key, values in file.items():
+            for key, values in data.items():
                 unique_values = set(values)
                 religion_wise_names[key] = list(set(religion_wise_names[key]) | unique_values)
         else:
             # Overwrite the keys' values
-            for key, values in file.items():
+            for key, values in data.items():
                 religion_wise_names[key] = values
 
     elif name == "Ethnicity Name Bias":
@@ -64,7 +64,7 @@ def add_custom_data(file, name, append):
         )
 
         # Validate the schema
-        for data_dict in file:
+        for data_dict in data:
             if 'name' not in data_dict:
                 raise ValueError("Invalid JSON format. 'name' key is missing.")
 
@@ -106,7 +106,7 @@ def add_custom_data(file, name, append):
         valid_names = ('female_pronouns', 'male_pronouns', 'neutral_pronouns')
 
         # Validate the schema
-        for data_dict in file:
+        for data_dict in data:
             if 'name' not in data_dict:
                 raise ValueError("Invalid JSON format. 'name' key is missing.")
 
