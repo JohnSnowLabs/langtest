@@ -32,8 +32,8 @@ class TestFactory:
 # Additional operations can be performed here using the validated data
 
     @staticmethod
-    def call_add_custom_bias(file, name):
-        add_custom_data(file, name)
+    def call_add_custom_bias(file, name,append):
+        add_custom_data(file, name,append)
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
