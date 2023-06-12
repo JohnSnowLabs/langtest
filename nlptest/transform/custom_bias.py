@@ -3,8 +3,7 @@ from .utils import (
     native_american_names, neutral_pronouns, religion_wise_names, white_names, female_pronouns
 )
 
-def add_custom_data(file, name):
-
+def add_custom_data(file, name, append):
     """
     Adds custom data to the corresponding bias dictionaries based on the specified name.
 
@@ -15,6 +14,7 @@ def add_custom_data(file, name):
             - "Religion Bias"
             - "Ethnicity Name Bias"
             - "Gender Pronoun Bias"
+        append (bool): Specifies whether to append the values or overwrite them.
 
     Raises:
         ValueError: If the specified `name` is invalid or if the provided data has an invalid format or contains invalid keys.
@@ -26,12 +26,15 @@ def add_custom_data(file, name):
         if not set(file.keys()).issubset(valid_names):
             raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
-        # Append unique values to existing keys
-        for key, values in file.items():
-            unique_values = set(values)
-            country_economic_dict[key] = list(set(country_economic_dict[key]) | unique_values)
-
-        
+        if append:
+            # Append unique values to existing keys
+            for key, values in file.items():
+                unique_values = set(values)
+                country_economic_dict[key] = list(set(country_economic_dict[key]) | unique_values)
+        else:
+            # Overwrite the keys' values
+            for key, values in file.items():
+                country_economic_dict[key] = values
 
     elif name == "Religion Bias":
         valid_names = religion_wise_names.keys()
@@ -40,10 +43,15 @@ def add_custom_data(file, name):
         if not set(file.keys()).issubset(valid_names):
             raise ValueError(f"Invalid schema. It should be one of: {', '.join(valid_names)}.")
 
-        # Append unique values to existing keys
-        for key, values in file.items():
-            unique_values = set(values)
-            religion_wise_names[key] = list(set(religion_wise_names[key]) | unique_values)
+        if append:
+            # Append unique values to existing keys
+            for key, values in file.items():
+                unique_values = set(values)
+                religion_wise_names[key] = list(set(religion_wise_names[key]) | unique_values)
+        else:
+            # Overwrite the keys' values
+            for key, values in file.items():
+                religion_wise_names[key] = values
 
     elif name == "Ethnicity Name Bias":
         valid_names = (
@@ -55,6 +63,7 @@ def add_custom_data(file, name):
             'inter_racial_names'
         )
 
+        # Validate the schema
         for data_dict in file:
             if 'name' not in data_dict:
                 raise ValueError("Invalid JSON format. 'name' key is missing.")
@@ -87,12 +96,16 @@ def add_custom_data(file, name):
 
             if name in bias_dict:
                 bias = bias_dict[name]
-                bias['first_names'].extend(set(first_names) - set(bias['first_names']))
-                bias['last_names'].extend(set(last_names) - set(bias['last_names']))
-
+                if append:
+                    bias['first_names'].extend(set(first_names) - set(bias['first_names']))
+                    bias['last_names'].extend(set(last_names) - set(bias['last_names']))
+                else:
+                    bias['first_names'] = list(set(first_names))
+                    bias['last_names'] = list(set(last_names))
     elif name == "Gender Pronoun Bias":
         valid_names = ('female_pronouns', 'male_pronouns', 'neutral_pronouns')
 
+        # Validate the schema
         for data_dict in file:
             if 'name' not in data_dict:
                 raise ValueError("Invalid JSON format. 'name' key is missing.")
@@ -131,10 +144,15 @@ def add_custom_data(file, name):
 
             if name in bias_dict:
                 bias = bias_dict[name]
-                bias['subjective_pronouns'].extend(set(pronouns['subjective_pronouns']) - set(bias['subjective_pronouns']))
-                bias['objective_pronouns'].extend(set(pronouns['objective_pronouns']) - set(bias['objective_pronouns']))
-                bias['reflexive_pronouns'].extend(set(pronouns['reflexive_pronouns']) - set(bias['reflexive_pronouns']))
-                bias['possessive_pronouns'].extend(set(pronouns['possessive_pronouns']) - set(bias['possessive_pronouns']))
-
+                if append:
+                    bias['subjective_pronouns'].extend(set(pronouns['subjective_pronouns']) - set(bias['subjective_pronouns']))
+                    bias['objective_pronouns'].extend(set(pronouns['objective_pronouns']) - set(bias['objective_pronouns']))
+                    bias['reflexive_pronouns'].extend(set(pronouns['reflexive_pronouns']) - set(bias['reflexive_pronouns']))
+                    bias['possessive_pronouns'].extend(set(pronouns['possessive_pronouns']) - set(bias['possessive_pronouns']))
+                else:
+                    bias['subjective_pronouns'] = pronouns['subjective_pronouns']
+                    bias['objective_pronouns'] = pronouns['objective_pronouns']
+                    bias['reflexive_pronouns'] = pronouns['reflexive_pronouns']
+                    bias['possessive_pronouns'] = pronouns['possessive_pronouns']
     else:
         raise ValueError(f"Invalid 'test_name' value '{name}'. It should be one of: Country Economic Bias, Religion Bias, Ethnicity Name Bias, Gender Pronoun Bias.")
