@@ -4,7 +4,6 @@ import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional, Union, Any
 import langchain
-
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
@@ -54,13 +53,8 @@ class Harness:
             model: Union[str, Any],
             task: str,
             hub: Optional[str] = None,
-            data: Optional[str] = None,
-            config: Optional[Union[str, dict]] = None,
-            feature_column: Optional[str]= None,
-            target_column: Optional[str]= None,  
-            split:Optional[str]= "test", 
-            subset:Optional[str]= None,        
-            
+            data: Optional[Union[str, dict]] = None,
+            config: Optional[Union[str, dict]] = None,            
     ):
         """
         Initialize the Harness object.
@@ -104,7 +98,7 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif data is not None and hub=="huggingface"and task=="text-classification":
-                self.data =  HuggingFaceDataset(data).load_data(feature_column,target_column,split,subset) if data is not None else None
+                self.data =  HuggingFaceDataset(data['data']).load_data(data['feature_column'],data['target_column'],data['split'],data['subset']) if data is not None else None
                 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
