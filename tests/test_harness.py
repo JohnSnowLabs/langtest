@@ -129,6 +129,30 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
 
+    def test_load_HF_data_text_classification(self):
+        """"""
+        save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
+        tc_harness = Harness(task="text-classification", hub="huggingface",
+                            model="nlptown/flaubert_small_cased_sentiment",
+                            data={
+                                "name":'amazon_reviews_multi',
+                                "subset":"en",
+                                "feature_column":"review_body",
+                                "target_column":'product_category',
+                                "split":"train"
+        })
+        tc_harness.generate()
+        tc_harness.save(save_dir)
+
+        loaded_tc_harness = Harness.load(
+            save_dir=save_dir,
+            task="text-classification",
+            model="nlptown/flaubert_small_cased_sentiment",
+            hub="huggingface"
+        )
+        self.assertEqual(tc_harness._config, loaded_tc_harness._config)
+        self.assertEqual(tc_harness.data, loaded_tc_harness.data)
+        self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """"""
