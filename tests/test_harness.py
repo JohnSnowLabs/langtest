@@ -133,21 +133,16 @@ class HarnessTestCase(unittest.TestCase):
         """"""
         save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
         tc_harness = Harness(task="text-classification", hub="huggingface",
-                            model="nlptown/flaubert_small_cased_sentiment",
-                            data={
-                                "name":'amazon_reviews_multi',
-                                "subset":"en",
-                                "feature_column":"review_body",
-                                "target_column":'product_category',
-                                "split":"train"
-        })
+                            model="lvwerra/distilbert-imdb",
+                            data={"name":'imdb'}
+                                )
         tc_harness.generate()
         tc_harness.save(save_dir)
 
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="nlptown/flaubert_small_cased_sentiment",
+            model="lvwerra/distilbert-imdb",
             hub="huggingface"
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
