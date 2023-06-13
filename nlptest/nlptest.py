@@ -191,8 +191,18 @@ class Harness:
         m_data = [sample.copy() for sample in self.data]
 
         if self.task in ["text-classification", "ner"]:
-            _ = [setattr(sample, 'expected_results', self.model(sample.original))
-                 for sample in m_data]
+            if not isinstance(self.model, dict):
+                _ = [setattr(sample, 'expected_results', self.model(sample.original))
+                     for sample in m_data]
+            else:
+                self._testcases={}
+                for k, v in self.model.items():
+                        _ = [setattr(sample, 'expected_results', v(sample.original)) for sample in m_data]
+                        self._testcases[k] = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                
+                return self
+                        
+                
         elif self.task in ("question-answering","summarization"):
             if 'bias' in tests.keys():
                 if self.file_path.split('-')[0] in ('BoolQ','XSum'):
@@ -226,9 +236,14 @@ class Harness:
         if self._testcases is None:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
-
-        self._generated_results = TestFactory.run(
-            self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+        if not isinstance(self._testcases, dict):
+            self._generated_results = TestFactory.run(
+                self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+        else:
+            self._generated_results={}
+            for k, v in self.model.items(): 
+                  self._generated_results[k] = TestFactory.run(self._testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+            
         return self
 
     def report(self) -> pd.DataFrame:
@@ -239,6 +254,7 @@ class Harness:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
+      
         if self._generated_results is None:
             raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
                                "calling the `.report()` method.")
@@ -253,46 +269,105 @@ class Harness:
             }
 
         summary = defaultdict(lambda: defaultdict(int))
-        for sample in self._generated_results:
-            summary[sample.test_type]['category'] = sample.category
-            summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+        if not isinstance(self._generated_results, dict):
+            for sample in self._generated_results:
+                summary[sample.test_type]['category'] = sample.category
+                summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+            report = {}
+            for test_type, value in summary.items():
+                pass_rate = summary[test_type]["true"] / \
+                    (summary[test_type]["true"] + summary[test_type]["false"])
+                min_pass_rate = self.min_pass_dict.get(
+                    test_type, self.default_min_pass_dict)
 
-        report = {}
-        for test_type, value in summary.items():
-            pass_rate = summary[test_type]["true"] / \
-                (summary[test_type]["true"] + summary[test_type]["false"])
-            min_pass_rate = self.min_pass_dict.get(
-                test_type, self.default_min_pass_dict)
+                if summary[test_type]['category'] == "Accuracy":
+                    min_pass_rate = 1
 
-            if summary[test_type]['category'] == "Accuracy":
-                min_pass_rate = 1
+                report[test_type] = {
+                    "category": summary[test_type]['category'],
+                    "fail_count": summary[test_type]["false"],
+                    "pass_count": summary[test_type]["true"],
+                    "pass_rate": pass_rate,
+                    "minimum_pass_rate": min_pass_rate,
+                    "pass": pass_rate >= min_pass_rate
+                }
 
-            report[test_type] = {
-                "category": summary[test_type]['category'],
-                "fail_count": summary[test_type]["false"],
-                "pass_count": summary[test_type]["true"],
-                "pass_rate": pass_rate,
-                "minimum_pass_rate": min_pass_rate,
-                "pass": pass_rate >= min_pass_rate
-            }
+            df_report = pd.DataFrame.from_dict(report, orient="index")
+            df_report = df_report.reset_index().rename(
+                columns={'index': 'test_type'})
 
-        df_report = pd.DataFrame.from_dict(report, orient="index")
-        df_report = df_report.reset_index().rename(
-            columns={'index': 'test_type'})
+            df_report['pass_rate'] = df_report['pass_rate'].apply(
+                lambda x: "{:.0f}%".format(x * 100))
+            df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
+                lambda x: "{:.0f}%".format(x * 100))
 
-        df_report['pass_rate'] = df_report['pass_rate'].apply(
-            lambda x: "{:.0f}%".format(x * 100))
-        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
-            lambda x: "{:.0f}%".format(x * 100))
+            col_to_move = 'category'
+            first_column = df_report.pop('category')
+            df_report.insert(0, col_to_move, first_column)
+            df_report = df_report.reset_index(drop=True)
 
-        col_to_move = 'category'
-        first_column = df_report.pop('category')
-        df_report.insert(0, col_to_move, first_column)
-        df_report = df_report.reset_index(drop=True)
+            self.df_report = df_report.fillna("-")
 
-        self.df_report = df_report.fillna("-")
+            return self.df_report
+        else:
+            df_final_report = pd.DataFrame()
+            for k, v in self.model.items():  
+                for sample in self._generated_results[k]:
+                        summary[sample.test_type]['category'] = sample.category
+                        summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+                report = {}      
+                for test_type, value in summary.items():
+                            pass_rate = summary[test_type]["true"] / \
+                                (summary[test_type]["true"] + summary[test_type]["false"])
+                            min_pass_rate = self.min_pass_dict.get(
+                                test_type, self.default_min_pass_dict)
 
-        return self.df_report
+                            if summary[test_type]['category'] == "Accuracy":
+                                min_pass_rate = 1
+
+                            report[test_type] = {
+                                "model_name": k,
+                                "category": summary[test_type]['category'],
+                                "fail_count": summary[test_type]["false"],
+                                "pass_count": summary[test_type]["true"],
+                                "pass_rate": pass_rate,
+                                "minimum_pass_rate": min_pass_rate,
+                                "pass": pass_rate >= min_pass_rate
+                            }
+
+                df_report = pd.DataFrame.from_dict(report, orient="index")
+                df_report = df_report.reset_index().rename(
+                            columns={'index': 'test_type'})
+
+                df_report['pass_rate'] = df_report['pass_rate'].apply(
+                            lambda x: "{:.0f}%".format(x * 100))
+                df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
+                            lambda x: "{:.0f}%".format(x * 100))
+
+                col_to_move = 'category'
+                first_column = df_report.pop('category')
+                df_report.insert(0, col_to_move, first_column)
+                df_report = df_report.reset_index(drop=True)
+                df_report = df_report.fillna("-")
+                df_final_report = pd.concat([df_final_report, df_report])
+ 
+            df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip('%').astype('float') / 100.0
+            pivot_minimum_pass_rate_df = df_final_report.pivot_table(index='model_name', columns='test_type', values='minimum_pass_rate', aggfunc='mean')
+
+            df_final_report = df_final_report.drop(['fail_count', 'pass_count', 'category'], axis=1)
+            df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip('%').astype('float') / 100.0
+
+            pivot_df = df_final_report.pivot_table(index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
+
+            def color_cells(series):
+                color = 'green' if series.name in pivot_minimum_pass_rate_df.columns and (series > pivot_minimum_pass_rate_df.loc[:, series.name]).all() else 'red'
+                return ['background-color: %s' % color] * len(series)
+
+            styled_df = pivot_df.style.apply(color_cells)
+            return styled_df
+
+
+       
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """
@@ -448,73 +523,3 @@ class Harness:
 
         return harness
     
-    def compare_models(self) -> pd.DataFrame:
-            if self._config is None:
-                raise RuntimeError("Please call .configure() first.")
-            if self._testcases is not None:
-                raise RuntimeError(
-                    "Testcases are already generated, please call .run() and .report() next.")
-
-            tests = self._config['tests']
-            testcases={}
-            generated_results={}
-            m_data = [sample.copy() for sample in self.data]
-            df_final_report = pd.DataFrame()
-            if self.task in ["text-classification", "ner"]:
-                if isinstance(self.model, dict):
-                    for k, v in self.model.items():
-                        _ = [setattr(sample, 'expected_results', v(sample.original)) for sample in m_data]
-                        testcases[k] = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
-                        generated_results[k] = TestFactory.run(testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
-                        if isinstance(self._config, dict):
-                            self.default_min_pass_dict = self._config['tests']['defaults'].get(
-                                'min_pass_rate', 0.65)
-                            self.min_pass_dict = {
-                                j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in
-                                self._config['tests'].items() for j, k in v.items() 
-                                if isinstance(k, dict) and 'min_pass_rate' in k.keys()
-                            }
-
-                        summary = defaultdict(lambda: defaultdict(int))
-                        for sample in generated_results[k]:
-                            summary[sample.test_type]['category'] = sample.category
-                            summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-
-                        report = {}
-                        for test_type, value in summary.items():
-                            pass_rate = summary[test_type]["true"] / \
-                                (summary[test_type]["true"] + summary[test_type]["false"])
-                            min_pass_rate = self.min_pass_dict.get(
-                                test_type, self.default_min_pass_dict)
-
-                            if summary[test_type]['category'] == "Accuracy":
-                                min_pass_rate = 1
-
-                            report[test_type] = {
-                                "model_name": k,
-                                "category": summary[test_type]['category'],
-                                "fail_count": summary[test_type]["false"],
-                                "pass_count": summary[test_type]["true"],
-                                "pass_rate": pass_rate,
-                                "minimum_pass_rate": min_pass_rate,
-                                "pass": pass_rate >= min_pass_rate
-                            }
-
-                        df_report = pd.DataFrame.from_dict(report, orient="index")
-                        df_report = df_report.reset_index().rename(
-                            columns={'index': 'test_type'})
-
-                        df_report['pass_rate'] = df_report['pass_rate'].apply(
-                            lambda x: "{:.0f}%".format(x * 100))
-                        df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
-                            lambda x: "{:.0f}%".format(x * 100))
-
-                        col_to_move = 'category'
-                        first_column = df_report.pop('category')
-                        df_report.insert(0, col_to_move, first_column)
-                        df_report = df_report.reset_index(drop=True)
-
-                        df_report = df_report.fillna("-")
-                        df_final_report = pd.concat([df_final_report, df_report])
-                        
-                return df_final_report
