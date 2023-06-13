@@ -98,7 +98,12 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif type(data) is dict  and hub=="huggingface"and task=="text-classification":
-                self.data =  HuggingFaceDataset(data['name']).load_data(data['feature_column'],data['target_column'],data['split'],data['subset']) if data is not None else None
+                self.data = HuggingFaceDataset(data['name']).load_data(
+                    data.get('feature_column', 'text'),
+                    data.get('target_column', 'label'),
+                    data.get('split', 'test'),
+                    data.get('subset', None)
+                ) if data is not None else None
                 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
