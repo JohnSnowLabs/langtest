@@ -327,9 +327,6 @@ class Harness:
 
                             report[test_type] = {
                                 "model_name": k,
-                                "category": summary[test_type]['category'],
-                                "fail_count": summary[test_type]["false"],
-                                "pass_count": summary[test_type]["true"],
                                 "pass_rate": pass_rate,
                                 "minimum_pass_rate": min_pass_rate,
                                 "pass": pass_rate >= min_pass_rate
@@ -344,9 +341,6 @@ class Harness:
                 df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
                             lambda x: "{:.0f}%".format(x * 100))
 
-                col_to_move = 'category'
-                first_column = df_report.pop('category')
-                df_report.insert(0, col_to_move, first_column)
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
                 df_final_report = pd.concat([df_final_report, df_report])
@@ -354,7 +348,6 @@ class Harness:
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip('%').astype('float') / 100.0
             pivot_minimum_pass_rate_df = df_final_report.pivot_table(index='model_name', columns='test_type', values='minimum_pass_rate', aggfunc='mean')
 
-            df_final_report = df_final_report.drop(['fail_count', 'pass_count', 'category'], axis=1)
             df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip('%').astype('float') / 100.0
 
             pivot_df = df_final_report.pivot_table(index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
@@ -522,4 +515,3 @@ class Harness:
         harness.generate()
 
         return harness
-    
