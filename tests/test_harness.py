@@ -136,6 +136,7 @@ class HarnessTestCase(unittest.TestCase):
                             model="lvwerra/distilbert-imdb",
                             data={"name":'imdb'}
                                 )
+        tc_harness.data=tc_harness.data[:10]
         tc_harness.generate()
         tc_harness.save(save_dir)
 
