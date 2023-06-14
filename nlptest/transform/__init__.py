@@ -121,7 +121,7 @@ class TestFactory:
         results = []
         run_timing = {}
         for each, runtime in temp_res:
-            results.extend(each.result())
+            results.extend(each)
             test_type = results[-1].test_type
             run_timing[test_type] = runtime
         return results, run_timing
@@ -164,10 +164,10 @@ class TestFactory:
     
     @classmethod
     async def measure_timing(cls, coro):
-        start_time = time.time()
+        start_time = time.time_ns()
         res = await coro
-        end_time = time.time()
-        return res, (end_time - start_time)
+        end_time = time.time_ns()
+        return (await res), (end_time - start_time)
 
 
 class ITests(ABC):
@@ -312,7 +312,7 @@ class RobustnessTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            start_time = time.time()
+            start_time = time.time_ns()
             if TestFactory.task in ('question-answering', 'summarization'):
                 _ = [
                     sample.transform(test_func, params.get('parameters', {}))
@@ -326,7 +326,7 @@ class RobustnessTestFactory(ITests):
                     data_handler_copy,
                     **params.get('parameters', {})
                 )
-            end_time = time.time()
+            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -462,10 +462,10 @@ class BiasTestFactory(ITests):
         runtime_test = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time()
+            start_time = time.time_ns()
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
-            end_time = time.time()
+            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -532,10 +532,10 @@ class RepresentationTestFactory(ITests):
         runtime_test = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time()
+            start_time = time.time_ns()
             transformed_samples = self.supported_tests[test_name].transform(
                 test_name, data_handler_copy, params)
-            end_time = time.time()
+            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -605,7 +605,7 @@ class FairnessTestFactory(ITests):
         
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time()
+            start_time = time.time_ns()
             if isinstance(data_handler_copy[0], NERSample):
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
             elif isinstance(data_handler_copy[0], SequenceClassificationSample):
@@ -619,7 +619,7 @@ class FairnessTestFactory(ITests):
             params["test_name"] = test_name
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
-            end_time = time.time()
+            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -781,7 +781,7 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            start_time = time.time()
+            start_time = time.time_ns()
             if data_handler_copy[0].task=="ner":
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
                 y_true = y_true.explode().apply(lambda x: x.split("-")
@@ -796,7 +796,7 @@ class AccuracyTestFactory(ITests):
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
             
-            end_time = time.time()
+            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
@@ -923,13 +923,13 @@ class ToxicityTestFactory(ITests):
         runtime_tests = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time()
+            start_time = time.time_ns()
             test_func = self.supported_tests[test_name].transform
             transformed_samples = test_func(
                     data_handler_copy,
                     **params.get('parameters', {})
                 )
-            end_time = time.time()
+            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
