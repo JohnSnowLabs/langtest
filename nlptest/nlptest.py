@@ -373,14 +373,28 @@ class Harness:
             logging.warning(
                 "Please run `Harness.run()` before calling `.generated_results()`.")
             return
-        generated_results_df = pd.DataFrame.from_dict(
-            [x.to_dict() for x in self._generated_results])
-        if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
-            generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
+        
+        if isinstance(self._generated_results, dict):
+            generated_results_df = []
+            if isinstance(self._generated_results, dict):
+                for k, v in self._generated_results.items():
+                    model_generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in v])
+                    if "test_case" in model_generated_results_df.columns and "original_question" in model_generated_results_df.columns:
+                        model_generated_results_df['original_question'].update(model_generated_results_df.pop('test_case'))
+                    model_generated_results_df["model_name"] = k
+                    generated_results_df.append(model_generated_results_df)
+            generated_results_df = pd.concat(generated_results_df)
+
+        else:
+            generated_results_df = pd.DataFrame.from_dict(
+                [x.to_dict() for x in self._generated_results])
+            if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
+                generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
         
 
 
-        column_order = ["category", "test_type", "original", "prompt", "original_context",
+
+        column_order = ["model_name", "category", "test_type", "original", "prompt", "original_context",
                          "original_question", "completion", "test_case", "perturbed_context", "perturbed_question", 
                          "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score", "pass"]
         columns = [c for c in column_order if c in generated_results_df.columns]
