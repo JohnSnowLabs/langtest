@@ -4,14 +4,10 @@ import re
 import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
-
 from nlptest.utils.custom_types.sample import ToxicitySample
-
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
-from datasets import load_dataset
-
 
 class _IDataset(ABC):
     """Abstract base class for Dataset.
@@ -574,6 +570,10 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
+        try:
+            from datasets import load_dataset
+        except ImportError:
+                raise ModuleNotFoundError("The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
         if subset:
             dataset = load_dataset(self.dataset_name, name=subset, split=split)
         else:
