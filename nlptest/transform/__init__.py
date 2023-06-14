@@ -529,15 +529,19 @@ class RepresentationTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
+        runtime_test = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
+            start_time = time.time()
             transformed_samples = self.supported_tests[test_name].transform(
                 test_name, data_handler_copy, params)
+            end_time = time.time()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
+            runtime_test[test_name] = (end_time - start_time)
 
-        return all_samples
+        return all_samples, runtime_test
 
     @staticmethod
     def available_tests() -> Dict:
@@ -594,13 +598,14 @@ class FairnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
+        runtime_tests = {}
 
         if self._data_handler[0].expected_results is None:
             raise RuntimeError('This dataset does not contain labels and fairness tests cannot be run with it.')
-
+        
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-
+            start_time = time.time()
             if isinstance(data_handler_copy[0], NERSample):
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
             elif isinstance(data_handler_copy[0], SequenceClassificationSample):
@@ -614,10 +619,12 @@ class FairnessTestFactory(ITests):
             params["test_name"] = test_name
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
+            end_time = time.time()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-        return all_samples
+            runtime_tests[test_name] = (end_time - start_time)
+        return all_samples, runtime_tests
 
     @staticmethod
     def available_tests() -> dict:
@@ -766,6 +773,7 @@ class AccuracyTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
+        runtime_tests = {}
 
         if self._data_handler[0].expected_results is None:
             raise RuntimeError('This dataset does not contain labels and accuracy tests cannot be run with it.')
@@ -773,6 +781,7 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
+            start_time = time.time()
             if data_handler_copy[0].task=="ner":
                 y_true = pd.Series(data_handler_copy).apply(lambda x: [y.entity for y in x.expected_results.predictions])
                 y_true = y_true.explode().apply(lambda x: x.split("-")
@@ -786,10 +795,13 @@ class AccuracyTestFactory(ITests):
             params["test_name"] = test_name
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params)
+            
+            end_time = time.time()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-        return all_samples
+            runtime_tests[test_name] = (end_time - start_time)
+        return all_samples, runtime_tests
 
     @staticmethod
     def available_tests() -> dict:
@@ -908,17 +920,21 @@ class ToxicityTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples=[]
+        runtime_tests = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
+            start_time = time.time()
             test_func = self.supported_tests[test_name].transform
             transformed_samples = test_func(
                     data_handler_copy,
                     **params.get('parameters', {})
                 )
+            end_time = time.time()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-        return all_samples
+            runtime_tests[test_name] = (end_time - start_time)
+        return all_samples, runtime_tests
 
     @staticmethod
     def available_tests() -> dict:
