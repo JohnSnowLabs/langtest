@@ -391,7 +391,7 @@ class Harness:
                         model_generated_results_df['original_question'].update(model_generated_results_df.pop('test_case'))
                     model_generated_results_df["model_name"] = k
                     generated_results_df.append(model_generated_results_df)
-            generated_results_df = pd.concat(generated_results_df)
+            generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
 
         else:
             generated_results_df = pd.DataFrame.from_dict(
@@ -475,7 +475,7 @@ class Harness:
                 model_testcases_df["model_name"] = k
                 testcases_df.append(model_testcases_df)
             
-            testcases_df = pd.concat(testcases_df)
+            testcases_df = pd.concat(testcases_df).reset_index(drop=True)
 
         else:
             testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
