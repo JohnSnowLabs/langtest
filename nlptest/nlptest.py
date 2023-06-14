@@ -4,13 +4,12 @@ import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional, Union, Any
 import langchain
-
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
-from .datahandler.datasource import DataFactory
+from .datahandler.datasource import DataFactory,HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 import json
@@ -55,8 +54,8 @@ class Harness:
             model: Union[str, Any],
             task: str,
             hub: Optional[str] = None,
-            data: Optional[str] = None,
-            config: Optional[Union[str, dict]] = None
+            data: Optional[Union[str, dict]] = None,
+            config: Optional[Union[str, dict]] = None,            
     ):
         """
         Initialize the Harness object.
@@ -99,6 +98,14 @@ class Harness:
             self.is_default = True
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
+        elif type(data) is dict  and hub=="huggingface"and task=="text-classification":
+                self.data = HuggingFaceDataset(data['name']).load_data(
+                    data.get('feature_column', 'text'),
+                    data.get('target_column', 'label'),
+                    data.get('split', 'test'),
+                    data.get('subset', None)
+                ) if data is not None else None
+                
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "

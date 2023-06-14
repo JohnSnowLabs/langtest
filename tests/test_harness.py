@@ -129,6 +129,26 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
 
+    def test_load_HF_data_text_classification(self):
+        """"""
+        save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
+        tc_harness = Harness(task="text-classification", hub="huggingface",
+                            model="lvwerra/distilbert-imdb",
+                            data={"name":'imdb'}
+                                )
+        tc_harness.data=tc_harness.data[:10]
+        tc_harness.generate()
+        tc_harness.save(save_dir)
+
+        loaded_tc_harness = Harness.load(
+            save_dir=save_dir,
+            task="text-classification",
+            model="lvwerra/distilbert-imdb",
+            hub="huggingface"
+        )
+        self.assertEqual(tc_harness._config, loaded_tc_harness._config)
+        self.assertEqual(tc_harness.data, loaded_tc_harness.data)
+        self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """"""
