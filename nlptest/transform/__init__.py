@@ -18,6 +18,7 @@ from tqdm.asyncio import tqdm
 from typing import Dict, List
 from abc import ABC, abstractmethod
 import asyncio
+from .custom_bias import add_custom_data
 import nest_asyncio
 nest_asyncio.apply()
 
@@ -28,6 +29,23 @@ class TestFactory:
     """
     is_augment = False
     task: str = None
+
+# Additional operations can be performed here using the validated data
+
+    @staticmethod
+    def call_add_custom_bias(data, name, append):
+        """
+        Add custom bias to the given data.
+
+        Args:
+            data (list): The data to which the custom bias will be added.
+            name (str): The name of the custom bias.
+            append (bool): Indicates whether to append the custom bias or replace the existing bias.
+
+        Returns:
+            None
+        """
+        add_custom_data(data, name, append)
 
     @staticmethod
     def transform(task: str, data: List[Sample], test_types: dict, *args, **kwargs) -> List[Result]:
@@ -413,6 +431,7 @@ class BiasTestFactory(ITests):
                     'country_names_to_substitute'] = get_substitution_names(countries_to_exclude)
                 self.tests[f"replace_to_{economic_level}_country"]['parameters']['chosen_country_names'] = \
                     country_economic_dict[income_level]
+
 
         for religion in religion_wise_names.keys():
             if f"replace_to_{religion.lower()}_names" in self.tests:
