@@ -133,7 +133,7 @@ class HarnessTestCase(unittest.TestCase):
         """"""
         save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
         tc_harness = Harness(task="text-classification", hub="huggingface",
-                            model="lvwerra/distilbert-imdb",
+                            model="aychang/roberta-base-imdb",
                             data={"name":'imdb'}
                                 )
         tc_harness.data=tc_harness.data[:10]
@@ -143,7 +143,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="lvwerra/distilbert-imdb",
+            model="aychang/roberta-base-imdb",
             hub="huggingface"
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
