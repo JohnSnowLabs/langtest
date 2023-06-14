@@ -440,7 +440,7 @@ class Harness:
 
         return harness
     @staticmethod
-    def custom_bias(file_path: str, test_name: str = None, append: bool = False):
+    def pass_custom_bias_data(file_path: str, test_name: str = None, append: bool = False):
         """Load custom data from a JSON file and store it in a class variable.
 
         Args:

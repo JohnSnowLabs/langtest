@@ -10,16 +10,16 @@ def add_custom_data(data, name, append):
     Args:
         data (dict or list): The data to be added.
         name (str): The type of bias dictionary to update. It should be one of the following:
-            - "Country Economic Bias"
-            - "Religion Bias"
-            - "Ethnicity Name Bias"
-            - "Gender Pronoun Bias"
+            - "Country-Economic-Bias"
+            - "Religion-Bias"
+            - "Ethnicity-Name-Bias"
+            - "Gender-Pronoun-Bias"
         append (bool): Specifies whether to append the values or overwrite them.
 
     Raises:
         ValueError: If the specified `name` is invalid or if the provided data has an invalid format or contains invalid keys.
     """
-    if name == "Country Economic Bias":
+    if name == "Country-Economic-Bias":
         valid_names = country_economic_dict.keys()
 
         # Validate the schema
@@ -36,7 +36,7 @@ def add_custom_data(data, name, append):
             for key, values in data.items():
                 country_economic_dict[key] = values
 
-    elif name == "Religion Bias":
+    elif name == "Religion-Bias":
         valid_names = religion_wise_names.keys()
 
         # Validate the schema
@@ -53,7 +53,7 @@ def add_custom_data(data, name, append):
             for key, values in data.items():
                 religion_wise_names[key] = values
 
-    elif name == "Ethnicity Name Bias":
+    elif name == "Ethnicity-Name-Bias":
         valid_names = (
             'white_names',
             'black_names',
@@ -102,7 +102,7 @@ def add_custom_data(data, name, append):
                 else:
                     bias['first_names'] = list(set(first_names))
                     bias['last_names'] = list(set(last_names))
-    elif name == "Gender Pronoun Bias":
+    elif name == "Gender-Pronoun-Bias":
         valid_names = ('female_pronouns', 'male_pronouns', 'neutral_pronouns')
 
         # Validate the schema
@@ -155,4 +155,4 @@ def add_custom_data(data, name, append):
                     bias['reflexive_pronouns'] = pronouns['reflexive_pronouns']
                     bias['possessive_pronouns'] = pronouns['possessive_pronouns']
     else:
-        raise ValueError(f"Invalid 'test_name' value '{name}'. It should be one of: Country Economic Bias, Religion Bias, Ethnicity Name Bias, Gender Pronoun Bias.")
+        raise ValueError(f"Invalid 'test_name' value '{name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias.")
