@@ -13,6 +13,7 @@ from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
+import json
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -439,3 +440,16 @@ class Harness:
         harness.generate()
 
         return harness
+    @staticmethod
+    def pass_custom_bias_data(file_path: str, test_name: str = None, append: bool = False):
+        """Load custom data from a JSON file and store it in a class variable.
+
+        Args:
+            file_path (str): Path to the JSON file.
+            test_name (str, optional): Name parameter. Defaults to None.
+            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
+        """
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        TestFactory.call_add_custom_bias(data, test_name, append)
