@@ -581,3 +581,8 @@ class ToxicitySample(BaseModel):
         self.completion = model(text={'context': self.prompt},
                                             prompt={"template":prompt_template, 'input_variables':["context"]})
         return True
+    
+class RuntimeSample(BaseModel):
+    transform_time: dict = {}
+    run_time: dict = {}
+    

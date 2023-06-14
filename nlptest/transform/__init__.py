@@ -1,3 +1,4 @@
+import time
 from ..utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
 from nlptest.utils.gender_classifier import GenderClassifier
 from ..utils.custom_types import Result, Sample
@@ -72,14 +73,15 @@ class TestFactory:
             tests.set_description(f"Generating testcases... ({each})")
             if each in all_categories:
                 sub_test_types = test_types[each]
-                all_results.extend(
+                sample_results, runtime_results = (
                     all_categories[each](m_data, sub_test_types,
                                         raw_data=data).transform()
                     if each in ["robustness", "bias"] and m_data
                     else all_categories[each](data, sub_test_types).transform()
                 )
+                all_results.extend(sample_results)
         tests.close()
-        return all_results
+        return all_results, runtime_results
 
     @classmethod
     def test_categories(cls) -> Dict:
@@ -117,9 +119,12 @@ class TestFactory:
             samples_list, model_handler, **kwargs)
         temp_res = asyncio.run(async_tests)
         results = []
-        for each in temp_res:
+        run_timing = {}
+        for each, runtime in temp_res:
             results.extend(each.result())
-        return results
+            test_type = results[-1].test_type
+            run_timing[test_type] = runtime
+        return results, run_timing
 
     @classmethod
     async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
@@ -153,7 +158,16 @@ class TestFactory:
                 all_results.extend(category_output)
             else:
                 all_results.append(category_output)
-        return await asyncio.gather(*all_results)
+        run_results = await asyncio.gather(*map(cls.measure_timing, all_results))
+       
+        return run_results
+    
+    @classmethod
+    async def measure_timing(cls, coro):
+        start_time = time.time()
+        res = await coro
+        end_time = time.time()
+        return res, (end_time - start_time)
 
 
 class ITests(ABC):
@@ -286,6 +300,7 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
+        runtime_test = {}
         for test_name, params in self.tests.items():
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
@@ -297,6 +312,7 @@ class RobustnessTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
+            start_time = time.time()
             if TestFactory.task in ('question-answering', 'summarization'):
                 _ = [
                     sample.transform(test_func, params.get('parameters', {}))
@@ -310,10 +326,12 @@ class RobustnessTestFactory(ITests):
                     data_handler_copy,
                     **params.get('parameters', {})
                 )
+            end_time = time.time()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-        return all_samples
+            runtime_test[test_name] = (end_time - start_time)
+        return all_samples, runtime_test
 
     @staticmethod
     def available_tests() -> dict:
@@ -441,14 +459,18 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
+        runtime_test = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
+            start_time = time.time()
             transformed_samples = self.supported_tests[test_name].transform(data_handler_copy,
                                                                             **params.get('parameters', {}))
+            end_time = time.time()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-        return all_samples
+            runtime_test[test_name] = (end_time - start_time)
+        return all_samples, runtime_test
 
     @staticmethod
     def available_tests() -> Dict:

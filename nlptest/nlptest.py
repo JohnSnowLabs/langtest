@@ -9,6 +9,8 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
+from nlptest.utils.custom_types.sample import RuntimeSample
+
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
@@ -134,6 +136,7 @@ class Harness:
         
         self._testcases = None
         self._generated_results = None
+        self._runtime = RuntimeSample()
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -203,7 +206,7 @@ class Harness:
                     
                 return self
                   
-        self._testcases = TestFactory.transform(
+        self._testcases, self._runtime.transform_time = TestFactory.transform(
            self.task, self.data, tests, m_data=m_data)
         return self
             
@@ -219,7 +222,7 @@ class Harness:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
 
-        self._generated_results = TestFactory.run(
+        self._generated_results, self._runtime.run_time = TestFactory.run(
             self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
         return self
 
