@@ -583,6 +583,20 @@ class ToxicitySample(BaseModel):
         return True
     
 class RuntimeSample(BaseModel):
-    transform_time: dict = {}
-    run_time: dict = {}
+    transform_time: Dict[str, Union[int, float]] = {}
+    run_time: Dict[str, Union[int, float]] = {}
+    total: Dict[str, Union[int, float]] = {}
+
+    def __init__(self, **data):
+        super().__init__(**data)
+    
+    def total_time(self):
+        total = {}
+        if self.total:
+            return self.total
+        else:
+            for key in self.transform_time.keys():
+                total[key] = self.transform_time[key] + self.run_time[key]
+            self.total = total
+        return total
     

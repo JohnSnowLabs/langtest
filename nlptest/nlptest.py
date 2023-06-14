@@ -226,7 +226,7 @@ class Harness:
             self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
         return self
 
-    def report(self) -> pd.DataFrame:
+    def report(self, time_elapsed =False) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -286,6 +286,9 @@ class Harness:
         df_report = df_report.reset_index(drop=True)
 
         self.df_report = df_report.fillna("-")
+        if time_elapsed :
+            self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
+                lambda x: self._runtime.total_time()[x])
 
         return self.df_report
 
