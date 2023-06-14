@@ -454,15 +454,31 @@ class Harness:
             pd.DataFrame:
                 testcases formatted into a pd.DataFrame
         """
-        testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
-        testcases_df = testcases_df.reset_index(drop=True)
-        if "prompt" in testcases_df.columns:
-            return testcases_df.fillna('-')
-        
-        elif "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
-            testcases_df['original_question'].update(testcases_df.pop('test_case'))
-        
-        column_order = ["category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
+        if isinstance(self._testcases, dict):
+            testcases_df = []
+            for k,v in self._testcases.items():
+                model_testcases_df = pd.DataFrame([x.to_dict() for x in v])
+                if "prompt" in model_testcases_df.columns:
+                    return model_testcases_df.fillna('-')
+                
+                elif "test_case" in model_testcases_df.columns and "original_question" in model_testcases_df.columns:
+                    model_testcases_df['original_question'].update(model_testcases_df.pop('test_case'))
+                    
+                model_testcases_df["model_name"] = k
+                testcases_df.append(model_testcases_df)
+            
+            testcases_df = pd.concat(testcases_df)
+
+        else:
+            testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
+            testcases_df = testcases_df.reset_index(drop=True)
+            if "prompt" in testcases_df.columns:
+                return testcases_df.fillna('-')
+            
+            elif "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
+                testcases_df['original_question'].update(testcases_df.pop('test_case'))
+            
+        column_order = ["model_name", "category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df=testcases_df[columns]
 
