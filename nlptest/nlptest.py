@@ -4,15 +4,15 @@ import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional, Union, Any
 import langchain
-
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness
-from .datahandler.datasource import DataFactory
+from .datahandler.datasource import DataFactory,HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
+import json
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -54,8 +54,8 @@ class Harness:
             model: Union[str, Any],
             task: str,
             hub: Optional[str] = None,
-            data: Optional[str] = None,
-            config: Optional[Union[str, dict]] = None
+            data: Optional[Union[str, dict]] = None,
+            config: Optional[Union[str, dict]] = None,            
     ):
         """
         Initialize the Harness object.
@@ -98,6 +98,14 @@ class Harness:
             self.is_default = True
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
+        elif type(data) is dict  and hub=="huggingface"and task=="text-classification":
+                self.data = HuggingFaceDataset(data['name']).load_data(
+                    data.get('feature_column', 'text'),
+                    data.get('target_column', 'label'),
+                    data.get('split', 'test'),
+                    data.get('subset', None)
+                ) if data is not None else None
+                
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "
@@ -545,3 +553,16 @@ class Harness:
         harness.generate()
 
         return harness
+    @staticmethod
+    def pass_custom_bias_data(file_path: str, test_name: str = None, append: bool = False):
+        """Load custom data from a JSON file and store it in a class variable.
+
+        Args:
+            file_path (str): Path to the JSON file.
+            test_name (str, optional): Name parameter. Defaults to None.
+            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
+        """
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        TestFactory.call_add_custom_bias(data, test_name, append)
