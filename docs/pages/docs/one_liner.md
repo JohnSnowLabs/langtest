@@ -209,7 +209,7 @@ h.generate().run().report()
 
 ### One Liner - Model Comparisons
 
-You can specify the names of the models you want to compare with their respective hubs as a dictionary and pass it to the model parameter of harness.
+To compare different models (either from same or different hubs) on the same task and test configuration, you can pass a dictionary to the 'model' parameter of the harness. This dictionary should contain the names of the models you want to compare, each paired with its respective hub.
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-body">
