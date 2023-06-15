@@ -339,6 +339,7 @@ class Harness:
             return self.df_report
         else:
             df_final_report = pd.DataFrame()
+            time_elapsed = {}
             for k, v in self.model.items():
                 for sample in self._generated_results[k]:
                     summary[sample.test_type]['category'] = sample.category
@@ -376,10 +377,12 @@ class Harness:
                 
                 
                 if return_runtime:
-                    self.df_report[f'time_elapsed ({unit})'] = self.df_report['model_name'].apply(
-                        lambda x: self._runtime.multi_model_total_time(unit)[x])
+                    if k not in time_elapsed:
+                        time_elapsed[k] = df_report['model_name'].apply(lambda x: self._runtime.multi_model_total_time(unit)[x])
+             
                 df_final_report = pd.concat([df_final_report, df_report])
-
+            
+            
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
             pivot_minimum_pass_rate_df = df_final_report.pivot_table(
@@ -387,16 +390,24 @@ class Harness:
 
             df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
-
+            
             pivot_df = df_final_report.pivot_table(
                 index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
 
             def color_cells(series):
-                color = 'green' if series.name in pivot_minimum_pass_rate_df.columns and (
-                    series > pivot_minimum_pass_rate_df.loc[:, series.name]).all() else 'red'
-                return ['background-color: %s' % color] * len(series)
-
+                res = []
+                for x in series.index:
+                    res.append(df_final_report[(df_final_report["test_type"]==series.name) & (df_final_report["model_name"]==x)]["pass"].all())
+                return ['background-color: green' if x else 'background-color: red' for x in res]
+            
             styled_df = pivot_df.style.apply(color_cells)
+            if return_runtime:
+                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
+                df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=['model_name', f'time_elapsed ({unit})'])
+                df_time_elapsed.set_index('model_name', inplace=True)
+                from IPython.display import display
+                display(df_time_elapsed)
+       
             return styled_df
 
     def generated_results(self) -> Optional[pd.DataFrame]:
