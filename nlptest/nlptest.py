@@ -358,7 +358,6 @@ class Harness:
                     report[test_type] = {
                         "model_name": k,
                         "pass_rate": pass_rate,
-                        "test_type": test_type,
                         "minimum_pass_rate": min_pass_rate,
                         "pass": pass_rate >= min_pass_rate
                     }
