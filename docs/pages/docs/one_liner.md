@@ -219,14 +219,14 @@ To compare different models (either from same or different hubs) on the same tas
 from nlptest import Harness
 
 # Define the dictionary
-model = {
+model_comparison_dict = {
     "ner.dl":"johnsnowlabs",
     "dslim/bert-base-NER":"huggingface",
     "en_core_web_sm":"spacy"
 }
 
 # Create a Harness object
-harness = Harness(task='ner', model=model, data="/path_to_conll")
+harness = Harness(task='ner', model=model_comparison_dict, data="/path-to-test-conll")
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -234,6 +234,4 @@ h.generate().run().report()
       </div>
     </div>
   </div>
-</div>
-
 </div>
