@@ -19,6 +19,7 @@ Supported data input formats are task-dependent. For `ner` and `text-classificat
 |**text-classification**     |CSV
 |**question-answering**     |Select list of benchmark datasets
 |**summarization**     |Select list of benchmark datasets
+|**toxicity**     |Select list of benchmark datasets
 
 </div><div class="h3-box" markdown="1">
 
