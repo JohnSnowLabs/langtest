@@ -291,7 +291,7 @@ class Harness:
 
         return self
 
-    def report(self, time_elapsed=False) -> pd.DataFrame:
+    def report(self, return_runtime=False, unit='ms') -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -352,13 +352,14 @@ class Harness:
             df_report = df_report.reset_index(drop=True)
 
             self.df_report = df_report.fillna("-")
-            if time_elapsed:
-                self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
-                    lambda x: self._runtime.total_time()[x])
+            if return_runtime:
+                self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
+                    lambda x: self._runtime.total_time(unit)[x])
 
             return self.df_report
         else:
             df_final_report = pd.DataFrame()
+            time_elapsed = {}
             for k, v in self.model.items():
                 for sample in self._generated_results[k]:
                     summary[sample.test_type]['category'] = sample.category
@@ -393,11 +394,15 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
-                if time_elapsed:
-                    self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
-                        lambda x: self._runtime.total_time()[x])
+                
+                
+                if return_runtime:
+                    if k not in time_elapsed:
+                        time_elapsed[k] = df_report['model_name'].apply(lambda x: self._runtime.multi_model_total_time(unit)[x])
+             
                 df_final_report = pd.concat([df_final_report, df_report])
-
+            
+            
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
             pivot_minimum_pass_rate_df = df_final_report.pivot_table(
@@ -405,7 +410,7 @@ class Harness:
 
             df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
-
+            
             pivot_df = df_final_report.pivot_table(
                 index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
 
@@ -414,8 +419,15 @@ class Harness:
                 for x in series.index:
                     res.append(df_final_report[(df_final_report["test_type"]==series.name) & (df_final_report["model_name"]==x)]["pass"].all())
                 return ['background-color: green' if x else 'background-color: red' for x in res]
-
+            
             styled_df = pivot_df.style.apply(color_cells)
+            if return_runtime:
+                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
+                df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=['model_name', f'time_elapsed ({unit})'])
+                df_time_elapsed.set_index('model_name', inplace=True)
+                from IPython.display import display
+                display(df_time_elapsed)
+       
             return styled_df
 
     def generated_results(self) -> Optional[pd.DataFrame]:
