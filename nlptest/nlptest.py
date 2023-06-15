@@ -119,6 +119,18 @@ class Harness:
                 data.get('split', 'test'),
                 data.get('subset', None)
             ) if data is not None else None
+
+        elif type(data) is dict and hub == "spacy" and task == "text-classification":
+            self.data = HuggingFaceDataset(data['name']).load_data(
+                data.get('feature_column', 'text'),
+                data.get('target_column', 'label'),
+                data.get('split', 'test'),
+                data.get('subset', None)
+            ) if data is not None else None  
+            if model == 'textcat_imdb':
+                model = resource_filename("nlptest", "data/textcat_imdb")      
+            else:
+                raise ValueError(f"Unsupported model '{model}'! Only 'textcat_imdb' is supported.")
             
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
