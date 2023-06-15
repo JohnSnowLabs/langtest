@@ -205,3 +205,35 @@ h.generate().run().report()
 </div>
 
 </div>
+
+
+### One Liner - Model Comparisons
+
+You can specify the names of the models you want to compare with their respective hubs as a dictionary and pass it to the model parameter of harness.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+from nlptest import Harness
+
+# Define the dictionary
+model = {
+    "ner.dl":"johnsnowlabs",
+    "dslim/bert-base-NER":"huggingface",
+    "en_core_web_sm":"spacy"
+}
+
+# Create a Harness object
+harness = Harness(task='ner', model=model, data="/path_to_conll")
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
