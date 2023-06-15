@@ -269,7 +269,7 @@ class Harness:
 
         return self
 
-    def report(self, time_elapsed=False, unit='ms') -> pd.DataFrame:
+    def report(self, return_runtime=False, unit='ms') -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -330,7 +330,7 @@ class Harness:
             df_report = df_report.reset_index(drop=True)
 
             self.df_report = df_report.fillna("-")
-            if time_elapsed:
+            if return_runtime:
                 self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
                     lambda x: self._runtime.total_time(unit)[x])
 
@@ -371,7 +371,7 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
-                if time_elapsed:
+                if return_runtime:
                     self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
                         lambda x: self._runtime.total_time(unit)[x])
                 df_final_report = pd.concat([df_final_report, df_report])
