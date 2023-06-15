@@ -590,13 +590,19 @@ class RuntimeSample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
     
-    def total_time(self):
+    def total_time(self, unit='ms'):
         total = {}
         if self.total:
             return self.total
         else:
             for key in self.transform_time.keys():
-                total[key] = self.transform_time[key] + self.run_time[key]
+                total[key] = self.convert_ns_to_unit(
+                    self.transform_time[key] + self.run_time[key],
+                    unit=unit)
             self.total = total
         return total
+    
+    def convert_ns_to_unit(self, time, unit='ms'):
+        unit_dict = {'ns': 1, 'us': 1e3, 'ms': 1e6, 's': 1e9, 'm': 6e10, 'h': 3.6e12}
+        return time / unit_dict[unit]
     

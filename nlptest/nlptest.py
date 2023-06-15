@@ -269,7 +269,7 @@ class Harness:
 
         return self
 
-    def report(self, time_elapsed=False) -> pd.DataFrame:
+    def report(self, time_elapsed=False, unit='ms') -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -332,7 +332,7 @@ class Harness:
             self.df_report = df_report.fillna("-")
             if time_elapsed:
                 self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
-                    lambda x: self._runtime.total_time()[x])
+                    lambda x: self._runtime.total_time(unit)[x])
 
             return self.df_report
         else:
@@ -373,7 +373,7 @@ class Harness:
                 df_report = df_report.fillna("-")
                 if time_elapsed:
                     self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
-                        lambda x: self._runtime.total_time()[x])
+                        lambda x: self._runtime.total_time(unit)[x])
                 df_final_report = pd.concat([df_final_report, df_report])
 
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(
