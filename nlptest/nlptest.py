@@ -390,9 +390,10 @@ class Harness:
                 index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
 
             def color_cells(series):
-                color = 'green' if series.name in pivot_minimum_pass_rate_df.columns and (
-                    series > pivot_minimum_pass_rate_df.loc[:, series.name]).all() else 'red'
-                return ['background-color: %s' % color] * len(series)
+                res = []
+                for x in series.index:
+                    res.append(df_final_report[(df_final_report["test_type"]==series.name) & (df_final_report["model_name"]==x)]["pass"].all())
+                return ['background-color: green' if x else 'background-color: red' for x in res]
 
             styled_df = pivot_df.style.apply(color_cells)
             return styled_df
