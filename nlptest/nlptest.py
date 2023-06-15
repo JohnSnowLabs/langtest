@@ -8,8 +8,10 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
+from nlptest.utils.custom_types.sample import RuntimeSample
+
 from .augmentation import AugmentRobustness
-from .datahandler.datasource import DataFactory,HuggingFaceDataset
+from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 import json
@@ -17,14 +19,17 @@ import json
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
 
+
 class Harness:
     """ Harness is a testing class for NLP models.
 
     Harness class evaluates the performance of a given NLP model. Given test data is
     used to test the model. A report is generated with test results.
     """
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization", "toxicity"]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
+    SUPPORTED_TASKS = ["ner", "text-classification",
+                       "question-answering", "summarization", "toxicity"]
+    SUPPORTED_HUBS = ["spacy", "huggingface",
+                      "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
@@ -44,7 +49,7 @@ class Harness:
             'ai21': resource_filename("nlptest", "data/config/ai21_config.yml"),
             'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
         },
-        'task':{
+        'task': {
             'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml")
         }
     }
@@ -55,7 +60,7 @@ class Harness:
             task: str,
             hub: Optional[str] = None,
             data: Optional[Union[str, dict]] = None,
-            config: Optional[Union[str, dict]] = None,            
+            config: Optional[Union[str, dict]] = None,
     ):
         """
         Initialize the Harness object.
@@ -96,16 +101,17 @@ class Harness:
             if model == "textcat_imdb":
                 model = resource_filename("nlptest", "data/textcat_imdb")
             self.is_default = True
-            logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
+            logging.info(
+                "Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif type(data) is dict  and hub=="huggingface"and task=="text-classification":
-                self.data = HuggingFaceDataset(data['name']).load_data(
-                    data.get('feature_column', 'text'),
-                    data.get('target_column', 'label'),
-                    data.get('split', 'test'),
-                    data.get('subset', None)
-                ) if data is not None else None
-                
+        elif type(data) is dict and hub == "huggingface" and task == "text-classification":
+            self.data = HuggingFaceDataset(data['name']).load_data(
+                data.get('feature_column', 'text'),
+                data.get('target_column', 'label'),
+                data.get('split', 'test'),
+                data.get('subset', None)
+            ) if data is not None else None
+
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "
@@ -121,9 +127,11 @@ class Harness:
             self._config = self.configure(config)
         elif hub in self.DEFAULTS_CONFIG['hubs']:
             if task in self.DEFAULTS_CONFIG['task']:
-                self._config = self.configure(self.DEFAULTS_CONFIG['task'][task])
+                self._config = self.configure(
+                    self.DEFAULTS_CONFIG['task'][task])
             else:
-                self._config = self.configure(self.DEFAULTS_CONFIG['hubs'][hub])
+                self._config = self.configure(
+                    self.DEFAULTS_CONFIG['hubs'][hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
@@ -133,23 +141,25 @@ class Harness:
         if isinstance(model, str):
             self.model = ModelFactory.load_model(
                 path=model, task=task, hub=hub, **self._config.get("model_parameters", {}))
-            
+
         elif isinstance(model, dict):
             model_dict = {}
             for k, v in model.items():
-                model_dict[k] = ModelFactory.load_model(task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
+                model_dict[k] = ModelFactory.load_model(
+                    task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
             self.model = model_dict
-            
+
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-        
-        global GLOBAL_MODEL 
+
+        global GLOBAL_MODEL
         if not isinstance(model, dict):
             GLOBAL_MODEL = self.model
-        
+
         self._testcases = None
         self._generated_results = None
+        self._runtime = RuntimeSample()
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -178,7 +188,7 @@ class Harness:
             with open(config, 'r', encoding="utf-8") as yml:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
-        
+
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
 
@@ -203,36 +213,40 @@ class Harness:
                 _ = [setattr(sample, 'expected_results', self.model(sample.original))
                      for sample in m_data]
             else:
-                self._testcases={}
+                self._testcases = {}
                 for k, v in self.model.items():
-                        _ = [setattr(sample, 'expected_results', v(sample.original)) for sample in m_data]
-                        self._testcases[k] = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
-                
+                    _ = [setattr(sample, 'expected_results', v(
+                        sample.original)) for sample in m_data]
+                    self._testcases[k] = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data)
+
                 return self
-                        
-                
-        elif self.task in ("question-answering","summarization"):
+
+        elif self.task in ("question-answering", "summarization"):
             if 'bias' in tests.keys():
-                if self.file_path.split('-')[0] in ('BoolQ','XSum'):
+                if self.file_path.split('-')[0] in ('BoolQ', 'XSum'):
                     tests_to_filter = tests['bias'].keys()
-                    self._testcases = DataFactory.load_curated_bias(tests_to_filter,self.file_path.split('-')[0])
+                    self._testcases = DataFactory.load_curated_bias(
+                        tests_to_filter, self.file_path.split('-')[0])
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != 'bias'}
-                        other_testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                        other_testcases, self._runtime.transform_time = TestFactory.transform(
+                            self.task, self.data, tests, m_data=m_data)
                         self._testcases.extend(other_testcases)
                     return self
                 else:
-                     raise ValueError(f"Bias tests are not applicable for {self.file_path} dataset.")
-   
+                    raise ValueError(
+                        f"Bias tests are not applicable for {self.file_path} dataset.")
+
             else:
-                self._testcases = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
-                    
+                self._testcases, self._runtime.transform_time = TestFactory.transform(
+                    self.task, self.data, tests, m_data=m_data)
+
                 return self
-                  
-        self._testcases = TestFactory.transform(
-           self.task, self.data, tests, m_data=m_data)
+
+        self._testcases, self._runtime.transform_time = TestFactory.transform(
+            self.task, self.data, tests, m_data=m_data)
         return self
-            
 
     def run(self) -> "Harness":
         """
@@ -245,16 +259,17 @@ class Harness:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
         if not isinstance(self._testcases, dict):
-            self._generated_results = TestFactory.run(
+            self._generated_results, self._runtime.run_time = TestFactory.run(
                 self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
         else:
-            self._generated_results={}
-            for k, v in self.model.items(): 
-                  self._generated_results[k] = TestFactory.run(self._testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
-            
+            self._generated_results = {}
+            for k, v in self.model.items():
+                self._generated_results[k], self._runtime.run_time = TestFactory.run(
+                    self._testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+
         return self
 
-    def report(self) -> pd.DataFrame:
+    def report(self, time_elapsed=False) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -262,7 +277,7 @@ class Harness:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
-      
+
         if self._generated_results is None:
             raise RuntimeError("The tests have not been run yet. Please use the `.run()` method before"
                                "calling the `.report()` method.")
@@ -272,7 +287,7 @@ class Harness:
                 'min_pass_rate', 0.65)
             self.min_pass_dict = {
                 j: k.get('min_pass_rate', self.default_min_pass_dict) for i, v in
-                self._config['tests'].items() for j, k in v.items() 
+                self._config['tests'].items() for j, k in v.items()
                 if isinstance(k, dict) and 'min_pass_rate' in k.keys()
             }
 
@@ -315,60 +330,70 @@ class Harness:
             df_report = df_report.reset_index(drop=True)
 
             self.df_report = df_report.fillna("-")
+            if time_elapsed:
+                self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
+                    lambda x: self._runtime.total_time()[x])
 
             return self.df_report
         else:
             df_final_report = pd.DataFrame()
-            for k, v in self.model.items():  
+            for k, v in self.model.items():
                 for sample in self._generated_results[k]:
-                        summary[sample.test_type]['category'] = sample.category
-                        summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-                report = {}      
+                    summary[sample.test_type]['category'] = sample.category
+                    summary[sample.test_type][str(
+                        sample.is_pass()).lower()] += 1
+                report = {}
                 for test_type, value in summary.items():
-                            pass_rate = summary[test_type]["true"] / \
-                                (summary[test_type]["true"] + summary[test_type]["false"])
-                            min_pass_rate = self.min_pass_dict.get(
-                                test_type, self.default_min_pass_dict)
+                    pass_rate = summary[test_type]["true"] / \
+                        (summary[test_type]["true"] +
+                         summary[test_type]["false"])
+                    min_pass_rate = self.min_pass_dict.get(
+                        test_type, self.default_min_pass_dict)
 
-                            if summary[test_type]['category'] == "Accuracy":
-                                min_pass_rate = 1
+                    if summary[test_type]['category'] == "Accuracy":
+                        min_pass_rate = 1
 
-                            report[test_type] = {
-                                "model_name": k,
-                                "pass_rate": pass_rate,
-                                "minimum_pass_rate": min_pass_rate,
-                                "pass": pass_rate >= min_pass_rate
-                            }
+                    report[test_type] = {
+                        "model_name": k,
+                        "pass_rate": pass_rate,
+                        "minimum_pass_rate": min_pass_rate,
+                        "pass": pass_rate >= min_pass_rate
+                    }
 
                 df_report = pd.DataFrame.from_dict(report, orient="index")
                 df_report = df_report.reset_index().rename(
-                            columns={'index': 'test_type'})
+                    columns={'index': 'test_type'})
 
                 df_report['pass_rate'] = df_report['pass_rate'].apply(
-                            lambda x: "{:.0f}%".format(x * 100))
+                    lambda x: "{:.0f}%".format(x * 100))
                 df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
-                            lambda x: "{:.0f}%".format(x * 100))
+                    lambda x: "{:.0f}%".format(x * 100))
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
+                if time_elapsed:
+                    self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
+                        lambda x: self._runtime.total_time()[x])
                 df_final_report = pd.concat([df_final_report, df_report])
- 
-            df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip('%').astype('float') / 100.0
-            pivot_minimum_pass_rate_df = df_final_report.pivot_table(index='model_name', columns='test_type', values='minimum_pass_rate', aggfunc='mean')
 
-            df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip('%').astype('float') / 100.0
+            df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(
+                '%').astype('float') / 100.0
+            pivot_minimum_pass_rate_df = df_final_report.pivot_table(
+                index='model_name', columns='test_type', values='minimum_pass_rate', aggfunc='mean')
 
-            pivot_df = df_final_report.pivot_table(index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
+            df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip(
+                '%').astype('float') / 100.0
+
+            pivot_df = df_final_report.pivot_table(
+                index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
 
             def color_cells(series):
-                color = 'green' if series.name in pivot_minimum_pass_rate_df.columns and (series > pivot_minimum_pass_rate_df.loc[:, series.name]).all() else 'red'
+                color = 'green' if series.name in pivot_minimum_pass_rate_df.columns and (
+                    series > pivot_minimum_pass_rate_df.loc[:, series.name]).all() else 'red'
                 return ['background-color: %s' % color] * len(series)
 
             styled_df = pivot_df.style.apply(color_cells)
             return styled_df
-
-
-       
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """
@@ -381,32 +406,33 @@ class Harness:
             logging.warning(
                 "Please run `Harness.run()` before calling `.generated_results()`.")
             return
-        
+
         if isinstance(self._generated_results, dict):
             generated_results_df = []
             if isinstance(self._generated_results, dict):
                 for k, v in self._generated_results.items():
-                    model_generated_results_df = pd.DataFrame.from_dict([x.to_dict() for x in v])
+                    model_generated_results_df = pd.DataFrame.from_dict(
+                        [x.to_dict() for x in v])
                     if "test_case" in model_generated_results_df.columns and "original_question" in model_generated_results_df.columns:
-                        model_generated_results_df['original_question'].update(model_generated_results_df.pop('test_case'))
+                        model_generated_results_df['original_question'].update(
+                            model_generated_results_df.pop('test_case'))
                     model_generated_results_df["model_name"] = k
                     generated_results_df.append(model_generated_results_df)
-            generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
+            generated_results_df = pd.concat(
+                generated_results_df).reset_index(drop=True)
 
         else:
             generated_results_df = pd.DataFrame.from_dict(
                 [x.to_dict() for x in self._generated_results])
             if "test_case" in generated_results_df.columns and "original_question" in generated_results_df.columns:
-                generated_results_df['original_question'].update(generated_results_df.pop('test_case'))
-        
-
-
+                generated_results_df['original_question'].update(
+                    generated_results_df.pop('test_case'))
 
         column_order = ["model_name", "category", "test_type", "original", "prompt", "original_context",
-                         "original_question", "completion", "test_case", "perturbed_context", "perturbed_question", 
-                         "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score", "pass"]
+                        "original_question", "completion", "test_case", "perturbed_context", "perturbed_question",
+                        "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score", "pass"]
         columns = [c for c in column_order if c in generated_results_df.columns]
-        generated_results_df=generated_results_df[columns]
+        generated_results_df = generated_results_df[columns]
 
         return generated_results_df.fillna("-")
 
@@ -464,17 +490,18 @@ class Harness:
         """
         if isinstance(self._testcases, dict):
             testcases_df = []
-            for k,v in self._testcases.items():
+            for k, v in self._testcases.items():
                 model_testcases_df = pd.DataFrame([x.to_dict() for x in v])
                 if "prompt" in model_testcases_df.columns:
                     return model_testcases_df.fillna('-')
-                
+
                 elif "test_case" in model_testcases_df.columns and "original_question" in model_testcases_df.columns:
-                    model_testcases_df['original_question'].update(model_testcases_df.pop('test_case'))
-                    
+                    model_testcases_df['original_question'].update(
+                        model_testcases_df.pop('test_case'))
+
                 model_testcases_df["model_name"] = k
                 testcases_df.append(model_testcases_df)
-            
+
             testcases_df = pd.concat(testcases_df).reset_index(drop=True)
 
         else:
@@ -482,13 +509,15 @@ class Harness:
             testcases_df = testcases_df.reset_index(drop=True)
             if "prompt" in testcases_df.columns:
                 return testcases_df.fillna('-')
-            
+
             elif "test_case" in testcases_df.columns and "original_question" in testcases_df.columns:
-                testcases_df['original_question'].update(testcases_df.pop('test_case'))
-            
-        column_order = ["model_name", "category", "test_type", "original", "original_context", "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
+                testcases_df['original_question'].update(
+                    testcases_df.pop('test_case'))
+
+        column_order = ["model_name", "category", "test_type", "original", "original_context",
+                        "original_question", "test_case", "perturbed_context", "perturbed_question", "expected_result"]
         columns = [c for c in column_order if c in testcases_df.columns]
-        testcases_df=testcases_df[columns]
+        testcases_df = testcases_df[columns]
 
         return testcases_df.fillna('-')
 
@@ -553,6 +582,7 @@ class Harness:
         harness.generate()
 
         return harness
+
     @staticmethod
     def pass_custom_bias_data(file_path: str, test_name: str = None, append: bool = False):
         """Load custom data from a JSON file and store it in a class variable.
