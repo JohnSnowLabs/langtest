@@ -214,10 +214,11 @@ class Harness:
                      for sample in m_data]
             else:
                 self._testcases = {}
+                self._runtime.transform_time = {}
                 for k, v in self.model.items():
                     _ = [setattr(sample, 'expected_results', v(
                         sample.original)) for sample in m_data]
-                    self._testcases[k] = TestFactory.transform(
+                    self._testcases[k], self._runtime.transform_time[k] = TestFactory.transform(
                         self.task, self.data, tests, m_data=m_data)
 
                 return self
@@ -263,8 +264,9 @@ class Harness:
                 self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
         else:
             self._generated_results = {}
+            self._runtime.run_time = {}
             for k, v in self.model.items():
-                self._generated_results[k], self._runtime.run_time = TestFactory.run(
+                self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
                     self._testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
 
         return self
