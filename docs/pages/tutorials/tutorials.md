@@ -47,6 +47,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 |TruthfulQA                                 |OpenAI           |Question-Answering    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/TruthfulQA_dataset.ipynb)|
 |NarrativeQA                                |OpenAI           |Question-Answering    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NarrativeQA_Question_Answering.ipynb)|
 |HellaSWag                                  |OpenAI           |Question-Answering    |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/HellaSwag_Question_Answering.ipynb)|
+|HuggingFaceDataset-Support                                  |Hugging Face           |Text-Classification   |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/end-to-end-notebooks/HuggingFace_Dataset_Notebook.ipynb)|
 
 <style>
   .heading {
