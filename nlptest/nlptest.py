@@ -358,6 +358,7 @@ class Harness:
                     report[test_type] = {
                         "model_name": k,
                         "pass_rate": pass_rate,
+                        "test_type": test_type,
                         "minimum_pass_rate": min_pass_rate,
                         "pass": pass_rate >= min_pass_rate
                     }
@@ -373,9 +374,11 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
+                
+                
                 if return_runtime:
-                    self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
-                        lambda x: self._runtime.total_time(unit)[x])
+                    self.df_report[f'time_elapsed ({unit})'] = self.df_report['model_name'].apply(
+                        lambda x: self._runtime.multi_model_total_time(unit)[x])
                 df_final_report = pd.concat([df_final_report, df_report])
 
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(

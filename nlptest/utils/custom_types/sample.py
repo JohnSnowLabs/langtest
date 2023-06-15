@@ -606,3 +606,16 @@ class RuntimeSample(BaseModel):
         unit_dict = {'ns': 1, 'us': 1e3, 'ms': 1e6, 's': 1e9, 'm': 6e10, 'h': 3.6e12}
         return time / unit_dict[unit]
     
+    def multi_model_total_time(self, unit='ms'):
+        total = {}
+        if self.total:
+            return self.total
+        else:
+            for key in self.transform_time.keys():
+                total[key] = self.convert_ns_to_unit(
+                  sum(self.transform_time[key].values()) + sum(self.run_time[key].values()),
+                    unit=unit)
+            self.total = total
+        return total
+        
+    
