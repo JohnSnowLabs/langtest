@@ -10,13 +10,13 @@ modify_date: "2019-05-16"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-Supported data input formats are task-dependent. For `ner` and `text-classification`, the user is meant to provide a **`CoNLL`** or **`CSV`** dataset. For `question-answering` the user is meant to choose from a list of benchmark datasets.
+Supported data input formats are task-dependent. For `ner` and `text-classification`, the user is meant to provide a **`CoNLL`** or **`CSV`** dataset. For `question-answering`, `summarization` and `toxicity`  the user is meant to choose from a list of benchmark datasets we support.
 
 {:.table2}
 | Task  | Supported Data Inputs |  
 | - | - | 
 |**ner**     |CoNLL and CSV|
-|**text-classification**     |CSV
+|**text-classification**     |CSV or a Dictionary (containing the name, subset, split, feature_column and target_column for loading the HF dataset.)
 |**question-answering**     |Select list of benchmark datasets
 |**summarization**     |Select list of benchmark datasets
 |**toxicity**     |Select list of benchmark datasets
