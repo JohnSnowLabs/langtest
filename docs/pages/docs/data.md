@@ -70,7 +70,7 @@ harness = Harness(task='ner',
 
 ### Text Classification
 
-There is 1 option for datasets to test Text Classification models: **`CSV`** datasets. Here are some details of what these may look like:
+There are 2 options for datasets to test Text Classification models: **`CSV`** datasets or a **`Dictionary`** containing the name, subset, split, feature_column and target_column for loading the HF datasets. Here are some details of what these may look like:
 
 #### CSV Format for Text Classification
 
@@ -91,7 +91,7 @@ For `CSV` files, we support different variations of the column names. They are s
 
 </div><div class="h3-box" markdown="1">
 
-#### Passing a Text Classification Dataset to the Harness
+#### Passing a CSV Text Classification Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
 
@@ -104,6 +104,39 @@ harness = Harness(task='text-classification',
                   config='config.yml',
                   hub ='huggingface',
                   data='sample.csv')
+```
+
+</div><div class="h3-box" markdown="1">
+
+#### Dictionary Format for Text Classification
+To handle text classification task for Hugging Face Datasets, the Harness class accepts the data parameter as a dictionary with following attributes:
+
+```python
+{
+   "name": "",
+   "subset": "",
+   "feature_column": "",
+   "target_column": "",
+   "split": ""
+}
+```
+
+#### Passing a Hugging Face Dataset for Text Classification to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the nlptest library
+from nlptest import Harness
+
+harness = Harness(task="text-classification", hub="huggingface",
+                   model="distilbert-base-uncased-finetuned-sst-2-english",
+                  data={"name":'glue',
+                  "subset":"sst2",
+                  "feature_column":"sentence",
+                  "target_column":'label',
+                  "split":"train"
+                  })
 ```
 
 </div><div class="h3-box" markdown="1">
