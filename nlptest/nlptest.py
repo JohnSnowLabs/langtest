@@ -331,7 +331,7 @@ class Harness:
 
             self.df_report = df_report.fillna("-")
             if return_runtime:
-                self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
+                self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
                     lambda x: self._runtime.total_time(unit)[x])
 
             return self.df_report
@@ -372,7 +372,7 @@ class Harness:
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
                 if return_runtime:
-                    self.df_report['time_elapsed'] = self.df_report['test_type'].apply(
+                    self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
                         lambda x: self._runtime.total_time(unit)[x])
                 df_final_report = pd.concat([df_final_report, df_report])
 
