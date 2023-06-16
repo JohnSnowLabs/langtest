@@ -111,6 +111,9 @@ harness = Harness(task='text-classification',
 #### Dictionary Format for Text Classification
 To handle text classification task for Hugging Face Datasets, the Harness class accepts the data parameter as a dictionary with following attributes:
 
+<i class="fa fa-info-circle"></i>
+<em>It's important to note that the default values for the **`split`**, **`feature_column`**, and **`target_column`** attributes are **`test`**, **`text`**, and **`label`**, respectively.</em>
+
 ```python
 {
    "name": "",
