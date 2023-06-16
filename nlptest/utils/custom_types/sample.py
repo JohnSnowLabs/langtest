@@ -12,7 +12,7 @@ default_user_prompt = {
     "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Context: {context}\n Question: {question}\n Answer:",
     "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:" ,
-    "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers. Please read the context below carefully, which contains information relevant to the questions. For each question, provide the corresponding answers using above context . Context: {context}\n Question: {question}\n Answer:",
+    "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers to all the questions without stopping in between. Read the following context and answer each question based on the given information.\n\nContext: {context}\n\nQuestions:\n{question}",
     "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. Answer:",
     "hellaswag":"You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n{context}{question}",
 }
@@ -581,3 +581,41 @@ class ToxicitySample(BaseModel):
         self.completion = model(text={'context': self.prompt},
                                             prompt={"template":prompt_template, 'input_variables':["context"]})
         return True
+    
+class RuntimeSample(BaseModel):
+    transform_time: Dict[str, Union[int, float]] = {}
+    run_time: Dict[str, Union[int, float]] = {}
+    total: Dict[str, Union[int, float]] = {}
+
+    def __init__(self, **data):
+        super().__init__(**data)
+    
+    def total_time(self, unit='ms'):
+        total = {}
+        if self.total:
+            return self.total
+        else:
+            for key in self.transform_time.keys():
+                total[key] = self.convert_ns_to_unit(
+                    self.transform_time[key] + self.run_time[key],
+                    unit=unit)
+            self.total = total
+        return total
+    
+    def convert_ns_to_unit(self, time, unit='ms'):
+        unit_dict = {'ns': 1, 'us': 1e3, 'ms': 1e6, 's': 1e9, 'm': 6e10, 'h': 3.6e12}
+        return time / unit_dict[unit]
+    
+    def multi_model_total_time(self, unit='ms'):
+        total = {}
+        if self.total:
+            return self.total
+        else:
+            for key in self.transform_time.keys():
+                total[key] = self.convert_ns_to_unit(
+                  sum(self.transform_time[key].values()) + sum(self.run_time[key].values()),
+                    unit=unit)
+            self.total = total
+        return total
+        
+    

@@ -4,13 +4,10 @@ import re
 import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
-
 from nlptest.utils.custom_types.sample import ToxicitySample
-
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
-
 
 class _IDataset(ABC):
     """Abstract base class for Dataset.
@@ -141,8 +138,8 @@ class DataFactory:
             'MMLU-test' : script_dir[:-7]+'/MMLU/MMLU-test.jsonl',
             'OpenBookQA-test' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
             'OpenBookQA-test-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test-tiny.jsonl',
-            'Quac-test' : script_dir[:-7]+'/Quac/Quac-test.jsonl',
-            'Quac-test-tiny' : script_dir[:-7]+'/Quac/Quac-test-tiny.jsonl',
+            'Quac-test' : script_dir[:-7]+'/quac/Quac-test.jsonl',
+            'Quac-test-tiny' : script_dir[:-7]+'/quac/Quac-test-tiny.jsonl',
             'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl',
             'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
             'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
@@ -533,3 +530,112 @@ class JSONLDataset(_IDataset):
                 path to save the data to
         """
         raise NotImplementedError()
+
+class HuggingFaceDataset(_IDataset):
+    """
+    Example dataset class that loads data using the Hugging Face dataset library.
+    """
+    COLUMN_NAMES = {
+        'text-classification': {
+            'text': ['text', 'sentences', 'sentence', 'sample'],
+            'label': ['label', 'labels', 'class', 'classes']
+        }
+    }
+
+    def __init__(self, dataset_name: str):
+        """
+        Initialize the HuggingFaceDataset class.
+
+        Args:
+            dataset_name (str):
+                Name of the dataset to load.
+        """
+        self.dataset_name = dataset_name
+
+    def load_data(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
+        """
+        Load the specified split from the dataset library.
+
+        Args:
+            feature_column (str):
+                Name of the feature_column column.
+            target_column (str):
+                Name of the target_column column.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects.
+        """
+        try:
+            from datasets import load_dataset
+        except ImportError:
+                raise ModuleNotFoundError("The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+        if subset:
+            dataset = load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = load_dataset(self.dataset_name, split=split)
+
+        if feature_column and target_column:
+            dataset = dataset.map(lambda example: {'text': example[feature_column], 'label': example[target_column]})
+
+        samples = [self._row_to_sample(example) for example in dataset]
+        return samples
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """
+        Exports the data to the corresponding format and saves it to 'output_path'.
+
+        Args:
+            data (List[Sample]):
+                Data to export.
+            output_path (str):
+                Path to save the data to.
+        """
+        with open(output_path, "w") as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(list(self.COLUMN_NAMES['text-classification'].keys()))
+            for sample in data:
+                row = self._sample_to_row(sample)
+                csv_writer.writerow(row)
+
+    def _row_to_sample(self, data_row: Dict[str, str]) -> Sample:
+        """
+        Convert a row from the dataset into a Sample for text classification.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object.
+        """
+        input_column = next((col for col in self.COLUMN_NAMES['text-classification']['text'] if col in data_row), None)
+        output_column = next((col for col in self.COLUMN_NAMES['text-classification']['label'] if col in data_row), None)
+
+        original = data_row.get(input_column, '')
+        label = SequenceLabel(label=data_row.get(output_column, ''), score=1)
+
+        return SequenceClassificationSample(
+            original=original,
+            expected_results=SequenceClassificationOutput(predictions=[label])
+        )
+
+    def _sample_to_row(self, sample: Sample) -> List[str]:
+        """
+        Convert a Sample object into a row for exporting.
+
+        Args:
+            sample (Sample):
+                Sample object to convert.
+
+        Returns:
+            List[str]:
+                Row formatted as a list of strings.
+        """
+        row = [sample.original, sample.expected_results.predictions[0].label]
+        return row

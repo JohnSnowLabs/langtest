@@ -66,7 +66,7 @@ class AugmentRobustness(BaseAugmentaion):
 
     """
 
-    def __init__(self, task, h_report, config, max_prop=0.5) -> None:
+    def __init__(self, task, h_report, config, custom_proportions=None, max_prop=0.5) -> None:
         """
         Initializes an instance of MyClass with the specified parameters.
 
@@ -87,6 +87,7 @@ class AugmentRobustness(BaseAugmentaion):
         self.config = config
         self.h_report = h_report
         self.max_prop = max_prop
+        self.custom_proportions = custom_proportions
 
         if isinstance(self.config, str):
             with open(self.config) as fread:
@@ -146,13 +147,14 @@ class AugmentRobustness(BaseAugmentaion):
                         if test == 'swap_entities':
                             test_type['robustness']['swap_entities']['parameters']['labels'] = [
                                 self.label[each]]
-                        hash_map[each] = TestFactory.transform(
+                        res, _ = TestFactory.transform(
                             self.task,
-                            [hash_map[each]], test_type)[0]
+                            [hash_map[each]], test_type)
+                        hash_map[each] = res[0]
 
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
-                    aug_data = TestFactory.transform(
+                    aug_data, _ = TestFactory.transform(
                         self.task,
                         sample_data, test_type)
                     fianl_aug_data.extend(aug_data)
@@ -168,6 +170,7 @@ class AugmentRobustness(BaseAugmentaion):
     def suggestions(self, report):
         """
         Calculates suggestions for improving test performance based on a given report.
+        Supports for custom proportion values passes in dict or list.
 
         Args:
             report (pandas.DataFrame): A DataFrame containing test results by category and test type,
@@ -183,10 +186,21 @@ class AugmentRobustness(BaseAugmentaion):
 
         """
         report['ratio'] = report['pass_rate'] / report['minimum_pass_rate']
-        report['proportion_increase'] = report['ratio'].apply(
-            lambda x: self._proportion_values(x)
-        )
-        return report[~report['proportion_increase'].isna()][['category', 'test_type', 'ratio', 'proportion_increase']]
+
+        if self.custom_proportions and isinstance(self.custom_proportions, dict):
+            report['proportion_increase'] = report['test_type'].map(
+                self.custom_proportions)
+        elif self.custom_proportions and isinstance(self.custom_proportions, list):
+            report['proportion_increase'] = report['ratio'].apply(
+                self._proportion_values)
+            report = report[report['test_type'].isin(self.custom_proportions)]
+        else:
+            report['proportion_increase'] = report['ratio'].apply(
+                self._proportion_values)
+
+        report = report.dropna(subset=['proportion_increase'])[
+            ['category', 'test_type', 'ratio', 'proportion_increase']]
+        return report
 
     def _proportion_values(self, x):
         """
