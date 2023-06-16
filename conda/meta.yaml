@@ -1,5 +1,5 @@
 {% set name = "nlptest" %}
-{% set version = "1.4.0" %}
+{% set version = "1.5.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
-  sha256: e2e28f9c3d0f35e3e3c07bebadb25b52fdd4f22e8ff4939d343cb68d4984d8ff
+  sha256: 556ac72ef3e8a1c1851bbfe8d22e4312f01e7607d6d3a44775279766744ff9e2
 
 build:
   number: 0
