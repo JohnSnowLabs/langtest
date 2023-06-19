@@ -960,3 +960,44 @@ class AddSlangifyTypo(BaseRobustness):
                 sample.category = "robustness"
 
         return sample_list
+    
+class MultiplePerturbationsTest(BaseRobustness):
+    alias_name = "multiple_perturbations"
+
+    @staticmethod
+    def transform(sample_list: List[Sample], perturbations: List[str]) -> List[Sample]:
+        """
+        Transforms the given sample list by applying multiple perturbations.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            perturbations (List[str]): The list of perturbations to apply.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+        def MultiplePerturbations(text):
+
+            if "NumberToWord" in perturbations:
+                modified_text = NumberToWord.transform(text)
+            if "AddOcrTypo" in perturbations:
+                modified_text = AddOcrTypo.transform(text)
+            if "AbbreviationInsertion" in perturbations:
+                modified_text = AbbreviationInsertion.transform(text)
+            if "AddSpeechToTextTypo" in perturbations:
+                modified_text = AddSpeechToTextTypo.transform(text)
+            if "AddSlangifyTypo" in perturbations:
+                modified_text = AddSlangifyTypo.transform(text)
+
+            return modified_text
+        
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ =MultiplePerturbations(sample)
+            else:
+                sample.test_case, transformations = MultiplePerturbations(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
