@@ -197,4 +197,15 @@ class RobustnessTestCase(unittest.TestCase):
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
 
-            
+    def test_combined_transformations(self) -> None:
+        """"""
+        transformations = [
+            UpperCase(),
+            AddPunctuation(),
+            StripPunctuation()
+        ]
+
+        combined_transformations = CombinedTransformations(transformations)
+
+        transformed_samples = combined_transformations.transform(self.sentences)
+        self.assertIsInstance(transformed_samples, list)
