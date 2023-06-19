@@ -977,8 +977,7 @@ class MultiplePerturbationsTest(BaseRobustness):
             List[Sample]: The transformed list of samples.
         """
         
-        def operation1(sample,order):
-              
+        def apply_transformation(sample, order):
             if order == "uppercase":
                 transformed_list = UpperCase.transform(sample)
             elif order == "lowercase":
@@ -1012,51 +1011,15 @@ class MultiplePerturbationsTest(BaseRobustness):
             else:
                 raise ValueError(f"Unknown transformation: {order}")
             return transformed_list
-            
-        def operation2(t_sample, prev_order):
-            if prev_order == "uppercase":
-                transformed_list = UpperCase.transform(t_sample)
-            elif prev_order == "lowercase":
-                transformed_list = LowerCase.transform(t_sample)
-            elif prev_order == "titlecase":
-                transformed_list = TitleCase.transform(t_sample)
-            elif prev_order == 'add_punctuation':
-                transformed_list = AddPunctuation.transform(t_sample)
-            elif prev_order == "strip_punctuation":
-                transformed_list = StripPunctuation.transform(t_sample)
-            elif prev_order == 'add_typo':
-                transformed_list = AddTypo.transform(t_sample)
-            elif prev_order in ("american_to_british", "british_to_american"):
-                transformed_list = ConvertAccent.transform(t_sample)
-            elif prev_order == 'add_context':
-                transformed_list = AddContext.transform(t_sample)
-            elif prev_order == "add_contraction":
-                transformed_list = AddContraction.transform(t_sample)
-            elif prev_order == "dyslexia_word_swap":
-                transformed_list = DyslexiaWordSwap.transform(t_sample)
-            elif prev_order == "number_to_word":
-                transformed_list = NumberToWord.transform(t_sample)
-            elif prev_order == 'add_abbreviation':
-                transformed_list = AbbreviationInsertion.transform(t_sample)
-            elif prev_order == 'add_ocr_typo':
-                transformed_list = AddOcrTypo.transform(t_sample)
-            elif prev_order == "add_speech_to_text_typo":
-                transformed_list = AddSpeechToTextTypo.transform(t_sample)
-            elif prev_order == "add_slangs":
-                transformed_list = AddSlangifyTypo.transform(t_sample)
-            else:
-                raise ValueError(f"Unknown transformation: {prev_order}")
-            return transformed_list
-            
 
         for idx, transformation in enumerate(perturbations):
             if idx == 0:
-                transformed_list = operation1(sample_list, transformation)
+                transformed_list = apply_transformation(sample_list, transformation)
             else:
                 new_list = []
                 for sample in transformed_list:
-                    new_sample = SequenceClassificationSample(original=sample.test_case,category = "robustness",)
+                    new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness")
                     new_list.append(new_sample)
-                    transformed_list = operation2(new_list, perturbations[idx])
+                transformed_list = apply_transformation(new_list, perturbations[idx])
 
         return transformed_list
