@@ -339,6 +339,11 @@ class RobustnessTestFactory(ITests):
                 ]
                 transformed_samples = data_handler_copy
 
+            if test_name == 'multiple_perturbations':
+                transformed_samples = test_func(
+                    data_handler_copy,
+                   params.get("perturbations"), config= self.tests)
+                
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
