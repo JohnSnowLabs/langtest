@@ -319,7 +319,8 @@ class RobustnessTestFactory(ITests):
         """
         all_samples = []
         runtime_test = {}
-        for test_name, params in self.tests.items():
+        tests_copy = self.tests.copy()  # Create a copy of self.tests
+        for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
             elif test_name in ["swap_entities"]:
@@ -340,6 +341,11 @@ class RobustnessTestFactory(ITests):
                 transformed_samples = data_handler_copy
 
             if test_name == 'multiple_perturbations':
+                if "american_to_british" in params.get("perturbations"):
+                    self.tests.setdefault('american_to_british', {})['parameters'] = {'accent_map': A2B_DICT}
+
+                if "british_to_american" in params.get("perturbations"):
+                    self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
                 transformed_samples = test_func(
                     data_handler_copy,
                    params.get("perturbations"), config= self.tests)

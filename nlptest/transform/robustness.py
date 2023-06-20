@@ -309,6 +309,7 @@ class AddTypo(BaseRobustness):
             else:
                 sample.category = "robustness"
                 sample.test_case = keyboard_typo(sample.original)
+        
 
         return sample_list
 
@@ -965,7 +966,8 @@ class MultiplePerturbations(BaseRobustness):
     alias_name = "multiple_perturbations"
 
     @staticmethod
-    def transform(sample_list: List[Sample], perturbations: List[str]) -> List[Sample]:
+    def transform(sample_list: List[Sample], perturbations: List[str],config) -> List[Sample]:
+        
         """
         Transforms the given sample list by applying multiple perturbations.
 
@@ -990,10 +992,10 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = StripPunctuation.transform(sample)
             elif order == 'add_typo':
                 transformed_list = AddTypo.transform(sample)
-            elif order in ("american_to_british", "british_to_american"):
-                transformed_list = ConvertAccent.transform(sample)
-            elif order == 'add_context':
-                transformed_list = AddContext.transform(sample)
+            elif order ==  "american_to_british":
+                transformed_list = ConvertAccent.transform(sample,**config.get('american_to_british', {}).get('parameters', {}))
+            elif order == "british_to_american":
+                transformed_list = ConvertAccent.transform(sample,**config.get('british_to_american', {}).get('parameters', {}))
             elif order == "add_contraction":
                 transformed_list = AddContraction.transform(sample)
             elif order == "dyslexia_word_swap":
@@ -1018,7 +1020,7 @@ class MultiplePerturbations(BaseRobustness):
             else:
                 new_list = []
                 for sample in transformed_list:
-                    new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness")
+                    new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness",expected_results=sample.expected_results)
                     new_list.append(new_sample)
                 transformed_list = apply_transformation(new_list, perturbations[idx])
 
