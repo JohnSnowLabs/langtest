@@ -961,7 +961,7 @@ class AddSlangifyTypo(BaseRobustness):
 
         return sample_list
     
-class MultiplePerturbationsTest(BaseRobustness):
+class MultiplePerturbations(BaseRobustness):
     alias_name = "multiple_perturbations"
 
     @staticmethod
@@ -974,7 +974,7 @@ class MultiplePerturbationsTest(BaseRobustness):
             perturbations (List[str]): The list of perturbations to apply.
 
         Returns:
-            List[Sample]: The transformed list of samples.
+            transformed_list: The transformed list of samples.
         """
         
         def apply_transformation(sample, order):
@@ -1021,5 +1021,9 @@ class MultiplePerturbationsTest(BaseRobustness):
                     new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness")
                     new_list.append(new_sample)
                 transformed_list = apply_transformation(new_list, perturbations[idx])
+
+        for i, sample in enumerate(transformed_list):
+            sample.original = sample_list[i].original
+            sample.transformations=None
 
         return transformed_list
