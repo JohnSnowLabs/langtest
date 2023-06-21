@@ -339,17 +339,35 @@ class RobustnessTestFactory(ITests):
                     for sample in data_handler_copy
                 ]
                 transformed_samples = data_handler_copy
+     
+            elif test_name == 'multiple_perturbations' and TestFactory.task == "text-classification":
+               
+                transformed_samples = []
 
-            if test_name == 'multiple_perturbations':
-                if "american_to_british" in params.get("perturbations"):
-                    self.tests.setdefault('american_to_british', {})['parameters'] = {'accent_map': A2B_DICT}
+                for key, perturbations in params.items():
+                    if key.startswith("perturbations"):
+                        
+                        perturbation_number = key[len("perturbations"):]
 
-                if "british_to_american" in params.get("perturbations"):
-                    self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
-                transformed_samples = test_func(
-                    data_handler_copy,
-                   params.get("perturbations"), config= self.tests)
-                
+                        if "american_to_british" in perturbations:
+                            self.tests.setdefault('american_to_british', {})['parameters'] = {'accent_map': A2B_DICT}
+
+                        if "british_to_american" in perturbations:
+                            self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
+
+                       
+                        transformed_samples_perturbation = test_func(data_handler_copy, perturbations, config=self.tests)
+
+                      
+                        if perturbation_number != '':
+                            test_type = "-".join(perturbations)
+                           
+                            for sample in transformed_samples_perturbation:
+                                sample.test_type = test_type
+
+                      
+                        transformed_samples.extend(transformed_samples_perturbation)
+  
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
