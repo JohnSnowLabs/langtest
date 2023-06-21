@@ -27,7 +27,7 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification",
-                       "question-answering", "summarization", "toxicity"]
+                       "question-answering", "summarization", "toxicity","translation"]
     SUPPORTED_HUBS = ["spacy", "huggingface",
                       "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))

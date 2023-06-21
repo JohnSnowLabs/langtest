@@ -23,7 +23,7 @@ class BaseRobustness(ABC):
     """
     alias_name = None
     supported_tasks = ["ner", "text-classification",
-                       "question-answering", "summarization"]
+                       "question-answering", "summarization","translation"]
 
     @staticmethod
     @abstractmethod
