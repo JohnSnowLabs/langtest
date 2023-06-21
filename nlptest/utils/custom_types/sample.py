@@ -618,4 +618,48 @@ class RuntimeSample(BaseModel):
             self.total = total
         return total
         
+class TranslationSample(BaseModel):
+    original: str
+    test_case: str = None
+    actual_translation: Union[str, List] = None
+    expected_translation: str = None
     
+    state: str = None
+    dataset_name: str = None 
+    task: str = None     #translation
+    category: str = None  
+    test_type: str = None  
+
+    def __init__(self, **data):
+        super().__init__(**data)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        
+        result = {
+            'category': self.category,
+            'test_type': self.test_type,
+            'original': self.original,
+            'actual_translation': self.actual_translation
+        }
+
+        if self.expected_translation is not None:
+            result.update({
+                'expected_translation': self.expected_translation,
+                'pass': self.is_pass()
+            })
+        
+        return result
+
+    def is_pass(self) -> bool:
+        """"""
+        return self.actual_translation == self.expected_translation  # ToDO
+    
+    def run(self, model, **kwargs):          #ToDo
+        """"""
+        dataset_name = self.dataset_name.split('-')[0].lower()
+        self.expected_translation = model(self.original)
+        self.actual_translation = model(self.test_type)
+
+     
+        return True
+        
