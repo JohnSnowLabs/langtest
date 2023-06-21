@@ -639,6 +639,7 @@ class TranslationSample(BaseModel):
             'category': self.category,
             'test_type': self.test_type,
             'original': self.original,
+            'test_case':self.test_case,
             'actual_translation': self.actual_translation
         }
 
