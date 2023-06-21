@@ -22,7 +22,6 @@ from .custom_bias import add_custom_data
 import nest_asyncio
 nest_asyncio.apply()
 
-
 class TestFactory:
     """
     A factory class for creating and running different types of tests on data.
@@ -235,6 +234,8 @@ class ITests(ABC):
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
+            if len(test_name.split("-"))>1:
+                test_name="multiple_perturbations"
             test_output = supported_tests[test_name].async_run(
                 samples, model, **kwargs)
             if type(test_output) == list:
@@ -339,11 +340,9 @@ class RobustnessTestFactory(ITests):
                     for sample in data_handler_copy
                 ]
                 transformed_samples = data_handler_copy
-     
+           
             elif test_name == 'multiple_perturbations' and TestFactory.task == "text-classification":
-               
                 transformed_samples = []
-
                 for key, perturbations in params.items():
                     if key.startswith("perturbations"):
                         
@@ -355,19 +354,14 @@ class RobustnessTestFactory(ITests):
                         if "british_to_american" in perturbations:
                             self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
 
-                       
                         transformed_samples_perturbation = test_func(data_handler_copy, perturbations, config=self.tests)
 
-                      
                         if perturbation_number != '':
                             test_type = "-".join(perturbations)
-                           
                             for sample in transformed_samples_perturbation:
                                 sample.test_type = test_type
-
-                      
                         transformed_samples.extend(transformed_samples_perturbation)
-  
+
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
@@ -375,7 +369,8 @@ class RobustnessTestFactory(ITests):
                 )
             end_time = time.time_ns()
             for sample in transformed_samples:
-                sample.test_type = test_name
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
             all_samples.extend(transformed_samples)
             runtime_test[test_name] = (end_time - start_time)
         return all_samples, runtime_test
