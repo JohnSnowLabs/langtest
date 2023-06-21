@@ -325,6 +325,9 @@ class Harness:
                 min_pass_rate = self.min_pass_dict.get(
                     test_type, self.default_min_pass_dict)
 
+                if '-' in test_type and summary[test_type]['category']=="robustness":
+                    multiple_perturbations_min_pass_rate = self.min_pass_dict.get("multiple_perturbations", self.default_min_pass_dict)
+                    min_pass_rate = self.min_pass_dict.get(test_type, multiple_perturbations_min_pass_rate)
                 if summary[test_type]['category'] == "Accuracy":
                     min_pass_rate = 1
 
@@ -345,7 +348,6 @@ class Harness:
                 lambda x: "{:.0f}%".format(x * 100))
             df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
                 lambda x: "{:.0f}%".format(x * 100))
-
             col_to_move = 'category'
             first_column = df_report.pop('category')
             df_report.insert(0, col_to_move, first_column)
