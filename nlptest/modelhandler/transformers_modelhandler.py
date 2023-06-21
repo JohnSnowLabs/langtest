@@ -4,7 +4,7 @@ import numpy as np
 from transformers import Pipeline, pipeline
 
 from .modelhandler import _ModelHandler
-from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
+from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput, TranslationOutput
 
 
 class PretrainedModelForNER(_ModelHandler):
@@ -272,10 +272,9 @@ class PretrainedModelForTranslation(_ModelHandler):
         self.model = model
 
 
-
     @classmethod
     def load_model(cls, path: str) -> 'Pipeline':
-        """Load the Translation model into the `model` attribute.
+        """Load the NER model into the `model` attribute.
 
         Args:
             path (str):
@@ -284,14 +283,16 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             'Pipeline':
         """
-        return pipeline(model=path, task="translation") 
+#         return pipeline(model=path, task="translation", ignore_labels=[])
+
+        return pipeline("translation_en_to_fr",model=path) 
 
 
-    def predict(self, text: str, **kwargs) -> NEROutput:
+    def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
 
         Args:
-            text (str): Input text to perform Translation on.
+            text (str): Input text to perform NER on.
             kwargs: Additional keyword arguments.
 
         Keyword Args:
@@ -300,6 +301,9 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             NEROutput: A list of named entities recognized in the input text.
         """
-        predictions = self.model(text, **kwargs)   # ToDo
-        
-        return predictions  
+        predictions = self.model(text, **kwargs)
+        return predictions
+    
+    def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)  
