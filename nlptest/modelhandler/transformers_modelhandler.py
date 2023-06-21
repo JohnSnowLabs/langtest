@@ -249,3 +249,57 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
+
+class PretrainedModelForTranslation(_ModelHandler):
+    """
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+    """
+
+    def __init__(
+            self,
+            model
+    ):
+        """
+        Attributes:
+            model (transformers.pipeline.Pipeline):
+                Loaded NER pipeline for predictions.
+        """
+
+        assert isinstance(model, Pipeline), \
+            ValueError(f"Invalid transformers pipeline! "
+                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
+        self.model = model
+
+
+
+    @classmethod
+    def load_model(cls, path: str) -> 'Pipeline':
+        """Load the Translation model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+        return pipeline(model=path, task="translation") 
+
+
+    def predict(self, text: str, **kwargs) -> NEROutput:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform Translation on.
+            kwargs: Additional keyword arguments.
+
+        Keyword Args:
+            group_entities (bool): Option to group entities.
+
+        Returns:
+            NEROutput: A list of named entities recognized in the input text.
+        """
+        predictions = self.model(text, **kwargs)   # ToDo
+        
+        return predictions  
