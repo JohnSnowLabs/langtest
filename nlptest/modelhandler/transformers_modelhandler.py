@@ -274,7 +274,7 @@ class PretrainedModelForTranslation(_ModelHandler):
 
     @classmethod
     def load_model(cls, path: str) -> 'Pipeline':
-        """Load the NER model into the `model` attribute.
+        """Load the Translation model into the `model` attribute.
 
         Args:
             path (str):
@@ -283,10 +283,16 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             'Pipeline':
         """
-#         return pipeline(model=path, task="translation", ignore_labels=[])
+        from ...nlptest import HARNESS_CONFIG as harness_config
+        
+        config =  harness_config['tests']['defaults']
+        tgt_lang = config.get('target_language')
 
-        return pipeline("translation_en_to_fr",model=path) 
-
+        if 't5' in path:
+            return pipeline(f"translation_en_to_{tgt_lang}", model=path)
+        else:
+            return pipeline(model=path, src_lang='en', tgt_lang=tgt_lang)
+            
 
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
