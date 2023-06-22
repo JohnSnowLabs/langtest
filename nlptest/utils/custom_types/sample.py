@@ -621,8 +621,8 @@ class RuntimeSample(BaseModel):
 class TranslationSample(BaseModel):
     original: str
     test_case: str = None
-    actual_translation: Union[str, List] = None
-    expected_translation: str = None
+    expected_results: Result = None
+    actual_results: Result = None
     
     state: str = None
     dataset_name: str = None 
@@ -640,27 +640,43 @@ class TranslationSample(BaseModel):
             'test_type': self.test_type,
             'original': self.original,
             'test_case':self.test_case,
-            'actual_translation': self.actual_translation
+            'actual_result': self.actual_results
         }
 
-        if self.expected_translation is not None:
+        if self.actual_results is not None:
+            bool_pass, eval_score = self._is_eval()
             result.update({
-                'expected_translation': self.expected_translation,
-                'pass': self.is_pass()
+                'expected_result': self.expected_results,
+                'actual_result': self.actual_results,
+                'eval_score': eval_score,
+                'pass': bool_pass
             })
-        
-        return result
 
-    def is_pass(self) -> bool:
-        """"""
-        return self.actual_translation == self.expected_translation  # ToDO
+        return result
     
-    def run(self, model, **kwargs):          #ToDo
+    def is_pass(self) :
+        """"""
+        return self._is_eval()[0]
+    
+    def _is_eval(self) -> bool:
+        """"""
+
+        from ...nlptest import HARNESS_CONFIG as harness_config
+        from evaluate import load
+
+        config = harness_config['tests']['defaults']
+        metric = load('rouge')
+        predictions = [self.expected_results]
+        references = [self.actual_results]
+        results = metric.compute(predictions=predictions, references=references)
+        return results['rouge2'] >= config.get('threshold', 0.50), results['rouge2']
+     
+    
+    def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split('-')[0].lower()
-        self.expected_translation = model(self.original)
-        self.actual_translation = model(self.test_type)
-
-     
+        self.expected_results = model(text=self.original)[0]['translation_text']
+        self.actual_results = model(text=self.test_case)[0]['translation_text']
+       
         return True
         
