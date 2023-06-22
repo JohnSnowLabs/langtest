@@ -829,14 +829,18 @@ class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
-        Transforms the given sample list by introducing typos simulating speech-to-text errors.
+        Transforms the given sample list by introducing typos simulating speech-to-text errors based on the threshold.
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
         Returns:
             List[Sample]: The transformed list of samples.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         def convertToSimilarHarmony(sentence):
             words = re.findall(r"\w+(?:'\w+)*|\W", sentence)
             converted_sentence = []
@@ -888,29 +892,33 @@ class AddSpeechToTextTypo(BaseRobustness):
             return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ =convertToSimilarHarmony(sample)
-            else:
-                sample.test_case, transformations = convertToSimilarHarmony(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = convertToSimilarHarmony(sample)
+                else:
+                    sample.test_case, transformations = convertToSimilarHarmony(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
 
         return sample_list
-
 
 class AddSlangifyTypo(BaseRobustness):
     alias_name = "add_slangs"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
-        Transforms the given sample list by adding slang words.
+        Transforms the given sample list by adding slang words based on the threshold.
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
         Returns:
             List[Sample]: The transformed list of samples.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         def slangify_typo(text):
             slang_words = [
                 list(map(list, zip(*Slang_Nouns))),
@@ -965,15 +973,15 @@ class AddSlangifyTypo(BaseRobustness):
             modified_text = "".join(modified_toks)
 
             return modified_text, transformations
-        
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ =slangify_typo(sample)
-            else:
-                sample.test_case, transformations = slangify_typo(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = slangify_typo(sample)
+                else:
+                    sample.test_case, transformations = slangify_typo(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
 
         return sample_list
