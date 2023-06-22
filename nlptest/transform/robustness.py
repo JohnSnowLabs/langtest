@@ -996,6 +996,8 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = ConvertAccent.transform(sample,**config.get('american_to_british', {}).get('parameters', {}))
             elif order == "british_to_american":
                 transformed_list = ConvertAccent.transform(sample,**config.get('british_to_american', {}).get('parameters', {}))
+            elif next(iter(order)) == "add_context" :
+                transformed_list = AddContext.transform(sample,order["add_context"]["parameters"]["starting_context"],order["add_context"]["parameters"]["ending_context"])
             elif order == "add_contraction":
                 transformed_list = AddContraction.transform(sample)
             elif order == "dyslexia_word_swap":

@@ -357,7 +357,7 @@ class RobustnessTestFactory(ITests):
                         transformed_samples_perturbation = test_func(data_handler_copy, perturbations, config=self.tests)
 
                         if perturbation_number != '':
-                            test_type = "-".join(perturbations)
+                            test_type = "-".join(str(perturbation) if not isinstance(perturbation, dict) else next(iter(perturbation)) for perturbation in perturbations)
                             for sample in transformed_samples_perturbation:
                                 sample.test_type = test_type
                         transformed_samples.extend(transformed_samples_perturbation)
