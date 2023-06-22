@@ -146,17 +146,17 @@ class TestFactory:
 
     @classmethod
     async def async_run(cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
-
         """
         Runs the specified tests on the given data and returns a list of results.
 
         Args:
             samples_list : List[Sample]
             model_handler : ModelFactory
-
         """
         hash_samples = {}
         for sample in samples_list:
+            if sample.category is None:
+                continue  # Skip the sample with None category
             if sample.category not in hash_samples:
                 hash_samples[sample.category] = {}
             if sample.test_type not in hash_samples[sample.category]:
@@ -165,19 +165,21 @@ class TestFactory:
                 hash_samples[sample.category][sample.test_type].append(sample)
 
         all_categories = TestFactory.test_categories()
-        tests = tqdm(total=len(samples_list), desc="Running testcases... ",
-                     position=0, disable=TestFactory.is_augment)
+        tests = tqdm(total=len(samples_list), desc="Running testcases... ", position=0, disable=TestFactory.is_augment)
         all_results = []
         for each in hash_samples:
+            if each is None:
+                continue  # Skip the category with None value
             values = hash_samples[each]
-            category_output = all_categories[each].run(
-                values, model_handler, progress_bar=tests, **kwargs)
+            if each not in all_categories:
+                continue  # Skip the category not present in all_categories
+            category_output = all_categories[each].run(values, model_handler, progress_bar=tests, **kwargs)
             if type(category_output) == list:
                 all_results.extend(category_output)
             else:
                 all_results.append(category_output)
         run_results = await asyncio.gather(*map(cls.measure_timing, all_results))
-       
+
         return run_results
     
     @classmethod
