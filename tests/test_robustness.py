@@ -205,7 +205,7 @@ class RobustnessTestCase(unittest.TestCase):
         """"""
         transformations = ["lowercase","add_ocr_typo","titlecase","number_to_word"]
 
-        transformed_samples=MultiplePerturbations.transform(self.multipleperturbations,transformations)
+        transformed_samples=MultiplePerturbations.transform(self.multipleperturbations,transformations,config=None)
         self.assertIsInstance(transformed_samples, list)
         
         for sample in transformed_samples:
