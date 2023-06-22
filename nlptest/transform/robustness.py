@@ -669,21 +669,24 @@ class DyslexiaWordSwap(BaseRobustness):
         
         return sample_list
 
-
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
     num = ConvertNumberToWord()
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
         Transform a list of strings to their equivalent verbal representation
-        of numbers present in the string.
+        of numbers present in the string based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
         Returns:
             List of sentences that have numbers in their verbal representation.
         """
+
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def convert_numbers(regex, text):
             results = []
@@ -697,44 +700,51 @@ class NumberToWord(BaseRobustness):
                 new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
                 trans.append(' '.join(words))
-                start_offset = match.end()  
+                start_offset = match.end()
                 transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=match.start(), end=match.end(), word=token),
-                            new_span=Span(start=match.start(), end=match.start()+new_words_len, word=' '.join(words)),
-                            ignore=False
-                        )
+                    Transformation(
+                        original_span=Span(
+                            start=match.start(), end=match.end(), word=token),
+                        new_span=Span(start=match.start(), end=match.start() + new_words_len, word=' '.join(words)),
+                        ignore=False
                     )
-                
+                )
+
             trans.append(text[start_offset:])
             results.append(''.join(trans))
             return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
-            else:
-                sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))', sample)
+                else:
+                    sample.test_case, transformations = convert_numbers(r'(?<!\S)(\d+(\.\d+)?)(?=(\s|\n|$))',
+                                                                          sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+
         return sample_list
 
 class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
-        Transforms the given sample list by introducing OCR typos.
+        Transforms the given sample list by introducing OCR typos based on the threshold.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
 
         Returns:
             List[Sample]: The transformed list of samples.
         """
+
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def ocr_typo(regex, text):
             results = []
@@ -760,8 +770,9 @@ class AddOcrTypo(BaseRobustness):
                     transformations.append(
                         Transformation(
                             original_span=Span(
-                            start=match.start(), end=match.end(), word=token),
-                            new_span=Span(start=match.start(), end=match.start() + len(corrected_token), word=corrected_token),
+                                start=match.start(), end=match.end(), word=token),
+                            new_span=Span(start=match.start(), end=match.start() + len(corrected_token),
+                                          word=corrected_token),
                             ignore=False
                         )
                     )
@@ -775,13 +786,14 @@ class AddOcrTypo(BaseRobustness):
             return ''.join(results), transformations
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = ocr_typo(r'[^,\s.!?]+', sample)
-            else:
-                sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = ocr_typo(r'[^,\s.!?]+', sample)
+                else:
+                    sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
 
         return sample_list
     
