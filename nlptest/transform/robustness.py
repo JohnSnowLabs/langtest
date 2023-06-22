@@ -223,11 +223,12 @@ class StripPunctuation(BaseRobustness):
     alias_name = "strip_punctuation"
 
     @staticmethod
-    def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation from the string, if there isn't punctuation at the end skip it
 
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold: The threshold value to determine the fraction of sentences to transform.
             whitelist: Whitelist for punctuations to strip from sentences.
         Returns:
             List of sentences that punctuation is stripped.
@@ -242,48 +243,53 @@ class StripPunctuation(BaseRobustness):
             else:
                 return text
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx] = check_whitelist(sample, whitelist)
-            else:
-                if sample.original[-1] in whitelist:
-                    sample.test_case = sample.original[:-1]
-                    if sample.task in ("ner", "text-classification"):
-                        sample.transformations = [
-                            Transformation(
-                                original_span=Span(
-                                    start=len(sample.original) - 1,
-                                    end=len(sample.original),
-                                    word=sample.original[-1:]
-                                ),
-                                new_span=Span(
-                                    start=len(sample.test_case),
-                                    end=len(sample.test_case),
-                                    word=""
-                                ),
-                                ignore=True
-                            )
-                        ]
-                else:
-                    sample.test_case = sample.original
-                sample.category = "robustness"
-        return sample_list
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
+        for idx, sample in enumerate(sample_list):
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx] = check_whitelist(sample, whitelist)
+                else:
+                    if sample.original[-1] in whitelist:
+                        sample.test_case = sample.original[:-1]
+                        if sample.task in ("ner", "text-classification"):
+                            sample.transformations = [
+                                Transformation(
+                                    original_span=Span(
+                                        start=len(sample.original) - 1,
+                                        end=len(sample.original),
+                                        word=sample.original[-1:]
+                                    ),
+                                    new_span=Span(
+                                        start=len(sample.test_case),
+                                        end=len(sample.test_case),
+                                        word=""
+                                    ),
+                                    ignore=True
+                                )
+                            ]
+                    else:
+                        sample.test_case = sample.original
+
+                sample.category = "robustness"
+
+        return sample_list
 
 class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Add typo to the sentences using keyboard typo and swap typo.
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+        """Transform a random subset of sentences by adding typos based on a threshold.
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold: The threshold value to determine the fraction of sentences to transform.
         Returns:
-            List of sentences that typo introduced.
+            List of sentences with typos introduced randomly based on the threshold.
         """
 
         def keyboard_typo(string):
-
             if len(string) < 5:
                 return string
 
@@ -319,13 +325,16 @@ class AddTypo(BaseRobustness):
 
             return "".join(string)
 
-        for idx, sample in enumerate(sample_list):
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
-            if isinstance(sample, str):
-                sample_list[idx] = keyboard_typo(sample)
-            else:
-                sample.category = "robustness"
-                sample.test_case = keyboard_typo(sample.original)
+        for idx, sample in enumerate(sample_list):
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx] = keyboard_typo(sample)
+                else:
+                    sample.category = "robustness"
+                    sample.test_case = keyboard_typo(sample.original)
 
         return sample_list
 
@@ -338,7 +347,8 @@ class SwapEntities(BaseRobustness):
     def transform(
             sample_list: List[Sample],
             labels: List[List[str]] = None,
-            terminology: Dict[str, List[str]] = None
+            terminology: Dict[str, List[str]] = None,
+            threshold: float = 1.0
     ) -> List[Sample]:
         """Swaps named entities with the new one from the terminology extracted from passed data.
 
@@ -346,68 +356,69 @@ class SwapEntities(BaseRobustness):
             sample_list: List of sentences to process.
             labels: Corresponding labels to make changes according to sentences.
             terminology: Dictionary of entities and corresponding list of words.
+            threshold: Threshold value to determine the fraction of sentences to transform.
         Returns:
             List of sentences that entities swapped with the terminology.
         """
 
         if terminology is None:
-            raise ValueError(
-                'In order to generate test cases for swap_entities, terminology should be passed!')
+            raise ValueError('In order to generate test cases for swap_entities, terminology should be passed!')
 
         if labels is None:
-            raise ValueError(
-                'In order to generate test cases for swap_entities, labels should be passed!')
+            raise ValueError('In order to generate test cases for swap_entities, labels should be passed!')
 
-        assert len(sample_list) == len(
-            labels), f"'labels' and 'sample_list' must have same lengths."
+        assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
-        for sample, sample_labels in zip(sample_list, labels):
-            sample.category = "robustness"
-            if all([label == "O" for label in sample_labels]):
-                sample.test_case = sample.original
-                continue
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
-            sent_tokens = sample.original.split(' ')
+        for idx, (sample, sample_labels) in enumerate(zip(sample_list, labels)):
+            if idx in transform_indices:
+                sample.category = "robustness"
+                if all([label == "O" for label in sample_labels]):
+                    sample.test_case = sample.original
+                    continue
 
-            ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
-            ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
-    
-            replace_idx = random.choice(ent_idx)
-            ent_type = sample_labels[replace_idx][2:]
-            replace_idxs = [replace_idx]
-            if replace_idx < len(sample_labels) - 1:
-                for i, label in enumerate(sample_labels[replace_idx + 1:]):
-                    if label == f'I-{ent_type}':
-                        replace_idxs.append(i + replace_idx + 1)
-                    else:
-                        break
+                sent_tokens = sample.original.split(' ')
 
-            replace_token = sent_tokens[replace_idx: replace_idx +
-                                        len(replace_idxs)]
-            token_length = len(replace_token)
-            replace_token = " ".join(replace_token)
+                ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
+                ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
+        
+                replace_idx = random.choice(ent_idx)
+                ent_type = sample_labels[replace_idx][2:]
+                replace_idxs = [replace_idx]
+                if replace_idx < len(sample_labels) - 1:
+                    for i, label in enumerate(sample_labels[replace_idx + 1:]):
+                        if label == f'I-{ent_type}':
+                            replace_idxs.append(i + replace_idx + 1)
+                        else:
+                            break
 
-            chosen_ent = random.choice(terminology[ent_type])
-            replace_token_pos = re.search(replace_token, sample.original)
+                replace_token = sent_tokens[replace_idx: replace_idx + len(replace_idxs)]
+                token_length = len(replace_token)
+                replace_token = " ".join(replace_token)
 
-            sample.test_case = sample.original.replace(
-                replace_token, chosen_ent)
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = [
-                    Transformation(
-                        original_span=Span(
-                            start=replace_token_pos.start(),
-                            end=replace_token_pos.end(),
-                            word=replace_token
-                        ),
-                        new_span=Span(
-                            start=replace_token_pos.start(),
-                            end=replace_token_pos.start() + len(chosen_ent),
-                            word=chosen_ent
-                        ),
-                        ignore=False
-                    )
-                ]
+                chosen_ent = random.choice(terminology[ent_type])
+                replace_token_pos = re.search(replace_token, sample.original)
+
+                sample.test_case = sample.original.replace(replace_token, chosen_ent)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = [
+                        Transformation(
+                            original_span=Span(
+                                start=replace_token_pos.start(),
+                                end=replace_token_pos.end(),
+                                word=replace_token
+                            ),
+                            new_span=Span(
+                                start=replace_token_pos.start(),
+                                end=replace_token_pos.start() + len(chosen_ent),
+                                word=chosen_ent
+                            ),
+                            ignore=False
+                        )
+                    ]
+
         return sample_list
 
 
