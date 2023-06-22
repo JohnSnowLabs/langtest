@@ -40,7 +40,7 @@ class Harness:
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
     }
-
+    SUPPORTED_HUBS_HF_DATASET = ["johnsnowlabs", "huggingface", "spacy"]
     DEFAULTS_CONFIG = {
         'hubs': {
             'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
@@ -104,7 +104,7 @@ class Harness:
             logging.info(
                 "Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif type(data) is dict and hub == "huggingface" and task == "text-classification":
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET and task == "text-classification":
             self.data = HuggingFaceDataset(data['name']).load_data(
                 data.get('feature_column', 'text'),
                 data.get('target_column', 'label'),
@@ -112,24 +112,9 @@ class Harness:
                 data.get('subset', None)
             ) if data is not None else None
 
-        elif type(data) is dict and hub == "johnsnowlabs" and task == "text-classification":
-            self.data = HuggingFaceDataset(data['name']).load_data(
-                data.get('feature_column', 'text'),
-                data.get('target_column', 'label'),
-                data.get('split', 'test'),
-                data.get('subset', None)
-            ) if data is not None else None
-
-        elif type(data) is dict and hub == "spacy" and task == "text-classification":
-            self.data = HuggingFaceDataset(data['name']).load_data(
-                data.get('feature_column', 'text'),
-                data.get('target_column', 'label'),
-                data.get('split', 'test'),
-                data.get('subset', None)
-            ) if data is not None else None  
-            if model == 'textcat_imdb':
-                model = resource_filename("nlptest", "data/textcat_imdb")      
-            else:
+            if hub == "spacy" and model == 'textcat_imdb':
+                model = resource_filename("nlptest", "data/textcat_imdb")
+            elif hub == "spacy":
                 raise ValueError(f"Unsupported model '{model}'! Only 'textcat_imdb' is supported.")
             
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
