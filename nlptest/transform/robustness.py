@@ -94,74 +94,90 @@ class UpperCase(BaseRobustness):
     alias_name = "uppercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with uppercase robustness
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+        """Transform a random subset of strings with uppercase robustness based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold: Threshold value to determine the fraction of sentences to transform.
         Returns:
-            List of sentences that uppercase robustness is applied.
+            List of sentences with uppercase robustness applied randomly based on the threshold.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if isinstance(sample, str) and idx in transform_indices:
                 sample_list[idx] = sample.upper()
-            else:
+            elif not isinstance(sample, str) and idx in transform_indices:
                 sample.test_case = sample.original.upper()
                 sample.category = "robustness"
         return sample_list
-
 
 class LowerCase(BaseRobustness):
     alias_name = "lowercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with lowercase robustness
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+        """Transform a list of strings with lowercase robustness based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold: Threshold value to determine the fraction of sentences to transform.
         Returns:
-            List of sentences that lowercase robustness is applied.
+            List of sentences with lowercase robustness applied based on the threshold.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if isinstance(sample, str) and idx in transform_indices:
                 sample_list[idx] = sample.lower()
-            else:
+            elif not isinstance(sample, str) and idx in transform_indices:
                 sample.test_case = sample.original.lower()
                 sample.category = "robustness"
-        return sample_list
 
+        return sample_list
 
 class TitleCase(BaseRobustness):
-    alias_name = 'titlecase'
+    alias_name = "titlecase"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Transform a list of strings with titlecase robustness
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+        """Transform a list of strings with titlecase robustness based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold: Threshold value to determine the fraction of sentences to transform.
         Returns:
-            List of sentences that titlecase robustness is applied.
+            List of sentences with titlecase robustness applied based on the threshold.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
+            if isinstance(sample, str) and idx in transform_indices:
                 sample_list[idx] = sample.title()
-            else:
+            elif not isinstance(sample, str) and idx in transform_indices:
                 sample.test_case = sample.original.title()
                 sample.category = "robustness"
+
         return sample_list
+
 
 
 class AddPunctuation(BaseRobustness):
     alias_name = 'add_punctuation'
 
     @staticmethod
-    def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
         Args:
             sample_list: List of sentences to apply robustness.
+            threshold: Threshold value to determine the fraction of sentences to transform.
             whitelist: Whitelist for punctuations to add to sentences.
         Returns:
             List of sentences that have punctuation at the end.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
@@ -174,33 +190,34 @@ class AddPunctuation(BaseRobustness):
                 return text
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx] = check_whitelist(sample, whitelist)
-            else:
-                if sample.original[-1] not in whitelist:
-                    chosen_punc = random.choice(whitelist)
-                    sample.test_case = sample.original + chosen_punc
-                    if sample.task in ("ner", "text-classification"):
-                        sample.transformations = [
-                            Transformation(
-                                original_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.original),
-                                    word=""
-                                ),
-                                new_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.test_case),
-                                    word=chosen_punc
-                                ),
-                                ignore=True
-                            )
-                        ]
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx] = check_whitelist(sample, whitelist)
                 else:
-                    sample.test_case = sample.original
-                sample.category = "robustness"
-        return sample_list
+                    if sample.original[-1] not in whitelist:
+                        chosen_punc = random.choice(whitelist)
+                        sample.test_case = sample.original + chosen_punc
+                        if sample.task in ("ner", "text-classification"):
+                            sample.transformations = [
+                                Transformation(
+                                    original_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.original),
+                                        word=""
+                                    ),
+                                    new_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.test_case),
+                                        word=chosen_punc
+                                    ),
+                                    ignore=True
+                                )
+                            ]
+                    else:
+                        sample.test_case = sample.original
+                    sample.category = "robustness"
 
+        return sample_list
 
 class StripPunctuation(BaseRobustness):
     alias_name = "strip_punctuation"
