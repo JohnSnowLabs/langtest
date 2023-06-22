@@ -340,9 +340,10 @@ class RobustnessTestFactory(ITests):
                 transformed_samples = data_handler_copy
 
             else:
+                threshold = params.pop('threshold', None)
                 transformed_samples = test_func(
-                    data_handler_copy,
-                    **params.get('parameters', {})
+                    data_handler_copy,threshold=threshold,
+                    **params.get('parameters', {}),
                 )
             end_time = time.time_ns()
             for sample in transformed_samples:
