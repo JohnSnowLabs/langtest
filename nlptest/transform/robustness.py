@@ -94,7 +94,7 @@ class UpperCase(BaseRobustness):
     alias_name = "uppercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """Transform a random subset of strings with uppercase robustness based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -102,7 +102,7 @@ class UpperCase(BaseRobustness):
         Returns:
             List of sentences with uppercase robustness applied randomly based on the threshold.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         for idx, sample in enumerate(sample_list):
@@ -117,7 +117,7 @@ class LowerCase(BaseRobustness):
     alias_name = "lowercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """Transform a list of strings with lowercase robustness based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -125,7 +125,7 @@ class LowerCase(BaseRobustness):
         Returns:
             List of sentences with lowercase robustness applied based on the threshold.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         for idx, sample in enumerate(sample_list):
@@ -141,7 +141,7 @@ class TitleCase(BaseRobustness):
     alias_name = "titlecase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """Transform a list of strings with titlecase robustness based on the threshold.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -149,7 +149,7 @@ class TitleCase(BaseRobustness):
         Returns:
             List of sentences with titlecase robustness applied based on the threshold.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         for idx, sample in enumerate(sample_list):
@@ -167,7 +167,7 @@ class AddPunctuation(BaseRobustness):
     alias_name = 'add_punctuation'
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None, whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
         Args:
             sample_list: List of sentences to apply robustness.
@@ -176,7 +176,7 @@ class AddPunctuation(BaseRobustness):
         Returns:
             List of sentences that have punctuation at the end.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         if whitelist is None:
@@ -223,7 +223,7 @@ class StripPunctuation(BaseRobustness):
     alias_name = "strip_punctuation"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None, whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation from the string, if there isn't punctuation at the end skip it
 
         Args:
@@ -243,7 +243,7 @@ class StripPunctuation(BaseRobustness):
             else:
                 return text
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         for idx, sample in enumerate(sample_list):
@@ -280,7 +280,7 @@ class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """Transform a random subset of sentences by adding typos based on a threshold.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -325,7 +325,7 @@ class AddTypo(BaseRobustness):
 
             return "".join(string)
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         for idx, sample in enumerate(sample_list):
@@ -348,7 +348,7 @@ class SwapEntities(BaseRobustness):
             sample_list: List[Sample],
             labels: List[List[str]] = None,
             terminology: Dict[str, List[str]] = None,
-            threshold: float = 1.0
+            threshold: Optional[float] = None
     ) -> List[Sample]:
         """Swaps named entities with the new one from the terminology extracted from passed data.
 
@@ -369,7 +369,7 @@ class SwapEntities(BaseRobustness):
 
         assert len(sample_list) == len(labels), f"'labels' and 'sample_list' must have same lengths."
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         for idx, (sample, sample_labels) in enumerate(zip(sample_list, labels)):
@@ -426,7 +426,7 @@ class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
-    def transform(sample_list: List[Sample], accent_map: Dict[str, str] = None, threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], accent_map: Dict[str, str] = None, threshold: Optional[float] = None) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
             sample_list: List of sentences to process.
@@ -435,7 +435,7 @@ class ConvertAccent(BaseRobustness):
         Returns:
             List of sentences that perturbed with accent conversion.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def convert_accent(string: str, accent_map: Dict[str, str]) -> str:
@@ -485,20 +485,28 @@ class AddContext(BaseRobustness):
 
     @staticmethod
     def transform(
-            sample_list: List[Sample],
-            starting_context: Optional[List[str]] = None,
-            ending_context: Optional[List[str]] = None,
-            strategy: str = None,
+        sample_list: List[Sample],
+        starting_context: Optional[List[str]] = None,
+        ending_context: Optional[List[str]] = None,
+        strategy: str = None,
+        threshold: Optional[float] = None
     ) -> List[Sample]:
-        """Converts input sentences using a conversion dictionary
-        Args:
-            sample_list: List of sentences to process.
-            strategy: Config method to adjust where will context tokens added. start, end or combined.
-            starting_context: list of terms (context) to input at start of sentences.
-            ending_context: list of terms (context) to input at end of sentences.
-        Returns:
-            List of sentences that context added at to begging, end or both, randomly.
         """
+        Converts input sentences by adding context to the beginning, end, or both.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            starting_context (Optional[List[str]]): List of terms (context) to add at the start of sentences.
+            ending_context (Optional[List[str]]): List of terms (context) to add at the end of sentences.
+            strategy (str): Config method to adjust where the context tokens will be added ('start', 'end', 'combined').
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def context(string, strategy):
             possible_methods = ['start', 'end', 'combined']
@@ -509,11 +517,10 @@ class AddContext(BaseRobustness):
                     f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}.")
 
             transformations = []
-            
+
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)
-                add_string = " ".join(add_tokens) if isinstance(
-                    add_tokens, list) else add_tokens
+                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
                 if string != "-":
                     string = add_string + ' ' + string
                     transformations.append(
@@ -525,14 +532,12 @@ class AddContext(BaseRobustness):
                     )
             if strategy == "end" or strategy == "combined":
                 add_tokens = random.choice(ending_context)
-                add_string = " ".join(add_tokens) if isinstance(
-                    add_tokens, list) else add_tokens
+                add_string = " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
                 if string != "-":
                     string = string + ' ' + add_string
                     transformations.append(
                         Transformation(
-                            original_span=Span(
-                            start=len(string) - 1, end=len(string), word=""),
+                            original_span=Span(start=len(string) - 1, end=len(string), word=""),
                             new_span=Span(start=len(string), end=len(string) + len(add_string) + 1, word=add_string),
                             ignore=True
                         )
@@ -540,26 +545,23 @@ class AddContext(BaseRobustness):
             return string, transformations
 
         for idx, sample in enumerate(sample_list):
-
-            if isinstance(sample, str):
-                sample_list[idx], _ = context(sample, strategy)
-            else:
-                if sample.task in ("ner", "text-classification"):
-                    sample.test_case, sample.transformations = context(
-                        sample.original, strategy)
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = context(sample, strategy)
                 else:
-                    sample.test_case, _ = context(
-                        sample.original, strategy)
-                    
-                sample.category = "robustness"
-        return sample_list
+                    if sample.task in ("ner", "text-classification"):
+                        sample.test_case, sample.transformations = context(sample.original, strategy)
+                    else:
+                        sample.test_case, _ = context(sample.original, strategy)
+                    sample.category = "robustness"
 
+        return sample_list
 
 class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Converts input sentences using a conversion dictionary based on the threshold.
 
@@ -571,7 +573,7 @@ class AddContraction(BaseRobustness):
             List[Sample]: The transformed list of samples.
         """
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def custom_replace(match):
@@ -632,7 +634,7 @@ class DyslexiaWordSwap(BaseRobustness):
     alias_name = "dyslexia_word_swap"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Converts the string by changing some similar words from the dictionary (dyslexia_map) and outputs a string.
 
@@ -644,7 +646,7 @@ class DyslexiaWordSwap(BaseRobustness):
             List[Sample]: The transformed list of samples.
         """
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def dyslexia_swap(text):
@@ -687,7 +689,7 @@ class NumberToWord(BaseRobustness):
     num = ConvertNumberToWord()
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Transform a list of strings to their equivalent verbal representation
         of numbers present in the string based on the threshold.
@@ -698,7 +700,7 @@ class NumberToWord(BaseRobustness):
             List of sentences that have numbers in their verbal representation.
         """
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def convert_numbers(regex, text):
@@ -744,7 +746,7 @@ class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by introducing OCR typos based on the threshold.
 
@@ -756,7 +758,7 @@ class AddOcrTypo(BaseRobustness):
             List[Sample]: The transformed list of samples.
         """
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def ocr_typo(regex, text):
@@ -814,7 +816,7 @@ class AbbreviationInsertion(BaseRobustness):
     alias_name = "add_abbreviation"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by inserting abbreviations.
 
@@ -826,7 +828,7 @@ class AbbreviationInsertion(BaseRobustness):
             List[Sample]: The transformed list of samples.
         """
 
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def insert_abbreviation(text):
@@ -869,7 +871,7 @@ class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by introducing typos simulating speech-to-text errors based on the threshold.
         Args:
@@ -878,7 +880,7 @@ class AddSpeechToTextTypo(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def convertToSimilarHarmony(sentence):
@@ -947,7 +949,7 @@ class AddSlangifyTypo(BaseRobustness):
     alias_name = "add_slangs"
 
     @staticmethod
-    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by adding slang words based on the threshold.
         Args:
@@ -956,7 +958,7 @@ class AddSlangifyTypo(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples.
         """
-        num_transform = int(threshold * len(sample_list))
+        num_transform = int(threshold * len(sample_list)) if threshold is not None else len(sample_list)
         transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def slangify_typo(text):
