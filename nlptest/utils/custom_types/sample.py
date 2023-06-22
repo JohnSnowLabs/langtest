@@ -345,11 +345,18 @@ class BaseQASample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
-    def transform(self, func, params, **kwargs):
-        sens = [self.original_question, self.original_context]
-        self.perturbed_question, self.perturbed_context = func(sens, **params, **kwargs)
-        self.category = func.__module__.split('.')[-1]
-        # self.perturbed_context = func(self.original_context, **kwargs)
+    def transform(self, func, params:None,perturbations=None,**kwargs):
+        
+        if perturbations is None:
+            sens = [self.original_question, self.original_context]
+            self.perturbed_question, self.perturbed_context = func(sens, **params, **kwargs)
+            self.category = func.__module__.split('.')[-1]
+
+        else:
+            sens = [self.original_question, self.original_context]
+
+            self.perturbed_question, self.perturbed_context = func(sens,perturbations, params,**kwargs)
+            self.category = func.__module__.split('.')[-1]
     
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split('-')[0].lower()
@@ -617,5 +624,3 @@ class RuntimeSample(BaseModel):
                     unit=unit)
             self.total = total
         return total
-        
-    

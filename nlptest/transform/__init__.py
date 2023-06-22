@@ -21,6 +21,7 @@ import asyncio
 from .custom_bias import add_custom_data
 import nest_asyncio
 nest_asyncio.apply()
+import copy
 
 class TestFactory:
     """
@@ -333,13 +334,37 @@ class RobustnessTestFactory(ITests):
             test_func = self.supported_tests[test_name].transform
 
             start_time = time.time_ns()
-            if TestFactory.task in ('question-answering', 'summarization'):
+            if TestFactory.task in ('question-answering', 'summarization') and test_name != 'multiple_perturbations' :
                 _ = [
                     sample.transform(test_func, params.get('parameters', {}))
                     if hasattr(sample, 'transform') else sample
                     for sample in data_handler_copy
                 ]
                 transformed_samples = data_handler_copy
+
+            elif test_name == 'multiple_perturbations' and TestFactory.task in ('question-answering', 'summarization'):
+                transformed_samples = []
+                for key, perturbations in params.items():
+                    if key.startswith("perturbations"):
+                        perturbation_number = key[len("perturbations"):]
+
+                        if "american_to_british" in perturbations:
+                            self.tests.setdefault('american_to_british', {})['parameters'] = {'accent_map': A2B_DICT}
+
+                        if "british_to_american" in perturbations:
+                            self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
+                        _ = [
+                            sample.transform(func=test_func, params=self.tests, perturbations=perturbations)
+                            if hasattr(sample, 'transform') else sample
+                            for sample in data_handler_copy
+                        ]
+                        transformed_samples_perturbation = copy.deepcopy(data_handler_copy)  # Create a deep copy
+                        if perturbation_number != '':
+                            test_type = "-".join(str(perturbation) if not isinstance(perturbation, dict) else next(iter(perturbation)) for perturbation in perturbations)
+                            for sample in transformed_samples_perturbation:
+                                sample.test_type = test_type
+
+                        transformed_samples.extend(transformed_samples_perturbation)
            
             elif test_name == 'multiple_perturbations' and TestFactory.task == "text-classification":
                 transformed_samples = []
