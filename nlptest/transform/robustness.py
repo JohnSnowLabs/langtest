@@ -426,14 +426,18 @@ class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
-    def transform(sample_list: List[Sample], accent_map: Dict[str, str] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], accent_map: Dict[str, str] = None, threshold: float = 1.0) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
             sample_list: List of sentences to process.
             accent_map: Dictionary with conversion terms.
+            threshold: Threshold value to determine the fraction of sentences to transform.
         Returns:
             List of sentences that perturbed with accent conversion.
         """
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         def convert_accent(string: str, accent_map: Dict[str, str]) -> str:
             tokens = set(string.split(' '))
             replaced_string = string
@@ -449,7 +453,7 @@ class ConvertAccent(BaseRobustness):
                         span = re.search(token, replaced_string)
                         replaced_string = re.sub(
                             token, new_token, replaced_string, count=1)
-                        
+
                         transformations.append(
                                 Transformation(
                                     original_span=Span(
@@ -462,20 +466,19 @@ class ConvertAccent(BaseRobustness):
             return replaced_string, transformations
 
         for idx, sample in enumerate(sample_list):
-
-            if isinstance(sample, str):
-                sample_list[idx], _ = convert_accent(sample, accent_map)
-            else:
-                if sample.task in ("ner", "text-classification"):
-                    sample.test_case, sample.transformations = convert_accent(
-                        sample.original, accent_map)
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = convert_accent(sample, accent_map)
                 else:
-                    sample.test_case, _ = convert_accent(
-                        sample.original, accent_map)
-                sample.category = "robustness"
+                    if sample.task in ("ner", "text-classification"):
+                        sample.test_case, sample.transformations = convert_accent(
+                            sample.original, accent_map)
+                    else:
+                        sample.test_case, _ = convert_accent(
+                            sample.original, accent_map)
+                    sample.category = "robustness"
 
         return sample_list
-
 
 class AddContext(BaseRobustness):
     alias_name = 'add_context'
@@ -556,21 +559,27 @@ class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'
 
     @staticmethod
-    def transform(
-            sample_list: List[Sample],
-    ) -> List[Sample]:
-        """Converts input sentences using a conversion dictionary
-        Args:
-            sample_list: List of sentences to process.
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
+        Converts input sentences using a conversion dictionary based on the threshold.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
 
         def custom_replace(match):
             """
-              regex replace for contraction.
+            Regex replace for contraction.
             """
             token = match.group(0)
-            contracted_token = CONTRACTION_MAP.get(
-                token, CONTRACTION_MAP.get(token.lower()))
+            contracted_token = CONTRACTION_MAP.get(token, CONTRACTION_MAP.get(token.lower()))
 
             is_upper_case = token[0]
             expanded_contraction = is_upper_case + contracted_token[1:]
@@ -579,65 +588,68 @@ class AddContraction(BaseRobustness):
         def search_contraction(text):
             replaced_string = text
             for contraction in CONTRACTION_MAP:
-                search = re.search(contraction, text,
-                                   flags=re.IGNORECASE | re.DOTALL)
+                search = re.search(contraction, text, flags=re.IGNORECASE | re.DOTALL)
                 if search:
-                    new_string = CONTRACTION_MAP.get(
-                        search.group(), search.group())
+                    new_string = CONTRACTION_MAP.get(search.group(), search.group())
                     diff_len = len(new_string) - len(search.group())
                     replaced_string = re.sub(contraction, custom_replace, replaced_string,
-                                             flags=re.IGNORECASE | re.DOTALL)
+                                              flags=re.IGNORECASE | re.DOTALL)
 
-                return replaced_string
+            return replaced_string
 
         for idx, sample in enumerate(sample_list):
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx] = search_contraction(sample)
+                else:
+                    replaced_string = sample.original
+                    transformations = []
 
-            if isinstance(sample, str):
-                sample_list[idx] = search_contraction(sample)
-            else:
-                replaced_string = sample.original
-                transformations = []
-
-                for contraction in CONTRACTION_MAP:
-                    search = re.search(contraction, sample.original,
-                                       flags=re.IGNORECASE | re.DOTALL)
-                    if search:
-                        new_string = CONTRACTION_MAP.get(
-                            search.group(), search.group())
-
-                        diff_len = len(new_string) - len(search.group())
-                        replaced_string = re.sub(contraction, custom_replace, replaced_string,
-                                                 flags=re.IGNORECASE | re.DOTALL)
-                        if sample.task in ("ner", "text-classification"):
-                            transformations.append(
-                                Transformation(
-                                    original_span=Span(start=search.start(
-                                    ), end=search.end(), word=search.group()),
-                                    new_span=Span(start=search.start(
-                                    ), end=search.end() + diff_len, word=new_string),
-                                    ignore=False
+                    for contraction in CONTRACTION_MAP:
+                        search = re.search(contraction, sample.original, flags=re.IGNORECASE | re.DOTALL)
+                        if search:
+                            new_string = CONTRACTION_MAP.get(search.group(), search.group())
+                            diff_len = len(new_string) - len(search.group())
+                            replaced_string = re.sub(contraction, custom_replace, replaced_string,
+                                                      flags=re.IGNORECASE | re.DOTALL)
+                            if sample.task in ("ner", "text-classification"):
+                                transformations.append(
+                                    Transformation(
+                                        original_span=Span(start=search.start(), end=search.end(), word=search.group()),
+                                        new_span=Span(start=search.start(), end=search.end() + diff_len, word=new_string),
+                                        ignore=False
+                                    )
                                 )
-                            )
-                sample.test_case = replaced_string
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+                    sample.test_case = replaced_string
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+
         return sample_list
 
 
 class DyslexiaWordSwap(BaseRobustness):
     alias_name = "dyslexia_word_swap"
-    
-    @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Converts the string by changing some similar words from the dictonary(dyslexia_map) and outputs a string. 
-           Args: sample_list: List of sentences to process.
 
-           Returns: Returns a converted string like words like write will get converted to right. 
+    @staticmethod
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
+        Converts the string by changing some similar words from the dictionary (dyslexia_map) and outputs a string.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            threshold (float): Threshold value to determine the fraction of sentences to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+        """
+
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         def dyslexia_swap(text):
             perturbed_text = text
-            transformations = [] 
+            transformations = []
 
             for orig, perturbed in dyslexia_map.items():
                 pattern = r"(?i)\b" + re.escape(orig) + r"\b"
@@ -654,21 +666,21 @@ class DyslexiaWordSwap(BaseRobustness):
                                 new_span=Span(start=start, end=start + len(perturbed), word=perturbed),
                                 ignore=False
                             )
-                        ) 
-            perturbed_text = perturbed_text.replace( "__TEMP__", "")
+                        )
+            perturbed_text = perturbed_text.replace("__TEMP__", "")
             return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx],_= dyslexia_swap(sample)
-            else:
-                sample.test_case, transformations = dyslexia_swap(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
-        
-        return sample_list
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = dyslexia_swap(sample)
+                else:
+                    sample.test_case, transformations = dyslexia_swap(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
 
+        return sample_list
 
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
