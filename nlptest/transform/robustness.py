@@ -814,20 +814,24 @@ class AbbreviationInsertion(BaseRobustness):
     alias_name = "add_abbreviation"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], threshold: float = 1.0) -> List[Sample]:
         """
         Transforms the given sample list by inserting abbreviations.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            threshold (float): Threshold value to determine the fraction of samples to transform.
 
         Returns:
             List[Sample]: The transformed list of samples.
         """
 
+        num_transform = int(threshold * len(sample_list))
+        transform_indices = random.sample(range(len(sample_list)), num_transform)
+
         def insert_abbreviation(text):
             perturbed_text = text
-            transformations = [] 
+            transformations = []
 
             for abbreviation, expansions in abbreviation_dict.items():
                 for expansion in expansions:
@@ -840,25 +844,25 @@ class AbbreviationInsertion(BaseRobustness):
                         end = match.end()
                         token = text[start:end]
                         if corrected_token != token:
-                    
                             transformations.append(
                                 Transformation(
                                     original_span=Span(start=start, end=end, word=token),
                                     new_span=Span(start=start, end=start + len(corrected_token), word=corrected_token),
                                     ignore=False
                                 )
-                            ) 
+                            )
             return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = insert_abbreviation(sample)
-            else:
-                sample.test_case, transformations = insert_abbreviation(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
-        
+            if idx in transform_indices:
+                if isinstance(sample, str):
+                    sample_list[idx], _ = insert_abbreviation(sample)
+                else:
+                    sample.test_case, transformations = insert_abbreviation(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+
         return sample_list
    
 class AddSpeechToTextTypo(BaseRobustness):
