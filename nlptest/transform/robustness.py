@@ -699,6 +699,7 @@ class AddOcrTypo(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
+
         """
         Transforms the given sample list by introducing OCR typos.
 
@@ -966,8 +967,7 @@ class MultiplePerturbations(BaseRobustness):
     alias_name = "multiple_perturbations"
 
     @staticmethod
-    def transform(sample_list: List[Sample], perturbations: List[str],config) -> List[Sample]:
-        
+    def transform(sample_list: List[Sample], perturbations: List[str],config) -> List[Sample]:      
         """
         Transforms the given sample list by applying multiple perturbations.
 
@@ -1015,19 +1015,26 @@ class MultiplePerturbations(BaseRobustness):
             else:
                 raise ValueError(f"Unknown transformation: {order}")
             return transformed_list
+        if isinstance(sample_list[0], SequenceClassificationSample):
+            for idx, transformation in enumerate(perturbations):
+                if idx == 0:
+                    transformed_list = apply_transformation(sample_list, transformation)
+                else:
+                    new_list = []
+                    for sample in transformed_list:
+                        new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness",expected_results=sample.expected_results)
+                        new_list.append(new_sample)
+                    transformed_list = apply_transformation(new_list, perturbations[idx])
 
-        for idx, transformation in enumerate(perturbations):
-            if idx == 0:
+            for i, sample in enumerate(transformed_list):
+                sample.original = sample_list[i].original
+                sample.transformations=None
+
+
+        elif isinstance(sample_list[0], str):
+            for idx, transformation in enumerate(perturbations):
+                
                 transformed_list = apply_transformation(sample_list, transformation)
-            else:
-                new_list = []
-                for sample in transformed_list:
-                    new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness",expected_results=sample.expected_results)
-                    new_list.append(new_sample)
-                transformed_list = apply_transformation(new_list, perturbations[idx])
-
-        for i, sample in enumerate(transformed_list):
-            sample.original = sample_list[i].original
-            sample.transformations=None
+        
 
         return transformed_list

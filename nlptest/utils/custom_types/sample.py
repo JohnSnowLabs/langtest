@@ -527,11 +527,18 @@ class SummarizationSample(BaseModel):
             results = metric.compute(predictions=predictions, references=references, lang='en')
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
     
-    def transform(self, func, params, **kwargs):
+    def transform(self, func, params:None,perturbations=None,**kwargs):
         """"""
-        sens = [self.original]
-        self.test_case= func(sens, **params, **kwargs)[0]
-        self.category = func.__module__.split('.')[-1]
+        if perturbations is None:
+
+                sens = [self.original]
+                self.test_case= func(sens, **params, **kwargs)[0]
+                self.category = func.__module__.split('.')[-1]
+        else:
+                
+                sens = [self.original]
+                self.test_case= func(sens,perturbations,params,**kwargs)[0]
+                self.category = func.__module__.split('.')[-1]
 
     def run(self, model, **kwargs):
         """"""
