@@ -80,6 +80,8 @@ class Harness:
         super().__init__()
 
         self.is_default = False
+        self._actual_model = model
+        self.hub =  hub
 
         if (task not in self.SUPPORTED_TASKS):
             raise ValueError(
@@ -176,7 +178,10 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-
+            
+        
+        print("Test Configuration : \n", self._config)
+        
         global GLOBAL_MODEL
         if not isinstance(model, dict):
             GLOBAL_MODEL = self.model
@@ -215,7 +220,26 @@ class Harness:
 
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
+        model = GLOBAL_MODEL
+        if self.task == 'translation' and model:
+                hub = self.hub
+                model = self._actual_model
+                task = self.task
+                
+                if isinstance(model, str):
+                    self.model = ModelFactory.load_model(
+                        path=model, task=task, hub=hub,**self._config.get("model_parameters", {}))
 
+                elif isinstance(model, dict):
+                    model_dict = {}
+                    for k, v in model.items():
+                        model_dict[k] = ModelFactory.load_model(
+                            task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
+                    self.model = model_dict
+                else:
+                    self.model = ModelFactory(
+                        task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
+    
         return self._config
 
     def generate(self) -> "Harness":
