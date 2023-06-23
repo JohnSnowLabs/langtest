@@ -640,7 +640,7 @@ class Harness:
 
         df_widget = pn.widgets.DataFrame(
             self.testcases(),
-            # autosize_mode='fit_columns'
+            autosize_mode='fit_viewport'
             )
         return df_widget
 
