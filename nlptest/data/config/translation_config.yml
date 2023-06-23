@@ -1,6 +1,7 @@
 
-target_language: 'fr'
-
+model_parameters:
+  target_language: 'fr'
+  
 tests:
   defaults:
     min_pass_rate: 1.0,
