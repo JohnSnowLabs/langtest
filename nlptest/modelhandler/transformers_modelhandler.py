@@ -283,10 +283,9 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             'Pipeline':
         """
-        from ...nlptest import HARNESS_CONFIG as harness_config
+        from ..nlptest import HARNESS_CONFIG as harness_config
         
-        config =  harness_config['tests']['defaults']
-        tgt_lang = config.get('target_language')
+        tgt_lang = harness_config.get('target_language')
 
         if 't5' in path:
             return pipeline(f"translation_en_to_{tgt_lang}", model=path)
