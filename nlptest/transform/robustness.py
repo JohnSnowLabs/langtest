@@ -583,17 +583,20 @@ class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'
 
     @staticmethod
-    def transform(
-            sample_list: List[Sample],
-    ) -> List[Sample]:
-        """Converts input sentences using a conversion dictionary
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+        """Converts input sentences using a conversion dictionary.
         Args:
             sample_list: List of sentences to process.
+            prob (Optional[float]): The probability controlling the proportion of contractions to be added.
+                If None, no threshold is applied.
+
+        Returns:
+            List[Sample]: Transformed list of samples.
         """
 
         def custom_replace(match):
             """
-              regex replace for contraction.
+            Regex replace for contraction.
             """
             token = match.group(0)
             contracted_token = CONTRACTION_MAP.get(
@@ -608,17 +611,16 @@ class AddContraction(BaseRobustness):
             for contraction in CONTRACTION_MAP:
                 search = re.search(contraction, text,
                                    flags=re.IGNORECASE | re.DOTALL)
-                if search:
+                if search and (prob is None or random.random() < prob):
                     new_string = CONTRACTION_MAP.get(
                         search.group(), search.group())
                     diff_len = len(new_string) - len(search.group())
                     replaced_string = re.sub(contraction, custom_replace, replaced_string,
                                              flags=re.IGNORECASE | re.DOTALL)
 
-                return replaced_string
+            return replaced_string
 
         for idx, sample in enumerate(sample_list):
-
             if isinstance(sample, str):
                 sample_list[idx] = search_contraction(sample)
             else:
@@ -628,7 +630,7 @@ class AddContraction(BaseRobustness):
                 for contraction in CONTRACTION_MAP:
                     search = re.search(contraction, sample.original,
                                        flags=re.IGNORECASE | re.DOTALL)
-                    if search:
+                    if search and (prob is None or random.random() < prob):
                         new_string = CONTRACTION_MAP.get(
                             search.group(), search.group())
 
@@ -638,10 +640,10 @@ class AddContraction(BaseRobustness):
                         if sample.task in ("ner", "text-classification"):
                             transformations.append(
                                 Transformation(
-                                    original_span=Span(start=search.start(
-                                    ), end=search.end(), word=search.group()),
-                                    new_span=Span(start=search.start(
-                                    ), end=search.end() + diff_len, word=new_string),
+                                    original_span=Span(start=search.start(),
+                                                       end=search.end(), word=search.group()),
+                                    new_span=Span(start=search.start(),
+                                                  end=search.end() + diff_len, word=new_string),
                                     ignore=False
                                 )
                             )
@@ -651,16 +653,19 @@ class AddContraction(BaseRobustness):
                 sample.category = "robustness"
         return sample_list
 
-
 class DyslexiaWordSwap(BaseRobustness):
     alias_name = "dyslexia_word_swap"
     
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Converts the string by changing some similar words from the dictonary(dyslexia_map) and outputs a string. 
-           Args: sample_list: List of sentences to process.
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+        """Converts the string by changing some similar words from the dictionary (dyslexia_map) and outputs a string. 
+           Args:
+               sample_list: List of sentences to process.
+               prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                   If None, no threshold is applied.
 
-           Returns: Returns a converted string like words like write will get converted to right. 
+           Returns:
+               List[Sample]: Transformed list of samples.
         """
         def dyslexia_swap(text):
             perturbed_text = text
@@ -674,7 +679,7 @@ class DyslexiaWordSwap(BaseRobustness):
                     start = match.start()
                     end = match.end()
                     token = text[start:end]
-                    if perturbed != token:
+                    if perturbed != token and (prob is None or random.random() < prob):
                         transformations.append(
                             Transformation(
                                 original_span=Span(start=start, end=end, word=token),
@@ -696,18 +701,19 @@ class DyslexiaWordSwap(BaseRobustness):
         
         return sample_list
 
-
 class NumberToWord(BaseRobustness):
     alias_name = "number_to_word"
     num = ConvertNumberToWord()
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
         """
         Transform a list of strings to their equivalent verbal representation
         of numbers present in the string.
         Args:
             sample_list: List of sentences to apply robustness.
+            prob (Optional[float]): The probability controlling the proportion of numbers to be perturbed.
+                If None, no threshold is applied.
         Returns:
             List of sentences that have numbers in their verbal representation.
         """
@@ -723,9 +729,9 @@ class NumberToWord(BaseRobustness):
                 words = NumberToWord.num.number_to_words(token, wantlist=True)
                 new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
-                trans.append(' '.join(words))
-                start_offset = match.end()  
-                transformations.append(
+                if prob is None or random.random() < prob:
+                    trans.append(' '.join(words))
+                    transformations.append(
                         Transformation(
                             original_span=Span(
                                 start=match.start(), end=match.end(), word=token),
@@ -733,6 +739,9 @@ class NumberToWord(BaseRobustness):
                             ignore=False
                         )
                     )
+                else:
+                    trans.append(token)
+                start_offset = match.end()
                 
             trans.append(text[start_offset:])
             results.append(''.join(trans))
@@ -748,21 +757,23 @@ class NumberToWord(BaseRobustness):
                 sample.category = "robustness"
         return sample_list
 
+
 class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
-
+    
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by introducing OCR typos.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of tokens to be perturbed.
+                If None, no threshold is applied.
 
         Returns:
             List[Sample]: The transformed list of samples.
         """
-
         def ocr_typo(regex, text):
             results = []
             trans = []
@@ -780,7 +791,7 @@ class AddOcrTypo(BaseRobustness):
                 else:
                     corrected_token = token
 
-                if corrected_token != token:
+                if corrected_token != token and (prob is None or random.random() < prob):
                     trans.append(text[start_offset:match.start()])
                     trans.append(corrected_token)
                     start_offset = match.end()
@@ -816,12 +827,14 @@ class AbbreviationInsertion(BaseRobustness):
     alias_name = "add_abbreviation"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by inserting abbreviations.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                If None, no threshold is applied.
 
         Returns:
             List[Sample]: The transformed list of samples.
@@ -829,27 +842,27 @@ class AbbreviationInsertion(BaseRobustness):
 
         def insert_abbreviation(text):
             perturbed_text = text
-            transformations = [] 
+            transformations = []
 
             for abbreviation, expansions in abbreviation_dict.items():
                 for expansion in expansions:
                     pattern = r"(?i)\b" + re.escape(expansion) + r"\b"
                     corrected_token = abbreviation
-                    perturbed_text = re.sub(pattern, corrected_token, perturbed_text)
                     matches = re.finditer(pattern, text)
                     for match in matches:
                         start = match.start()
                         end = match.end()
                         token = text[start:end]
-                        if corrected_token != token:
-                    
+                        if corrected_token != token and (prob is None or random.random() < prob):
+                            perturbed_text = perturbed_text[:start] + corrected_token + perturbed_text[end:]
                             transformations.append(
                                 Transformation(
                                     original_span=Span(start=start, end=end, word=token),
                                     new_span=Span(start=start, end=start + len(corrected_token), word=corrected_token),
                                     ignore=False
                                 )
-                            ) 
+                            )
+
             return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
@@ -860,18 +873,20 @@ class AbbreviationInsertion(BaseRobustness):
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
-        
+
         return sample_list
    
 class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by introducing typos simulating speech-to-text errors.
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                If None, no threshold is applied.
         Returns:
             List[Sample]: The transformed list of samples.
         """
@@ -898,7 +913,7 @@ class AddSpeechToTextTypo(BaseRobustness):
                             if similar_word.lower() == word.lower():
                                 similar_word = word
 
-                            if similar_word != word:
+                            if similar_word != word and (prob is None or random.random() < prob):
                                 start_index = sentence.index(word, index_offset)
                                 end_index = start_index + len(word)
                                 converted_sentence.append(similar_word)
@@ -927,7 +942,7 @@ class AddSpeechToTextTypo(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx], _ =convertToSimilarHarmony(sample)
+                sample_list[idx], _ = convertToSimilarHarmony(sample)
             else:
                 sample.test_case, transformations = convertToSimilarHarmony(sample.original)
                 if sample.task in ("ner", "text-classification"):
@@ -936,16 +951,17 @@ class AddSpeechToTextTypo(BaseRobustness):
 
         return sample_list
 
-
 class AddSlangifyTypo(BaseRobustness):
     alias_name = "add_slangs"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
         """
         Transforms the given sample list by adding slang words.
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                If None, no threshold is applied.
         Returns:
             List[Sample]: The transformed list of samples.
         """
@@ -977,7 +993,7 @@ class AddSlangifyTypo(BaseRobustness):
                         if is_cap:
                             temp = temp[0].upper() + temp[1:]
 
-                        if temp != token:
+                        if temp != token and (prob is None or random.random() < prob):
                             start_index = text.index(token, start_offset)
                             end_index = start_index + len(token)
                             modified_toks.append(temp)
@@ -1007,7 +1023,7 @@ class AddSlangifyTypo(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx], _ =slangify_typo(sample)
+                sample_list[idx], _ = slangify_typo(sample)
             else:
                 sample.test_case, transformations = slangify_typo(sample.original)
                 if sample.task in ("ner", "text-classification"):
