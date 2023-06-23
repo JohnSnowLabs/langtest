@@ -50,7 +50,8 @@ class Harness:
             'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
         },
         'task': {
-            'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml")
+            'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml"),
+            'translation': resource_filename("nlptest", "data/config/translation_config.yml")
         }
     }
 
@@ -152,6 +153,9 @@ class Harness:
             else:
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG['hubs'][hub])
+        elif task=="translation" :
+            self._config = self.configure(
+                    self.DEFAULTS_CONFIG['task'][task])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")

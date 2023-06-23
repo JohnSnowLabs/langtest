@@ -283,7 +283,7 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             'Pipeline':
         """
-        from ..nlptest import HARNESS_CONFIG as harness_config
+        from ...nlptest import HARNESS_CONFIG as harness_config
         
         tgt_lang = harness_config.get('target_language')
 
