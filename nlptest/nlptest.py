@@ -56,8 +56,8 @@ class Harness:
 
     def __init__(
             self,
-            model: Union[str, Any],
             task: str,
+            model: Optional[Union[str, Any]]=None,
             hub: Optional[str] = None,
             data: Optional[Union[str, dict]] = None,
             config: Optional[Union[str, dict]] = None,
@@ -112,10 +112,11 @@ class Harness:
                 data.get('subset', None)
             ) if data is not None else None
 
-            if hub == "spacy" and model == 'textcat_imdb':
+            if hub == "spacy" and (model == 'textcat_imdb' or model is None):
+                if model is None:
+                    logging.warning("Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("nlptest", "data/textcat_imdb")
-            elif hub == "spacy":
-                raise ValueError(f"Unsupported model '{model}'! Only 'textcat_imdb' is supported.")
+
             
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
