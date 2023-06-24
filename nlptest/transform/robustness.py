@@ -367,8 +367,10 @@ class SwapEntities(BaseRobustness):
     @staticmethod
     def transform(
             sample_list: List[Sample],
+            prob: Optional[float] = None,
             labels: List[List[str]] = None,
-            terminology: Dict[str, List[str]] = None
+            terminology: Dict[str, List[str]] = None,
+            
     ) -> List[Sample]:
         """Swaps named entities with the new one from the terminology extracted from passed data.
 
@@ -376,6 +378,7 @@ class SwapEntities(BaseRobustness):
             sample_list: List of sentences to process.
             labels: Corresponding labels to make changes according to sentences.
             terminology: Dictionary of entities and corresponding list of words.
+            prob: Probability of replacing entities with the terminology.
         Returns:
             List of sentences that entities swapped with the terminology.
         """
@@ -418,26 +421,30 @@ class SwapEntities(BaseRobustness):
             replace_token = " ".join(replace_token)
 
             chosen_ent = random.choice(terminology[ent_type])
-            replace_token_pos = re.search(replace_token, sample.original)
+            
+            if prob is None or random.random() < prob:
+                replace_token_pos = re.search(replace_token, sample.original)
+                sample.test_case = sample.original.replace(
+                    replace_token, chosen_ent)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = [
+                        Transformation(
+                            original_span=Span(
+                                start=replace_token_pos.start(),
+                                end=replace_token_pos.end(),
+                                word=replace_token
+                            ),
+                            new_span=Span(
+                                start=replace_token_pos.start(),
+                                end=replace_token_pos.start() + len(chosen_ent),
+                                word=chosen_ent
+                            ),
+                            ignore=False
+                        )
+                    ]
+            else:
+                sample.test_case = sample.original
 
-            sample.test_case = sample.original.replace(
-                replace_token, chosen_ent)
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = [
-                    Transformation(
-                        original_span=Span(
-                            start=replace_token_pos.start(),
-                            end=replace_token_pos.end(),
-                            word=replace_token
-                        ),
-                        new_span=Span(
-                            start=replace_token_pos.start(),
-                            end=replace_token_pos.start() + len(chosen_ent),
-                            word=chosen_ent
-                        ),
-                        ignore=False
-                    )
-                ]
         return sample_list
 
 class ConvertAccent(BaseRobustness):
