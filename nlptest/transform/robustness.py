@@ -668,44 +668,45 @@ class DyslexiaWordSwap(BaseRobustness):
         """Converts the string by changing some similar words from the dictionary (dyslexia_map) and outputs a string. 
            Args:
                sample_list: List of sentences to process.
-               prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+               prob : The probability controlling the proportion of words to be perturbed.
                    If None, no threshold is applied.
 
            Returns:
                List[Sample]: Transformed list of samples.
         """
-        def dyslexia_swap(text):
-            perturbed_text = text
-            transformations = [] 
+        def dyslexia_word_swap(text):
+            transformations = []
 
-            for orig, perturbed in dyslexia_map.items():
-                pattern = r"(?i)\b" + re.escape(orig) + r"\b"
-                perturbed_text = re.sub(pattern, "__TEMP__" + perturbed, perturbed_text)
-                matches = re.finditer(pattern, text)
-                for match in matches:
-                    start = match.start()
-                    end = match.end()
-                    token = text[start:end]
-                    if perturbed != token and (prob is None or random.random() < prob):
-                        transformations.append(
-                            Transformation(
-                                original_span=Span(start=start, end=end, word=token),
-                                new_span=Span(start=start, end=start + len(perturbed), word=perturbed),
-                                ignore=False
-                            )
-                        ) 
-            perturbed_text = perturbed_text.replace( "__TEMP__", "")
-            return perturbed_text, transformations
+            def replace_word(match):
+                original_word = match.group()
+                transformed_word = dyslexia_map.get(original_word, original_word)
+                if transformed_word != original_word and (prob is None or random.random() < prob):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(), end=match.end(), word=original_word),
+                            new_span=Span(
+                                start=match.start(), end=match.start() + len(transformed_word), word=transformed_word),
+                            ignore=False
+                        )
+                    )
+                    return transformed_word
+                return original_word
+
+            pattern = r'\b\w+\b'  # Matches whole words using word boundaries
+            transformed_text = re.sub(pattern, replace_word, text)
+
+            return transformed_text, transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx],_= dyslexia_swap(sample)
+                sample_list[idx], _ = dyslexia_word_swap(sample)
             else:
-                sample.test_case, transformations = dyslexia_swap(sample.original)
+                sample.test_case, transformations = dyslexia_word_swap(sample.original)
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
-        
+
         return sample_list
 
 class NumberToWord(BaseRobustness):
