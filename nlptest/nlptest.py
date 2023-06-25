@@ -291,7 +291,7 @@ class Harness:
 
         return self
 
-    def report(self, return_runtime=False, unit='ms') -> pd.DataFrame:
+    def report(self, return_runtime=False, unit='ms', format="dataframe", save_dir=None) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -356,7 +356,26 @@ class Harness:
                 self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
                     lambda x: self._runtime.total_time(unit)[x])
 
-            return self.df_report
+            
+            if format=="dataframe":
+                return self.df_report
+            elif format=="dict":
+                return self.df_report.to_dict("records")
+            elif format=="excel":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_excel(save_dir)
+            elif format=="html":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_html(save_dir)
+            elif format=="markdown":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_markdown(save_dir)
+            elif format=="text" or format=="csv":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_csv(save_dir)
+            else:
+                raise ValueError(f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
+
         else:
             df_final_report = pd.DataFrame()
             time_elapsed = {}
@@ -427,8 +446,27 @@ class Harness:
                 df_time_elapsed.set_index('model_name', inplace=True)
                 from IPython.display import display
                 display(df_time_elapsed)
-       
-            return styled_df
+
+
+        
+            if format=="dataframe":
+                return styled_df
+            elif format=="dict":
+                return styled_df.to_dict("records")
+            elif format=="excel":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_excel(save_dir)
+            elif format=="html":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_html(save_dir)
+            elif format=="markdown":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_markdown(save_dir)
+            elif format=="text" or format=="csv":
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_csv(save_dir)
+            else:
+                raise ValueError(f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """
