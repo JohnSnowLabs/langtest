@@ -1,4 +1,4 @@
-# NLP Test: Deliver Safe & Effective Language Models
+# LangTest: Deliver Safe & Effective Language Models
 
 <p align="center">
     <a href="https://github.com/JohnSnowLabs/nlptest/actions" alt="build">
@@ -28,7 +28,7 @@
 
 ## Project's Website
 
-Take a look at our official page for user documentation and examples: [nlptest.org](http://nlptest.org/) 
+Take a look at our official page for user documentation and examples: [langtest.org](http://langtest.org/) 
 
 ## Key Features
 
@@ -41,11 +41,11 @@ Take a look at our official page for user documentation and examples: [nlptest.o
 ## How To Use
 
 ```python
-# Install nlptest
-!pip install nlptest
+# Install langtest
+!pip install langtest
 
 # Import and create a Harness object
-from nlptest import Harness
+from langtest import Harness
 h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
 
 # Generate test cases, run them and view a report
@@ -53,13 +53,13 @@ h.generate().run().report()
 ```
 
 > **Note**
-> For more extended examples of usage and documentation, head over to [nlptest.org](https://www.nlptest.org)
+> For more extended examples of usage and documentation, head over to [langtest.org](https://www.langtest.org)
 
 ## Community Support
 
-- [Slack](https://www.johnsnowlabs.com/slack-redirect/) For live discussion with the NLP Test community, join the `#nlptest` channel
+- [Slack](https://www.johnsnowlabs.com/slack-redirect/) For live discussion with the LangTest community, join the `#langtest` channel
 - [GitHub](https://github.com/JohnSnowLabs/nlptest/tree/main) For bug reports, feature requests, and contributions
-- [Discussions](https://github.com/JohnSnowLabs/nlptest/discussions) To engage with other community members, share ideas, and show off how you use NLP Test!
+- [Discussions](https://github.com/JohnSnowLabs/nlptest/discussions) To engage with other community members, share ideas, and show off how you use LangTest!
 
 ## Mission
 
@@ -91,5 +91,5 @@ We would like to acknowledge all contributors of this open-source community proj
 
 ## License
 
-NLP Test is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
+LangTest is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
 
