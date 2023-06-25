@@ -1,6 +1,8 @@
 import os
 from typing import List, Union, Dict, Tuple
 
+from nlptest.utils.custom_types.output import TranslationOutput
+
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
@@ -394,6 +396,95 @@ class PretrainedModelForTextClassification(_ModelHandler):
         prediction = [max(prediction, key=lambda x: x['score'])]
         return [x["label"] for x in prediction]
 
+    def __call__(self, text: str) -> SequenceClassificationOutput:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text)
+
+class PretrainedModelForTranslation(_ModelHandler):
+
+    """"""
+
+    def __init__(self) -> None:
+        
+        if model.__class__.__name__ == 'PipelineModel':
+            model = model
+        
+        elif model.__class__.__name__ == 'LightPipeline':
+            model = model.pipeline_model
+        
+        elif model.__class__.__name__ == 'PretrainedPipeline':
+            model = model.model
+        
+        elif model.__class__.__name__ == 'NLUPipeline':
+            stages = [comp.model for comp in model.components]
+            _pipeline = nlp.Pipeline().setStages(stages)
+            tmp_df = model.spark.createDataFrame([['']]).toDF('text')
+            model = _pipeline.fit(tmp_df)
+        
+        else:
+            raise ValueError(f'Invalid SparkNLP model object: {type(model)}. '
+                             f'John Snow Labs model handler accepts: '
+                             f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
+
+
+    @classmethod
+    def load_model(cls, path) -> 'NLUPipeline':
+        """
+        Load the NER model into the `model` attribute.
+
+        Args:
+            path (str): Path to pretrained local or NLP Models Hub SparkNLP model
+        """
+        if os.path.exists(path):
+            if try_import_lib('johnsnowlabs'):
+                loaded_model = nlp.load(path=path)
+            else:
+                loaded_model = PipelineModel.load(path)
+        else:
+            if try_import_lib('johnsnowlabs'):
+                loaded_model = nlp.load(path)
+            else:
+                raise ValueError(f'johnsnowlabs is not installed. '
+                                    f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
+
+        return loaded_model
+    
+    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+        """
+        Perform predictions with SparkNLP LightPipeline on the input text.
+
+        Args:
+            text (str): Input text to perform NER on.
+            return_all_scores (bool): Option to return score for all labels.
+
+        Returns:
+            TranslationOutput: Translation output from SparkNLP LightPipeline.
+        """
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
+        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
+
+        if not return_all_scores:
+            prediction = [max(prediction, key=lambda x: x['score'])]
+
+        return TranslationOutput(
+            text=text,
+            predictions=prediction
+        )
+    
+    def predict_raw(self, text: str) -> List[str]:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform text classification on.
+
+        Returns:
+            List[str]: Predictions as a list of strings.
+        """
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
+        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
+        prediction = [max(prediction, key=lambda x: x['score'])]
+        return [x["label"] for x in prediction]
+    
     def __call__(self, text: str) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)

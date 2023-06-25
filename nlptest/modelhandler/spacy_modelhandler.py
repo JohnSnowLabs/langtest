@@ -149,3 +149,60 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
+
+class PretrainedModelForTranslation(_ModelHandler):
+    """
+    Args:
+        model: Pretrained SpaCy pipeline.
+    """
+
+    def __init__(
+            self,
+            model
+    ):
+        annotation = getattr(model, '__call__').__annotations__
+        assert (annotation.get('return') and annotation['return'] is Doc), \
+            ValueError(f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
+                       f"but pipeline returns: {annotation.get('return', None)}")
+
+        self.model = model
+
+    @classmethod
+    def load_model(cls, path: str):
+        """Load and return SpaCy pipeline"""
+        try:
+            from ...nlptest import HARNESS_CONFIG as harness_config
+            
+            config = harness_config['model_parameters']
+            tgt_lang = config.get('target_language')
+        
+            return spacy.load(path)
+        except:
+            raise ValueError(
+                f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
+
+    def predict(self, text: str, *args, **kwargs) -> str:
+        """Perform translation predictions on the input text.
+
+        Args:
+            text (str): Input text to translate.
+
+        Returns:
+            str: Translated text.
+        """
+        return self.model(text).text
+
+    def predict_raw(self, text: str) -> str:
+        """Perform translation predictions on input text.
+
+        Args:
+            text (str): Input text to translate.
+
+        Returns:
+            str: Translated text.
+        """
+        return self.model(text).text
+
+    def __call__(self, text: str, *args, **kwargs) -> str:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)
