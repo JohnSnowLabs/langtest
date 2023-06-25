@@ -52,10 +52,10 @@ article_header:
                 <div class="highlight-box">
   {% highlight python %}
 # Using PyPI
-pip install nlptest
+pip install langtest
 
 # Using Conda
-conda install -c johnsnowlabs nlptest
+conda install -c johnsnowlabs langtest
 {% endhighlight %}
                   </div>
               </div>
@@ -94,7 +94,7 @@ conda install -c johnsnowlabs nlptest
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Create a Harness object
 h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
@@ -107,7 +107,7 @@ h.generate().run().report()
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Create a Harness object
 h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
@@ -120,7 +120,7 @@ h.generate().run().report()
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ['OPENAI_API_KEY'] = ''
@@ -136,7 +136,7 @@ h.generate().run().report()
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Create a Harness object
 h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
