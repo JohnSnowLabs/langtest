@@ -1,6 +1,6 @@
 ---
 layout: landing
-title: 'NLP Test <span>Deliver Safe & Effective Language Models</span>'
+title: 'LangTest <span>Deliver Safe & Effective Language Models</span>'
 excerpt: <br> 50+ Tests Evaluating Language Models
 permalink: /
 header: true
