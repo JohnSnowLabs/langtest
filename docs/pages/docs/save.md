@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Saving Tests | NLP Docs | John Snow Labs
+seotitle: Saving Tests | LangTest | John Snow Labs
 title: Saving Tests
 permalink: /docs/pages/docs/save
 key: docs-install

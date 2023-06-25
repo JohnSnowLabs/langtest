@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Retrieving Reports | NLP Test | John Snow Labs
+seotitle: Retrieving Reports | LangTest | John Snow Labs
 title: Retrieving Reports
 permalink: /docs/pages/docs/report
 key: docs-install

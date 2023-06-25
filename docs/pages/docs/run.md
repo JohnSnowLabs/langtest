@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Running Test Cases | NLP Test | John Snow Labs
+seotitle: Running Test Cases | LangTest | John Snow Labs
 title: Running Test Cases
 permalink: /docs/pages/docs/run
 key: docs-install
