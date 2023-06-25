@@ -291,7 +291,7 @@ class Harness:
 
         return self
 
-    def report(self, return_runtime=False, unit='ms', format="dataframe", out=None) -> pd.DataFrame:
+    def report(self, return_runtime=False, unit='ms', format="dataframe", save_dir=None) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -362,17 +362,17 @@ class Harness:
             elif format=="dict":
                 return self.df_report.to_dict("records")
             elif format=="excel":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                self.df_report.to_excel(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_excel(save_dir)
             elif format=="html":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                self.df_report.to_html(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_html(save_dir)
             elif format=="markdown":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                self.df_report.to_markdown(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_markdown(save_dir)
             elif format=="text" or format=="csv":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                self.df_report.to_csv(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_csv(save_dir)
             else:
                 raise ValueError(f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
 
@@ -454,17 +454,17 @@ class Harness:
             elif format=="dict":
                 return styled_df.to_dict("records")
             elif format=="excel":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                styled_df.to_excel(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_excel(save_dir)
             elif format=="html":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                styled_df.to_html(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_html(save_dir)
             elif format=="markdown":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                styled_df.to_markdown(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_markdown(save_dir)
             elif format=="text" or format=="csv":
-                if out is None: raise ValueError("You need to set \"out\" parameter for this format.")
-                styled_df.to_csv(out)
+                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_csv(save_dir)
             else:
                 raise ValueError(f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
 
