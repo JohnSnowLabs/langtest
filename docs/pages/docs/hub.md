@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Hub | NLP Test | John Snow Labs
+seotitle: Hub | LangTest | John Snow Labs
 title: Hub
 permalink: /docs/pages/docs/hub
 key: docs-install

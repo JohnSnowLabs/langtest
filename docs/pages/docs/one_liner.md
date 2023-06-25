@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: One Liners | NLP Test | John Snow Labs
+seotitle: One Liners | LangTest | John Snow Labs
 title: One Liners
 permalink: /docs/pages/docs/one_liner
 key: docs-install
@@ -14,7 +14,7 @@ With just one line of code, you can generate and run over 50 different test type
 
 ### One Liner - NER
 
-Try out the nlptest library on the following default model-dataset combinations for NER. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
+Try out the LangTest library on the following default model-dataset combinations for NER. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://langtest.org/docs/pages/docs/harness)).
 
 <div id="one_liner_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -26,7 +26,7 @@ Try out the nlptest library on the following default model-dataset combinations 
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
@@ -39,7 +39,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
@@ -52,7 +52,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
@@ -67,7 +67,7 @@ h.generate().run().report()
 
 ### One Liner - Text Classification
 
-Try out the nlptest library on the following default model-dataset combinations for Text Classification. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://nlptest.org/docs/pages/docs/harness)).
+Try out the LangTest library on the following default model-dataset combinations for Text Classification. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://langtest.org/docs/pages/docs/harness)).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -79,7 +79,7 @@ Try out the nlptest library on the following default model-dataset combinations 
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model='en.sentiment.imdb.glove', hub='johnsnowlabs')
@@ -92,7 +92,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model='lvwerra/distilbert-imdb', hub='huggingface')
@@ -105,7 +105,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model='textcat_imdb', hub='spacy')
@@ -121,7 +121,7 @@ h.generate().run().report()
 
 ### One Liner - Question Answering
 
-Try out the nlptest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data).
+Try out the LangTest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](https://langtest.org/docs/pages/docs/data).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -131,7 +131,7 @@ Try out the nlptest library on the following default model-dataset combinations 
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ['OPENAI_API_KEY'] = ''
@@ -150,7 +150,7 @@ h.generate().run().report()
 
 ### One Liner - Summarization
 
-Try out the nlptest library on the following default model-dataset combinations for Summarization. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data).
+Try out the LangTest library on the following default model-dataset combinations for Summarization. To get a list of valid dataset options, please navigate to the [Data Input docs](https://langtest.org/docs/pages/docs/data).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -160,7 +160,7 @@ Try out the nlptest library on the following default model-dataset combinations 
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ['OPENAI_API_KEY'] = ''
@@ -178,7 +178,7 @@ h.generate().run().report()
 
 ### One Liner - Toxicity
 
-Try out the nlptest library on the following default model-dataset combinations for Toxicity. To get a list of valid dataset options, please navigate to the [Data Input docs](https://nlptest.org/docs/pages/docs/data).
+Try out the LangTest library on the following default model-dataset combinations for Toxicity. To get a list of valid dataset options, please navigate to the [Data Input docs](https://langtest.org/docs/pages/docs/data).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -188,7 +188,7 @@ Try out the nlptest library on the following default model-dataset combinations 
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ['OPENAI_API_KEY'] = ''
@@ -216,7 +216,7 @@ To compare different models (either from same or different hubs) on the same tas
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from nlptest import Harness
+from langtest import Harness
 
 # Define the dictionary
 model_comparison_dict = {
