@@ -11,7 +11,7 @@ article_header:
      url: /docs/pages/docs/install   
    - text: '<i class="fab fa-github"></i>Star on GitHub'
      type: full_white
-     url: https://github.com/JohnSnowLabs/nlptest 
+     url: https://github.com/JohnSnowLabs/langtest 
    - text: '<i class="fab fa-slack-hash"></i> Slack'
      type: trans
      url: https://spark-nlp.slack.com/archives/C051A5XG6CU   
