@@ -357,7 +357,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
             else:
                 raise ValueError(f'johnsnowlabs is not installed. '
                                  f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
-
+ 
         return loaded_model
 
     def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
@@ -449,7 +449,7 @@ class PretrainedModelForTranslation(_ModelHandler):
 
         return loaded_model
     
-    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+    def predict(self, text: str, *args, **kwargs) -> TranslationOutput:
         """
         Perform predictions with SparkNLP LightPipeline on the input text.
 
@@ -460,15 +460,11 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             TranslationOutput: Translation output from SparkNLP LightPipeline.
         """
-        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
-        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
-
-        if not return_all_scores:
-            prediction = [max(prediction, key=lambda x: x['score'])]
+        prediction_metadata = self.model.fullAnnotate(text)[0]['translation']
+        prediction = [x for x in prediction_metadata.result()]
 
         return TranslationOutput(
-            text=text,
-            predictions=prediction
+            translation_text=' '.join(prediction)
         )
     
     def predict_raw(self, text: str) -> List[str]:
@@ -480,10 +476,9 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             List[str]: Predictions as a list of strings.
         """
-        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][0].metadata
-        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
-        prediction = [max(prediction, key=lambda x: x['score'])]
-        return [x["label"] for x in prediction]
+        prediction_metadata = self.model.fullAnnotate(text)[0]['translation']
+        prediction = [x for x in prediction_metadata.result()]
+        return prediction
     
     def __call__(self, text: str) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
