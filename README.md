@@ -1,15 +1,15 @@
 # LangTest: Deliver Safe & Effective Language Models
 
 <p align="center">
-    <a href="https://github.com/JohnSnowLabs/nlptest/actions" alt="build">
-        <img src="https://github.com/JohnSnowLabs/nlptest/workflows/build/badge.svg" /></a>
-    <a href="https://github.com/JohnSnowLabs/nlptest/releases" alt="Current Release Version">
+    <a href="https://github.com/JohnSnowLabs/langtest/actions" alt="build">
+        <img src="https://github.com/JohnSnowLabs/langtest/workflows/build/badge.svg" /></a>
+    <a href="https://github.com/JohnSnowLabs/langtest/releases" alt="Current Release Version">
         <img src="https://img.shields.io/github/v/release/JohnSnowLabs/nlptest.svg?style=flat-square&logo=github" /></a>
-    <a href="https://github.com/JohnSnowLabs/nlptest/blob/master/LICENSE" alt="License">
+    <a href="https://github.com/JohnSnowLabs/langtest/blob/master/LICENSE" alt="License">
         <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" /></a>
-    <a href="https://pypi.org/project/nlptest/" alt="PyPi downloads">
+    <a href="https://pypi.org/project/langtest/" alt="PyPi downloads">
         <img src="https://static.pepy.tech/personalized-badge/nlptest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
-    <a href="https://anaconda.org/conda-forge/nlptest" alt="Conda Version">
+    <a href="https://anaconda.org/conda-forge/langtest" alt="Conda Version">
         <img src="https://img.shields.io/conda/vn/conda-forge/nlptest.svg?style=flat-square&color=blue&logo=conda-forge" /></a>
 </p>
 
@@ -24,7 +24,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/nlptest/main/docs/assets/images/nlptest/nlptest_flow_graphic.jpeg)
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/docs/assets/images/langtest/nlptest_flow_graphic.jpeg)
 
 ## Project's Website
 
@@ -58,8 +58,8 @@ h.generate().run().report()
 ## Community Support
 
 - [Slack](https://www.johnsnowlabs.com/slack-redirect/) For live discussion with the LangTest community, join the `#langtest` channel
-- [GitHub](https://github.com/JohnSnowLabs/nlptest/tree/main) For bug reports, feature requests, and contributions
-- [Discussions](https://github.com/JohnSnowLabs/nlptest/discussions) To engage with other community members, share ideas, and show off how you use LangTest!
+- [GitHub](https://github.com/JohnSnowLabs/langtest/tree/main) For bug reports, feature requests, and contributions
+- [Discussions](https://github.com/JohnSnowLabs/langtest/discussions) To engage with other community members, share ideas, and show off how you use LangTest!
 
 ## Mission
 
@@ -85,11 +85,11 @@ Feel free to clone the repo and submit pull-requests! You can also contribute by
 
 We would like to acknowledge all contributors of this open-source community project. 
 
-<a href="https://github.com/johnsnowlabs/nlptest/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=johnsnowlabs/nlptest" />
+<a href="https://github.com/johnsnowlabs/langtest/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=johnsnowlabs/langtest" />
 </a>
 
 ## License
 
-LangTest is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
+LangTest is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/langtest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
 
