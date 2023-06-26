@@ -16,6 +16,7 @@ if try_import_lib('johnsnowlabs'):
 
 SUPPORTED_SPARKNLP_NER_MODELS = []
 SUPPORTED_SPARKNLP_CLASSIFERS = []
+SUPPORTED_SPARKNLP_TRANSLATION = []
 if try_import_lib("sparknlp"):
     from sparknlp.annotator import *
     from sparknlp.base import LightPipeline
@@ -45,6 +46,10 @@ if try_import_lib("sparknlp"):
         RoBertaForSequenceClassification,
         XlmRoBertaForSequenceClassification,
         XlnetForSequenceClassification,
+    ])
+    SUPPORTED_SPARKNLP_TRANSLATION.extend([
+        MarianTransformer,
+        
     ])
 
 if try_import_lib("sparknlp_jsl"):
@@ -426,8 +431,25 @@ class PretrainedModelForTranslation(_ModelHandler):
                              f'John Snow Labs model handler accepts: '
                              f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
         
-        self.model = LightPipeline(model)
+        _translator = None
+        for annotator in model.stages:
+            if self.is_translator(annotator):
+                _translator = annotator
+                break
 
+        if _translator is None:
+            raise ValueError('Invalid PipelineModel! There should be at least one translator component.')
+
+        self.output_col = _translator.getOutputCol()
+        self.model = LightPipeline(model)
+    
+    @staticmethod
+    def is_translator(model_instance) -> bool:
+        """Check translator model instance is supported by nlptest"""
+        for model in SUPPORTED_SPARKNLP_TRANSLATION:
+            if isinstance(model_instance, model):
+                return True
+        return False
 
     @classmethod
     def load_model(cls, path) -> 'NLUPipeline':
@@ -463,7 +485,7 @@ class PretrainedModelForTranslation(_ModelHandler):
             TranslationOutput: Translation output from SparkNLP LightPipeline.
         """
         prediction_metadata = self.model.fullAnnotate(text)[0]['translation']
-        prediction = [x for x in prediction_metadata.result()]
+        prediction = [x.result for x in prediction_metadata]
 
         return TranslationOutput(
             translation_text=' '.join(prediction)
@@ -473,15 +495,15 @@ class PretrainedModelForTranslation(_ModelHandler):
         """Perform predictions on the input text.
 
         Args:
-            text (str): Input text to perform text classification on.
+            text (str): Input text to perform translation on.
 
         Returns:
             List[str]: Predictions as a list of strings.
         """
         prediction_metadata = self.model.fullAnnotate(text)[0]['translation']
-        prediction = [x for x in prediction_metadata.result()]
+        prediction = [x.result for x in prediction_metadata]
         return prediction
     
-    def __call__(self, text: str) -> SequenceClassificationOutput:
+    def __call__(self, text: str) -> TranslationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
