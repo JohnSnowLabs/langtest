@@ -666,8 +666,8 @@ class TranslationSample(BaseModel):
 
         config = harness_config['tests']['defaults']
         metric = load('rouge')
-        predictions = [self.expected_results]
-        references = [self.actual_results]
+        predictions = [self.expected_results.translation_text]
+        references = [self.actual_results.translation_text]
         results = metric.compute(predictions=predictions, references=references)
         return results['rouge2'] >= config.get('threshold', 0.50), results['rouge2']
      
