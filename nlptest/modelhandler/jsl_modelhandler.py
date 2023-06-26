@@ -404,7 +404,7 @@ class PretrainedModelForTranslation(_ModelHandler):
 
     """"""
 
-    def __init__(self) -> None:
+    def __init__(self, model) -> None:
         
         if model.__class__.__name__ == 'PipelineModel':
             model = model
