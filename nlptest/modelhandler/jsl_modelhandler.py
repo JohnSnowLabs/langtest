@@ -425,6 +425,8 @@ class PretrainedModelForTranslation(_ModelHandler):
             raise ValueError(f'Invalid SparkNLP model object: {type(model)}. '
                              f'John Snow Labs model handler accepts: '
                              f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
+        
+        self.model = LightPipeline(model)
 
 
     @classmethod
