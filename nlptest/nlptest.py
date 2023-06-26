@@ -129,12 +129,13 @@ class Harness:
                 data.get('target_column', 'label'),
                 data.get('split', 'test'),
                 data.get('subset', None)
-            ) if data is not None else None  
+            ) if data is not None else None
             if model == 'textcat_imdb':
-                model = resource_filename("nlptest", "data/textcat_imdb")      
+                model = resource_filename("nlptest", "data/textcat_imdb")
             else:
-                raise ValueError(f"Unsupported model '{model}'! Only 'textcat_imdb' is supported.")
-            
+                raise ValueError(
+                    f"Unsupported model '{model}'! Only 'textcat_imdb' is supported.")
+
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "
@@ -397,15 +398,14 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
-                
-                
+
                 if return_runtime:
                     if k not in time_elapsed:
-                        time_elapsed[k] = df_report['model_name'].apply(lambda x: self._runtime.multi_model_total_time(unit)[x])
-             
+                        time_elapsed[k] = df_report['model_name'].apply(
+                            lambda x: self._runtime.multi_model_total_time(unit)[x])
+
                 df_final_report = pd.concat([df_final_report, df_report])
-            
-            
+
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
             pivot_minimum_pass_rate_df = df_final_report.pivot_table(
@@ -413,24 +413,27 @@ class Harness:
 
             df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
-            
+
             pivot_df = df_final_report.pivot_table(
                 index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
 
             def color_cells(series):
                 res = []
                 for x in series.index:
-                    res.append(df_final_report[(df_final_report["test_type"]==series.name) & (df_final_report["model_name"]==x)]["pass"].all())
+                    res.append(df_final_report[(df_final_report["test_type"] == series.name) & (
+                        df_final_report["model_name"] == x)]["pass"].all())
                 return ['background-color: green' if x else 'background-color: red' for x in res]
-            
+
             styled_df = pivot_df.style.apply(color_cells)
             if return_runtime:
-                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
-                df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=['model_name', f'time_elapsed ({unit})'])
+                time_elapsed_mean = {k: v.mean()
+                                     for k, v in time_elapsed.items()}
+                df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=[
+                                               'model_name', f'time_elapsed ({unit})'])
                 df_time_elapsed.set_index('model_name', inplace=True)
                 from IPython.display import display
                 display(df_time_elapsed)
-       
+
             return styled_df
 
     def generated_results(self) -> Optional[pd.DataFrame]:
@@ -635,12 +638,17 @@ class Harness:
 
         TestFactory.call_add_custom_bias(data, test_name, append)
 
-    def edit(self, **kwargs):
-        """ Edit the testcacses with panel interface"""
+    def edit(self, output_path: str = None, **kwargs):
+        """ testcases is exported to a csv file and can be edited. 
+        The edited file can be imported back to the harness"""
+        self.testcases().to_csv(output_path, index=False)
 
-        df_widget = pn.widgets.DataFrame(
-            self.testcases(),
-            autosize_mode='fit_viewport'
-            )
-        return df_widget
+        return self
 
+    def import_testcases(self, input_path: str, **kwargs):
+        """ testcases is imported from a csv file and can be edited.
+        The edited file can be imported back to the harness"""
+
+        self._testcases = DataFactory(input_path, task=self.task).load()
+
+        return self
