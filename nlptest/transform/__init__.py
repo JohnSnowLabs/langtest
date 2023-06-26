@@ -370,7 +370,7 @@ class RobustnessTestFactory(ITests):
                 transformed_samples = []
                 for key, perturbations in params.items():
                     if key.startswith("perturbations"):
-                        
+
                         perturbation_number = key[len("perturbations"):]
 
                         if "american_to_british" in perturbations:
@@ -387,6 +387,8 @@ class RobustnessTestFactory(ITests):
                                 sample.test_type = test_type
                         transformed_samples.extend(transformed_samples_perturbation)
 
+                    elif key != "min_pass_rate":
+                        raise ValueError(f"Invalid perturbation {key} in multiple_perturbations. Please use perturbations1, perturbations2, perturbations3 ...")
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
