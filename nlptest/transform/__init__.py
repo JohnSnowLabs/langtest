@@ -365,6 +365,8 @@ class RobustnessTestFactory(ITests):
                                 sample.test_type = test_type
 
                         transformed_samples.extend(transformed_samples_perturbation)
+                    elif key != "min_pass_rate":
+                        raise ValueError(f"Invalid perturbation {key} in multiple_perturbations.Please use perturbations1, perturbations2, ...")
            
             elif test_name == 'multiple_perturbations' and TestFactory.task == "text-classification":
                 transformed_samples = []
@@ -389,6 +391,10 @@ class RobustnessTestFactory(ITests):
 
                     elif key != "min_pass_rate":
                         raise ValueError(f"Invalid perturbation {key} in multiple_perturbations. Please use perturbations1, perturbations2, perturbations3 ...")
+                     
+            elif test_name == 'multiple_perturbations' and TestFactory.task == "ner":
+                raise ValueError(f"multiple_perturbations test is not supported for NER task")
+            
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
