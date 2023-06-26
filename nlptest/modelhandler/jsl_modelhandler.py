@@ -282,7 +282,7 @@ class PretrainedModelForNER(_ModelHandler):
 
     @staticmethod
     def is_ner_annotator(model_instance) -> bool:
-        """Check ner model instance is supported by nlptest"""
+        """Check ner model instance is supported by langtest"""
         for model in SUPPORTED_SPARKNLP_NER_MODELS:
             if isinstance(model_instance, model):
                 return True
@@ -337,7 +337,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     @staticmethod
     def is_classifier(model_instance) -> bool:
-        """Check classifier model instance is supported by nlptest"""
+        """Check classifier model instance is supported by langtest"""
         for model in SUPPORTED_SPARKNLP_CLASSIFERS:
             if isinstance(model_instance, model):
                 return True
@@ -445,7 +445,7 @@ class PretrainedModelForTranslation(_ModelHandler):
     
     @staticmethod
     def is_translator(model_instance) -> bool:
-        """Check translator model instance is supported by nlptest"""
+        """Check translator model instance is supported by langtest"""
         for model in SUPPORTED_SPARKNLP_TRANSLATION:
             if isinstance(model_instance, model):
                 return True
@@ -454,7 +454,7 @@ class PretrainedModelForTranslation(_ModelHandler):
     @classmethod
     def load_model(cls, path) -> 'NLUPipeline':
         """
-        Load the NER model into the `model` attribute.
+        Load the translation model into the `model` attribute.
 
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
@@ -478,8 +478,7 @@ class PretrainedModelForTranslation(_ModelHandler):
         Perform predictions with SparkNLP LightPipeline on the input text.
 
         Args:
-            text (str): Input text to perform NER on.
-            return_all_scores (bool): Option to return score for all labels.
+            text (str): Input text to perform translation on.
 
         Returns:
             TranslationOutput: Translation output from SparkNLP LightPipeline.

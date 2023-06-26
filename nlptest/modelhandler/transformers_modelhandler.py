@@ -253,7 +253,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
 class PretrainedModelForTranslation(_ModelHandler):
     """
     Args:
-        model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
     """
 
     def __init__(
@@ -263,7 +263,7 @@ class PretrainedModelForTranslation(_ModelHandler):
         """
         Attributes:
             model (transformers.pipeline.Pipeline):
-                Loaded NER pipeline for predictions.
+                Loaded translation pipeline for predictions.
         """
 
         assert isinstance(model, Pipeline), \
@@ -298,14 +298,12 @@ class PretrainedModelForTranslation(_ModelHandler):
         """Perform predictions on the input text.
 
         Args:
-            text (str): Input text to perform NER on.
+            text (str): Input text to perform translation on.
             kwargs: Additional keyword arguments.
 
-        Keyword Args:
-            group_entities (bool): Option to group entities.
 
         Returns:
-            NEROutput: A list of named entities recognized in the input text.
+            TranslationOutput: Output model for translation tasks
         """
         prediction = self.model(text, **kwargs)[0]['translation_text']
         return TranslationOutput(
