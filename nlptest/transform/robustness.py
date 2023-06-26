@@ -2,7 +2,7 @@ import asyncio
 import random
 import re
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional,Union
+from typing import Dict, List, Optional
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives, dyslexia_map)
 from ..utils.custom_types import Sample, Span, Transformation
@@ -94,7 +94,7 @@ class UpperCase(BaseRobustness):
     alias_name = "uppercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[Union[float, int]] = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Transform a list of strings with uppercase robustness
         Args:
             sample_list: List of sentences to apply robustness.
@@ -122,7 +122,7 @@ class LowerCase(BaseRobustness):
     alias_name = "lowercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[Union[float, int]] = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Transform a list of strings with lowercase robustness
         Args:
             sample_list: List of sentences to apply robustness.
@@ -150,7 +150,7 @@ class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[Union[float, int]] = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Transform a list of strings with titlecase robustness
         Args:
             sample_list: List of sentences to apply robustness.
