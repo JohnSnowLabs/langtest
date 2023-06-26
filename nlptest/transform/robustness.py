@@ -95,31 +95,25 @@ class UpperCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
-        """
-        Transform a list of strings with uppercase robustness.
-
+        """Transform a list of strings with uppercase robustness
         Args:
-            sample_list (List[Sample]): List of sentences to apply robustness.
-            prob (Optional[float]): The probability controlling the proportion of words to be converted to uppercase.
-                If None, no threshold is applied.
-
+            sample_list: List of sentences to apply robustness.
+            prob: The probability of transforming each word.
         Returns:
-            List[Sample]: List of sentences with uppercase robustness applied.
+            List of sentences that uppercase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                transformed_words = [
-                    word.upper() if prob is None or random.random() < prob else word
-                    for word in words
-                ]
+                num_transform_words = int(prob * len(words))
+                transformed_indices = random.sample(range(len(words)), num_transform_words)
+                transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                transformed_words = [
-                    word.upper() if prob is None or random.random() < prob else word
-                    for word in words
-                ]
+                num_transform_words = int(prob * len(words))
+                transformed_indices = random.sample(range(len(words)), num_transform_words)
+                transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
                 sample.category = "robustness"
         return sample_list
