@@ -88,30 +88,28 @@ class BaseRobustness(ABC):
             cls.run(sample_list, model, **kwargs))
         return created_task
 
-
-
 class UpperCase(BaseRobustness):
     alias_name = "uppercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Transform a list of strings with uppercase robustness
+    def transform(sample_list: List[Sample], prob: float = None) -> List[Sample]:
+        """Transform a list of strings with uppercase robustness.
         Args:
             sample_list: List of sentences to apply robustness.
-            prob: The probability of transforming each word.
+            prob: Probability of perturbing each word. If None, all words are perturbed.
         Returns:
-            List of sentences that uppercase robustness is applied.
+            List of sentences with uppercase robustness applied.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -122,24 +120,24 @@ class LowerCase(BaseRobustness):
     alias_name = "lowercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Transform a list of strings with lowercase robustness
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+        """Transform a list of strings with lowercase robustness.
         Args:
             sample_list: List of sentences to apply robustness.
-            prob: The probability of transforming each word.
+            prob: Probability of perturbing each word. If None, all words are perturbed.
         Returns:
-            List of sentences that lowercase robustness is applied.
+            List of sentences with lowercase robustness applied.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -150,24 +148,24 @@ class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Transform a list of strings with titlecase robustness
+    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+        """Transform a list of strings with titlecase robustness.
         Args:
             sample_list: List of sentences to apply robustness.
-            prob: The probability of transforming each word.
+            prob: Probability of perturbing each word. If None, all words are perturbed.
         Returns:
-            List of sentences that titlecase robustness is applied.
+            List of sentences with titlecase robustness applied.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
