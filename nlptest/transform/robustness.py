@@ -123,70 +123,56 @@ class LowerCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
-        """
-        Transform a list of strings with lowercase robustness.
-
+        """Transform a list of strings with lowercase robustness
         Args:
-            sample_list (List[Sample]): List of sentences to apply robustness.
-            prob (Optional[float]): The probability controlling the proportion of words to be converted to lowercase.
-                If None, no threshold is applied.
-
+            sample_list: List of sentences to apply robustness.
+            prob: The probability of transforming each word.
         Returns:
-            List[Sample]: List of sentences with lowercase robustness applied.
+            List of sentences that lowercase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                transformed_words = [
-                    word.lower() if prob is None or random.random() < prob else word
-                    for word in words
-                ]
+                num_transform_words = int(prob * len(words))
+                transformed_indices = random.sample(range(len(words)), num_transform_words)
+                transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                transformed_words = [
-                    word.lower() if prob is None or random.random() < prob else word
-                    for word in words
-                ]
+                num_transform_words = int(prob * len(words))
+                transformed_indices = random.sample(range(len(words)), num_transform_words)
+                transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
                 sample.category = "robustness"
         return sample_list
-
 
 class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
-        """
-        Transforms the given sample list with titlecase robustness.
-
+        """Transform a list of strings with titlecase robustness
         Args:
-            sample_list (List[Sample]): The list of samples to transform.
-            prob (Optional[float]): The probability controlling the proportion of words to be converted to titlecase.
-                If None, no threshold is applied.
-
+            sample_list: List of sentences to apply robustness.
+            prob: The probability of transforming each word.
         Returns:
-            List[Sample]: The transformed list of samples.
+            List of sentences that titlecase robustness is applied.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                transformed_words = [
-                    word.title() if prob is None or random.random() < prob else word
-                    for word in words
-                ]
+                num_transform_words = int(prob * len(words))
+                transformed_indices = random.sample(range(len(words)), num_transform_words)
+                transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                transformed_words = [
-                    word.title() if prob is None or random.random() < prob else word
-                    for word in words
-                ]
+                num_transform_words = int(prob * len(words))
+                transformed_indices = random.sample(range(len(words)), num_transform_words)
+                transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
                 sample.category = "robustness"
         return sample_list
-
 
 class AddPunctuation(BaseRobustness):
     alias_name = 'add_punctuation'
