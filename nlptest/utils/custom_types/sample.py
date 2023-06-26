@@ -675,8 +675,8 @@ class TranslationSample(BaseModel):
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split('-')[0].lower()
-        self.expected_results = model(text=self.original)[0]['translation_text']
-        self.actual_results = model(text=self.test_case)[0]['translation_text']
+        self.expected_results = model(text=self.original)
+        self.actual_results = model(text=self.test_case)
        
         return True
         
