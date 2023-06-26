@@ -307,8 +307,10 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             NEROutput: A list of named entities recognized in the input text.
         """
-        predictions = self.model(text, **kwargs)
-        return predictions
+        prediction = self.model(text, **kwargs)[0]['translation_text']
+        return TranslationOutput(
+            translation_text = prediction
+        )
     
     def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Alias of the 'predict' method"""
