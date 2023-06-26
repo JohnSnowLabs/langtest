@@ -123,7 +123,7 @@ class TranslationOutput(BaseModel):
     """
     translation_text: str  # Changed from List[str] to str
 
-    def to_list(self) -> List[str]:
+    def to_str_list(self) -> List[str]:
         """
         Returns the translation_text as a list of strings.
         """
