@@ -70,6 +70,13 @@ class RobustnessTestCase(unittest.TestCase):
         for sample in transformed_samples:
             self.assertTrue(sample.test_case.isupper())
 
+    def test_custom_proportion_uppercase(self) -> None:
+        """"""
+        transformed_samples = UpperCase.transform(self.sentences, prob = 0.5)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
     def test_lowercase(self) -> None:
         """"""
         transformed_samples = LowerCase.transform(self.sentences)
@@ -77,6 +84,13 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertEqual(len(self.sentences), len(transformed_samples))
         for sample in transformed_samples:
             self.assertTrue(sample.test_case.islower())
+
+    def test_custom_proportion_lowercase(self) -> None:
+        """"""
+        transformed_samples = LowerCase.transform(self.sentences, prob = 0.3)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
 
     def test_titlecase(self) -> None:
         """"""
@@ -196,5 +210,3 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
-
-            
