@@ -89,27 +89,33 @@ class BaseRobustness(ABC):
         return created_task
 
 class UpperCase(BaseRobustness):
+    """A class for transforming text samples to uppercase."""
+
     alias_name = "uppercase"
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Transform a list of strings with uppercase robustness.
+        """
+        Transform the text samples in the given sample list to uppercase.
+
         Args:
-            sample_list: List of sentences to apply robustness.
-            prob: Probability of perturbing each word. If None, all words are perturbed.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of transforming each word to uppercase.
+                Defaults to 1.0, which means all words will be transformed.
+
         Returns:
-            List of sentences with uppercase robustness applied.
+            List[Sample]: The transformed sample list with text samples in uppercase.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -117,27 +123,33 @@ class UpperCase(BaseRobustness):
         return sample_list
 
 class LowerCase(BaseRobustness):
+    """A class for transforming text samples to lowercase."""
+
     alias_name = "lowercase"
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Transform a list of strings with lowercase robustness.
+        """
+        Transform the text samples in the given sample list to lowercase.
+
         Args:
-            sample_list: List of sentences to apply robustness.
-            prob: Probability of perturbing each word. If None, all words are perturbed.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of transforming each word to lowercase.
+                                    Defaults to 1.0, which means all words will be transformed.
+
         Returns:
-            List of sentences with lowercase robustness applied.
+            List[Sample]: The transformed sample list with text samples in lowercase.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -145,27 +157,33 @@ class LowerCase(BaseRobustness):
         return sample_list
 
 class TitleCase(BaseRobustness):
+    """A class for transforming text samples to titlecase."""
+
     alias_name = 'titlecase'
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Transform a list of strings with titlecase robustness.
+        """
+        Transform the text samples in the given sample list to title case.
+
         Args:
-            sample_list: List of sentences to apply robustness.
-            prob: Probability of perturbing each word. If None, all words are perturbed.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of transforming each word to title case.
+                                    Defaults to 1.0, which means all words will be transformed.
+
         Returns:
-            List of sentences with titlecase robustness applied.
+            List[Sample]: The transformed sample list with text samples in title case.
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = num_transform_words = int(prob * len(words))
+                num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -173,20 +191,25 @@ class TitleCase(BaseRobustness):
         return sample_list
 
 class AddPunctuation(BaseRobustness):
+    """A class for adding punctuation to text samples."""
+
     alias_name = 'add_punctuation'
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
-        """Add punctuation at the end of the string, if there is punctuation at the end skip it.
+        """
+        Add punctuation to the text samples in the given sample list.
 
         Args:
-            sample_list: List of sentences to apply robustness.
-            whitelist: Whitelist for punctuations to add to sentences.
-            prob: The probability controlling the proportion of sentences to which punctuation is added. If None, no threshold is applied.
-        Returns:
-            List of sentences with punctuation added at the end.
-        """
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of adding punctuation to each sample.
+                                    Defaults to 1.0, which means all words will be transformed.
+            whitelist (Optional[List[str]]): A list of punctuation characters to consider when adding punctuation.
+                If None, the default whitelist ['!', '?', ',', '.', '-', ':', ';'] will be used. Defaults to None.
 
+        Returns:
+            List[Sample]: The transformed sample list with added punctuation.
+        """
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
 
@@ -227,20 +250,25 @@ class AddPunctuation(BaseRobustness):
         return sample_list
 
 class StripPunctuation(BaseRobustness):
+    """A class for stripping punctuation to text samples."""
+
     alias_name = "strip_punctuation"
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
-        """Strip punctuation from the string, if there isn't punctuation at the end skip it.
+        """
+        Strip punctuation from the text samples in the given sample list.
 
         Args:
-            sample_list: List of sentences to apply robustness.
-            whitelist: Whitelist for punctuations to strip from sentences.
-            prob: The probability controlling the proportion of sentences from which punctuation is stripped. If None, no threshold is applied.
-        Returns:
-            List of sentences with stripped punctuation.
-        """
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of stripping punctuation from each sample.
+                                    Defaults to 1.0, which means all words will be transformed.
+            whitelist (Optional[List[str]]): A list of punctuation characters to consider when stripping punctuation.
+                If None, the default whitelist ['!', '?', ',', '.', '-', ':', ';'] will be used. Defaults to None.
 
+        Returns:
+            List[Sample]: The transformed sample list with punctuation stripped.
+        """
         if whitelist is None:
             whitelist = ['!', '?', ',', '.', '-', ':', ';']
 
@@ -279,18 +307,23 @@ class StripPunctuation(BaseRobustness):
         return sample_list
 
 class AddTypo(BaseRobustness):
+    """A class for adding typos to text samples."""
+
     alias_name = 'add_typo'
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Add typos to the sentences using keyboard typo and swap typo.
-        Args:
-            sample_list: List of sentences to apply robustness.
-            prob: The probability controlling the proportion of sentences to which typos are added. If None, no threshold is applied.
-        Returns:
-            List of sentences with introduced typos.
         """
+        Add typos to the text samples in the given sample list.
 
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of adding a typo to each sample.
+                                    Defaults to 1.0, which means all words will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list with added typos.
+        """
         def keyboard_typo(string):
             if prob is not None and random.random() >= prob:
                 return string
@@ -341,6 +374,8 @@ class AddTypo(BaseRobustness):
         return sample_list
     
 class SwapEntities(BaseRobustness):
+    """A class for swapping entities in text samples."""
+
     alias_name = 'swap_entities'
     supported_tasks = ["ner"]
 
@@ -352,17 +387,19 @@ class SwapEntities(BaseRobustness):
             terminology: Dict[str, List[str]] = None,
             
     ) -> List[Sample]:
-        """Swaps named entities with the new one from the terminology extracted from passed data.
+        """
+        Swap entities in the text samples of the given sample list.
 
         Args:
-            sample_list: List of sentences to process.
-            labels: Corresponding labels to make changes according to sentences.
-            terminology: Dictionary of entities and corresponding list of words.
-            prob: Probability of replacing entities with the terminology.
-        Returns:
-            List of sentences that entities swapped with the terminology.
-        """
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of swapping entities in each sample.
+                                    Defaults to 1.0, which means all eligible samples will have their entities swapped.
+            labels (List[List[str]]):  Corresponding labels to make changes according to sentences.
+            terminology (Dict[str, List[str]]): Dictionary of entities and corresponding list of words.
 
+        Returns:
+            List[Sample]: The transformed sample list with entities swapped.
+        """
         if terminology is None:
             raise ValueError(
                 'In order to generate test cases for swap_entities, terminology should be passed!')
@@ -428,17 +465,23 @@ class SwapEntities(BaseRobustness):
         return sample_list
 
 class ConvertAccent(BaseRobustness):
+    """A class for converting accents in text samples."""
+
     alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
     def transform(sample_list: List[Sample],prob: Optional[float] = 1.0, accent_map: Dict[str, str] = None) -> List[Sample]:
-        """Converts input sentences using a conversion dictionary
+        """
+        Converts accents in the input sentences using a conversion dictionary.
+
         Args:
-            sample_list: List of sentences to process.
-            accent_map: Dictionary with conversion terms.
-            prob: The probability controlling the proportion of sentences to which accent conversion is applied. If None, no threshold is applied.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of applying accent conversion to each sample.
+                                    Defaults to 1.0, which means all samples will have accents converted.
+            accent_map (Dict[str, str]): A dictionary with conversion terms mapping source accents to target accents.
+
         Returns:
-            List of sentences that are perturbed with accent conversion.
+            List[Sample]: The transformed sample list with accents converted.
         """
         def convert_accent(string: str, accent_map: Dict[str, str]) -> str:
             tokens = set(string.split(' '))
@@ -484,6 +527,8 @@ class ConvertAccent(BaseRobustness):
         return sample_list
 
 class AddContext(BaseRobustness):
+    """A class for adding context to text samples."""
+
     alias_name = 'add_context'
 
     @staticmethod
@@ -495,18 +540,20 @@ class AddContext(BaseRobustness):
         strategy: str = None,
        
     ) -> List[Sample]:
-        """Converts input sentences using a conversion dictionary.
+        """
+        Adds context to the input sentences.
+
         Args:
-            sample_list: List of sentences to process.
-            starting_context: List of terms (context) to input at the start of sentences.
-            ending_context: List of terms (context) to input at the end of sentences.
-            strategy: Config method to adjust where the context tokens are added. Options: 'start', 'end', or 'combined'.
-            prob: The probability controlling the proportion of sentences to which context is added. If None, no threshold is applied.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of adding context to each sample.
+                                     Defaults to 1.0, which means all samples will have context added.
+            starting_context (Optional[List[str]]): A list of terms (context) to be added at the start of sentences.
+            ending_context (Optional[List[str]]): A list of terms (context) to be added at the end of sentences.
+            strategy (str): Config method to adjust where the context tokens are added. Options: 'start', 'end', or 'combined'.
 
         Returns:
-            List[Sample]: Transformed list of samples.
+            List[Sample]: The transformed sample list with context added.
         """
-
         def context(string, strategy):
             possible_methods = ['start', 'end', 'combined']
             if strategy is None:
@@ -567,20 +614,23 @@ class AddContext(BaseRobustness):
 
 
 class AddContraction(BaseRobustness):
+    """A class for adding contractions to text samples."""
+
     alias_name = 'add_contraction'
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Converts input sentences using a conversion dictionary.
+        """
+        Adds contractions to the input sentences.
+
         Args:
-            sample_list: List of sentences to process.
-            prob (Optional[float]): The probability controlling the proportion of contractions to be added.
-                If None, no threshold is applied.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of adding contractions to each sample.
+                                    Defaults to 1.0, which means all samples will have context added.
 
         Returns:
-            List[Sample]: Transformed list of samples.
+            List[Sample]: The transformed sample list with contractions added.
         """
-
         def custom_replace(match):
             """
             Regex replace for contraction.
@@ -641,18 +691,22 @@ class AddContraction(BaseRobustness):
         return sample_list
 
 class DyslexiaWordSwap(BaseRobustness):
+    """A class for simulating dyslexic word swapping."""
+
     alias_name = "dyslexia_word_swap"
     
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """Converts the string by changing some similar words from the dictionary (dyslexia_map) and outputs a string. 
-           Args:
-               sample_list: List of sentences to process.
-               prob : The probability controlling the proportion of words to be perturbed.
-                   If None, no threshold is applied.
+        """
+        Converts the input sentences by changing some similar words from the dyslexia map and outputs a new string.
 
-           Returns:
-               List[Sample]: Transformed list of samples.
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of adding dyslexia words to each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list with dyslexia words added.
         """
         def dyslexia_word_swap(text):
             transformations = []
@@ -690,22 +744,24 @@ class DyslexiaWordSwap(BaseRobustness):
         return sample_list
 
 class NumberToWord(BaseRobustness):
+    """A class for converting numbers to words."""
+
     alias_name = "number_to_word"
     num = ConvertNumberToWord()
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
-        Transform a list of strings to their equivalent verbal representation
-        of numbers present in the string.
-        Args:
-            sample_list: List of sentences to apply robustness.
-            prob (Optional[float]): The probability controlling the proportion of numbers to be perturbed.
-                If None, no threshold is applied.
-        Returns:
-            List of sentences that have numbers in their verbal representation.
-        """
+        Converts numbers in the input text to their word representations.
 
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of converting numbers to words in each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list.
+        """
         def convert_numbers(regex, text):
             results = []
             trans = []
@@ -747,20 +803,22 @@ class NumberToWord(BaseRobustness):
 
 
 class AddOcrTypo(BaseRobustness):
+    """A class for adding OCR typos to the input text."""
+
     alias_name = "add_ocr_typo"
     
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
-        Transforms the given sample list by introducing OCR typos.
+        Add OCR typos to the input samples.
 
         Args:
-            sample_list (List[Sample]): The list of samples to transform.
-            prob (Optional[float]): The probability controlling the proportion of tokens to be perturbed.
-                If None, no threshold is applied.
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of adding OCR typos to each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
 
         Returns:
-            List[Sample]: The transformed list of samples.
+            List[Sample]: The transformed sample list with ocr typos added
         """
         def ocr_typo(regex, text):
             results = []
@@ -812,6 +870,8 @@ class AddOcrTypo(BaseRobustness):
         return sample_list
     
 class AbbreviationInsertion(BaseRobustness):
+    """A class for adding abbreviations to the input text."""
+
     alias_name = "add_abbreviation"
 
     @staticmethod
@@ -822,12 +882,11 @@ class AbbreviationInsertion(BaseRobustness):
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
-                If None, no threshold is applied.
+                                    Defaults to 1.0, which means all samples will be transformed.
 
         Returns:
-            List[Sample]: The transformed list of samples.
+            List[Sample]: The transformed list of samples with abbreviations added
         """
-
         def insert_abbreviation(text):
             perturbed_text = text
             transformations = []
@@ -865,6 +924,8 @@ class AbbreviationInsertion(BaseRobustness):
         return sample_list
    
 class AddSpeechToTextTypo(BaseRobustness):
+    """A class for adding common speech to text typos to the input text."""
+
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
@@ -876,7 +937,7 @@ class AddSpeechToTextTypo(BaseRobustness):
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
                 If None, no threshold is applied.
         Returns:
-            List[Sample]: The transformed list of samples.
+            List[Sample]: The transformed list of samples with speech to text typos added.
         """
         def convertToSimilarHarmony(sentence):
             words = re.findall(r"\w+(?:'\w+)*|\W", sentence)
@@ -940,6 +1001,8 @@ class AddSpeechToTextTypo(BaseRobustness):
         return sample_list
 
 class AddSlangifyTypo(BaseRobustness):
+    """A class for adding slangs to text typos to the input text."""
+
     alias_name = "add_slangs"
 
     @staticmethod
@@ -951,7 +1014,7 @@ class AddSlangifyTypo(BaseRobustness):
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
                 If None, no threshold is applied.
         Returns:
-            List[Sample]: The transformed list of samples.
+            List[Sample]: The transformed list of samples with slangs added.
         """
         def slangify_typo(text):
             slang_words = [
