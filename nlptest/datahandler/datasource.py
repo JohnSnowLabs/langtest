@@ -2,8 +2,10 @@ import csv
 import os
 import re
 import jsonlines
+import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Dict, List
+from nlptest.utils.custom_types import sample
 from nlptest.utils.custom_types.sample import ToxicitySample
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
@@ -45,6 +47,7 @@ class DataFactory:
             self,
             file_path: str,
             task: str,
+            **kwargs
     ) -> None:
         """Initializes DataFactory object.
         Args:
@@ -63,6 +66,7 @@ class DataFactory:
             _, self.file_ext = os.path.splitext(self._file_path)
         self.task = task
         self.init_cls = None
+        self.kwargs = kwargs
 
     def load(self) -> List[Sample]:
         """Loads the data for the correct Dataset type.
@@ -71,7 +75,7 @@ class DataFactory:
             list[Sample]: Loaded text data.
         """
         self.init_cls = self._class_map[self.file_ext.replace(
-            '.', '')](self._file_path, task=self.task)
+            '.', '')](self._file_path, task=self.task, **self.kwargs)
         return self.init_cls.load_data()
 
     def export(self, data: List[Sample], output_path: str):
@@ -289,7 +293,7 @@ class CSVDataset(_IDataset):
         }
     }
 
-    def __init__(self, file_path: str, task: str) -> None:
+    def __init__(self, file_path: str, task: str, **kwargs) -> None:
         """Initializes CSVDataset object.
         Args:
             file_path (str):
@@ -303,12 +307,17 @@ class CSVDataset(_IDataset):
         self.delimiter = self._find_delimiter(file_path)
         self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
         self.column_map = None
+        self.kwargs = kwargs
 
     def load_data(self) -> List[Sample]:
         """Loads data from a csv file.
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
+        if self.kwargs.get('is_import', False):
+            kwargs = self.kwargs.copy()
+            kwargs.pop('is_import')
+            return self._import_data(self._file_path, **kwargs)
         with open(self._file_path, newline='', encoding="utf-8") as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
@@ -456,6 +465,23 @@ class CSVDataset(_IDataset):
                 f"You can use following namespaces:\n{not_referenced_columns}"
             )
         return column_map
+
+    def _import_data(self, file_name, **kwargs) -> List[Sample]:
+        data = pd.read_csv(file_name, **kwargs)
+        sample_models = {
+            k.lower(): v for k, v in sample.__dict__.items() 
+            if k.endswith('Sample') 
+        }
+        samples = []
+      
+        for i in data.to_dict(orient='records'):
+            sample_name = self.task.lower() + 'sample'
+            samples.append(
+                sample_models[sample_name](**i)
+            )
+        return samples
+
+
 
 
 class JSONLDataset(_IDataset):

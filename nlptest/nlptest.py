@@ -649,6 +649,6 @@ class Harness:
         """ testcases is imported from a csv file and can be edited.
         The edited file can be imported back to the harness"""
 
-        self._testcases = DataFactory(input_path, task=self.task).load()
+        self._testcases = DataFactory(input_path, task=self.task, is_import=True).load()
 
         return self
