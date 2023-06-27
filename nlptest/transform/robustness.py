@@ -92,7 +92,7 @@ class UpperCase(BaseRobustness):
     alias_name = "uppercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: float = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Transform a list of strings with uppercase robustness.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -103,13 +103,13 @@ class UpperCase(BaseRobustness):
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
+                num_transform_words = num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
+                num_transform_words = num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].upper() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -120,7 +120,7 @@ class LowerCase(BaseRobustness):
     alias_name = "lowercase"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Transform a list of strings with lowercase robustness.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -131,13 +131,13 @@ class LowerCase(BaseRobustness):
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
+                num_transform_words = num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
+                num_transform_words = num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].lower() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -148,7 +148,7 @@ class TitleCase(BaseRobustness):
     alias_name = 'titlecase'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Transform a list of strings with titlecase robustness.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -159,13 +159,13 @@ class TitleCase(BaseRobustness):
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 words = sample.split()
-                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
+                num_transform_words = num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample_list[idx] = ' '.join(transformed_words)
             else:
                 words = sample.original.split()
-                num_transform_words = int(prob * len(words)) if prob is not None else len(words)
+                num_transform_words = num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(range(len(words)), num_transform_words)
                 transformed_words = [words[i].title() if i in transformed_indices else words[i] for i in range(len(words))]
                 sample.test_case = ' '.join(transformed_words)
@@ -176,7 +176,7 @@ class AddPunctuation(BaseRobustness):
     alias_name = 'add_punctuation'
 
     @staticmethod
-    def transform(sample_list: List[Sample],prob: Optional[float] = None, whitelist: Optional[List[str]] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it.
 
         Args:
@@ -199,9 +199,10 @@ class AddPunctuation(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = check_whitelist(sample, whitelist) if (prob is None or random.random() < prob) else sample
+                if random.random() < prob:
+                    sample_list[idx] = check_whitelist(sample, whitelist)
             else:
-                if sample.original[-1] not in whitelist and (prob is None or random.random() < prob):
+                if sample.original[-1] not in whitelist and (random.random() < prob):
                     chosen_punc = random.choice(whitelist)
                     sample.test_case = sample.original + chosen_punc
                     if sample.task in ("ner", "text-classification"):
@@ -229,7 +230,7 @@ class StripPunctuation(BaseRobustness):
     alias_name = "strip_punctuation"
 
     @staticmethod
-    def transform(sample_list: List[Sample],prob: Optional[float] = None, whitelist: Optional[List[str]] = None,) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
         """Strip punctuation from the string, if there isn't punctuation at the end skip it.
 
         Args:
@@ -251,9 +252,10 @@ class StripPunctuation(BaseRobustness):
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                sample_list[idx] = check_whitelist(sample, whitelist) if (prob is None or random.random() < prob) else sample
+                if random.random() < prob:
+                    sample_list[idx] = check_whitelist(sample, whitelist)
             else:
-                if sample.original[-1] in whitelist and (prob is None or random.random() < prob):
+                if sample.original[-1] in whitelist and (random.random() < prob):
                     sample.test_case = sample.original[:-1]
                     if sample.task in ("ner", "text-classification"):
                         sample.transformations = [
@@ -280,7 +282,7 @@ class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Add typos to the sentences using keyboard typo and swap typo.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -345,7 +347,7 @@ class SwapEntities(BaseRobustness):
     @staticmethod
     def transform(
             sample_list: List[Sample],
-            prob: Optional[float] = None,
+            prob: Optional[float] = 1.0,
             labels: List[List[str]] = None,
             terminology: Dict[str, List[str]] = None,
             
@@ -400,7 +402,7 @@ class SwapEntities(BaseRobustness):
 
             chosen_ent = random.choice(terminology[ent_type])
             
-            if prob is None or random.random() < prob:
+            if random.random() < prob:
                 replace_token_pos = re.search(replace_token, sample.original)
                 sample.test_case = sample.original.replace(
                     replace_token, chosen_ent)
@@ -429,7 +431,7 @@ class ConvertAccent(BaseRobustness):
     alias_name = ["american_to_british", "british_to_american"]
 
     @staticmethod
-    def transform(sample_list: List[Sample],prob: Optional[float] = None, accent_map: Dict[str, str] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample],prob: Optional[float] = 1.0, accent_map: Dict[str, str] = None) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
             sample_list: List of sentences to process.
@@ -444,7 +446,7 @@ class ConvertAccent(BaseRobustness):
             transformations = []
 
             for i, token in enumerate(tokens):
-                if prob is None or random.random() < prob:
+                if random.random() < prob:
                     new_token = accent_map.get(token.lower(), token)
                     if new_token != token:
                         diff_len = len(new_token) - len(token)
@@ -487,7 +489,7 @@ class AddContext(BaseRobustness):
     @staticmethod
     def transform(
         sample_list: List[Sample],
-        prob: Optional[float] = None,
+        prob: Optional[float] = 1.0,
         starting_context: Optional[List[str]] = None,
         ending_context: Optional[List[str]] = None,
         strategy: str = None,
@@ -516,7 +518,7 @@ class AddContext(BaseRobustness):
             transformations = []
             
             if strategy == "start" or strategy == "combined":
-                if prob is None or random.random() < prob:
+                if random.random() < prob:
                     add_tokens = random.choice(starting_context)
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
@@ -531,7 +533,7 @@ class AddContext(BaseRobustness):
                         )
                     
             if strategy == "end" or strategy == "combined":
-                if prob is None or random.random() < prob:
+                if random.random() < prob:
                     add_tokens = random.choice(ending_context)
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
@@ -568,7 +570,7 @@ class AddContraction(BaseRobustness):
     alias_name = 'add_contraction'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Converts input sentences using a conversion dictionary.
         Args:
             sample_list: List of sentences to process.
@@ -596,7 +598,7 @@ class AddContraction(BaseRobustness):
             for contraction in CONTRACTION_MAP:
                 search = re.search(contraction, text,
                                    flags=re.IGNORECASE | re.DOTALL)
-                if search and (prob is None or random.random() < prob):
+                if search and (random.random() < prob):
                     new_string = CONTRACTION_MAP.get(
                         search.group(), search.group())
                     diff_len = len(new_string) - len(search.group())
@@ -615,7 +617,7 @@ class AddContraction(BaseRobustness):
                 for contraction in CONTRACTION_MAP:
                     search = re.search(contraction, sample.original,
                                        flags=re.IGNORECASE | re.DOTALL)
-                    if search and (prob is None or random.random() < prob):
+                    if search and (random.random() < prob):
                         new_string = CONTRACTION_MAP.get(
                             search.group(), search.group())
 
@@ -642,7 +644,7 @@ class DyslexiaWordSwap(BaseRobustness):
     alias_name = "dyslexia_word_swap"
     
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """Converts the string by changing some similar words from the dictionary (dyslexia_map) and outputs a string. 
            Args:
                sample_list: List of sentences to process.
@@ -658,7 +660,7 @@ class DyslexiaWordSwap(BaseRobustness):
             def replace_word(match):
                 original_word = match.group()
                 transformed_word = dyslexia_map.get(original_word, original_word)
-                if transformed_word != original_word and (prob is None or random.random() < prob):
+                if transformed_word != original_word and (random.random() < prob):
                     transformations.append(
                         Transformation(
                             original_span=Span(
@@ -692,7 +694,7 @@ class NumberToWord(BaseRobustness):
     num = ConvertNumberToWord()
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
         Transform a list of strings to their equivalent verbal representation
         of numbers present in the string.
@@ -715,7 +717,7 @@ class NumberToWord(BaseRobustness):
                 words = NumberToWord.num.number_to_words(token, wantlist=True)
                 new_words_len = len(' '.join(words))
                 trans.append(text[start_offset:match.start()])
-                if prob is None or random.random() < prob:
+                if random.random() < prob:
                     trans.append(' '.join(words))
                     transformations.append(
                         Transformation(
@@ -748,7 +750,7 @@ class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
     
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
         Transforms the given sample list by introducing OCR typos.
 
@@ -777,7 +779,7 @@ class AddOcrTypo(BaseRobustness):
                 else:
                     corrected_token = token
 
-                if corrected_token != token and (prob is None or random.random() < prob):
+                if corrected_token != token and (random.random() < prob):
                     trans.append(text[start_offset:match.start()])
                     trans.append(corrected_token)
                     start_offset = match.end()
@@ -813,7 +815,7 @@ class AbbreviationInsertion(BaseRobustness):
     alias_name = "add_abbreviation"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
         Transforms the given sample list by inserting abbreviations.
 
@@ -839,7 +841,7 @@ class AbbreviationInsertion(BaseRobustness):
                         start = match.start()
                         end = match.end()
                         token = text[start:end]
-                        if corrected_token != token and (prob is None or random.random() < prob):
+                        if corrected_token != token and (random.random() < prob):
                             perturbed_text = perturbed_text[:start] + corrected_token + perturbed_text[end:]
                             transformations.append(
                                 Transformation(
@@ -866,7 +868,7 @@ class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
         Transforms the given sample list by introducing typos simulating speech-to-text errors.
         Args:
@@ -899,7 +901,7 @@ class AddSpeechToTextTypo(BaseRobustness):
                             if similar_word.lower() == word.lower():
                                 similar_word = word
 
-                            if similar_word != word and (prob is None or random.random() < prob):
+                            if similar_word != word and (random.random() < prob):
                                 start_index = sentence.index(word, index_offset)
                                 end_index = start_index + len(word)
                                 converted_sentence.append(similar_word)
@@ -941,7 +943,7 @@ class AddSlangifyTypo(BaseRobustness):
     alias_name = "add_slangs"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
         """
         Transforms the given sample list by adding slang words.
         Args:
@@ -979,7 +981,7 @@ class AddSlangifyTypo(BaseRobustness):
                         if is_cap:
                             temp = temp[0].upper() + temp[1:]
 
-                        if temp != token and (prob is None or random.random() < prob):
+                        if temp != token and (random.random() < prob):
                             start_index = text.index(token, start_offset)
                             end_index = start_index + len(token)
                             modified_toks.append(temp)

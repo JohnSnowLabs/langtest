@@ -345,7 +345,7 @@ class BaseQASample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
-    def transform(self, func, params, prob=None, **kwargs):
+    def transform(self, func, params, prob, **kwargs):
         sens = [self.original_question, self.original_context]
         self.perturbed_question, self.perturbed_context = func(sens, prob, **params, **kwargs)
         self.category = func.__module__.split('.')[-1]
@@ -520,7 +520,7 @@ class SummarizationSample(BaseModel):
             results = metric.compute(predictions=predictions, references=references, lang='en')
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
     
-    def transform(self, func, params, prob=None, **kwargs):
+    def transform(self, func, params, prob, **kwargs):
         """"""
         sens = [self.original]
         self.test_case= func(sens, prob, **params, **kwargs)[0]
