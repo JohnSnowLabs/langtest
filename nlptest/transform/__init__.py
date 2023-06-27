@@ -333,7 +333,7 @@ class RobustnessTestFactory(ITests):
             start_time = time.time_ns()
             if TestFactory.task in ('question-answering', 'summarization'):
                 _ = [
-                    sample.transform(test_func, params.get('parameters', {}))
+                    sample.transform(test_func, params.get('parameters', {}),prob=params.pop('prob', 1.0))
                     if hasattr(sample, 'transform') else sample
                     for sample in data_handler_copy
                 ]
@@ -342,7 +342,7 @@ class RobustnessTestFactory(ITests):
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
-                    **params.get('parameters', {})
+                **params.get('parameters', {}),prob=params.pop('prob', 1.0)
                 )
             end_time = time.time_ns()
             for sample in transformed_samples:
