@@ -11,6 +11,7 @@ from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
 
+
 class _IDataset(ABC):
     """Abstract base class for Dataset.
 
@@ -135,20 +136,20 @@ class DataFactory:
             'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
             'XSum-test-tiny': script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
             'XSum-test': script_dir[:-7]+'/Xsum/XSum-test.jsonl',
-            'TruthfulQA-combined' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-combined.jsonl',
-            'TruthfulQA-test' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
-            'TruthfulQA-test-tiny' : script_dir[:-7]+'/TruthfulQA/TruthfulQA-test-tiny.jsonl',
-            'MMLU-test-tiny' : script_dir[:-7]+'/MMLU/MMLU-test-tiny.jsonl',
-            'MMLU-test' : script_dir[:-7]+'/MMLU/MMLU-test.jsonl',
-            'OpenBookQA-test' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
-            'OpenBookQA-test-tiny' : script_dir[:-7]+'/OpenBookQA/OpenBookQA-test-tiny.jsonl',
-            'Quac-test' : script_dir[:-7]+'/quac/Quac-test.jsonl',
-            'Quac-test-tiny' : script_dir[:-7]+'/quac/Quac-test-tiny.jsonl',
+            'TruthfulQA-combined': script_dir[:-7]+'/TruthfulQA/TruthfulQA-combined.jsonl',
+            'TruthfulQA-test': script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
+            'TruthfulQA-test-tiny': script_dir[:-7]+'/TruthfulQA/TruthfulQA-test-tiny.jsonl',
+            'MMLU-test-tiny': script_dir[:-7]+'/MMLU/MMLU-test-tiny.jsonl',
+            'MMLU-test': script_dir[:-7]+'/MMLU/MMLU-test.jsonl',
+            'OpenBookQA-test': script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
+            'OpenBookQA-test-tiny': script_dir[:-7]+'/OpenBookQA/OpenBookQA-test-tiny.jsonl',
+            'Quac-test': script_dir[:-7]+'/quac/Quac-test.jsonl',
+            'Quac-test-tiny': script_dir[:-7]+'/quac/Quac-test-tiny.jsonl',
             'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl',
-            'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
-            'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
-            'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
-            'HellaSwag-test-tiny' : script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
+            'NarrativeQA-test': script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
+            'NarrativeQA-test-tiny': script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
+            'HellaSwag-test': script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
+            'HellaSwag-test-tiny': script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
         }
         return datasets_info[dataset_name]
 
@@ -305,7 +306,8 @@ class CSVDataset(_IDataset):
         self._file_path = file_path
         self.task = task
         self.delimiter = self._find_delimiter(file_path)
-        self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
+        if task in self.COLUMN_NAMES:
+            self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
         self.column_map = None
         self.kwargs = kwargs
 
@@ -468,20 +470,26 @@ class CSVDataset(_IDataset):
 
     def _import_data(self, file_name, **kwargs) -> List[Sample]:
         data = pd.read_csv(file_name, **kwargs)
+        custom_names = {
+            'question-answering': 'qa',
+            'text-classification': 'sequenceclassification'
+
+        }
         sample_models = {
-            k.lower(): v for k, v in sample.__dict__.items() 
-            if k.endswith('Sample') 
+            k.lower(): v for k, v in sample.__dict__.items()
+            if k.endswith('Sample')
         }
         samples = []
-      
+
         for i in data.to_dict(orient='records'):
-            sample_name = self.task.lower() + 'sample'
+            if self.task in custom_names:
+                sample_name = custom_names[self.task] + 'sample'
+            else:
+                sample_name = self.task.lower() + 'sample'
             samples.append(
                 sample_models[sample_name](**i)
             )
         return samples
-
-
 
 
 class JSONLDataset(_IDataset):
@@ -557,6 +565,7 @@ class JSONLDataset(_IDataset):
         """
         raise NotImplementedError()
 
+
 class HuggingFaceDataset(_IDataset):
     """
     Example dataset class that loads data using the Hugging Face dataset library.
@@ -599,14 +608,16 @@ class HuggingFaceDataset(_IDataset):
         try:
             from datasets import load_dataset
         except ImportError:
-                raise ModuleNotFoundError("The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+            raise ModuleNotFoundError(
+                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
         if subset:
             dataset = load_dataset(self.dataset_name, name=subset, split=split)
         else:
             dataset = load_dataset(self.dataset_name, split=split)
 
         if feature_column and target_column:
-            dataset = dataset.map(lambda example: {'text': example[feature_column], 'label': example[target_column]})
+            dataset = dataset.map(lambda example: {
+                                  'text': example[feature_column], 'label': example[target_column]})
 
         samples = [self._row_to_sample(example) for example in dataset]
         return samples
@@ -623,7 +634,8 @@ class HuggingFaceDataset(_IDataset):
         """
         with open(output_path, "w") as file:
             csv_writer = csv.writer(file)
-            csv_writer.writerow(list(self.COLUMN_NAMES['text-classification'].keys()))
+            csv_writer.writerow(
+                list(self.COLUMN_NAMES['text-classification'].keys()))
             for sample in data:
                 row = self._sample_to_row(sample)
                 csv_writer.writerow(row)
@@ -640,8 +652,10 @@ class HuggingFaceDataset(_IDataset):
             Sample:
                 Row formatted into a Sample object.
         """
-        input_column = next((col for col in self.COLUMN_NAMES['text-classification']['text'] if col in data_row), None)
-        output_column = next((col for col in self.COLUMN_NAMES['text-classification']['label'] if col in data_row), None)
+        input_column = next(
+            (col for col in self.COLUMN_NAMES['text-classification']['text'] if col in data_row), None)
+        output_column = next(
+            (col for col in self.COLUMN_NAMES['text-classification']['label'] if col in data_row), None)
 
         original = data_row.get(input_column, '')
         label = SequenceLabel(label=data_row.get(output_column, ''), score=1)
