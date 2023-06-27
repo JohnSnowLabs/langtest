@@ -469,6 +469,15 @@ class CSVDataset(_IDataset):
         return column_map
 
     def _import_data(self, file_name, **kwargs) -> List[Sample]:
+        """
+        Helper function to import testcases from csv file after editing.
+        Args:
+            file_name (str):    path to the csv file
+            **kwargs:           additional arguments to pass to pandas.read_csv
+        Returns:
+            List[Sample]:       list of samples
+                    
+        """
         data = pd.read_csv(file_name, **kwargs)
         custom_names = {
             'question-answering': 'qa',
