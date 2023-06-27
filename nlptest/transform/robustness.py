@@ -10,6 +10,7 @@ from ..utils.number_to_word import ConvertNumberToWord
 from typing import List
 import string
 from ..utils.SoundsLikeFunctions import Search
+from copy import deepcopy
 
 class BaseRobustness(ABC):
     """
@@ -257,7 +258,7 @@ class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], count=1) -> List[Sample]:
         """Add typo to the sentences using keyboard typo and swap typo.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -266,12 +267,9 @@ class AddTypo(BaseRobustness):
         """
 
         def keyboard_typo(string):
-
             if len(string) < 5:
                 return string
-
             string = list(string)
-
             if random.random() > 0.1:
                 idx_list = list(range(len(TYPO_FREQUENCY)))
                 char_list = list(TYPO_FREQUENCY.keys())
@@ -299,18 +297,20 @@ class AddTypo(BaseRobustness):
                 tmp = string[swap_idx]
                 string[swap_idx] = string[swap_idx + 1]
                 string[swap_idx + 1] = tmp
-
             return "".join(string)
 
-        for idx, sample in enumerate(sample_list):
+        perturbed_samples = []
+        for sample in sample_list:
+            for i in range(count):
+                if isinstance(sample, str):
+                    perturbed_samples.append(keyboard_typo(sample))
+                else:
+                    s = deepcopy(sample)
+                    s.category = "robustness"
+                    s.test_case = keyboard_typo(sample.original)
+                    perturbed_samples.append(s)
 
-            if isinstance(sample, str):
-                sample_list[idx] = keyboard_typo(sample)
-            else:
-                sample.category = "robustness"
-                sample.test_case = keyboard_typo(sample.original)
-
-        return sample_list
+        return perturbed_samples
 
 
 class SwapEntities(BaseRobustness):
