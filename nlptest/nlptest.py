@@ -3,9 +3,7 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional, Union, Any
-import langchain
 import pandas as pd
-import panel as pn
 import yaml
 from pkg_resources import resource_filename
 
@@ -16,8 +14,6 @@ from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 import json
-
-pn.extension()
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
