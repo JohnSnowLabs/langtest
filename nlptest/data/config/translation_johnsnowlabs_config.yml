@@ -1,0 +1,9 @@
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  robustness:
+    lowercase:
+      min_pass_rate: 0.70
+    uppercase:
+      min_pass_rate: 0.70

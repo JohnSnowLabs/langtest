@@ -51,7 +51,8 @@ class Harness:
         },
         'task': {
             'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml"),
-            'translation': resource_filename("nlptest", "data/config/translation_config.yml")
+            'translation-huggingface': resource_filename("nlptest", "data/config/translation_transformers_config.yml"),
+            'translation-johnsnowlabs': resource_filename("nlptest", "data/config/translation_jsl_config.yml")
         }
     }
 
@@ -157,7 +158,7 @@ class Harness:
                     self.DEFAULTS_CONFIG['hubs'][hub])
         elif task=="translation" :
             self._config = self.configure(
-                    self.DEFAULTS_CONFIG['task'][task])
+                    self.DEFAULTS_CONFIG['task'][task+"-"+hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
