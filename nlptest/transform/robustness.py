@@ -936,7 +936,7 @@ class AddSpeechToTextTypo(BaseRobustness):
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
-                If None, no threshold is applied.
+                                    Defaults to 1.0, which means all samples will be transformed.
         Returns:
             List[Sample]: The transformed list of samples with speech to text typos added.
         """
@@ -1013,7 +1013,7 @@ class AddSlangifyTypo(BaseRobustness):
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
-                If None, no threshold is applied.
+                                    Defaults to 1.0, which means all samples will be transformed.
         Returns:
             List[Sample]: The transformed list of samples with slangs added.
         """
@@ -1085,6 +1085,8 @@ class AddSlangifyTypo(BaseRobustness):
         return sample_list
     
 class MultiplePerturbations(BaseRobustness):
+    """ A class for applying multiple perturbations to transform a sample list. """
+
     alias_name = "multiple_perturbations"
 
     @staticmethod
@@ -1095,7 +1097,8 @@ class MultiplePerturbations(BaseRobustness):
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             perturbations (List[str]): The list of perturbations to apply.
-
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
         Returns:
             transformed_list: The transformed list of samples.
         """
