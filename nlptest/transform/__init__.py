@@ -21,7 +21,7 @@ import asyncio
 from .custom_bias import add_custom_data
 import nest_asyncio
 nest_asyncio.apply()
-
+import copy
 
 class TestFactory:
     """
@@ -235,6 +235,8 @@ class ITests(ABC):
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
+            if len(test_name.split("-"))>1:
+                test_name="multiple_perturbations"
             test_output = supported_tests[test_name].async_run(
                 samples, model, **kwargs)
             if type(test_output) == list:
@@ -319,7 +321,8 @@ class RobustnessTestFactory(ITests):
         """
         all_samples = []
         runtime_test = {}
-        for test_name, params in self.tests.items():
+        tests_copy = self.tests.copy()  # Create a copy of self.tests
+        for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
             elif test_name in ["swap_entities"]:
@@ -331,7 +334,7 @@ class RobustnessTestFactory(ITests):
             test_func = self.supported_tests[test_name].transform
 
             start_time = time.time_ns()
-            if TestFactory.task in ('question-answering', 'summarization'):
+            if TestFactory.task in ('question-answering', 'summarization') and test_name != 'multiple_perturbations' :
                 _ = [
                     sample.transform(test_func, params.get('parameters', {}),prob=params.pop('prob', 1.0))
                     if hasattr(sample, 'transform') else sample
@@ -339,6 +342,59 @@ class RobustnessTestFactory(ITests):
                 ]
                 transformed_samples = data_handler_copy
 
+            elif test_name == 'multiple_perturbations' and TestFactory.task in ('question-answering', 'summarization'):
+                transformed_samples = []
+                for key, perturbations in params.items():
+                    if key.startswith("perturbations"):
+                        perturbation_number = key[len("perturbations"):]
+
+                        if "american_to_british" in perturbations:
+                            self.tests.setdefault('american_to_british', {})['parameters'] = {'accent_map': A2B_DICT}
+
+                        if "british_to_american" in perturbations:
+                            self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
+                        _ = [
+                            sample.transform(func=test_func, params=self.tests,prob=params.pop('prob', 1.0), perturbations=perturbations)
+                            if hasattr(sample, 'transform') else sample
+                            for sample in data_handler_copy
+                        ]
+                        transformed_samples_perturbation = copy.deepcopy(data_handler_copy)  # Create a deep copy
+                        if perturbation_number != '':
+                            test_type = "-".join(str(perturbation) if not isinstance(perturbation, dict) else next(iter(perturbation)) for perturbation in perturbations)
+                            for sample in transformed_samples_perturbation:
+                                sample.test_type = test_type
+
+                        transformed_samples.extend(transformed_samples_perturbation)
+                    elif key != "min_pass_rate":
+                        raise ValueError(f"Invalid perturbation {key} in multiple_perturbations.Please use perturbations1, perturbations2, ...")
+           
+            elif test_name == 'multiple_perturbations' and TestFactory.task == "text-classification":
+                transformed_samples = []
+                for key, perturbations in params.items():
+                    if key.startswith("perturbations"):
+
+                        perturbation_number = key[len("perturbations"):]
+
+                        if "american_to_british" in perturbations:
+                            self.tests.setdefault('american_to_british', {})['parameters'] = {'accent_map': A2B_DICT}
+
+                        if "british_to_american" in perturbations:
+                            self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
+
+                        transformed_samples_perturbation = test_func(data_handler_copy, perturbations, config=self.tests)
+
+                        if perturbation_number != '':
+                            test_type = "-".join(str(perturbation) if not isinstance(perturbation, dict) else next(iter(perturbation)) for perturbation in perturbations)
+                            for sample in transformed_samples_perturbation:
+                                sample.test_type = test_type
+                        transformed_samples.extend(transformed_samples_perturbation)
+
+                    elif key != "min_pass_rate":
+                        raise ValueError(f"Invalid perturbation {key} in multiple_perturbations. Please use perturbations1, perturbations2, perturbations3 ...")
+                     
+            elif test_name == 'multiple_perturbations' and TestFactory.task == "ner":
+                raise ValueError(f"multiple_perturbations test is not supported for NER task")
+            
             else:
                 transformed_samples = test_func(
                     data_handler_copy,
@@ -346,7 +402,8 @@ class RobustnessTestFactory(ITests):
                 )
             end_time = time.time_ns()
             for sample in transformed_samples:
-                sample.test_type = test_name
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
             all_samples.extend(transformed_samples)
             runtime_test[test_name] = (end_time - start_time)
         return all_samples, runtime_test
