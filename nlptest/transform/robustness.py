@@ -155,7 +155,7 @@ class AddPunctuation(BaseRobustness):
     alias_name = 'add_punctuation'
 
     @staticmethod
-    def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None) -> List[Sample]:
+    def transform(sample_list: List[Sample], whitelist: Optional[List[str]] = None, count:int = 1) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
         Args:
             sample_list: List of sentences to apply robustness.
@@ -174,33 +174,38 @@ class AddPunctuation(BaseRobustness):
             else:
                 return text
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx] = check_whitelist(sample, whitelist)
-            else:
-                if sample.original[-1] not in whitelist:
-                    chosen_punc = random.choice(whitelist)
-                    sample.test_case = sample.original + chosen_punc
-                    if sample.task in ("ner", "text-classification"):
-                        sample.transformations = [
-                            Transformation(
-                                original_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.original),
-                                    word=""
-                                ),
-                                new_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.test_case),
-                                    word=chosen_punc
-                                ),
-                                ignore=True
-                            )
-                        ]
+        perturbed_samples=[]
+
+        for sample in sample_list:
+            for i in range(count):
+                if isinstance(sample, str):
+                    perturbed_samples.append(check_whitelist(sample, whitelist))
                 else:
-                    sample.test_case = sample.original
-                sample.category = "robustness"
-        return sample_list
+                    sample = deepcopy(sample)
+                    if sample.original[-1] not in whitelist:
+                        chosen_punc = random.choice(whitelist)
+                        sample.test_case = sample.original + chosen_punc
+                        if sample.task in ("ner", "text-classification"):
+                            sample.transformations = [
+                                Transformation(
+                                    original_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.original),
+                                        word=""
+                                    ),
+                                    new_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.test_case),
+                                        word=chosen_punc
+                                    ),
+                                    ignore=True
+                                )
+                            ]
+                    else:
+                        sample.test_case = sample.original
+                    sample.category = "robustness"
+                    perturbed_samples.append(sample)
+        return perturbed_samples
 
 
 class StripPunctuation(BaseRobustness):
@@ -507,6 +512,7 @@ class AddContext(BaseRobustness):
                         )
                     )
             return string, transformations
+
 
         for idx, sample in enumerate(sample_list):
 
