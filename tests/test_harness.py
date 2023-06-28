@@ -169,7 +169,7 @@ class HarnessTestCase(unittest.TestCase):
         harness.generate()
 
         # edit the testcases
-        harness.edit(save_dir+"/test_cases.csv")
+        harness.edit_testcases(save_dir+"/test_cases.csv")
 
         # test the file is generated or not
         self.assertTrue(os.path.exists(save_dir+"/test_cases.csv"))
@@ -180,7 +180,7 @@ class HarnessTestCase(unittest.TestCase):
         df.to_csv(save_dir+"/test_cases.csv", index=False)
 
         # import the testcases
-        harness.import_testcases(save_dir+"/test_cases.csv")
+        harness.import_edited_testcases(save_dir+"/test_cases.csv")
 
         # test working of the harness
         harness.run().report()

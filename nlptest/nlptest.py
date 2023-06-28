@@ -676,7 +676,7 @@ class Harness:
 
         TestFactory.call_add_custom_bias(data, test_name, append)
 
-    def edit(self, output_path: str, **kwargs):
+    def edit_testcases(self, output_path: str, **kwargs):
         """ testcases is exported to a csv file and can be edited. 
         The edited file can be imported back to the harness"""
         temp_df = self.testcases()
@@ -685,7 +685,7 @@ class Harness:
 
         return self
 
-    def import_testcases(self, input_path: str, **kwargs):
+    def import_edited_testcases(self, input_path: str, **kwargs):
         """ testcases is imported from a csv file and can be edited.
         The edited file can be imported back to the harness"""
 
