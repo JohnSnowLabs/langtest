@@ -1,6 +1,19 @@
 from collections import Counter
 
 def classification_report(y_true, y_pred, zero_division=0):
+    """
+    Generate a classification report based on the true labels and predicted labels.
+
+    Args:
+        y_true (List[Union[int, str]]): A list of true labels.
+        y_pred (List[Union[int, str]]): A list of predicted labels.
+        zero_division (Union[int, float], optional): The value to use when a division by zero occurs.
+            Defaults to 0.
+
+    Returns:
+        Dict[Union[int, str], Dict[str, Union[float, int]]]: A dictionary containing precision, recall, F1-score,
+            and support for each class label, as well as macro average values.
+    """
     # Count total true labels for each class (support)
     support = Counter(y_true)
     
@@ -49,9 +62,21 @@ def classification_report(y_true, y_pred, zero_division=0):
     
     return report
 
-
-
 def calculate_f1_score(y_true, y_pred, average='macro', zero_division=0):
+    """
+    Calculate the F1-score based on the true labels and predicted labels.
+
+    Args:
+        y_true (List[Union[int, str]]): A list of true labels.
+        y_pred (List[Union[int, str]]): A list of predicted labels.
+        average (str, optional): The averaging method to calculate the F1-score.
+                                 Valid options are 'macro', 'micro', or 'weighted'. Defaults to 'macro'.
+        zero_division (Union[int, float], optional): The value to use when a division by zero occurs.
+            Defaults to 0.
+
+    Returns:
+        float: The calculated F1-score.
+    """
     assert len(y_true) == len(y_pred), "Lengths of y_true and y_pred must be equal."
 
     unique_labels = set(y_true + y_pred)
@@ -105,7 +130,6 @@ def calculate_f1_score(y_true, y_pred, average='macro', zero_division=0):
 
     else:
         raise ValueError("Invalid averaging method. Must be one of 'macro', 'micro', or 'weighted'.")
-
     return f1_score
 
 
