@@ -39,7 +39,7 @@ class Harness:
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
     }
-
+    SUPPORTED_HUBS_HF_DATASET = ["johnsnowlabs", "huggingface", "spacy"]
     DEFAULTS_CONFIG = {
         'hubs': {
             'azure-openai': resource_filename("nlptest", "data/config/azure_config.yml"),
@@ -55,8 +55,8 @@ class Harness:
 
     def __init__(
             self,
-            model: Union[str, Any],
             task: str,
+            model: Optional[Union[str, Any]] = None,
             hub: Optional[str] = None,
             data: Optional[Union[str, dict]] = None,
             config: Optional[Union[str, dict]] = None,
@@ -103,7 +103,7 @@ class Harness:
             logging.info(
                 "Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif type(data) is dict and hub == "huggingface" and task == "text-classification":
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET and task == "text-classification":
             self.data = HuggingFaceDataset(data['name']).load_data(
                 data.get('feature_column', 'text'),
                 data.get('target_column', 'label'),
@@ -111,26 +111,11 @@ class Harness:
                 data.get('subset', None)
             ) if data is not None else None
 
-        elif type(data) is dict and hub == "johnsnowlabs" and task == "text-classification":
-            self.data = HuggingFaceDataset(data['name']).load_data(
-                data.get('feature_column', 'text'),
-                data.get('target_column', 'label'),
-                data.get('split', 'test'),
-                data.get('subset', None)
-            ) if data is not None else None
-
-        elif type(data) is dict and hub == "spacy" and task == "text-classification":
-            self.data = HuggingFaceDataset(data['name']).load_data(
-                data.get('feature_column', 'text'),
-                data.get('target_column', 'label'),
-                data.get('split', 'test'),
-                data.get('subset', None)
-            ) if data is not None else None
-            if model == 'textcat_imdb':
+            if hub == "spacy" and (model == 'textcat_imdb' or model is None):
+                if model is None:
+                    logging.warning(
+                        "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("nlptest", "data/textcat_imdb")
-            else:
-                raise ValueError(
-                    f"Unsupported model '{model}'! Only 'textcat_imdb' is supported.")
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
@@ -291,7 +276,7 @@ class Harness:
 
         return self
 
-    def report(self, return_runtime=False, unit='ms') -> pd.DataFrame:
+    def report(self, return_runtime=False, unit='ms', format="dataframe", save_dir=None) -> pd.DataFrame:
         """
         Generate a report of the test results.
 
@@ -325,6 +310,11 @@ class Harness:
                 min_pass_rate = self.min_pass_dict.get(
                     test_type, self.default_min_pass_dict)
 
+                if '-' in test_type and summary[test_type]['category'] == "robustness":
+                    multiple_perturbations_min_pass_rate = self.min_pass_dict.get(
+                        "multiple_perturbations", self.default_min_pass_dict)
+                    min_pass_rate = self.min_pass_dict.get(
+                        test_type, multiple_perturbations_min_pass_rate)
                 if summary[test_type]['category'] == "Accuracy":
                     min_pass_rate = 1
 
@@ -345,7 +335,6 @@ class Harness:
                 lambda x: "{:.0f}%".format(x * 100))
             df_report['minimum_pass_rate'] = df_report['minimum_pass_rate'].apply(
                 lambda x: "{:.0f}%".format(x * 100))
-
             col_to_move = 'category'
             first_column = df_report.pop('category')
             df_report.insert(0, col_to_move, first_column)
@@ -356,7 +345,34 @@ class Harness:
                 self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
                     lambda x: self._runtime.total_time(unit)[x])
 
-            return self.df_report
+            if format == "dataframe":
+                return self.df_report
+            elif format == "dict":
+                return self.df_report.to_dict("records")
+            elif format == "excel":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_excel(save_dir)
+            elif format == "html":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_html(save_dir)
+            elif format == "markdown":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_markdown(save_dir)
+            elif format == "text" or format == "csv":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_csv(save_dir)
+            else:
+                raise ValueError(
+                    f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
+
         else:
             df_final_report = pd.DataFrame()
             time_elapsed = {}
@@ -430,7 +446,33 @@ class Harness:
                 from IPython.display import display
                 display(df_time_elapsed)
 
-            return styled_df
+            if format == "dataframe":
+                return styled_df
+            elif format == "dict":
+                return styled_df.to_dict("records")
+            elif format == "excel":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_excel(save_dir)
+            elif format == "html":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_html(save_dir)
+            elif format == "markdown":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_markdown(save_dir)
+            elif format == "text" or format == "csv":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                styled_df.to_csv(save_dir)
+            else:
+                raise ValueError(
+                    f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """
@@ -649,8 +691,9 @@ class Harness:
 
         temp_testcases = [sample for sample in self._testcases if sample.category not in [
             'robustness', 'bias']]
-        
-        self._testcases = DataFactory(input_path, task=self.task, is_import=True).load()
+
+        self._testcases = DataFactory(
+            input_path, task=self.task, is_import=True).load()
         self._testcases.extend(temp_testcases)
-        
+
         return self
