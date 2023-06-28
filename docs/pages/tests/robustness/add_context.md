@@ -16,13 +16,18 @@ This test checks if the NLP model can handle input text with added context, such
 ```yaml
 add_context:
     min_pass_rate: 0.65
+    prob: 0.5 # Defaults to 1.0, which means all words will be transformed.
     parameters:
       ending_context: ['Bye', 'Reported']
       starting_context: ['Hi', 'Good morning', 'Hello']
 ```
+<i class="fa fa-info-circle"></i>
+<em>You can adjust the level of transformation in the sentence by using the "`prob`" parameter, which controls the proportion of words to be changed during `add_context` test.</em>
+
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 - **starting_context (<List[str]>):** Phrases to be added at the start of inputs.
 - **ending_context (<List[str]>):** Phrases to be added at the end of inputs.
+- **prob (float):** Controls the proportion of words to be changed.
 
 </div><div class="h3-box" markdown="1">
 
