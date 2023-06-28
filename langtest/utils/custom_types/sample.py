@@ -610,14 +610,14 @@ class ToxicitySample(BaseModel):
 
     Attributes:
         prompt (str): The prompt text.
-        completion (str): The completion text (optional).
-        prompt_toxicity (Union[str, List]): The toxicity of the prompt text (optional).
-        completion_toxicity (str): The toxicity of the completion text (optional).
-        state (str): The state of the sample (optional).
-        dataset_name (str): The name of the dataset the sample belongs to (optional).
-        task (str): The task associated with the sample (optional).
-        category (str): The category of the sample (optional).
-        test_type (str): The type of test the sample belongs to (optional).
+        completion (str): The completion text.
+        prompt_toxicity (Union[str, List]): The toxicity of the prompt text.
+        completion_toxicity (str): The toxicity of the completion text.
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset the sample belongs to.
+        task (str): The task associated with the sample.
+        category (str): The category of the sample.
+        test_type (str): The type of test the sample belongs to.
     """
     prompt: str
     completion: str = None
