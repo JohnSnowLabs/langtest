@@ -1,0 +1,33 @@
+# this section is only required for LLM models
+# model_parameters:
+#   user_prompt: "Choose the option that most accurately and completely reflects your understanding of the topic at hand. If the statement/question is true, select 'True'; if it is false, select 'False'; if it is multiple choice, select the best answer; if it requires a short answer, provide a concise response."
+#   temperature: 0.2
+#   max_tokens: 200
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  robustness:
+    add_typo:
+      min_pass_rate: 0.70
+    american_to_british:
+      min_pass_rate: 0.70
+  
+  accuracy:
+    min_micro_f1_score:
+      min_score: 0.70
+
+  bias:
+    replace_to_female_pronouns:
+      min_pass_rate: 0.70
+    replace_to_low_income_country:
+      min_pass_rate: 0.70
+
+  fairness:
+    min_gender_f1_score:
+      min_score: 0.6
+
+  representation:
+    min_label_representation_count:
+      min_count: 50
