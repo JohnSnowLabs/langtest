@@ -64,5 +64,5 @@ about:
     :point_right: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sugatoray-conda-forger.streamlit.app/)
     [_streamlit-conda-forger-app]: https://sugatoray-conda-forger.streamlit.app/
 
-  dev_url: https://github.com/JohnSnowLabs/nlptest/
-  doc_url: https://nlptest.org/docs/pages/docs/install
+  dev_url: https://github.com/JohnSnowLabs/langtest/
+  doc_url: https://langtest.org/docs/pages/docs/install
