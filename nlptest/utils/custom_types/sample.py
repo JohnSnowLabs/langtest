@@ -367,7 +367,7 @@ class BaseQASample(BaseModel):
         else:
             sens = [self.original_question, self.original_context]
 
-            self.perturbed_question, self.perturbed_context = func(sens,perturbations, params,**kwargs)
+            self.perturbed_question, self.perturbed_context = func(sens,perturbations,prob,params,**kwargs)
             self.category = func.__module__.split('.')[-1]
 
     
@@ -561,7 +561,7 @@ class SummarizationSample(BaseModel):
         else:
                 
                 sens = [self.original]
-                self.test_case= func(sens,perturbations,params,**kwargs)[0]
+                self.test_case= func(sens,perturbations,prob,params,**kwargs)[0]
                 self.category = func.__module__.split('.')[-1]
 
 

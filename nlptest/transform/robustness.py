@@ -936,7 +936,7 @@ class AddSpeechToTextTypo(BaseRobustness):
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
-                If None, no threshold is applied.
+                                    Defaults to 1.0, which means all samples will be transformed.
         Returns:
             List[Sample]: The transformed list of samples with speech to text typos added.
         """
@@ -1013,7 +1013,7 @@ class AddSlangifyTypo(BaseRobustness):
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
-                If None, no threshold is applied.
+                                    Defaults to 1.0, which means all samples will be transformed.
         Returns:
             List[Sample]: The transformed list of samples with slangs added.
         """
@@ -1085,67 +1085,70 @@ class AddSlangifyTypo(BaseRobustness):
         return sample_list
     
 class MultiplePerturbations(BaseRobustness):
+    """ A class for applying multiple perturbations to transform a sample list. """
+
     alias_name = "multiple_perturbations"
 
     @staticmethod
-    def transform(sample_list: List[Sample], perturbations: List[str],config) -> List[Sample]:      
+    def transform(sample_list: List[Sample], perturbations: List[str],prob: Optional[float] = 1.0,config=None) -> List[Sample]:      
         """
         Transforms the given sample list by applying multiple perturbations.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             perturbations (List[str]): The list of perturbations to apply.
-
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
         Returns:
             transformed_list: The transformed list of samples.
         """
         
-        def apply_transformation(sample, order):
+        def apply_transformation(sample, order,prob):
             if order == "uppercase":
-                transformed_list = UpperCase.transform(sample)
+                transformed_list = UpperCase.transform(sample,prob)
             elif order == "lowercase":
-                transformed_list = LowerCase.transform(sample)
+                transformed_list = LowerCase.transform(sample,prob)
             elif order == "titlecase":
-                transformed_list = TitleCase.transform(sample)
+                transformed_list = TitleCase.transform(sample,prob)
             elif order == 'add_punctuation':
-                transformed_list = AddPunctuation.transform(sample)
+                transformed_list = AddPunctuation.transform(sample,prob)
             elif order == "strip_punctuation":
-                transformed_list = StripPunctuation.transform(sample)
+                transformed_list = StripPunctuation.transform(sample,prob)
             elif order == 'add_typo':
-                transformed_list = AddTypo.transform(sample)
+                transformed_list = AddTypo.transform(sample,prob)
             elif order ==  "american_to_british":
-                transformed_list = ConvertAccent.transform(sample,**config.get('american_to_british', {}).get('parameters', {}))
+                transformed_list = ConvertAccent.transform(sample,prob,**config.get('american_to_british', {}).get('parameters', {}))
             elif order == "british_to_american":
-                transformed_list = ConvertAccent.transform(sample,**config.get('british_to_american', {}).get('parameters', {}))
+                transformed_list = ConvertAccent.transform(sample,prob,**config.get('british_to_american', {}).get('parameters', {}))
             elif next(iter(order)) == "add_context" :
-                transformed_list = AddContext.transform(sample,order["add_context"]["parameters"]["starting_context"],order["add_context"]["parameters"]["ending_context"])
+                transformed_list = AddContext.transform(sample,prob,order["add_context"]["parameters"]["starting_context"],order["add_context"]["parameters"]["ending_context"])
             elif order == "add_contraction":
-                transformed_list = AddContraction.transform(sample)
+                transformed_list = AddContraction.transform(sample,prob)
             elif order == "dyslexia_word_swap":
-                transformed_list = DyslexiaWordSwap.transform(sample)
+                transformed_list = DyslexiaWordSwap.transform(sample,prob)
             elif order == "number_to_word":
-                transformed_list = NumberToWord.transform(sample)
+                transformed_list = NumberToWord.transform(sample,prob)
             elif order == 'add_abbreviation':
-                transformed_list = AbbreviationInsertion.transform(sample)
+                transformed_list = AbbreviationInsertion.transform(sample,prob)
             elif order == 'add_ocr_typo':
-                transformed_list = AddOcrTypo.transform(sample)
+                transformed_list = AddOcrTypo.transform(sample,prob)
             elif order == "add_speech_to_text_typo":
-                transformed_list = AddSpeechToTextTypo.transform(sample)
+                transformed_list = AddSpeechToTextTypo.transform(sample,prob)
             elif order == "add_slangs":
-                transformed_list = AddSlangifyTypo.transform(sample)
+                transformed_list = AddSlangifyTypo.transform(sample,prob)
             else:
                 raise ValueError(f"Unknown transformation: {order}")
             return transformed_list
         if isinstance(sample_list[0], SequenceClassificationSample):
             for idx, transformation in enumerate(perturbations):
                 if idx == 0:
-                    transformed_list = apply_transformation(sample_list, transformation)
+                    transformed_list = apply_transformation(sample_list, transformation,prob)
                 else:
                     new_list = []
                     for sample in transformed_list:
                         new_sample = SequenceClassificationSample(original=sample.test_case, category="robustness",expected_results=sample.expected_results)
                         new_list.append(new_sample)
-                    transformed_list = apply_transformation(new_list, perturbations[idx])
+                    transformed_list = apply_transformation(new_list, perturbations[idx],prob)
 
             for i, sample in enumerate(transformed_list):
                 sample.original = sample_list[i].original
@@ -1155,7 +1158,7 @@ class MultiplePerturbations(BaseRobustness):
         elif isinstance(sample_list[0], str):
             for idx, transformation in enumerate(perturbations):
                 
-                transformed_list = apply_transformation(sample_list, transformation)
+                transformed_list = apply_transformation(sample_list, transformation,prob)
         
 
         return transformed_list

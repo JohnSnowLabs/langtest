@@ -344,6 +344,7 @@ class RobustnessTestFactory(ITests):
 
             elif test_name == 'multiple_perturbations' and TestFactory.task in ('question-answering', 'summarization'):
                 transformed_samples = []
+                prob=params.pop('prob', 1.0)
                 for key, perturbations in params.items():
                     if key.startswith("perturbations"):
                         perturbation_number = key[len("perturbations"):]
@@ -354,7 +355,7 @@ class RobustnessTestFactory(ITests):
                         if "british_to_american" in perturbations:
                             self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
                         _ = [
-                            sample.transform(func=test_func, params=self.tests,prob=params.pop('prob', 1.0), perturbations=perturbations)
+                            sample.transform(func=test_func, params=self.tests,prob=prob, perturbations=perturbations)
                             if hasattr(sample, 'transform') else sample
                             for sample in data_handler_copy
                         ]
@@ -370,6 +371,7 @@ class RobustnessTestFactory(ITests):
            
             elif test_name == 'multiple_perturbations' and TestFactory.task == "text-classification":
                 transformed_samples = []
+                prob=params.pop('prob', 1.0)
                 for key, perturbations in params.items():
                     if key.startswith("perturbations"):
 
@@ -381,7 +383,7 @@ class RobustnessTestFactory(ITests):
                         if "british_to_american" in perturbations:
                             self.tests.setdefault('british_to_american', {})['parameters'] = {'accent_map': {v: k for k, v in A2B_DICT.items()}}
 
-                        transformed_samples_perturbation = test_func(data_handler_copy, perturbations, config=self.tests)
+                        transformed_samples_perturbation = test_func(data_handler_copy, perturbations,prob=prob ,config=self.tests,)
 
                         if perturbation_number != '':
                             test_type = "-".join(str(perturbation) if not isinstance(perturbation, dict) else next(iter(perturbation)) for perturbation in perturbations)
@@ -389,7 +391,7 @@ class RobustnessTestFactory(ITests):
                                 sample.test_type = test_type
                         transformed_samples.extend(transformed_samples_perturbation)
 
-                    elif key != "min_pass_rate":
+                    elif key not in ("min_pass_rate", "prob"):
                         raise ValueError(f"Invalid perturbation {key} in multiple_perturbations. Please use perturbations1, perturbations2, perturbations3 ...")
                      
             elif test_name == 'multiple_perturbations' and TestFactory.task == "ner":
