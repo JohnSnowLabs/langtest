@@ -275,8 +275,17 @@ class NERSample(BaseSample):
 
 
 class SequenceClassificationSample(BaseSample):
-    """"""
+    """A sample class representing a sequence classification sample.
 
+    Attributes:
+        task (str): The task type, set to "text-classification".
+        expected_results (Any): The expected results of the sample.
+        actual_results (Any): The actual results of the sample.
+
+    Methods:
+        is_pass: Checks if the sample passes based on the expected and actual results.
+
+    """
     task: str = "text-classification"
 
     def __init__(self, **data):
@@ -286,10 +295,17 @@ class SequenceClassificationSample(BaseSample):
         """"""
         return self.expected_results == self.actual_results
 
-
 class MinScoreSample(BaseSample):
-    """"""
+    """A sample class representing a minimum score sample.
 
+    Attributes:
+        actual_results (Results): The actual results of the sample.
+        expected_results (Results): The expected results of the sample.
+
+    Methods:
+        is_pass: Checks if the sample passes based on the minimum score.
+
+    """
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -299,10 +315,16 @@ class MinScoreSample(BaseSample):
             return False
         return self.actual_results.min_score >= self.expected_results.min_score
 
-
 class MaxScoreSample(BaseSample):
-    """"""
+    """"A class representing a maximum score.
 
+    Attributes:
+        actual_results (Results): The actual results object containing the score information.
+        expected_results (Results): The expected results object containing the score information.
+
+    Methods:
+        is_pass(): Checks if the sample passes based on the maximum score.
+    """
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -312,10 +334,8 @@ class MaxScoreSample(BaseSample):
             return False
         return self.actual_results.max_score <= self.expected_results.max_score
 
-
 Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample,
                  SequenceClassificationSample, NERSample)
-
 
 class BaseQASample(BaseModel):
     """
@@ -362,16 +382,22 @@ class BaseQASample(BaseModel):
         
         return True
 
-
 class QASample(BaseQASample):
-    """"""
+    """
+    A class representing a sample for question answering task.
 
+    Attributes:
+        Inherits attributes from BaseQASample class.
+    """
     def __init__(self, **data):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        Returns the dict version of sample.
+        Returns the dictionary version of the sample.
+
+        Returns:
+            Dict[str, Any]: The dictionary representation of the sample.
         """
         expected_result = self.expected_results
         actual_result = self.actual_results
@@ -395,7 +421,12 @@ class QASample(BaseQASample):
         return result
 
     def is_pass(self) -> bool:
+        """
+        Checks if the sample has passed the evaluation.
 
+        Returns:
+            bool: True if the sample passed the evaluation, False otherwise.
+        """
         from ...langtest import GLOBAL_MODEL as llm_model
         from langchain.evaluation.qa import QAEvalChain
         from ...transform .utils import qa_prompt_template
@@ -435,33 +466,49 @@ class QASample(BaseQASample):
                     }
                 ], question_key="question", prediction_key="text")
 
-   
-
         return graded_outputs[0]['text'].strip() == 'CORRECT'
 
 class MinScoreQASample(QASample):
-    """"""
-
+    """
+    A class representing a sample for question answering task with minimum score comparison.
+    """
     def __init__(self, **data):
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """"""
+        """
+        Checks if the sample has passed the evaluation.
+        """  
         return self.actual_results.min_score >= self.expected_results.min_score
 
-
 class MaxScoreQASample(QASample):
-    """"""
-
+    """
+    A class representing a sample for question answering task with maximum score comparison.
+    """
     def __init__(self, **data):
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """"""
+        """
+        Checks if the sample has passed the evaluation.
+        """  
         return self.actual_results.max_score <= self.expected_results.max_score
     
-
 class SummarizationSample(BaseModel):
+    """
+    A class representing a sample for summarization task.
+
+    Attributes:
+        original (str): The original text.
+        test_case (str): The test case text.
+        expected_results (Union[str, List]): The expected results of the test case.
+        actual_results (str): The actual results of the test case.
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset.
+        task (str): The task associated with the sample.
+        category (str): The category of the sample.
+        test_type (str): The type of the test.
+    """
     original: str = None
     test_case: str = None
     expected_results: Union[str, List] = None
@@ -498,12 +545,17 @@ class SummarizationSample(BaseModel):
         return result
     
     def is_pass(self) :
-        """"""
+        """
+        Checks if the sample has passed the evaluation.
+        """        
         return self._is_eval()[0]
     
     def _is_eval(self) :
-        """"""
-        
+        """Perform the evaluation and return the evaluation score.
+
+        Returns:
+            Tuple[bool, float]: A tuple containing a boolean indicating if the evaluation passed and the evaluation score.
+        """
         from ...langtest import HARNESS_CONFIG as harness_config
         from evaluate import load
 
@@ -521,13 +573,29 @@ class SummarizationSample(BaseModel):
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
     
     def transform(self, func, params, **kwargs):
-        """"""
+        """
+        Transforms the sample using the specified function and parameters.
+
+        Args:
+            func (callable): The transformation function to apply to the sample.
+            params: Additional parameters to pass to the transformation function.
+            **kwargs: Additional keyword arguments to pass to the transformation function.
+        """
         sens = [self.original]
         self.test_case= func(sens, **params, **kwargs)[0]
         self.category = func.__module__.split('.')[-1]
 
     def run(self, model, **kwargs):
-        """"""
+        """
+        Runs the sample using the specified model and keyword arguments.
+
+        Args:
+            model: The model to run the sample with.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            bool: True if the sample ran successfully, False otherwise.
+        """
         dataset_name = self.dataset_name.split('-')[0].lower()
         prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, ""))
         self.expected_results = model(text={'context':self.original},
@@ -535,7 +603,6 @@ class SummarizationSample(BaseModel):
         self.actual_results = model(text={'context':self.test_case},
                                             prompt={"template":prompt_template, 'input_variables':["context"]})
         return True
-        
 
 class ToxicitySample(BaseModel):
     """
