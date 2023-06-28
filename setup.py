@@ -44,14 +44,14 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="nlptest",  # Required
+    name="langtest",  # Required
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/guides/single-sourcing-package-version/
-    version="1.5.0",  # Required
+    version="1.0.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -81,7 +81,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url="https://www.nlptest.org",  # Optional
+    url="https://www.langtest.org",  # Optional
     # This should be your name or the name of the organization which owns the
     # project.
     author="John Snow Labs",  # Optional
@@ -159,7 +159,7 @@ setup(
     # If there are data files included in your packages that need to be
     # installed, specify them here.
     package_data={  # Optional
-        "nlptest": [
+        "langtest": [
             "utils/checkpoints.ckpt",
             "data/config.yml",
             "data/imdb/sample.csv",
@@ -208,7 +208,7 @@ setup(
     # maintainers, and where to support the project financially. The key is
     # what's used to render the link text on PyPI.
     project_urls={  # Optional
-        "Bug Reports": "https://github.com/JohnSnowLabs/nlptest/issues",
-        "Source": "https://github.com/JohnSnowLabs/nlptest/",
+        "Bug Reports": "https://github.com/JohnSnowLabs/langtest/issues",
+        "Source": "https://github.com/JohnSnowLabs/langtest/",
     },
 )

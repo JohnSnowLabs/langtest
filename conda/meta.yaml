@@ -1,12 +1,12 @@
-{% set name = "nlptest" %}
-{% set version = "1.5.0" %}
+{% set name = "langtest" %}
+{% set version = "1.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/nlptest-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/langtest-{{ version }}.tar.gz
   sha256: 556ac72ef3e8a1c1851bbfe8d22e4312f01e7607d6d3a44775279766744ff9e2
 
 build:
@@ -40,23 +40,23 @@ requirements:
 
 test:
   imports:
-    - nlptest
+    - langtest
   commands:
     - pip check
   requires:
     - pip
 
 about:
-  home: https://github.com/JohnSnowLabs/nlptest/
+  home: https://github.com/JohnSnowLabs/langtest/
   summary: John Snow Labs provides a library for delivering safe & effective NLP models.
   license: Apache-2.0
   license_file: LICENSE
-  license_url: https://github.com/JohnSnowLabs/nlptest/blob/main/LICENSE
+  license_url: https://github.com/JohnSnowLabs/langtest/blob/main/LICENSE
   description: |
-    `nlptest` is an open-source Python library designed to help developers
+    `langtest` is an open-source Python library designed to help developers
     deliver safe and effective Natural Language Processing (NLP) models.
 
-    PyPI: [https://pypi.org/project/nlptest/](https://pypi.org/project/nlptest/)
+    PyPI: [https://pypi.org/project/langtest/](https://pypi.org/project/langtest/)
 
     ---
     :fire: The conda-forge recipe was generated with [Conda-Forger App](https://sugatoray-conda-forger.streamlit.app/).
