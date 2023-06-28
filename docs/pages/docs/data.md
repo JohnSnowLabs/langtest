@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Data | NLP Test | John Snow Labs
+seotitle: Data | LangTest | John Snow Labs
 title: Data
 key: docs-examples
 permalink: /docs/pages/docs/data
