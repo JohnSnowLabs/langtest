@@ -16,8 +16,13 @@ This test provides a convenient way to convert numerical values in text into the
 ```yaml
 number_to_word:
     min_pass_rate: 0.8
+    prob: 0.5 # Defaults to 1.0, which means all words will be transformed.
 ```
+<i class="fa fa-info-circle"></i>
+<em>You can adjust the level of transformation in the sentence by using the "`prob`" parameter, which controls the proportion of words to be changed during `number_to_word` test.</em>
+
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
+- **prob (float):** Controls the proportion of words to be changed.
 
 </div><div class="h3-box" markdown="1">
 
