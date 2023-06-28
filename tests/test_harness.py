@@ -155,6 +155,9 @@ class HarnessTestCase(unittest.TestCase):
     def test_harness_edit_import_testcases(self):
         """"""
         save_dir = "/tmp/saved_harness_edit_import_testcases"
+
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
         
         harness = Harness(
             task="ner",
