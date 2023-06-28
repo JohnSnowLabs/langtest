@@ -52,7 +52,7 @@ class Harness:
         'task': {
             'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml"),
             'translation-huggingface': resource_filename("nlptest", "data/config/translation_transformers_config.yml"),
-            'translation-johnsnowlabs': resource_filename("nlptest", "data/config/translation_jsl_config.yml")
+            'translation-johnsnowlabs': resource_filename("nlptest", "data/config/translation_johnsnowlabs_config.yml")
         }
     }
 
