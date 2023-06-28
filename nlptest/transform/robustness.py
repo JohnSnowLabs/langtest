@@ -521,19 +521,20 @@ class AddContext(BaseRobustness):
 
         perturbed_samples = []
         for sample in sample_list:
-            sample = deepcopy(sample)
-            if isinstance(sample, str):
-                sample, _ = context(sample, strategy)
-            else:
-                if sample.task in ("ner", "text-classification"):
-                    sample.test_case, sample.transformations = context(
-                        sample.original, strategy)
+            for i in range(count):
+                sample = deepcopy(sample)
+                if isinstance(sample, str):
+                    sample, _ = context(sample, strategy)
                 else:
-                    sample.test_case, _ = context(
-                        sample.original, strategy)
-                    
-                sample.category = "robustness"
-            perturbed_samples.append(sample)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.test_case, sample.transformations = context(
+                            sample.original, strategy)
+                    else:
+                        sample.test_case, _ = context(
+                            sample.original, strategy)
+                        
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
         return perturbed_samples
 
 
