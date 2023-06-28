@@ -1,7 +1,9 @@
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
-from .helpers import Transformation, Span, SimpleSentenceTransformer, cosine_similarity
+from .helpers import Transformation, Span
+from ..SentenceTransformer import SimpleSentenceTransformer
+from ..util_metrics import cosine_similarity
 from .output import NEROutput, Result
 from .predictions import NERPrediction
 

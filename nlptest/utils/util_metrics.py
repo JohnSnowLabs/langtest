@@ -1,4 +1,5 @@
 from collections import Counter
+import numpy as np
 
 def classification_report(y_true, y_pred, zero_division=0):
     # Count total true labels for each class (support)
@@ -110,5 +111,21 @@ def calculate_f1_score(y_true, y_pred, average='macro', zero_division=0):
 
 
 
+def cosine_similarity(array1, array2):
+    """
+    Compute the cosine similarity between two arrays.
+   
+    Args:
+        array1 (numpy.ndarray): The first input array. This is a two-dimensional array, where each row is a vector.
+        array2 (numpy.ndarray): The second input array. This should have the same shape as array1.
 
+    Returns:
+        numpy.ndarray: An array of cosine similarity values. Each value corresponds to the cosine similarity between a pair of vectors from array1 and array2.
+    """
+ 
+    dot_products = np.einsum('ij,ij->i', array1, array2)
+    magnitudes1 = np.linalg.norm(array1, axis=1)
+    magnitudes2 = np.linalg.norm(array2, axis=1)
+    cosine_similarities = dot_products / (magnitudes1 * magnitudes2)
 
+    return cosine_similarities
