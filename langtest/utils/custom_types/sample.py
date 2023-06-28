@@ -670,6 +670,14 @@ class ToxicitySample(BaseModel):
         return True
     
 class RuntimeSample(BaseModel):
+    """
+    A class Representing a sample for runtime task.
+
+    Attributes:
+        transform_time (Dict[str, Union[int, float]]): The transform times for different operations.
+        run_time (Dict[str, Union[int, float]]): The run times for different operations.
+        total (Dict[str, Union[int, float]]): The total times for different operations.
+    """
     transform_time: Dict[str, Union[int, float]] = {}
     run_time: Dict[str, Union[int, float]] = {}
     total: Dict[str, Union[int, float]] = {}
@@ -678,6 +686,15 @@ class RuntimeSample(BaseModel):
         super().__init__(**data)
     
     def total_time(self, unit='ms'):
+        """
+        Calculates the total time for each operation.
+
+        Args:
+            unit (str, optional): The unit of time to convert to (default: 'ms').
+
+        Returns:
+            Dict[str, Union[int, float]]: A dictionary containing the total times for each operation.
+        """
         total = {}
         if self.total:
             return self.total
@@ -690,10 +707,29 @@ class RuntimeSample(BaseModel):
         return total
     
     def convert_ns_to_unit(self, time, unit='ms'):
+        """
+        Converts time from nanoseconds to the specified unit.
+
+        Args:
+            time (Union[int, float]): The time value to convert.
+            unit (str, optional): The unit of time to convert to (default: 'ms').
+
+        Returns:
+            Union[int, float]: The converted time value.
+        """
         unit_dict = {'ns': 1, 'us': 1e3, 'ms': 1e6, 's': 1e9, 'm': 6e10, 'h': 3.6e12}
         return time / unit_dict[unit]
     
     def multi_model_total_time(self, unit='ms'):
+        """
+        Calculates the total time for each operation across multiple models.
+
+        Args:
+            unit (str, optional): The unit of time to convert to (default: 'ms').
+
+        Returns:
+            Dict[str, Union[int, float]]: A dictionary containing the total times for each operation across multiple models.
+        """
         total = {}
         if self.total:
             return self.total
@@ -704,5 +740,3 @@ class RuntimeSample(BaseModel):
                     unit=unit)
             self.total = total
         return total
-        
-    
