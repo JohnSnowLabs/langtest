@@ -96,6 +96,7 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Add Slangs](robustness#add-slangs)                                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
 |[Robustness](robustness)		            |[Speech to Text typos](robustness#add-speech-to-text-typo)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`
 |[Robustness](robustness)		            |[Insert Abbreviations](robustness#add-abbreviation)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Multiple Perturbations](robustness#multiple-perturbations)                                                        |`text-classification`, `question-answering`, `summarization`
 |[Toxicity](toxicity)		            |[Offensive](toxicity#Offensive)                                                        |`toxicity`
 
 </div></div>
