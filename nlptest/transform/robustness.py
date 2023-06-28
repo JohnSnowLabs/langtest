@@ -829,7 +829,7 @@ class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], count: int  = 1) -> List[Sample]:
         """
         Transforms the given sample list by introducing typos simulating speech-to-text errors.
         Args:
@@ -887,16 +887,19 @@ class AddSpeechToTextTypo(BaseRobustness):
 
             return perturbed_text, transformations
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ =convertToSimilarHarmony(sample)
-            else:
-                sample.test_case, transformations = convertToSimilarHarmony(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
-
-        return sample_list
+        perturbed_samples = []
+        for s in sample_list:
+            for i in range(count):
+                sample = deepcopy(s)
+                if isinstance(sample, str):
+                    sample, _ =convertToSimilarHarmony(sample)
+                else:
+                    sample.test_case, transformations = convertToSimilarHarmony(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
+        return perturbed_samples
 
 
 class AddSlangifyTypo(BaseRobustness):
