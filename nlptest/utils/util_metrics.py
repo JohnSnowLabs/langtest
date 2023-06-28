@@ -1,7 +1,21 @@
 from collections import Counter
+from typing import List, Union, Dict
 import numpy as np
 
-def classification_report(y_true, y_pred, zero_division=0):
+def classification_report(y_true: List[Union[str, int]], y_pred: List[Union[str, int]], zero_division: int =0) -> Dict[str, Dict[str, Union[float, int]]]:
+    """
+    Generate a classification report including precision, recall, f1-score, and support.
+
+    Args:
+        y_true (List[Union[str, int]]): List of true labels.
+        y_pred (List[Union[str, int]]): List of predicted labels.
+        zero_division (int, optional): Specifies the value to return when there is a zero division case, i.e., when all predictions and true values are negative. Defaults to 0.
+
+    Returns:
+        Dict[str, Dict[str, Union[float, int]]]: Classification report, each class has a dictionary containing precision, recall, f1-score, and support.
+
+    """
+    
     # Count total true labels for each class (support)
     support = Counter(y_true)
     
@@ -52,7 +66,23 @@ def classification_report(y_true, y_pred, zero_division=0):
 
 
 
-def calculate_f1_score(y_true, y_pred, average='macro', zero_division=0):
+def calculate_f1_score(y_true: List[Union[str, int]], y_pred: List[Union[str, int]], average: str ='macro', zero_division: int =0) -> float:
+    """
+    Calculate the F1 score for the provided true and predicted labels.
+
+    Args:
+        y_true (List[Union[str, int]]): List of true labels.
+        y_pred (List[Union[str, int]]): List of predicted labels.
+        average (str, optional): Method to calculate F1 score, can be 'micro', 'macro' or 'weighted'. Defaults to 'macro'.
+        zero_division (int, optional): Value to return when there is a zero division case, i.e., when all predictions and true values are negative. Defaults to 0.
+
+    Returns:
+        float: Calculated F1 score.
+
+    Raises:
+        AssertionError: If lengths of y_true and y_pred are not equal.
+        ValueError: If invalid averaging method is provided.
+    """
     assert len(y_true) == len(y_pred), "Lengths of y_true and y_pred must be equal."
 
     unique_labels = set(y_true + y_pred)
@@ -111,7 +141,7 @@ def calculate_f1_score(y_true, y_pred, average='macro', zero_division=0):
 
 
 
-def cosine_similarity(array1, array2):
+def cosine_similarity(array1: np.ndarray, array2: np.ndarray) -> np.ndarray:
     """
     Compute the cosine similarity between two arrays.
    

@@ -1,4 +1,6 @@
+from typing import Tuple, List, Union
 import torch
+import numpy as np
 from transformers import AutoModel, AutoTokenizer
 
 class SimpleSentenceTransformer:
@@ -9,16 +11,17 @@ class SimpleSentenceTransformer:
         device (torch.device): The device used for computations, i.e., either a GPU (if available) or a CPU.
         tokenizer (transformers.AutoTokenizer): The tokenizer associated with the model.
         model (transformers.AutoModel): The transformer model used for sentence embeddings.
-
-    Args:
-        model_name (str): The name of the model to be loaded. By default, it uses the multilingual MiniLM model.
     """
-    def __init__(self, model_name='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'):
+    def __init__(self, model_name: str ='sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'):
+        """
+        Args:
+            model_name (str): The name of the model to be loaded. By default, it uses the multilingual MiniLM model.
+        """
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModel.from_pretrained(model_name).to(self.device)
     
-    def mean_pooling(self, model_output, attention_mask):
+    def mean_pooling(self, model_output: Tuple[torch.Tensor], attention_mask: torch.Tensor) -> torch.Tensor:
         """
         Apply mean pooling on the model outputs.
 
@@ -33,7 +36,8 @@ class SimpleSentenceTransformer:
         input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
         return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
-    def encode(self, sentences, convert_to_tensor=False, max_length=128):
+    def encode(self, sentences: Union[str, List[str]], convert_to_tensor: bool=False, max_length: int=128) -> Union[torch.Tensor, np.ndarray]:
+    
         """
         Encode sentences into sentence embeddings.
 
