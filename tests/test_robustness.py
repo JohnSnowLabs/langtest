@@ -51,6 +51,22 @@ class RobustnessTestCase(unittest.TestCase):
             SequenceClassificationSample(original="I picked up a stone and attempted to skim it across the water."),
             SequenceClassificationSample(original="It was totally excellent but useless bet.")
         ]
+        self.custom_proportion_lowercase = [
+            SequenceClassificationSample(original="I PICKED UP A STONE AND ATTEMPTED TO SKIM IT ACROSS THE WATER."),
+            SequenceClassificationSample(original="IT WAS TOTALLY EXCELLENT BUT USELESS BET.")
+        ]
+        self.custom_proportion_uppercase = [
+            SequenceClassificationSample(original="i picked up a stone and attempted to skim it across the water."),
+            SequenceClassificationSample(original="it was totally excellent but useless bet.")
+        ]
+        self.multipleperturbations =  [
+            SequenceClassificationSample(original="I live in London, United Kingdom since 2019"),
+            SequenceClassificationSample(original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them")
+        ]
+        self.test_qa =  [
+            "20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar to the current one, is being released. The European Central Bank will, in due time, announce when banknotes from the first series lose legal tender status.",
+            "is the first series 20 euro note still legal tender"
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -70,6 +86,13 @@ class RobustnessTestCase(unittest.TestCase):
         for sample in transformed_samples:
             self.assertTrue(sample.test_case.isupper())
 
+    def test_custom_proportion_uppercase(self) -> None:
+        """"""
+        transformed_samples = UpperCase.transform(self.custom_proportion_uppercase, prob = 0.6)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
     def test_lowercase(self) -> None:
         """"""
         transformed_samples = LowerCase.transform(self.sentences)
@@ -77,6 +100,13 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertEqual(len(self.sentences), len(transformed_samples))
         for sample in transformed_samples:
             self.assertTrue(sample.test_case.islower())
+
+    def test_custom_proportion_lowercase(self) -> None:
+        """"""
+        transformed_samples = LowerCase.transform(self.custom_proportion_lowercase, prob = 0.6)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
 
     def test_titlecase(self) -> None:
         """"""
@@ -197,4 +227,18 @@ class RobustnessTestCase(unittest.TestCase):
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
 
-            
+    def test_multipleperturbations(self) -> None:
+        """"""
+        transformations = ["lowercase","add_ocr_typo","titlecase","number_to_word"]
+
+        transformed_samples=MultiplePerturbations.transform(self.multipleperturbations,transformations,config=None)
+        self.assertIsInstance(transformed_samples, list)
+        
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+        original_qa=self.test_qa.copy()
+        transformed_samples_qa=MultiplePerturbations.transform(self.test_qa,transformations,config=None)
+        self.assertIsInstance(transformed_samples, list)
+        self.assertNotEqual(original_qa,transformed_samples_qa)
+                
