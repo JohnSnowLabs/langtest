@@ -634,10 +634,12 @@ class Harness:
 
         TestFactory.call_add_custom_bias(data, test_name, append)
 
-    def edit(self, output_path: str = None, **kwargs):
+    def edit(self, output_path: str, **kwargs):
         """ testcases is exported to a csv file and can be edited. 
         The edited file can be imported back to the harness"""
-        self.testcases().to_csv(output_path, index=False)
+        temp_df = self.testcases()
+        temp_df = temp_df[temp_df['category'].isin(['robustness', 'bias'])]
+        temp_df.to_csv(output_path, index=False)
 
         return self
 
@@ -645,6 +647,10 @@ class Harness:
         """ testcases is imported from a csv file and can be edited.
         The edited file can be imported back to the harness"""
 
+        temp_testcases = [sample for sample in self._testcases if sample.category not in [
+            'robustness', 'bias']]
+        
         self._testcases = DataFactory(input_path, task=self.task, is_import=True).load()
-
+        self._testcases.extend(temp_testcases)
+        
         return self

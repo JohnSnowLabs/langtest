@@ -47,7 +47,7 @@ class BaseSample(BaseModel):
         Returns the dict version of sample.
         """
         expected_result = self.expected_results.to_str_list(
-        ) if self.actual_results is not None else None
+        ) if self.expected_results is not None else None
         actual_result = self.actual_results.to_str_list(
         ) if self.actual_results is not None else None
 
@@ -62,10 +62,10 @@ class BaseSample(BaseModel):
         if self.test_case is not None:
             result['test_case'] = self.test_case
 
-        result['expected_result'] = expected_result
 
         if actual_result is not None:
             result.update({
+                'expected_result' : expected_result,
                 'actual_result': actual_result,
                 'pass': self.is_pass()
             })
