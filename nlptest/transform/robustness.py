@@ -263,7 +263,7 @@ class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
     @staticmethod
-    def transform(sample_list: List[Sample], count=1) -> List[Sample]:
+    def transform(sample_list: List[Sample], count: int = 1) -> List[Sample]:
         """Add typo to the sentences using keyboard typo and swap typo.
         Args:
             sample_list: List of sentences to apply robustness.
@@ -326,7 +326,8 @@ class SwapEntities(BaseRobustness):
     def transform(
             sample_list: List[Sample],
             labels: List[List[str]] = None,
-            terminology: Dict[str, List[str]] = None
+            terminology: Dict[str, List[str]] = None,
+            count: int = 1
     ) -> List[Sample]:
         """Swaps named entities with the new one from the terminology extracted from passed data.
 
@@ -349,54 +350,58 @@ class SwapEntities(BaseRobustness):
         assert len(sample_list) == len(
             labels), f"'labels' and 'sample_list' must have same lengths."
 
+        perturbed_samples=[]
         for sample, sample_labels in zip(sample_list, labels):
             sample.category = "robustness"
-            if all([label == "O" for label in sample_labels]):
-                sample.test_case = sample.original
-                continue
+            for i in range(count):
+                sample = deepcopy(sample)
+                if all([label == "O" for label in sample_labels]):
+                    sample.test_case = sample.original
+                    continue
 
-            sent_tokens = sample.original.split(' ')
+                sent_tokens = sample.original.split(' ')
 
-            ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
-            ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
-    
-            replace_idx = random.choice(ent_idx)
-            ent_type = sample_labels[replace_idx][2:]
-            replace_idxs = [replace_idx]
-            if replace_idx < len(sample_labels) - 1:
-                for i, label in enumerate(sample_labels[replace_idx + 1:]):
-                    if label == f'I-{ent_type}':
-                        replace_idxs.append(i + replace_idx + 1)
-                    else:
-                        break
+                ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
+                ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
+        
+                replace_idx = random.choice(ent_idx)
+                ent_type = sample_labels[replace_idx][2:]
+                replace_idxs = [replace_idx]
+                if replace_idx < len(sample_labels) - 1:
+                    for i, label in enumerate(sample_labels[replace_idx + 1:]):
+                        if label == f'I-{ent_type}':
+                            replace_idxs.append(i + replace_idx + 1)
+                        else:
+                            break
 
-            replace_token = sent_tokens[replace_idx: replace_idx +
-                                        len(replace_idxs)]
-            token_length = len(replace_token)
-            replace_token = " ".join(replace_token)
+                replace_token = sent_tokens[replace_idx: replace_idx +
+                                            len(replace_idxs)]
+                token_length = len(replace_token)
+                replace_token = " ".join(replace_token)
 
-            chosen_ent = random.choice(terminology[ent_type])
-            replace_token_pos = re.search(replace_token, sample.original)
+                chosen_ent = random.choice(terminology[ent_type])
+                replace_token_pos = re.search(replace_token, sample.original)
 
-            sample.test_case = sample.original.replace(
-                replace_token, chosen_ent)
-            if sample.task in ("ner", "text-classification"):
-                sample.transformations = [
-                    Transformation(
-                        original_span=Span(
-                            start=replace_token_pos.start(),
-                            end=replace_token_pos.end(),
-                            word=replace_token
-                        ),
-                        new_span=Span(
-                            start=replace_token_pos.start(),
-                            end=replace_token_pos.start() + len(chosen_ent),
-                            word=chosen_ent
-                        ),
-                        ignore=False
-                    )
-                ]
-        return sample_list
+                sample.test_case = sample.original.replace(
+                    replace_token, chosen_ent)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = [
+                        Transformation(
+                            original_span=Span(
+                                start=replace_token_pos.start(),
+                                end=replace_token_pos.end(),
+                                word=replace_token
+                            ),
+                            new_span=Span(
+                                start=replace_token_pos.start(),
+                                end=replace_token_pos.start() + len(chosen_ent),
+                                word=chosen_ent
+                            ),
+                            ignore=False
+                        )
+                    ]
+                perturbed_samples.append(sample)
+        return perturbed_samples
 
 
 class ConvertAccent(BaseRobustness):
