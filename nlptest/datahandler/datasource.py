@@ -308,6 +308,10 @@ class CSVDataset(_IDataset):
         self.delimiter = self._find_delimiter(file_path)
         if task in self.COLUMN_NAMES:
             self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
+        elif 'is_import' not in kwargs:
+            raise ValueError(
+                f"Given task ({task}) is not matched with template. \
+                CSV dataset can ne only loaded for text-classification and ner!")
         self.column_map = None
         self.kwargs = kwargs
 
@@ -476,7 +480,7 @@ class CSVDataset(_IDataset):
             **kwargs:           additional arguments to pass to pandas.read_csv
         Returns:
             List[Sample]:       list of samples
-                    
+
         """
         data = pd.read_csv(file_name, **kwargs)
         custom_names = {
