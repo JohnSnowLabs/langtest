@@ -538,6 +538,20 @@ class SummarizationSample(BaseModel):
         
 
 class ToxicitySample(BaseModel):
+    """
+    A class Representing a sample for toxicity task.
+
+    Attributes:
+        prompt (str): The prompt text.
+        completion (str): The completion text (optional).
+        prompt_toxicity (Union[str, List]): The toxicity of the prompt text (optional).
+        completion_toxicity (str): The toxicity of the completion text (optional).
+        state (str): The state of the sample (optional).
+        dataset_name (str): The name of the dataset the sample belongs to (optional).
+        task (str): The task associated with the sample (optional).
+        category (str): The category of the sample (optional).
+        test_type (str): The type of test the sample belongs to (optional).
+    """
     prompt: str
     completion: str = None
     prompt_toxicity: Union[str, List] = None
@@ -553,6 +567,12 @@ class ToxicitySample(BaseModel):
         super().__init__(**data)
     
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the ToxicitySample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the ToxicitySample object.
+        """
         
         result = {
             'category': self.category,
