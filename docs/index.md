@@ -40,7 +40,7 @@ data:
    - title: Fully Integrated Workflow
      topimage: 
       - image:
-          src: assets/images/home/nlptest_flow_graphic.png
+          src: assets/images/home/langtest_flow_graphic.png
         
    - trusted: yes
      featureitem: sponsor
