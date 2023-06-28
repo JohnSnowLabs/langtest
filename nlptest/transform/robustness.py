@@ -468,6 +468,7 @@ class AddContext(BaseRobustness):
             starting_context: Optional[List[str]] = None,
             ending_context: Optional[List[str]] = None,
             strategy: str = None,
+            count: int = 1
     ) -> List[Sample]:
         """Converts input sentences using a conversion dictionary
         Args:
@@ -518,11 +519,11 @@ class AddContext(BaseRobustness):
                     )
             return string, transformations
 
-
-        for idx, sample in enumerate(sample_list):
-
+        perturbed_samples = []
+        for sample in sample_list:
+            sample = deepcopy(sample)
             if isinstance(sample, str):
-                sample_list[idx], _ = context(sample, strategy)
+                sample, _ = context(sample, strategy)
             else:
                 if sample.task in ("ner", "text-classification"):
                     sample.test_case, sample.transformations = context(
@@ -532,7 +533,8 @@ class AddContext(BaseRobustness):
                         sample.original, strategy)
                     
                 sample.category = "robustness"
-        return sample_list
+            perturbed_samples.append(sample)
+        return perturbed_samples
 
 
 class AddContraction(BaseRobustness):
