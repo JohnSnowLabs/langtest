@@ -711,7 +711,7 @@ class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    def transform(sample_list: List[Sample], count: int = 1) -> List[Sample]:
         """
         Transforms the given sample list by introducing OCR typos.
 
@@ -760,16 +760,19 @@ class AddOcrTypo(BaseRobustness):
 
             return ''.join(results), transformations
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = ocr_typo(r'[^,\s.!?]+', sample)
-            else:
-                sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
-
-        return sample_list
+        perturbed_samples = []
+        for s in sample_list:
+            for i in range(count):
+                sample = deepcopy(s)
+                if isinstance(sample, str):
+                    sample, _ = ocr_typo(r'[^,\s.!?]+', sample)
+                else:
+                    sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
+        return perturbed_samples
     
 class AbbreviationInsertion(BaseRobustness):
     alias_name = "add_abbreviation"
