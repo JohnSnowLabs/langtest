@@ -95,19 +95,19 @@ class PretrainedJSLModel(ABC):
         """
 
         if model.__class__.__name__ == 'PipelineModel':
-            model = model
+            self.model = model
 
         elif model.__class__.__name__ == 'LightPipeline':
-            model = model.pipeline_model
+            self.model = model.pipeline_model
 
         elif model.__class__.__name__ == 'PretrainedPipeline':
-            model = model.model
+            self.model = model.model
 
         elif model.__class__.__name__ == 'NLUPipeline':
             stages = [comp.model for comp in model.components]
             _pipeline = nlp.Pipeline().setStages(stages)
             tmp_df = model.spark.createDataFrame([['']]).toDF('text')
-            model = _pipeline.fit(tmp_df)
+            self.model = _pipeline.fit(tmp_df)
 
         else:
             raise ValueError(f'Invalid SparkNLP model object: {type(model)}. '
@@ -174,7 +174,7 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         #   there can be multiple ner model in the pipeline
         #   but at first I will set first as default one. Later we can adjust Harness to test multiple model
         ner_model = None
-        for annotator in model.stages:
+        for annotator in self.model.stages:
             if self.is_ner_annotator(annotator):
                 ner_model = annotator
                 break
@@ -345,7 +345,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
         super().__init__(model)
 
         _classifier = None
-        for annotator in model.stages:
+        for annotator in self.model.stages:
             if self.is_classifier(annotator):
                 _classifier = annotator
                 break
@@ -416,7 +416,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
         super().__init__(model)
 
         _translator = None
-        for annotator in model.stages:
+        for annotator in self.model.stages:
             if self.is_translator(annotator):
                 _translator = annotator
                 break
