@@ -1,5 +1,5 @@
-from nlptest.utils.custom_types import SequenceClassificationSample, Transformation, Span
-from nlptest.transform.bias import GenderPronounBias, CountryEconomicBias, EthnicityNameBias, ReligionBias
+from langtest.utils.custom_types import SequenceClassificationSample, Transformation, Span
+from langtest.transform.bias import GenderPronounBias, CountryEconomicBias, EthnicityNameBias, ReligionBias
 
 
 class TestBias:

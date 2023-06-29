@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from nlptest import Harness
+from langtest import Harness
 
 
 class AccuracyTestCase(unittest.TestCase):
@@ -11,7 +11,7 @@ class AccuracyTestCase(unittest.TestCase):
         self.h_spacy = Harness(
             task="ner",
             model="en_core_web_sm",
-            data="nlptest/data/conll/sample.conll",
+            data="langtest/data/conll/sample.conll",
             hub="spacy"
         )
         self.h_spacy.configure(

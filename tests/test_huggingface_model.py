@@ -1,5 +1,5 @@
 import unittest
-from nlptest.modelhandler import ModelFactory
+from langtest.modelhandler import ModelFactory
 
 
 class HuggingFaceTestCase(unittest.TestCase):

@@ -4,9 +4,9 @@ import unittest
 import pandas as pd
 import yaml
 
-from nlptest.augmentation import AugmentRobustness
-from nlptest.modelhandler.modelhandler import ModelFactory
-from nlptest.nlptest import Harness
+from langtest.augmentation import AugmentRobustness
+from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.langtest import Harness
 
 
 class AugmentRobustnessTestCase(unittest.TestCase):

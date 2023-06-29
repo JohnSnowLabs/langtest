@@ -115,7 +115,7 @@ class Harness:
             if hub == "spacy" and (model == 'textcat_imdb' or model is None):
                 if model is None:
                     logging.warning("Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
-                model = resource_filename("nlptest", "data/textcat_imdb")
+                model = resource_filename("langtest", "data/textcat_imdb")
 
             
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():

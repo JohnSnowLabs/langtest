@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from nlptest import Harness
-from nlptest.modelhandler.modelhandler import ModelFactory
-from nlptest.utils.custom_types import Sample
+from langtest import Harness
+from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.utils.custom_types import Sample
 
 
 class HarnessTestCase(unittest.TestCase):
