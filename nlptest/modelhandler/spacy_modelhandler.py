@@ -30,7 +30,7 @@ class PretrainedModelForNER(_ModelHandler):
 
         try:
             return spacy.load(path)
-        except:
+        except OSError:
             raise ValueError(
                 f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
 
@@ -107,7 +107,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """Load and return SpaCy pipeline"""
         try:
             return spacy.load(path)
-        except:
+        except OSError:
             raise ValueError(
                 f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
 
@@ -150,6 +150,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
+
 class PretrainedModelForTranslation(_ModelHandler):
     """
     Args:
@@ -172,12 +173,12 @@ class PretrainedModelForTranslation(_ModelHandler):
         """Load and return SpaCy pipeline"""
         try:
             from ...nlptest import HARNESS_CONFIG as harness_config
-            
+
             config = harness_config['model_parameters']
             tgt_lang = config.get('target_language')
-        
+
             return spacy.load(path)
-        except:
+        except OSError:
             raise ValueError(
                 f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
 
