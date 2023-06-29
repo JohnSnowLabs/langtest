@@ -70,8 +70,8 @@ if try_import_lib("sparknlp_jsl"):
 
 
 class PretrainedModelForNER(_ModelHandler):
-    """"""
-
+    """Handler class for pretrained models used in Named Entity Recognition (NER) tasks with SparkNLP."""
+    
     def __init__(
             self,
             model: Union['NLUPipeline', 'PretrainedPipeline', 'LightPipeline', 'PipelineModel']
