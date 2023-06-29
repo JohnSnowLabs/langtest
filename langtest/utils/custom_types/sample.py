@@ -365,11 +365,31 @@ class BaseQASample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
-    def transform(self, func, params, **kwargs):
-        sens = [self.original_question, self.original_context]
-        self.perturbed_question, self.perturbed_context = func(sens, **params, **kwargs)
-        self.category = func.__module__.split('.')[-1]
-        # self.perturbed_context = func(self.original_context, **kwargs)
+    def transform(self, func,params,prob,perturbations=None,**kwargs):
+        """
+        Transforms the original question and context using the specified function.
+
+        Args:
+            func (function): The transformation function to apply.
+            params (dict): Additional parameters for the transformation function.
+            prob (float): Probability of applying the transformation.
+            **kwargs: Additional keyword arguments for the transformation function.
+
+        Returns:
+            None
+        """        
+        
+        if perturbations is None:
+            sens = [self.original_question, self.original_context]
+            self.perturbed_question, self.perturbed_context = func(sens, prob,**params, **kwargs)
+            self.category = func.__module__.split('.')[-1]
+
+        else:
+            sens = [self.original_question, self.original_context]
+
+            self.perturbed_question, self.perturbed_context = func(sens,perturbations,prob,params,**kwargs)
+            self.category = func.__module__.split('.')[-1]
+
     
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split('-')[0].lower()
@@ -572,18 +592,30 @@ class SummarizationSample(BaseModel):
             results = metric.compute(predictions=predictions, references=references, lang='en')
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
     
-    def transform(self, func, params, **kwargs):
+    def transform(self, func, params,prob,perturbations=None,**kwargs):
         """
-        Transforms the sample using the specified function and parameters.
+        Transforms the original data using the specified function.
 
         Args:
-            func (callable): The transformation function to apply to the sample.
-            params: Additional parameters to pass to the transformation function.
-            **kwargs: Additional keyword arguments to pass to the transformation function.
+            func (function): The transformation function to apply.
+            params (dict): Additional parameters for the transformation function.
+            prob (float): Probability of applying the transformation.
+            **kwargs: Additional keyword arguments for the transformation function.
+
+        Returns:
+            None
         """
-        sens = [self.original]
-        self.test_case= func(sens, **params, **kwargs)[0]
-        self.category = func.__module__.split('.')[-1]
+        if perturbations is None:
+
+                sens = [self.original]
+                self.test_case= func(sens,prob,**params, **kwargs)[0]
+                self.category = func.__module__.split('.')[-1]
+        else:
+                
+                sens = [self.original]
+                self.test_case= func(sens,perturbations,prob,params,**kwargs)[0]
+                self.category = func.__module__.split('.')[-1]
+
 
     def run(self, model, **kwargs):
         """
