@@ -186,7 +186,7 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         self.output_col = ner_model.getOutputCol()
 
         #   in order to overwrite configs, light pipeline should be reinitialized.
-        self.model = LightPipeline(model)
+        self.model = LightPipeline(self.model)
 
     @staticmethod
     def _aggregate_words(prediction: List[Dict]) -> List[Dict]:
@@ -356,7 +356,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
 
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
-        self.model = LightPipeline(model)
+        self.model = LightPipeline(self.model)
 
     @staticmethod
     def is_classifier(model_instance) -> bool:
@@ -426,7 +426,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
                 'Invalid PipelineModel! There should be at least one translator component.')
 
         self.output_col = _translator.getOutputCol()
-        self.model = LightPipeline(model)
+        self.model = LightPipeline(self.model)
 
     @staticmethod
     def is_translator(model_instance) -> bool:
