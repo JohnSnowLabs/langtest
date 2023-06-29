@@ -1,7 +1,7 @@
 import unittest
-from nlptest.transform.robustness import *
-from nlptest.transform.utils import A2B_DICT
-from nlptest.utils.custom_types import SequenceClassificationSample
+from langtest.transform.robustness import *
+from langtest.transform.utils import A2B_DICT
+from langtest.utils.custom_types import SequenceClassificationSample
 
 
 class RobustnessTestCase(unittest.TestCase):

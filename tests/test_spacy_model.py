@@ -1,7 +1,7 @@
 
 import unittest
-from nlptest import Harness
-from nlptest.modelhandler.modelhandler import ModelFactory
+from langtest import Harness
+from langtest.modelhandler.modelhandler import ModelFactory
 
 
 class SpacyTestCase(unittest.TestCase):
@@ -10,7 +10,7 @@ class SpacyTestCase(unittest.TestCase):
         self.params = {
             "task": 'ner',
             "model": "en_core_web_sm",
-            "data": "nlptest/data/conll/sample.conll",
+            "data": "langtest/data/conll/sample.conll",
             "config": "tests/fixtures/config_ner.yaml",
             "hub": "spacy"
         }

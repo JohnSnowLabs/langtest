@@ -1,6 +1,6 @@
 import unittest
-import nlptest
-from nlptest.modelhandler.modelhandler import *
+import langtest
+from langtest.modelhandler.modelhandler import *
 
 
 class ModelHandlerTestCase(unittest.TestCase):
@@ -22,10 +22,10 @@ class ModelHandlerTestCase(unittest.TestCase):
             "ner", "huggingface", "dslim/bert-base-NER")
         self.assertIsInstance(model, ModelFactory)
         self.assertIsInstance(
-            model.model_class, nlptest.modelhandler.transformers_modelhandler.PretrainedModelForNER)
+            model.model_class, langtest.modelhandler.transformers_modelhandler.PretrainedModelForNER)
 
     def test_ner_spacy_model(self) -> None:
         model = ModelFactory.load_model("ner", "spacy", "en_core_web_sm")
         self.assertIsInstance(model, ModelFactory)
         self.assertIsInstance(
-            model.model_class, nlptest.modelhandler.spacy_modelhandler.PretrainedModelForNER)
+            model.model_class, langtest.modelhandler.spacy_modelhandler.PretrainedModelForNER)

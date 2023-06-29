@@ -1,6 +1,6 @@
 import unittest
 
-from nlptest.utils.custom_types import NEROutput, NERPrediction, NERSample, Span, Transformation
+from langtest.utils.custom_types import NEROutput, NERPrediction, NERSample, Span, Transformation
 
 
 class TestNERSample(unittest.TestCase):

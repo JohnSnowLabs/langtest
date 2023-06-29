@@ -10,7 +10,7 @@ from ..utils.number_to_word import ConvertNumberToWord
 from typing import List
 import string
 from ..utils.SoundsLikeFunctions import Search
-from nlptest.utils.custom_types import SequenceClassificationSample
+from langtest.utils.custom_types import SequenceClassificationSample
 class BaseRobustness(ABC):
     """
     Abstract base class for implementing robustness measures.
