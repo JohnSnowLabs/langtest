@@ -29,6 +29,8 @@ class G2p(object):
             return self.CMU_dict[text]
         else:
             return prons
+        
+g2p = G2p()
 
 class Word_Functions:
     """
