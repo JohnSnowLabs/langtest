@@ -10,8 +10,9 @@ from langtest.langtest import Harness
 
 
 class AugmentRobustnessTestCase(unittest.TestCase):
-    """"""
-
+    """
+    Test case for the AugmentRobustness class.
+    """
     def setUp(self) -> None:
         """"""
         self.params = {
@@ -39,7 +40,9 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         }
 
     def test_augment_robustness(self):
-        """"""
+        """
+        Test augmenting data for robustness.
+        """
         temp_df = pd.DataFrame({
             'test_type': ['replace_to_female_pronouns', 'replace_to_male_pronouns', 'lowercase', 'uppercase'],
             'category': ['bias', 'bias', 'robustness', 'robustness'],
@@ -89,7 +92,9 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_hf_ner_augmentation(self):
-        """"""
+        """
+        Test augmentation using Hugging Face NER model.
+        """
         harness = Harness(**self.params['huggingface_ner'])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -102,6 +107,9 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_spacy_ner_augmentation(self):
+        """
+        Test augmentation using spaCy NER model.
+        """
         harness = Harness(**self.params['spacy_ner'])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -114,7 +122,9 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_custom_proportions_augment_harness(self):
-        """"""
+        """
+        Test augmentation with custom proportions using Hugging Face NER model.
+        """
         harness = Harness(**self.params['huggingface_ner'])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
