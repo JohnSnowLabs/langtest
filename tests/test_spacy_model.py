@@ -5,8 +5,15 @@ from langtest.modelhandler.modelhandler import ModelFactory
 
 
 class SpacyTestCase(unittest.TestCase):
-
+    """
+    Test case for the Spacy integration in the langtest module.
+    """
     def setUp(self) -> None:
+        """
+        Set up the test case.
+
+        Initializes the parameters for the Harness class.
+        """
         self.params = {
             "task": 'ner',
             "model": "en_core_web_sm",
@@ -33,6 +40,11 @@ class SpacyTestCase(unittest.TestCase):
         self.assertIsInstance(harness._config, (str, dict))
 
     def test_generate(self):
+        """
+        Test the generate method of the Harness class.
+
+        Checks if the generate method returns a Harness instance.
+        """
         harness = Harness(**self.params)
         self.assertIsInstance(
             harness.generate(),
@@ -40,6 +52,11 @@ class SpacyTestCase(unittest.TestCase):
         )
 
     def test_run(self):
+        """
+        Test the run method of the Harness class.
+
+        Checks if the run method returns a Harness instance after generating.
+        """
         harness = Harness(**self.params)
         harness.generate()
         self.assertIsInstance(

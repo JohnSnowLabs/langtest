@@ -5,7 +5,9 @@ from langtest.modelhandler import ModelFactory
 
 
 class SparkNLPTestCase(unittest.TestCase):
-
+    """
+    Test case for the SparkNLP integration in the langtest module.
+    """
     def setUp(self) -> None:
         self.params = {
             "task": 'ner',

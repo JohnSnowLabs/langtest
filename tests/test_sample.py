@@ -4,10 +4,19 @@ from langtest.utils.custom_types import NEROutput, NERPrediction, NERSample, Spa
 
 
 class TestNERSample(unittest.TestCase):
-    """"""
+    """
+    A test case for NER samples.
+
+    This test case performs tests on NER samples using the `NERSample` class.
+
+    Each test method represents a specific test scenario for adding context to the original text.
+
+    Attributes:
+        No additional attributes.
+    """
 
     def test_add_context_left(self):
-        """"""
+        """Test adding context to the left of the original text."""
         sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
@@ -33,7 +42,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_add_context_right(self):
-        """"""
+        """Test adding context to the right of the original text."""
         sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
@@ -59,7 +68,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_add_context_middle(self):
-        """"""
+        """Test adding context in the middle of the original text."""
         sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
@@ -85,7 +94,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_add_two_contexts(self):
-        """"""
+        """Test adding two contexts to the original text."""
         sample = NERSample(
             original="I do love KFC",
             test_type="add_context",
@@ -145,7 +154,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_contraction(self):
-        """"""
+        """Test transforming a contraction in the original text."""
         sample = NERSample(
             original="I do not love KFC",
             test_type="contraction",
@@ -171,7 +180,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_entity_swap(self):
-        """"""
+        """Test swapping an entity in the original text."""
         sample = NERSample(
             original="I do love KFC",
             test_type="contraction",
@@ -245,7 +254,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_two_entities_two_contexts(self):
-        """"""
+        """Test adding context to the original text with two entities."""
         sample = NERSample(
             original="My name is Jules and I do love KFC",
             test_type="add_context",
@@ -278,7 +287,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_entity_to_ignore(self):
-        """"""
+        """Test ignoring an entity in the original text."""
         sample = NERSample(
             original="China 1 0 0 1 0 2 0",
             test_type="add_context",
@@ -305,7 +314,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_swap_entities(self):
-        """"""
+        """Test swapping entities in the original text."""
         sample = NERSample(
             original="I live in India",
             test_type="swap_entities",
@@ -331,7 +340,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_trailing_whitespace_realignment(self):
-        """"""
+        """ Test trailing whitespace realignment in the original text. """
         sample = NERSample(
             original='CRICKET - LARA ENDURES ANOTHER MISERABLE DAY .',
             test_case='Good Morning CRICKET - LARA ENDURES ANOTHER MISERABLE DAY Reported .',
@@ -362,7 +371,7 @@ class TestNERSample(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_add_contraction_realignment(self):
-        """"""
+        """ Test realignment of contractions in the original text. """
         sample = NERSample(
             original="FIFA 's players ' status committee , meeting in Barcelona , decided that although the Udinese document was basically valid , it could not be legally protected .",
             test_type='add_contraction',
@@ -445,10 +454,10 @@ class TestNERSample(unittest.TestCase):
 
 
 class TestTokenMismatch(unittest.TestCase):
-    """"""
+    """Test case for token mismatch."""
 
     def test_token_mismatch_hf(self):
-        """"""
+        """Test token mismatch for 'replace_to_female_pronouns' in NERSample."""
         sample = NERSample(
             original="Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C"
                      " championship match on Friday .",
@@ -527,7 +536,7 @@ class TestTokenMismatch(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_token_mismatch_hf2(self):
-        """"""
+        """Test token mismatch for 'replace_to_female_pronouns' in NERSample."""
         sample = NERSample(
             original='But China saw their luck desert them in the second match of the group , crashing to a surprise '
                      '2-0 defeat to newcomers Uzbekistan .',
@@ -615,7 +624,7 @@ class TestTokenMismatch(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_swap_entities_whole_sample(self):
-        """"""
+        """Test swapping entities in NERSample."""
         sample = NERSample(
             original="Nadim Ladki",
             test_case="Ijaz Ahmad",
@@ -683,7 +692,7 @@ class TestTokenMismatch(unittest.TestCase):
         self.assertTrue(sample.is_pass())
 
     def test_entity_nested_in_transformation(self):
-        """"""
+        """Test entity nested in transformation in NERSample."""
         sample = NERSample(
             original='GOLF - ZIMBABWE OPEN SECOND ROUND SCORES .',
             test_type='replace_to_low_income_country',
