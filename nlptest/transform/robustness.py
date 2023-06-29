@@ -1,16 +1,15 @@
 import asyncio
 import random
 import re
+import string
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+from copy import deepcopy
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives, dyslexia_map)
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import ConvertNumberToWord 
-from typing import List
-import string
 from ..utils.SoundsLikeFunctions import Search
-from copy import deepcopy
 
 class BaseRobustness(ABC):
     """
@@ -160,6 +159,7 @@ class AddPunctuation(BaseRobustness):
         Args:
             sample_list: List of sentences to apply robustness.
             whitelist: Whitelist for punctuations to add to sentences.
+            count: Number of variations to create.
         Returns:
             List of sentences that have punctuation at the end.
         """
@@ -267,6 +267,7 @@ class AddTypo(BaseRobustness):
         """Add typo to the sentences using keyboard typo and swap typo.
         Args:
             sample_list: List of sentences to apply robustness.
+            count: Number of variations to create.
         Returns:
             List of sentences that typo introduced.
         """
@@ -476,6 +477,8 @@ class AddContext(BaseRobustness):
             strategy: Config method to adjust where will context tokens added. start, end or combined.
             starting_context: list of terms (context) to input at start of sentences.
             ending_context: list of terms (context) to input at end of sentences.
+            count: Number of variations to create.
+
         Returns:
             List of sentences that context added at to begging, end or both, randomly.
         """
@@ -717,6 +720,7 @@ class AddOcrTypo(BaseRobustness):
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            count: Number of variations to create.
 
         Returns:
             List[Sample]: The transformed list of samples.
@@ -834,6 +838,8 @@ class AddSpeechToTextTypo(BaseRobustness):
         Transforms the given sample list by introducing typos simulating speech-to-text errors.
         Args:
             sample_list (List[Sample]): The list of samples to transform.
+            count: Number of variations to create.
+
         Returns:
             List[Sample]: The transformed list of samples.
         """
@@ -913,7 +919,7 @@ class AddSlangifyTypo(BaseRobustness):
             sample_list (List[Sample]): The list of samples to transform.
         Returns:
             List[Sample]: The transformed list of samples.
-        """
+        """ 
         def slangify_typo(text):
             slang_words = [
                 list(map(list, zip(*Slang_Nouns))),
