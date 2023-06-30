@@ -1,14 +1,14 @@
 import asyncio
 import random
 import re
+import string
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
+from copy import deepcopy
 from nlptest.modelhandler.modelhandler import ModelFactory
 from .utils import (CONTRACTION_MAP, TYPO_FREQUENCY, default_user_prompt ,ocr_typo_dict,abbreviation_dict,Slang_Nouns, Slang_Adverbs, Slang_Adjectives, dyslexia_map)
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import ConvertNumberToWord 
-from typing import List
-import string
 from ..utils.SoundsLikeFunctions import Search
 from nlptest.utils.custom_types import SequenceClassificationSample
 class BaseRobustness(ABC):
@@ -196,16 +196,16 @@ class AddPunctuation(BaseRobustness):
     alias_name = 'add_punctuation'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, whitelist: Optional[List[str]] = None) -> List[Sample]:
-        """
-        Add punctuation to the text samples in the given sample list.
-
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, whitelist: Optional[List[str]] = None, count:int = 1) -> List[Sample]:
+        """Add punctuation at the end of the string, if there is punctuation at the end skip it
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
             prob (Optional[float]): The probability of adding punctuation to each sample.
                                     Defaults to 1.0, which means all words will be transformed.
             whitelist (Optional[List[str]]): A list of punctuation characters to consider when adding punctuation.
                 If None, the default whitelist ['!', '?', ',', '.', '-', ':', ';'] will be used. Defaults to None.
+            count: Number of variations to create.
+
 
         Returns:
             List[Sample]: The transformed sample list with added punctuation.
@@ -220,34 +220,40 @@ class AddPunctuation(BaseRobustness):
             else:
                 return text
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                if random.random() < prob:
-                    sample_list[idx] = check_whitelist(sample, whitelist)
-            else:
-                if sample.original[-1] not in whitelist and (random.random() < prob):
-                    chosen_punc = random.choice(whitelist)
-                    sample.test_case = sample.original + chosen_punc
-                    if sample.task in ("ner", "text-classification"):
-                        sample.transformations = [
-                            Transformation(
-                                original_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.original),
-                                    word=""
-                                ),
-                                new_span=Span(
-                                    start=len(sample.original),
-                                    end=len(sample.test_case),
-                                    word=chosen_punc
-                                ),
-                                ignore=True
-                            )
-                        ]
+        perturbed_samples=[]
+
+        for s in sample_list:
+            sample = deepcopy(s)
+            for i in range(count):
+                if isinstance(sample, str):
+                    if random.random() < prob:
+                        perturbed_samples.append(check_whitelist(sample, whitelist))
                 else:
-                    sample.test_case = sample.original
-                sample.category = "robustness"
-        return sample_list
+
+                    if sample.original[-1] not in whitelist and (random.random() < prob):
+                        chosen_punc = random.choice(whitelist)
+                        sample.test_case = sample.original + chosen_punc
+                        if sample.task in ("ner", "text-classification"):
+                            sample.transformations = [
+                                Transformation(
+                                    original_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.original),
+                                        word=""
+                                    ),
+                                    new_span=Span(
+                                        start=len(sample.original),
+                                        end=len(sample.test_case),
+                                        word=chosen_punc
+                                    ),
+                                    ignore=True
+                                )
+                            ]
+                    else:
+                        sample.test_case = sample.original
+                    sample.category = "robustness"
+                    perturbed_samples.append(sample)
+        return perturbed_samples
 
 class StripPunctuation(BaseRobustness):
     """A class for stripping punctuation to text samples."""
@@ -312,7 +318,7 @@ class AddTypo(BaseRobustness):
     alias_name = 'add_typo'
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, count: int = 1) -> List[Sample]:
         """
         Add typos to the text samples in the given sample list.
 
@@ -321,6 +327,7 @@ class AddTypo(BaseRobustness):
             prob (Optional[float]): The probability of adding a typo to each sample.
                                     Defaults to 1.0, which means all words will be transformed.
 
+            count: Number of variations to create.
         Returns:
             List[Sample]: The transformed sample list with added typos.
         """
@@ -330,9 +337,7 @@ class AddTypo(BaseRobustness):
 
             if len(string) < 5:
                 return string
-
             string = list(string)
-
             if random.random() > 0.1:
                 idx_list = list(range(len(TYPO_FREQUENCY)))
                 char_list = list(TYPO_FREQUENCY.keys())
@@ -360,20 +365,22 @@ class AddTypo(BaseRobustness):
                 tmp = string[swap_idx]
                 string[swap_idx] = string[swap_idx + 1]
                 string[swap_idx + 1] = tmp
-
             return "".join(string)
 
-        for idx, sample in enumerate(sample_list):
+        perturbed_samples = []
+        for sample in sample_list:
+            for i in range(count):
+                if isinstance(sample, str):
+                    perturbed_samples.append(keyboard_typo(sample))
+                else:
+                    s = deepcopy(sample)
+                    s.category = "robustness"
+                    s.test_case = keyboard_typo(sample.original)
+                    perturbed_samples.append(s)
 
-            if isinstance(sample, str):
-                sample_list[idx] = keyboard_typo(sample)
-            else:
-                sample.category = "robustness"
-                sample.test_case = keyboard_typo(sample.original)
-        
+        return perturbed_samples
 
-        return sample_list
-    
+
 class SwapEntities(BaseRobustness):
     """A class for swapping entities in text samples."""
 
@@ -386,7 +393,7 @@ class SwapEntities(BaseRobustness):
             prob: Optional[float] = 1.0,
             labels: List[List[str]] = None,
             terminology: Dict[str, List[str]] = None,
-            
+            count: int = 1
     ) -> List[Sample]:
         """
         Swap entities in the text samples of the given sample list.
@@ -412,58 +419,62 @@ class SwapEntities(BaseRobustness):
         assert len(sample_list) == len(
             labels), f"'labels' and 'sample_list' must have same lengths."
 
-        for sample, sample_labels in zip(sample_list, labels):
-            sample.category = "robustness"
-            if all([label == "O" for label in sample_labels]):
-                sample.test_case = sample.original
-                continue
+        perturbed_samples=[]
+        for s, sample_labels in zip(sample_list, labels):
+            for i in range(count):
+                sample = deepcopy(s)
+                sample.category = "robustness"
+                if all([label == "O" for label in sample_labels]):
+                    sample.test_case = sample.original
+                    continue
 
-            sent_tokens = sample.original.split(' ')
+                sent_tokens = sample.original.split(' ')
 
-            ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
-            ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
-    
-            replace_idx = random.choice(ent_idx)
-            ent_type = sample_labels[replace_idx][2:]
-            replace_idxs = [replace_idx]
-            if replace_idx < len(sample_labels) - 1:
-                for i, label in enumerate(sample_labels[replace_idx + 1:]):
-                    if label == f'I-{ent_type}':
-                        replace_idxs.append(i + replace_idx + 1)
-                    else:
-                        break
+                ent_start_pos = [1 if label[0] == 'B' else 0 for label in sample_labels]
+                ent_idx = [i for i, value in enumerate(ent_start_pos) if value==1]
+        
+                replace_idx = random.choice(ent_idx)
+                ent_type = sample_labels[replace_idx][2:]
+                replace_idxs = [replace_idx]
+                if replace_idx < len(sample_labels) - 1:
+                    for i, label in enumerate(sample_labels[replace_idx + 1:]):
+                        if label == f'I-{ent_type}':
+                            replace_idxs.append(i + replace_idx + 1)
+                        else:
+                            break
 
-            replace_token = sent_tokens[replace_idx: replace_idx +
-                                        len(replace_idxs)]
-            token_length = len(replace_token)
-            replace_token = " ".join(replace_token)
+                replace_token = sent_tokens[replace_idx: replace_idx +
+                                            len(replace_idxs)]
+                token_length = len(replace_token)
+                replace_token = " ".join(replace_token)
 
-            chosen_ent = random.choice(terminology[ent_type])
-            
-            if random.random() < prob:
-                replace_token_pos = re.search(replace_token, sample.original)
-                sample.test_case = sample.original.replace(
-                    replace_token, chosen_ent)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = [
-                        Transformation(
-                            original_span=Span(
-                                start=replace_token_pos.start(),
-                                end=replace_token_pos.end(),
-                                word=replace_token
-                            ),
-                            new_span=Span(
-                                start=replace_token_pos.start(),
-                                end=replace_token_pos.start() + len(chosen_ent),
-                                word=chosen_ent
-                            ),
-                            ignore=False
-                        )
-                    ]
-            else:
-                sample.test_case = sample.original
+                chosen_ent = random.choice(terminology[ent_type])
+                
+                if random.random() < prob:
+                    replace_token_pos = re.search(replace_token, sample.original)
+                    sample.test_case = sample.original.replace(
+                        replace_token, chosen_ent)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=replace_token_pos.start(),
+                                    end=replace_token_pos.end(),
+                                    word=replace_token
+                                ),
+                                new_span=Span(
+                                    start=replace_token_pos.start(),
+                                    end=replace_token_pos.start() + len(chosen_ent),
+                                    word=chosen_ent
+                                ),
+                                ignore=False
+                            )
+                        ]
+                else:
+                    sample.test_case = sample.original
+                perturbed_samples.append(sample)
 
-        return sample_list
+        return perturbed_samples
 
 class ConvertAccent(BaseRobustness):
     """A class for converting accents in text samples."""
@@ -539,7 +550,7 @@ class AddContext(BaseRobustness):
         starting_context: Optional[List[str]] = None,
         ending_context: Optional[List[str]] = None,
         strategy: str = None,
-       
+        count: int = 1
     ) -> List[Sample]:
         """
         Adds context to the input sentences.
@@ -551,11 +562,12 @@ class AddContext(BaseRobustness):
             starting_context (Optional[List[str]]): A list of terms (context) to be added at the start of sentences.
             ending_context (Optional[List[str]]): A list of terms (context) to be added at the end of sentences.
             strategy (str): Config method to adjust where the context tokens are added. Options: 'start', 'end', or 'combined'.
+            count: Number of variations to create.
 
         Returns:
             List[Sample]: The transformed sample list with context added.
         """
-        def context(string, strategy):
+        def context(text, strategy):
             possible_methods = ['start', 'end', 'combined']
             if strategy is None:
                 strategy = random.choice(possible_methods)
@@ -570,8 +582,8 @@ class AddContext(BaseRobustness):
                     add_tokens = random.choice(starting_context)
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
-                    if string != "-":
-                        string = add_string + ' ' + string
+                    if text != "-":
+                        text = add_string + ' ' + text
                         transformations.append(
                             Transformation(
                                 original_span=Span(start=0, end=0, word=""),
@@ -585,33 +597,36 @@ class AddContext(BaseRobustness):
                     add_tokens = random.choice(ending_context)
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
-                    if string != "-":
-                        string = string + ' ' + add_string
+                    if text != "-":
+                        text = text + ' ' + add_string
                         transformations.append(
                             Transformation(
                                 original_span=Span(
-                                start=len(string) - 1, end=len(string), word=""),
-                                new_span=Span(start=len(string), end=len(string) + len(add_string) + 1, word=add_string),
+                                start=len(text) - 1, end=len(text), word=""),
+                                new_span=Span(start=len(text), end=len(text) + len(add_string) + 1, word=add_string),
                                 ignore=True
                             )
                         )
             
-            return string, transformations
+            return text, transformations
 
-        for idx, sample in enumerate(sample_list):
-
-            if isinstance(sample, str):
-                sample_list[idx], _ = context(sample, strategy)
-            else:
-                if sample.task in ("ner", "text-classification"):
-                    sample.test_case, sample.transformations = context(
-                        sample.original, strategy)
+        perturbed_samples = []
+        for s in sample_list:
+            for i in range(count):
+                sample = deepcopy(s)
+                if isinstance(sample, str):
+                    sample, _ = context(sample, strategy)
                 else:
-                    sample.test_case, _ = context(
-                        sample.original, strategy)
-                    
-                sample.category = "robustness"
-        return sample_list
+                    if sample.task in ("ner", "text-classification"):
+                        sample.test_case, sample.transformations = context(
+                            sample.original, strategy)
+                    else:
+                        sample.test_case, _ = context(
+                            sample.original, strategy)
+                        
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
+        return perturbed_samples
 
 
 class AddContraction(BaseRobustness):
@@ -809,7 +824,7 @@ class AddOcrTypo(BaseRobustness):
     alias_name = "add_ocr_typo"
     
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, count: int = 1) -> List[Sample]:
         """
         Add OCR typos to the input samples.
 
@@ -817,6 +832,7 @@ class AddOcrTypo(BaseRobustness):
             sample_list (List[Sample]): A list of samples to be transformed.
             prob (Optional[float]): The probability of adding OCR typos to each sample.
                                     Defaults to 1.0, which means all samples will be transformed.
+            count: Number of variations to create.
 
         Returns:
             List[Sample]: The transformed sample list with ocr typos added
@@ -859,16 +875,19 @@ class AddOcrTypo(BaseRobustness):
 
             return ''.join(results), transformations
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = ocr_typo(r'[^,\s.!?]+', sample)
-            else:
-                sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
-
-        return sample_list
+        perturbed_samples = []
+        for s in sample_list:
+            for i in range(count):
+                sample = deepcopy(s)
+                if isinstance(sample, str):
+                    sample, _ = ocr_typo(r'[^,\s.!?]+', sample)
+                else:
+                    sample.test_case, transformations = ocr_typo(r'[^,\s.!?]+', sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
+        return perturbed_samples
     
 class AbbreviationInsertion(BaseRobustness):
     """A class for adding abbreviations to the input text."""
@@ -930,13 +949,15 @@ class AddSpeechToTextTypo(BaseRobustness):
     alias_name = "add_speech_to_text_typo"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, count: int  = 1) -> List[Sample]:
         """
         Transforms the given sample list by introducing typos simulating speech-to-text errors.
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
                                     Defaults to 1.0, which means all samples will be transformed.
+            count: Number of variations to create.
+
         Returns:
             List[Sample]: The transformed list of samples with speech to text typos added.
         """
@@ -990,16 +1011,20 @@ class AddSpeechToTextTypo(BaseRobustness):
 
             return perturbed_text, transformations
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = convertToSimilarHarmony(sample)
-            else:
-                sample.test_case, transformations = convertToSimilarHarmony(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+        perturbed_samples = []
+        for s in sample_list:
+            for i in range(count):
+                sample = deepcopy(s)
+                if isinstance(sample, str):
+                    sample, _ = convertToSimilarHarmony(sample)
+                else:
+                    sample.test_case, transformations = convertToSimilarHarmony(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
+        return perturbed_samples
 
-        return sample_list
 
 class AddSlangifyTypo(BaseRobustness):
     """A class for adding slangs to text typos to the input text."""
@@ -1081,8 +1106,9 @@ class AddSlangifyTypo(BaseRobustness):
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
-
+                
         return sample_list
+
     
 class MultiplePerturbations(BaseRobustness):
     """ A class for applying multiple perturbations to transform a sample list. """
