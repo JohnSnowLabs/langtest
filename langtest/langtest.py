@@ -162,8 +162,8 @@ class Harness:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
             
-        
-        print("Test Configuration : \n", self._config)
+        formatted_config = json.dumps(self._config, indent=1)
+        print("Test Configuration : \n", formatted_config)
         
         global GLOBAL_MODEL
         if not isinstance(model, dict):
