@@ -125,6 +125,9 @@ class RobustnessTestCase(unittest.TestCase):
             self.assertFalse(sample.test_case[-1].isalnum())
             self.assertEqual(len(sample.transformations), 1)
 
+        transformed_samples = AddPunctuation.transform(self.sentences, count=2)
+        self.assertEqual(len(transformed_samples), len(self.sentences)*2)
+
     def test_strip_punctuation(self) -> None:
         """"""
         transformed_samples = StripPunctuation.transform(self.sentences_with_punctuation)
@@ -144,6 +147,14 @@ class RobustnessTestCase(unittest.TestCase):
         for sample in transformed_samples:
             self.assertEqual(len(sample.transformations), 1)
             self.assertNotEqual(sample.test_case, sample.original)
+
+        transformed_samples = SwapEntities.transform(
+            sample_list=self.sentences,
+            labels=self.labels,
+            terminology=self.terminology,
+            count=2
+        )
+        self.assertEqual(len(transformed_samples), len(self.sentences)*2)
 
     def test_american_to_british(self) -> None:
         """"""
@@ -172,6 +183,14 @@ class RobustnessTestCase(unittest.TestCase):
         for sample in transformed_samples:
             self.assertTrue(sample.test_case.startswith(start_context[0]))
             self.assertTrue(sample.test_case.endswith(end_context[0]))
+        transformed_samples = AddContext.transform(
+            sample_list=self.sentences,
+            starting_context=start_context,
+            ending_context=end_context,
+            strategy="combined",
+            count=2
+        )
+        self.assertEqual(len(transformed_samples), len(self.sentences)*2)
 
     def test_add_contraction(self) -> None:
         """"""
