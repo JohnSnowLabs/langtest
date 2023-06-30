@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Quick Start | NLP Test | John Snow Labs
+seotitle: Quick Start | LangTest | John Snow Labs
 title: Quick Start
 permalink: /docs/pages/docs/install
 key: docs-install
@@ -10,8 +10,8 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-**nlptest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
-You can install **nlptest** using pip or conda.
+**LangTest** is an open-source Python library designed to help developers deliver safe and effective Natural Language Processing (NLP) models.
+You can install **langtest** using pip or conda.
 
 </div><div class="h3-box" markdown="1">
 
@@ -20,7 +20,7 @@ You can install **nlptest** using pip or conda.
 **Using PyPI**:
 
 ```sh
-pip install nlptest
+pip install langtest
 ```
 
 **Using Conda**: 
@@ -29,10 +29,10 @@ Download from johnsnowlabs or conda-forge channel.
 
 ```sh
 # Option 1: From the johnsowlabs channel
-conda install -c johnsnowlabs nlptest
+conda install -c johnsnowlabs langtest
 
 # Option 2: From the conda-forge channel
-conda install -c conda-forge nlptest
+conda install -c conda-forge langtest
 ```
 
 > :bulb: The conda solver is slower than the mamba solver. Install mamba in the 

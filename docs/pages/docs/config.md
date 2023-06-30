@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Config | NLP Test | John Snow Labs
+seotitle: Config | LangTest | John Snow Labs
 title: Config
 permalink: /docs/pages/docs/config
 key: docs-install
@@ -34,7 +34,7 @@ tests:
 ```
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness with config file
 h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv', config='config.yml')
@@ -43,7 +43,7 @@ h = Harness(task='text-classification', model='path/to/local_saved_model', hub='
 #### Using the `.configure()` Method
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness without config file
 h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv')

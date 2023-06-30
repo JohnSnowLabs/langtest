@@ -14,8 +14,8 @@ Supported Custom Bias Data Category:
 To add custom bias, you can follow these steps:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 # Create a Harness object
 harness = Harness(
@@ -35,4 +35,4 @@ When adding custom bias data, it's important to note that each custom bias categ
 
 Additionally, it's important to remember that when you add custom bias data, it will affect a particular set of bias tests based on the category and data provided.
 
-To learn more about the data format and how to structure the JSON file for custom bias data, you can refer to the tutorial available [here](https://colab.research.google.com/github/JohnSnowLabs/nlptest/blob/main/demo/tutorials/test-specific-notebooks/Custom_Bias_Demo.ipynb).
+To learn more about the data format and how to structure the JSON file for custom bias data, you can refer to the tutorial available [here](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Custom_Bias_Demo.ipynb).

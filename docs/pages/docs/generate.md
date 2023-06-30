@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Generating Test Cases | NLP Test | John Snow Labs
+seotitle: Generating Test Cases | LangTest | John Snow Labs
 title: Generating Test Cases
 permalink: /docs/pages/docs/generate
 key: docs-install
@@ -31,7 +31,7 @@ tests:
 ```
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness with config file
 h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv', config='config.yml')
@@ -40,7 +40,7 @@ h = Harness(task='text-classification', model='path/to/local_saved_model', hub='
 #### Using the `.configure()` Method
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness without config file
 h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv')

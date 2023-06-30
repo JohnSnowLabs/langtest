@@ -1,6 +1,6 @@
 ---
 layout: docs
-seotitle: Model | NLP Test | John Snow Labs
+seotitle: Model | LangTest | John Snow Labs
 title: Model
 permalink: /docs/pages/docs/model
 key: docs-install
@@ -21,7 +21,7 @@ pip install johnsnowlabs
 ```
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 h = Harness(task='ner', model='ner_dl_bert', hub='johnsnowlabs', data='test.conll', config='config.yml')
 
 # Generate test cases, run them and view a report
@@ -57,7 +57,7 @@ ner_pipeline = nlp.Pipeline().setStages([documentAssembler,
 
 ner_model_pipeline = ner_pipeline.fit(spark.createDataFrame([[""]]).toDF("text"))
 
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness
 h = Harness(task='ner', model=ner_model_pipeline, hub='johnsnowlabs', data='test.conll', config='config.yml')
@@ -69,7 +69,7 @@ h.generate().run().report()
 #### Locally Saved Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness
 h = Harness(task='ner', model='path/to/local_saved_model', hub='johnsnowlabs', data='test.conll', config='config.yml')
@@ -85,7 +85,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness
 h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface', data='test.conll', config='config.yml')
@@ -97,7 +97,7 @@ h.generate().run().report()
 #### Locally Saved Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness
 h = Harness(task='text-classification', model='path/to/local_saved_model', hub='huggingface', data='test.csv', config='config.yml')
@@ -113,7 +113,7 @@ h.generate().run().report()
 Using any large language model from the [OpenAI API](https://platform.openai.com/docs/models/overview):
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ['OPENAI_API_KEY'] = ''
@@ -132,7 +132,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness
 h = Harness(task='ner', model='en_core_web_sm', hub='spacy', data='test.conll', config='config.yml')
@@ -144,7 +144,7 @@ h.generate().run().report()
 #### Locally Saved Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Create test Harness
 h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv', config='config.yml')
@@ -159,7 +159,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ["COHERE_API_KEY"] = "<YOUR_API_KEY>"
@@ -178,7 +178,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ["AI21_API_KEY"] = "<YOUR_API_KEY>"
@@ -196,7 +196,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ["OPENAI_API_KEY"] = "<API_KEY>"
@@ -220,7 +220,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```python
-from nlptest import Harness
+from langtest import Harness
 
 # Set API keys
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = "<API_TOKEN>"

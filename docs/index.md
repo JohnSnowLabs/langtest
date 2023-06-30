@@ -1,6 +1,6 @@
 ---
 layout: landing
-title: 'NLP Test <span>Deliver Safe & Effective Language Models</span>'
+title: 'LangTest <span>Deliver Safe & Effective Language Models</span>'
 excerpt: <br> 50+ Tests Evaluating Language Models
 permalink: /
 header: true
@@ -11,7 +11,7 @@ article_header:
      url: /docs/pages/docs/install   
    - text: '<i class="fab fa-github"></i>Star on GitHub'
      type: full_white
-     url: https://github.com/JohnSnowLabs/nlptest 
+     url: https://github.com/JohnSnowLabs/langtest 
    - text: '<i class="fab fa-slack-hash"></i> Slack'
      type: trans
      url: https://spark-nlp.slack.com/archives/C051A5XG6CU   
@@ -40,7 +40,7 @@ data:
    - title: Fully Integrated Workflow
      topimage: 
       - image:
-          src: assets/images/home/nlptest_flow_graphic.png
+          src: assets/images/home/langtest_flow_graphic.png
         
    - trusted: yes
      featureitem: sponsor

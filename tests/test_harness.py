@@ -1,15 +1,14 @@
 import os
 import unittest
-
 import pandas as pd
-
-from nlptest import Harness
-from nlptest.modelhandler.modelhandler import ModelFactory
-from nlptest.utils.custom_types import Sample
-
+from langtest import Harness
+from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.utils.custom_types import Sample
 
 class HarnessTestCase(unittest.TestCase):
-
+    """
+    Test case for the Harness class.
+    """
     @classmethod
     def setUpClass(cls) -> None:
         """"""
@@ -26,37 +25,47 @@ class HarnessTestCase(unittest.TestCase):
         cls.harness.generate().run()
 
     def test_Harness(self):
-        """"""
+        """
+        Test the Harness instance.
+        """
         self.assertIsInstance(self.harness, Harness)
 
     def test_missing_parameter(self):
-        """"""
+        """
+        Test handling of missing parameters in Harness instantiation.
+        """
         with self.assertRaises(ValueError) as _:
             Harness(task='ner', model='dslim/bert-base-NER',
                     data=self.data_path, config=self.config_path)
 
     def test_attributes(self):
         """
-        Testing Attributes of Harness Class
+        Test the attributes of the Harness class.
         """
         self.assertIsInstance(self.harness.task, str)
         self.assertIsInstance(self.harness.model, (str, ModelFactory))
         self.assertIsInstance(self.harness._config, (str, dict))
 
     def test_generate_testcases(self):
-        """"""
+        """
+        Test generating test cases.
+        """
         load_testcases = self.harness._testcases
         self.assertIsInstance(load_testcases, list)
         self.assertIsInstance(load_testcases[0], Sample.__constraints__)
 
     def test_run_testcases(self):
-        """"""
+        """
+        Test running test cases.
+        """
         robustness_results = self.harness._generated_results
         self.assertIsInstance(robustness_results, list)
         self.assertIsInstance(robustness_results[0], Sample.__constraints__)
 
     def test_report(self):
-        """"""
+        """
+        Test generating a report.
+        """
         df = self.harness.report()
         self.assertCountEqual(
             df.columns.tolist(),
@@ -64,7 +73,9 @@ class HarnessTestCase(unittest.TestCase):
              'minimum_pass_rate', 'pass'])
 
     def test_incompatible_tasks(self):
-        """"""
+        """
+        Test handling of incompatible tasks.
+        """
         with self.assertRaises(ValueError):
             Harness(
                 task="text-classifer",
@@ -75,7 +86,9 @@ class HarnessTestCase(unittest.TestCase):
             )
 
     def test_unsupported_test_for_task(self):
-        """"""
+        """
+        Test handling of unsupported tests for a task.
+        """
         with self.assertRaises(ValueError):
             h = Harness(
                 task="text-classification",
@@ -86,7 +99,9 @@ class HarnessTestCase(unittest.TestCase):
             h.generate()
 
     def test_save(self):
-        """"""
+        """
+        Test saving the Harness object.
+        """
         save_dir = "/tmp/saved_harness_test"
         self.harness.save(save_dir)
 
@@ -94,7 +109,9 @@ class HarnessTestCase(unittest.TestCase):
             'config.yaml', 'test_cases.pkl', 'data.pkl'])
 
     def test_load_ner(self):
-        """"""
+        """
+        Test loading a saved Harness object for NER task.
+        """
         save_dir = "/tmp/saved_ner_harness_test"
         self.harness.save(save_dir)
 
@@ -109,7 +126,9 @@ class HarnessTestCase(unittest.TestCase):
         self.assertNotEqual(self.harness.model, loaded_harness.model)
 
     def test_load_text_classification(self):
-        """"""
+        """
+        Test loading a saved Harness object for text classification task.
+        """
         save_dir = "/tmp/saved_text_classification_harness_test"
         tc_harness = Harness(
             task='text-classification',
@@ -132,7 +151,9 @@ class HarnessTestCase(unittest.TestCase):
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
 
     def test_load_HF_data_text_classification(self):
-        """"""
+        """
+        Test loading a saved Harness object with Hugging Face data for text classification task.
+        """
         save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
         tc_harness = Harness(task="text-classification", hub="huggingface",
                             model="aychang/roberta-base-imdb",
@@ -186,40 +207,56 @@ class HarnessTestCase(unittest.TestCase):
         harness.run().report()
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
-    """"""
-
+    """
+    Test case for the default code blocks.
+    """
     def test_non_existing_default(self):
+        """
+        Test handling of non-existing default models.
+        """
         with self.assertRaises(ValueError):
             h = Harness(task="ner", model="xxxxxxxxx", hub="spacy")
 
     def test_ner_spacy(self):
-        """"""
+        """
+        Test NER task with Spacy model.
+        """
         h = Harness(task="ner", model="en_core_web_sm", hub="spacy")
         h.generate().run().report()
 
     def test_ner_hf(self):
-        """"""
+        """
+        Test NER task with Hugging Face model.
+        """
         h = Harness(task="ner", model="dslim/bert-base-NER", hub="huggingface")
         h.generate().run().report()
 
     def test_ner_jsl(self):
-        """"""
+        """
+        Test NER task with John Snow Labs model.
+        """
         h = Harness(task="ner", model="ner_dl_bert", hub="johnsnowlabs")
         h.generate().run().report()
 
     def test_text_classification_spacy(self):
-        """"""
+        """
+        Test text classification task with Spacy model.
+        """
         h = Harness(task="text-classification", model="textcat_imdb", hub="spacy")
         h.generate().run().report()
 
     def test_text_classification_hf(self):
-        """"""
+        """
+        Test text classification task with Hugging Face model.
+        """
         h = Harness(task="text-classification", model="lvwerra/distilbert-imdb",
                     hub="huggingface")
         h.generate().run().report()
 
     def test_text_classification_jsl(self):
-        """"""
+        """
+        Test text classification task with John Snow Labs model.
+        """
         try:
             h = Harness(task="text-classification", model="en.sentiment.imdb.glove", hub="johnsnowlabs")
             h.generate().run().report()

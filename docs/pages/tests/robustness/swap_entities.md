@@ -16,8 +16,13 @@ This test shuffles the labeled entities in the input to test the models robustne
 ```yaml
 swap_entities:
     min_pass_rate: 0.8
+    prob: 0.5 # Defaults to 1.0, which means all words will be transformed.
 ```
+<i class="fa fa-info-circle"></i>
+<em>You can adjust the level of transformation in the sentence by using the "`prob`" parameter, which controls the proportion of words to be changed during `swap_entities` test.</em>
+
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
+- **prob (float):** Controls the proportion of words to be changed.
 
 </div><div class="h3-box" markdown="1">
 
