@@ -1,0 +1,12 @@
+
+model_parameters:
+  target_language: 'fr'
+  
+tests:
+  defaults:
+    min_pass_rate: 1.0,
+  robustness:
+    add_typo:
+      min_pass_rate: 0.70
+    uppercase:
+      min_pass_rate: 0.70

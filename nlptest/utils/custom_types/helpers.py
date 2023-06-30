@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class Span(BaseModel):
     """Representation of a text's slice"""
     start: int
@@ -51,3 +50,6 @@ class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
+
+
+        

@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
 from .helpers import Transformation, Span
+from ..SentenceTransformer import SimpleSentenceTransformer
+from ..util_metrics import cosine_similarity
 from .output import NEROutput, Result
 from .predictions import NERPrediction
 
@@ -656,3 +658,69 @@ class RuntimeSample(BaseModel):
                     unit=unit)
             self.total = total
         return total
+        
+class TranslationSample(BaseModel):
+    original: str
+    test_case: str = None
+    expected_results: Result = None
+    actual_results: Result = None
+    
+    state: str = None
+    dataset_name: str = None 
+    task: str = None     #translation
+    category: str = None  
+    test_type: str = None  
+
+    def __init__(self, **data):
+        super().__init__(**data)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        
+        result = {
+            'category': self.category,
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case':self.test_case,
+            'actual_result': self.actual_results
+        }
+
+        if self.actual_results is not None:
+            bool_pass, eval_score = self._is_eval()
+            result.update({
+                'expected_result': self.expected_results,
+                'actual_result': self.actual_results,
+                'eval_score': eval_score,
+                'pass': bool_pass
+            })
+
+        return result
+    
+    def is_pass(self) :
+        """"""
+        return self._is_eval()[0]
+    
+    def _is_eval(self) -> bool:
+        """"""
+
+        model = SimpleSentenceTransformer()
+        
+        # Get the sentence vectors
+        vectors1 = model.encode([self.original], convert_to_tensor=True)
+        vectors2 = model.encode([self.test_case], convert_to_tensor=True)
+        vectors3 = model.encode([self.expected_results.translation_text], convert_to_tensor=True)
+        vectors4 = model.encode([self.actual_results.translation_text], convert_to_tensor=True)
+
+        original_similarities = cosine_similarity(vectors1.cpu().numpy(), vectors2.cpu().numpy())
+        translation_similarities = cosine_similarity(vectors3.cpu().numpy(), vectors4.cpu().numpy())
+        
+        return abs(original_similarities-translation_similarities)[0] < 0.1, abs(original_similarities-translation_similarities)[0]
+     
+    
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split('-')[0].lower()
+        self.expected_results = model(text=self.original)
+        self.actual_results = model(text=self.test_case)
+       
+        return True
+        
