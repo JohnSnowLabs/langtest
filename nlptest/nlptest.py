@@ -3,7 +3,6 @@ import os
 import pickle
 from collections import defaultdict
 from typing import Dict, List, Optional, Union, Any
-import langchain
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
@@ -59,7 +58,7 @@ class Harness:
     def __init__(
             self,
             task: str,
-            model: Optional[Union[str, Any]]=None,
+            model: Optional[Union[str, Any]] = None,
             hub: Optional[str] = None,
             data: Optional[Union[str, dict]] = None,
             config: Optional[Union[str, dict]] = None,
@@ -118,10 +117,10 @@ class Harness:
 
             if hub == "spacy" and (model == 'textcat_imdb' or model is None):
                 if model is None:
-                    logging.warning("Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
+                    logging.warning(
+                        "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("nlptest", "data/textcat_imdb")
 
-            
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "
@@ -340,9 +339,11 @@ class Harness:
                 min_pass_rate = self.min_pass_dict.get(
                     test_type, self.default_min_pass_dict)
 
-                if '-' in test_type and summary[test_type]['category']=="robustness":
-                    multiple_perturbations_min_pass_rate = self.min_pass_dict.get("multiple_perturbations", self.default_min_pass_dict)
-                    min_pass_rate = self.min_pass_dict.get(test_type, multiple_perturbations_min_pass_rate)
+                if '-' in test_type and summary[test_type]['category'] == "robustness":
+                    multiple_perturbations_min_pass_rate = self.min_pass_dict.get(
+                        "multiple_perturbations", self.default_min_pass_dict)
+                    min_pass_rate = self.min_pass_dict.get(
+                        test_type, multiple_perturbations_min_pass_rate)
                 if summary[test_type]['category'] == "Accuracy":
                     min_pass_rate = 1
 
@@ -373,25 +374,33 @@ class Harness:
                 self.df_report[f'time_elapsed ({unit})'] = self.df_report['test_type'].apply(
                     lambda x: self._runtime.total_time(unit)[x])
 
-            
-            if format=="dataframe":
+            if format == "dataframe":
                 return self.df_report
-            elif format=="dict":
+            elif format == "dict":
                 return self.df_report.to_dict("records")
-            elif format=="excel":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "excel":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 self.df_report.to_excel(save_dir)
-            elif format=="html":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "html":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 self.df_report.to_html(save_dir)
-            elif format=="markdown":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "markdown":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 self.df_report.to_markdown(save_dir)
-            elif format=="text" or format=="csv":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "text" or format == "csv":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 self.df_report.to_csv(save_dir)
             else:
-                raise ValueError(f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
+                raise ValueError(
+                    f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
 
         else:
             df_final_report = pd.DataFrame()
@@ -430,15 +439,14 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
-                
-                
+
                 if return_runtime:
                     if k not in time_elapsed:
-                        time_elapsed[k] = df_report['model_name'].apply(lambda x: self._runtime.multi_model_total_time(unit)[x])
-             
+                        time_elapsed[k] = df_report['model_name'].apply(
+                            lambda x: self._runtime.multi_model_total_time(unit)[x])
+
                 df_final_report = pd.concat([df_final_report, df_report])
-            
-            
+
             df_final_report['minimum_pass_rate'] = df_final_report['minimum_pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
             pivot_minimum_pass_rate_df = df_final_report.pivot_table(
@@ -446,44 +454,54 @@ class Harness:
 
             df_final_report['pass_rate'] = df_final_report['pass_rate'].str.rstrip(
                 '%').astype('float') / 100.0
-            
+
             pivot_df = df_final_report.pivot_table(
                 index='model_name', columns='test_type', values='pass_rate', aggfunc='mean')
 
             def color_cells(series):
                 res = []
                 for x in series.index:
-                    res.append(df_final_report[(df_final_report["test_type"]==series.name) & (df_final_report["model_name"]==x)]["pass"].all())
+                    res.append(df_final_report[(df_final_report["test_type"] == series.name) & (
+                        df_final_report["model_name"] == x)]["pass"].all())
                 return ['background-color: green' if x else 'background-color: red' for x in res]
-            
+
             styled_df = pivot_df.style.apply(color_cells)
             if return_runtime:
-                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
-                df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=['model_name', f'time_elapsed ({unit})'])
+                time_elapsed_mean = {k: v.mean()
+                                     for k, v in time_elapsed.items()}
+                df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=[
+                                               'model_name', f'time_elapsed ({unit})'])
                 df_time_elapsed.set_index('model_name', inplace=True)
                 from IPython.display import display
                 display(df_time_elapsed)
 
-
-        
-            if format=="dataframe":
+            if format == "dataframe":
                 return styled_df
-            elif format=="dict":
+            elif format == "dict":
                 return styled_df.to_dict("records")
-            elif format=="excel":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "excel":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 styled_df.to_excel(save_dir)
-            elif format=="html":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "html":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 styled_df.to_html(save_dir)
-            elif format=="markdown":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "markdown":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 styled_df.to_markdown(save_dir)
-            elif format=="text" or format=="csv":
-                if save_dir is None: raise ValueError("You need to set \"save_dir\" parameter for this format.")
+            elif format == "text" or format == "csv":
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
                 styled_df.to_csv(save_dir)
             else:
-                raise ValueError(f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
+                raise ValueError(
+                    f"Report in format \"{format}\" is not supported. Please use \"dataframe\", \"excel\", \"html\", \"markdown\", \"text\", \"dict\".")
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """
@@ -686,3 +704,25 @@ class Harness:
             data = json.load(f)
 
         TestFactory.call_add_custom_bias(data, test_name, append)
+
+    def edit_testcases(self, output_path: str, **kwargs):
+        """ testcases is exported to a csv file and can be edited. 
+        The edited file can be imported back to the harness"""
+        temp_df = self.testcases()
+        temp_df = temp_df[temp_df['category'].isin(['robustness', 'bias'])]
+        temp_df.to_csv(output_path, index=False)
+
+        return self
+
+    def import_edited_testcases(self, input_path: str, **kwargs):
+        """ testcases is imported from a csv file and can be edited.
+        The edited file can be imported back to the harness"""
+
+        temp_testcases = [sample for sample in self._testcases if sample.category not in [
+            'robustness', 'bias']]
+
+        self._testcases = DataFactory(
+            input_path, task=self.task, is_import=True).load()
+        self._testcases.extend(temp_testcases)
+
+        return self

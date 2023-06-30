@@ -1,6 +1,8 @@
 import os
 import unittest
 
+import pandas as pd
+
 from nlptest import Harness
 from nlptest.modelhandler.modelhandler import ModelFactory
 from nlptest.utils.custom_types import Sample
@@ -149,6 +151,39 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+    
+    def test_harness_edit_import_testcases(self):
+        """"""
+        save_dir = "/tmp/saved_harness_edit_import_testcases"
+
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        
+        harness = Harness(
+            task="ner",
+            model="bert-base-cased",
+            data="tests/fixtures/test.conll",
+            hub="huggingface"
+        )
+        harness.data = harness.data[:10]
+        harness.generate()
+
+        # edit the testcases
+        harness.edit_testcases(save_dir+"/test_cases.csv")
+
+        # test the file is generated or not
+        self.assertTrue(os.path.exists(save_dir+"/test_cases.csv"))
+
+        # remove the testcases randomly
+        df = pd.read_csv(save_dir+"/test_cases.csv")
+        df = df.sample(frac=0.5)
+        df.to_csv(save_dir+"/test_cases.csv", index=False)
+
+        # import the testcases
+        harness.import_edited_testcases(save_dir+"/test_cases.csv")
+
+        # test working of the harness
+        harness.run().report()
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """"""
