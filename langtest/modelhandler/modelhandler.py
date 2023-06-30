@@ -36,7 +36,7 @@ class ModelFactory:
     A factory class for instantiating models.
     """
 
-    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization", "toxicity"]
+    SUPPORTED_TASKS = ["ner", "text-classification", "question-answering","summarization", "toxicity","translation"]
     SUPPORTED_MODULES = ['pyspark', 'sparknlp',
                          'nlu', 'transformers', 'spacy', 'langchain']
     SUPPORTED_HUBS = ['johnsnowlabs', 'spacy', 'huggingface']
@@ -96,6 +96,9 @@ class ModelFactory:
              _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
              self.model_class = model_handler.PretrainedModelForToxicity(
                 hub, model, *args, **kwargs)
+             
+        elif task == 'translation':
+            self.model_class = model_handler.PretrainedModelForTranslation(model)
              
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(
@@ -167,6 +170,9 @@ class ModelFactory:
             _ = kwargs.pop('user_prompt') if 'user_prompt' in kwargs else kwargs
             model_class = modelhandler_module.PretrainedModelForToxicity.load_model(
                 hub, path, *args, **kwargs)
+        elif task == 'translation':
+            model_class = modelhandler_module.PretrainedModelForTranslation.load_model(path)
+            
         else:
             model_class = modelhandler_module.PretrainedModelForTextClassification.load_model(
                 path)

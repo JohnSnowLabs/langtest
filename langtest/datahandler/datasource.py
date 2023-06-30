@@ -4,7 +4,7 @@ import re
 import jsonlines
 from abc import ABC, abstractmethod
 from typing import Dict, List
-from langtest.utils.custom_types.sample import ToxicitySample
+from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
@@ -145,6 +145,7 @@ class DataFactory:
             'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
             'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
             'HellaSwag-test-tiny' : script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
+            'Translation-test':  script_dir[:-7]+'/Translation/translation-test-tiny.jsonl'
         }
         return datasets_info[dataset_name]
 
@@ -517,6 +518,16 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split('/')[-2]
                         )
                     )
+                    
+                elif (self.task == 'translation'):
+                    data.append(
+                        TranslationSample(
+                            original=item['sourceString'],
+                            task=self.task,
+                            dataset_name=self._file_path.split('/')[-2]
+                        )
+                    )
+                    
 
         return data
 

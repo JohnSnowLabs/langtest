@@ -4,7 +4,7 @@ import numpy as np
 from transformers import Pipeline, pipeline
 
 from .modelhandler import _ModelHandler
-from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
+from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput, TranslationOutput
 
 
 class PretrainedModelForNER(_ModelHandler):
@@ -249,3 +249,67 @@ class PretrainedModelForTextClassification(_ModelHandler):
     def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
+
+class PretrainedModelForTranslation(_ModelHandler):
+    """
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
+    """
+
+    def __init__(
+            self,
+            model
+    ):
+        """
+        Attributes:
+            model (transformers.pipeline.Pipeline):
+                Loaded translation pipeline for predictions.
+        """
+
+        assert isinstance(model, Pipeline), \
+            ValueError(f"Invalid transformers pipeline! "
+                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
+        self.model = model
+
+
+    @classmethod
+    def load_model(cls, path: str) -> 'Pipeline':
+        """Load the Translation model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+        from ..langtest import HARNESS_CONFIG as harness_config
+        
+        config = harness_config['model_parameters']
+        tgt_lang = config.get('target_language')
+
+        if 't5' in path:
+            return pipeline(f"translation_en_to_{tgt_lang}", model=path)
+        else:
+            return pipeline(model=path, src_lang='en', tgt_lang=tgt_lang)
+            
+
+    def predict(self, text: str, **kwargs) -> TranslationOutput:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform translation on.
+            kwargs: Additional keyword arguments.
+
+
+        Returns:
+            TranslationOutput: Output model for translation tasks
+        """
+        prediction = self.model(text, **kwargs)[0]['translation_text']
+        return TranslationOutput(
+            translation_text = prediction
+        )
+    
+    def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)  

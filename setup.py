@@ -177,7 +177,8 @@ setup(
             "data/quac/*",
             "data/OpenBookQA/*",
             "data/MMLU/*",
-            "data/NarrativeQA/*"
+            "data/NarrativeQA/*",
+            "data/Translation/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
