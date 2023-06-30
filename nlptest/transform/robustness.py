@@ -611,9 +611,9 @@ class AddContext(BaseRobustness):
             return text, transformations
 
         perturbed_samples = []
-        for sample in sample_list:
+        for s in sample_list:
             for i in range(count):
-                sample = deepcopy(sample)
+                sample = deepcopy(s)
                 if isinstance(sample, str):
                     sample, _ = context(sample, strategy)
                 else:
