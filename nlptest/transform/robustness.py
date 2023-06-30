@@ -1106,6 +1106,8 @@ class AddSlangifyTypo(BaseRobustness):
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
+                
+        return sample_list
 
     
 class MultiplePerturbations(BaseRobustness):
