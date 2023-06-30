@@ -226,6 +226,9 @@ class RobustnessTestCase(unittest.TestCase):
             [sample.test_case for sample in transformed_samples],
              expected_corrected_sentences
            )
+        transformed_samples = AddOcrTypo.transform(self.ocr_sentences, count=2)
+        self.assertEqual(len(transformed_samples), len(self.ocr_sentences)*2)
+
         
     def test_abbreviation_insertion(self) -> None:
         """"""
@@ -238,6 +241,8 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertTrue(sample.test_case != sample.original or sample.test_case)
+        transformed_samples = AddSpeechToTextTypo.transform(self.speech_to_text_sentences, count=2)
+        self.assertEqual(len(transformed_samples), len(self.speech_to_text_sentences)*2)
         
     def test_add_slangify_typo(self) -> None:
         """"""
