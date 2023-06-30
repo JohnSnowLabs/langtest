@@ -2,7 +2,7 @@
 Quick Start
 ###############
 
-NLP Test Quick Start
+LangTest Quick Start
 =======================
 
 The following can be used as a quick reference on how to get up and running with ``langtest``:
@@ -10,7 +10,7 @@ The following can be used as a quick reference on how to get up and running with
 .. code-block:: bash
     :substitutions:
 
-    # Install NLP Test from PyPI
+    # Install langtest from PyPI
     pip install langtest==|release|
 
 
@@ -36,7 +36,7 @@ We can create a Python `Virtualenv <https://virtualenv.pypa.io/en/latest/>`_:
     source langtest/bin/activate
     pip install langtest==|release| jupyter
 
-Now you should be ready to create a jupyter notebook with NLP Test running:
+Now you should be ready to create a jupyter notebook with LangTest running:
 
 .. code-block:: bash
 
@@ -53,7 +53,7 @@ Then we can create a new environment ``langtest`` and install the ``langtest`` p
     conda activate langtest
     conda install -c langtest==|release| jupyter
 
-Now you should be ready to create a jupyter notebook with NLP Test running:
+Now you should be ready to create a jupyter notebook with LangTest running:
 
 .. code-block:: bash
 

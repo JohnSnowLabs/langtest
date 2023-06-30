@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-NLP Test Documentation
+LangTest Documentation
 =======================================
 
-This page contains technical documentation for the NLP Test library. For in-depth explanations around usage, supported NLP tasks and test types, please head over to `langtest.org <https://www.langtest.org/>`_
+This page contains technical documentation for the LangTest library. For in-depth explanations around usage, supported NLP tasks and test types, please head over to `langtest.org <https://www.langtest.org/>`_
 
 .. toctree::
    :maxdepth: 2
