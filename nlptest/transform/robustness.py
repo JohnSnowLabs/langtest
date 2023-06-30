@@ -448,31 +448,31 @@ class SwapEntities(BaseRobustness):
                 token_length = len(replace_token)
                 replace_token = " ".join(replace_token)
 
-            chosen_ent = random.choice(terminology[ent_type])
-            
-            if random.random() < prob:
-                replace_token_pos = re.search(replace_token, sample.original)
-                sample.test_case = sample.original.replace(
-                    replace_token, chosen_ent)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = [
-                        Transformation(
-                            original_span=Span(
-                                start=replace_token_pos.start(),
-                                end=replace_token_pos.end(),
-                                word=replace_token
-                            ),
-                            new_span=Span(
-                                start=replace_token_pos.start(),
-                                end=replace_token_pos.start() + len(chosen_ent),
-                                word=chosen_ent
-                            ),
-                            ignore=False
-                        )
-                    ]
-            else:
-                sample.test_case = sample.original
-            perturbed_samples.append(sample)
+                chosen_ent = random.choice(terminology[ent_type])
+                
+                if random.random() < prob:
+                    replace_token_pos = re.search(replace_token, sample.original)
+                    sample.test_case = sample.original.replace(
+                        replace_token, chosen_ent)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=replace_token_pos.start(),
+                                    end=replace_token_pos.end(),
+                                    word=replace_token
+                                ),
+                                new_span=Span(
+                                    start=replace_token_pos.start(),
+                                    end=replace_token_pos.start() + len(chosen_ent),
+                                    word=chosen_ent
+                                ),
+                                ignore=False
+                            )
+                        ]
+                else:
+                    sample.test_case = sample.original
+                perturbed_samples.append(sample)
 
         return perturbed_samples
 
