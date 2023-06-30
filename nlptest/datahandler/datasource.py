@@ -5,6 +5,7 @@ import jsonlines
 import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Dict, List
+from nlptest.utils.custom_types import sample
 from nlptest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
