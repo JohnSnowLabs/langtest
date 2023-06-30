@@ -117,4 +117,35 @@ class NEROutput(BaseModel):
         raise NotImplementedError()
 
 
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, MaxScoreOutput, List[str], str)
+class TranslationOutput(BaseModel):
+    """
+    Output model for translation tasks.
+    """
+    translation_text: str  # Changed from List[str] to str
+
+    def to_str_list(self) -> List[str]:
+        """
+        Returns the translation_text as a list of strings.
+        """
+        return [self.translation_text]  # Wrap self.translation_text in a list
+
+    def __str__(self):
+        """
+        String representation of TranslationOutput.
+        """
+        return self.translation_text  # Return translation_text directly
+
+    def __eq__(self, other):
+        """
+        Equality comparison method.
+        """
+        if isinstance(other, TranslationOutput):
+            return self.translation_text == other.translation_text
+        if isinstance(other, list):
+            return [self.translation_text] == other  # Compare list with single item to other
+        return False
+
+
+
+
+Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, TranslationOutput, MaxScoreOutput, List[str], str)

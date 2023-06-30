@@ -26,7 +26,7 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification",
-                       "question-answering", "summarization", "toxicity"]
+                       "question-answering", "summarization", "toxicity","translation"]
     SUPPORTED_HUBS = ["spacy", "huggingface",
                       "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
@@ -49,7 +49,9 @@ class Harness:
             'huggingface-inference-api': resource_filename("nlptest", "data/config/huggingface_config.yml")
         },
         'task': {
-            'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml")
+            'toxicity': resource_filename("nlptest", "data/config/toxicity_config.yml"),
+            'translation-huggingface': resource_filename("nlptest", "data/config/translation_transformers_config.yml"),
+            'translation-johnsnowlabs': resource_filename("nlptest", "data/config/translation_johnsnowlabs_config.yml")
         }
     }
 
@@ -78,6 +80,8 @@ class Harness:
         super().__init__()
 
         self.is_default = False
+        self._actual_model = model
+        self.hub =  hub
 
         if (task not in self.SUPPORTED_TASKS):
             raise ValueError(
@@ -137,6 +141,9 @@ class Harness:
             else:
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG['hubs'][hub])
+        elif task=="translation" :
+            self._config = self.configure(
+                    self.DEFAULTS_CONFIG['task'][task+"-"+hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
@@ -157,7 +164,10 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-
+            
+        
+        print("Test Configuration : \n", self._config)
+        
         global GLOBAL_MODEL
         if not isinstance(model, dict):
             GLOBAL_MODEL = self.model
@@ -196,7 +206,26 @@ class Harness:
 
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
+        model = GLOBAL_MODEL
+        if self.task == 'translation' and model:
+                hub = self.hub
+                model = self._actual_model
+                task = self.task
+                
+                if isinstance(model, str):
+                    self.model = ModelFactory.load_model(
+                        path=model, task=task, hub=hub,**self._config.get("model_parameters", {}))
 
+                elif isinstance(model, dict):
+                    model_dict = {}
+                    for k, v in model.items():
+                        model_dict[k] = ModelFactory.load_model(
+                            task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
+                    self.model = model_dict
+                else:
+                    self.model = ModelFactory(
+                        task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
+    
         return self._config
 
     def generate(self) -> "Harness":
