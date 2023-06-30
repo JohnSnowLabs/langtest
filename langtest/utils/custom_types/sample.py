@@ -750,7 +750,17 @@ class RuntimeSample(BaseModel):
             self.total = total
         return total
 
-    def convert_ns_to_unit(self, time, unit='ms'):
+    def convert_ns_to_unit(self, time: Union[int, float], unit: str ='ms'):
+        """	
+        Converts time from nanoseconds to the specified unit.	
+
+
+        Args:	  
+            time (Union[int, float]): The time value to convert.	       
+            unit (str, optional): The unit of time to convert to (default: 'ms').	                
+        Returns:	
+            Union[int, float]: The converted time value.	
+        """
         unit_dict = {'ns': 1, 'us': 1e3, 'ms': 1e6,
                      's': 1e9, 'm': 6e10, 'h': 3.6e12}
         return time / unit_dict[unit]
