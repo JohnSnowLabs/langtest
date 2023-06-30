@@ -567,7 +567,7 @@ class AddContext(BaseRobustness):
         Returns:
             List[Sample]: The transformed sample list with context added.
         """
-        def context(string, strategy):
+        def context(text, strategy):
             possible_methods = ['start', 'end', 'combined']
             if strategy is None:
                 strategy = random.choice(possible_methods)
@@ -582,8 +582,8 @@ class AddContext(BaseRobustness):
                     add_tokens = random.choice(starting_context)
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
-                    if string != "-":
-                        string = add_string + ' ' + string
+                    if text != "-":
+                        text = add_string + ' ' + text
                         transformations.append(
                             Transformation(
                                 original_span=Span(start=0, end=0, word=""),
@@ -597,18 +597,18 @@ class AddContext(BaseRobustness):
                     add_tokens = random.choice(ending_context)
                     add_string = " ".join(add_tokens) if isinstance(
                         add_tokens, list) else add_tokens
-                    if string != "-":
-                        string = string + ' ' + add_string
+                    if text != "-":
+                        text = text + ' ' + add_string
                         transformations.append(
                             Transformation(
                                 original_span=Span(
-                                start=len(string) - 1, end=len(string), word=""),
-                                new_span=Span(start=len(string), end=len(string) + len(add_string) + 1, word=add_string),
+                                start=len(text) - 1, end=len(text), word=""),
+                                new_span=Span(start=len(text), end=len(text) + len(add_string) + 1, word=add_string),
                                 ignore=True
                             )
                         )
             
-            return string, transformations
+            return text, transformations
 
         perturbed_samples = []
         for sample in sample_list:
