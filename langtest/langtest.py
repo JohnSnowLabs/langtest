@@ -151,7 +151,7 @@ class Harness:
             self.model = ModelFactory.load_model(
                 path=model, task=task, hub=hub, **self._config.get("model_parameters", {}))
 
-        elif isinstance(model, dict):
+        elif type(model) == dict:
             model_dict = {}
             for k, v in model.items():
                 model_dict[k] = ModelFactory.load_model(
