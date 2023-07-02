@@ -575,14 +575,14 @@ class Harness:
                 "%", "").astype(int)
 
         # checking if the custom_proportions are valid
-        vaild_test_types = set(custom_proportions.keys() if isinstance(
-            custom_proportions, dict) else custom_proportions)
-        
-        report_test_types = set(self.df_report['test_type'].unique())
-        
-        if not (vaild_test_types.issubset(report_test_types)):
-            raise ValueError(
-                f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types.")
+        if custom_proportions:
+            vaild_test_types = set(custom_proportions.keys() if isinstance(
+                custom_proportions, dict) else custom_proportions)
+            report_test_types = set(self.df_report['test_type'].unique())
+            
+            if not (vaild_test_types.issubset(report_test_types)):
+                raise ValueError(
+                    f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types.")
 
         _ = AugmentRobustness(
             task=self.task,
