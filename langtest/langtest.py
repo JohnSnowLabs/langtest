@@ -24,7 +24,7 @@ class Harness:
     used to test the model. A report is generated with test results.
     """
     SUPPORTED_TASKS = ["ner", "text-classification",
-                       "question-answering", "summarization", "toxicity","translation"]
+                       "question-answering", "summarization", "toxicity", "translation"]
     SUPPORTED_HUBS = ["spacy", "huggingface",
                       "johnsnowlabs", "openai", "cohere", "ai21"]
     SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
@@ -79,7 +79,7 @@ class Harness:
 
         self.is_default = False
         self._actual_model = model
-        self.hub =  hub
+        self.hub = hub
 
         if (task not in self.SUPPORTED_TASKS):
             raise ValueError(
@@ -115,7 +115,8 @@ class Harness:
 
             if hub == "spacy" and (model == 'textcat_imdb' or model is None):
                 if model is None:
-                    logging.warning("Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
+                    logging.warning(
+                        "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("langtest", "data/textcat_imdb")
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
@@ -138,9 +139,9 @@ class Harness:
             else:
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG['hubs'][hub])
-        elif task=="translation" :
+        elif task == "translation":
             self._config = self.configure(
-                    self.DEFAULTS_CONFIG['task'][task+"-"+hub])
+                self.DEFAULTS_CONFIG['task'][task+"-"+hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
@@ -161,10 +162,10 @@ class Harness:
         else:
             self.model = ModelFactory(
                 task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-            
+
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)
-        
+
         global GLOBAL_MODEL
         if not isinstance(model, dict):
             GLOBAL_MODEL = self.model
@@ -205,24 +206,24 @@ class Harness:
         HARNESS_CONFIG = self._config
         model = GLOBAL_MODEL
         if self.task == 'translation' and model:
-                hub = self.hub
-                model = self._actual_model
-                task = self.task
-                
-                if isinstance(model, str):
-                    self.model = ModelFactory.load_model(
-                        path=model, task=task, hub=hub,**self._config.get("model_parameters", {}))
+            hub = self.hub
+            model = self._actual_model
+            task = self.task
 
-                elif isinstance(model, dict):
-                    model_dict = {}
-                    for k, v in model.items():
-                        model_dict[k] = ModelFactory.load_model(
-                            task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
-                    self.model = model_dict
-                else:
-                    self.model = ModelFactory(
-                        task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
-    
+            if isinstance(model, str):
+                self.model = ModelFactory.load_model(
+                    path=model, task=task, hub=hub, **self._config.get("model_parameters", {}))
+
+            elif isinstance(model, dict):
+                model_dict = {}
+                for k, v in model.items():
+                    model_dict[k] = ModelFactory.load_model(
+                        task=task, path=k, hub=v, **self._config.get("model_parameters", {}))
+                self.model = model_dict
+            else:
+                self.model = ModelFactory(
+                    task=task, model=model, hub=hub, **self._config.get("model_parameters", {}))
+
         return self._config
 
     def generate(self) -> "Harness":
@@ -572,6 +573,17 @@ class Harness:
                 "%", "").astype(int)
             self.df_report['minimum_pass_rate'] = self.df_report['minimum_pass_rate'].str.replace(
                 "%", "").astype(int)
+
+        # checking if the custom_proportions are valid
+        vaild_test_types = set(custom_proportions.keys() if isinstance(
+            custom_proportions, dict) else custom_proportions)
+        
+        report_test_types = set(self.df_report['test_type'].unique())
+        
+        if not (vaild_test_types.issubset(report_test_types)):
+            raise ValueError(
+                f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types.")
+
         _ = AugmentRobustness(
             task=self.task,
             config=self._config,
