@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Toxicity Tests | NLP Test | John Snow Labs
+seotitle: Toxicity Tests | LangTest | John Snow Labs
 title: Toxicity
 key: tests
 permalink: /docs/pages/tests/toxicity
