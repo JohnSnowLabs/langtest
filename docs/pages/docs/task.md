@@ -21,6 +21,7 @@ The `Harness` `task` parameter accepts different tasks.
 |**`question-answering`** | Question Answering | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)
 |**`summarization`** | Summarization | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)
 |**`toxicity`** | Toxicity | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)
+|**`translation`** | Translation | Translation models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)
 
 </div><div class="h3-box" markdown="1">
 
