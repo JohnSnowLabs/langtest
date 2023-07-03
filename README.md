@@ -24,7 +24,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 ## Project's Website
 
