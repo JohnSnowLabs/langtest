@@ -375,7 +375,10 @@ class Harness:
             if format == "dataframe":
                 return self.df_report
             elif format == "dict":
-                return self.df_report.to_dict("records")
+                if save_dir is None:
+                    raise ValueError(
+                        "You need to set \"save_dir\" parameter for this format.")
+                self.df_report.to_json(save_dir)                    
             elif format == "excel":
                 if save_dir is None:
                     raise ValueError(
