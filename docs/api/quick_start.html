@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Quick Start &#8212; nlptest 1.1.0 documentation</title>
+    <title>Quick Start &#8212; langtest 1.1.0 documentation</title>
   
   
   
@@ -43,8 +43,8 @@
     <link rel="icon" href="static/fav.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="nlptest" href="autosummary/nlptest.html" />
-    <link rel="prev" title="NLP Test Documentation" href="index.html" />
+    <link rel="next" title="langtest" href="autosummary/langtest.html" />
+    <link rel="prev" title="LangTest Documentation" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -140,7 +140,7 @@
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="autosummary/nlptest.html">
+                      <a class="nav-link nav-internal" href="autosummary/langtest.html">
                         API Reference
                       </a>
                     </li>
@@ -187,7 +187,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/JohnSnowLabs/nlptest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+          <a href="https://github.com/JohnSnowLabs/langtest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
 </ul></div>
@@ -246,7 +246,7 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="autosummary/nlptest.html">
+                      <a class="nav-link nav-internal" href="autosummary/langtest.html">
                         API Reference
                       </a>
                     </li>
@@ -282,7 +282,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/JohnSnowLabs/nlptest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
+          <a href="https://github.com/JohnSnowLabs/langtest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
 </ul></div>
@@ -343,13 +343,13 @@ document.write(`
   <section id="quick-start">
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading">#</a></h1>
 <section id="nlp-test-quick-start">
-<h2>NLP Test Quick Start<a class="headerlink" href="#nlp-test-quick-start" title="Permalink to this heading">#</a></h2>
-<p>The following can be used as a quick reference on how to get up and running with <code class="docutils literal notranslate"><span class="pre">nlptest</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install NLP Test from PyPI</span>
-pip install <span class="nv">nlptest</span><span class="o">==</span><span class="m">1</span>.1.0
+<h2>LangTest Quick Start<a class="headerlink" href="#nlp-test-quick-start" title="Permalink to this heading">#</a></h2>
+<p>The following can be used as a quick reference on how to get up and running with <code class="docutils literal notranslate"><span class="pre">langtest</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install LangTest from PyPI</span>
+pip install <span class="nv">langtest</span><span class="o">==</span><span class="m">1</span>.1.0
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nlptest</span> <span class="kn">import</span> <span class="n">Harness</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">langtest</span> <span class="kn">import</span> <span class="n">Harness</span>
 
 <span class="c1"># Create a Harness object</span>
 <span class="n">h</span> <span class="o">=</span> <span class="n">Harness</span><span class="p">(</span><span class="s1">&#39;ner&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;dslim/bert-base-NER&#39;</span><span class="p">,</span> <span class="n">hub</span><span class="o">=</span><span class="s1">&#39;transformers&#39;</span><span class="p">)</span>
@@ -362,23 +362,23 @@ pip install <span class="nv">nlptest</span><span class="o">==</span><span class=
 <section id="alternative-installation-options">
 <h2>Alternative Installation Options<a class="headerlink" href="#alternative-installation-options" title="Permalink to this heading">#</a></h2>
 <p>We can create a Python <a class="reference external" href="https://virtualenv.pypa.io/en/latest/">Virtualenv</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv nlptest --python<span class="o">=</span>python3.8
-<span class="nb">source</span> nlptest/bin/activate
-pip install <span class="nv">nlptest</span><span class="o">==</span><span class="m">1</span>.1.0 jupyter
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv langtest --python<span class="o">=</span>python3.8
+<span class="nb">source</span> langtest/bin/activate
+pip install <span class="nv">langtest</span><span class="o">==</span><span class="m">1</span>.1.0 jupyter
 </pre></div>
 </div>
-<p>Now you should be ready to create a jupyter notebook with NLP Test running:</p>
+<p>Now you should be ready to create a jupyter notebook with LangTest running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter notebook
 </pre></div>
 </div>
 <p>We can also use conda and create a new <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/index.html">conda</a> environment to manage all the dependencies there.</p>
-<p>Then we can create a new environment <code class="docutils literal notranslate"><span class="pre">nlptest</span></code> and install the <code class="docutils literal notranslate"><span class="pre">nlptest</span></code> package with pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n nlptest <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 -y
-conda activate nlptest
-conda install -c <span class="nv">nlptest</span><span class="o">==</span><span class="m">1</span>.1.0 jupyter
+<p>Then we can create a new environment <code class="docutils literal notranslate"><span class="pre">langtest</span></code> and install the <code class="docutils literal notranslate"><span class="pre">langtest</span></code> package with pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda create -n langtest <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 -y
+conda activate langtest
+conda install -c <span class="nv">langtest</span><span class="o">==</span><span class="m">1</span>.1.0 jupyter
 </pre></div>
 </div>
-<p>Now you should be ready to create a jupyter notebook with NLP Test running:</p>
+<p>Now you should be ready to create a jupyter notebook with LangTest running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter notebook
 </pre></div>
 </div>
@@ -402,15 +402,15 @@ conda install -c <span class="nv">nlptest</span><span class="o">==</span><span c
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">NLP Test Documentation</p>
+        <p class="prev-next-title">LangTest Documentation</p>
       </div>
     </a>
     <a class="right-next"
-       href="autosummary/nlptest.html"
+       href="autosummary/langtest.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">nlptest</p>
+        <p class="prev-next-title">langtest</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -432,7 +432,7 @@ conda install -c <span class="nv">nlptest</span><span class="o">==</span><span c
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlp-test-quick-start">NLP Test Quick Start</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nlp-test-quick-start">LangTest Quick Start</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternative-installation-options">Alternative Installation Options</a></li>
 </ul>
   </nav></div>

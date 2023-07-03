@@ -9,4 +9,4 @@
    :template: custom-module-template.rst
    :recursive:
 
-   nlptest
+   langtest

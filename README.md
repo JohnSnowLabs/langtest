@@ -4,13 +4,13 @@
     <a href="https://github.com/JohnSnowLabs/langtest/actions" alt="build">
         <img src="https://github.com/JohnSnowLabs/langtest/workflows/build/badge.svg" /></a>
     <a href="https://github.com/JohnSnowLabs/langtest/releases" alt="Current Release Version">
-        <img src="https://img.shields.io/github/v/release/JohnSnowLabs/nlptest.svg?style=flat-square&logo=github" /></a>
+        <img src="https://img.shields.io/github/v/release/JohnSnowLabs/langtest.svg?style=flat-square&logo=github" /></a>
     <a href="https://github.com/JohnSnowLabs/langtest/blob/master/LICENSE" alt="License">
         <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" /></a>
     <a href="https://pypi.org/project/langtest/" alt="PyPi downloads">
-        <img src="https://static.pepy.tech/personalized-badge/nlptest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
+        <img src="https://static.pepy.tech/personalized-badge/langtest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
     <a href="https://anaconda.org/conda-forge/langtest" alt="Conda Version">
-        <img src="https://img.shields.io/conda/vn/conda-forge/nlptest.svg?style=flat-square&color=blue&logo=conda-forge" /></a>
+        <img src="https://img.shields.io/conda/vn/conda-forge/langtest.svg?style=flat-square&color=blue&logo=conda-forge" /></a>
 </p>
 
 
@@ -24,7 +24,7 @@
   <a href="#license">License</a>
 </p>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 ## Project's Website
 

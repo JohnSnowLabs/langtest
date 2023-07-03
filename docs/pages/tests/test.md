@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tests | NLP Test | John Snow Labs
+seotitle: Tests | LangTest | John Snow Labs
 title: Available Tests
 key: notebooks
 permalink: /docs/pages/tests/test
