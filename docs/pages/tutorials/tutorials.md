@@ -54,6 +54,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 |Runtime Test                               |Hugging Face/John Snow Labs/Spacy           |NER   |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/RuntimeTest_Notebook.ipynb)|
 |Multiple Variations                        |John Snow Labs           |NER   |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Multiple_Variations_Notebook.ipynb)|
 |Editing Testcases                          |Hugging Face           |NER   |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Editing_TestCases_Notebook.ipynb)|
+|Different Report Formats                   |Spacy    |NER |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Different_Report_formats.ipynb)|
 
 <style>
   .heading {
