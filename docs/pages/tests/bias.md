@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Bias Tests | NLP Test | John Snow Labs
+seotitle: Bias Tests | LangTest | John Snow Labs
 title: Bias
 key: tests
 permalink: /docs/pages/tests/bias

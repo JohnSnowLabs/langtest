@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Generating Augmentations | NLP Test | John Snow Labs
+seotitle: Generating Augmentations | LangTest | John Snow Labs
 title: Generating Augmentations
 key: docs-install
 permalink: /docs/pages/docs/generate_augmentation

@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Data | NLP Test | John Snow Labs
+seotitle: Data | LangTest | John Snow Labs
 title: Data
 key: docs-examples
 permalink: /docs/pages/docs/data
@@ -56,8 +56,8 @@ VICTORY        NNP I-NP O
 In the Harness, we specify the data input in the following way:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 harness = Harness(task='ner',
                   model='en_core_web_sm',
@@ -96,8 +96,8 @@ For `CSV` files, we support different variations of the column names. They are s
 In the Harness, we specify the data input in the following way:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 harness = Harness(task='text-classification',
                   model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
@@ -129,8 +129,8 @@ To handle text classification task for Hugging Face Datasets, the Harness class 
 In the Harness, we specify the data input in the following way:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 harness = Harness(task="text-classification", hub="huggingface",
                    model="distilbert-base-uncased-finetuned-sst-2-english",
@@ -182,8 +182,8 @@ To test Question Answering models, the user is meant to select a benchmark datas
 In the Harness, we specify the data input in the following way:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 harness = Harness(task='question-answering',
                   model='gpt-3.5-turbo',
@@ -214,8 +214,8 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 In the Harness, we specify the data input in the following way:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 harness = Harness(task='summarization',
                   model='text-davinci-002',
@@ -241,8 +241,8 @@ This test checks the toxicity of the completion., the user is meant to select a 
 In the Harness, we specify the data input in the following way:
 
 ```python
-# Import Harness from the nlptest library
-from nlptest import Harness
+# Import Harness from the LangTest library
+from langtest import Harness
 
 harness = Harness(task='toxicity',
                   model='text-davinci-002',

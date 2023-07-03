@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'nlptest'
+project = 'langtest'
 copyright = '2023, John Snow Labs'
 author = 'John Snow Labs'
 
@@ -68,7 +68,7 @@ html_theme_options = {
             # Label for this link
             "name": "GitHub",
             # URL where the link will redirect
-            "url": "https://github.com/JohnSnowLabs/nlptest",  # required
+            "url": "https://github.com/JohnSnowLabs/langtest",  # required
             # Icon class (if "type": "fontawesome"), or path to local image (if "type": "local")
             "icon": "fa-brands fa-square-github",
             # The type of image to be used (see below for details)

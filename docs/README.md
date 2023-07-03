@@ -1,4 +1,4 @@
-# nlptest.org
+# langtest.org
 
 ## Instructions to run the website locally
 

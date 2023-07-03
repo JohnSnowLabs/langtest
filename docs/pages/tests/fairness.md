@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Fairness Tests | NLP Test | John Snow Labs
+seotitle: Fairness Tests | LangTest | John Snow Labs
 title: Fairness
 key: tests
 permalink: /docs/pages/tests/fairness

@@ -1,14 +1,18 @@
-from nlptest.utils.custom_types import SequenceClassificationSample, Transformation, Span
-from nlptest.transform.bias import GenderPronounBias, CountryEconomicBias, EthnicityNameBias, ReligionBias
+from langtest.utils.custom_types import SequenceClassificationSample, Transformation, Span
+from langtest.transform.bias import GenderPronounBias, CountryEconomicBias, EthnicityNameBias, ReligionBias
 
 
 class TestBias:
     """
+    Test suite for bias transformation functions.
+
     Note: we are using `SequenceClassificationSample` but any `xxxSample` would work
     """
 
     def test_gender_bias(self):
-        """"""
+        """
+        Test gender bias transformation.
+        """
         sample = SequenceClassificationSample(
             original="Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C championship match on Friday .",
             test_type="replace_to_female_pronouns"
@@ -35,7 +39,9 @@ class TestBias:
                                    "a Group C championship match on Friday ."
 
     def test_country_economic_bias(self):
-        """"""
+        """
+        Test country economic bias transformation.
+        """
         sample = SequenceClassificationSample(
             original="Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria.",
             test_type="replace_to_low_income_country"
@@ -53,7 +59,9 @@ class TestBias:
         )
 
     def test_ethnicity_bias(self):
-        """"""
+        """
+        Test ethnicity bias transformation.
+        """
         sample = SequenceClassificationSample(
             original="He was born in the USA and was called Malcolm after his grandfather",
             test_type="replace_to_white_firstnames"
@@ -71,7 +79,9 @@ class TestBias:
         )
 
     def test_religion_bias(self):
-        """"""
+        """
+        Test religion bias transformation.
+        """
         sample = SequenceClassificationSample(
             original="He was born in the USA and was called Malcolm after his grandfather",
             test_type="replace_to_hindu_names"
