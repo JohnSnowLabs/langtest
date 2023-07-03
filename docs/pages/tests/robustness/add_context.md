@@ -20,6 +20,7 @@ add_context:
     parameters:
       ending_context: ['Bye', 'Reported']
       starting_context: ['Hi', 'Good morning', 'Hello']
+      count: 1 # Defaults to 1
 ```
 <i class="fa fa-info-circle"></i>
 <em>You can adjust the level of transformation in the sentence by using the "`prob`" parameter, which controls the proportion of words to be changed during `add_context` test.</em>
@@ -28,6 +29,7 @@ add_context:
 - **starting_context (<List[str]>):** Phrases to be added at the start of inputs.
 - **ending_context (<List[str]>):** Phrases to be added at the end of inputs.
 - **prob (float):** Controls the proportion of words to be changed.
+- **count (float):** Number of variations of sentence to be constructed.
 
 </div><div class="h3-box" markdown="1">
 
