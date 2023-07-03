@@ -26,5 +26,25 @@ A sample report looks like this:
 |robustness | uppercase | 11 | 80 | 88% | 60%  | True |
 
 
+### Different Report formats
+
+
+```python
+# Generate Report as Dictionary and Save as Json Report
+h.report(format="dict",save_dir="report.json")
+
+# Generate and Save Excel Report
+h.report(format="excel", save_dir="report.xlsx")
+
+# Generate and Save HTML Report
+h.report(format="html", save_dir="report.html")
+
+# Generate and Save Text Report
+h.report(format="text", save_dir="report.txt")
+
+# Generate and Save Markdown Report
+h.report(format="markdown", save_dir="report.md")
+```
+</div><div class="h3-box" markdown="1">
 
 </div></div>
