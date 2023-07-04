@@ -610,6 +610,19 @@ class HuggingFaceDataset:
                 Name of the dataset to load.
         """
         self.dataset_name = dataset_name
+        self._check_datasets_package()
+
+    def _check_datasets_package(self):
+        """
+        Check if the 'datasets' package is installed and import the load_dataset function.
+        Raises an error if the package is not found.
+        """
+        try:
+            from datasets import load_dataset
+        except ImportError:
+            raise ModuleNotFoundError(
+                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+        self.load_dataset = load_dataset
 
     def load_data_classification(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
         """
@@ -630,16 +643,10 @@ class HuggingFaceDataset:
                 Loaded split as a list of Sample objects.
         """
         
-        try:
-            from datasets import load_dataset
-        except ImportError:
-            raise ModuleNotFoundError(
-                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
-                
         if subset:
-            dataset = load_dataset(self.dataset_name, name=subset, split=split)
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
-            dataset = load_dataset(self.dataset_name, split=split)
+            dataset = self.load_dataset(self.dataset_name, split=split)
 
         if feature_column and target_column:
             dataset = dataset.map(lambda example: {
@@ -654,26 +661,22 @@ class HuggingFaceDataset:
 
         Args:
             feature_column (str):
-                Name of the feature_column column.
+                Name of the column containing the input text or document.
+            target_column (str):
+                Name of the column containing the target summary.
             split (str):
                 Name of the split to load (e.g., train, validation, test).
             subset (str):
-                Name of the configuration.
+                Name of the configuration or subset to load.
 
         Returns:
             List[Sample]:
                 Loaded split as a list of Sample objects for summarization task.
         """
-        try:
-            from datasets import load_dataset
-        except ImportError:
-            raise ModuleNotFoundError(
-                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
-                
         if subset:
-            dataset = load_dataset(self.dataset_name, name=subset, split=split)
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
-            dataset = load_dataset(self.dataset_name, split=split)
+            dataset = self.load_dataset(self.dataset_name, split=split)
 
         if feature_column and target_column:
             dataset = dataset.map(lambda example: {
