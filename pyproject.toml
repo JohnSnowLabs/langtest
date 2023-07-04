@@ -35,7 +35,6 @@ exclude = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-torch = "^2.0.1"
 langchain = "<0.0.222"
 pydantic = "1.10.6"
 johnsnowlabs = "4.3.5"
@@ -46,15 +45,22 @@ spacy = ">3.0.0"
 nest-asyncio = "^1.5.0"
 openai = ">0.27.0"
 jsonlines = "^3.1.0"
+torch = [
+    { platform = "linux", version = ">2.0.0" },
+    { url = "https://download.pytorch.org/whl/cpu/torch-2.0.0-cp38-none-macosx_11_0_arm64.whl", platform = "darwin", python = ">=3.8 <3.9" },
+    { url = "https://download.pytorch.org/whl/cpu/torch-2.0.0-cp39-none-macosx_11_0_arm64.whl", platform = "darwin", python = ">=3.9 <3.10" },
+    { url = "https://download.pytorch.org/whl/cpu/torch-2.0.0-cp310-none-macosx_11_0_arm64.whl", platform = "darwin", python = ">=3.10 <3.11" },
+]
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"
 pytest = "^7.4.0"
 taskipy = "^1.11.0"
-en-core-web-sm = {url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz"}
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz" }
 
 [tool.taskipy.tasks]
 test = "pytest tests/*"
+
 
 [build-system]
 requires = ["poetry-core"]
