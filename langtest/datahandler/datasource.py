@@ -590,7 +590,7 @@ class JSONLDataset(_IDataset):
         raise NotImplementedError()
 
 
-class HuggingFaceDataset(_IDataset):
+class HuggingFaceDataset:
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
@@ -600,7 +600,7 @@ class HuggingFaceDataset(_IDataset):
             'label': ['label', 'labels', 'class', 'classes']
         }
     }
-
+    
     def __init__(self, dataset_name: str):
         """
         Initialize the HuggingFaceDataset class.
@@ -611,7 +611,7 @@ class HuggingFaceDataset(_IDataset):
         """
         self.dataset_name = dataset_name
 
-    def load_data(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
+    def load_data_classification(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
         """
         Load the specified split from the dataset library.
 
@@ -629,11 +629,13 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
+        
         try:
             from datasets import load_dataset
         except ImportError:
             raise ModuleNotFoundError(
                 "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+                
         if subset:
             dataset = load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -643,7 +645,7 @@ class HuggingFaceDataset(_IDataset):
             dataset = dataset.map(lambda example: {
                                   'text': example[feature_column], 'label': example[target_column]})
 
-        samples = [self._row_to_sample(example) for example in dataset]
+        samples = [self._row_to_sample_classification(example) for example in dataset]
         return samples
     
     def load_data_summarization(self, feature_column: str = "document", target_column: str ='summary',split: str = 'test', subset: str = None) -> List[Sample]:
@@ -667,6 +669,7 @@ class HuggingFaceDataset(_IDataset):
         except ImportError:
             raise ModuleNotFoundError(
                 "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+                
         if subset:
             dataset = load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -697,10 +700,9 @@ class HuggingFaceDataset(_IDataset):
         return SummarizationSample(
             original=original,
             expected_results=summary,
-           task="summarization",
-        #    dataset_name=self.dataset_name
-           
+            task="summarization"
         )
+
 
     def export_data(self, data: List[Sample], output_path: str):
         """
@@ -720,7 +722,7 @@ class HuggingFaceDataset(_IDataset):
                 row = self._sample_to_row(sample)
                 csv_writer.writerow(row)
 
-    def _row_to_sample(self, data_row: Dict[str, str]) -> Sample:
+    def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
         """
         Convert a row from the dataset into a Sample for text classification.
 
