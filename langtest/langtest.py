@@ -38,6 +38,7 @@ class Harness:
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
     }
     SUPPORTED_HUBS_HF_DATASET = ["johnsnowlabs", "huggingface", "spacy"]
+    SUPPORTED_HUBS_HF_DATASET_SUM = ["openai", "cohere", "ai21", "huggingface-inference-api"]
     DEFAULTS_CONFIG = {
         'hubs': {
             'azure-openai': resource_filename("langtest", "data/config/azure_config.yml"),
@@ -105,7 +106,7 @@ class Harness:
             logging.info(
                 "Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET and task == "text-classification":
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET and task =="text-classification":
             self.data = HuggingFaceDataset(data['name']).load_data(
                 data.get('feature_column', 'text'),
                 data.get('target_column', 'label'),
@@ -119,6 +120,13 @@ class Harness:
                         "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("langtest", "data/textcat_imdb")
 
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_SUM  and task == "summarization":
+            self.data = HuggingFaceDataset(data['name']).load_data_summarization(
+                data.get('feature_column', 'document'),
+                data.get('target_column', 'summary'),
+                data.get('split', 'test'),
+                data.get('subset', None)
+            )
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
                              "passed is not among the default ones. You need to either specify the parameter 'data' "
