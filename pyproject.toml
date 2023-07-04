@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "langtest"
+version = "1.0.0"
+description = "John Snow Labs provides a library for delivering safe & effective NLP models."
+authors = ["John Snow Labs <support@johnsnowlabs.com>"]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+license = "Apache-2.0"
+homepage = "https://www.langtest.org"
+repository = "https://github.com/JohnSnowLabs/langtest/"
+documentation = "https://langtest.org/docs/pages/docs/install"
+keywords = [
+    "NLP",
+    "testing",
+    "robustness",
+    "bias",
+    "fairness",
+    "representation",
+    "accuracy"
+]
+exclude = [
+    "tests/"
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+langchain = "<0.0.222"
+pydantic = "1.10.6"
+johnsnowlabs = "4.3.5"
+rouge-score = "^0.1.2"
+evaluate = "^0.4.0"
+transformers = ">4.20.0"
+spacy = ">3.0.0"
+nest-asyncio = "^1.5.0"
+openai = ">0.27.0"
+jsonlines = "^3.1.0"
+torch = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+ipdb = "^0.13.13"
+pytest = "^7.4.0"
+taskipy = "^1.11.0"
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz" }
+
+[tool.taskipy.tasks]
+test = "pytest tests/*"
+force-cpu-torch = "python -m pip install torch --index-url https://download.pytorch.org/whl/cpu"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
