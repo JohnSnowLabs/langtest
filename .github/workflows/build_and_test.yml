@@ -43,8 +43,8 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install --with dev
+          python -m spacy download en_core_web_sm
 
       - name: Test with pytest
         run: |
-          python -m spacy download en_core_web_sm
           poetry run task test
