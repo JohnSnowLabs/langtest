@@ -45,12 +45,7 @@ spacy = ">3.0.0"
 nest-asyncio = "^1.5.0"
 openai = ">0.27.0"
 jsonlines = "^3.1.0"
-torch = [
-    { platform = "linux", version = ">2.0.0" },
-    { url = "https://download.pytorch.org/whl/cpu/torch-2.0.0-cp38-none-macosx_11_0_arm64.whl", platform = "darwin", python = ">=3.8 <3.9" },
-    { url = "https://download.pytorch.org/whl/cpu/torch-2.0.0-cp39-none-macosx_11_0_arm64.whl", platform = "darwin", python = ">=3.9 <3.10" },
-    { url = "https://download.pytorch.org/whl/cpu/torch-2.0.0-cp310-none-macosx_11_0_arm64.whl", platform = "darwin", python = ">=3.10 <3.11" },
-]
+torch = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"
@@ -60,6 +55,7 @@ en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/dow
 
 [tool.taskipy.tasks]
 test = "pytest tests/*"
+force-cpu-torch = "python -m pip install torch --index-url https://download.pytorch.org/whl/cpu"
 
 
 [build-system]
