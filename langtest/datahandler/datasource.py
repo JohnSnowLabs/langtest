@@ -645,6 +645,62 @@ class HuggingFaceDataset(_IDataset):
 
         samples = [self._row_to_sample(example) for example in dataset]
         return samples
+    
+    def load_data_summarization(self, feature_column: str = "document", target_column: str ='summary',split: str = 'test', subset: str = None) -> List[Sample]:
+        """
+        Load the specified split from the dataset library for summarization task.
+
+        Args:
+            feature_column (str):
+                Name of the feature_column column.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects for summarization task.
+        """
+        try:
+            from datasets import load_dataset
+        except ImportError:
+            raise ModuleNotFoundError(
+                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+        if subset:
+            dataset = load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = load_dataset(self.dataset_name, split=split)
+
+        if feature_column and target_column:
+            dataset = dataset.map(lambda example: {
+                                  'document': example[feature_column], 'summary': example[target_column]})
+
+        samples = [self._row_to_sample_summarization(example) for example in dataset]
+        return samples
+
+    def _row_to_sample_summarization(self, data_row: Dict[str, str]) -> Sample:
+        """
+        Convert a row from the dataset into a Sample for summarization.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object for summarization.
+        """
+        original = data_row.get('document', '')
+        summary = data_row.get('summary', '')
+
+        return SummarizationSample(
+            original=original,
+            expected_results=summary,
+           task="summarization",
+        #    dataset_name=self.dataset_name
+           
+        )
 
     def export_data(self, data: List[Sample], output_path: str):
         """
