@@ -96,18 +96,21 @@ class AugmentRobustness(BaseAugmentaion):
     def fix(
         self,
         input_path: str,
-        output_path,
+        output_path: str,
         inplace: Union[bool, str] = False
     ):
         """
         Applies perturbations to the input data based on the recommendations from harness reports.
-
+    
         Args:
             input_path (str): The path to the input data file.
             output_path (str): The path to save the augmented data file.
-            inplace (bool, optional): If True, the list of samples is modified in place.
-                                      Otherwise, a new samples are add to input data. Defaults to False.
-
+            inplace (Union[bool, str], optional): Determines how the samples are modified or exported.
+                                                If True, the list of samples is modified in place.
+                                                If False, new samples are added to the input data.
+                                                If 'transformed', only the transformed data is exported, excluding untransformed samples.
+                                                Defaults to False.
+    
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
@@ -124,7 +127,7 @@ class AugmentRobustness(BaseAugmentaion):
 
         self.config = self._parameters_overrides(self.config, data)
 
-        fianl_aug_data = []
+        final_aug_data = []
         hash_map = {k: v for k, v in enumerate(data)}
 
         for proportion in suggest.iterrows():
@@ -138,37 +141,31 @@ class AugmentRobustness(BaseAugmentaion):
                 }
             }
             if proportion[-1]['test_type'] in supported_tests[cat]:
-                sample_length = len(
-                    data) * self.max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
+                sample_length = len(data) * self.max_prop * (proportion[-1]['proportion_increase'] / sum_propotion)
                 if inplace is True or inplace == 'transformed':
-                    sample_indices = random.sample(
-                        range(0, len(data)), int(sample_length))
+                    sample_indices = random.sample(range(0, len(data)), int(sample_length))
                     for each in sample_indices:
                         if test == 'swap_entities':
-                            test_type['robustness']['swap_entities']['parameters']['labels'] = [
-                                self.label[each]]
-                        res, _ = TestFactory.transform(
-                            self.task,
-                            [hash_map[each]], test_type)
+                            test_type['robustness']['swap_entities']['parameters']['labels'] = [self.label[each]]
+                        res, _ = TestFactory.transform(self.task, [hash_map[each]], test_type)
                         hash_map[each] = res[0]
-
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
-                    aug_data, _ = TestFactory.transform(
-                        self.task,
-                        sample_data, test_type)
-                    fianl_aug_data.extend(aug_data)
+                    aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
+                    final_aug_data.extend(aug_data)
+
         if inplace:
-            fianl_aug_data = list(hash_map.values())
-            self.df.export(fianl_aug_data, output_path)
+            final_aug_data = list(hash_map.values())
+            self.df.export(final_aug_data, output_path)
         elif inplace == 'transformed':
-            fianl_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
-            self.df.export(fianl_aug_data, output_path)
+            final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
+            self.df.export(final_aug_data, output_path)
         else:
-            data.extend(fianl_aug_data)
+            data.extend(final_aug_data)
             self.df.export(data, output_path)
+
         TestFactory.is_augment = False
-        return fianl_aug_data
+        return final_aug_data
 
     def suggestions(self, report):
         """
