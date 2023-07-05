@@ -739,21 +739,6 @@ class Harness:
 
         return self
 
-    # def available_tests():
-    #     """
-    #     Returns a dictionary of available tests categorized by test type.
-
-    #     Returns:
-    #         dict: A dictionary containing available tests categorized by test type.
-    #     """
-    #     test_scenarios = TestFactory.test_scenarios()
-    #     available_tests = {}
-
-    #     for test_type, scenarios in test_scenarios.items():
-    #         available_tests[test_type] = list(scenarios.keys())
-
-    #     return ("The supported tests are :", available_tests)
-
     def available_tests(test_type=None):
         """
         Returns a dictionary of available tests categorized by test type.
