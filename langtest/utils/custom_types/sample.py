@@ -638,29 +638,20 @@ class SummarizationSample(BaseModel):
         Returns:
             bool: True if the sample ran successfully, False otherwise.
         """
-        if self.dataset_name is not None:
-            dataset_name = self.dataset_name.split('-')[0].lower()
-           
-            prompt_template = kwargs.get(
-                'user_prompt', default_user_prompt.get(dataset_name, ""))
-            
-         
-            self.expected_results = model(text={'context': self.original},
-                                        prompt={"template": prompt_template, 'input_variables': ["context"]})
-            self.actual_results = model(text={'context': self.test_case},
-                                        prompt={"template": prompt_template, 'input_variables': ["context"]})
-            return True
-        else:
-            prompt_template = kwargs.get(
-                'user_prompt', default_user_prompt.get("sum_prompt", ""))
-          
-            self.expected_results = model(text={'context': self.original},
-                                        prompt={"template": prompt_template, 'input_variables': ["context"]})
+        dataset_name = self.dataset_name.split('-')[0].lower() if self.dataset_name else None
 
-            self.actual_results = model(text={'context': self.test_case},
-                                        prompt={"template": prompt_template, 'input_variables': ["context"]})
+        prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, "sum_prompt"))
 
-            return True
+        self.expected_results = model(
+            text={'context': self.original},
+            prompt={"template": prompt_template, 'input_variables': ["context"]}
+        )
+        self.actual_results = model(
+            text={'context': self.test_case},
+            prompt={"template": prompt_template, 'input_variables': ["context"]}
+        )
+
+        return True
 
 class ToxicitySample(BaseModel):
     """
