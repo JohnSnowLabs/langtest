@@ -106,12 +106,13 @@ class Harness:
             logging.info(
                 "Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION and task =="text-classification":
-            self.data = HuggingFaceDataset(data['name']).load_data_classification(
-                data.get('feature_column', 'text'),
-                data.get('target_column', 'label'),
-                data.get('split', 'test'),
-                data.get('subset', None)
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION and task == "text-classification":
+            self.data = HuggingFaceDataset(data['name']).load_data(
+                task="text-classification",
+                feature_column=data.get('feature_column', 'text'),
+                target_column=data.get('target_column', 'label'),
+                split=data.get('split', 'test'),
+                subset=data.get('subset', None)
             ) if data is not None else None
 
             if hub == "spacy" and (model == 'textcat_imdb' or model is None):
@@ -120,12 +121,13 @@ class Harness:
                         "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("langtest", "data/textcat_imdb")
 
-        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION  and task == "summarization":
-            self.data = HuggingFaceDataset(data['name']).load_data_summarization(
-                data.get('feature_column', 'document'),
-                data.get('target_column', 'summary'),
-                data.get('split', 'test'),
-                data.get('subset', None)
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION and task == "summarization":
+            self.data = HuggingFaceDataset(data['name']).load_data(
+                task="summarization",
+                feature_column=data.get('feature_column', 'document'),
+                target_column=data.get('target_column', 'summary'),
+                split=data.get('split', 'test'),
+                subset=data.get('subset', None)
             )
 
 

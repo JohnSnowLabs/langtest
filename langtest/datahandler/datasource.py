@@ -592,7 +592,7 @@ class JSONLDataset(_IDataset):
         raise NotImplementedError()
 
 
-class HuggingFaceDataset:
+class HuggingFaceDataset(_IDataset):
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
@@ -689,7 +689,16 @@ class HuggingFaceDataset:
 
         samples = [self._row_to_sample_summarization(example) for example in dataset]
         return samples
-
+    
+    def load_data(self, task: str, feature_column: str = "text", target_column: str = "label",
+                  split: str = 'test', subset: str = None) -> List[Sample]:
+        if task == 'text-classification':
+            return self.load_data_classification(feature_column, target_column, split, subset)
+        elif task == 'summarization':
+            return self.load_data_summarization(feature_column, target_column, split, subset)
+        else:
+            raise ValueError(f"Unsupported task: {task}")
+        
     def _row_to_sample_summarization(self, data_row: Dict[str, str]) -> Sample:
         """
         Convert a row from the dataset into a Sample for summarization.
