@@ -10,6 +10,8 @@ from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
+from ..utils.lib_manager import try_import_lib
+import importlib
 
 
 class _IDataset(ABC):
@@ -617,12 +619,15 @@ class HuggingFaceDataset:
         Check if the 'datasets' package is installed and import the load_dataset function.
         Raises an error if the package is not found.
         """
-        try:
-            from datasets import load_dataset
-        except ImportError:
+        lib_name = 'datasets'
+        lib_installed = try_import_lib(lib_name)
+
+        if lib_installed:
+            dataset_module = importlib.import_module(lib_name)
+            self.load_dataset = getattr(dataset_module, 'load_dataset')
+        else:
             raise ModuleNotFoundError(
-                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
-        self.load_dataset = load_dataset
+                f"The '{lib_name}' package is not installed. Please install it using 'pip install {lib_name}'.")
 
     def load_data_classification(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
         """
