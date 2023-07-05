@@ -206,6 +206,19 @@ class HarnessTestCase(unittest.TestCase):
         # test working of the harness
         harness.run().report()
 
+    def test_available_tests(self):
+        """
+        Test the available_tests function.
+
+        This test case checks the return types of the available_tests function
+        with and without specifying a test type.
+        """
+        specific_test_type = Harness.available_tests("robustness")
+        self.assertIsInstance(specific_test_type, dict)
+
+        available_tests = Harness.available_tests()
+        self.assertIsInstance(available_tests, tuple)
+
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """
     Test case for the default code blocks.
