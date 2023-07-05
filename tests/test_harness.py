@@ -217,7 +217,7 @@ class HarnessTestCase(unittest.TestCase):
         self.assertIsInstance(specific_test_type, dict)
 
         available_tests = Harness.available_tests()
-        self.assertIsInstance(available_tests, tuple)
+        self.assertIsInstance(available_tests, dict)
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """
