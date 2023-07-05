@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 
+
 class Span(BaseModel):
     """Representation of a text's slice"""
+
     start: int
     end: int
     word: str
@@ -30,8 +32,9 @@ class Span(BaseModel):
 
     def __eq__(self, other):
         """"""
-        return self.start == other.start and \
-               self.end - int(self.ends_with_space) == other.end - int(other.ends_with_space)
+        return self.start == other.start and self.end - int(
+            self.ends_with_space
+        ) == other.end - int(other.ends_with_space)
 
     def __str__(self):
         """"""
@@ -47,9 +50,7 @@ class Transformation(BaseModel):
     Helper object keeping track of an alteration performed on a piece of text.
     It holds information about how a given span was transformed into another one
     """
+
     original_span: Span
     new_span: Span
     ignore: bool = False
-
-
-        

@@ -17,5 +17,5 @@ def try_import_lib(lib: str) -> bool:
     except ImportError:
         return False
     except Exception as err:
-        print(f'Failure to import {lib}.')
+        print(f"Failure to import {lib}.")
         print(err)

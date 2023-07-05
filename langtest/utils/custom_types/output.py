@@ -3,10 +3,12 @@ from pydantic import BaseModel, validator
 from .helpers import Span
 from .predictions import NERPrediction, SequenceLabel
 
+
 class SequenceClassificationOutput(BaseModel):
     """
     Output model for text classification tasks.
     """
+
     predictions: List[SequenceLabel]
 
     def to_str_list(self) -> str:
@@ -31,6 +33,7 @@ class SequenceClassificationOutput(BaseModel):
 
 class MinScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
+
     min_score: float
 
     def to_str_list(self) -> float:
@@ -48,6 +51,7 @@ class MinScoreOutput(BaseModel):
 
 class MaxScoreOutput(BaseModel):
     """Output for accuracy/representation tests."""
+
     max_score: float
 
     def to_str_list(self) -> float:
@@ -67,6 +71,7 @@ class NEROutput(BaseModel):
     """
     Output model for NER tasks.
     """
+
     predictions: List[NERPrediction]
 
     @validator("predictions")
@@ -78,7 +83,9 @@ class NEROutput(BaseModel):
         """"""
         return len(self.predictions)
 
-    def __getitem__(self, item: Union[Span, int]) -> Optional[Union[List[NERPrediction], NERPrediction]]:
+    def __getitem__(
+        self, item: Union[Span, int]
+    ) -> Optional[Union[List[NERPrediction], NERPrediction]]:
         """"""
         if isinstance(item, int):
             return self.predictions[item]
@@ -97,7 +104,7 @@ class NEROutput(BaseModel):
         Returns:
             List[str]: predictions in form of a list of strings.
         """
-        return ", ".join([str(x) for x in self.predictions if str(x)[-3:] != ': O'])
+        return ", ".join([str(x) for x in self.predictions if str(x)[-3:] != ": O"])
 
     def __repr__(self) -> str:
         """"""
@@ -118,6 +125,7 @@ class TranslationOutput(BaseModel):
     """
     Output model for translation tasks.
     """
+
     translation_text: str  # Changed from List[str] to str
 
     def to_str_list(self) -> List[str]:
@@ -139,10 +147,17 @@ class TranslationOutput(BaseModel):
         if isinstance(other, TranslationOutput):
             return self.translation_text == other.translation_text
         if isinstance(other, list):
-            return [self.translation_text] == other  # Compare list with single item to other
+            return [self.translation_text] == other
         return False
 
 
-
-
-Result = TypeVar("Result", NEROutput, SequenceClassificationOutput, MinScoreOutput, TranslationOutput, MaxScoreOutput, List[str], str)
+Result = TypeVar(
+    "Result",
+    NEROutput,
+    SequenceClassificationOutput,
+    MinScoreOutput,
+    TranslationOutput,
+    MaxScoreOutput,
+    List[str],
+    str,
+)
