@@ -739,17 +739,45 @@ class Harness:
 
         return self
 
-    def available_tests():
+    # def available_tests():
+    #     """
+    #     Returns a dictionary of available tests categorized by test type.
+
+    #     Returns:
+    #         dict: A dictionary containing available tests categorized by test type.
+    #     """
+    #     test_scenarios = TestFactory.test_scenarios()
+    #     available_tests = {}
+
+    #     for test_type, scenarios in test_scenarios.items():
+    #         available_tests[test_type] = list(scenarios.keys())
+
+    #     return ("The supported tests are :", available_tests)
+
+    def available_tests(test_type=None):
         """
         Returns a dictionary of available tests categorized by test type.
 
+        Args:
+            test_type (str, optional): The specific test type to retrieve. Defaults to None.
+
         Returns:
-            dict: A dictionary containing available tests categorized by test type.
+            tuple or dict: If test_type is provided, returns a dictionary containing available tests for that type.
+                        If test_type is None, returns a tuple with the message and the entire available_tests dictionary.
+        Raises:
+            ValueError: If an invalid test type is provided.
         """
         test_scenarios = TestFactory.test_scenarios()
         available_tests = {}
 
-        for test_type, scenarios in test_scenarios.items():
-            available_tests[test_type] = list(scenarios.keys())
+        for t_type, scenarios in test_scenarios.items():
+            available_tests[t_type] = list(scenarios.keys())
 
-        return ("The supported tests are :", available_tests)
+        if test_type:
+            if test_type in available_tests:
+                return {f"The supported {test_type} tests are": available_tests[test_type]}
+            else:
+                test_types = ', '.join(available_tests.keys())
+                raise ValueError(f"Invalid test type '{test_type}'. Available test types are: {test_types}")
+        else:
+            return "The supported tests are:", available_tests
