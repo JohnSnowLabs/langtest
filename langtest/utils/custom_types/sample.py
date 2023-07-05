@@ -64,10 +64,9 @@ class BaseSample(BaseModel):
         if self.test_case is not None:
             result['test_case'] = self.test_case
 
-
         if actual_result is not None:
             result.update({
-                'expected_result' : expected_result,
+                'expected_result': expected_result,
                 'actual_result': actual_result,
                 'pass': self.is_pass()
             })
@@ -298,6 +297,7 @@ class SequenceClassificationSample(BaseSample):
         """"""
         return self.expected_results == self.actual_results
 
+
 class MinScoreSample(BaseSample):
     """A sample class representing a minimum score sample.
 
@@ -309,6 +309,7 @@ class MinScoreSample(BaseSample):
         is_pass: Checks if the sample passes based on the minimum score.
 
     """
+
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -317,6 +318,7 @@ class MinScoreSample(BaseSample):
         if self.actual_results is None:
             return False
         return self.actual_results.min_score >= self.expected_results.min_score
+
 
 class MaxScoreSample(BaseSample):
     """"A class representing a maximum score.
@@ -328,6 +330,7 @@ class MaxScoreSample(BaseSample):
     Methods:
         is_pass(): Checks if the sample passes based on the maximum score.
     """
+
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -337,8 +340,10 @@ class MaxScoreSample(BaseSample):
             return False
         return self.actual_results.max_score <= self.expected_results.max_score
 
+
 Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample,
                  SequenceClassificationSample, NERSample)
+
 
 class BaseQASample(BaseModel):
     """
@@ -368,7 +373,7 @@ class BaseQASample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
-    def transform(self, func,params,prob,perturbations=None,**kwargs):
+    def transform(self, func, params, prob, perturbations=None, **kwargs):
         """
         Transforms the original question and context using the specified function.
 
@@ -380,20 +385,21 @@ class BaseQASample(BaseModel):
 
         Returns:
             None
-        """        
-        
+        """
+
         if perturbations is None:
             sens = [self.original_question, self.original_context]
-            self.perturbed_question, self.perturbed_context = func(sens, prob,**params, **kwargs)
+            self.perturbed_question, self.perturbed_context = func(
+                sens, prob, **params, **kwargs)
             self.category = func.__module__.split('.')[-1]
 
         else:
             sens = [self.original_question, self.original_context]
 
-            self.perturbed_question, self.perturbed_context = func(sens,perturbations,prob,params,**kwargs)
+            self.perturbed_question, self.perturbed_context = func(
+                sens, perturbations, prob, params, **kwargs)
             self.category = func.__module__.split('.')[-1]
 
-    
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split('-')[0].lower()
         prompt_template = kwargs.get(
@@ -406,6 +412,7 @@ class BaseQASample(BaseModel):
 
         return True
 
+
 class QASample(BaseQASample):
     """
     A class representing a sample for question answering task.
@@ -413,6 +420,7 @@ class QASample(BaseQASample):
     Attributes:
         Inherits attributes from BaseQASample class.
     """
+
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -499,28 +507,32 @@ class MinScoreQASample(QASample):
     """
     A class representing a sample for question answering task with minimum score comparison.
     """
+
     def __init__(self, **data):
         super().__init__(**data)
 
     def is_pass(self) -> bool:
         """
         Checks if the sample has passed the evaluation.
-        """  
+        """
         return self.actual_results.min_score >= self.expected_results.min_score
+
 
 class MaxScoreQASample(QASample):
     """
     A class representing a sample for question answering task with maximum score comparison.
     """
+
     def __init__(self, **data):
         super().__init__(**data)
 
     def is_pass(self) -> bool:
         """
         Checks if the sample has passed the evaluation.
-        """  
+        """
         return self.actual_results.max_score <= self.expected_results.max_score
-    
+
+
 class SummarizationSample(BaseModel):
     """
     A class representing a sample for summarization task.
@@ -570,14 +582,14 @@ class SummarizationSample(BaseModel):
             })
 
         return result
-    
-    def is_pass(self) :
+
+    def is_pass(self):
         """
         Checks if the sample has passed the evaluation.
-        """        
+        """
         return self._is_eval()[0]
-    
-    def _is_eval(self) :
+
+    def _is_eval(self):
         """Perform the evaluation and return the evaluation score.
 
         Returns:
@@ -600,8 +612,8 @@ class SummarizationSample(BaseModel):
             results = metric.compute(
                 predictions=predictions, references=references, lang='en')
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
-    
-    def transform(self, func, params,prob,perturbations=None,**kwargs):
+
+    def transform(self, func, params, prob, perturbations=None, **kwargs):
         """
         Transforms the original data using the specified function.
 
@@ -616,15 +628,15 @@ class SummarizationSample(BaseModel):
         """
         if perturbations is None:
 
-                sens = [self.original]
-                self.test_case= func(sens,prob,**params, **kwargs)[0]
-                self.category = func.__module__.split('.')[-1]
+            sens = [self.original]
+            self.test_case = func(sens, prob, **params, **kwargs)[0]
+            self.category = func.__module__.split('.')[-1]
         else:
-                
-                sens = [self.original]
-                self.test_case= func(sens,perturbations,prob,params,**kwargs)[0]
-                self.category = func.__module__.split('.')[-1]
 
+            sens = [self.original]
+            self.test_case = func(sens, perturbations,
+                                  prob, params, **kwargs)[0]
+            self.category = func.__module__.split('.')[-1]
 
     def run(self, model, **kwargs):
         """
@@ -645,6 +657,7 @@ class SummarizationSample(BaseModel):
         self.actual_results = model(text={'context': self.test_case},
                                     prompt={"template": prompt_template, 'input_variables': ["context"]})
         return True
+
 
 class ToxicitySample(BaseModel):
     """
@@ -682,7 +695,7 @@ class ToxicitySample(BaseModel):
         Returns:
             Dict[str, Any]: A dictionary representation of the ToxicitySample object.
         """
-        
+
         result = {
             'category': self.category,
             'test_type': self.test_type,
@@ -722,14 +735,21 @@ class RuntimeSample(BaseModel):
         run_time (Dict[str, Union[int, float]]): The run times for different operations.
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
-    transform_time: Dict[str, Union[int, float]] = {}
-    run_time: Dict[str, Union[int, float]] = {}
-    total: Dict[str, Union[int, float]] = {}
+    category: str
+    test_type: str
+    original: str = "-"
+    test_case: str = "speed test"
+    expected_results: Result = None
+    actual_results: Result = None
 
     def __init__(self, **data):
         super().__init__(**data)
 
-    def total_time(self, unit='ms'):
+    def total_time(
+            self,
+            transform_time: Union[int, float],
+            run_time: Union[int, float],
+            unit='ms'):
         """
         Calculates the total time for each operation.
 
@@ -739,18 +759,12 @@ class RuntimeSample(BaseModel):
         Returns:
             Dict[str, Union[int, float]]: A dictionary containing the total times for each operation.
         """
-        total = {}
-        if self.total:
-            return self.total
-        else:
-            for key in self.transform_time.keys():
-                total[key] = self.convert_ns_to_unit(
-                    self.transform_time[key] + self.run_time[key],
-                    unit=unit)
-            self.total = total
-        return total
+        self.actual_results = self.convert_ns_to_unit(
+            transform_time + run_time, unit=unit)
 
-    def convert_ns_to_unit(self, time: Union[int, float], unit: str ='ms'):
+        return self
+
+    def convert_ns_to_unit(self, time: Union[int, float], unit: str = 'ms'):
         """	
         Converts time from nanoseconds to the specified unit.	
 
@@ -786,29 +800,58 @@ class RuntimeSample(BaseModel):
                     unit=unit)
             self.total = total
         return total
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the RuntimeSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the RuntimeSample object.
+        """
+        result = {
+            'category': self.category,
+            'test_type': self.test_type,
+            'original': self.original,
+            'test_case': self.test_case
+        }
         
+        if self.actual_results is not None:
+            result.update({
+                'expected_result': self.expected_results,
+                'actual_result': self.actual_results,
+                'pass': self.is_pass()
+            })
+
+        return result
+    
+    def is_pass(self):
+        """"""
+        if self.actual_results is None:
+            return False
+        return self.expected_results <= self.actual_results
+
 class TranslationSample(BaseModel):
     original: str
     test_case: str = None
     expected_results: Result = None
     actual_results: Result = None
-    
+
     state: str = None
-    dataset_name: str = None 
-    task: str = None     #translation
-    category: str = None  
-    test_type: str = None  
+    dataset_name: str = None
+    task: str = None  # translation
+    category: str = None
+    test_type: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
-    
+
     def to_dict(self) -> Dict[str, Any]:
-        
+
         result = {
             'category': self.category,
             'test_type': self.test_type,
             'original': self.original,
-            'test_case':self.test_case,
+            'test_case': self.test_case,
             'actual_result': self.actual_results
         }
 
@@ -822,33 +865,35 @@ class TranslationSample(BaseModel):
             })
 
         return result
-    
-    def is_pass(self) :
+
+    def is_pass(self):
         """"""
         return self._is_eval()[0]
-    
+
     def _is_eval(self) -> bool:
         """"""
 
         model = SimpleSentenceTransformer()
-        
+
         # Get the sentence vectors
         vectors1 = model.encode([self.original], convert_to_tensor=True)
         vectors2 = model.encode([self.test_case], convert_to_tensor=True)
-        vectors3 = model.encode([self.expected_results.translation_text], convert_to_tensor=True)
-        vectors4 = model.encode([self.actual_results.translation_text], convert_to_tensor=True)
+        vectors3 = model.encode(
+            [self.expected_results.translation_text], convert_to_tensor=True)
+        vectors4 = model.encode(
+            [self.actual_results.translation_text], convert_to_tensor=True)
 
-        original_similarities = cosine_similarity(vectors1.cpu().numpy(), vectors2.cpu().numpy())
-        translation_similarities = cosine_similarity(vectors3.cpu().numpy(), vectors4.cpu().numpy())
-        
+        original_similarities = cosine_similarity(
+            vectors1.cpu().numpy(), vectors2.cpu().numpy())
+        translation_similarities = cosine_similarity(
+            vectors3.cpu().numpy(), vectors4.cpu().numpy())
+
         return abs(original_similarities-translation_similarities)[0] < 0.1, abs(original_similarities-translation_similarities)[0]
-     
-    
+
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split('-')[0].lower()
         self.expected_results = model(text=self.original)
         self.actual_results = model(text=self.test_case)
-       
+
         return True
-        
