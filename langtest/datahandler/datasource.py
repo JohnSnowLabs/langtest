@@ -590,7 +590,7 @@ class JSONLDataset(_IDataset):
         raise NotImplementedError()
 
 
-class HuggingFaceDataset(_IDataset):
+class HuggingFaceDataset:
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
