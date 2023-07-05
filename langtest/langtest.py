@@ -12,7 +12,6 @@ from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 import json
-import pprint
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
