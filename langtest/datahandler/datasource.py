@@ -302,8 +302,7 @@ class CSVDataset(_IDataset):
         Args:
             file_path (str):
                 Path to the data file.
-            task (str):
-                Task to be evaluated.
+
         """
         super().__init__()
         self._file_path = file_path
@@ -596,6 +595,7 @@ class HuggingFaceDataset(_IDataset):
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
+    LIB_NAME = "datasets"
     COLUMN_NAMES = {
         'text-classification': {
             'text': ['text', 'sentences', 'sentence', 'sample'],
@@ -603,15 +603,18 @@ class HuggingFaceDataset(_IDataset):
         }
     }
     
-    def __init__(self, dataset_name: str):
+    def __init__(self, dataset_name: str, task: str):
         """
         Initialize the HuggingFaceDataset class.
 
         Args:
             dataset_name (str):
                 Name of the dataset to load.
+            task (str):
+                Task to be evaluated on.
         """
         self.dataset_name = dataset_name
+        self.task = task
         self._check_datasets_package()
 
     def _check_datasets_package(self):
@@ -619,15 +622,13 @@ class HuggingFaceDataset(_IDataset):
         Check if the 'datasets' package is installed and import the load_dataset function.
         Raises an error if the package is not found.
         """
-        lib_name = 'datasets'
-        lib_installed = try_import_lib(lib_name)
 
-        if lib_installed:
-            dataset_module = importlib.import_module(lib_name)
+        if try_import_lib(self.LIB_NAME):
+            dataset_module = importlib.import_module(self.LIB_NAME)
             self.load_dataset = getattr(dataset_module, 'load_dataset')
         else:
             raise ModuleNotFoundError(
-                f"The '{lib_name}' package is not installed. Please install it using 'pip install {lib_name}'.")
+                f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'.")
 
     def load_data_classification(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
         """
@@ -690,14 +691,12 @@ class HuggingFaceDataset(_IDataset):
         samples = [self._row_to_sample_summarization(example) for example in dataset]
         return samples
     
-    def load_data(self, task: str, feature_column: str = "text", target_column: str = "label",
+    def load_data(self, feature_column: str = "text", target_column: str = "label",
                   split: str = 'test', subset: str = None) -> List[Sample]:
         """
         Load the specified data based on the task.
 
         Args:
-            task (str):
-                Task type, either 'text-classification' or 'summarization'.
             feature_column (str):
                 Name of the column containing the input text or document.
             target_column (str):
@@ -715,12 +714,12 @@ class HuggingFaceDataset(_IDataset):
             ValueError:
                 If an unsupported task is provided.
         """
-        if task == 'text-classification':
+        if self.task == 'text-classification':
             return self.load_data_classification(feature_column, target_column, split, subset)
-        elif task == 'summarization':
+        elif self.task == 'summarization':
             return self.load_data_summarization(feature_column, target_column, split, subset)
         else:
-            raise ValueError(f"Unsupported task: {task}")
+            raise ValueError(f"Unsupported task: {self.task}")
         
     def _row_to_sample_summarization(self, data_row: Dict[str, str]) -> Sample:
         """
