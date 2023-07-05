@@ -692,6 +692,29 @@ class HuggingFaceDataset(_IDataset):
     
     def load_data(self, task: str, feature_column: str = "text", target_column: str = "label",
                   split: str = 'test', subset: str = None) -> List[Sample]:
+        """
+        Load the specified data based on the task.
+
+        Args:
+            task (str):
+                Task type, either 'text-classification' or 'summarization'.
+            feature_column (str):
+                Name of the column containing the input text or document.
+            target_column (str):
+                Name of the column containing the target label or summary.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration or subset to load.
+
+        Returns:
+            List[Sample]:
+                Loaded data as a list of Sample objects.
+
+        Raises:
+            ValueError:
+                If an unsupported task is provided.
+        """
         if task == 'text-classification':
             return self.load_data_classification(feature_column, target_column, split, subset)
         elif task == 'summarization':
