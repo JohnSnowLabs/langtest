@@ -12,6 +12,7 @@ from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
 import json
+import pprint
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -747,8 +748,8 @@ class Harness:
             test_type (str, optional): The specific test type to retrieve. Defaults to None.
 
         Returns:
-            tuple or dict: If test_type is provided, returns a dictionary containing available tests for that type.
-                        If test_type is None, returns a tuple with the message and the entire available_tests dictionary.
+            dict: Returns a dictionary containing available tests for the specified test type and defaults to all available tests.
+
         Raises:
             ValueError: If an invalid test type is provided.
         """
@@ -765,4 +766,4 @@ class Harness:
                 test_types = ', '.join(available_tests.keys())
                 raise ValueError(f"Invalid test type '{test_type}'. Available test types are: {test_types}")
         else:
-            return "The supported tests are:", available_tests
+            return {"The supported tests are": available_tests}
