@@ -19,8 +19,19 @@ from .custom_bias import add_custom_data
 class RepresentationOperation:
 
     @staticmethod
-    def add_custom_representation(data, name, append):
-        add_custom_data(data, name, append)
+    def add_custom_representation(data, name, append,task):
+        """
+        Add custom representation to the given data.
+
+        Args:
+            data (list): The data to which the custom representation will be added.
+            name (str): The name of the custom representation.
+            append (bool): Indicates whether to append the custom representation or replace the existing representation.
+            task :  "representation"
+        Returns:
+            None
+        """
+        add_custom_data(data, name, append,task)
     
  
             

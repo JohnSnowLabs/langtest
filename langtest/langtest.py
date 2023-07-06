@@ -905,22 +905,6 @@ class Harness:
 
         return harness
 
-    @staticmethod
-    def pass_custom_bias_data(
-        file_path: str, test_name: str = None, append: bool = False
-    ):
-        """Load custom data from a JSON file and store it in a class variable.
-
-        Args:
-            file_path (str): Path to the JSON file.
-            test_name (str, optional): Name parameter. Defaults to None.
-            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
-        """
-        with open(file_path, "r") as f:
-            data = json.load(f)
-
-        TestFactory.call_add_custom_bias(data, test_name, append)
-
     def edit_testcases(self, output_path: str, **kwargs):
         """testcases is exported to a csv file and can be edited.
         The edited file can be imported back to the harness"""
@@ -946,15 +930,23 @@ class Harness:
         return self
 
     @staticmethod
-    def pass_custom_data(file_path: str, test_name: str = None, append: bool = False,TASK:str=None):
+    def pass_custom_data(file_path: str, test_name: str = None, task: str = None, append: bool = False):
         """Load custom data from a JSON file and store it in a class variable.
 
         Args:
             file_path (str): Path to the JSON file.
             test_name (str, optional): Name parameter. Defaults to None.
+            task (str, optional): Task type. Either "bias" or "representation". Defaults to None.
             append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
         """
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             data = json.load(f)
 
-        RepresentationOperation.add_custom_representation(data, test_name, append)
+        if task == "bias":
+            TestFactory.call_add_custom_bias(data, test_name, append,task)
+        elif task == "representation":
+            if test_name == "Gender-Representation":
+                RepresentationOperation.add_custom_representation(data, test_name, append,task)
+
+        else:
+            raise ValueError(f"Invalid task type: {task}. Expected 'bias' or 'representation'.")
