@@ -64,6 +64,7 @@ taskipy = "^1.11.0"
 en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz" }
 black = "^23.3.0"
 pyproject-flake8 = "<6.0.0"
+pre-commit = "^3.3.3"
 
 [tool.taskipy.tasks]
 test = "pytest tests/* -v --disable-warnings"
