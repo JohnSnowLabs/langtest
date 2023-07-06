@@ -22,7 +22,6 @@ from .utils import (
     black_names,
     country_economic_dict,
     create_terminology,
-    default_user_prompt,
     female_pronouns,
     get_substitution_names,
     hispanic_names,
@@ -34,8 +33,14 @@ from .utils import (
     white_names,
 )
 from ..modelhandler import ModelFactory
-from ..utils.custom_types import Result, Sample
-from ..utils.custom_types.sample import NERSample, QASample, SequenceClassificationSample
+from ..utils.custom_types.sample import (
+    NERSample,
+    QASample,
+    SequenceClassificationSample,
+    Sample,
+    Result,
+)
+from ..utils.custom_types.helpers import default_user_prompt
 
 nest_asyncio.apply()
 
