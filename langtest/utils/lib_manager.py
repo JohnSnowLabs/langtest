@@ -19,3 +19,4 @@ def try_import_lib(lib: str) -> bool:
     except Exception as err:
         print(f"Failure to import {lib}.")
         print(err)
+

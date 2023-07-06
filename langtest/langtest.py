@@ -51,7 +51,13 @@ class Harness:
             "johnsnowlabs",
         ): "imdb/sample.csv",
     }
-    SUPPORTED_HUBS_HF_DATASET = ["johnsnowlabs", "huggingface", "spacy"]
+    SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
+    SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = [
+        "openai",
+        "cohere",
+        "ai21",
+        "huggingface-inference-api",
+    ]
     DEFAULTS_CONFIG = {
         "hubs": {
             "azure-openai": resource_filename("langtest", "data/config/azure_config.yml"),
@@ -129,15 +135,15 @@ class Harness:
 
         elif (
             type(data) is dict
-            and hub in self.SUPPORTED_HUBS_HF_DATASET
+            and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             and task == "text-classification"
         ):
             self.data = (
-                HuggingFaceDataset(data["name"]).load_data(
-                    data.get("feature_column", "text"),
-                    data.get("target_column", "label"),
-                    data.get("split", "test"),
-                    data.get("subset", None),
+                HuggingFaceDataset(data["name"], task=task).load_data(
+                    feature_column=data.get("feature_column", "text"),
+                    target_column=data.get("target_column", "label"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
                 )
                 if data is not None
                 else None
@@ -149,6 +155,18 @@ class Harness:
                         "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
                     )
                 model = resource_filename("langtest", "data/textcat_imdb")
+
+        elif (
+            type(data) is dict
+            and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+            and task == "summarization"
+        ):
+            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
+                feature_column=data.get("feature_column", "document"),
+                target_column=data.get("target_column", "summary"),
+                split=data.get("split", "test"),
+                subset=data.get("subset", None),
+            )
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(

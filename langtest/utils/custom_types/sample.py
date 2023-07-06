@@ -17,6 +17,7 @@ default_user_prompt = {
     "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers to all the questions without stopping in between. Read the following context and answer each question based on the given information.\n\nContext: {context}\n\nQuestions:\n{question}",
     "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. Answer:",
     "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n{context}{question}",
+    "sum_prompt": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
 }
 
 
@@ -374,11 +375,6 @@ class MaxScoreSample(BaseSample):
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
-Sample = TypeVar(
-    "Sample", MaxScoreSample, MinScoreSample, SequenceClassificationSample, NERSample
-)
-
-
 class BaseQASample(BaseModel):
     """
     Helper object storing the original text, the perturbed one and the corresponding
@@ -436,6 +432,7 @@ class BaseQASample(BaseModel):
                 sens, perturbations, prob, params, **kwargs
             )
             self.category = func.__module__.split(".")[-1]
+
 
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split("-")[0].lower()
@@ -514,7 +511,6 @@ class QASample(BaseQASample):
         from ...transform.utils import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
-        """"""
         if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac"]:
             PROMPT = PromptTemplate(
                 input_variables=["query", "answer", "result"], template=qa_prompt_template
@@ -875,6 +871,7 @@ class TranslationSample(BaseModel):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
+        """"""
         result = {
             "category": self.category,
             "test_type": self.test_type,
@@ -933,3 +930,6 @@ class TranslationSample(BaseModel):
         self.actual_results = model(text=self.test_case)
 
         return True
+
+
+Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample, SequenceClassificationSample, NERSample, SummarizationSample)
