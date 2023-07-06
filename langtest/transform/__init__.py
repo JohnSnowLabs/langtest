@@ -677,11 +677,11 @@ class BiasTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the bias test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
         runtime_test = {}
@@ -746,11 +746,11 @@ class RepresentationTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the representation test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the representation test.
         """
         all_samples = []
         runtime_test = {}
@@ -814,11 +814,11 @@ class FairnessTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the fairness test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the fairness test.
         """
         all_samples = []
         runtime_tests = {}
@@ -1038,11 +1038,11 @@ class AccuracyTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the accuracy test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the accuracy test.
         """
         all_samples = []
         runtime_tests = {}
@@ -1234,11 +1234,11 @@ class ToxicityTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the toxicity test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the toxicity test.
         """
         all_samples = []
         runtime_tests = {}
