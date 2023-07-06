@@ -10,6 +10,8 @@ from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
 from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
     SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
+from ..utils.lib_manager import try_import_lib
+import importlib
 
 
 class _IDataset(ABC):
@@ -300,8 +302,7 @@ class CSVDataset(_IDataset):
         Args:
             file_path (str):
                 Path to the data file.
-            task (str):
-                Task to be evaluated.
+
         """
         super().__init__()
         self._file_path = file_path
@@ -594,24 +595,42 @@ class HuggingFaceDataset(_IDataset):
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
+    LIB_NAME = "datasets"
     COLUMN_NAMES = {
         'text-classification': {
             'text': ['text', 'sentences', 'sentence', 'sample'],
             'label': ['label', 'labels', 'class', 'classes']
         }
     }
-
-    def __init__(self, dataset_name: str):
+    
+    def __init__(self, dataset_name: str, task: str):
         """
         Initialize the HuggingFaceDataset class.
 
         Args:
             dataset_name (str):
                 Name of the dataset to load.
+            task (str):
+                Task to be evaluated on.
         """
         self.dataset_name = dataset_name
+        self.task = task
+        self._check_datasets_package()
 
-    def load_data(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
+    def _check_datasets_package(self):
+        """
+        Check if the 'datasets' package is installed and import the load_dataset function.
+        Raises an error if the package is not found.
+        """
+
+        if try_import_lib(self.LIB_NAME):
+            dataset_module = importlib.import_module(self.LIB_NAME)
+            self.load_dataset = getattr(dataset_module, 'load_dataset')
+        else:
+            raise ModuleNotFoundError(
+                f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'.")
+
+    def load_data_classification(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
         """
         Load the specified split from the dataset library.
 
@@ -629,22 +648,100 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
-        try:
-            from datasets import load_dataset
-        except ImportError:
-            raise ModuleNotFoundError(
-                "The 'datasets' package is not installed. Please install it using 'pip install datasets'.")
+        
         if subset:
-            dataset = load_dataset(self.dataset_name, name=subset, split=split)
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
-            dataset = load_dataset(self.dataset_name, split=split)
+            dataset = self.load_dataset(self.dataset_name, split=split)
 
         if feature_column and target_column:
             dataset = dataset.map(lambda example: {
                                   'text': example[feature_column], 'label': example[target_column]})
 
-        samples = [self._row_to_sample(example) for example in dataset]
+        samples = [self._row_to_sample_classification(example) for example in dataset]
         return samples
+    
+    def load_data_summarization(self, feature_column: str = "document", target_column: str ='summary',split: str = 'test', subset: str = None) -> List[Sample]:
+        """
+        Load the specified split from the dataset library for summarization task.
+
+        Args:
+            feature_column (str):
+                Name of the column containing the input text or document.
+            target_column (str):
+                Name of the column containing the target summary.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration or subset to load.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects for summarization task.
+        """
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        if feature_column and target_column:
+            dataset = dataset.map(lambda example: {
+                                  'document': example[feature_column], 'summary': example[target_column]})
+
+        samples = [self._row_to_sample_summarization(example) for example in dataset]
+        return samples
+    
+    def load_data(self, feature_column: str = "text", target_column: str = "label",
+                  split: str = 'test', subset: str = None) -> List[Sample]:
+        """
+        Load the specified data based on the task.
+
+        Args:
+            feature_column (str):
+                Name of the column containing the input text or document.
+            target_column (str):
+                Name of the column containing the target label or summary.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration or subset to load.
+
+        Returns:
+            List[Sample]:
+                Loaded data as a list of Sample objects.
+
+        Raises:
+            ValueError:
+                If an unsupported task is provided.
+        """
+        if self.task == 'text-classification':
+            return self.load_data_classification(feature_column, target_column, split, subset)
+        elif self.task == 'summarization':
+            return self.load_data_summarization(feature_column, target_column, split, subset)
+        else:
+            raise ValueError(f"Unsupported task: {self.task}")
+        
+    def _row_to_sample_summarization(self, data_row: Dict[str, str]) -> Sample:
+        """
+        Convert a row from the dataset into a Sample for summarization.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object for summarization.
+        """
+        original = data_row.get('document', '')
+        summary = data_row.get('summary', '')
+
+        return SummarizationSample(
+            original=original,
+            expected_results=summary,
+            task="summarization"
+        )
+
 
     def export_data(self, data: List[Sample], output_path: str):
         """
@@ -664,7 +761,7 @@ class HuggingFaceDataset(_IDataset):
                 row = self._sample_to_row(sample)
                 csv_writer.writerow(row)
 
-    def _row_to_sample(self, data_row: Dict[str, str]) -> Sample:
+    def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
         """
         Convert a row from the dataset into a Sample for text classification.
 

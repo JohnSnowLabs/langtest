@@ -17,6 +17,7 @@ default_user_prompt = {
     "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers to all the questions without stopping in between. Read the following context and answer each question based on the given information.\n\nContext: {context}\n\nQuestions:\n{question}",
     "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. Answer:",
     "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n{context}{question}",
+    "sum_prompt": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
 }
 
 
@@ -337,8 +338,7 @@ class MaxScoreSample(BaseSample):
             return False
         return self.actual_results.max_score <= self.expected_results.max_score
 
-Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample,
-                 SequenceClassificationSample, NERSample)
+
 
 class BaseQASample(BaseModel):
     """
@@ -380,8 +380,8 @@ class BaseQASample(BaseModel):
 
         Returns:
             None
-        """        
-        
+        """
+
         if perturbations is None:
             sens = [self.original_question, self.original_context]
             self.perturbed_question, self.perturbed_context = func(sens, prob,**params, **kwargs)
@@ -393,7 +393,7 @@ class BaseQASample(BaseModel):
             self.perturbed_question, self.perturbed_context = func(sens,perturbations,prob,params,**kwargs)
             self.category = func.__module__.split('.')[-1]
 
-    
+
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split('-')[0].lower()
         prompt_template = kwargs.get(
@@ -505,7 +505,7 @@ class MinScoreQASample(QASample):
     def is_pass(self) -> bool:
         """
         Checks if the sample has passed the evaluation.
-        """  
+        """
         return self.actual_results.min_score >= self.expected_results.min_score
 
 class MaxScoreQASample(QASample):
@@ -518,9 +518,9 @@ class MaxScoreQASample(QASample):
     def is_pass(self) -> bool:
         """
         Checks if the sample has passed the evaluation.
-        """  
+        """
         return self.actual_results.max_score <= self.expected_results.max_score
-    
+
 class SummarizationSample(BaseModel):
     """
     A class representing a sample for summarization task.
@@ -570,13 +570,13 @@ class SummarizationSample(BaseModel):
             })
 
         return result
-    
+
     def is_pass(self) :
         """
         Checks if the sample has passed the evaluation.
-        """        
+        """
         return self._is_eval()[0]
-    
+
     def _is_eval(self) :
         """Perform the evaluation and return the evaluation score.
 
@@ -600,7 +600,7 @@ class SummarizationSample(BaseModel):
             results = metric.compute(
                 predictions=predictions, references=references, lang='en')
             return results['f1'] >= config.get('threshold', 0.50), results['f1']
-    
+
     def transform(self, func, params,prob,perturbations=None,**kwargs):
         """
         Transforms the original data using the specified function.
@@ -620,7 +620,7 @@ class SummarizationSample(BaseModel):
                 self.test_case= func(sens,prob,**params, **kwargs)[0]
                 self.category = func.__module__.split('.')[-1]
         else:
-                
+
                 sens = [self.original]
                 self.test_case= func(sens,perturbations,prob,params,**kwargs)[0]
                 self.category = func.__module__.split('.')[-1]
@@ -637,13 +637,19 @@ class SummarizationSample(BaseModel):
         Returns:
             bool: True if the sample ran successfully, False otherwise.
         """
-        dataset_name = self.dataset_name.split('-')[0].lower()
-        prompt_template = kwargs.get(
-            'user_prompt', default_user_prompt.get(dataset_name, ""))
-        self.expected_results = model(text={'context': self.original},
-                                      prompt={"template": prompt_template, 'input_variables': ["context"]})
-        self.actual_results = model(text={'context': self.test_case},
-                                    prompt={"template": prompt_template, 'input_variables': ["context"]})
+        dataset_name = self.dataset_name.split('-')[0].lower() if self.dataset_name else None
+
+        prompt_template = kwargs.get('user_prompt', default_user_prompt.get(dataset_name, "sum_prompt"))
+
+        self.expected_results = model(
+            text={'context': self.original},
+            prompt={"template": prompt_template, 'input_variables': ["context"]}
+        )
+        self.actual_results = model(
+            text={'context': self.test_case},
+            prompt={"template": prompt_template, 'input_variables': ["context"]}
+        )
+
         return True
 
 class ToxicitySample(BaseModel):
@@ -682,7 +688,7 @@ class ToxicitySample(BaseModel):
         Returns:
             Dict[str, Any]: A dictionary representation of the ToxicitySample object.
         """
-        
+
         result = {
             'category': self.category,
             'test_type': self.test_type,
@@ -786,24 +792,24 @@ class RuntimeSample(BaseModel):
                     unit=unit)
             self.total = total
         return total
-        
+
 class TranslationSample(BaseModel):
     original: str
     test_case: str = None
     expected_results: Result = None
     actual_results: Result = None
-    
+
     state: str = None
-    dataset_name: str = None 
+    dataset_name: str = None
     task: str = None     #translation
-    category: str = None  
-    test_type: str = None  
+    category: str = None
+    test_type: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
-    
+
     def to_dict(self) -> Dict[str, Any]:
-        
+
         result = {
             'category': self.category,
             'test_type': self.test_type,
@@ -822,16 +828,16 @@ class TranslationSample(BaseModel):
             })
 
         return result
-    
+
     def is_pass(self) :
         """"""
         return self._is_eval()[0]
-    
+
     def _is_eval(self) -> bool:
         """"""
 
         model = SimpleSentenceTransformer()
-        
+
         # Get the sentence vectors
         vectors1 = model.encode([self.original], convert_to_tensor=True)
         vectors2 = model.encode([self.test_case], convert_to_tensor=True)
@@ -840,15 +846,17 @@ class TranslationSample(BaseModel):
 
         original_similarities = cosine_similarity(vectors1.cpu().numpy(), vectors2.cpu().numpy())
         translation_similarities = cosine_similarity(vectors3.cpu().numpy(), vectors4.cpu().numpy())
-        
+
         return abs(original_similarities-translation_similarities)[0] < 0.1, abs(original_similarities-translation_similarities)[0]
-     
-    
+
+
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split('-')[0].lower()
         self.expected_results = model(text=self.original)
         self.actual_results = model(text=self.test_case)
-       
+
         return True
-        
+
+
+Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample, SequenceClassificationSample, NERSample, SummarizationSample)

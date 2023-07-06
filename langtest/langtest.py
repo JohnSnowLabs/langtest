@@ -37,7 +37,8 @@ class Harness:
         ("text-classification", "textcat_imdb", "spacy"): "imdb/sample.csv",
         ("text-classification", "en.sentiment.imdb.glove", "johnsnowlabs"): "imdb/sample.csv"
     }
-    SUPPORTED_HUBS_HF_DATASET = ["johnsnowlabs", "huggingface", "spacy"]
+    SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
+    SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = ["openai", "cohere", "ai21", "huggingface-inference-api"]
     DEFAULTS_CONFIG = {
         'hubs': {
             'azure-openai': resource_filename("langtest", "data/config/azure_config.yml"),
@@ -105,12 +106,13 @@ class Harness:
             logging.info(
                 "Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET and task == "text-classification":
-            self.data = HuggingFaceDataset(data['name']).load_data(
-                data.get('feature_column', 'text'),
-                data.get('target_column', 'label'),
-                data.get('split', 'test'),
-                data.get('subset', None)
+        elif type(
+                data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION and task == "text-classification":
+            self.data = HuggingFaceDataset(data['name'], task=task).load_data(
+                feature_column=data.get('feature_column', 'text'),
+                target_column=data.get('target_column', 'label'),
+                split=data.get('split', 'test'),
+                subset=data.get('subset', None)
             ) if data is not None else None
 
             if hub == "spacy" and (model == 'textcat_imdb' or model is None):
@@ -118,6 +120,15 @@ class Harness:
                     logging.warning(
                         "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired.")
                 model = resource_filename("langtest", "data/textcat_imdb")
+
+        elif type(data) is dict and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION and task == "summarization":
+            self.data = HuggingFaceDataset(data['name'], task=task).load_data(
+                feature_column=data.get('feature_column', 'document'),
+                target_column=data.get('target_column', 'summary'),
+                split=data.get('split', 'test'),
+                subset=data.get('subset', None)
+            )
+
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError("You haven't specified any value for the parameter 'data' and the configuration you "
@@ -141,7 +152,7 @@ class Harness:
                     self.DEFAULTS_CONFIG['hubs'][hub])
         elif task == "translation":
             self._config = self.configure(
-                self.DEFAULTS_CONFIG['task'][task+"-"+hub])
+                self.DEFAULTS_CONFIG['task'][task + "-" + hub])
         else:
             logging.info(
                 "No configuration file was provided, loading default config.")
@@ -293,13 +304,15 @@ class Harness:
                                "calling the `.run()` method.")
         if not isinstance(self._testcases, dict):
             self._generated_results, self._runtime.run_time = TestFactory.run(
-                self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+                self._testcases, self.model, is_default=self.is_default, raw_data=self.data,
+                **self._config.get("model_parameters", {}))
         else:
             self._generated_results = {}
             self._runtime.run_time = {}
             for k, v in self.model.items():
                 self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
-                    self._testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
+                    self._testcases[k], v, is_default=self.is_default, raw_data=self.data,
+                    **self._config.get("model_parameters", {}))
 
         return self
 
@@ -333,7 +346,7 @@ class Harness:
             report = {}
             for test_type, value in summary.items():
                 pass_rate = summary[test_type]["true"] / \
-                    (summary[test_type]["true"] + summary[test_type]["false"])
+                            (summary[test_type]["true"] + summary[test_type]["false"])
                 min_pass_rate = self.min_pass_dict.get(
                     test_type, self.default_min_pass_dict)
 
@@ -378,7 +391,7 @@ class Harness:
                 if save_dir is None:
                     raise ValueError(
                         "You need to set \"save_dir\" parameter for this format.")
-                self.df_report.to_json(save_dir)                    
+                self.df_report.to_json(save_dir)
             elif format == "excel":
                 if save_dir is None:
                     raise ValueError(
@@ -414,8 +427,8 @@ class Harness:
                 report = {}
                 for test_type, value in summary.items():
                     pass_rate = summary[test_type]["true"] / \
-                        (summary[test_type]["true"] +
-                         summary[test_type]["false"])
+                                (summary[test_type]["true"] +
+                                 summary[test_type]["false"])
                     min_pass_rate = self.min_pass_dict.get(
                         test_type, self.default_min_pass_dict)
 
@@ -463,7 +476,7 @@ class Harness:
                 res = []
                 for x in series.index:
                     res.append(df_final_report[(df_final_report["test_type"] == series.name) & (
-                        df_final_report["model_name"] == x)]["pass"].all())
+                            df_final_report["model_name"] == x)]["pass"].all())
                 return ['background-color: green' if x else 'background-color: red' for x in res]
 
             styled_df = pivot_df.style.apply(color_cells)
@@ -471,7 +484,7 @@ class Harness:
                 time_elapsed_mean = {k: v.mean()
                                      for k, v in time_elapsed.items()}
                 df_time_elapsed = pd.DataFrame(list(time_elapsed_mean.items()), columns=[
-                                               'model_name', f'time_elapsed ({unit})'])
+                    'model_name', f'time_elapsed ({unit})'])
                 df_time_elapsed.set_index('model_name', inplace=True)
                 from IPython.display import display
                 display(df_time_elapsed)
@@ -539,13 +552,15 @@ class Harness:
 
         column_order = ["model_name", "category", "test_type", "original", "prompt", "original_context",
                         "original_question", "completion", "test_case", "perturbed_context", "perturbed_question",
-                        "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score", "pass"]
+                        "expected_result", "prompt_toxicity", "actual_result", "completion_toxicity", "eval_score",
+                        "pass"]
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
 
         return generated_results_df.fillna("-")
 
-    def augment(self, input_path: str, output_path: str, custom_proportions: Union[Dict, List] = None, inplace: bool = False) -> "Harness":
+    def augment(self, input_path: str, output_path: str, custom_proportions: Union[Dict, List] = None,
+                inplace: bool = False) -> "Harness":
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -582,7 +597,7 @@ class Harness:
             vaild_test_types = set(custom_proportions.keys() if isinstance(
                 custom_proportions, dict) else custom_proportions)
             report_test_types = set(self.df_report['test_type'].unique())
-            
+
             if not (vaild_test_types.issubset(report_test_types)):
                 raise ValueError(
                     f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types.")
