@@ -1,5 +1,5 @@
 import re
-from ..transform.utils import CMU_dict
+from ..transform.constants import CMU_dict
 
 
 class G2p(object):

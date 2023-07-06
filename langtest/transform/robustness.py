@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import SequenceClassificationSample
-from .utils import (
+from .constants import (
     CONTRACTION_MAP,
     Slang_Adjectives,
     Slang_Adverbs,

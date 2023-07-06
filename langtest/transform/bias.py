@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from langtest.modelhandler.modelhandler import ModelFactory
-from .utils import female_pronouns, male_pronouns, neutral_pronouns
+from .constants import female_pronouns, male_pronouns, neutral_pronouns
 from ..utils.custom_types import Sample, Span, Transformation
 
 

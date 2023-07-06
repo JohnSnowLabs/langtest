@@ -1,4 +1,4 @@
-from .utils import (
+from .constants import (
     asian_names,
     black_names,
     country_economic_dict,

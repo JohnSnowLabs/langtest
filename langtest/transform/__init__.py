@@ -16,14 +16,12 @@ from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
-from .utils import (
+from .constants import (
     A2B_DICT,
     asian_names,
     black_names,
     country_economic_dict,
-    create_terminology,
     female_pronouns,
-    get_substitution_names,
     hispanic_names,
     inter_racial_names,
     male_pronouns,
@@ -31,6 +29,10 @@ from .utils import (
     neutral_pronouns,
     religion_wise_names,
     white_names,
+)
+from .utils import (
+    get_substitution_names,
+    create_terminology
 )
 from ..modelhandler import ModelFactory
 from ..utils.custom_types.sample import (

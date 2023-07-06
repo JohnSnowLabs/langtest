@@ -1,7 +1,7 @@
 from numbers import Number
 from pydantic import Field
 from pydantic.typing import Annotated
-from langtest.transform.utils import (
+from langtest.transform.constants import (
     ordinal,
     unit,
     teen,
@@ -10,7 +10,7 @@ from langtest.transform.utils import (
     nth_suff,
     ordinal_suff,
 )
-from langtest.transform.utils import (
+from langtest.transform.constants import (
     NON_DIGIT,
     WHITESPACES,
     COMMA_WORD,

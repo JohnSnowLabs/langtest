@@ -11,15 +11,18 @@ from langtest.utils.custom_types import (
 )
 from langtest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
 from langtest.utils.gender_classifier import GenderClassifier
-from .utils import (
-    default_economic_country_representation,
-    default_ehtnicity_representation,
-    default_religion_representation,
-    get_country_economic_representation_dict,
-    get_entity_representation_proportions,
-    get_ethnicity_representation_dict,
-    get_label_representation_dict,
-    get_religion_name_representation_dict,
+from .utils import ( 
+                    get_label_representation_dict,
+                    get_country_economic_representation_dict,
+                    get_religion_name_representation_dict,
+                    get_ethnicity_representation_dict,
+                    get_entity_representation_proportions
+)
+from .constants import (
+                    default_label_representation,
+                    default_ehtnicity_representation,
+                    default_economic_country_representation,
+                    default_religion_representation
 )
 
 

@@ -494,7 +494,7 @@ class QASample(BaseQASample):
         """
         from ...langtest import GLOBAL_MODEL as llm_model
         from langchain.evaluation.qa import QAEvalChain
-        from ...transform.utils import qa_prompt_template
+        from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
         if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac"]:
