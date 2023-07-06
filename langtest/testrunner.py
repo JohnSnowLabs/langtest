@@ -11,10 +11,10 @@ class BaseRunner:
     """
 
     def __init__(
-            self,
-            load_testcases: List[Sample],
-            model_handler: ModelFactory,
-            data: List[Sample]
+        self,
+        load_testcases: List[Sample],
+        model_handler: ModelFactory,
+        data: List[Sample],
     ) -> None:
         """
         Initialize the BaseRunner class.
@@ -34,9 +34,9 @@ class BaseRunner:
         Returns:
             Tuple[List[Sample], pd.DataFrame]
         """
-     
-        test_result = TestRunner(self.load_testcases, self._model_handler, self._data).evaluate()
-        
+        test_result = TestRunner(
+            self.load_testcases, self._model_handler, self._data
+        ).evaluate()
         return test_result
 
 
@@ -54,10 +54,9 @@ class TestRunner(BaseRunner):
         """
         for sample in tqdm(self.load_testcases, desc="Running test cases..."):
             if sample.state != "done":
-                if sample.category not in ["Robustness","Bias"]:
+                if sample.category not in ["Robustness", "Bias"]:
                     sample.expected_results = self._model_handler(sample.original)
                 sample.actual_results = self._model_handler(sample.test_case)
                 sample.state = "done"
 
         return self.load_testcases
-

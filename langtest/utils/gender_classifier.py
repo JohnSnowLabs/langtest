@@ -19,12 +19,11 @@ class GenderClassifier(object):
 
         tokenizer = AutoTokenizer.from_pretrained(self.PRETRAINED_MODEL)
         model = AutoModelForSequenceClassification.from_pretrained(
-            self.PRETRAINED_MODEL,
-            num_labels=3
+            self.PRETRAINED_MODEL, num_labels=3
         )
 
         curr_dir = os.path.dirname(__file__)
-        ckpt_path = os.path.join(curr_dir, 'checkpoints.ckpt')
+        ckpt_path = os.path.join(curr_dir, "checkpoints.ckpt")
         ckpts = torch.load(ckpt_path)
         model.load_state_dict(ckpts)
         self.pipe = pipeline("text-classification", model=model, tokenizer=tokenizer)

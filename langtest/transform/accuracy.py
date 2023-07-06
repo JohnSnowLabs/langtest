@@ -1,11 +1,12 @@
+import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-import asyncio
-import logging
 import evaluate
+
 from langtest.utils.custom_types import MinScoreOutput, MinScoreSample
-from langtest.utils.util_metrics import classification_report, calculate_f1_score
+from langtest.utils.util_metrics import calculate_f1_score, classification_report
+
 
 class BaseAccuracy(ABC):
     """
@@ -17,6 +18,7 @@ class BaseAccuracy(ABC):
     Methods:
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
     """
+
     alias_name = None
     supported_tasks = ["ner", "text-classification"]
 
@@ -39,12 +41,14 @@ class BaseAccuracy(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs) -> List[MinScoreSample]:
+    async def run(
+        sample_list: List[MinScoreSample], y_true, y_pred, **kwargs
+    ) -> List[MinScoreSample]:
         return NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[MinScoreSample],  y_true, y_pred, **kwargs):
-        """ 
+    async def async_run(cls, sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
+        """
         Creates a task to run the accuracy measure.
 
         Args:
@@ -53,8 +57,7 @@ class BaseAccuracy(ABC):
             y_pred (List[Any]): Predicted values
 
         """
-        created_task = asyncio.create_task(
-            cls.run(sample_list, y_true, y_pred, **kwargs))
+        created_task = asyncio.create_task(cls.run(sample_list, y_true, y_pred, **kwargs))
         return created_task
 
 
@@ -90,9 +93,7 @@ class MinPrecisionScore(BaseAccuracy):
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
-            min_scores = {
-                label: params["min_score"] for label in labels
-            }
+            min_scores = {label: params["min_score"] for label in labels}
 
         precision_samples = []
         for k in labels:
@@ -103,7 +104,7 @@ class MinPrecisionScore(BaseAccuracy):
                 category="accuracy",
                 test_type="min_precision_score",
                 test_case=k,
-                expected_results=MinScoreOutput(min_score=min_scores[k])
+                expected_results=MinScoreOutput(min_score=min_scores[k]),
             )
             precision_samples.append(sample)
         return precision_samples
@@ -119,21 +120,18 @@ class MinPrecisionScore(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        df_metrics = classification_report(
-            y_true, y_pred,zero_division=0)
+        df_metrics = classification_report(y_true, y_pred, zero_division=0)
         df_metrics.pop("macro avg")
-       
 
         for idx, sample in enumerate(sample_list):
             if progress:
                 progress.update(1)
             if sample.test_case not in df_metrics:
                 sample_list.pop(idx)
-                
+
                 continue
             precision = df_metrics.get(sample.test_case)
-            sample.actual_results = MinScoreOutput(
-                min_score=precision['precision'])
+            sample.actual_results = MinScoreOutput(min_score=precision["precision"])
             sample.state = "done"
 
         return sample_list
@@ -171,9 +169,7 @@ class MinRecallScore(BaseAccuracy):
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
-            min_scores = {
-                label: params["min_score"] for label in labels
-            }
+            min_scores = {label: params["min_score"] for label in labels}
 
         rec_samples = []
         for k in labels:
@@ -184,7 +180,7 @@ class MinRecallScore(BaseAccuracy):
                 category="accuracy",
                 test_type="min_recall_score",
                 test_case=k,
-                expected_results=MinScoreOutput(min_score=min_scores[k])
+                expected_results=MinScoreOutput(min_score=min_scores[k]),
             )
             rec_samples.append(sample)
         return rec_samples
@@ -201,8 +197,7 @@ class MinRecallScore(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        df_metrics = classification_report(
-            y_true, y_pred,zero_division=0)
+        df_metrics = classification_report(y_true, y_pred, zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -210,11 +205,10 @@ class MinRecallScore(BaseAccuracy):
                 progress.update(1)
             if sample.test_case not in df_metrics:
                 sample_list.pop(idx)
-                
+
                 continue
             precision = df_metrics.get(sample.test_case)
-            sample.actual_results = MinScoreOutput(
-                min_score=precision['recall'])
+            sample.actual_results = MinScoreOutput(min_score=precision["recall"])
             sample.state = "done"
 
         return sample_list
@@ -252,9 +246,7 @@ class MinF1Score(BaseAccuracy):
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
-            min_scores = {
-                label: params["min_score"] for label in labels
-            }
+            min_scores = {label: params["min_score"] for label in labels}
 
         f1_samples = []
         for k in labels:
@@ -265,7 +257,7 @@ class MinF1Score(BaseAccuracy):
                 category="accuracy",
                 test_type="min_f1_score",
                 test_case=k,
-                expected_results=MinScoreOutput(min_score=min_scores[k])
+                expected_results=MinScoreOutput(min_score=min_scores[k]),
             )
             f1_samples.append(sample)
         return f1_samples
@@ -282,8 +274,7 @@ class MinF1Score(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        df_metrics = classification_report(
-            y_true, y_pred,zero_division=0)
+        df_metrics = classification_report(y_true, y_pred, zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -294,8 +285,7 @@ class MinF1Score(BaseAccuracy):
                 sample_list.pop(idx)
                 continue
             f1_scores = df_metrics.get(sample.test_case)
-            sample.actual_results = MinScoreOutput(
-                min_score=f1_scores['f1-score'])
+            sample.actual_results = MinScoreOutput(min_score=f1_scores["f1-score"])
             sample.state = "done"
 
         return sample_list
@@ -335,7 +325,7 @@ class MinMicroF1Score(BaseAccuracy):
             category="accuracy",
             test_type="min_micro_f1_score",
             test_case="micro",
-            expected_results=MinScoreOutput(min_score=min_score)
+            expected_results=MinScoreOutput(min_score=min_score),
         )
 
         return [sample]
@@ -351,9 +341,9 @@ class MinMicroF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        
-        f1 = calculate_f1_score(y_true, y_pred, average="micro",zero_division=0)
-        
+
+        f1 = calculate_f1_score(y_true, y_pred, average="micro", zero_division=0)
+
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
@@ -397,13 +387,12 @@ class MinMacroF1Score(BaseAccuracy):
             category="accuracy",
             test_type="min_macro_f1_score",
             test_case="macro",
-            expected_results=MinScoreOutput(min_score=min_score)
+            expected_results=MinScoreOutput(min_score=min_score),
         )
 
         return [sample]
 
     async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-
         """
         Computes the minimum F1 score for the given data.
 
@@ -415,8 +404,8 @@ class MinMacroF1Score(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        f1 = calculate_f1_score(y_true, y_pred, average="macro",zero_division=0)
-        
+        f1 = calculate_f1_score(y_true, y_pred, average="macro", zero_division=0)
+
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
@@ -459,7 +448,7 @@ class MinWeightedF1Score(BaseAccuracy):
             category="accuracy",
             test_type="min_weighted_f1_score",
             test_case="weighted",
-            expected_results=MinScoreOutput(min_score=min_score)
+            expected_results=MinScoreOutput(min_score=min_score),
         )
 
         return [sample]
@@ -475,14 +464,15 @@ class MinWeightedF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        f1 = calculate_f1_score(y_true, y_pred, average="weighted",zero_division=0)
-        
+        f1 = calculate_f1_score(y_true, y_pred, average="weighted", zero_division=0)
+
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
             sample.state = "done"
             if progress:
                 progress.update(1)
         return sample_list
+
 
 class MinEMcore(BaseAccuracy):
     """
@@ -517,14 +507,13 @@ class MinEMcore(BaseAccuracy):
         sample = MinScoreSample(
             category="accuracy",
             test_type="min_macro_f1_score",
-            expected_results=MinScoreOutput(min_score=min_score)
+            expected_results=MinScoreOutput(min_score=min_score),
         )
 
         return [sample]
 
     @staticmethod
     async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-
         """
         Computes the minimum F1 score for the given data.
 
@@ -544,8 +533,9 @@ class MinEMcore(BaseAccuracy):
             sample.state = "done"
             if progress:
                 progress.update(1)
-                
+
         return sample_list
+
 
 class MinBLEUcore(BaseAccuracy):
     """
@@ -580,14 +570,13 @@ class MinBLEUcore(BaseAccuracy):
         sample = MinScoreSample(
             category="accuracy",
             test_type="min_bleu_score",
-            expected_results=MinScoreOutput(min_score=min_score)
+            expected_results=MinScoreOutput(min_score=min_score),
         )
 
         return [sample]
 
     @staticmethod
     async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-
         """
         Computes the minimum F1 score for the given data.
 
@@ -600,15 +589,16 @@ class MinBLEUcore(BaseAccuracy):
         progress = kwargs.get("progress_bar", False)
         em = evaluate.load("bleu")
         result = em.compute(references=y_true, predictions=y_pred)
-        y_true = [[f'The answer is {y}' for y in x] for x in y_true]
-        y_pred = [f'The answer is {x}' for x in y_pred]
-        
+        y_true = [[f"The answer is {y}" for y in x] for x in y_true]
+        y_pred = [f"The answer is {x}" for x in y_pred]
+
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=result["bleu"])
             sample.state = "done"
             if progress:
                 progress.update(1)
         return sample_list
+
 
 class MinROUGEcore(BaseAccuracy):
     """
@@ -621,7 +611,12 @@ class MinROUGEcore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = ["min_rouge1_score","min_rouge2_score","min_rougeL_score","min_rougeLsum_score"]
+    alias_name = [
+        "min_rouge1_score",
+        "min_rouge2_score",
+        "min_rougeL_score",
+        "min_rougeLsum_score",
+    ]
     supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
@@ -643,14 +638,13 @@ class MinROUGEcore(BaseAccuracy):
         sample = MinScoreSample(
             category="accuracy",
             test_type=params["test_name"],
-            expected_results=MinScoreOutput(min_score=min_score)
+            expected_results=MinScoreOutput(min_score=min_score),
         )
 
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred,**kwargs):
-
+    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
         """
         Computes the minimum F1 score for the given data.
 
@@ -664,7 +658,9 @@ class MinROUGEcore(BaseAccuracy):
         em = evaluate.load("rouge")
         result = em.compute(references=y_true, predictions=y_pred)
         for sample in sample_list:
-            sample.actual_results = MinScoreOutput(min_score=result[sample.test_type.split('_')[1]])
+            sample.actual_results = MinScoreOutput(
+                min_score=result[sample.test_type.split("_")[1]]
+            )
             sample.state = "done"
             if progress:
                 progress.update(1)
