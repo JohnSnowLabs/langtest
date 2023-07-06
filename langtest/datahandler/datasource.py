@@ -162,26 +162,26 @@ class DataFactory:
             "XSum-test-tiny": script_dir[:-7] + "/Xsum/XSum-test-tiny.jsonl",
             "XSum-test": script_dir[:-7] + "/Xsum/XSum-test.jsonl",
             "TruthfulQA-combined": script_dir[:-7]
-                                   + "/TruthfulQA/TruthfulQA-combined.jsonl",
+            + "/TruthfulQA/TruthfulQA-combined.jsonl",
             "TruthfulQA-test": script_dir[:-7] + "/TruthfulQA/TruthfulQA-test.jsonl",
             "TruthfulQA-test-tiny": script_dir[:-7]
-                                    + "/TruthfulQA/TruthfulQA-test-tiny.jsonl",
+            + "/TruthfulQA/TruthfulQA-test-tiny.jsonl",
             "MMLU-test-tiny": script_dir[:-7] + "/MMLU/MMLU-test-tiny.jsonl",
             "MMLU-test": script_dir[:-7] + "/MMLU/MMLU-test.jsonl",
             "OpenBookQA-test": script_dir[:-7] + "/OpenBookQA/OpenBookQA-test.jsonl",
             "OpenBookQA-test-tiny": script_dir[:-7]
-                                    + "/OpenBookQA/OpenBookQA-test-tiny.jsonl",
+            + "/OpenBookQA/OpenBookQA-test-tiny.jsonl",
             "Quac-test": script_dir[:-7] + "/quac/Quac-test.jsonl",
             "Quac-test-tiny": script_dir[:-7] + "/quac/Quac-test-tiny.jsonl",
             "toxicity-test-tiny": script_dir[:-7] + "/toxicity/toxicity-test-tiny.jsonl",
             "NarrativeQA-test": script_dir[:-7] + "/NarrativeQA/NarrativeQA-test.jsonl",
             "NarrativeQA-test-tiny": script_dir[:-7]
-                                     + "/NarrativeQA/NarrativeQA-test-tiny.jsonl",
+            + "/NarrativeQA/NarrativeQA-test-tiny.jsonl",
             "HellaSwag-test": script_dir[:-7] + "/HellaSwag/hellaswag-test.jsonl",
             "HellaSwag-test-tiny": script_dir[:-7]
-                                   + "/HellaSwag/hellaswag-test-tiny.jsonl",
+            + "/HellaSwag/hellaswag-test-tiny.jsonl",
             "Translation-test": script_dir[:-7]
-                                + "/Translation/translation-test-tiny.jsonl",
+            + "/Translation/translation-test-tiny.jsonl",
         }
         return datasets_info[dataset_name]
 
@@ -574,7 +574,7 @@ class JSONLDataset(_IDataset):
                         "answer_and_def_correct_predictions", item.get("answer", None)
                     )
                     if isinstance(expected_results, str) or isinstance(
-                            expected_results, bool
+                        expected_results, bool
                     ):
                         expected_results = [str(expected_results)]
 
@@ -591,7 +591,7 @@ class JSONLDataset(_IDataset):
                 elif self.task == "summarization":
                     expected_results = item.get("summary", None)
                     if isinstance(expected_results, str) or isinstance(
-                            expected_results, bool
+                        expected_results, bool
                     ):
                         expected_results = [str(expected_results)]
                     data.append(
@@ -676,11 +676,11 @@ class HuggingFaceDataset(_IDataset):
             )
 
     def load_data_classification(
-            self,
-            feature_column: str = "text",
-            target_column: str = "label",
-            split: str = "test",
-            subset: str = None,
+        self,
+        feature_column: str = "text",
+        target_column: str = "label",
+        split: str = "test",
+        subset: str = None,
     ) -> List[Sample]:
         """
         Load the specified split from the dataset library.
@@ -717,11 +717,11 @@ class HuggingFaceDataset(_IDataset):
         return samples
 
     def load_data_summarization(
-            self,
-            feature_column: str = "document",
-            target_column: str = "summary",
-            split: str = "test",
-            subset: str = None,
+        self,
+        feature_column: str = "document",
+        target_column: str = "summary",
+        split: str = "test",
+        subset: str = None,
     ) -> List[Sample]:
         """
         Load the specified split from the dataset library for summarization task.
@@ -757,11 +757,11 @@ class HuggingFaceDataset(_IDataset):
         return samples
 
     def load_data(
-            self,
-            feature_column: str = "text",
-            target_column: str = "label",
-            split: str = "test",
-            subset: str = None,
+        self,
+        feature_column: str = "text",
+        target_column: str = "label",
+        split: str = "test",
+        subset: str = None,
     ) -> List[Sample]:
         """
         Load the specified data based on the task.
@@ -828,8 +828,8 @@ class HuggingFaceDataset(_IDataset):
         with open(output_path, "w") as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow(list(self.COLUMN_NAMES["text-classification"].keys()))
-            for sample in data:
-                row = self._sample_to_row(sample)
+            for s in data:
+                row = self._sample_to_row(s)
                 csv_writer.writerow(row)
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
@@ -870,17 +870,17 @@ class HuggingFaceDataset(_IDataset):
         )
 
     @staticmethod
-    def _sample_to_row(sample: Sample) -> List[str]:
+    def _sample_to_row(s: Sample) -> List[str]:
         """
         Convert a Sample object into a row for exporting.
 
         Args:
-            sample (Sample):
+            s (Sample):
                 Sample object to convert.
 
         Returns:
             List[str]:
                 Row formatted as a list of strings.
         """
-        row = [sample.original, sample.expected_results.predictions[0].label]
+        row = [s.original, s.expected_results.predictions[0].label]
         return row

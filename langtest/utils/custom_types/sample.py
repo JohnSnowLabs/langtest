@@ -433,7 +433,6 @@ class BaseQASample(BaseModel):
             )
             self.category = func.__module__.split(".")[-1]
 
-
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
@@ -932,4 +931,11 @@ class TranslationSample(BaseModel):
         return True
 
 
-Sample = TypeVar("Sample", MaxScoreSample, MinScoreSample, SequenceClassificationSample, NERSample, SummarizationSample)
+Sample = TypeVar(
+    "Sample",
+    MaxScoreSample,
+    MinScoreSample,
+    SequenceClassificationSample,
+    NERSample,
+    SummarizationSample,
+)
