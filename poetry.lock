@@ -624,6 +624,7 @@ spacy = ">=3.5.0,<3.6.0"
 [package.source]
 type = "url"
 url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz"
+
 [[package]]
 name = "evaluate"
 version = "0.4.0"
@@ -2056,6 +2057,22 @@ docs = ["sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
 tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
+name = "pyproject-flake8"
+version = "5.0.4.post1"
+description = "pyproject-flake8 (`pflake8`), a monkey patching wrapper to connect flake8 with pyproject.toml configuration"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyproject-flake8-5.0.4.post1.tar.gz", hash = "sha256:c2dfdf1064f47efbb2e4faf1a32b0b6a6ea67dc4d1debb98d862b0cdee377941"},
+    {file = "pyproject_flake8-5.0.4.post1-py2.py3-none-any.whl", hash = "sha256:457e52dde1b7a1f84b5230c70d61afa58ced64a44b81a609f19e972319fa68ed"},
+]
+
+[package.dependencies]
+flake8 = "5.0.4"
+tomli = {version = "*", markers = "python_version < \"3.11\""}
+
+[[package]]
 name = "pyspark"
 version = "3.1.2"
 description = "Apache Spark Python API"
@@ -3360,4 +3377,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "11705184e37e0a322b869db7373be1f100a962060be8efa3dacde161791152f6"
+content-hash = "e50508d05dee97a425c7af12c71c62f17d3815bcff828bc5e3b187e96c0a1747"

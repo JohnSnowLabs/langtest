@@ -33,6 +33,15 @@ exclude = [
     "tests/"
 ]
 
+[tool.flake8]
+max-line-length = 90
+ignore = "E203,E501,W503"
+per-file-ignores = '__init__.py:F401'
+
+[tool.black]
+line-length = 90
+extend-exclude = "langtest/transform/utils.py"
+
 [tool.poetry.dependencies]
 python = "^3.8"
 langchain = "<0.0.222"
@@ -54,13 +63,13 @@ pytest = "^7.4.0"
 taskipy = "^1.11.0"
 en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz" }
 black = "^23.3.0"
-flake8 = "<6.0.0"
+pyproject-flake8 = "<6.0.0"
 
 [tool.taskipy.tasks]
 test = "pytest tests/* -v --disable-warnings"
-lint = "flake8 --max-line-length 90 --ignore=E203,E501,W503 --per-file-ignores='__init__.py:F401' langtest/"
-format = "black --line-length 90 --extend-exclude=langtest/transform/utils.py langtest/ tests/"
-is-formatted = "black --line-length 90 --check --extend-exclude=langtest/transform/utils.py langtest/ tests/"
+lint = "pflake8 langtest/"
+format = "black langtest/ tests/"
+is-formatted = "black --check langtest/ tests/"
 force-cpu-torch = "python -m pip install torch --index-url https://download.pytorch.org/whl/cpu"
 
 
