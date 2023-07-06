@@ -8,10 +8,10 @@ from .modelhandler import _ModelHandler
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
 
-if try_import_lib('pyspark'):
+if try_import_lib("pyspark"):
     from pyspark.ml import PipelineModel
 
-if try_import_lib('johnsnowlabs'):
+if try_import_lib("johnsnowlabs"):
     from johnsnowlabs import nlp
     from nlu import NLUPipeline
 
@@ -19,11 +19,7 @@ SUPPORTED_SPARKNLP_NER_MODELS = []
 SUPPORTED_SPARKNLP_CLASSIFERS = []
 SUPPORTED_SPARKNLP_TRANSLATION = []
 if try_import_lib("sparknlp"):
-    from sparknlp.annotator import *
-    from sparknlp.base import LightPipeline
-    from sparknlp.pretrained import PretrainedPipeline
-
-    SUPPORTED_SPARKNLP_NER_MODELS.extend([
+    from sparknlp.annotator import (
         AlbertForTokenClassification,
         BertForTokenClassification,
         CamemBertForTokenClassification,
@@ -33,10 +29,7 @@ if try_import_lib("sparknlp"):
         RoBertaForTokenClassification,
         XlmRoBertaForTokenClassification,
         XlnetForTokenClassification,
-        NerDLModel
-    ])
-
-    SUPPORTED_SPARKNLP_CLASSIFERS.extend([
+        NerDLModel,
         ClassifierDLModel,
         SentimentDLModel,
         AlbertForSequenceClassification,
@@ -47,34 +40,89 @@ if try_import_lib("sparknlp"):
         RoBertaForSequenceClassification,
         XlmRoBertaForSequenceClassification,
         XlnetForSequenceClassification,
-    ])
-    SUPPORTED_SPARKNLP_TRANSLATION.extend([
         MarianTransformer,
+    )
+    from sparknlp.base import LightPipeline
+    from sparknlp.pretrained import PretrainedPipeline
 
-    ])
+    SUPPORTED_SPARKNLP_NER_MODELS.extend(
+        [
+            AlbertForTokenClassification,
+            BertForTokenClassification,
+            CamemBertForTokenClassification,
+            DeBertaForTokenClassification,
+            DistilBertForTokenClassification,
+            LongformerForTokenClassification,
+            RoBertaForTokenClassification,
+            XlmRoBertaForTokenClassification,
+            XlnetForTokenClassification,
+            NerDLModel,
+        ]
+    )
+
+    SUPPORTED_SPARKNLP_CLASSIFERS.extend(
+        [
+            ClassifierDLModel,
+            SentimentDLModel,
+            AlbertForSequenceClassification,
+            BertForSequenceClassification,
+            DeBertaForSequenceClassification,
+            DistilBertForSequenceClassification,
+            LongformerForSequenceClassification,
+            RoBertaForSequenceClassification,
+            XlmRoBertaForSequenceClassification,
+            XlnetForSequenceClassification,
+        ]
+    )
+    SUPPORTED_SPARKNLP_TRANSLATION.extend(
+        [
+            MarianTransformer,
+        ]
+    )
 
 if try_import_lib("sparknlp_jsl"):
-    from sparknlp_jsl.legal import (LegalBertForTokenClassification, LegalNerModel,
-                                    LegalBertForSequenceClassification, LegalClassifierDLModel)
+    from sparknlp_jsl.legal import (
+        LegalBertForTokenClassification,
+        LegalNerModel,
+        LegalBertForSequenceClassification,
+        LegalClassifierDLModel,
+    )
 
-    from sparknlp_jsl.finance import (FinanceBertForTokenClassification, FinanceNerModel,
-                                      FinanceBertForSequenceClassification, FinanceClassifierDLModel)
+    from sparknlp_jsl.finance import (
+        FinanceBertForTokenClassification,
+        FinanceNerModel,
+        FinanceBertForSequenceClassification,
+        FinanceClassifierDLModel,
+    )
 
-    from sparknlp_jsl.annotator import (MedicalBertForTokenClassifier, MedicalNerModel,
-                                        MedicalBertForSequenceClassification,
-                                        MedicalDistilBertForSequenceClassification)
+    from sparknlp_jsl.annotator import (
+        MedicalBertForTokenClassifier,
+        MedicalNerModel,
+        MedicalBertForSequenceClassification,
+        MedicalDistilBertForSequenceClassification,
+    )
 
-    SUPPORTED_SPARKNLP_NER_MODELS.extend([
-        LegalBertForTokenClassification, LegalNerModel,
-        FinanceBertForTokenClassification, FinanceNerModel,
-        MedicalBertForTokenClassifier, MedicalNerModel
-    ])
+    SUPPORTED_SPARKNLP_NER_MODELS.extend(
+        [
+            LegalBertForTokenClassification,
+            LegalNerModel,
+            FinanceBertForTokenClassification,
+            FinanceNerModel,
+            MedicalBertForTokenClassifier,
+            MedicalNerModel,
+        ]
+    )
 
-    SUPPORTED_SPARKNLP_CLASSIFERS.extend([
-        LegalBertForSequenceClassification, LegalClassifierDLModel,
-        FinanceBertForSequenceClassification, FinanceClassifierDLModel,
-        MedicalBertForSequenceClassification, MedicalDistilBertForSequenceClassification
-    ])
+    SUPPORTED_SPARKNLP_CLASSIFERS.extend(
+        [
+            LegalBertForSequenceClassification,
+            LegalClassifierDLModel,
+            FinanceBertForSequenceClassification,
+            FinanceClassifierDLModel,
+            MedicalBertForSequenceClassification,
+            MedicalDistilBertForSequenceClassification,
+        ]
+    )
 
 
 class PretrainedJSLModel(ABC):
@@ -84,9 +132,10 @@ class PretrainedJSLModel(ABC):
 
     @abstractmethod
     def __init__(
-            self,
-            model: Union['NLUPipeline', 'PretrainedPipeline',
-                         'LightPipeline', 'PipelineModel']
+        self,
+        model: Union[
+            "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
+        ],
     ):
         """
         Attributes:
@@ -94,28 +143,30 @@ class PretrainedJSLModel(ABC):
                 Loaded SparkNLP LightPipeline for inference.
         """
 
-        if model.__class__.__name__ == 'PipelineModel':
+        if model.__class__.__name__ == "PipelineModel":
             self.model = model
 
-        elif model.__class__.__name__ == 'LightPipeline':
+        elif model.__class__.__name__ == "LightPipeline":
             self.model = model.pipeline_model
 
-        elif model.__class__.__name__ == 'PretrainedPipeline':
+        elif model.__class__.__name__ == "PretrainedPipeline":
             self.model = model.model
 
-        elif model.__class__.__name__ == 'NLUPipeline':
+        elif model.__class__.__name__ == "NLUPipeline":
             stages = [comp.model for comp in model.components]
             _pipeline = nlp.Pipeline().setStages(stages)
-            tmp_df = model.spark.createDataFrame([['']]).toDF('text')
+            tmp_df = model.spark.createDataFrame([[""]]).toDF("text")
             self.model = _pipeline.fit(tmp_df)
 
         else:
-            raise ValueError(f'Invalid SparkNLP model object: {type(model)}. '
-                             f'John Snow Labs model handler accepts: '
-                             f'[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]')
+            raise ValueError(
+                f"Invalid SparkNLP model object: {type(model)}. "
+                f"John Snow Labs model handler accepts: "
+                f"[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]"
+            )
 
     @classmethod
-    def load_model(cls, path) -> 'NLUPipeline':
+    def load_model(cls, path) -> "NLUPipeline":
         """
         Load the NER model into the `model` attribute.
 
@@ -123,36 +174,35 @@ class PretrainedJSLModel(ABC):
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
         """
         if os.path.exists(path):
-            if try_import_lib('johnsnowlabs'):
+            if try_import_lib("johnsnowlabs"):
                 loaded_model = nlp.load(path=path)
             else:
                 loaded_model = PipelineModel.load(path)
         else:
-            if try_import_lib('johnsnowlabs'):
+            if try_import_lib("johnsnowlabs"):
                 loaded_model = nlp.load(path)
             else:
-                raise ValueError(f'johnsnowlabs is not installed. '
-                                 f'In order to use NLP Models Hub, johnsnowlabs should be installed!')
+                raise ValueError(
+                    "johnsnowlabs is not installed. "
+                    "In order to use NLP Models Hub, johnsnowlabs should be installed!"
+                )
 
         return loaded_model
 
     @abstractmethod
-    def predict(
-            self,
-            text: str,
-            *args, **kwargs) -> Any:
+    def predict(self, text: str, *args, **kwargs) -> Any:
         """
-            Perform predictions with SparkNLP LightPipeline on the input text.
+        Perform predictions with SparkNLP LightPipeline on the input text.
 
-            Args:
-                text (str): Input text to perform translation on.
+        Args:
+            text (str): Input text to perform translation on.
         """
 
         return NotImplementedError
 
-    def __call__(self, text: str) -> Union[
-            NEROutput, SequenceClassificationOutput,
-            TranslationOutput]:
+    def __call__(
+        self, text: str
+    ) -> Union[NEROutput, SequenceClassificationOutput, TranslationOutput]:
         """Alias of the 'predict' method"""
         return self.predict(text=text)
 
@@ -161,9 +211,10 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
     """"""
 
     def __init__(
-            self,
-            model: Union['NLUPipeline', 'PretrainedPipeline',
-                         'LightPipeline', 'PipelineModel']
+        self,
+        model: Union[
+            "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
+        ],
     ):
         """
         Attributes:
@@ -181,7 +232,8 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
         if ner_model is None:
             raise ValueError(
-                'Invalid PipelineModel! There should be at least one NER component.')
+                "Invalid PipelineModel! There should be at least one NER component."
+            )
 
         self.output_col = ner_model.getOutputCol()
 
@@ -204,12 +256,11 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         for i in range(0, len(prediction)):
             aggregated_words.append(
                 {
-                    'entity': prediction[i].result,
-                    'index': i+1,
-                    'word': prediction[i].metadata['word'],
-                    'start': prediction[i].begin,
-                    'end':  (prediction[i].end)+1
-
+                    "entity": prediction[i].result,
+                    "index": i + 1,
+                    "word": prediction[i].metadata["word"],
+                    "start": prediction[i].begin,
+                    "end": (prediction[i].end) + 1,
                 }
             )
 
@@ -217,7 +268,7 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
     @staticmethod
     def _get_tag(entity_label: str) -> Tuple[str, str]:
-        """"
+        """ "
         Args:
             entity_label (str):
                 BIO style label
@@ -270,18 +321,15 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
                 continue
 
             bi, tag = self._get_tag(entity["entity"])
-            last_bi, last_tag = self._get_tag(
-                entity_group_disagg[-1]["entity"])
+            last_bi, last_tag = self._get_tag(entity_group_disagg[-1]["entity"])
 
             if tag == "O":
-                entity_groups.append(
-                    self._group_sub_entities(entity_group_disagg))
+                entity_groups.append(self._group_sub_entities(entity_group_disagg))
                 entity_group_disagg = [entity]
             elif tag == last_tag and bi != "B":
                 entity_group_disagg.append(entity)
             else:
-                entity_groups.append(
-                    self._group_sub_entities(entity_group_disagg))
+                entity_groups.append(self._group_sub_entities(entity_group_disagg))
                 entity_group_disagg = [entity]
         if entity_group_disagg:
             entity_groups.append(self._group_sub_entities(entity_group_disagg))
@@ -302,11 +350,12 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         return NEROutput(
             predictions=[
                 NERPrediction.from_span(
-                    entity=ent['entity_group'],
-                    word=ent['word'],
-                    start=ent['start'],
-                    end=ent['end'],
-                ) for ent in aggregated_predictions
+                    entity=ent["entity_group"],
+                    word=ent["word"],
+                    start=ent["start"],
+                    end=ent["end"],
+                )
+                for ent in aggregated_predictions
             ]
         )
 
@@ -332,9 +381,10 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
     """"""
 
     def __init__(
-            self,
-            model: Union['NLUPipeline', 'PretrainedPipeline',
-                         'LightPipeline', 'PipelineModel']
+        self,
+        model: Union[
+            "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
+        ],
     ):
         """
         Attributes:
@@ -352,7 +402,8 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
 
         if _classifier is None:
             raise ValueError(
-                'Invalid PipelineModel! There should be at least one classifier component.')
+                "Invalid PipelineModel! There should be at least one classifier component."
+            )
 
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
@@ -366,7 +417,9 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
                 return True
         return False
 
-    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+    def predict(
+        self, text: str, return_all_scores: bool = False, *args, **kwargs
+    ) -> SequenceClassificationOutput:
         """
         Perform predictions with SparkNLP LightPipeline on the input text.
 
@@ -377,18 +430,15 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
         Returns:
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
-        prediction_metadata = self.model.fullAnnotate(
-            text)[0][self.output_col][0].metadata
-        prediction = [{"label": x, "score": y}
-                      for x, y in prediction_metadata.items()]
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][
+            0
+        ].metadata
+        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
 
         if not return_all_scores:
-            prediction = [max(prediction, key=lambda x: x['score'])]
+            prediction = [max(prediction, key=lambda x: x["score"])]
 
-        return SequenceClassificationOutput(
-            text=text,
-            predictions=prediction
-        )
+        return SequenceClassificationOutput(text=text, predictions=prediction)
 
     def predict_raw(self, text: str) -> List[str]:
         """Perform predictions on the input text.
@@ -399,20 +449,18 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
         Returns:
             List[str]: Predictions as a list of strings.
         """
-        prediction_metadata = self.model.fullAnnotate(
-            text)[0][self.output_col][0].metadata
-        prediction = [{"label": x, "score": y}
-                      for x, y in prediction_metadata.items()]
-        prediction = [max(prediction, key=lambda x: x['score'])]
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][
+            0
+        ].metadata
+        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
+        prediction = [max(prediction, key=lambda x: x["score"])]
         return [x["label"] for x in prediction]
 
 
 class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
-
     """"""
 
     def __init__(self, model) -> None:
-
         super().__init__(model)
 
         _translator = None
@@ -423,7 +471,8 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
 
         if _translator is None:
             raise ValueError(
-                'Invalid PipelineModel! There should be at least one translator component.')
+                "Invalid PipelineModel! There should be at least one translator component."
+            )
 
         self.output_col = _translator.getOutputCol()
         self.model = LightPipeline(self.model)
@@ -446,12 +495,10 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
         Returns:
             TranslationOutput: Translation output from SparkNLP LightPipeline.
         """
-        prediction_metadata = self.model.fullAnnotate(text)[0]['translation']
+        prediction_metadata = self.model.fullAnnotate(text)[0]["translation"]
         prediction = [x.result for x in prediction_metadata]
 
-        return TranslationOutput(
-            translation_text=' '.join(prediction)
-        )
+        return TranslationOutput(translation_text=" ".join(prediction))
 
     def predict_raw(self, text: str) -> List[str]:
         """Perform predictions on the input text.
@@ -462,6 +509,6 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
         Returns:
             List[str]: Predictions as a list of strings.
         """
-        prediction_metadata = self.model.fullAnnotate(text)[0]['translation']
+        prediction_metadata = self.model.fullAnnotate(text)[0]["translation"]
         prediction = [x.result for x in prediction_metadata]
         return prediction

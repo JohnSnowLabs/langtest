@@ -11,7 +11,6 @@ from langtest.transform.utils import create_terminology
 
 
 class BaseAugmentaion(ABC):
-
     """
     Abstract base class for data augmentation techniques.
 
@@ -40,7 +39,6 @@ class BaseAugmentaion(ABC):
 
 
 class AugmentRobustness(BaseAugmentaion):
-
     """
     A class for performing a specified task with historical results.
 
@@ -66,7 +64,9 @@ class AugmentRobustness(BaseAugmentaion):
 
     """
 
-    def __init__(self, task, h_report, config, custom_proportions=None, max_prop=0.5) -> None:
+    def __init__(
+        self, task, h_report, config, custom_proportions=None, max_prop=0.5
+    ) -> None:
         """
         Initializes an instance of MyClass with the specified parameters.
 
@@ -93,12 +93,7 @@ class AugmentRobustness(BaseAugmentaion):
             with open(self.config) as fread:
                 self.config = yaml.safe_load(fread)
 
-    def fix(
-        self,
-        input_path: str,
-        output_path: str,
-        inplace: Union[bool, str] = False
-    ):
+    def fix(self, input_path: str, output_path, inplace: Union[bool, str] = False):
         """
         Applies perturbations to the input data based on the recommendations from harness reports.
     
@@ -120,7 +115,7 @@ class AugmentRobustness(BaseAugmentaion):
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest: pd.DataFrame = self.suggestions(self.h_report)
-        sum_propotion = suggest['proportion_increase'].sum()
+        sum_propotion = suggest["proportion_increase"].sum()
         if suggest.shape[0] <= 0 or suggest.empty:
             print("All tests have passed. Augmentation will not be applied in this case.")
             return None
@@ -131,23 +126,29 @@ class AugmentRobustness(BaseAugmentaion):
         hash_map = {k: v for k, v in enumerate(data)}
 
         for proportion in suggest.iterrows():
-            cat = proportion[-1]['category'].lower()
-            if cat not in ["robustness", 'bias']:
+            cat = proportion[-1]["category"].lower()
+            if cat not in ["robustness", "bias"]:
                 continue
-            test = proportion[-1]['test_type'].lower()
-            test_type = {
-                cat: {
-                    test: self.config.get('tests').get(cat).get(test)
-                }
-            }
-            if proportion[-1]['test_type'] in supported_tests[cat]:
-                sample_length = len(data) * self.max_prop * (proportion[-1]['proportion_increase'] / sum_propotion)
+            test = proportion[-1]["test_type"].lower()
+            test_type = {cat: {test: self.config.get("tests").get(cat).get(test)}}
+            if proportion[-1]["test_type"] in supported_tests[cat]:
+                sample_length = (
+                    len(data)
+                    * self.max_prop
+                    * (proportion[-1]["proportion_increase"] / sum_propotion)
+                )
                 if inplace is True or inplace == 'transformed':
-                    sample_indices = random.sample(range(0, len(data)), int(sample_length))
+                    sample_indices = random.sample(
+                        range(0, len(data)), int(sample_length)
+                    )
                     for each in sample_indices:
-                        if test == 'swap_entities':
-                            test_type['robustness']['swap_entities']['parameters']['labels'] = [self.label[each]]
-                        res, _ = TestFactory.transform(self.task, [hash_map[each]], test_type)
+                        if test == "swap_entities":
+                            test_type["robustness"]["swap_entities"]["parameters"][
+                                "labels"
+                            ] = [self.label[each]]
+                        res, _ = TestFactory.transform(
+                            self.task, [hash_map[each]], test_type
+                        )
                         hash_map[each] = res[0]
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
@@ -185,21 +186,21 @@ class AugmentRobustness(BaseAugmentaion):
                                                     should increase to reach the minimum pass rate
 
         """
-        report['ratio'] = report['pass_rate'] / report['minimum_pass_rate']
+        report["ratio"] = report["pass_rate"] / report["minimum_pass_rate"]
 
         if self.custom_proportions and isinstance(self.custom_proportions, dict):
-            report['proportion_increase'] = report['test_type'].map(
-                self.custom_proportions)
+            report["proportion_increase"] = report["test_type"].map(
+                self.custom_proportions
+            )
         elif self.custom_proportions and isinstance(self.custom_proportions, list):
-            report['proportion_increase'] = report['ratio'].apply(
-                self._proportion_values)
-            report = report[report['test_type'].isin(self.custom_proportions)]
+            report["proportion_increase"] = report["ratio"].apply(self._proportion_values)
+            report = report[report["test_type"].isin(self.custom_proportions)]
         else:
-            report['proportion_increase'] = report['ratio'].apply(
-                self._proportion_values)
+            report["proportion_increase"] = report["ratio"].apply(self._proportion_values)
 
-        report = report.dropna(subset=['proportion_increase'])[
-            ['category', 'test_type', 'ratio', 'proportion_increase']]
+        report = report.dropna(subset=["proportion_increase"])[
+            ["category", "test_type", "ratio", "proportion_increase"]
+        ]
         return report
 
     def _proportion_values(self, x):
@@ -231,15 +232,26 @@ class AugmentRobustness(BaseAugmentaion):
             return 0.3
 
     def _parameters_overrides(self, config: dict, data_handler: List[Sample]) -> dict:
-        tests = config.get('tests', {}).get('robustness', {})
-        if 'swap_entities' in config.get('tests', {}).get('robustness', {}):
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                               'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
-            params = tests['swap_entities']
-            params['parameters'] = {}
-            params['parameters']['terminology'] = create_terminology(df)
-            params['parameters']['labels'] = df.label.tolist()
-            self.label = self.config.get('tests').get('robustness').get(
-                'swap_entities').get('parameters').get('labels')
+        tests = config.get("tests", {}).get("robustness", {})
+        if "swap_entities" in config.get("tests", {}).get("robustness", {}):
+            df = pd.DataFrame(
+                {
+                    "text": [sample.original for sample in data_handler],
+                    "label": [
+                        [i.entity for i in sample.expected_results.predictions]
+                        for sample in data_handler
+                    ],
+                }
+            )
+            params = tests["swap_entities"]
+            params["parameters"] = {}
+            params["parameters"]["terminology"] = create_terminology(df)
+            params["parameters"]["labels"] = df.label.tolist()
+            self.label = (
+                self.config.get("tests")
+                .get("robustness")
+                .get("swap_entities")
+                .get("parameters")
+                .get("labels")
+            )
         return config
