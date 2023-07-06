@@ -1,6 +1,7 @@
 import re
 from ..transform.utils import CMU_dict
 
+
 class G2p(object):
     """
     Grapheme-to-Phoneme conversion class.
@@ -21,7 +22,7 @@ class G2p(object):
         """
         prons = []
         text = text.lower()
-        text = re.sub("[^ a-z'.,?!\-]", "", text)
+        text = re.sub("[^ a-z'.,?!-]", "", text)
 
         if text in self.cmu:
             return self.cmu[text][0]
@@ -29,8 +30,10 @@ class G2p(object):
             return self.CMU_dict[text]
         else:
             return prons
-        
+
+
 g2p = G2p()
+
 
 class Word_Functions:
     """
@@ -58,15 +61,18 @@ class Word_Functions:
                 w_pron = dictionary[w]
                 search_pron.append(w_pron)
             elif generate:
-                 return Pronunciation_Functions.generate_pronunciation(term)
+                return Pronunciation_Functions.generate_pronunciation(term)
             else:
                 raise ValueError(
                     "Dictionary Error: Search term or search token not found in dictionary. "
                     "Contact administrator to update dictionary if necessary."
                 )
 
-        pron = [p for sublist in search_pron for p in sublist]  # flatten list of lists into one list
+        pron = [
+            p for sublist in search_pron for p in sublist
+        ]  # flatten list of lists into one list
         return pron
+
 
 class Pronunciation_Functions:
     """
@@ -85,9 +91,10 @@ class Pronunciation_Functions:
             list: A list of phonetic representations of the input text.
         """
         if text not in CMU_dict:
-            return [phone for phone in g2p(text) if phone != ' ']
+            return [phone for phone in g2p(text) if phone != " "]
         else:
             return CMU_dict[text]
+
 
 class Phone_Functions:
     """
@@ -108,6 +115,7 @@ class Phone_Functions:
         else:
             return phone[:-1]
 
+
 class Search:
     """
     Class containing functions for searching words and their pronunciations.
@@ -125,5 +133,7 @@ class Search:
             list: A list of words with the exact same pronunciation as the search term.
         """
         Search_Pron = Word_Functions.pronunciation(Search_Term, generate)
-        PerfectHomophones = [word.title() for word in dictionary if dictionary[word] == Search_Pron]
+        PerfectHomophones = [
+            word.title() for word in dictionary if dictionary[word] == Search_Pron
+        ]
         return PerfectHomophones

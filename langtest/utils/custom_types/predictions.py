@@ -7,6 +7,7 @@ from .helpers import Span
 
 class NERPrediction(BaseModel):
     """Single prediction obtained from a named entity recognition model"""
+
     entity: str = Field(None, alias="entity_group")
     span: Span
     score: Optional[float] = None
@@ -21,16 +22,16 @@ class NERPrediction(BaseModel):
 
     @classmethod
     def from_span(
-            cls,
-            entity: str,
-            word: str,
-            start: int,
-            end: int,
-            score: float = None,
-            doc_id: int = None,
-            doc_name: str = None,
-            pos_tag: str = None,
-            chunk_tag: str = None
+        cls,
+        entity: str,
+        word: str,
+        start: int,
+        end: int,
+        score: float = None,
+        doc_id: int = None,
+        doc_name: str = None,
+        pos_tag: str = None,
+        chunk_tag: str = None,
     ) -> "NERPrediction":
         """"""
         return cls(
@@ -40,7 +41,7 @@ class NERPrediction(BaseModel):
             doc_id=doc_id,
             doc_name=doc_name,
             pos_tag=pos_tag,
-            chunk_tag=chunk_tag
+            chunk_tag=chunk_tag,
         )
 
     def __hash__(self):
@@ -50,9 +51,11 @@ class NERPrediction(BaseModel):
     def __eq__(self, other):
         """"""
         if isinstance(other, NERPrediction):
-            return self.entity == other.entity and \
-                   self.span.start == other.span.start and \
-                   self.span.end == other.span.end
+            return (
+                self.entity == other.entity
+                and self.span.start == other.span.start
+                and self.span.end == other.span.end
+            )
         return False
 
     def __str__(self) -> str:
@@ -66,6 +69,7 @@ class NERPrediction(BaseModel):
 
 class SequenceLabel(BaseModel):
     """Single prediction obtained from text-classification models"""
+
     label: str
     score: float
 

@@ -2,7 +2,6 @@ from numbers import Number
 from pydantic import Field
 from pydantic.typing import Annotated
 from langtest.transform.utils import (
-    nth,
     ordinal,
     unit,
     teen,
@@ -32,9 +31,7 @@ from typing import (
     Any,
 )
 
-Word = Annotated[
-    str, Field(min_length=1)
-]
+Word = Annotated[str, Field(min_length=1)]
 Falsish = Any
 
 STDOUT_ON = False  # Flag indicating whether standard output is enabled or disabled
@@ -399,48 +396,8 @@ class ConvertNumberToWord:
         self.mill_count += 1
         return ret
 
-    def millfn(self, ind: int = 0) -> str:
-        """
-        Retrieves the word representation of a mill index.
-
-        Args:
-            ind (int, optional): The index of the mill. Defaults to 0.
-
-        Returns:
-            str: The word representation of the mill index.
-
-        Raises:
-            NumOutOfRangeError: If the mill index is out of range.
-
-        """
-        if ind > len(mill) - 1:
-            print3("number out of range")
-            raise NumOutOfRangeError
-        return mill[ind]
-
     def unitfn(self, units: int, mindex: int = 0) -> str:
         return f"{unit[units]}{self.millfn(mindex)}"
-
-    def tenfn(self, tens: int, units: int, mindex: int = 0) -> str:
-        """
-        Constructs the word representation of a two-digit number.
-
-        Args:
-            tens (int): The tens digit.
-            units (int): The units digit.
-            mindex (int, optional): The mill index. Defaults to 0.
-
-        Returns:
-            str: The word representation of the two-digit number.
-
-        """
-        if tens != 1:
-            tens_part = ten[tens]
-            hyphen = "-" if tens and units else ""
-            unit_part = unit[units]
-            mill_part = self.millfn(mindex)
-            return f"{tens_part}{hyphen}{unit_part}{mill_part}"
-        return f"{teen[units]}{mill[mindex]}"
 
     def hundfn(self, hundreds: int, tens: int, units: int, mindex: int) -> str:
         """

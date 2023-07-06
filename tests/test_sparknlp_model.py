@@ -8,13 +8,14 @@ class SparkNLPTestCase(unittest.TestCase):
     """
     Test case for the SparkNLP integration in the langtest module.
     """
+
     def setUp(self) -> None:
         self.params = {
-            "task": 'ner',
+            "task": "ner",
             "model": "ner_dl_bert",
             "data": "tests/fixtures/test.conll",
             "config": "tests/fixtures/config_ner.yaml",
-            "hub": "johnsnowlabs"
+            "hub": "johnsnowlabs",
         }
 
     def test_predict(self):

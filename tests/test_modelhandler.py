@@ -7,6 +7,7 @@ class ModelHandlerTestCase(unittest.TestCase):
     """
     Test case for the ModelHandler class.
     """
+
     def setUp(self):
         pass
 
@@ -16,25 +17,26 @@ class ModelHandlerTestCase(unittest.TestCase):
         """
         with self.assertRaises(AssertionError) as _:
             ModelFactory.load_model(
-                task="unsupported_task", hub="spacy", path="en_core_web_sm")
+                task="unsupported_task", hub="spacy", path="en_core_web_sm"
+            )
 
     def test_unsupported_hub(self) -> None:
         """
         Test loading an unsupported hub.
         """
         with self.assertRaises(AssertionError) as _:
-            ModelFactory.load_model(
-                task="ner", hub="invalid_hub", path="en_core_web_sm")
+            ModelFactory.load_model(task="ner", hub="invalid_hub", path="en_core_web_sm")
 
     def test_ner_transformers_model(self) -> None:
         """
         Test loading an NER model from Hugging Face Transformers.
         """
-        model = ModelFactory.load_model(
-            "ner", "huggingface", "dslim/bert-base-NER")
+        model = ModelFactory.load_model("ner", "huggingface", "dslim/bert-base-NER")
         self.assertIsInstance(model, ModelFactory)
         self.assertIsInstance(
-            model.model_class, langtest.modelhandler.transformers_modelhandler.PretrainedModelForNER)
+            model.model_class,
+            langtest.modelhandler.transformers_modelhandler.PretrainedModelForNER,
+        )
 
     def test_ner_spacy_model(self) -> None:
         """
@@ -43,4 +45,6 @@ class ModelHandlerTestCase(unittest.TestCase):
         model = ModelFactory.load_model("ner", "spacy", "en_core_web_sm")
         self.assertIsInstance(model, ModelFactory)
         self.assertIsInstance(
-            model.model_class, langtest.modelhandler.spacy_modelhandler.PretrainedModelForNER)
+            model.model_class,
+            langtest.modelhandler.spacy_modelhandler.PretrainedModelForNER,
+        )

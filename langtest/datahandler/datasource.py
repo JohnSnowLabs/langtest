@@ -8,8 +8,18 @@ from typing import Dict, List
 from langtest.utils.custom_types import sample
 from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
-from ..utils.custom_types import NEROutput, NERPrediction, NERSample, Sample, SequenceClassificationOutput, \
-    SequenceClassificationSample, SequenceLabel, QASample, SummarizationSample
+from ..utils.custom_types import (
+    NEROutput,
+    NERPrediction,
+    NERSample,
+    Sample,
+    SequenceClassificationOutput,
+    SequenceClassificationSample,
+    SequenceLabel,
+    QASample,
+    SummarizationSample,
+)
+
 from ..utils.lib_manager import try_import_lib
 import importlib
 
@@ -46,12 +56,7 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    def __init__(
-            self,
-            file_path: str,
-            task: str,
-            **kwargs
-    ) -> None:
+    def __init__(self, file_path: str, task: str, **kwargs) -> None:
         """Initializes DataFactory object.
         Args:
             file_path (str): Path to the dataset.
@@ -59,11 +64,13 @@ class DataFactory:
         """
 
         self._file_path = file_path
-        self._class_map = {cls.__name__.replace(
-            'Dataset', '').lower(): cls for cls in _IDataset.__subclasses__()}
+        self._class_map = {
+            cls.__name__.replace("Dataset", "").lower(): cls
+            for cls in _IDataset.__subclasses__()
+        }
         _, self.file_ext = os.path.splitext(self._file_path)
         if len(self.file_ext) > 0:
-            self.file_ext = self.file_ext.replace('.', '')
+            self.file_ext = self.file_ext.replace(".", "")
         else:
             self._file_path = self._load_dataset(self._file_path)
             _, self.file_ext = os.path.splitext(self._file_path)
@@ -77,8 +84,9 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
-        self.init_cls = self._class_map[self.file_ext.replace(
-            '.', '')](self._file_path, task=self.task, **self.kwargs)
+        self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self._file_path, task=self.task, **self.kwargs
+        )
         return self.init_cls.load_data()
 
     def export(self, data: List[Sample], output_path: str):
@@ -96,23 +104,38 @@ class DataFactory:
     def load_curated_bias(cls, tests_to_filter, file_path) -> List[Sample]:
         data = []
         path = os.path.abspath(__file__)
-        if file_path == 'BoolQ':
-            bias_jsonl = os.path.dirname(path)[: -7]+"/BoolQ/bias.jsonl"
+        if file_path == "BoolQ":
+            bias_jsonl = os.path.dirname(path)[:-7] + "/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item['test_type'] in tests_to_filter:
+                    if item["test_type"] in tests_to_filter:
                         data.append(
-                            QASample(original_question=item['original_question'], original_context=item.get(
-                                'original_context', "-"), perturbed_question=item['perturbed_question'], perturbed_context=item.get(
-                                'perturbed_context', "-"), task="question-answering", test_type=item['test_type'], category=item['category'], dataset_name="BoolQ")
+                            QASample(
+                                original_question=item["original_question"],
+                                original_context=item.get("original_context", "-"),
+                                perturbed_question=item["perturbed_question"],
+                                perturbed_context=item.get("perturbed_context", "-"),
+                                task="question-answering",
+                                test_type=item["test_type"],
+                                category=item["category"],
+                                dataset_name="BoolQ",
+                            )
                         )
-        elif file_path == 'XSum':
-            bias_jsonl = os.path.dirname(path)[: -7]+"/Xsum/bias.jsonl"
+        elif file_path == "XSum":
+            bias_jsonl = os.path.dirname(path)[:-7] + "/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item['test_type'] in tests_to_filter:
+                    if item["test_type"] in tests_to_filter:
                         data.append(
-                            SummarizationSample(original=item['original'], test_case=item['test_case'], task="summarization", test_type=item['test_type'], category=item['category'], dataset_name="XSum"))
+                            SummarizationSample(
+                                original=item["original"],
+                                test_case=item["test_case"],
+                                task="summarization",
+                                test_type=item["test_type"],
+                                category=item["category"],
+                                dataset_name="XSum",
+                            )
+                        )
 
         return data
 
@@ -128,31 +151,37 @@ class DataFactory:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         datasets_info = {
-            'BoolQ-dev-tiny': script_dir[:-7]+'/BoolQ/dev-tiny.jsonl',
-            'BoolQ-dev': script_dir[:-7]+'/BoolQ/dev.jsonl',
-            'BoolQ-test-tiny': script_dir[:-7]+'/BoolQ/test-tiny.jsonl',
-            'BoolQ-test': script_dir[:-7]+'/BoolQ/test.jsonl',
-            'BoolQ': script_dir[:-7]+'/BoolQ/combined.jsonl',
-            'NQ-open-test': script_dir[:-7]+'/NQ-open/test.jsonl',
-            'NQ-open': script_dir[:-7]+'/NQ-open/combined.jsonl',
-            'NQ-open-test-tiny': script_dir[:-7]+'/NQ-open/test-tiny.jsonl',
-            'XSum-test-tiny': script_dir[:-7]+'/Xsum/XSum-test-tiny.jsonl',
-            'XSum-test': script_dir[:-7]+'/Xsum/XSum-test.jsonl',
-            'TruthfulQA-combined': script_dir[:-7]+'/TruthfulQA/TruthfulQA-combined.jsonl',
-            'TruthfulQA-test': script_dir[:-7]+'/TruthfulQA/TruthfulQA-test.jsonl',
-            'TruthfulQA-test-tiny': script_dir[:-7]+'/TruthfulQA/TruthfulQA-test-tiny.jsonl',
-            'MMLU-test-tiny': script_dir[:-7]+'/MMLU/MMLU-test-tiny.jsonl',
-            'MMLU-test': script_dir[:-7]+'/MMLU/MMLU-test.jsonl',
-            'OpenBookQA-test': script_dir[:-7]+'/OpenBookQA/OpenBookQA-test.jsonl',
-            'OpenBookQA-test-tiny': script_dir[:-7]+'/OpenBookQA/OpenBookQA-test-tiny.jsonl',
-            'Quac-test': script_dir[:-7]+'/quac/Quac-test.jsonl',
-            'Quac-test-tiny': script_dir[:-7]+'/quac/Quac-test-tiny.jsonl',
-            'toxicity-test-tiny': script_dir[:-7]+'/toxicity/toxicity-test-tiny.jsonl',
-            'NarrativeQA-test' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test.jsonl',
-            'NarrativeQA-test-tiny' : script_dir[:-7]+'/NarrativeQA/NarrativeQA-test-tiny.jsonl',
-            'HellaSwag-test' : script_dir[:-7]+'/HellaSwag/hellaswag-test.jsonl',
-            'HellaSwag-test-tiny' : script_dir[:-7]+'/HellaSwag/hellaswag-test-tiny.jsonl',
-            'Translation-test':  script_dir[:-7]+'/Translation/translation-test-tiny.jsonl'
+            "BoolQ-dev-tiny": script_dir[:-7] + "/BoolQ/dev-tiny.jsonl",
+            "BoolQ-dev": script_dir[:-7] + "/BoolQ/dev.jsonl",
+            "BoolQ-test-tiny": script_dir[:-7] + "/BoolQ/test-tiny.jsonl",
+            "BoolQ-test": script_dir[:-7] + "/BoolQ/test.jsonl",
+            "BoolQ": script_dir[:-7] + "/BoolQ/combined.jsonl",
+            "NQ-open-test": script_dir[:-7] + "/NQ-open/test.jsonl",
+            "NQ-open": script_dir[:-7] + "/NQ-open/combined.jsonl",
+            "NQ-open-test-tiny": script_dir[:-7] + "/NQ-open/test-tiny.jsonl",
+            "XSum-test-tiny": script_dir[:-7] + "/Xsum/XSum-test-tiny.jsonl",
+            "XSum-test": script_dir[:-7] + "/Xsum/XSum-test.jsonl",
+            "TruthfulQA-combined": script_dir[:-7]
+            + "/TruthfulQA/TruthfulQA-combined.jsonl",
+            "TruthfulQA-test": script_dir[:-7] + "/TruthfulQA/TruthfulQA-test.jsonl",
+            "TruthfulQA-test-tiny": script_dir[:-7]
+            + "/TruthfulQA/TruthfulQA-test-tiny.jsonl",
+            "MMLU-test-tiny": script_dir[:-7] + "/MMLU/MMLU-test-tiny.jsonl",
+            "MMLU-test": script_dir[:-7] + "/MMLU/MMLU-test.jsonl",
+            "OpenBookQA-test": script_dir[:-7] + "/OpenBookQA/OpenBookQA-test.jsonl",
+            "OpenBookQA-test-tiny": script_dir[:-7]
+            + "/OpenBookQA/OpenBookQA-test-tiny.jsonl",
+            "Quac-test": script_dir[:-7] + "/quac/Quac-test.jsonl",
+            "Quac-test-tiny": script_dir[:-7] + "/quac/Quac-test-tiny.jsonl",
+            "toxicity-test-tiny": script_dir[:-7] + "/toxicity/toxicity-test-tiny.jsonl",
+            "NarrativeQA-test": script_dir[:-7] + "/NarrativeQA/NarrativeQA-test.jsonl",
+            "NarrativeQA-test-tiny": script_dir[:-7]
+            + "/NarrativeQA/NarrativeQA-test-tiny.jsonl",
+            "HellaSwag-test": script_dir[:-7] + "/HellaSwag/hellaswag-test.jsonl",
+            "HellaSwag-test-tiny": script_dir[:-7]
+            + "/HellaSwag/hellaswag-test-tiny.jsonl",
+            "Translation-test": script_dir[:-7]
+            + "/Translation/translation-test-tiny.jsonl",
         }
         return datasets_info[dataset_name]
 
@@ -170,9 +199,10 @@ class ConllDataset(_IDataset):
         super().__init__()
         self._file_path = file_path
 
-        if task != 'ner':
+        if task != "ner":
             raise ValueError(
-                f'Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!')
+                f"Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!"
+            )
         self.task = task
 
     def load_data(self) -> List[NERSample]:
@@ -184,19 +214,22 @@ class ConllDataset(_IDataset):
         with open(self._file_path) as f:
             content = f.read()
             docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
-            docs = [i.strip() for i in re.split(
-                r"-DOCSTART- \S+ \S+ O", content.strip()) if i != '']
+            docs = [
+                i.strip()
+                for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip())
+                if i != ""
+            ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = doc.strip().split('\n\n')
+                sentences = doc.strip().split("\n\n")
 
-                if sentences == ['']:
-                    data.append(([''], ['']))
+                if sentences == [""]:
+                    data.append(([""], [""]))
                     continue
 
                 for sent in sentences:
                     # sentence string to token level split
-                    tokens = sent.strip().split('\n')
+                    tokens = sent.strip().split("\n")
 
                     # get annotations from token level split
                     token_list = [t.split() for t in tokens]
@@ -212,21 +245,23 @@ class ConllDataset(_IDataset):
                                 start=cursor,
                                 end=cursor + len(split[0]),
                                 doc_id=d_id,
-                                doc_name=(docs_strings[d_id] if len(
-                                    docs_strings) > 0 else ''),
+                                doc_name=(
+                                    docs_strings[d_id] if len(docs_strings) > 0 else ""
+                                ),
                                 pos_tag=split[1],
-                                chunk_tag=split[2]
+                                chunk_tag=split[2],
                             )
                         )
                         # +1 to account for the white space
                         cursor += len(split[0]) + 1
 
-                    original = " ".join(
-                        [label.span.word for label in ner_labels])
+                    original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                        NERSample(original=original, expected_results=NEROutput(
-                            predictions=ner_labels))
+                        NERSample(
+                            original=original,
+                            expected_results=NEROutput(predictions=ner_labels),
+                        )
                     )
 
         return data
@@ -243,8 +278,7 @@ class ConllDataset(_IDataset):
         temp_id = None
         otext = ""
         for i in data:
-            text, temp_id = Formatter.process(
-                i, output_format='conll', temp_id=temp_id)
+            text, temp_id = Formatter.process(i, output_format="conll", temp_id=temp_id)
             otext += text
 
         with open(output_path, "wb") as fwriter:
@@ -284,17 +318,27 @@ class CSVDataset(_IDataset):
     """
     Class to handle CSV files dataset. Subclass of _IDataset.
     """
+
     COLUMN_NAMES = {
-        'text-classification': {
-            'text': ['text', 'sentences', 'sentence', 'sample'],
-            'label': ['label', 'labels ', 'class', 'classes']
+        "text-classification": {
+            "text": ["text", "sentences", "sentence", "sample"],
+            "label": ["label", "labels ", "class", "classes"],
         },
-        'ner': {
-            'text': ['text', 'sentences', 'sentence', 'sample'],
-            'ner': ['label', 'labels ', 'class', 'classes', 'ner_tag', 'ner_tags', 'ner', 'entity'],
-            'pos': ['pos_tags', 'pos_tag', 'pos', 'part_of_speech'],
-            'chunk': ['chunk_tags', 'chunk_tag']
-        }
+        "ner": {
+            "text": ["text", "sentences", "sentence", "sample"],
+            "ner": [
+                "label",
+                "labels ",
+                "class",
+                "classes",
+                "ner_tag",
+                "ner_tags",
+                "ner",
+                "entity",
+            ],
+            "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
+            "chunk": ["chunk_tags", "chunk_tag"],
+        },
     }
 
     def __init__(self, file_path: str, task: str, **kwargs) -> None:
@@ -310,10 +354,11 @@ class CSVDataset(_IDataset):
         self.delimiter = self._find_delimiter(file_path)
         if task in self.COLUMN_NAMES:
             self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
-        elif 'is_import' not in kwargs:
+        elif "is_import" not in kwargs:
             raise ValueError(
                 f"Given task ({task}) is not matched with template. \
-                CSV dataset can ne only loaded for text-classification and ner!")
+                CSV dataset can ne only loaded for text-classification and ner!"
+            )
         self.column_map = None
         self.kwargs = kwargs
 
@@ -322,28 +367,23 @@ class CSVDataset(_IDataset):
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
-        if self.kwargs.get('is_import', False):
+        if self.kwargs.get("is_import", False):
             kwargs = self.kwargs.copy()
-            kwargs.pop('is_import')
+            kwargs.pop("is_import")
             return self._import_data(self._file_path, **kwargs)
-        with open(self._file_path, newline='', encoding="utf-8") as csv_file:
+        with open(self._file_path, newline="", encoding="utf-8") as csv_file:
             csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
             samples = []
             for sent_indx, row in enumerate(csv_reader):
                 if not self.column_map:
-                    self.column_map = self._match_column_names(
-                        list(row.keys()))
+                    self.column_map = self._match_column_names(list(row.keys()))
 
-                if self.task == 'ner':
-                    samples.append(
-                        self._row_to_ner_sample(row, sent_indx)
-                    )
+                if self.task == "ner":
+                    samples.append(self._row_to_ner_sample(row, sent_indx))
 
-                elif self.task == 'text-classification':
-                    samples.append(
-                        self._row_to_seq_classification_sample(row)
-                    )
+                elif self.task == "text-classification":
+                    samples.append(self._row_to_seq_classification_sample(row))
 
         return samples
 
@@ -360,10 +400,9 @@ class CSVDataset(_IDataset):
         otext = ""
         for i in data:
             if isinstance(i, NEROutput):
-                text, temp_id = Formatter.process(
-                    i, output_format='csv', temp_id=temp_id)
+                text, temp_id = Formatter.process(i, output_format="csv", temp_id=temp_id)
             else:
-                text = Formatter.process(i, output_format='csv')
+                text = Formatter.process(i, output_format="csv")
             otext += text
 
         with open(output_path, "wb") as fwriter:
@@ -396,37 +435,40 @@ class CSVDataset(_IDataset):
             Sample:
                 row formatted into a Sample object
         """
-        assert all(isinstance(value, list) for value in row.values()), \
-            ValueError(f"Column ({sent_index}th) values should be list that contains tokens or labels. "
-                       "Given CSV file has invalid values")
+        assert all(isinstance(value, list) for value in row.values()), ValueError(
+            f"Column ({sent_index}th) values should be list that contains tokens or labels. "
+            "Given CSV file has invalid values"
+        )
 
-        token_num = len(row['text'])
-        assert all(len(value) == token_num for value in row.values()), \
-            ValueError(f"Column ({sent_index}th) values should have same length with number of token in text, "
-                       f"which is {token_num}")
+        token_num = len(row["text"])
+        assert all(len(value) == token_num for value in row.values()), ValueError(
+            f"Column ({sent_index}th) values should have same length with number of token in text, "
+            f"which is {token_num}"
+        )
 
-        original = " ".join(self.column_map['text'])
+        original = " ".join(self.column_map["text"])
         ner_labels = list()
         cursor = 0
-        for token_indx in range(len(self.column_map['text'])):
-            token = row[self.column_map['text']][token_indx]
+        for token_indx in range(len(self.column_map["text"])):
+            token = row[self.column_map["text"]][token_indx]
             ner_labels.append(
                 NERPrediction.from_span(
-                    entity=row[self.column_map['ner']][token_indx],
+                    entity=row[self.column_map["ner"]][token_indx],
                     word=token,
                     start=cursor,
                     end=cursor + len(token),
-                    pos_tag=row[self.column_map['pos']][token_indx]
-                    if row.get(self.column_map['pos'], None) else None,
-                    chunk_tag=row[self.column_map['chunk']][token_indx]
-                    if row.get(self.column_map['chunk'], None) else None,
+                    pos_tag=row[self.column_map["pos"]][token_indx]
+                    if row.get(self.column_map["pos"], None)
+                    else None,
+                    chunk_tag=row[self.column_map["chunk"]][token_indx]
+                    if row.get(self.column_map["chunk"], None)
+                    else None,
                 )
             )
             cursor += len(token) + 1  # +1 to account for the white space
 
         return NERSample(
-            original=original,
-            expected_results=NEROutput(predictions=ner_labels)
+            original=original, expected_results=NEROutput(predictions=ner_labels)
         )
 
     def _row_to_seq_classification_sample(self, row: Dict[str, str]) -> Sample:
@@ -439,13 +481,13 @@ class CSVDataset(_IDataset):
             Sample:
                 row formatted into a Sample object
         """
-        original = row[self.column_map['text']]
+        original = row[self.column_map["text"]]
         #   label score should be 1 since it is ground truth, required for __eq__
-        label = SequenceLabel(label=row[self.column_map['label']], score=1)
+        label = SequenceLabel(label=row[self.column_map["label"]], score=1)
 
         return SequenceClassificationSample(
             original=original,
-            expected_results=SequenceClassificationOutput(predictions=[label])
+            expected_results=SequenceClassificationOutput(predictions=[label]),
         )
 
     def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
@@ -465,7 +507,8 @@ class CSVDataset(_IDataset):
                     column_map[key] = c
 
         not_referenced_columns = {
-            k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None}
+            k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None
+        }
         if not_referenced_columns:
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
@@ -486,24 +529,20 @@ class CSVDataset(_IDataset):
         """
         data = pd.read_csv(file_name, **kwargs)
         custom_names = {
-            'question-answering': 'qa',
-            'text-classification': 'sequenceclassification'
-
+            "question-answering": "qa",
+            "text-classification": "sequenceclassification",
         }
         sample_models = {
-            k.lower(): v for k, v in sample.__dict__.items()
-            if k.endswith('Sample')
+            k.lower(): v for k, v in sample.__dict__.items() if k.endswith("Sample")
         }
         samples = []
 
-        for i in data.to_dict(orient='records'):
+        for i in data.to_dict(orient="records"):
             if self.task in custom_names:
-                sample_name = custom_names[self.task] + 'sample'
+                sample_name = custom_names[self.task] + "sample"
             else:
-                sample_name = self.task.lower() + 'sample'
-            samples.append(
-                sample_models[sample_name](**i)
-            )
+                sample_name = self.task.lower() + "sample"
+            samples.append(sample_models[sample_name](**i))
         return samples
 
 
@@ -530,52 +569,56 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                if (self.task == 'question-answering'):
+                if self.task == "question-answering":
                     expected_results = item.get(
-                        "answer_and_def_correct_predictions", item.get("answer", None))
-                    if isinstance(expected_results, str) or isinstance(expected_results, bool):
+                        "answer_and_def_correct_predictions", item.get("answer", None)
+                    )
+                    if isinstance(expected_results, str) or isinstance(
+                        expected_results, bool
+                    ):
                         expected_results = [str(expected_results)]
 
                     data.append(
                         QASample(
-                            original_question=item['question'],
-                            original_context=item.get('passage', "-"),
+                            original_question=item["question"],
+                            original_context=item.get("passage", "-"),
                             expected_results=expected_results,
                             task=self.task,
-                            dataset_name=self._file_path.split('/')[-2]
+                            dataset_name=self._file_path.split("/")[-2],
                         )
                     )
 
-                elif (self.task == 'summarization'):
+                elif self.task == "summarization":
                     expected_results = item.get("summary", None)
-                    if isinstance(expected_results, str) or isinstance(expected_results, bool):
+                    if isinstance(expected_results, str) or isinstance(
+                        expected_results, bool
+                    ):
                         expected_results = [str(expected_results)]
                     data.append(
                         SummarizationSample(
-                            original=item['document'],
+                            original=item["document"],
                             expected_results=expected_results,
                             task=self.task,
-                            dataset_name=self._file_path.split('/')[-2]
+                            dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-                elif (self.task == 'toxicity'):
+                elif self.task == "toxicity":
                     data.append(
                         ToxicitySample(
-                            prompt=item['text'],
+                            prompt=item["text"],
                             task=self.task,
-                            dataset_name=self._file_path.split('/')[-2]
+                            dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-                    
-                elif (self.task == 'translation'):
+
+                elif self.task == "translation":
                     data.append(
                         TranslationSample(
-                            original=item['sourceString'],
+                            original=item["sourceString"],
                             task=self.task,
-                            dataset_name=self._file_path.split('/')[-2]
+                            dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-                    
 
         return data
 
@@ -595,14 +638,15 @@ class HuggingFaceDataset(_IDataset):
     """
     Example dataset class that loads data using the Hugging Face dataset library.
     """
+
     LIB_NAME = "datasets"
     COLUMN_NAMES = {
-        'text-classification': {
-            'text': ['text', 'sentences', 'sentence', 'sample'],
-            'label': ['label', 'labels', 'class', 'classes']
+        "text-classification": {
+            "text": ["text", "sentences", "sentence", "sample"],
+            "label": ["label", "labels", "class", "classes"],
         }
     }
-    
+
     def __init__(self, dataset_name: str, task: str):
         """
         Initialize the HuggingFaceDataset class.
@@ -625,12 +669,19 @@ class HuggingFaceDataset(_IDataset):
 
         if try_import_lib(self.LIB_NAME):
             dataset_module = importlib.import_module(self.LIB_NAME)
-            self.load_dataset = getattr(dataset_module, 'load_dataset')
+            self.load_dataset = getattr(dataset_module, "load_dataset")
         else:
             raise ModuleNotFoundError(
-                f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'.")
+                f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'."
+            )
 
-    def load_data_classification(self, feature_column: str = "text", target_column: str = "label", split: str = 'test', subset: str = None) -> List[Sample]:
+    def load_data_classification(
+        self,
+        feature_column: str = "text",
+        target_column: str = "label",
+        split: str = "test",
+        subset: str = None,
+    ) -> List[Sample]:
         """
         Load the specified split from the dataset library.
 
@@ -648,20 +699,30 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
-        
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
         if feature_column and target_column:
-            dataset = dataset.map(lambda example: {
-                                  'text': example[feature_column], 'label': example[target_column]})
+            dataset = dataset.map(
+                lambda example: {
+                    "text": example[feature_column],
+                    "label": example[target_column],
+                }
+            )
 
         samples = [self._row_to_sample_classification(example) for example in dataset]
         return samples
-    
-    def load_data_summarization(self, feature_column: str = "document", target_column: str ='summary',split: str = 'test', subset: str = None) -> List[Sample]:
+
+    def load_data_summarization(
+        self,
+        feature_column: str = "document",
+        target_column: str = "summary",
+        split: str = "test",
+        subset: str = None,
+    ) -> List[Sample]:
         """
         Load the specified split from the dataset library for summarization task.
 
@@ -685,14 +746,23 @@ class HuggingFaceDataset(_IDataset):
             dataset = self.load_dataset(self.dataset_name, split=split)
 
         if feature_column and target_column:
-            dataset = dataset.map(lambda example: {
-                                  'document': example[feature_column], 'summary': example[target_column]})
+            dataset = dataset.map(
+                lambda example: {
+                    "document": example[feature_column],
+                    "summary": example[target_column],
+                }
+            )
 
         samples = [self._row_to_sample_summarization(example) for example in dataset]
         return samples
-    
-    def load_data(self, feature_column: str = "text", target_column: str = "label",
-                  split: str = 'test', subset: str = None) -> List[Sample]:
+
+    def load_data(
+        self,
+        feature_column: str = "text",
+        target_column: str = "label",
+        split: str = "test",
+        subset: str = None,
+    ) -> List[Sample]:
         """
         Load the specified data based on the task.
 
@@ -714,14 +784,19 @@ class HuggingFaceDataset(_IDataset):
             ValueError:
                 If an unsupported task is provided.
         """
-        if self.task == 'text-classification':
-            return self.load_data_classification(feature_column, target_column, split, subset)
-        elif self.task == 'summarization':
-            return self.load_data_summarization(feature_column, target_column, split, subset)
+        if self.task == "text-classification":
+            return self.load_data_classification(
+                feature_column, target_column, split, subset
+            )
+        elif self.task == "summarization":
+            return self.load_data_summarization(
+                feature_column, target_column, split, subset
+            )
         else:
             raise ValueError(f"Unsupported task: {self.task}")
-        
-    def _row_to_sample_summarization(self, data_row: Dict[str, str]) -> Sample:
+
+    @staticmethod
+    def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:
         """
         Convert a row from the dataset into a Sample for summarization.
 
@@ -733,15 +808,12 @@ class HuggingFaceDataset(_IDataset):
             Sample:
                 Row formatted into a Sample object for summarization.
         """
-        original = data_row.get('document', '')
-        summary = data_row.get('summary', '')
+        original = data_row.get("document", "")
+        summary = data_row.get("summary", "")
 
         return SummarizationSample(
-            original=original,
-            expected_results=summary,
-            task="summarization"
+            original=original, expected_results=summary, task="summarization"
         )
-
 
     def export_data(self, data: List[Sample], output_path: str):
         """
@@ -755,10 +827,9 @@ class HuggingFaceDataset(_IDataset):
         """
         with open(output_path, "w") as file:
             csv_writer = csv.writer(file)
-            csv_writer.writerow(
-                list(self.COLUMN_NAMES['text-classification'].keys()))
-            for sample in data:
-                row = self._sample_to_row(sample)
+            csv_writer.writerow(list(self.COLUMN_NAMES["text-classification"].keys()))
+            for s in data:
+                row = self._sample_to_row(s)
                 csv_writer.writerow(row)
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
@@ -774,29 +845,42 @@ class HuggingFaceDataset(_IDataset):
                 Row formatted into a Sample object.
         """
         input_column = next(
-            (col for col in self.COLUMN_NAMES['text-classification']['text'] if col in data_row), None)
+            (
+                col
+                for col in self.COLUMN_NAMES["text-classification"]["text"]
+                if col in data_row
+            ),
+            None,
+        )
         output_column = next(
-            (col for col in self.COLUMN_NAMES['text-classification']['label'] if col in data_row), None)
+            (
+                col
+                for col in self.COLUMN_NAMES["text-classification"]["label"]
+                if col in data_row
+            ),
+            None,
+        )
 
-        original = data_row.get(input_column, '')
-        label = SequenceLabel(label=data_row.get(output_column, ''), score=1)
+        original = data_row.get(input_column, "")
+        label = SequenceLabel(label=data_row.get(output_column, ""), score=1)
 
         return SequenceClassificationSample(
             original=original,
-            expected_results=SequenceClassificationOutput(predictions=[label])
+            expected_results=SequenceClassificationOutput(predictions=[label]),
         )
 
-    def _sample_to_row(self, sample: Sample) -> List[str]:
+    @staticmethod
+    def _sample_to_row(s: Sample) -> List[str]:
         """
         Convert a Sample object into a row for exporting.
 
         Args:
-            sample (Sample):
+            s (Sample):
                 Sample object to convert.
 
         Returns:
             List[str]:
                 Row formatted as a list of strings.
         """
-        row = [sample.original, sample.expected_results.predictions[0].label]
+        row = [s.original, s.expected_results.predictions[0].label]
         return row

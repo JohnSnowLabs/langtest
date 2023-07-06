@@ -20,9 +20,9 @@ class HuggingFaceTestCase(unittest.TestCase):
         This method initializes the list of Hugging Face model names and the associated tasks.
         """
         self.models = [
-            'dslim/bert-base-NER',
-            'Jean-Baptiste/camembert-ner',
-            'd4data/biomedical-ner-all'
+            "dslim/bert-base-NER",
+            "Jean-Baptiste/camembert-ner",
+            "d4data/biomedical-ner-all",
         ]
 
         self.tasks = ["ner", "text-classifier"]
@@ -34,7 +34,9 @@ class HuggingFaceTestCase(unittest.TestCase):
         This method tests the loading of a Hugging Face model using the `ModelFactory` class.
         It asserts that the loaded model is an instance of `ModelFactory`.
         """
-        model = ModelFactory.load_model(task=self.tasks[0], hub="huggingface", path=self.models[0])
+        model = ModelFactory.load_model(
+            task=self.tasks[0], hub="huggingface", path=self.models[0]
+        )
         self.assertIsInstance(model, ModelFactory)
 
     def test_unsupported_task(self):
