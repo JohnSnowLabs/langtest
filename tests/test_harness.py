@@ -172,14 +172,14 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
-    
+
     def test_harness_edit_import_testcases(self):
         """"""
         save_dir = "/tmp/saved_harness_edit_import_testcases"
 
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        
+
         harness = Harness(
             task="ner",
             model="bert-base-cased",
@@ -214,10 +214,12 @@ class HarnessTestCase(unittest.TestCase):
         with and without specifying a test type.
         """
         specific_test_type = Harness.available_tests("robustness")
-        self.assertIsInstance(specific_test_type, list)
+        self.assertIsInstance(specific_test_type, dict)
+        self.assertTrue(len(specific_test_type) == 1)
 
         available_tests = Harness.available_tests()
         self.assertIsInstance(available_tests, dict)
+        self.assertTrue(len(specific_test_type) > 1)
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """
