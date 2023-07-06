@@ -11,6 +11,7 @@ from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
 from .transform import TestFactory
+from .transform.utils import RepresentationOperation
 import json
 
 GLOBAL_MODEL = None
@@ -943,3 +944,17 @@ class Harness:
         self._testcases.extend(temp_testcases)
 
         return self
+
+    @staticmethod
+    def pass_custom_data(file_path: str, test_name: str = None, append: bool = False,TASK:str=None):
+        """Load custom data from a JSON file and store it in a class variable.
+
+        Args:
+            file_path (str): Path to the JSON file.
+            test_name (str, optional): Name parameter. Defaults to None.
+            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
+        """
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+
+        RepresentationOperation.add_custom_representation(data, test_name, append)

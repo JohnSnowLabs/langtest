@@ -11,13 +11,7 @@ from langtest.utils.custom_types import (
 )
 from langtest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
 from langtest.utils.gender_classifier import GenderClassifier
-from .utils import ( 
-                    get_label_representation_dict,
-                    get_country_economic_representation_dict,
-                    get_religion_name_representation_dict,
-                    get_ethnicity_representation_dict,
-                    get_entity_representation_proportions
-)
+from .utils import RepresentationOperation
 from .constants import (
                     default_label_representation,
                     default_ehtnicity_representation,
@@ -406,11 +400,11 @@ class EthnicityRepresentation(BaseRepresentation):
         """
         progress = kwargs.get("progress_bar", False)
 
-        entity_representation = get_ethnicity_representation_dict(kwargs["raw_data"])
+        entity_representation = RepresentationOperation.get_ethnicity_representation_dict(kwargs["raw_data"])
 
         for sample in sample_list:
             if sample.test_type == "min_ethnicity_name_representation_proportion":
-                entity_representation_proportion = get_entity_representation_proportions(
+                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
                     entity_representation
                 )
                 actual_representation = {
@@ -547,14 +541,14 @@ class LabelRepresentation(BaseRepresentation):
         """
         progress = kwargs.get("progress_bar", False)
 
-        entity_representation = get_label_representation_dict(kwargs["raw_data"])
+        entity_representation = RepresentationOperation.get_label_representation_dict(kwargs["raw_data"])
 
         for sample in sample_list:
             if progress:
                 progress.update(1)
 
             if sample.test_type == "min_label_representation_proportion":
-                entity_representation_proportion = get_entity_representation_proportions(
+                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
                     entity_representation
                 )
                 actual_representation = {**entity_representation_proportion}
@@ -687,8 +681,8 @@ class ReligionRepresentation(BaseRepresentation):
                         )
                         raise ValueError()
 
-            entity_representation = get_religion_name_representation_dict(data)
-            entity_representation_proportion = get_entity_representation_proportions(
+            entity_representation = RepresentationOperation.get_religion_name_representation_dict(data)
+            entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
                 entity_representation
             )
             actual_representation = {
@@ -741,11 +735,11 @@ class ReligionRepresentation(BaseRepresentation):
 
         progress = kwargs.get("progress_bar", False)
 
-        entity_representation = get_religion_name_representation_dict(kwargs["raw_data"])
+        entity_representation = RepresentationOperation.get_religion_name_representation_dict(kwargs["raw_data"])
 
         for sample in sample_list:
             if sample.test_type == "min_religion_name_representation_proportion":
-                entity_representation_proportion = get_entity_representation_proportions(
+                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
                     entity_representation
                 )
                 actual_representation = {
@@ -927,13 +921,13 @@ class CountryEconomicRepresentation(BaseRepresentation):
         """
         progress = kwargs.get("progress_bar", False)
 
-        entity_representation = get_country_economic_representation_dict(
+        entity_representation = RepresentationOperation.get_country_economic_representation_dict(
             kwargs["raw_data"]
         )
 
         for sample in sample_list:
             if sample.test_type == "min_country_economic_representation_proportion":
-                entity_representation_proportion = get_entity_representation_proportions(
+                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
                     entity_representation
                 )
                 actual_representation = {
