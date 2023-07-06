@@ -214,7 +214,7 @@ class HarnessTestCase(unittest.TestCase):
         with and without specifying a test type.
         """
         specific_test_type = Harness.available_tests("robustness")
-        self.assertIsInstance(specific_test_type, dict)
+        self.assertIsInstance(specific_test_type, list)
 
         available_tests = Harness.available_tests()
         self.assertIsInstance(available_tests, dict)
