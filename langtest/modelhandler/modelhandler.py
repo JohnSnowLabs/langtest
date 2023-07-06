@@ -1,20 +1,26 @@
 import importlib
-import langchain
+
 from typing import List, Union
 from abc import ABC, abstractmethod
 from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+from langtest.utils.lib_manager import try_import_lib
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
     "huggingfacehub": "huggingface-inference-api",
 }
 
-LANGCHAIN_HUBS = {
-    RENAME_HUBS.get(hub.lower(), hub.lower())
-    if hub.lower() in RENAME_HUBS
-    else hub.lower(): hub
-    for hub in langchain.llms.__all__
-}
+if try_import_lib("langchain"):
+    import langchain
+
+    LANGCHAIN_HUBS = {
+        RENAME_HUBS.get(hub.lower(), hub.lower())
+        if hub.lower() in RENAME_HUBS
+        else hub.lower(): hub
+        for hub in langchain.llms.__all__
+    }
+else:
+    LANGCHAIN_HUBS = {}
 
 
 class _ModelHandler(ABC):

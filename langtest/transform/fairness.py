@@ -2,8 +2,6 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import List
 
-import evaluate
-
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import (
     MaxScoreOutput,
@@ -302,6 +300,8 @@ class MinGenderRougeScore(BaseFairness):
             List[MinScoreSample]: The transformed samples.
 
         """
+        import evaluate
+
         progress = kwargs.get("progress_bar", False)
         task = kwargs.get("task", None)
 
@@ -397,6 +397,8 @@ class MaxGenderRougeScore(BaseFairness):
             List[MaxScoreSample]: The transformed samples.
 
         """
+        import evaluate
+
         progress = kwargs.get("progress_bar", False)
         task = kwargs.get("task", None)
 
