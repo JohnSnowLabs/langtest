@@ -11,7 +11,7 @@ from tqdm.asyncio import tqdm
 from langtest.utils.gender_classifier import GenderClassifier
 from .accuracy import BaseAccuracy
 from .bias import BaseBias
-from .custom_bias import add_custom_data
+from .custom_data import add_custom_data
 from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness

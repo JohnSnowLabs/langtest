@@ -13,7 +13,7 @@ from .constants import (
     native_american_names,
     entity_types as default_entity_types,
 )
-from .custom_bias import add_custom_data
+from .custom_data import add_custom_data
 
 
 
