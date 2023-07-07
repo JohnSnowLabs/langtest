@@ -945,8 +945,7 @@ class Harness:
         if task == "bias":
             TestFactory.call_add_custom_bias(data, test_name, append,task)
         elif task == "representation":
-            if test_name == "Gender-Representation":
-                RepresentationOperation.add_custom_representation(data, test_name, append,task)
+            RepresentationOperation.add_custom_representation(data, test_name, append,task)
 
         else:
             raise ValueError(f"Invalid task type: {task}. Expected 'bias' or 'representation'.")
