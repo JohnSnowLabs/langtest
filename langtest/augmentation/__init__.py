@@ -1,7 +1,7 @@
 import yaml
 import random
 import pandas as pd
-from typing import List, Union
+from typing import List
 from abc import ABC, abstractmethod
 
 from langtest.transform import TestFactory
@@ -93,18 +93,18 @@ class AugmentRobustness(BaseAugmentaion):
             with open(self.config) as fread:
                 self.config = yaml.safe_load(fread)
 
-    def fix(self, input_path: str, output_path, inplace: Union[bool, str] = False):
+    def fix(self, input_path: str, output_path, export_mode: str = "add"):
         """
         Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
             input_path (str): The path to the input data file.
             output_path (str): The path to save the augmented data file.
-            inplace (Union[bool, str], optional): Determines how the samples are modified or exported.
-                                                If True, the list of samples is modified in place.
-                                                If False, new samples are added to the input data.
-                                                If 'transformed', only the transformed data is exported, excluding untransformed samples.
-                                                Defaults to False.
+            export_mode (str, optional): Determines how the samples are modified or exported.
+                                        - 'inplace': Modifies the list of samples in place.
+                                        - 'add': Adds new samples to the input data.
+                                        - 'transformed': Exports only the transformed data, excluding untransformed samples.
+                                        Defaults to 'add'.
 
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
@@ -137,7 +137,7 @@ class AugmentRobustness(BaseAugmentaion):
                     * self.max_prop
                     * (proportion[-1]["proportion_increase"] / sum_propotion)
                 )
-                if inplace is True or inplace == "transformed":
+                if export_mode in ("inplace", "transformed"):
                     sample_indices = random.sample(
                         range(0, len(data)), int(sample_length)
                     )
@@ -155,10 +155,10 @@ class AugmentRobustness(BaseAugmentaion):
                     aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
                     final_aug_data.extend(aug_data)
 
-        if inplace:
+        if export_mode == "inplace":
             final_aug_data = list(hash_map.values())
             self.df.export(final_aug_data, output_path)
-        elif inplace == "transformed":
+        elif export_mode == "transformed":
             final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
             self.df.export(final_aug_data, output_path)
         else:
