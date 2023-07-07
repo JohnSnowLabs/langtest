@@ -35,9 +35,11 @@ class RepresentationOperation:
         """
         if name != "Label-Representation":
             add_custom_data(data, name, append, task)
-        elif name == "Label-Representation":
-            # Update the entity types with the new entity types
-            RepresentationOperation.entity_types = data
+        else:
+            if append:
+                RepresentationOperation.entity_types = list(set(RepresentationOperation.entity_types) | set(data))
+            else:
+                RepresentationOperation.entity_types = data
 
     @staticmethod
     def get_label_representation_dict(data: List[Sample]) -> Dict[str, int]:
@@ -50,7 +52,6 @@ class RepresentationOperation:
         """
 
         label_representation = defaultdict(int)
-
         for sample in data:
             for prediction in sample.expected_results.predictions:
                 if isinstance(prediction, SequenceLabel):
