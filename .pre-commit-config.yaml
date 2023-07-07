@@ -22,3 +22,12 @@ repos:
             "--extend-exclude=langtest/transform/utils.py",
             "--check"
         ]
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: [
+            "--add-ignore=D100,D105,D400",
+            "--add-select=D417",
+            "--convention=google"
+        ]
