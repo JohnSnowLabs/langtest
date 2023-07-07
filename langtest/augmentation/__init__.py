@@ -1,7 +1,7 @@
 import yaml
 import random
 import pandas as pd
-from typing import List,Union
+from typing import List, Union
 from abc import ABC, abstractmethod
 
 from langtest.transform import TestFactory
@@ -96,7 +96,7 @@ class AugmentRobustness(BaseAugmentaion):
     def fix(self, input_path: str, output_path, inplace: Union[bool, str] = False):
         """
         Applies perturbations to the input data based on the recommendations from harness reports.
-    
+
         Args:
             input_path (str): The path to the input data file.
             output_path (str): The path to save the augmented data file.
@@ -105,7 +105,7 @@ class AugmentRobustness(BaseAugmentaion):
                                                 If False, new samples are added to the input data.
                                                 If 'transformed', only the transformed data is exported, excluding untransformed samples.
                                                 Defaults to False.
-    
+
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
@@ -137,7 +137,7 @@ class AugmentRobustness(BaseAugmentaion):
                     * self.max_prop
                     * (proportion[-1]["proportion_increase"] / sum_propotion)
                 )
-                if inplace is True or inplace == 'transformed':
+                if inplace is True or inplace == "transformed":
                     sample_indices = random.sample(
                         range(0, len(data)), int(sample_length)
                     )
@@ -158,7 +158,7 @@ class AugmentRobustness(BaseAugmentaion):
         if inplace:
             final_aug_data = list(hash_map.values())
             self.df.export(final_aug_data, output_path)
-        elif inplace == 'transformed':
+        elif inplace == "transformed":
             final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
             self.df.export(final_aug_data, output_path)
         else:
