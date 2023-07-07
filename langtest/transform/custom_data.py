@@ -75,17 +75,27 @@ def add_custom_data(data, name, append,task):
             for key, values in data.items():
                 religion_wise_names[key] = values
 
-    elif name in ("Ethnicity-Name-Bias","Ethnicity-Representation"):
-        valid_names = (
-            "white_names",
-            "black_names",
-            "hispanic_names",
-            "asian_names",
-            "native_american_names",
-            "inter_racial_names",
-        )
+    elif name in ("Ethnicity-Name-Bias", "Ethnicity-Representation"):
+        ethnicity_data = {
+            "white_names": white_names,
+            "black_names": black_names,
+            "hispanic_names": hispanic_names,
+            "asian_names": asian_names,
+            "native_american_names": native_american_names,
+            "inter_racial_names": inter_racial_names,
+        }
 
-        # Validate the schema
+        valid_names = tuple(ethnicity_data.keys())
+
+        ethnicity_data = {
+            "white_names": white_names,
+            "black_names": black_names,
+            "hispanic_names": hispanic_names,
+            "asian_names": asian_names,
+            "native_american_names": native_american_names,
+            "inter_racial_names": inter_racial_names,
+        }
+
         for data_dict in data:
             if "name" not in data_dict:
                 raise ValueError("Invalid JSON format. 'name' key is missing.")
@@ -103,9 +113,14 @@ def add_custom_data(data, name, append,task):
                 )
 
             if not first_names and not last_names:
-                raise ValueError(
-                    f"At least one of 'first_names' or 'last_names' must be specified for '{name}'."
-                )
+                if name not in ("native_american_names", "inter_racial_names"):
+                    raise ValueError(
+                        f"At least one of 'first_names' or 'last_names' must be specified for '{name}'."
+                    )
+                else:
+                    raise ValueError(
+                        f"'last_names' must be specified for '{name}'."
+                    )
 
             if set(data_dict.keys()) - {"name", "first_names", "last_names"}:
                 raise ValueError(
@@ -113,25 +128,24 @@ def add_custom_data(data, name, append,task):
                     f"Only the following keys are allowed: 'name', 'first_names', 'last_names'."
                 )
 
-            bias_dict = {
-                "white_names": white_names,
-                "black_names": black_names,
-                "hispanic_names": hispanic_names,
-                "asian_names": asian_names,
-                "native_american_names": native_american_names,
-                "inter_racial_names": inter_racial_names,
-            }
-
-            if name in bias_dict:
-                bias = bias_dict[name]
+            if name in (
+                "white_names",
+                "black_names",
+                "hispanic_names",
+                "asian_names",
+            ):
                 if append:
-                    bias["first_names"].extend(
-                        set(first_names) - set(bias["first_names"])
-                    )
-                    bias["last_names"].extend(set(last_names) - set(bias["last_names"]))
+                    ethnicity_data[name]["first_names"] += first_names
+                    ethnicity_data[name]["last_names"] += last_names
                 else:
-                    bias["first_names"] = list(set(first_names))
-                    bias["last_names"] = list(set(last_names))
+                    ethnicity_data[name]["first_names"] = first_names
+                    ethnicity_data[name]["last_names"] = last_names
+            elif name in ("native_american_names", "inter_racial_names"):
+                if append:
+                    ethnicity_data[name]["last_names"] += last_names
+                else:
+                    ethnicity_data[name]["last_names"] = last_names
+                    
     elif name == "Gender-Pronoun-Bias":
         valid_names = ("female_pronouns", "male_pronouns", "neutral_pronouns")
 
