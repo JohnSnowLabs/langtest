@@ -1,7 +1,7 @@
 import yaml
 import random
 import pandas as pd
-from typing import List
+from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
 
 from langtest.transform import TestFactory
@@ -11,39 +11,29 @@ from langtest.transform.utils import create_terminology
 
 
 class BaseAugmentaion(ABC):
-    """
-    Abstract base class for data augmentation techniques.
-
-    Attributes:
-        None
+    """Abstract base class for data augmentation techniques.
 
     Methods:
         fix: Abstract method that should be implemented by child classes.
              This method should perform the data augmentation operation.
-
-             Returns:
-                 NotImplementedError: Raised if the method is not implemented by child classes.
     """
 
     @abstractmethod
-    def fix(self):
-        """
-        Abstract method that should be implemented by child classes.
+    def fix(self, *args, **kwargs):
+        """Abstract method that should be implemented by child classes.
+
         This method should perform the data augmentation operation.
 
         Returns:
             NotImplementedError: Raised if the method is not implemented by child classes.
         """
-
         return NotImplementedError
 
 
 class AugmentRobustness(BaseAugmentaion):
-    """
-    A class for performing a specified task with historical results.
+    """A class for performing a specified task with historical results.
 
     Attributes:
-
         task (str): A string indicating the task being performed.
         config (dict): A dictionary containing configuration parameters for the task.
         h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
@@ -51,7 +41,6 @@ class AugmentRobustness(BaseAugmentaion):
                         Defaults to 0.5.
 
     Methods:
-
         __init__(self, task, h_report, config, max_prop=0.5) -> None:
             Initializes an instance of MyClass with the specified parameters.
 
@@ -61,19 +50,23 @@ class AugmentRobustness(BaseAugmentaion):
         suggestions(self, prop) -> pandas.DataFrame:
             Calculates suggestions for improving test performance based on a given report.
 
-
     """
 
     def __init__(
-        self, task, h_report, config, custom_proportions=None, max_prop=0.5
+        self,
+        task: str,
+        h_report: "pd.DataFrame",
+        config: Dict,
+        custom_proportions: Union[Dict, List] = None,
+        max_prop=0.5,
     ) -> None:
-        """
-        Initializes an instance of MyClass with the specified parameters.
+        """Initializes an instance of MyClass with the specified parameters.
 
         Args:
             task (str): A string indicating the task being performed.
             h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
             config (dict): A dictionary containing configuration parameters for the task.
+            custom_proportions
             max_prop (float): The maximum proportion of improvement that can be suggested by the class methods.
                               Defaults to 0.5.
 
@@ -81,7 +74,6 @@ class AugmentRobustness(BaseAugmentaion):
             None
 
         """
-
         super().__init__()
         self.task = task
         self.config = config
@@ -94,8 +86,7 @@ class AugmentRobustness(BaseAugmentaion):
                 self.config = yaml.safe_load(fread)
 
     def fix(self, input_path: str, output_path, inplace: bool = False):
-        """
-        Applies perturbations to the input data based on the recommendations from harness reports.
+        """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
             input_path (str): The path to the input data file.
@@ -106,7 +97,6 @@ class AugmentRobustness(BaseAugmentaion):
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
-
         self.df = DataFactory(input_path, self.task)
         data = self.df.load()
         TestFactory.is_augment = True
@@ -161,10 +151,8 @@ class AugmentRobustness(BaseAugmentaion):
         TestFactory.is_augment = False
         return fianl_aug_data
 
-    def suggestions(self, report):
-        """
-        Calculates suggestions for improving test performance based on a given report.
-        Supports for custom proportion values passes in dict or list.
+    def suggestions(self, report: "pd.DataFrame") -> "pd.DataFrame":
+        """Calculates suggestions for improving test performance based on a given report.
 
         Args:
             report (pandas.DataFrame): A DataFrame containing test results by category and test type,
@@ -177,7 +165,6 @@ class AugmentRobustness(BaseAugmentaion):
                                 - ratio: the pass rate divided by the minimum pass rate for the test
                                 - proportion_increase: a proportion indicating how much the pass rate
                                                     should increase to reach the minimum pass rate
-
         """
         report["ratio"] = report["pass_rate"] / report["minimum_pass_rate"]
 
@@ -196,9 +183,9 @@ class AugmentRobustness(BaseAugmentaion):
         ]
         return report
 
-    def _proportion_values(self, x):
-        """
-        Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
+    @staticmethod
+    def _proportion_values(x: float) -> Optional[float]:
+        """Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
 
         Args:
             x (float): The ratio of the pass rate to the minimum pass rate for a given test.
@@ -212,7 +199,6 @@ class AugmentRobustness(BaseAugmentaion):
                 If the pass rate is less than 0.7 times the minimum pass rate, returns 0.3.
 
         """
-
         if x >= 1:
             return None
         elif x > 0.9:
