@@ -749,9 +749,12 @@ class Harness:
 
         # checking if the custom_proportions are valid
         if custom_proportions:
-            vaild_test_types = set(custom_proportions.keys() if isinstance(
-                custom_proportions, dict) else custom_proportions)
-            report_test_types = set(self.df_report['test_type'].unique())
+            vaild_test_types = set(
+                custom_proportions.keys()
+                if isinstance(custom_proportions, dict)
+                else custom_proportions
+            )
+            report_test_types = set(self.df_report["test_type"].unique())
             vaild_test_types = set(
                 custom_proportions.keys()
                 if isinstance(custom_proportions, dict)
@@ -962,12 +965,15 @@ class Harness:
             ValueError: If an invalid test type is provided.
         """
         test_scenarios = TestFactory.test_scenarios()
-        available_tests = {test: list(scenarios.items()) for test, scenarios in test_scenarios.items()}
+        available_tests = {
+            test: list(scenarios.items()) for test, scenarios in test_scenarios.items()
+        }
 
         if test_type:
             if test_type not in available_tests.keys():
                 raise ValueError(
-                    f"Unsupported test type '{test_type}'. The available test types are: {available_tests.keys()}")
+                    f"Unsupported test type '{test_type}'. The available test types are: {available_tests.keys()}"
+                )
             return {test_type: available_tests[test_type]}
 
         return available_tests
