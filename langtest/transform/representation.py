@@ -197,6 +197,7 @@ class GenderRepresentation(BaseRepresentation):
             List[Sample]: The list of samples with actual results.
 
         """
+        from langtest.utils.gender_classifier import GenderClassifier
 
         progress = kwargs.get("progress_bar", False)
         classifier = GenderClassifier()
