@@ -85,14 +85,17 @@ class AugmentRobustness(BaseAugmentaion):
             with open(self.config) as fread:
                 self.config = yaml.safe_load(fread)
 
-    def fix(self, input_path: str, output_path, inplace: bool = False):
+    def fix(self, input_path: str, output_path, export_mode: str = "add"):
         """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
             input_path (str): The path to the input data file.
             output_path (str): The path to save the augmented data file.
-            inplace (bool, optional): If True, the list of samples is modified in place.
-                                      Otherwise, a new samples are add to input data. Defaults to False.
+            export_mode (str, optional): Determines how the samples are modified or exported.
+                                        - 'inplace': Modifies the list of samples in place.
+                                        - 'add': Adds new samples to the input data.
+                                        - 'transformed': Exports only the transformed data, excluding untransformed samples.
+                                        Defaults to 'add'.
 
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
@@ -109,7 +112,7 @@ class AugmentRobustness(BaseAugmentaion):
 
         self.config = self._parameters_overrides(self.config, data)
 
-        fianl_aug_data = []
+        final_aug_data = []
         hash_map = {k: v for k, v in enumerate(data)}
 
         for proportion in suggest.iterrows():
@@ -124,7 +127,7 @@ class AugmentRobustness(BaseAugmentaion):
                     * self.max_prop
                     * (proportion[-1]["proportion_increase"] / sum_propotion)
                 )
-                if inplace:
+                if export_mode in ("inplace", "transformed"):
                     sample_indices = random.sample(
                         range(0, len(data)), int(sample_length)
                     )
@@ -137,19 +140,23 @@ class AugmentRobustness(BaseAugmentaion):
                             self.task, [hash_map[each]], test_type
                         )
                         hash_map[each] = res[0]
-
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
                     aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
-                    fianl_aug_data.extend(aug_data)
-        if inplace:
-            fianl_aug_data = list(hash_map.values())
-            self.df.export(fianl_aug_data, output_path)
+                    final_aug_data.extend(aug_data)
+
+        if export_mode == "inplace":
+            final_aug_data = list(hash_map.values())
+            self.df.export(final_aug_data, output_path)
+        elif export_mode == "transformed":
+            final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
+            self.df.export(final_aug_data, output_path)
         else:
-            data.extend(fianl_aug_data)
+            data.extend(final_aug_data)
             self.df.export(data, output_path)
+
         TestFactory.is_augment = False
-        return fianl_aug_data
+        return final_aug_data
 
     def suggestions(self, report: "pd.DataFrame") -> "pd.DataFrame":
         """Calculates suggestions for improving test performance based on a given report.

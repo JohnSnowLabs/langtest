@@ -711,7 +711,7 @@ class Harness:
         input_path: str,
         output_path: str,
         custom_proportions: Union[Dict, List] = None,
-        inplace: bool = False,
+        export_mode: str = "add",
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -719,7 +719,11 @@ class Harness:
             input_path (str): Path to the input file.
             output_path (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
-            inplace (bool, optional): Whether to modify the input file directly. Defaults to False.
+            export_mode (str, optional): Determines how the samples are modified or exported.
+                                    - 'inplace': Modifies the list of samples in place.
+                                    - 'add': Adds new samples to the input data.
+                                    - 'transformed': Exports only the transformed data, excluding untransformed samples.
+                                    Defaults to 'add'.
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -756,6 +760,12 @@ class Harness:
                 else custom_proportions
             )
             report_test_types = set(self.df_report["test_type"].unique())
+            vaild_test_types = set(
+                custom_proportions.keys()
+                if isinstance(custom_proportions, dict)
+                else custom_proportions
+            )
+            report_test_types = set(self.df_report["test_type"].unique())
 
             if not (vaild_test_types.issubset(report_test_types)):
                 raise ValueError(
@@ -767,7 +777,7 @@ class Harness:
             config=self._config,
             h_report=self.df_report,
             custom_proportions=custom_proportions,
-        ).fix(input_path=input_path, output_path=output_path, inplace=inplace)
+        ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
 
         return self
 
@@ -947,3 +957,30 @@ class Harness:
         self._testcases.extend(temp_testcases)
 
         return self
+
+    @staticmethod
+    def available_tests(test_type: str = None) -> Dict[str, List[str]]:
+        """Returns a dictionary of available tests categorized by test type.
+
+        Args:
+            test_type (str, optional): The specific test type to retrieve. Defaults to None.
+
+        Returns:
+            dict: Returns a dictionary containing available tests for the specified test type and defaults to all available tests.
+
+        Raises:
+            ValueError: If an invalid test type is provided.
+        """
+        test_scenarios = TestFactory.test_scenarios()
+        available_tests = {
+            test: list(scenarios.items()) for test, scenarios in test_scenarios.items()
+        }
+
+        if test_type:
+            if test_type not in available_tests.keys():
+                raise ValueError(
+                    f"Unsupported test type '{test_type}'. The available test types are: {available_tests.keys()}"
+                )
+            return {test_type: available_tests[test_type]}
+
+        return available_tests
