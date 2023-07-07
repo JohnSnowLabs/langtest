@@ -5,7 +5,6 @@ import pandas as pd
 import yaml
 
 from langtest.augmentation import AugmentRobustness
-from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.langtest import Harness
 
 
@@ -116,7 +115,7 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         harness.augment(
             "tests/fixtures/train.conll",
             "tests/fixtures/augmentated_train.conll",
-            inplace=True,
+            export_mode="inplace",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
         self.assertTrue(is_file_exist)
@@ -133,7 +132,7 @@ class AugmentRobustnessTestCase(unittest.TestCase):
         harness.augment(
             "tests/fixtures/train.conll",
             "tests/fixtures/augmentated_train.conll",
-            inplace=True,
+            export_mode="inplace",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
         self.assertTrue(is_file_exist)
@@ -153,7 +152,7 @@ class AugmentRobustnessTestCase(unittest.TestCase):
             "tests/fixtures/train.conll",
             "tests/fixtures/augmentated_train.conll",
             custom_proportions=proportions,
-            inplace=True,
+            export_mode="inplace",
         )
 
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
