@@ -755,6 +755,12 @@ class Harness:
                 else custom_proportions
             )
             report_test_types = set(self.df_report["test_type"].unique())
+            vaild_test_types = set(
+                custom_proportions.keys()
+                if isinstance(custom_proportions, dict)
+                else custom_proportions
+            )
+            report_test_types = set(self.df_report["test_type"].unique())
 
             if not (vaild_test_types.issubset(report_test_types)):
                 raise ValueError(
@@ -943,3 +949,31 @@ class Harness:
         self._testcases.extend(temp_testcases)
 
         return self
+
+    @staticmethod
+    def available_tests(test_type: str = None) -> Dict[str, List[str]]:
+        """
+        Returns a dictionary of available tests categorized by test type.
+
+        Args:
+            test_type (str, optional): The specific test type to retrieve. Defaults to None.
+
+        Returns:
+            dict: Returns a dictionary containing available tests for the specified test type and defaults to all available tests.
+
+        Raises:
+            ValueError: If an invalid test type is provided.
+        """
+        test_scenarios = TestFactory.test_scenarios()
+        available_tests = {
+            test: list(scenarios.items()) for test, scenarios in test_scenarios.items()
+        }
+
+        if test_type:
+            if test_type not in available_tests.keys():
+                raise ValueError(
+                    f"Unsupported test type '{test_type}'. The available test types are: {available_tests.keys()}"
+                )
+            return {test_type: available_tests[test_type]}
+
+        return available_tests
