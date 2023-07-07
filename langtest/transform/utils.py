@@ -4,22 +4,24 @@ import pandas as pd
 from langtest.utils.custom_types import NERPrediction, Sample, SequenceLabel, NEROutput, SequenceClassificationOutput         
 from .constants import (
     country_economic_dict, 
-    religion_wise_names ,
-    white_names ,
-    black_names ,
-    hispanic_names ,
-    asian_names ,
-    inter_racial_names ,
-    native_american_names 
+    religion_wise_names,
+    white_names,
+    black_names,
+    hispanic_names,
+    asian_names,
+    inter_racial_names,
+    native_american_names,
+    entity_types as default_entity_types,
 )
 from .custom_bias import add_custom_data
 
 
 
 class RepresentationOperation:
+    entity_types = default_entity_types.copy()
 
     @staticmethod
-    def add_custom_representation(data, name, append,task):
+    def add_custom_representation(data, name, append, task):
         """
         Add custom representation to the given data.
 
@@ -31,11 +33,13 @@ class RepresentationOperation:
         Returns:
             None
         """
-        add_custom_data(data, name, append,task)
-    
- 
-            
+        if name != "Label-Representation":
+            add_custom_data(data, name, append, task)
+        elif name == "Label-Representation":
+            # Update the entity types with the new entity types
+            RepresentationOperation.entity_types = data
 
+    @staticmethod
     def get_label_representation_dict(data: List[Sample]) -> Dict[str, int]:
         """
         Args:
@@ -54,7 +58,7 @@ class RepresentationOperation:
                 elif isinstance(prediction, NERPrediction):
                     if prediction.entity == 'O':
                         label_representation[prediction.entity] += 1
-                    elif prediction.entity in ['B-LOC', 'I-LOC', 'B-PER', 'I-PER', 'B-MISC', 'I-MISC', 'B-ORG', 'I-ORG']:
+                    elif prediction.entity in RepresentationOperation.entity_types:
                         label_representation[prediction.entity.split("-")[1]] += 1
 
         return label_representation
