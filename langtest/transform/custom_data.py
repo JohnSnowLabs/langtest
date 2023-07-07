@@ -87,15 +87,6 @@ def add_custom_data(data, name, append,task):
 
         valid_names = tuple(ethnicity_data.keys())
 
-        ethnicity_data = {
-            "white_names": white_names,
-            "black_names": black_names,
-            "hispanic_names": hispanic_names,
-            "asian_names": asian_names,
-            "native_american_names": native_american_names,
-            "inter_racial_names": inter_racial_names,
-        }
-
         for data_dict in data:
             if "name" not in data_dict:
                 raise ValueError("Invalid JSON format. 'name' key is missing.")
