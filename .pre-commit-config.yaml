@@ -31,3 +31,4 @@ repos:
             "--add-select=D417",
             "--convention=google"
         ]
+        exclude: "langtest/transform/utils.py"
