@@ -6,8 +6,7 @@ import numpy as np
 def classification_report(
     y_true: List[Union[str, int]], y_pred: List[Union[str, int]], zero_division: int = 0
 ) -> Dict[str, Dict[str, Union[float, int]]]:
-    """
-    Generate a classification report including precision, recall, f1-score, and support.
+    """Generate a classification report including precision, recall, f1-score, and support.
 
     Args:
         y_true (List[Union[str, int]]): List of true labels.
@@ -16,9 +15,7 @@ def classification_report(
 
     Returns:
         Dict[str, Dict[str, Union[float, int]]]: Classification report, each class has a dictionary containing precision, recall, f1-score, and support.
-
     """
-
     # Count total true labels for each class (support)
     support = Counter(y_true)
 
@@ -82,8 +79,7 @@ def calculate_f1_score(
     average: str = "macro",
     zero_division: int = 0,
 ) -> float:
-    """
-    Calculate the F1 score for the provided true and predicted labels.
+    """Calculate the F1 score for the provided true and predicted labels.
 
     Args:
         y_true (List[Union[str, int]]): List of true labels.
@@ -179,8 +175,7 @@ def calculate_f1_score(
 
 
 def cosine_similarity(array1: np.ndarray, array2: np.ndarray) -> np.ndarray:
-    """
-    Compute the cosine similarity between two arrays.
+    """Compute the cosine similarity between two arrays.
 
     Args:
         array1 (numpy.ndarray): The first input array. This is a two-dimensional array, where each row is a vector.
@@ -189,7 +184,6 @@ def cosine_similarity(array1: np.ndarray, array2: np.ndarray) -> np.ndarray:
     Returns:
         numpy.ndarray: An array of cosine similarity values. Each value corresponds to the cosine similarity between a pair of vectors from array1 and array2.
     """
-
     dot_products = np.einsum("ij,ij->i", array1, array2)
     magnitudes1 = np.linalg.norm(array1, axis=1)
     magnitudes2 = np.linalg.norm(array2, axis=1)
