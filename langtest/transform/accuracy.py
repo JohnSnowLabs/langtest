@@ -7,8 +7,7 @@ from langtest.utils.util_metrics import calculate_f1_score, classification_repor
 
 
 class BaseAccuracy(ABC):
-    """
-    Abstract base class for implementing accuracy measures.
+    """Abstract base class for implementing accuracy measures.
 
     Attributes:
         alias_name (str): A name or list of names that identify the accuracy measure.
@@ -22,32 +21,41 @@ class BaseAccuracy(ABC):
 
     @staticmethod
     @abstractmethod
-    def transform(y_true: List[Any]):
-        """
-        Abstract method that implements the accuracy measure.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Abstract method that implements the accuracy measure.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
             List[MinScoreSample]: The transformed data based on the implemented accuracy measure.
         """
-
         raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     async def run(
-        sample_list: List[MinScoreSample], y_true, y_pred, **kwargs
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
     ) -> List[MinScoreSample]:
-        return NotImplementedError()
+        """Computes the accuracy score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): List of samples to be transformed.
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+        """
+        raise NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Creates a task to run the accuracy measure.
+    async def async_run(
+        cls,
+        sample_list: List[MinScoreSample],
+        y_true: List[Any],
+        y_pred: List[Any],
+        **kwargs,
+    ):
+        """Creates a task to run the accuracy measure.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -60,8 +68,7 @@ class BaseAccuracy(ABC):
 
 
 class MinPrecisionScore(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
         alias_name (str): The name for config.
@@ -73,15 +80,12 @@ class MinPrecisionScore(BaseAccuracy):
     alias_name = "min_precision_score"
 
     @staticmethod
-    def transform(y_true: List[Any], params: Dict):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum precision score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
-
 
         Returns:
             List[MinScoreSample]: Precision test results.
@@ -107,15 +111,15 @@ class MinPrecisionScore(BaseAccuracy):
             precision_samples.append(sample)
         return precision_samples
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum precision score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum precision score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
             y_true (List[Any]): True values
             y_pred (List[Any]): Predicted values
-
         """
         progress = kwargs.get("progress_bar", False)
         df_metrics = classification_report(y_true, y_pred, zero_division=0)
@@ -136,8 +140,7 @@ class MinPrecisionScore(BaseAccuracy):
 
 
 class MinRecallScore(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum recall score.
 
     Attributes:
         alias_name (str): The name for config.
@@ -149,19 +152,16 @@ class MinRecallScore(BaseAccuracy):
     alias_name = "min_recall_score"
 
     @staticmethod
-    def transform(y_true: List[Any], params: Dict):
-        """
-        Computes the minimum recall score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum recall score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
-            List[MinScoreSample]: Precision recall results.
+            List[MinScoreSample]: minimum recall results.
         """
-
         labels = set(y_true)  # .union(set(y_pred))
 
         if isinstance(params["min_score"], dict):
@@ -183,9 +183,10 @@ class MinRecallScore(BaseAccuracy):
             rec_samples.append(sample)
         return rec_samples
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum recall score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum recall score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -213,32 +214,26 @@ class MinRecallScore(BaseAccuracy):
 
 
 class MinF1Score(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum F1 score.
 
     Attributes:
         alias_name (str): The name for config.
 
-    Methods:
-        transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
     alias_name = "min_f1_score"
 
     @staticmethod
-    def transform(y_true: List[Any], params: Dict):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
             List[MinScoreSample]: F1 score test results.
         """
-
         labels = set(y_true)
 
         if isinstance(params["min_score"], dict):
@@ -260,9 +255,10 @@ class MinF1Score(BaseAccuracy):
             f1_samples.append(sample)
         return f1_samples
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -290,32 +286,25 @@ class MinF1Score(BaseAccuracy):
 
 
 class MinMicroF1Score(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum micro f1 score.
 
     Attributes:
         alias_name (str): The name for config.
-
-    Methods:
-        transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
     alias_name = "min_micro_f1_score"
 
     @staticmethod
-    def transform(y_true: List[Any], params: Dict):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum micro F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
-            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum micro F1 score.
         """
-
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -328,9 +317,10 @@ class MinMicroF1Score(BaseAccuracy):
 
         return [sample]
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -352,32 +342,28 @@ class MinMicroF1Score(BaseAccuracy):
 
 
 class MinMacroF1Score(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum macro score.
 
     Attributes:
         alias_name (str): The name for config.
 
     Methods:
-        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+        transform(y_true, params) -> Any: Creates accuracy test results.
     """
 
     alias_name = "min_macro_f1_score"
 
     @staticmethod
-    def transform(y_true, params):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum macro F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
-            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum macro F1 score.
         """
-
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -390,9 +376,10 @@ class MinMacroF1Score(BaseAccuracy):
 
         return [sample]
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -413,32 +400,28 @@ class MinMacroF1Score(BaseAccuracy):
 
 
 class MinWeightedF1Score(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum weighted f1 score.
+    """Subclass of BaseAccuracy that implements the minimum weighted f1 score.
 
     Attributes:
         alias_name (str): The name for config.
 
     Methods:
-        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+        transform(y_true, params) -> Any: Creates accuracy test results.
     """
 
     alias_name = "min_weighted_f1_score"
 
     @staticmethod
-    def transform(y_true: List[Any], params: Dict):
-        """
-        Computes the minimum weighted F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum weighted F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
-
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -451,9 +434,10 @@ class MinWeightedF1Score(BaseAccuracy):
 
         return [sample]
 
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -473,8 +457,7 @@ class MinWeightedF1Score(BaseAccuracy):
 
 
 class MinEMcore(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
         alias_name (str): The name for config.
@@ -487,19 +470,16 @@ class MinEMcore(BaseAccuracy):
     supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
-    def transform(y_true, params):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
-
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -511,9 +491,10 @@ class MinEMcore(BaseAccuracy):
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -538,8 +519,7 @@ class MinEMcore(BaseAccuracy):
 
 
 class MinBLEUcore(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
         alias_name (str): The name for config.
@@ -552,19 +532,16 @@ class MinBLEUcore(BaseAccuracy):
     supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
-    def transform(y_true, params):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
             params (Dict): parameters for tests configuration
 
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
-
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -576,9 +553,10 @@ class MinBLEUcore(BaseAccuracy):
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.
@@ -603,8 +581,7 @@ class MinBLEUcore(BaseAccuracy):
 
 
 class MinROUGEcore(BaseAccuracy):
-    """
-    Subclass of BaseAccuracy that implements the minimum precision score.
+    """Subclass of BaseAccuracy that implements the minimum precision score.
 
     Attributes:
         alias_name (str): The name for config.
@@ -622,9 +599,8 @@ class MinROUGEcore(BaseAccuracy):
     supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
-    def transform(y_true, params):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
 
         Args:
             y_true (List[Any]): True values
@@ -634,7 +610,6 @@ class MinROUGEcore(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
-
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -646,9 +621,10 @@ class MinROUGEcore(BaseAccuracy):
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], y_true, y_pred, **kwargs):
-        """
-        Computes the minimum F1 score for the given data.
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): List of samples to be transformed.

@@ -14,8 +14,7 @@ from .utils import (
 
 
 def add_custom_data(data, name, append):
-    """
-    Adds custom data to the corresponding bias dictionaries based on the specified name.
+    """Adds custom data to the corresponding bias dictionaries based on the specified name.
 
     Args:
         data (dict or list): The data to be added.

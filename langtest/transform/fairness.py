@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict, Union
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import (
@@ -14,15 +14,14 @@ from langtest.utils.util_metrics import calculate_f1_score
 
 
 class BaseFairness(ABC):
-    """
-    Abstract base class for implementing accuracy measures.
+    """Abstract base class for implementing accuracy measures.
 
     Attributes:
         alias_name (str): A name or list of names that identify the accuracy measure.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into an
-        output based on the implemented accuracy measure.
+        transform(data: List[Sample], params: Dict) -> Union[List[MinScoreSample], List[MaxScoreSample]]:
+            Transforms the input data into an output based on the implemented accuracy measure.
     """
 
     alias_name = None
@@ -30,30 +29,38 @@ class BaseFairness(ABC):
 
     @staticmethod
     @abstractmethod
-    def transform(data, model, params):
-        """
-        Abstract method that implements the accuracy measure.
+    def transform(
+        data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreSample], List[MaxScoreSample]]:
+        """Abstract method that implements the computation of the given measure.
 
         Args:
             data (List[Sample]): The input data to be transformed.
-
+            params (Dict): parameters for tests configuration
         Returns:
-            Any: The transformed data based on the implemented accuracy measure.
+            Union[List[MinScoreSample], List[MaxScoreSample]]: The transformed data based on the implemented measure.
         """
-
-        return NotImplementedError
+        raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     async def run(
         sample_list: List[MinScoreSample], categorised_data, **kwargs
     ) -> List[Sample]:
-        return NotImplementedError()
+        """Computes the score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for the computation.
+
+        Returns:
+            List[MinScoreSample]: The transformed samples.
+        """
+        raise NotImplementedError()
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
-        """
-        Creates a task for the run method.
+        """Creates a task for the run method.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -68,29 +75,27 @@ class BaseFairness(ABC):
 
 
 class MinGenderF1Score(BaseFairness):
-    """
-    Subclass of BaseFairness that implements the minimum F1 score.
+    """Subclass of BaseFairness that implements the minimum F1 score.
 
     Attributes:
         alias_name (str): The name "min_f1" identifying the minimum F1 score.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into
-        an output based on the minimum F1 score.
+        transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+            Transforms the input data into an output based on the minimum F1 score.
     """
 
     alias_name = "min_gender_f1_score"
 
     @staticmethod
-    def transform(data: List[Sample], params):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
 
         Args:
             data (List[Sample]): The input data to be transformed.
-
+            params (Dict): parameters for tests configuration
         Returns:
-            Any: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
@@ -118,13 +123,11 @@ class MinGenderF1Score(BaseFairness):
     async def run(
         sample_list: List[MinScoreSample], gendered_data, **kwargs
     ) -> List[MinScoreSample]:
-        """
-        Computes the minimum F1 score for the given data.
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): The input data to be transformed.
             model (ModelFactory): The model to be used for the computation.
-
 
         Returns:
             List[MinScoreSample]: The transformed samples.
@@ -150,29 +153,27 @@ class MinGenderF1Score(BaseFairness):
 
 
 class MaxGenderF1Score(BaseFairness):
-    """
-    Subclass of BaseFairness that implements the maximum F1 score.
+    """Subclass of BaseFairness that implements the maximum F1 score.
 
     Attributes:
         alias_name (str): The name to be used in config.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into
-        an output based on the maximum F1 score.
+        transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+            Transforms the input data into an output based on the maximum F1 score.
     """
 
     alias_name = "max_gender_f1_score"
 
     @staticmethod
-    def transform(data: List[Sample], params):
-        """
-        Computes the maximum F1 score for the given data.
+    def transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+        """Computes the maximum F1 score for the given data.
 
         Args:
             data (List[Sample]): The input data to be transformed.
-
+            params (Dict): parameters for tests configuration
         Returns:
-            Any: The transformed data based on the maximum F1 score.
+            List[MaxScoreSample]: The transformed data based on the maximum F1 score.
         """
         if isinstance(params["max_score"], dict):
             max_scores = params["max_score"]
@@ -200,8 +201,7 @@ class MaxGenderF1Score(BaseFairness):
     async def run(
         sample_list: List[MaxScoreSample], gendered_data, **kwargs
     ) -> List[MaxScoreSample]:
-        """
-        Computes the maximum F1 score for the given data.
+        """Computes the maximum F1 score for the given data.
 
         Args:
             sample_list (List[MaxScoreSample]): The input data to be transformed.
@@ -232,15 +232,14 @@ class MaxGenderF1Score(BaseFairness):
 
 
 class MinGenderRougeScore(BaseFairness):
-    """
-    Subclass of BaseFairness that implements the minimum F1 score.
+    """Subclass of BaseFairness that implements the minimum F1 score.
 
     Attributes:
         alias_name (str): The name "min_f1" identifying the minimum F1 score.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into
-        an output based on the minimum F1 score.
+        transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+            Transforms the input data into an output based on the minimum F1 score.
     """
 
     alias_name = [
@@ -252,15 +251,14 @@ class MinGenderRougeScore(BaseFairness):
     supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
-    def transform(data: List[Sample], params):
-        """
-        Computes the minimum F1 score for the given data.
+    def transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+        """Computes the min rouge score for the given data.
 
         Args:
             data (List[Sample]): The input data to be transformed.
-
+            params (Dict): parameters for tests configuration
         Returns:
-            Any: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
@@ -288,13 +286,11 @@ class MinGenderRougeScore(BaseFairness):
     async def run(
         sample_list: List[MinScoreSample], gendered_data, **kwargs
     ) -> List[MinScoreSample]:
-        """
-        Computes the minimum F1 score for the given data.
+        """Computes the minimum F1 score for the given data.
 
         Args:
             sample_list (List[MinScoreSample]): The input data to be transformed.
             model (ModelFactory): The model to be used for the computation.
-
 
         Returns:
             List[MinScoreSample]: The transformed samples.
@@ -329,15 +325,14 @@ class MinGenderRougeScore(BaseFairness):
 
 
 class MaxGenderRougeScore(BaseFairness):
-    """
-    Subclass of BaseFairness that implements the rouge score.
+    """Subclass of BaseFairness that implements the rouge score.
 
     Attributes:
         alias_name (str): The name to be used in config.
 
     Methods:
-        transform(data: List[Sample]) -> Any: Transforms the input data into
-        an output based on the rouge score.
+        transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+            Transforms the input data into an output based on the rouge score.
     """
 
     alias_name = [
@@ -349,15 +344,14 @@ class MaxGenderRougeScore(BaseFairness):
     supported_tasks = ["question-answering", "summarization"]
 
     @staticmethod
-    def transform(data: List[Sample], params):
-        """
-        Computes the rouge score for the given data.
+    def transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+        """Computes the rouge score for the given data.
 
         Args:
             data (List[Sample]): The input data to be transformed.
-
+            params (Dict): parameters for tests configuration
         Returns:
-            Any: The transformed data based on the rouge score.
+            List[MaxScoreSample]: The transformed data based on the rouge score.
         """
         if isinstance(params["max_score"], dict):
             max_scores = params["max_score"]
@@ -385,13 +379,11 @@ class MaxGenderRougeScore(BaseFairness):
     async def run(
         sample_list: List[MaxScoreSample], gendered_data, **kwargs
     ) -> List[MaxScoreSample]:
-        """
-        Computes the maximum rouge score for the given data.
+        """Computes the maximum rouge score for the given data.
 
         Args:
             sample_list (List[MaxScoreSample]): The input data to be transformed.
             model (ModelFactory): The model to be used for the computation.
-
 
         Returns:
             List[MaxScoreSample]: The transformed samples.

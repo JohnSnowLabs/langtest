@@ -1,24 +1,43 @@
 import asyncio
-
 from abc import ABC, abstractmethod
-from ..utils.custom_types import Sample
 from typing import List
+
+from langtest.modelhandler import ModelFactory
+from ..utils.custom_types import Sample
 
 toxicity_metric = None
 
 
 class BaseToxicity(ABC):
+    """Abstract base class to extend for toxicity completion"""
+
     alias_name = None
     supported_tasks = ["toxicity"]
 
     @staticmethod
     @abstractmethod
-    def transform(sample_list: List[Sample]):
-        return NotImplementedError()
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """Abstract method that implements samples transformations
+
+        Args:
+            sample_list (List[Sample]): list of samples to transform
+
+        Returns:
+            List[Sample]: list of transformed samples
+        """
+        raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[Sample], model, *args, **kwargs):
+    async def run(
+        sample_list: List[Sample], model: ModelFactory, *args, **kwargs
+    ) -> List[Sample]:
+        """Computes the toxicity completion on the samples
+
+        Args:
+            sample_list (List[Sample]): list of samples to compute toxicity on
+            model (ModelFactory): model to use for toxicity completion
+        """
         progress = kwargs.get("progress_bar", False)
         global toxicity_metric
         for sample in sample_list:
@@ -42,15 +61,34 @@ class BaseToxicity(ABC):
         return sample_list
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model, *args, **kwargs):
+    async def async_run(
+        cls, sample_list: List[Sample], model: ModelFactory, *args, **kwargs
+    ):
+        """Computes the toxicity completion on the samples in async mode.
+
+        Args:
+            sample_list (List[Sample]): list of samples to compute toxicity on
+            model (ModelFactory): model to use for toxicity completion
+        """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
 
 
 class PromptToxicity(BaseToxicity):
+    """Class for prompt toxicity"""
+
     alias_name = "offensive"
 
+    @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
+        """Method that implements prompt toxicity transformations on the given samples
+
+        Args:
+             sample_list (List[Sample]): list of samples to compute toxicity prompt on
+
+        Returns:
+            List[Sample]:  list of transformed samples
+        """
         import evaluate
 
         global toxicity_metric
