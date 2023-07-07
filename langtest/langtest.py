@@ -709,7 +709,7 @@ class Harness:
         input_path: str,
         output_path: str,
         custom_proportions: Union[Dict, List] = None,
-        inplace: bool = False,
+        export_mode: str = "add",
     ) -> "Harness":
         """
         Augments the data in the input file located at `input_path` and saves the result to `output_path`.
@@ -717,7 +717,11 @@ class Harness:
         Args:
             input_path (str): Path to the input file.
             output_path (str): Path to save the augmented data.
-            inplace (bool, optional): Whether to modify the input file directly. Defaults to False.
+            export_mode (str, optional): Determines how the samples are modified or exported.
+                                    - 'inplace': Modifies the list of samples in place.
+                                    - 'add': Adds new samples to the input data.
+                                    - 'transformed': Exports only the transformed data, excluding untransformed samples.
+                                    Defaults to 'add'.
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -766,7 +770,7 @@ class Harness:
             config=self._config,
             h_report=self.df_report,
             custom_proportions=custom_proportions,
-        ).fix(input_path=input_path, output_path=output_path, inplace=inplace)
+        ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
 
         return self
 
