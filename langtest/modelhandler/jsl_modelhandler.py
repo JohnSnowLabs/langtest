@@ -126,8 +126,11 @@ if try_import_lib("sparknlp_jsl"):
 
 
 class PretrainedJSLModel(ABC):
-    """
-    PretrainedJSLModel is an abstract class for handling SparkNLP models.
+    """PretrainedJSLModel is an abstract class for handling SparkNLP models.
+
+    Attributes:
+        model (Union["NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"]):
+            Loaded SparkNLP LightPipeline for inference.
     """
 
     @abstractmethod
@@ -137,12 +140,12 @@ class PretrainedJSLModel(ABC):
             "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
         ],
     ):
-        """
-        Attributes:
-            model (LightPipeline):
+        """Constructor method
+
+        Args:
+            model (Union["NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"]):
                 Loaded SparkNLP LightPipeline for inference.
         """
-
         if model.__class__.__name__ == "PipelineModel":
             self.model = model
 
@@ -167,8 +170,7 @@ class PretrainedJSLModel(ABC):
 
     @classmethod
     def load_model(cls, path) -> "NLUPipeline":
-        """
-        Load the NER model into the `model` attribute.
+        """Load the NER model into the `model` attribute.
 
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
@@ -191,14 +193,12 @@ class PretrainedJSLModel(ABC):
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs) -> Any:
-        """
-        Perform predictions with SparkNLP LightPipeline on the input text.
+        """Perform predictions with SparkNLP LightPipeline on the input text.
 
         Args:
             text (str): Input text to perform translation on.
         """
-
-        return NotImplementedError
+        raise NotImplementedError()
 
     def __call__(
         self, text: str
@@ -208,7 +208,7 @@ class PretrainedJSLModel(ABC):
 
 
 class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
-    """"""
+    """Pretrained model for NER tasks."""
 
     def __init__(
         self,
@@ -216,8 +216,9 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
             "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
         ],
     ):
-        """
-        Attributes:
+        """Constructor method
+
+        Args:
             model (LightPipeline):
                 Loaded SparkNLP LightPipeline for inference.
         """
@@ -241,9 +242,8 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         self.model = LightPipeline(self.model)
 
     @staticmethod
-    def _aggregate_words(prediction: List[Dict]) -> List[Dict]:
-        """
-        Aggregates predictions at a word-level by taking the first token label.
+    def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
+        """Aggregates predictions at a word-level by taking the first token label.
 
         Args:
             predictions (List[Dict]):
@@ -253,14 +253,14 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
                 aggregated predictions
         """
         aggregated_words = []
-        for i in range(0, len(prediction)):
+        for i in range(0, len(predictions)):
             aggregated_words.append(
                 {
-                    "entity": prediction[i].result,
+                    "entity": predictions[i].result,
                     "index": i + 1,
-                    "word": prediction[i].metadata["word"],
-                    "start": prediction[i].begin,
-                    "end": (prediction[i].end) + 1,
+                    "word": predictions[i].metadata["word"],
+                    "start": predictions[i].begin,
+                    "end": (predictions[i].end) + 1,
                 }
             )
 
@@ -268,7 +268,8 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
     @staticmethod
     def _get_tag(entity_label: str) -> Tuple[str, str]:
-        """ "
+        """Retrieve the tag of a BIO label
+
         Args:
             entity_label (str):
                 BIO style label
@@ -282,8 +283,8 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
     @staticmethod
     def _group_sub_entities(entities: List[dict]) -> dict:
-        """
-        Group together the adjacent tokens with the same entity predicted.
+        """Group together the adjacent tokens with the same entity predicted.
+
         Args:
             entities (`dict`): The entities predicted by the pipeline.
         """
@@ -300,14 +301,15 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         return entity_group
 
     def group_entities(self, entities: List[Dict]) -> List[Dict]:
-        """
-        Find and group together the adjacent tokens with the same entity predicted.
+        """Find and group together the adjacent tokens with the same entity predicted.
+
         Inspired and adapted from:
         https://github.com/huggingface/transformers/blob/68287689f2f0d8b7063c400230b3766987abf18d/src/transformers/pipelines/token_classification.py#L421
 
         Args:
             entities (List[Dict]):
                 The entities predicted by the pipeline.
+
         Returns:
             List[Dict]:
                 grouped entities
@@ -338,8 +340,10 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
+
         Args:
             text (str): Input text to perform NER on.
+
         Returns:
             NEROutput: A list of named entities recognized in the input text.
         """
@@ -361,8 +365,10 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
     def predict_raw(self, text: str) -> List[str]:
         """Perform predictions with SparkNLP LightPipeline on the input text.
+
         Args:
             text (str): Input text to perform NER on.
+
         Returns:
             List[str]: Predicted labels.
         """
@@ -378,7 +384,7 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
 
 
 class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
-    """"""
+    """Pretrained model for text classification tasks"""
 
     def __init__(
         self,
@@ -386,12 +392,12 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
             "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
         ],
     ):
-        """
-        Attributes:
+        """Constructor class
+
+        Args:
             model (LightPipeline):
                 Loaded SparkNLP LightPipeline for inference.
         """
-
         super().__init__(model)
 
         _classifier = None
@@ -420,8 +426,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
     ) -> SequenceClassificationOutput:
-        """
-        Perform predictions with SparkNLP LightPipeline on the input text.
+        """Perform predictions with SparkNLP LightPipeline on the input text.
 
         Args:
             text (str): Input text to perform NER on.
@@ -458,9 +463,20 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
 
 
 class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
-    """"""
+    """Pretrained model for translations tasks"""
 
-    def __init__(self, model) -> None:
+    def __init__(
+        self,
+        model: Union[
+            "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
+        ],
+    ):
+        """Constructor class
+
+        Args:
+            model (LightPipeline):
+                Loaded SparkNLP LightPipeline for inference.
+        """
         super().__init__(model)
 
         _translator = None
@@ -486,8 +502,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
         return False
 
     def predict(self, text: str, *args, **kwargs) -> TranslationOutput:
-        """
-        Perform predictions with SparkNLP LightPipeline on the input text.
+        """Perform predictions with SparkNLP LightPipeline on the input text.
 
         Args:
             text (str): Input text to perform translation on.

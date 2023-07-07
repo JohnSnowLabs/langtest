@@ -13,18 +13,18 @@ from ..utils.custom_types import (
 
 
 class PretrainedModelForNER(_ModelHandler):
-    """
+    """Transformers pretrained model for NER tasks
+
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
     """
 
     def __init__(self, model):
-        """
-        Attributes:
-            model (transformers.pipeline.Pipeline):
-                Loaded NER pipeline for predictions.
-        """
+        """Constructor method
 
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
         assert isinstance(model, Pipeline), ValueError(
             f"Invalid transformers pipeline! "
             f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
@@ -33,8 +33,7 @@ class PretrainedModelForNER(_ModelHandler):
 
     @staticmethod
     def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
-        """
-        Aggregates predictions at a word-level by taking the first token label.
+        """Aggregates predictions at a word-level by taking the first token label.
 
         Args:
             predictions (List[Dict]):
@@ -60,7 +59,8 @@ class PretrainedModelForNER(_ModelHandler):
 
     @staticmethod
     def _get_tag(entity_label: str) -> Tuple[str, str]:
-        """ "
+        """Retrieve the tag of a BIO label
+
         Args:
             entity_label (str):
                 BIO style label
@@ -75,8 +75,8 @@ class PretrainedModelForNER(_ModelHandler):
 
     @staticmethod
     def _group_sub_entities(entities: List[dict]) -> dict:
-        """
-        Group together the adjacent tokens with the same entity predicted.
+        """Group together the adjacent tokens with the same entity predicted.
+
         Args:
             entities (`dict`): The entities predicted by the pipeline.
         """
@@ -95,14 +95,15 @@ class PretrainedModelForNER(_ModelHandler):
         return entity_group
 
     def group_entities(self, entities: List[Dict]) -> List[Dict]:
-        """
-        Find and group together the adjacent tokens with the same entity predicted.
+        """Find and group together the adjacent tokens with the same entity predicted.
+
         Inspired and adapted from:
         https://github.com/huggingface/transformers/blob/68287689f2f0d8b7063c400230b3766987abf18d/src/transformers/pipelines/token_classification.py#L421
 
         Args:
             entities (List[Dict]):
                 The entities predicted by the pipeline.
+
         Returns:
             List[Dict]:
                 grouped entities
@@ -173,10 +174,11 @@ class PretrainedModelForNER(_ModelHandler):
         )
 
     def predict_raw(self, text: str) -> List[str]:
-        """
-        Predict a list of labels.
+        """Predict a list of labels.
+
         Args:
             text (str): Input text to perform NER on.
+
         Returns:
             List[str]: A list of named entities recognized in the input text.
         """
@@ -194,7 +196,8 @@ class PretrainedModelForNER(_ModelHandler):
 
 
 class PretrainedModelForTextClassification(_ModelHandler):
-    """
+    """Transformers pretrained model for text classification tasks
+
     Attributes:
         model (transformers.pipeline.Pipeline):
             Loaded Text Classification pipeline for predictions.
@@ -204,6 +207,11 @@ class PretrainedModelForTextClassification(_ModelHandler):
         self,
         model: Pipeline,
     ):
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
         assert isinstance(model, Pipeline), ValueError(
             f"Invalid transformers pipeline! "
             f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
@@ -270,18 +278,18 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
 
 class PretrainedModelForTranslation(_ModelHandler):
-    """
+    """Transformers pretrained model for translation tasks
+
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
     """
 
     def __init__(self, model):
-        """
-        Attributes:
-            model (transformers.pipeline.Pipeline):
-                Loaded translation pipeline for predictions.
-        """
+        """Constructor method
 
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
         assert isinstance(model, Pipeline), ValueError(
             f"Invalid transformers pipeline! "
             f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"

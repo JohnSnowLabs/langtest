@@ -1,9 +1,9 @@
 import importlib
-
-from typing import List, Union
 from abc import ABC, abstractmethod
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
+from typing import List, Union
+
 from langtest.utils.lib_manager import try_import_lib
+from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
@@ -24,27 +24,24 @@ else:
 
 
 class _ModelHandler(ABC):
-    """
-    Abstract base class for handling different models.
+    """Abstract base class for handling different models.
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
 
     @abstractmethod
-    def load_model(cls, path: str):
+    def load_model(cls, *args, **kwargs):
         """Load the model."""
-        return NotImplementedError()
+        raise NotImplementedError()
 
     @abstractmethod
-    def predict(self, text: str, *args, **kwargs):
+    def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform predictions on input text."""
-        return NotImplementedError()
+        raise NotImplementedError()
 
 
 class ModelFactory:
-    """
-    A factory class for instantiating models.
-    """
+    """A factory class for instantiating models."""
 
     SUPPORTED_TASKS = [
         "ner",
@@ -67,6 +64,7 @@ class ModelFactory:
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
         """Initializes the ModelFactory object.
+
         Args:
             model (str):
                 path to the model to evaluate
@@ -140,9 +138,9 @@ class ModelFactory:
             hub (str):
                 model hub to load custom model from the path, either to hub or local disk.
 
-        Returns
+        Returns:
+            ModelHandler:
         """
-
         assert task in cls.SUPPORTED_TASKS, ValueError(
             f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"
         )
