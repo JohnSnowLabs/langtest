@@ -49,6 +49,10 @@ jobs:
         run: |
           poetry run task is-formatted
 
+      - name: Check docstrings
+        run: |
+          poetry run task check-docstrings
+
       - name: Test with pytest
         run: |
           poetry run task force-cpu-torch
