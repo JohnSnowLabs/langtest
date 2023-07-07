@@ -44,18 +44,29 @@ extend-exclude = "langtest/transform/utils.py"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-langchain = "<0.0.222"
+langchain = { version = "<0.0.222", optional = true }
 pydantic = "1.10.6"
-johnsnowlabs = "4.3.5"
-rouge-score = "^0.1.2"
-evaluate = "^0.4.0"
-transformers = ">4.20.0"
-spacy = ">=3.0.0"
+johnsnowlabs = { version = "4.3.5", optional = true }
+rouge-score = {version = "^0.1.2", optional = true}
+evaluate = { version = "^0.4.0", optional = true }
+transformers = { version = ">4.20.0", optional = true }
+spacy = { version = ">=3.0.0", optional = true }
 nest-asyncio = "^1.5.0"
-openai = ">0.27.0"
+openai = { version = ">0.27.0", optional = true }
 jsonlines = "^3.1.0"
-torch = "^2.0.1"
+torch = { version = "^2.0.1", optional = true }
 typing-extensions = "<4.6.0"
+pandas = "^2.0.3"
+pyyaml = "^6.0"
+tqdm = "^4.65.0"
+
+[tool.poetry.extras]
+transformers = ["transformers", "torch"]
+evaluate = ["evaluate", "rouge-score"]
+spacy = ["spacy"]
+langchain = ["langchain"]
+johnsnowlabs = ["johnsnowlabs"]
+openai = ["openai"]
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"

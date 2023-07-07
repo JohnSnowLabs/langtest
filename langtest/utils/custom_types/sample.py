@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
-from .helpers import Transformation, Span, default_user_prompt
-from ..SentenceTransformer import SimpleSentenceTransformer
+from .helpers import Transformation, Span
+from .helpers import default_user_prompt
 from ..util_metrics import cosine_similarity
 from .output import NEROutput, Result
 from .predictions import NERPrediction
@@ -885,6 +885,7 @@ class TranslationSample(BaseModel):
 
     def _is_eval(self) -> bool:
         """"""
+        from ..SentenceTransformer import SimpleSentenceTransformer
 
         model = SimpleSentenceTransformer()
 

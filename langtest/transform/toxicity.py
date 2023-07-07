@@ -1,5 +1,5 @@
 import asyncio
-import evaluate
+
 from abc import ABC, abstractmethod
 from ..utils.custom_types import Sample
 from typing import List
@@ -51,6 +51,8 @@ class PromptToxicity(BaseToxicity):
     alias_name = "offensive"
 
     def transform(sample_list: List[Sample]) -> List[Sample]:
+        import evaluate
+
         global toxicity_metric
         toxicity_metric = evaluate.load("toxicity", module_type="measurement")
         for sample in sample_list:
