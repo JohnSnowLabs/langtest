@@ -2,8 +2,6 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
 
-import evaluate
-
 from langtest.utils.custom_types import MinScoreOutput, MinScoreSample
 from langtest.utils.util_metrics import calculate_f1_score, classification_report
 
@@ -523,6 +521,8 @@ class MinEMcore(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
+        import evaluate
+
         progress = kwargs.get("progress_bar", False)
 
         em = evaluate.load("exact_match")
@@ -587,6 +587,8 @@ class MinBLEUcore(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
+        import evaluate
+
         em = evaluate.load("bleu")
         result = em.compute(references=y_true, predictions=y_pred)
         y_true = [[f"The answer is {y}" for y in x] for x in y_true]
@@ -655,6 +657,8 @@ class MinROUGEcore(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
+        import evaluate
+
         em = evaluate.load("rouge")
         result = em.compute(references=y_true, predictions=y_pred)
         for sample in sample_list:

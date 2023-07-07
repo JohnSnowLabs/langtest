@@ -8,7 +8,6 @@ import nest_asyncio
 import pandas as pd
 from tqdm.asyncio import tqdm
 
-from langtest.utils.gender_classifier import GenderClassifier
 from .accuracy import BaseAccuracy
 from .bias import BaseBias
 from .custom_bias import add_custom_data
@@ -989,6 +988,10 @@ class FairnessTestFactory(ITests):
     @staticmethod
     def get_gendered_data(data):
         """Split list of samples into gendered lists."""
+        from langtest.utils.gender_classifier import GenderClassifier
+
+        classifier = GenderClassifier()
+
         data = pd.Series(data)
         if isinstance(data[0], QASample):
             sentences = data.apply(
@@ -996,7 +999,7 @@ class FairnessTestFactory(ITests):
             )
         else:
             sentences = data.apply(lambda x: x.original)
-        classifier = GenderClassifier()
+
         genders = sentences.apply(classifier.predict)
         gendered_data = {
             "male": data[genders == "male"].tolist(),
