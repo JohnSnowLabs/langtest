@@ -23,10 +23,15 @@ from .custom_data import add_custom_data
 
 
 class RepresentationOperation:
+    """
+    This class provides operations for adding and analyzing custom representations in data.
+
+    """
+
     entity_types = default_entity_types.copy()
 
     @staticmethod
-    def add_custom_representation(data, name, append, task):
+    def add_custom_representation(data, name, append, task, check):
         """
         Add custom representation to the given data.
 
@@ -44,6 +49,10 @@ class RepresentationOperation:
             if not isinstance(data, list):
                 raise ValueError(
                     "Invalid JSON format. Format should be a list of strings."
+                )
+            if check != "ner":
+                raise ValueError(
+                    "pass_custom_data() method with test_name as 'Label-Representation' is only supported for NER task."
                 )
             if append:
                 RepresentationOperation.entity_types = list(
