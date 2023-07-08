@@ -968,7 +968,9 @@ class Harness:
         return available_tests
 
     @staticmethod
-    def pass_custom_data(file_path: str, test_name: str = None, task: str = None, append: bool = False):
+    def pass_custom_data(
+        file_path: str, test_name: str = None, task: str = None, append: bool = False
+    ):
         """Load custom data from a JSON file and store it in a class variable.
 
         Args:
@@ -983,7 +985,11 @@ class Harness:
         if task == "bias":
             TestFactory.call_add_custom_bias(data, test_name, append, task)
         elif task == "representation":
-            RepresentationOperation.add_custom_representation(data, test_name, append, task)
+            RepresentationOperation.add_custom_representation(
+                data, test_name, append, task
+            )
 
         else:
-            raise ValueError(f"Invalid task type: {task}. Expected 'bias' or 'representation'.")
+            raise ValueError(
+                f"Invalid task type: {task}. Expected 'bias' or 'representation'."
+            )
