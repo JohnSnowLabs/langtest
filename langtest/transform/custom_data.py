@@ -215,13 +215,3 @@ def add_custom_data(data, name, append, task):
                     bias["objective_pronouns"] = pronouns["objective_pronouns"]
                     bias["reflexive_pronouns"] = pronouns["reflexive_pronouns"]
                     bias["possessive_pronouns"] = pronouns["possessive_pronouns"]
-
-    else:
-        if task == "bias":
-            raise ValueError(
-                f"Invalid 'test_name' value '{name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias."
-            )
-        else:
-            raise ValueError(
-                f"Invalid 'test_name' value '{name}'. It should be one of: Country-Economic-Representation, Religion-Representation, Ethnicity-Representation, Label-Representation."
-            )

@@ -986,8 +986,28 @@ class Harness:
             data = json.load(f)
 
         if task == "bias":
+            if test_name not in (
+                "Country-Economic-Bias",
+                "Religion-Bias",
+                "Ethnicity-Name-Bias",
+                "Gender-Pronoun-Bias",
+            ):
+                raise ValueError(
+                    f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias."
+                )
+
             TestFactory.call_add_custom_bias(data, test_name, append, task)
         elif task == "representation":
+            if test_name not in (
+                "Country-Economic-Representation",
+                "Religion-Representation",
+                "Ethnicity-Representation",
+                "Label-Representation",
+            ):
+                raise ValueError(
+                    f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Representation, Religion-Representation, Ethnicity-Representation, Label-Representation."
+                )
+
             RepresentationOperation.add_custom_representation(
                 data, test_name, append, task, check=self.task
             )
