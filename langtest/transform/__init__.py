@@ -29,10 +29,7 @@ from .constants import (
     religion_wise_names,
     white_names,
 )
-from .utils import (
-    get_substitution_names,
-    create_terminology
-)
+from .utils import get_substitution_names, create_terminology
 from ..modelhandler import ModelFactory
 from ..utils.custom_types.sample import (
     NERSample,
@@ -57,7 +54,7 @@ class TestFactory:
     # Additional operations can be performed here using the validated data
 
     @staticmethod
-    def call_add_custom_bias(data, name, append,task):
+    def call_add_custom_bias(data, name, append, task):
         """
         Add custom bias to the given data.
 
@@ -69,7 +66,7 @@ class TestFactory:
         Returns:
             None
         """
-        add_custom_data(data, name, append,task)
+        add_custom_data(data, name, append, task)
 
     @staticmethod
     def transform(

@@ -13,7 +13,7 @@ from .constants import (
 )
 
 
-def add_custom_data(data, name, append,task):
+def add_custom_data(data, name, append, task):
     """
     Adds custom data to the corresponding bias dictionaries based on the specified name.
 
@@ -33,7 +33,7 @@ def add_custom_data(data, name, append,task):
     Raises:
         ValueError: If the specified `name` is invalid or if the provided data has an invalid format or contains invalid keys.
     """
-    if name in ("Country-Economic-Bias","Country-Economic-Representation"):
+    if name in ("Country-Economic-Bias", "Country-Economic-Representation"):
         valid_names = country_economic_dict.keys()
 
         # Validate the schema
@@ -54,7 +54,7 @@ def add_custom_data(data, name, append,task):
             for key, values in data.items():
                 country_economic_dict[key] = values
 
-    elif name in ("Religion-Bias","Religion-Representation"):
+    elif name in ("Religion-Bias", "Religion-Representation"):
         valid_names = religion_wise_names.keys()
 
         # Validate the schema
@@ -109,9 +109,7 @@ def add_custom_data(data, name, append,task):
                         f"At least one of 'first_names' or 'last_names' must be specified for '{name}'."
                     )
                 else:
-                    raise ValueError(
-                        f"'last_names' must be specified for '{name}'."
-                    )
+                    raise ValueError(f"'last_names' must be specified for '{name}'.")
 
             if set(data_dict.keys()) - {"name", "first_names", "last_names"}:
                 raise ValueError(
@@ -136,7 +134,7 @@ def add_custom_data(data, name, append,task):
                     ethnicity_data[name]["last_names"] += last_names
                 else:
                     ethnicity_data[name]["last_names"] = last_names
-                    
+
     elif name == "Gender-Pronoun-Bias":
         valid_names = ("female_pronouns", "male_pronouns", "neutral_pronouns")
 
@@ -217,9 +215,9 @@ def add_custom_data(data, name, append,task):
                     bias["objective_pronouns"] = pronouns["objective_pronouns"]
                     bias["reflexive_pronouns"] = pronouns["reflexive_pronouns"]
                     bias["possessive_pronouns"] = pronouns["possessive_pronouns"]
-                    
+
     else:
-        if task =="bias":
+        if task == "bias":
             raise ValueError(
                 f"Invalid 'test_name' value '{name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias."
             )

@@ -981,9 +981,9 @@ class Harness:
             data = json.load(f)
 
         if task == "bias":
-            TestFactory.call_add_custom_bias(data, test_name, append,task)
+            TestFactory.call_add_custom_bias(data, test_name, append, task)
         elif task == "representation":
-            RepresentationOperation.add_custom_representation(data, test_name, append,task)
+            RepresentationOperation.add_custom_representation(data, test_name, append, task)
 
         else:
             raise ValueError(f"Invalid task type: {task}. Expected 'bias' or 'representation'.")
