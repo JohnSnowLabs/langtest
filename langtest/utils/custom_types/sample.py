@@ -889,6 +889,7 @@ class TranslationSample(BaseModel):
             return False, 1
         else:
             from ..SentenceTransformer import SimpleSentenceTransformer
+
             model = SimpleSentenceTransformer()
 
             # Get the sentence vectors
