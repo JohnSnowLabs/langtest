@@ -973,7 +973,7 @@ class Harness:
         test_name: str = None,
         task: str = None,
         append: bool = False,
-    ):
+    ) -> None:
         """Load custom data from a JSON file and store it in a class variable.
 
         Args:
@@ -996,7 +996,7 @@ class Harness:
                     f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias."
                 )
 
-            TestFactory.call_add_custom_bias(data, test_name, append, task)
+            TestFactory.call_add_custom_bias(data, test_name, append)
         elif task == "representation":
             if test_name not in (
                 "Country-Economic-Representation",
@@ -1009,7 +1009,7 @@ class Harness:
                 )
 
             RepresentationOperation.add_custom_representation(
-                data, test_name, append, task, check=self.task
+                data, test_name, append, check=self.task
             )
 
         else:

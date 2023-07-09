@@ -2,7 +2,7 @@ import asyncio
 import copy
 import time
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import nest_asyncio
 import pandas as pd
@@ -54,19 +54,19 @@ class TestFactory:
     # Additional operations can be performed here using the validated data
 
     @staticmethod
-    def call_add_custom_bias(data, name, append, task):
+    def call_add_custom_bias(data: Union[list, dict], name: str, append: bool) -> None:
         """
         Add custom bias to the given data.
 
         Args:
-            data (list): The data to which the custom bias will be added.
+            data (Union[list, dict]): The data to which the custom bias will be added.
             name (str): The name of the custom bias.
             append (bool): Indicates whether to append the custom bias or replace the existing bias.
-            task : "bias"
+
         Returns:
             None
         """
-        add_custom_data(data, name, append, task)
+        add_custom_data(data, name, append)
 
     @staticmethod
     def transform(

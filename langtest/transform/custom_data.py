@@ -11,9 +11,10 @@ from .constants import (
     white_names,
     female_pronouns,
 )
+from typing import Union
 
 
-def add_custom_data(data, name, append, task):
+def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
     """
     Adds custom data to the corresponding bias dictionaries based on the specified name.
 
@@ -28,7 +29,6 @@ def add_custom_data(data, name, append, task):
             - "Religion-Representation"
             - "Ethnicity-Representation"
         append (bool): Specifies whether to append the values or overwrite them.
-        task (str, optional): Task type. Either "bias" or "representation".
 
     Raises:
         ValueError: If the specified `name` is invalid or if the provided data has an invalid format or contains invalid keys.
@@ -117,12 +117,7 @@ def add_custom_data(data, name, append, task):
                     f"Only the following keys are allowed: 'name', 'first_names', 'last_names'."
                 )
 
-            if name in (
-                "white_names",
-                "black_names",
-                "hispanic_names",
-                "asian_names",
-            ):
+            if name in ("white_names", "black_names", "hispanic_names", "asian_names",):
                 if append:
                     ethnicity_data[name]["first_names"] += first_names
                     ethnicity_data[name]["last_names"] += last_names

@@ -20,31 +20,44 @@ from .constants import (
     entity_types as default_entity_types,
 )
 from .custom_data import add_custom_data
+from typing import Union
 
 
 class RepresentationOperation:
     """
-    This class provides operations for adding and analyzing custom representations in data.
+    This class provides operations for analyzing and evaluating representations in data.
 
+    Methods:
+        - add_custom_representation(data, name, append, check): Adds custom representation to the given data.
+        - get_label_representation_dict(data): Retrieves the label representation information from the data.
+        - get_country_economic_representation_dict(data): Retrieves the country economic representation information from the data.
+        - get_religion_name_representation_dict(data): Retrieves the religion representation information from the data.
+        - get_ethnicity_representation_dict(data): Retrieves the ethnicity representation information from the data.
+        - get_entity_representation_proportions(entity_representation): Calculates the proportions of each entity in the representation.
+    Attributes:
+        - entity_types: A list of default entity types.
     """
 
     entity_types = default_entity_types.copy()
 
     @staticmethod
-    def add_custom_representation(data, name, append, task, check):
+    def add_custom_representation(
+        data: Union[list, dict], name: str, append: bool, check: str
+    ) -> None:
         """
         Add custom representation to the given data.
 
         Args:
-            data (list): The data to which the custom representation will be added.
+            data (Union[list, dict]): The data to which the custom representation will be added.
             name (str): The name of the custom representation.
             append (bool): Indicates whether to append the custom representation or replace the existing representation.
-            task :  "representation"
+            check (str): The check parameter is used for 'Label-Representation' because it is only supported for NER.
+
         Returns:
             None
         """
         if name != "Label-Representation":
-            add_custom_data(data, name, append, task)
+            add_custom_data(data, name, append)
         else:
             if not isinstance(data, list):
                 raise ValueError(
@@ -84,6 +97,7 @@ class RepresentationOperation:
 
         return label_representation
 
+    @staticmethod
     def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, int]:
         """
         Args:
@@ -128,6 +142,7 @@ class RepresentationOperation:
 
         return country_economic_representation
 
+    @staticmethod
     def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
         """
         Args:
@@ -168,6 +183,7 @@ class RepresentationOperation:
 
         return religion_representation
 
+    @staticmethod
     def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
         """
         Args:
@@ -216,6 +232,7 @@ class RepresentationOperation:
 
         return ethnicity_representation
 
+    @staticmethod
     def get_entity_representation_proportions(entity_representation):
         """
         Args:
