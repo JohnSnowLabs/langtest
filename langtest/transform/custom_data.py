@@ -117,7 +117,12 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
                     f"Only the following keys are allowed: 'name', 'first_names', 'last_names'."
                 )
 
-            if name in ("white_names", "black_names", "hispanic_names", "asian_names",):
+            if name in (
+                "white_names",
+                "black_names",
+                "hispanic_names",
+                "asian_names",
+            ):
                 if append:
                     ethnicity_data[name]["first_names"] += first_names
                     ethnicity_data[name]["last_names"] += last_names

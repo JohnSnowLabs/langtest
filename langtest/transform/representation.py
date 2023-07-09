@@ -405,8 +405,10 @@ class EthnicityRepresentation(BaseRepresentation):
 
         for sample in sample_list:
             if sample.test_type == "min_ethnicity_name_representation_proportion":
-                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
-                    entity_representation
+                entity_representation_proportion = (
+                    RepresentationOperation.get_entity_representation_proportions(
+                        entity_representation
+                    )
                 )
                 actual_representation = {
                     **default_ehtnicity_representation,
@@ -551,8 +553,10 @@ class LabelRepresentation(BaseRepresentation):
                 progress.update(1)
 
             if sample.test_type == "min_label_representation_proportion":
-                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
-                    entity_representation
+                entity_representation_proportion = (
+                    RepresentationOperation.get_entity_representation_proportions(
+                        entity_representation
+                    )
                 )
                 actual_representation = {**entity_representation_proportion}
                 sample.actual_results = MinScoreOutput(
@@ -684,11 +688,13 @@ class ReligionRepresentation(BaseRepresentation):
                         )
                         raise ValueError()
 
-            entity_representation = RepresentationOperation.get_religion_name_representation_dict(
-                data
+            entity_representation = (
+                RepresentationOperation.get_religion_name_representation_dict(data)
             )
-            entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
-                entity_representation
+            entity_representation_proportion = (
+                RepresentationOperation.get_entity_representation_proportions(
+                    entity_representation
+                )
             )
             actual_representation = {
                 **default_religion_representation,
@@ -740,14 +746,18 @@ class ReligionRepresentation(BaseRepresentation):
 
         progress = kwargs.get("progress_bar", False)
 
-        entity_representation = RepresentationOperation.get_religion_name_representation_dict(
-            kwargs["raw_data"]
+        entity_representation = (
+            RepresentationOperation.get_religion_name_representation_dict(
+                kwargs["raw_data"]
+            )
         )
 
         for sample in sample_list:
             if sample.test_type == "min_religion_name_representation_proportion":
-                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
-                    entity_representation
+                entity_representation_proportion = (
+                    RepresentationOperation.get_entity_representation_proportions(
+                        entity_representation
+                    )
                 )
                 actual_representation = {
                     **default_religion_representation,
@@ -928,14 +938,18 @@ class CountryEconomicRepresentation(BaseRepresentation):
         """
         progress = kwargs.get("progress_bar", False)
 
-        entity_representation = RepresentationOperation.get_country_economic_representation_dict(
-            kwargs["raw_data"]
+        entity_representation = (
+            RepresentationOperation.get_country_economic_representation_dict(
+                kwargs["raw_data"]
+            )
         )
 
         for sample in sample_list:
             if sample.test_type == "min_country_economic_representation_proportion":
-                entity_representation_proportion = RepresentationOperation.get_entity_representation_proportions(
-                    entity_representation
+                entity_representation_proportion = (
+                    RepresentationOperation.get_entity_representation_proportions(
+                        entity_representation
+                    )
                 )
                 actual_representation = {
                     **default_economic_country_representation,
