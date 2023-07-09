@@ -648,6 +648,7 @@ spacy = ">=3.5.0,<3.6.0"
 [package.source]
 type = "url"
 url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz"
+
 [[package]]
 name = "evaluate"
 version = "0.4.0"
@@ -3511,11 +3512,11 @@ multidict = ">=4.0"
 evaluate = ["evaluate", "rouge-score"]
 johnsnowlabs = ["johnsnowlabs"]
 langchain = ["langchain"]
-openai = ["openai"]
+openai = ["langchain", "openai"]
 spacy = ["spacy"]
 transformers = ["torch", "transformers"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "26540c1c97b97ac6f6b750ba0212b1c59e88c826d1eb324dfcbd2cad43e57dde"
+content-hash = "4a30999d18e70683faf1fecd2ae4f61a4ecbf8f6d0f8c7bfb2b99dcc70f11f4a"
