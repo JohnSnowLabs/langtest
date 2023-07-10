@@ -381,7 +381,7 @@ class Harness:
             )
         else:
             self._generated_results = {}
-            self._runtime['run'] = {}
+            self._runtime["run"] = {}
             for k, v in self.model.items():
                 self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
                     self._testcases[k],

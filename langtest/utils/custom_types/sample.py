@@ -775,6 +775,7 @@ class SpeedTestSample(BaseModel):
         run_time (Dict[str, Union[int, float]]): The run times for different operations.
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
+
     category: str = "speed-test"
     test_type: str = "ms"
     original: str = None
@@ -798,19 +799,20 @@ class SpeedTestSample(BaseModel):
             Dict[str, Union[int, float]]: A dictionary containing the total times for each operation.
         """
         self.actual_results = self.convert_ns_to_unit(
-            self.transform_time + self.run_time, unit=unit)
+            self.transform_time + self.run_time, unit=unit
+        )
 
         return self
 
-    def convert_ns_to_unit(self, time: Union[int, float], unit: str = 'ms'):
-        """	
-        Converts time from nanoseconds to the specified unit.	
+    def convert_ns_to_unit(self, time: Union[int, float], unit: str = "ms"):
+        """
+        Converts time from nanoseconds to the specified unit.
 
-        Args:	  
-            time (Union[int, float]): The time value to convert.	       
-            unit (str, optional): The unit of time to convert to (default: 'ms').	                
-        Returns:	
-            Union[int, float]: The converted time value.	
+        Args:
+            time (Union[int, float]): The time value to convert.
+            unit (str, optional): The unit of time to convert to (default: 'ms').
+        Returns:
+            Union[int, float]: The converted time value.
         """
         unit_dict = {"ns": 1, "us": 1e3, "ms": 1e6, "s": 1e9, "m": 6e10, "h": 3.6e12}
         return time / unit_dict[unit]
@@ -823,21 +825,23 @@ class SpeedTestSample(BaseModel):
             Dict[str, Any]: A dictionary representation of the SpeedTestSample object.
         """
         result = {
-            'category': self.category,
-            'test_type': self.test_type,
-            'original': self.original,
-            'test_case': self.test_case
+            "category": self.category,
+            "test_type": self.test_type,
+            "original": self.original,
+            "test_case": self.test_case,
         }
-        
+
         if self.actual_results is not None:
-            result.update({
-                'expected_result': self.expected_results,
-                'actual_result': self.actual_results,
-                'pass': self.is_pass()
-            })
+            result.update(
+                {
+                    "expected_result": self.expected_results,
+                    "actual_result": self.actual_results,
+                    "pass": self.is_pass(),
+                }
+            )
 
         return result
-    
+
     def is_pass(self):
         """"""
         if self.actual_results is None:
@@ -845,18 +849,20 @@ class SpeedTestSample(BaseModel):
         return 0 <= self.actual_results
 
     @classmethod
-    def bulk_create(cls, runtime_values: Dict[str, Dict[str, Union[int, float]]], unit='ms', **kwargs):
+    def bulk_create(
+        cls, runtime_values: Dict[str, Dict[str, Union[int, float]]], unit="ms", **kwargs
+    ):
         """
         Creates a list of SpeedTestSample objects from the specified runtime values.
-        
+
         Args:
-            runtime_values (Dict[str, Dict[str, Union[int, float]]]): A dictionary containing the transfrom and run keys 
+            runtime_values (Dict[str, Dict[str, Union[int, float]]]): A dictionary containing the transfrom and run keys
             runtime values for each operation in nanoseconds.
             **kwargs: Additional keyword arguments.
 
         Returns:
             List[SpeedTestSample]: A list of SpeedTestSample objects."""
-        
+
         rearranged_values = defaultdict(lambda: defaultdict(dict))
 
         for k, v in runtime_values.items():
@@ -868,16 +874,16 @@ class SpeedTestSample(BaseModel):
         for _, values in rearranged_values.items():
             for test_case, values in values.items():
                 temp_sample = SpeedTestSample(
-                        original = test_case,
-                        transform_time=values['transform'],
-                        run_time=values['run'],
-                        **kwargs
-                    )
+                    original=test_case,
+                    transform_time=values["transform"],
+                    run_time=values["run"],
+                    **kwargs
+                )
                 temp_sample.total_time(unit)
                 samples.append(temp_sample)
-        
+
         return samples
-    
+
 
 class TranslationSample(BaseModel):
     """
@@ -885,6 +891,7 @@ class TranslationSample(BaseModel):
     predictions for each, for the translation task.
 
     """
+
     original: str
     test_case: str = None
     expected_results: Result = None
@@ -908,11 +915,11 @@ class TranslationSample(BaseModel):
         """
 
         result = {
-            'category': self.category,
-            'test_type': self.test_type,
-            'original': self.original,
-            'test_case': self.test_case,
-            'actual_result': self.actual_results
+            "category": self.category,
+            "test_type": self.test_type,
+            "original": self.original,
+            "test_case": self.test_case,
+            "actual_result": self.actual_results,
         }
 
         if self.actual_results is not None:

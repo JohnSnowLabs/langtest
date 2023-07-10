@@ -127,8 +127,9 @@ class TestFactory:
             if each in all_categories:
                 sub_test_types = test_types[each]
                 sample_results, runtime_results[each] = (
-                    all_categories[each](m_data, sub_test_types,
-                                        raw_data=data).transform()
+                    all_categories[each](
+                        m_data, sub_test_types, raw_data=data
+                    ).transform()
                     if each in ["robustness", "bias"] and m_data
                     else all_categories[each](data, sub_test_types).transform()
                 )
