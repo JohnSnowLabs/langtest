@@ -141,7 +141,11 @@ class AugmentRobustness(BaseAugmentaion):
                         )
                         hash_map[each] = res[0]
                 else:
-                    sample_data = random.choices(data, k=int(sample_length))
+                    if test == "swap_entities":
+                        sample_data = data[:int(sample_length)]
+                        test_type["robustness"]["swap_entities"]["parameters"]["labels"] = test_type["robustness"]["swap_entities"]["parameters"]["labels"][:int(sample_length)]
+                    else:
+                        sample_data = random.choices(data, k=int(sample_length))
                     aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
                     final_aug_data.extend(aug_data)
 
