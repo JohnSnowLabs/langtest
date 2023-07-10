@@ -736,9 +736,9 @@ class RuntimeSample(BaseModel):
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
     category: str
-    test_type: str
+    test_type: str = "speed"
     original: str = "-"
-    test_case: str = "speed test"
+    test_case: str = "-"
     expected_results: Result = None
     actual_results: Result = None
 
