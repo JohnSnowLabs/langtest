@@ -8,12 +8,18 @@ from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificatio
 
 
 class PretrainedModelForNER(_ModelHandler):
-    """
+    """SpaCy pretrained model for NER tasks
+
     Args:
         model: Pretrained SpaCy pipeline.
     """
 
     def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model: spacy model
+        """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
             f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
@@ -23,9 +29,12 @@ class PretrainedModelForNER(_ModelHandler):
         self.model = model
 
     @classmethod
-    def load_model(cls, path):
-        """Load and return SpaCy pipeline"""
+    def load_model(cls, path: str):
+        """Load and return SpaCy pipeline
 
+        Args:
+            path (str): name of path to model to load
+        """
         try:
             return spacy.load(path)
         except OSError:
@@ -66,8 +75,7 @@ class PretrainedModelForNER(_ModelHandler):
         return self.predict(text=text)
 
     def predict_raw(self, text: str) -> List[str]:
-        """
-        Predict a list of labels in form of strings.
+        """Predict a list of labels in form of strings.
 
         Args:
             text (str): Input text to perform NER on.
@@ -75,7 +83,6 @@ class PretrainedModelForNER(_ModelHandler):
         Returns:
             List[str]: A list of named entities recognized in the input text.
         """
-
         doc = self.model(text)
         return [
             f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_
@@ -84,12 +91,18 @@ class PretrainedModelForNER(_ModelHandler):
 
 
 class PretrainedModelForTextClassification(_ModelHandler):
-    """
+    """SpaCy pretrained model for text classification tasks
+
     Args:
         model: Pretrained SpaCy pipeline.
     """
 
     def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model: pretrained SpaCy pipeline
+        """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
             f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
@@ -105,7 +118,11 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     @classmethod
     def load_model(cls, path: str):
-        """Load and return SpaCy pipeline"""
+        """Load and return SpaCy pipeline
+
+        Args:
+            path (str): name of path to model to load
+        """
         try:
             return spacy.load(path)
         except OSError:
@@ -154,12 +171,18 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
 
 class PretrainedModelForTranslation(_ModelHandler):
-    """
+    """SpaCy pretrained model for translation tasks
+
     Args:
         model: Pretrained SpaCy pipeline.
     """
 
     def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model: Pretrained SpaCy pipeline.
+        """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
             f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
@@ -170,7 +193,11 @@ class PretrainedModelForTranslation(_ModelHandler):
 
     @classmethod
     def load_model(cls, path: str):
-        """Load and return SpaCy pipeline"""
+        """Load and return SpaCy pipeline
+
+        Args:
+            path (str): name of path to model to load
+        """
         try:
             return spacy.load(path)
         except OSError:

@@ -80,11 +80,13 @@ en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/dow
 black = "^23.3.0"
 pyproject-flake8 = "<6.0.0"
 pre-commit = "^3.3.3"
+pydocstyle = "^6.3.0"
 
 [tool.taskipy.tasks]
 test = "pytest tests/* -v --disable-warnings"
 lint = "pflake8 langtest/"
 format = "black langtest/ tests/"
+check-docstrings = "pydocstyle langtest/ --add-select=D417 --add-ignore=D100,D104,D105,D400,D415 --convention=google"
 is-formatted = "black --check langtest/ tests/"
 force-cpu-torch = "python -m pip install torch --index-url https://download.pytorch.org/whl/cpu"
 

@@ -24,8 +24,7 @@ from ..utils.number_to_word import ConvertNumberToWord
 
 
 class BaseRobustness(ABC):
-    """
-    Abstract base class for implementing robustness measures.
+    """Abstract base class for implementing robustness measures.
 
     Attributes:
         alias_name (str): A name or list of names that identify the robustness measure.
@@ -46,8 +45,7 @@ class BaseRobustness(ABC):
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
-        """
-        Abstract method that implements the robustness measure.
+        """Abstract method that implements the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -55,16 +53,14 @@ class BaseRobustness(ABC):
         Returns:
             Any: The transformed data based on the implemented robustness measure.
         """
-
-        return NotImplementedError()
+        raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Abstract method that implements the robustness measure.
+        """Abstract method that implements the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -92,8 +88,7 @@ class BaseRobustness(ABC):
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
-        """
-        Creates a task to run the robustness measure.
+        """Creates a task to run the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -115,8 +110,7 @@ class UpperCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Transform the text samples in the given sample list to uppercase.
+        """Transform the text samples in the given sample list to uppercase.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -160,8 +154,7 @@ class LowerCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Transform the text samples in the given sample list to lowercase.
+        """Transform the text samples in the given sample list to lowercase.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -205,8 +198,7 @@ class TitleCase(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Transform the text samples in the given sample list to title case.
+        """Transform the text samples in the given sample list to title case.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -256,6 +248,7 @@ class AddPunctuation(BaseRobustness):
         count: int = 1,
     ) -> List[Sample]:
         """Add punctuation at the end of the string, if there is punctuation at the end skip it
+
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
             prob (Optional[float]): The probability of adding punctuation to each sample.
@@ -263,7 +256,6 @@ class AddPunctuation(BaseRobustness):
             whitelist (Optional[List[str]]): A list of punctuation characters to consider when adding punctuation.
                 If None, the default whitelist ['!', '?', ',', '.', '-', ':', ';'] will be used. Defaults to None.
             count: Number of variations to create.
-
 
         Returns:
             List[Sample]: The transformed sample list with added punctuation.
@@ -324,8 +316,7 @@ class StripPunctuation(BaseRobustness):
         prob: Optional[float] = 1.0,
         whitelist: Optional[List[str]] = None,
     ) -> List[Sample]:
-        """
-        Strip punctuation from the text samples in the given sample list.
+        """Strip punctuation from the text samples in the given sample list.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -384,8 +375,7 @@ class AddTypo(BaseRobustness):
     def transform(
         sample_list: List[Sample], prob: Optional[float] = 1.0, count: int = 1
     ) -> List[Sample]:
-        """
-        Add typos to the text samples in the given sample list.
+        """Add typos to the text samples in the given sample list.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -393,6 +383,7 @@ class AddTypo(BaseRobustness):
                                     Defaults to 1.0, which means all words will be transformed.
 
             count: Number of variations to create.
+
         Returns:
             List[Sample]: The transformed sample list with added typos.
         """
@@ -461,8 +452,7 @@ class SwapEntities(BaseRobustness):
         terminology: Dict[str, List[str]] = None,
         count: int = 1,
     ) -> List[Sample]:
-        """
-        Swap entities in the text samples of the given sample list.
+        """Swap entities in the text samples of the given sample list.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -554,8 +544,7 @@ class ConvertAccent(BaseRobustness):
         prob: Optional[float] = 1.0,
         accent_map: Dict[str, str] = None,
     ) -> List[Sample]:
-        """
-        Converts accents in the input sentences using a conversion dictionary.
+        """Converts accents in the input sentences using a conversion dictionary.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -629,8 +618,7 @@ class AddContext(BaseRobustness):
         strategy: str = None,
         count: int = 1,
     ) -> List[Sample]:
-        """
-        Adds context to the input sentences.
+        """Adds context to the input sentences.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -728,8 +716,7 @@ class AddContraction(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Adds contractions to the input sentences.
+        """Adds contractions to the input sentences.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -741,9 +728,7 @@ class AddContraction(BaseRobustness):
         """
 
         def custom_replace(match):
-            """
-            Regex replace for contraction.
-            """
+            """Regex replace for contraction."""
             token = match.group(0)
             contracted_token = CONTRACTION_MAP.get(
                 token, CONTRACTION_MAP.get(token.lower())
@@ -819,8 +804,7 @@ class DyslexiaWordSwap(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Converts the input sentences by changing some similar words from the dyslexia map and outputs a new string.
+        """Converts the input sentences by changing some similar words from the dyslexia map and outputs a new string.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -879,8 +863,7 @@ class NumberToWord(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Converts numbers in the input text to their word representations.
+        """Converts numbers in the input text to their word representations.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -949,8 +932,7 @@ class AddOcrTypo(BaseRobustness):
     def transform(
         sample_list: List[Sample], prob: Optional[float] = 1.0, count: int = 1
     ) -> List[Sample]:
-        """
-        Add OCR typos to the input samples.
+        """Add OCR typos to the input samples.
 
         Args:
             sample_list (List[Sample]): A list of samples to be transformed.
@@ -1030,8 +1012,7 @@ class AbbreviationInsertion(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Transforms the given sample list by inserting abbreviations.
+        """Transforms the given sample list by inserting abbreviations.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
@@ -1096,8 +1077,8 @@ class AddSpeechToTextTypo(BaseRobustness):
     def transform(
         sample_list: List[Sample], prob: Optional[float] = 1.0, count: int = 1
     ) -> List[Sample]:
-        """
-        Transforms the given sample list by introducing typos simulating speech-to-text errors.
+        """Transforms the given sample list by introducing typos simulating speech-to-text errors.
+
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
@@ -1189,12 +1170,13 @@ class AddSlangifyTypo(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
-        """
-        Transforms the given sample list by adding slang words.
+        """Transforms the given sample list by adding slang words.
+
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
                                     Defaults to 1.0, which means all samples will be transformed.
+
         Returns:
             List[Sample]: The transformed list of samples with slangs added.
         """
@@ -1289,14 +1271,14 @@ class MultiplePerturbations(BaseRobustness):
         prob: Optional[float] = 1.0,
         config=None,
     ) -> List[Sample]:
-        """
-        Transforms the given sample list by applying multiple perturbations.
+        """Transforms the given sample list by applying multiple perturbations.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             perturbations (List[str]): The list of perturbations to apply.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
                                     Defaults to 1.0, which means all samples will be transformed.
+
         Returns:
             transformed_list: The transformed list of samples.
         """

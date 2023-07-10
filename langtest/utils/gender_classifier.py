@@ -6,15 +6,13 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipe
 
 
 class GenderClassifier(object):
-    """
-    Helper model to predict the 'gender' of a piece of text.
-    """
+    """Helper model to predict the 'gender' of a piece of text."""
 
     LABELS = {"LABEL_0": "female", "LABEL_1": "male", "LABEL_2": "unknown"}
     PRETRAINED_MODEL = "microsoft/xtremedistil-l6-h256-uncased"
 
     def __init__(self):
-        """"""
+        """Constructor method"""
         logging.getLogger("transformers").setLevel(logging.ERROR)
 
         tokenizer = AutoTokenizer.from_pretrained(self.PRETRAINED_MODEL)
@@ -29,7 +27,8 @@ class GenderClassifier(object):
         self.pipe = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
     def predict(self, text: str) -> str:
-        """
+        """Method to classify the text into one of the gender classes
+
         Args:
             text (str):
                 piece of text to run through the gender classifier

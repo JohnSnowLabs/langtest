@@ -90,8 +90,7 @@ class Harness:
         data: Optional[Union[str, dict]] = None,
         config: Optional[Union[str, dict]] = None,
     ):
-        """
-        Initialize the Harness object.
+        """Initialize the Harness object.
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
@@ -103,7 +102,6 @@ class Harness:
         Raises:
             ValueError: Invalid arguments.
         """
-
         super().__init__()
 
         self.is_default = False
@@ -243,8 +241,7 @@ class Harness:
         return object.__repr__(self)
 
     def configure(self, config: Union[str, dict]) -> dict:
-        """
-        Configure the Harness with a given configuration.
+        """Configure the Harness with a given configuration.
 
         Args:
             config (str | dict): Configuration file path or dictionary
@@ -297,9 +294,9 @@ class Harness:
         return self._config
 
     def generate(self) -> "Harness":
-        """
-        Generates the testcases to be used when evaluating the model. The generated testcases are stored in
-        `_testcases` attribute.
+        """Generate the testcases to be used when evaluating the model.
+
+        The generated testcases are stored in `_testcases` attribute.
         """
         if self._config is None:
             raise RuntimeError("Please call .configure() first.")
@@ -367,8 +364,7 @@ class Harness:
         return self
 
     def run(self) -> "Harness":
-        """
-        Run the tests on the model using the generated testcases.
+        """Run the tests on the model using the generated testcases.
 
         Returns:
             None: The evaluations are stored in `generated_results` attribute.
@@ -401,16 +397,23 @@ class Harness:
         return self
 
     def report(
-        self, return_runtime=False, unit="ms", format="dataframe", save_dir=None
+        self,
+        return_runtime: bool = False,
+        unit: str = "ms",
+        format: str = "dataframe",
+        save_dir: str = None,
     ) -> pd.DataFrame:
-        """
-        Generate a report of the test results.
+        """Generate a report of the test results.
 
+        Args:
+            return_runtime (bool): whether to return runtime
+            unit (str): time unit to use
+            format (str): format in which to save the report
+            save_dir (str): name of the directory to save the file
         Returns:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
-
         if self._generated_results is None:
             raise RuntimeError(
                 "The tests have not been run yet. Please use the `.run()` method before"
@@ -641,8 +644,7 @@ class Harness:
                 )
 
     def generated_results(self) -> Optional[pd.DataFrame]:
-        """
-        Generates an overall report with every textcase and labelwise metrics.
+        """Generates an overall report with every textcase and labelwise metrics.
 
         Returns:
             pd.DataFrame: Generated dataframe.
@@ -714,12 +716,12 @@ class Harness:
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
     ) -> "Harness":
-        """
-        Augments the data in the input file located at `input_path` and saves the result to `output_path`.
+        """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
         Args:
             input_path (str): Path to the input file.
             output_path (str): Path to save the augmented data.
+            custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
                                     - 'inplace': Modifies the list of samples in place.
                                     - 'add': Adds new samples to the input data.
@@ -739,7 +741,6 @@ class Harness:
             >>> harness = Harness(...)
             >>> harness.augment("train.conll", "augmented_train.conll")
         """
-
         dtypes = list(
             map(
                 str,
@@ -784,8 +785,7 @@ class Harness:
         return self
 
     def testcases(self) -> pd.DataFrame:
-        """
-        Testcases after .generate() is called
+        """Testcases after .generate() is called
 
         Returns:
             pd.DataFrame:
@@ -841,8 +841,7 @@ class Harness:
         return testcases_df.fillna("-")
 
     def save(self, save_dir: str) -> None:
-        """
-        Save the configuration, generated testcases and the `DataFactory` to be reused later.
+        """Save the configuration, generated testcases and the `DataFactory` to be reused later.
 
         Args:
             save_dir (str): path to folder to save the different files
@@ -881,8 +880,7 @@ class Harness:
         task: str,
         hub: Optional[str] = None,
     ) -> "Harness":
-        """
-        Loads a previously saved `Harness` from a given configuration and dataset
+        """Loads a previously saved `Harness` from a given configuration and dataset
 
         Args:
             save_dir (str):
@@ -893,6 +891,7 @@ class Harness:
                 ModelFactory object or path to the model to be evaluated.
             hub (str, optional):
                 model hub to load from the path. Required if path is passed as 'model'.
+
         Returns:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
@@ -918,18 +917,23 @@ class Harness:
         return harness
 
     def edit_testcases(self, output_path: str, **kwargs):
-        """testcases is exported to a csv file and can be edited.
-        The edited file can be imported back to the harness"""
+        """Testcases are exported to a csv file to be edited.
+
+        The edited file can be imported back to the harness
+
+        Args:
+            output_path (str): path to save the testcases to
+        """
         temp_df = self.testcases()
         temp_df = temp_df[temp_df["category"].isin(["robustness", "bias"])]
         temp_df.to_csv(output_path, index=False)
 
-        return self
-
     def import_edited_testcases(self, input_path: str, **kwargs):
-        """testcases is imported from a csv file and can be edited.
-        The edited file can be imported back to the harness"""
+        """Testcases are imported from a csv file
 
+        Args:
+            input_path (str): location of the file to load
+        """
         temp_testcases = [
             sample
             for sample in self._testcases
@@ -943,8 +947,7 @@ class Harness:
 
     @staticmethod
     def available_tests(test_type: str = None) -> Dict[str, List[str]]:
-        """
-        Returns a dictionary of available tests categorized by test type.
+        """Returns a dictionary of available tests categorized by test type.
 
         Args:
             test_type (str, optional): The specific test type to retrieve. Defaults to None.

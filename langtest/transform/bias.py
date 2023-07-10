@@ -10,8 +10,7 @@ from ..utils.custom_types import Sample, Span, Transformation
 
 
 class BaseBias(ABC):
-    """
-    Abstract base class for implementing bias measures.
+    """Abstract base class for implementing bias measures.
 
     Attributes:
         alias_name (str): A name or list of names that identify the bias measure.
@@ -30,8 +29,7 @@ class BaseBias(ABC):
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
-        """
-        Abstract method that implements the bias measure.
+        """Abstract method that implements the bias measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -46,8 +44,7 @@ class BaseBias(ABC):
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Abstract method that implements the bias measure.
+        """Abstract method that implements the bias measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -74,8 +71,7 @@ class BaseBias(ABC):
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
-        """
-        Abstract method that implements the creation of an asyncio task for the bias measure.
+        """Abstract method that implements the creation of an asyncio task for the bias measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -89,6 +85,8 @@ class BaseBias(ABC):
 
 
 class GenderPronounBias(BaseBias):
+    """Class for gender biases"""
+
     alias_name = [
         "replace_to_male_pronouns",
         "replace_to_female_pronouns",
@@ -189,6 +187,8 @@ class GenderPronounBias(BaseBias):
 
 
 class CountryEconomicBias(BaseBias):
+    """Class for economical biases on countries"""
+
     alias_name = [
         "replace_to_high_income_country",
         "replace_to_low_income_country",
@@ -203,7 +203,6 @@ class CountryEconomicBias(BaseBias):
         chosen_country_names: List[str],
     ) -> List[Sample]:
         """Replace country names to check the ethnicity bias
-
 
         Args:
             sample_list (List[Sample]): List of sentences to apply perturbation.
@@ -272,6 +271,8 @@ class CountryEconomicBias(BaseBias):
 
 
 class EthnicityNameBias(BaseBias):
+    """Class for ethnicity biases"""
+
     alias_name = [
         "replace_to_white_firstnames",
         "replace_to_black_firstnames",
@@ -292,6 +293,7 @@ class EthnicityNameBias(BaseBias):
         chosen_ethnicity_names: List[str],
     ) -> List[Sample]:
         """Replace names to check the ethnicity bias
+
         Ethnicity Dataset Curated from the United States Census Bureau surveys
 
         Args:
@@ -358,6 +360,8 @@ class EthnicityNameBias(BaseBias):
 
 
 class ReligionBias(BaseBias):
+    """Class for religious biases"""
+
     alias_name = [
         "replace_to_muslim_names",
         "replace_to_hindu_names",
@@ -372,8 +376,7 @@ class ReligionBias(BaseBias):
     def transform(
         sample_list: List[Sample], names_to_substitute: List[str], chosen_names: List[str]
     ) -> List[Sample]:
-        """
-        Replace  names to check the religion bias
+        """Replace  names to check the religion bias
 
         Args:
             sample_list (List[Sample]): List of sentences to apply perturbation.

@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Dict, Union
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import (
@@ -19,12 +19,11 @@ from .constants import (
 
 
 class BaseRepresentation(ABC):
-    """
-    Abstract base class for implementing representation measures.
+    """Abstract base class for implementing representation measures.
 
     Attributes:
         alias_name (str): A name or list of names that identify the representation measure.
-
+        supported_tasks (List[str]): name of the supported task for the representation measure
     Methods:
         transform(data: List[Sample]) -> Any: Transforms the input data into an output
         based on the implemented representation measure.
@@ -40,30 +39,39 @@ class BaseRepresentation(ABC):
 
     @staticmethod
     @abstractmethod
-    def transform(self):
-        """
-        Abstract method that implements the representation measure.
+    def transform(
+        test: str, data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
+        """Abstract method that implements the representation measure.
 
         Args:
-            data (List[Sample]): The input data to be evaluated for representation test.
-
+            test (str): name of the test to perform
+            data (List[Sample]): The input data to be transformed.
+            params (Dict): parameters for tests configuration
         Returns:
             Any: The transformed data based on the implemented representation measure.
         """
-
-        return NotImplementedError
+        raise NotImplementedError()
 
     @staticmethod
     @abstractmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        return NotImplementedError()
+        """Computes the score for the given data.
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for the computation.
+
+        Returns:
+            List[Sample]: The transformed samples.
+        """
+        raise NotImplementedError()
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
-        """
-        Creates a task for the run method.
+        """Creates a task for the run method.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
@@ -77,12 +85,11 @@ class BaseRepresentation(ABC):
 
 
 class GenderRepresentation(BaseRepresentation):
-    """
-    Subclass of BaseRepresentation that implements the gender representation test.
+    """Subclass of BaseRepresentation that implements the gender representation test.
 
     Attributes:
         alias_name (List[str]): The list of test names that identify the representation measure.
-
+        supported_tasks (List[str]): name of the supported task for the representation measure
     """
 
     alias_name = [
@@ -90,15 +97,12 @@ class GenderRepresentation(BaseRepresentation):
         "min_gender_representation_proportion",
     ]
 
-    supported_tasks = [
-        "ner",
-        "text-classification",
-        "question-answering",
-        "summarization",
-    ]
+    @staticmethod
+    def transform(
+        test: str, data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
+        """Compute the gender representation measure
 
-    def transform(test, data, params):
-        """
         Args:
             test (str): name of the test
             data (List[Sample]): The input data to be evaluated for representation test.
@@ -108,9 +112,8 @@ class GenderRepresentation(BaseRepresentation):
             ValueError: If sum of specified proportions in config is greater than 1
 
         Returns:
-            List[Sample]: Gender Representation test results.
+            Union[List[MinScoreQASample], List[MinScoreSample]]: Gender Representation test results.
         """
-
         samples = []
         if test == "min_gender_representation_count":
             if isinstance(params["min_count"], dict):
@@ -181,11 +184,11 @@ class GenderRepresentation(BaseRepresentation):
                     samples.append(sample)
         return samples
 
+    @staticmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Computes the actual results for the Gender Representation test.
+        """Computes the actual results for the Gender Representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
@@ -244,12 +247,11 @@ class GenderRepresentation(BaseRepresentation):
 
 
 class EthnicityRepresentation(BaseRepresentation):
-    """
-    Subclass of BaseRepresentation that implements the ethnicity representation test.
+    """Subclass of BaseRepresentation that implements the ethnicity representation test.
 
     Attributes:
         alias_name (List[str]): The list of test names that identify the representation measure.
-
+        supported_tasks (List[str]): name of the supported task for the representation measure
     """
 
     alias_name = [
@@ -257,15 +259,12 @@ class EthnicityRepresentation(BaseRepresentation):
         "min_ethnicity_name_representation_proportion",
     ]
 
-    supported_tasks = [
-        "ner",
-        "text-classification",
-        "question-answering",
-        "summarization",
-    ]
+    @staticmethod
+    def transform(
+        test: str, data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
+        """Compute the ethnicity representation measure
 
-    def transform(test, data, params):
-        """
         Args:
             test (str): name of the test
             data (List[Sample]): The input data to be evaluated for representation test.
@@ -275,7 +274,7 @@ class EthnicityRepresentation(BaseRepresentation):
             ValueError: If sum of specified proportions in config is greater than 1
 
         Returns:
-            List[Sample]: Ethnicity Representation test results.
+            Union[List[MinScoreQASample], List[MinScoreSample]]: Ethnicity Representation test results.
         """
         sample_list = []
 
@@ -384,11 +383,11 @@ class EthnicityRepresentation(BaseRepresentation):
 
         return sample_list
 
+    @staticmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Computes the actual results for the enthicity representation test.
+        """Computes the actual results for the ethnicity representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
@@ -437,30 +436,33 @@ class EthnicityRepresentation(BaseRepresentation):
 
 
 class LabelRepresentation(BaseRepresentation):
-    """
-    Subclass of BaseRepresentation that implements the label representation test.
+    """Subclass of BaseRepresentation that implements the label representation test.
 
     Attributes:
         alias_name (List[str]): The list of test names that identify the representation measure.
-
+        supported_tasks (List[str]): name of the supported task for the representation measure
     """
 
     alias_name = ["min_label_representation_count", "min_label_representation_proportion"]
 
     supported_tasks = ["ner", "text-classification"]
 
-    def transform(test, data, params):
-        """
+    @staticmethod
+    def transform(
+        test: str, data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
+        """Compute the label representation measure
+
         Args:
             test (str): name of the test
             data (List[Sample]): The input data to be evaluated for representation test.
-            params : parameters specified in config.
+            params (Dict): parameters specified in config.
 
         Raises:
             ValueError: If sum of specified proportions in config is greater than 1
 
         Returns:
-            List[Sample]: Label Representation test results.
+            Union[List[MinScoreQASample], List[MinScoreSample]]: Label Representation test results.
         """
         sample_list = []
         labels = [s.expected_results.predictions for s in data]
@@ -529,11 +531,11 @@ class LabelRepresentation(BaseRepresentation):
 
         return sample_list
 
+    @staticmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Computes the actual representation of the labels in the dataset.
+        """Computes the actual representation of the labels in the dataset.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
@@ -574,27 +576,24 @@ class LabelRepresentation(BaseRepresentation):
 
 
 class ReligionRepresentation(BaseRepresentation):
-    """
-    Subclass of BaseRepresentation that implements the religion representation test.
+    """Subclass of BaseRepresentation that implements the religion representation test.
 
     Attributes:
         alias_name (List[str]): The list of test names that identify the representation measure.
-
+        supported_tasks (List[str]): name of the supported task for the representation measure
     """
 
     alias_name = [
         "min_religion_name_representation_count",
         "min_religion_name_representation_proportion",
     ]
-    supported_tasks = [
-        "ner",
-        "text-classification",
-        "question-answering",
-        "summarization",
-    ]
 
-    def transform(test, data, params):
-        """
+    @staticmethod
+    def transform(
+        test: str, data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
+        """Compute the religion representation measure
+
         Args:
             test (str): name of the test
             data (List[Sample]): The input data to be evaluated for representation test.
@@ -604,7 +603,7 @@ class ReligionRepresentation(BaseRepresentation):
             ValueError: If sum of specified proportions in config is greater than 1
 
         Returns:
-            List[Sample]: Religion Representation test results.
+            Union[List[MinScoreQASample], List[MinScoreSample]]: Religion Representation test results.
         """
         sample_list = []
 
@@ -729,11 +728,11 @@ class ReligionRepresentation(BaseRepresentation):
 
         return sample_list
 
+    @staticmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Computes the actual representation of religion names in the data.
+        """Computes the actual representation of religion names in the data.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
@@ -743,7 +742,6 @@ class ReligionRepresentation(BaseRepresentation):
             List[Sample]: Religion Representation test results.
 
         """
-
         progress = kwargs.get("progress_bar", False)
 
         entity_representation = (
@@ -787,12 +785,11 @@ class ReligionRepresentation(BaseRepresentation):
 
 
 class CountryEconomicRepresentation(BaseRepresentation):
-    """
-    Subclass of BaseRepresentation that implements the country economic representation test.
+    """Subclass of BaseRepresentation that implements the country economic representation test.
 
     Attributes:
         alias_name (List[str]): The list of test names that identify the representation measure.
-
+        supported_tasks (List[str]): name of the supported task for the representation measure
     """
 
     alias_name = [
@@ -800,15 +797,12 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_proportion",
     ]
 
-    supported_tasks = [
-        "ner",
-        "text-classification",
-        "question-answering",
-        "summarization",
-    ]
+    @staticmethod
+    def transform(
+        test: str, data: List[Sample], params: Dict
+    ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
+        """Compute the country economic representation measure
 
-    def transform(test, data, params):
-        """
         Args:
             test (str): name of the test
             data (List[Sample]): The input data to be evaluated for representation test.
@@ -818,7 +812,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
             ValueError: If sum of specified proportions in config is greater than 1
 
         Returns:
-            List[Sample]: Country Economic Representation test results.
+            Union[List[MinScoreQASample], List[MinScoreSample]]: Country Economic Representation test results.
         """
         sample_list = []
 
@@ -922,11 +916,11 @@ class CountryEconomicRepresentation(BaseRepresentation):
 
         return sample_list
 
+    @staticmethod
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """
-        Computes the actual results for the country economic representation test.
+        """Computes the actual results for the country economic representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
