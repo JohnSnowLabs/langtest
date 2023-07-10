@@ -769,15 +769,15 @@ class ToxicitySample(BaseModel):
 
 class SpeedTestSample(BaseModel):
     """
-    A class Representing a sample for runtime task.
+    A class representing a sample for speed test.
 
     Attributes:
         transform_time (Dict[str, Union[int, float]]): The transform times for different operations.
         run_time (Dict[str, Union[int, float]]): The run times for different operations.
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
-    category: str = "runtime"
-    test_type: str = "speed"
+    category: str = "speed-test"
+    test_type: str = "ms"
     original: str = None
     test_case: str = "-"
     expected_results: Result = None
