@@ -851,7 +851,7 @@ class SpeedTestSample(BaseModel):
     @classmethod
     def bulk_create(
         cls, runtime_values: Dict[str, Dict[str, Union[int, float]]], unit="ms", **kwargs
-    ):
+    ) -> List["SpeedTestSample"]:
         """
         Creates a list of SpeedTestSample objects from the specified runtime values.
 
@@ -881,6 +881,17 @@ class SpeedTestSample(BaseModel):
                 )
                 temp_sample.total_time(unit)
                 samples.append(temp_sample)
+
+        return samples
+
+    @classmethod
+    def bulk_create_multi_model(
+        cls, runtime_values: Dict[str, Dict[str, Any]], unit="ms", **kwargs
+    ):
+        """"""
+        samples = {}
+        for each_model, values in runtime_values.items():
+            samples[each_model] = cls.bulk_create(values, unit, **kwargs)
 
         return samples
 

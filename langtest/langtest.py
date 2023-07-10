@@ -225,7 +225,7 @@ class Harness:
 
         self._testcases = None
         self._generated_results = None
-        self._runtime = {}
+        self._runtime = defaultdict(lambda: defaultdict(dict))
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -313,7 +313,6 @@ class Harness:
                 ]
             else:
                 self._testcases = {}
-                self._runtime.transform_time = {}
                 for k, v in self.model.items():
                     _ = [
                         setattr(sample, "expected_results", v(sample.original))
@@ -321,7 +320,7 @@ class Harness:
                     ]
                     (
                         self._testcases[k],
-                        self._runtime.transform_time[k],
+                        self._runtime[k]["transform"],
                     ) = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
 
                 return self
@@ -337,7 +336,7 @@ class Harness:
                         tests = {k: v for k, v in tests.items() if k != "bias"}
                         (
                             other_testcases,
-                            self._runtime.transform_time,
+                            self._runtime["transform"],
                         ) = TestFactory.transform(
                             self.task, self.data, tests, m_data=m_data
                         )
@@ -349,13 +348,13 @@ class Harness:
                     )
 
             else:
-                self._testcases, self._runtime.transform_time = TestFactory.transform(
+                self._testcases, self._runtime["transform"] = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
 
                 return self
 
-        self._testcases, self._runtime.transform_time = TestFactory.transform(
+        self._testcases, self._runtime["transform"] = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
         )
         return self
@@ -372,18 +371,19 @@ class Harness:
                 "calling the `.run()` method."
             )
         if not isinstance(self._testcases, dict):
-            self._generated_results, self._runtime.run_time = TestFactory.run(
+            self._generated_results, self._runtime["run"] = TestFactory.run(
                 self._testcases,
                 self.model,
                 is_default=self.is_default,
                 raw_data=self.data,
                 **self._config.get("model_parameters", {}),
             )
+            samples = SpeedTestSample.bulk_create(self._runtime)
+            self._generated_results.extend(samples)
         else:
             self._generated_results = {}
-            self._runtime["run"] = {}
             for k, v in self.model.items():
-                self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
+                self._generated_results[k], self._runtime[k]["run"] = TestFactory.run(
                     self._testcases[k],
                     v,
                     is_default=self.is_default,
@@ -391,8 +391,10 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
 
-        samples = SpeedTestSample.bulk_create(self._runtime)
-        self._generated_results.extend(samples)
+            speedtest_samples = SpeedTestSample.bulk_create_multi_model(self._runtime)
+            for k, v in speedtest_samples.items():
+                self._generated_results[k].extend(v)
+
         return self
 
     def report(
