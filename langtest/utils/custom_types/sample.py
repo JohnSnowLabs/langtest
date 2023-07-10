@@ -363,7 +363,6 @@ class MaxScoreSample(BaseSample):
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
-
 class BaseQASample(BaseModel):
     """
     Helper object storing the original text, the perturbed one and the corresponding
