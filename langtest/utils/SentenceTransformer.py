@@ -5,8 +5,7 @@ from transformers import AutoModel, AutoTokenizer
 
 
 class SimpleSentenceTransformer:
-    """
-    A simple class to handle the sentence transformation using the specified model.
+    """A simple class to handle the sentence transformation using the specified model.
 
     Attributes:
         device (torch.device): The device used for computations, i.e., either a GPU (if available) or a CPU.
@@ -18,7 +17,8 @@ class SimpleSentenceTransformer:
         self,
         model_name: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
     ):
-        """
+        """Constructor method
+
         Args:
             model_name (str): The name of the model to be loaded. By default, it uses the multilingual MiniLM model.
         """
@@ -29,8 +29,7 @@ class SimpleSentenceTransformer:
     def mean_pooling(
         self, model_output: Tuple[torch.Tensor], attention_mask: torch.Tensor
     ) -> torch.Tensor:
-        """
-        Apply mean pooling on the model outputs.
+        """Apply mean pooling on the model outputs.
 
         Args:
             model_output (torch.Tensor): The model's output.
@@ -55,8 +54,7 @@ class SimpleSentenceTransformer:
         convert_to_tensor: bool = False,
         max_length: int = 128,
     ) -> Union[torch.Tensor, np.ndarray]:
-        """
-        Encode sentences into sentence embeddings.
+        """Encode sentences into sentence embeddings.
 
         Args:
             sentences (str | list): The sentences to be encoded. Can be either a single string or a list of strings.
@@ -66,7 +64,6 @@ class SimpleSentenceTransformer:
         Returns:
             torch.Tensor | numpy.ndarray: The sentence embeddings. The datatype depends on the 'convert_to_tensor' parameter.
         """
-
         # Ensure sentences is a list
         if not isinstance(sentences, list):
             sentences = [sentences]
