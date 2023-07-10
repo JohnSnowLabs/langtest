@@ -777,7 +777,7 @@ class SpeedTestSample(BaseModel):
     """
 
     category: str = "speed-test"
-    test_type: str = "ms"
+    test_type: str = "speed(ms)"
     original: str = None
     test_case: str = "-"
     expected_results: Result = None

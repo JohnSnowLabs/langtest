@@ -658,20 +658,20 @@ class Harness:
 
         if isinstance(self._generated_results, dict):
             generated_results_df = []
-            if isinstance(self._generated_results, dict):
-                for k, v in self._generated_results.items():
-                    model_generated_results_df = pd.DataFrame.from_dict(
+            for k, v in self._generated_results.items():
+                model_generated_results_df = pd.DataFrame.from_dict(
                         [x.to_dict() for x in v]
                     )
-                    if (
-                        "test_case" in model_generated_results_df.columns
-                        and "original_question" in model_generated_results_df.columns
+                if (
+                    "test_case" in model_generated_results_df.columns
+                      and "original_question" in model_generated_results_df.columns
                     ):
-                        model_generated_results_df["original_question"].update(
+                    
+                    model_generated_results_df["original_question"].update(
                             model_generated_results_df.pop("test_case")
                         )
-                    model_generated_results_df["model_name"] = k
-                    generated_results_df.append(model_generated_results_df)
+                model_generated_results_df["model_name"] = k
+                generated_results_df.append(model_generated_results_df)
             generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
 
         else:
