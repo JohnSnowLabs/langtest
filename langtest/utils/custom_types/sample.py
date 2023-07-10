@@ -885,12 +885,13 @@ class TranslationSample(BaseModel):
 
     def _is_eval(self) -> bool:
         """"""
-        
+
         if self.test_case == self.actual_results.translation_text:
             return False, 1
-          
+
         else:
             from ..SentenceTransformer import SimpleSentenceTransformer
+
             model = SimpleSentenceTransformer()
 
             # Get the sentence vectors
