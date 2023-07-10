@@ -1,39 +1,44 @@
 from collections import defaultdict
 from typing import Dict, List
+from typing import Union
+
 import pandas as pd
+
 from langtest.utils.custom_types import (
     NERPrediction,
     Sample,
     SequenceLabel,
-    NEROutput,
-    SequenceClassificationOutput,
 )
 from .constants import (
-    country_economic_dict,
-    religion_wise_names,
-    white_names,
-    black_names,
-    hispanic_names,
     asian_names,
+    black_names,
+    country_economic_dict,
+    entity_types as default_entity_types,
+    hispanic_names,
     inter_racial_names,
     native_american_names,
-    entity_types as default_entity_types,
+    religion_wise_names,
+    white_names,
 )
 from .custom_data import add_custom_data
-from typing import Union
 
 
 class RepresentationOperation:
-    """
-    This class provides operations for analyzing and evaluating representations in data.
+    """This class provides operations for analyzing and evaluating different representations in data.
 
     Methods:
-        - add_custom_representation(data, name, append, check): Adds custom representation to the given data.
-        - get_label_representation_dict(data): Retrieves the label representation information from the data.
-        - get_country_economic_representation_dict(data): Retrieves the country economic representation information from the data.
-        - get_religion_name_representation_dict(data): Retrieves the religion representation information from the data.
-        - get_ethnicity_representation_dict(data): Retrieves the ethnicity representation information from the data.
-        - get_entity_representation_proportions(entity_representation): Calculates the proportions of each entity in the representation.
+        - add_custom_representation(data, name, append, check):
+            Adds custom representation to the given data.
+        - get_label_representation_dict(data):
+            Retrieves the label representation information from the data.
+        - get_country_economic_representation_dict(data):
+            Retrieves the country economic representation information from the data.
+        - get_religion_name_representation_dict(data):
+            Retrieves the religion representation information from the data.
+        - get_ethnicity_representation_dict(data):
+            Retrieves the ethnicity representation information from the data.
+        - get_entity_representation_proportions(entity_representation):
+            Calculates the proportions of each entity in the representation.
     Attributes:
         - entity_types: A list of default entity types.
     """
@@ -44,8 +49,7 @@ class RepresentationOperation:
     def add_custom_representation(
         data: Union[list, dict], name: str, append: bool, check: str
     ) -> None:
-        """
-        Add custom representation to the given data.
+        """Add custom representation to the given data.
 
         Args:
             data (Union[list, dict]): The data to which the custom representation will be added.
@@ -76,14 +80,14 @@ class RepresentationOperation:
 
     @staticmethod
     def get_label_representation_dict(data: List[Sample]) -> Dict[str, int]:
-        """
+        """Retrieves the label representation information from the data.
+
         Args:
             data (List[Sample]): The input data to be evaluated for representation test.
 
         Returns:
             dict: a dictionary containing label representation information.
         """
-
         label_representation = defaultdict(int)
         for sample in data:
             for prediction in sample.expected_results.predictions:
@@ -99,14 +103,14 @@ class RepresentationOperation:
 
     @staticmethod
     def get_country_economic_representation_dict(data: List[Sample]) -> Dict[str, int]:
-        """
+        """Retrieves the country economic representation information from the data.
+
         Args:
-        data (List[Sample]): The input data to be evaluated for representation test.
+            data (List[Sample]): The input data to be evaluated for representation test.
 
         Returns:
-        Dict[str, int]: a dictionary containing country economic representation information.
+            Dict[str, int]: a dictionary containing country economic representation information.
         """
-
         country_economic_representation = {
             "high_income": 0,
             "low_income": 0,
@@ -122,9 +126,9 @@ class RepresentationOperation:
         }
 
         for sample in data:
-            if isinstance(sample.expected_results, NEROutput):
+            if sample.task == "ner":
                 words = [x.span.word.lower() for x in sample.expected_results.predictions]
-            elif isinstance(sample.expected_results, SequenceClassificationOutput):
+            elif sample.task == "text-classification":
                 words = set(sample.original.replace(".", "").lower().split())
             elif sample.task == "question-answering":
                 if "perturbed_context" in sample.__annotations__:
@@ -133,6 +137,8 @@ class RepresentationOperation:
                     words = set(sample.original_question.replace(".", "").lower().split())
             elif sample.task == "summarization":
                 words = set(sample.original.replace(".", "").lower().split())
+            else:
+                raise ValueError(f"Unsupported task: '{sample.task}'")
 
             for income, countries in country_economic_dict.items():
                 for country in countries:
@@ -144,14 +150,14 @@ class RepresentationOperation:
 
     @staticmethod
     def get_religion_name_representation_dict(data: List[Sample]) -> Dict[str, int]:
-        """
+        """Retrieves the religion representation information from the data.
+
         Args:
             data (List[Sample]): The input data to be evaluated for representation test.
 
         Returns:
             Dict[str, int]: a dictionary containing religion representation information.
         """
-
         religion_representation = {
             "muslim": 0,
             "hindu": 0,
@@ -161,12 +167,12 @@ class RepresentationOperation:
             "buddhist": 0,
             "parsi": 0,
         }
-        religions = ["Muslim", "Hindu", "Sikh", "Parsi", "Christian", "Buddhist", "Jain"]
+        religions = [religion.capitalize() for religion in religion_representation]
 
         for sample in data:
-            if isinstance(sample.expected_results, NEROutput):
+            if sample.task == "ner":
                 words = [x.span.word for x in sample.expected_results.predictions]
-            elif isinstance(sample.expected_results, SequenceClassificationOutput):
+            elif sample.task == "text-classification":
                 words = sample.original.split()
             elif sample.task == "question-answering":
                 if "perturbed_context" in sample.__annotations__:
@@ -175,17 +181,20 @@ class RepresentationOperation:
                     words = sample.original_question.split()
             elif sample.task == "summarization":
                 words = sample.original.split()
+            else:
+                raise ValueError(f"Unsupported task: '{sample.task}'")
 
-            for i in words:
+            for word in words:
                 for religion in religions:
-                    if check_name(i, [religion_wise_names[religion]]):
+                    if check_name(word, [religion_wise_names[religion]]):
                         religion_representation[religion.lower()] += 1
 
         return religion_representation
 
     @staticmethod
     def get_ethnicity_representation_dict(data: List[Sample]) -> Dict[str, int]:
-        """
+        """Retrieves the ethnicity representation information from the data.
+
         Args:
             data (List[Sample]): The input data to be evaluated for representation test.
 
@@ -202,9 +211,9 @@ class RepresentationOperation:
         }
 
         for sample in data:
-            if isinstance(sample.expected_results, NEROutput):
+            if sample.task == "ner":
                 words = [x.span.word for x in sample.expected_results.predictions]
-            elif isinstance(sample.expected_results, SequenceClassificationOutput):
+            elif sample.task == "text-classification":
                 words = sample.original.split()
             elif sample.task == "question-answering":
                 if "perturbed_context" in sample.__annotations__:
@@ -213,42 +222,52 @@ class RepresentationOperation:
                     words = sample.original_question.split()
             elif sample.task == "summarization":
                 words = sample.original.split()
+            else:
+                raise ValueError(f"Unsupported task: {sample.task}")
 
-            for i in words:
-                if check_name(i, [white_names["first_names"], white_names["last_names"]]):
+            for word in words:
+                if check_name(
+                    word, [white_names["first_names"], white_names["last_names"]]
+                ):
                     ethnicity_representation["white"] += 1
-                if check_name(i, [black_names["first_names"], black_names["last_names"]]):
+                if check_name(
+                    word, [black_names["first_names"], black_names["last_names"]]
+                ):
                     ethnicity_representation["black"] += 1
                 if check_name(
-                    i, [hispanic_names["first_names"], hispanic_names["last_names"]]
+                    word, [hispanic_names["first_names"], hispanic_names["last_names"]]
                 ):
                     ethnicity_representation["hispanic"] += 1
-                if check_name(i, [asian_names["first_names"], asian_names["last_names"]]):
+                if check_name(
+                    word, [asian_names["first_names"], asian_names["last_names"]]
+                ):
                     ethnicity_representation["asian"] += 1
-                if check_name(i, [inter_racial_names["last_names"]]):
+                if check_name(word, [inter_racial_names["last_names"]]):
                     ethnicity_representation["inter_racial"] += 1
-                if check_name(i, [native_american_names["last_names"]]):
+                if check_name(word, [native_american_names["last_names"]]):
                     ethnicity_representation["native_american"] += 1
 
         return ethnicity_representation
 
     @staticmethod
-    def get_entity_representation_proportions(entity_representation):
-        """
+    def get_entity_representation_proportions(
+        entity_representation: Dict[str, int]
+    ) -> Dict[str, float]:
+        """Calculates the proportions of each entity in the representation.
+
         Args:
-        entity_representation (dict): a dictionary containing representation information.
+            entity_representation (dict): a dictionary containing representation information.
 
         Returns:
-        dict: a dictionary with proportions of each entity.
+            Dict[str, float]: a dictionary with proportions of each entity.
         """
-
         total_entities = sum(entity_representation.values())
         entity_representation_proportion = {}
-        for k, v in entity_representation.items():
+        for entity, count in entity_representation.items():
             if total_entities == 0:
-                entity_representation_proportion[k] = 0
+                entity_representation_proportion[entity] = 0
             else:
-                entity_representation_proportion[k] = v / total_entities
+                entity_representation_proportion[entity] = count / total_entities
 
         return entity_representation_proportion
 
