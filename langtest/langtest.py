@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Union, Any
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
-from langtest.utils.custom_types.sample import RuntimeSample
+from langtest.utils.custom_types.sample import SpeedTestSample
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import ModelFactory, LANGCHAIN_HUBS
@@ -391,7 +391,7 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
 
-        samples = RuntimeSample.bulk_create(self._runtime)
+        samples = SpeedTestSample.bulk_create(self._runtime)
         self._generated_results.extend(samples)
         return self
 

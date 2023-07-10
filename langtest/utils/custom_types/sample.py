@@ -767,7 +767,7 @@ class ToxicitySample(BaseModel):
         return True
 
 
-class RuntimeSample(BaseModel):
+class SpeedTestSample(BaseModel):
     """
     A class Representing a sample for runtime task.
 
@@ -818,10 +818,10 @@ class RuntimeSample(BaseModel):
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        Converts the RuntimeSample object to a dictionary.
+        Converts the SpeedTestSample object to a dictionary.
 
         Returns:
-            Dict[str, Any]: A dictionary representation of the RuntimeSample object.
+            Dict[str, Any]: A dictionary representation of the SpeedTestSample object.
         """
         result = {
             'category': self.category,
@@ -848,7 +848,7 @@ class RuntimeSample(BaseModel):
     @classmethod
     def bulk_create(cls, runtime_values: Dict[str, Dict[str, Union[int, float]]], unit='ms', **kwargs):
         """
-        Creates a list of RuntimeSample objects from the specified runtime values.
+        Creates a list of SpeedTestSample objects from the specified runtime values.
         
         Args:
             runtime_values (Dict[str, Dict[str, Union[int, float]]]): A dictionary containing the transfrom and run keys 
@@ -856,7 +856,7 @@ class RuntimeSample(BaseModel):
             **kwargs: Additional keyword arguments.
 
         Returns:
-            List[RuntimeSample]: A list of RuntimeSample objects."""
+            List[SpeedTestSample]: A list of SpeedTestSample objects."""
         
         rearranged_values = defaultdict(lambda: defaultdict(dict))
 
@@ -868,7 +868,7 @@ class RuntimeSample(BaseModel):
         samples = []
         for _, values in rearranged_values.items():
             for test_case, values in values.items():
-                temp_sample = RuntimeSample(
+                temp_sample = SpeedTestSample(
                         original = test_case,
                         transform_time=values['transform'],
                         run_time=values['run'],
