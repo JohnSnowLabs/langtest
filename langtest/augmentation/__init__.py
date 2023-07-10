@@ -1,7 +1,7 @@
 import yaml
 import random
 import pandas as pd
-from typing import List
+from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
 
 from langtest.transform import TestFactory
@@ -11,41 +11,29 @@ from langtest.transform.utils import create_terminology
 
 
 class BaseAugmentaion(ABC):
-
-    """
-    Abstract base class for data augmentation techniques.
-
-    Attributes:
-        None
+    """Abstract base class for data augmentation techniques.
 
     Methods:
         fix: Abstract method that should be implemented by child classes.
              This method should perform the data augmentation operation.
-
-             Returns:
-                 NotImplementedError: Raised if the method is not implemented by child classes.
     """
 
     @abstractmethod
-    def fix(self):
-        """
-        Abstract method that should be implemented by child classes.
+    def fix(self, *args, **kwargs):
+        """Abstract method that should be implemented by child classes.
+
         This method should perform the data augmentation operation.
 
         Returns:
             NotImplementedError: Raised if the method is not implemented by child classes.
         """
-
         return NotImplementedError
 
 
 class AugmentRobustness(BaseAugmentaion):
-
-    """
-    A class for performing a specified task with historical results.
+    """A class for performing a specified task with historical results.
 
     Attributes:
-
         task (str): A string indicating the task being performed.
         config (dict): A dictionary containing configuration parameters for the task.
         h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
@@ -53,7 +41,6 @@ class AugmentRobustness(BaseAugmentaion):
                         Defaults to 0.5.
 
     Methods:
-
         __init__(self, task, h_report, config, max_prop=0.5) -> None:
             Initializes an instance of MyClass with the specified parameters.
 
@@ -63,17 +50,23 @@ class AugmentRobustness(BaseAugmentaion):
         suggestions(self, prop) -> pandas.DataFrame:
             Calculates suggestions for improving test performance based on a given report.
 
-
     """
 
-    def __init__(self, task, h_report, config, custom_proportions=None, max_prop=0.5) -> None:
-        """
-        Initializes an instance of MyClass with the specified parameters.
+    def __init__(
+        self,
+        task: str,
+        h_report: "pd.DataFrame",
+        config: Dict,
+        custom_proportions: Union[Dict, List] = None,
+        max_prop=0.5,
+    ) -> None:
+        """Initializes an instance of MyClass with the specified parameters.
 
         Args:
             task (str): A string indicating the task being performed.
             h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
             config (dict): A dictionary containing configuration parameters for the task.
+            custom_proportions
             max_prop (float): The maximum proportion of improvement that can be suggested by the class methods.
                               Defaults to 0.5.
 
@@ -81,7 +74,6 @@ class AugmentRobustness(BaseAugmentaion):
             None
 
         """
-
         super().__init__()
         self.task = task
         self.config = config
@@ -93,84 +85,81 @@ class AugmentRobustness(BaseAugmentaion):
             with open(self.config) as fread:
                 self.config = yaml.safe_load(fread)
 
-    def fix(
-        self,
-        input_path: str,
-        output_path,
-        inplace: bool = False
-    ):
-        """
-        Applies perturbations to the input data based on the recommendations from harness reports.
+    def fix(self, input_path: str, output_path, export_mode: str = "add"):
+        """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
             input_path (str): The path to the input data file.
             output_path (str): The path to save the augmented data file.
-            inplace (bool, optional): If True, the list of samples is modified in place.
-                                      Otherwise, a new samples are add to input data. Defaults to False.
+            export_mode (str, optional): Determines how the samples are modified or exported.
+                                        - 'inplace': Modifies the list of samples in place.
+                                        - 'add': Adds new samples to the input data.
+                                        - 'transformed': Exports only the transformed data, excluding untransformed samples.
+                                        Defaults to 'add'.
 
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
-
         self.df = DataFactory(input_path, self.task)
         data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest: pd.DataFrame = self.suggestions(self.h_report)
-        sum_propotion = suggest['proportion_increase'].sum()
+        sum_propotion = suggest["proportion_increase"].sum()
         if suggest.shape[0] <= 0 or suggest.empty:
             print("All tests have passed. Augmentation will not be applied in this case.")
             return None
 
         self.config = self._parameters_overrides(self.config, data)
 
-        fianl_aug_data = []
+        final_aug_data = []
         hash_map = {k: v for k, v in enumerate(data)}
 
         for proportion in suggest.iterrows():
-            cat = proportion[-1]['category'].lower()
-            if cat not in ["robustness", 'bias']:
+            cat = proportion[-1]["category"].lower()
+            if cat not in ["robustness", "bias"]:
                 continue
-            test = proportion[-1]['test_type'].lower()
-            test_type = {
-                cat: {
-                    test: self.config.get('tests').get(cat).get(test)
-                }
-            }
-            if proportion[-1]['test_type'] in supported_tests[cat]:
-                sample_length = len(
-                    data) * self.max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
-                if inplace:
+            test = proportion[-1]["test_type"].lower()
+            test_type = {cat: {test: self.config.get("tests").get(cat).get(test)}}
+            if proportion[-1]["test_type"] in supported_tests[cat]:
+                sample_length = (
+                    len(data)
+                    * self.max_prop
+                    * (proportion[-1]["proportion_increase"] / sum_propotion)
+                )
+                if export_mode in ("inplace", "transformed"):
                     sample_indices = random.sample(
-                        range(0, len(data)), int(sample_length))
+                        range(0, len(data)), int(sample_length)
+                    )
                     for each in sample_indices:
-                        if test == 'swap_entities':
-                            test_type['robustness']['swap_entities']['parameters']['labels'] = [
-                                self.label[each]]
+                        if test == "swap_entities":
+                            test_type["robustness"]["swap_entities"]["parameters"][
+                                "labels"
+                            ] = [self.label[each]]
                         res, _ = TestFactory.transform(
-                            self.task,
-                            [hash_map[each]], test_type)
+                            self.task, [hash_map[each]], test_type
+                        )
                         hash_map[each] = res[0]
-
                 else:
                     sample_data = random.choices(data, k=int(sample_length))
-                    aug_data, _ = TestFactory.transform(
-                        self.task,
-                        sample_data, test_type)
-                    fianl_aug_data.extend(aug_data)
-        if inplace:
-            fianl_aug_data = list(hash_map.values())
-            self.df.export(fianl_aug_data, output_path)
-        else:
-            data.extend(fianl_aug_data)
-            self.df.export(data, output_path)
-        TestFactory.is_augment = False
-        return fianl_aug_data
+                    aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
+                    final_aug_data.extend(aug_data)
 
-    def suggestions(self, report):
-        """
-        Calculates suggestions for improving test performance based on a given report.
-        Supports for custom proportion values passes in dict or list.
+        if export_mode == "inplace":
+            final_aug_data = list(hash_map.values())
+            self.df.export(final_aug_data, output_path)
+        elif export_mode == "transformed":
+            final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
+            self.df.export(final_aug_data, output_path)
+        else:
+            data.extend(final_aug_data)
+            self.df.export(data, output_path)
+
+        TestFactory.is_augment = False
+        return final_aug_data
+
+    def suggestions(self, report: "pd.DataFrame") -> "pd.DataFrame":
+        """Calculates suggestions for improving test performance based on a given report.
 
         Args:
             report (pandas.DataFrame): A DataFrame containing test results by category and test type,
@@ -183,28 +172,27 @@ class AugmentRobustness(BaseAugmentaion):
                                 - ratio: the pass rate divided by the minimum pass rate for the test
                                 - proportion_increase: a proportion indicating how much the pass rate
                                                     should increase to reach the minimum pass rate
-
         """
-        report['ratio'] = report['pass_rate'] / report['minimum_pass_rate']
+        report["ratio"] = report["pass_rate"] / report["minimum_pass_rate"]
 
         if self.custom_proportions and isinstance(self.custom_proportions, dict):
-            report['proportion_increase'] = report['test_type'].map(
-                self.custom_proportions)
+            report["proportion_increase"] = report["test_type"].map(
+                self.custom_proportions
+            )
         elif self.custom_proportions and isinstance(self.custom_proportions, list):
-            report['proportion_increase'] = report['ratio'].apply(
-                self._proportion_values)
-            report = report[report['test_type'].isin(self.custom_proportions)]
+            report["proportion_increase"] = report["ratio"].apply(self._proportion_values)
+            report = report[report["test_type"].isin(self.custom_proportions)]
         else:
-            report['proportion_increase'] = report['ratio'].apply(
-                self._proportion_values)
+            report["proportion_increase"] = report["ratio"].apply(self._proportion_values)
 
-        report = report.dropna(subset=['proportion_increase'])[
-            ['category', 'test_type', 'ratio', 'proportion_increase']]
+        report = report.dropna(subset=["proportion_increase"])[
+            ["category", "test_type", "ratio", "proportion_increase"]
+        ]
         return report
 
-    def _proportion_values(self, x):
-        """
-        Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
+    @staticmethod
+    def _proportion_values(x: float) -> Optional[float]:
+        """Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
 
         Args:
             x (float): The ratio of the pass rate to the minimum pass rate for a given test.
@@ -218,7 +206,6 @@ class AugmentRobustness(BaseAugmentaion):
                 If the pass rate is less than 0.7 times the minimum pass rate, returns 0.3.
 
         """
-
         if x >= 1:
             return None
         elif x > 0.9:
@@ -231,15 +218,26 @@ class AugmentRobustness(BaseAugmentaion):
             return 0.3
 
     def _parameters_overrides(self, config: dict, data_handler: List[Sample]) -> dict:
-        tests = config.get('tests', {}).get('robustness', {})
-        if 'swap_entities' in config.get('tests', {}).get('robustness', {}):
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                               'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
-            params = tests['swap_entities']
-            params['parameters'] = {}
-            params['parameters']['terminology'] = create_terminology(df)
-            params['parameters']['labels'] = df.label.tolist()
-            self.label = self.config.get('tests').get('robustness').get(
-                'swap_entities').get('parameters').get('labels')
+        tests = config.get("tests", {}).get("robustness", {})
+        if "swap_entities" in config.get("tests", {}).get("robustness", {}):
+            df = pd.DataFrame(
+                {
+                    "text": [sample.original for sample in data_handler],
+                    "label": [
+                        [i.entity for i in sample.expected_results.predictions]
+                        for sample in data_handler
+                    ],
+                }
+            )
+            params = tests["swap_entities"]
+            params["parameters"] = {}
+            params["parameters"]["terminology"] = create_terminology(df)
+            params["parameters"]["labels"] = df.label.tolist()
+            self.label = (
+                self.config.get("tests")
+                .get("robustness")
+                .get("swap_entities")
+                .get("parameters")
+                .get("labels")
+            )
         return config

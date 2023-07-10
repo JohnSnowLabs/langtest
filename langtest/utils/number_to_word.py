@@ -2,7 +2,6 @@ from numbers import Number
 from pydantic import Field
 from pydantic.typing import Annotated
 from langtest.transform.utils import (
-    nth,
     ordinal,
     unit,
     teen,
@@ -32,17 +31,14 @@ from typing import (
     Any,
 )
 
-Word = Annotated[
-    str, Field(min_length=1)
-]
+Word = Annotated[str, Field(min_length=1)]
 Falsish = Any
 
 STDOUT_ON = False  # Flag indicating whether standard output is enabled or disabled
 
 
 def print3(txt: str) -> None:
-    """
-    Prints the provided text.
+    """Prints the provided text.
 
     Args:
         txt (str): The text to be printed.
@@ -55,32 +51,26 @@ def print3(txt: str) -> None:
 
 
 class BadChunkingOptionError(Exception):
-    """
-    Exception raised when an invalid chunking option is encountered.
-    """
+    """Exception raised when an invalid chunking option is encountered."""
 
     pass
 
 
 class NumOutOfRangeError(Exception):
-    """
-    Exception raised when a number is out of the supported range.
-    """
+    """Exception raised when a number is out of the supported range."""
 
     pass
 
 
 class ConvertNumberToWord:
-    """
-    Converts a number to its corresponding word representation.
-    """
+    """Converts a number to its corresponding word representation."""
 
     def __init__(self) -> None:
+        """Constructor method"""
         self.mill_count = 0
 
     def millfn(self, ind: int = 0) -> str:
-        """
-        Retrieves the word representation of a given mill index.
+        """Retrieves the word representation of a given mill index.
 
         Args:
             ind (int): The index of the mill.
@@ -97,8 +87,7 @@ class ConvertNumberToWord:
         return mill[ind]
 
     def tenfn(self, tens: int, units: int, mindex: int = 0) -> str:
-        """
-        Converts a two-digit number to its word representation.
+        """Converts a two-digit number to its word representation.
 
         Args:
             tens (int): The tens digit.
@@ -117,8 +106,7 @@ class ConvertNumberToWord:
         return f"{teen[units]}{mill[mindex]}"
 
     def group1sub(self, mo: Match) -> str:
-        """
-        Substitutes a matched pattern from group 1 with its word representation.
+        """Substitutes a matched pattern from group 1 with its word representation.
 
         Args:
             mo (Match): The matched pattern object.
@@ -135,8 +123,7 @@ class ConvertNumberToWord:
             return f" {self.number_args['zero']}, "
 
     def group1bsub(self, mo: Match) -> str:
-        """
-        Substitutes a matched pattern from group 1b with its word representation.
+        """Substitutes a matched pattern from group 1b with its word representation.
 
         Args:
             mo (Match): The matched pattern object.
@@ -151,8 +138,7 @@ class ConvertNumberToWord:
             return f" {self.number_args['zero']}, "
 
     def group2sub(self, mo: Match) -> str:
-        """
-        Substitutes a matched pattern from group 2 with its word representation.
+        """Substitutes a matched pattern from group 2 with its word representation.
 
         Args:
             mo (Match): The matched pattern object.
@@ -169,8 +155,7 @@ class ConvertNumberToWord:
         return f" {self.number_args['zero']} {self.number_args['zero']}, "
 
     def group3sub(self, mo: Match) -> str:
-        """
-        Substitutes a matched pattern from group 3 with its word representation.
+        """Substitutes a matched pattern from group 3 with its word representation.
 
         Args:
             mo (Match): The matched pattern object.
@@ -210,8 +195,7 @@ class ConvertNumberToWord:
         decimal: Union[Falsish, str] = "point",
         threshold: Optional[int] = None,
     ) -> Union[str, List[str]]:
-        """
-        Converts a number or word to its corresponding word representation.
+        """Converts a number or word to its corresponding word representation.
 
         Args:
             num (Union[Number, Word]): The number or word to be converted.
@@ -341,8 +325,7 @@ class ConvertNumberToWord:
                 return num
 
     def enword(self, num: str, group: int) -> str:
-        """
-        Converts a numeric string to its word representation based on the specified grouping.
+        """Converts a numeric string to its word representation based on the specified grouping.
 
         Args:
             num (str): The numeric string to convert.
@@ -383,8 +366,7 @@ class ConvertNumberToWord:
         return num
 
     def hundsub(self, mo: Match) -> str:
-        """
-        Substitution function for matching and converting a three-digit numeric group.
+        """Substitution function for matching and converting a three-digit numeric group.
 
         Args:
             mo (Match): The matched object containing the captured groups.
@@ -399,52 +381,12 @@ class ConvertNumberToWord:
         self.mill_count += 1
         return ret
 
-    def millfn(self, ind: int = 0) -> str:
-        """
-        Retrieves the word representation of a mill index.
-
-        Args:
-            ind (int, optional): The index of the mill. Defaults to 0.
-
-        Returns:
-            str: The word representation of the mill index.
-
-        Raises:
-            NumOutOfRangeError: If the mill index is out of range.
-
-        """
-        if ind > len(mill) - 1:
-            print3("number out of range")
-            raise NumOutOfRangeError
-        return mill[ind]
-
     def unitfn(self, units: int, mindex: int = 0) -> str:
+        """Prettify string"""
         return f"{unit[units]}{self.millfn(mindex)}"
 
-    def tenfn(self, tens: int, units: int, mindex: int = 0) -> str:
-        """
-        Constructs the word representation of a two-digit number.
-
-        Args:
-            tens (int): The tens digit.
-            units (int): The units digit.
-            mindex (int, optional): The mill index. Defaults to 0.
-
-        Returns:
-            str: The word representation of the two-digit number.
-
-        """
-        if tens != 1:
-            tens_part = ten[tens]
-            hyphen = "-" if tens and units else ""
-            unit_part = unit[units]
-            mill_part = self.millfn(mindex)
-            return f"{tens_part}{hyphen}{unit_part}{mill_part}"
-        return f"{teen[units]}{mill[mindex]}"
-
     def hundfn(self, hundreds: int, tens: int, units: int, mindex: int) -> str:
-        """
-        Constructs the word representation of a three-digit number.
+        """Constructs the word representation of a three-digit number.
 
         Args:
             hundreds (int): The hundreds digit.
@@ -467,8 +409,7 @@ class ConvertNumberToWord:
         return ""
 
     def tensub(self, mo: Match) -> str:
-        """
-        Substitution function for matching and converting a two-digit numeric group.
+        """Substitution function for matching and converting a two-digit numeric group.
 
         Args:
             mo (Match): The matched object containing the captured groups.
@@ -480,8 +421,7 @@ class ConvertNumberToWord:
         return f"{self.tenfn(int(mo.group(1)), int(mo.group(2)), self.mill_count)}, "
 
     def unitsub(self, mo: Match) -> str:
-        """
-        Substitution function for matching and converting a one-digit numeric group.
+        """Substitution function for matching and converting a one-digit numeric group.
 
         Args:
             mo (Match): The matched object containing the captured groups.
