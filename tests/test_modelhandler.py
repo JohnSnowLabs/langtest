@@ -1,11 +1,15 @@
 import unittest
 import langtest
-from langtest.modelhandler.modelhandler import *
+from langtest.modelhandler import ModelFactory
+from langtest.modelhandler.spacy_modelhandler import PretrainedModelForNER as SpacyNER
+from langtest.modelhandler.llm_modelhandler import ConfigError
 
 
 class ModelHandlerTestCase(unittest.TestCase):
     """
     Test case for the ModelHandler class.
+
+    Note: we mainly want to check hubs access and loading mechanism
     """
 
     def setUp(self):
@@ -46,5 +50,32 @@ class ModelHandlerTestCase(unittest.TestCase):
         self.assertIsInstance(model, ModelFactory)
         self.assertIsInstance(
             model.model_class,
-            langtest.modelhandler.spacy_modelhandler.PretrainedModelForNER,
+            SpacyNER,
         )
+
+    def test_ai21_model(self) -> None:
+        """
+        Test loading a model from the Ai21 hub
+        """
+        with self.assertRaises(ConfigError) as _:
+            ModelFactory.load_model(
+                task="question-answering", hub="ai21", path="j2-jumbo-instruct"
+            )
+
+    def test_openai_model(self) -> None:
+        """
+        Test loading a model from the OpenAI hub
+        """
+        with self.assertRaises(ConfigError) as _:
+            ModelFactory.load_model(
+                task="question-answering", hub="openai", path="gpt-3.5-turbo"
+            )
+
+    def test_cohere_model(self) -> None:
+        """
+        Test loading a model from Cohere
+        """
+        with self.assertRaises(ConfigError) as _:
+            ModelFactory.load_model(
+                task="question-answering", hub="cohere", path="command-xlarge-nightly"
+            )

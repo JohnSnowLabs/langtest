@@ -885,31 +885,36 @@ class TranslationSample(BaseModel):
 
     def _is_eval(self) -> bool:
         """"""
-        from ..SentenceTransformer import SimpleSentenceTransformer
 
-        model = SimpleSentenceTransformer()
+        if self.test_case == self.actual_results.translation_text:
+            return False, 1
 
-        # Get the sentence vectors
-        vectors1 = model.encode([self.original], convert_to_tensor=True)
-        vectors2 = model.encode([self.test_case], convert_to_tensor=True)
-        vectors3 = model.encode(
-            [self.expected_results.translation_text], convert_to_tensor=True
-        )
-        vectors4 = model.encode(
-            [self.actual_results.translation_text], convert_to_tensor=True
-        )
+        else:
+            from ..SentenceTransformer import SimpleSentenceTransformer
 
-        original_similarities = cosine_similarity(
-            vectors1.cpu().numpy(), vectors2.cpu().numpy()
-        )
-        translation_similarities = cosine_similarity(
-            vectors3.cpu().numpy(), vectors4.cpu().numpy()
-        )
+            model = SimpleSentenceTransformer()
 
-        return (
-            abs(original_similarities - translation_similarities)[0] < 0.1,
-            abs(original_similarities - translation_similarities)[0],
-        )
+            # Get the sentence vectors
+            vectors1 = model.encode([self.original], convert_to_tensor=True)
+            vectors2 = model.encode([self.test_case], convert_to_tensor=True)
+            vectors3 = model.encode(
+                [self.expected_results.translation_text], convert_to_tensor=True
+            )
+            vectors4 = model.encode(
+                [self.actual_results.translation_text], convert_to_tensor=True
+            )
+
+            original_similarities = cosine_similarity(
+                vectors1.cpu().numpy(), vectors2.cpu().numpy()
+            )
+            translation_similarities = cosine_similarity(
+                vectors3.cpu().numpy(), vectors4.cpu().numpy()
+            )
+
+            return (
+                abs(original_similarities - translation_similarities)[0] < 0.1,
+                abs(original_similarities - translation_similarities)[0],
+            )
 
     def run(self, model, **kwargs):
         """"""
