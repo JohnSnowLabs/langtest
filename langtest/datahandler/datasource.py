@@ -57,7 +57,7 @@ class DataFactory:
 
     def __init__(self, file_path: str, task: str, **kwargs) -> None:
         """Initializes DataFactory object.
-        
+
         Args:
             file_path (str): Path to the dataset.
             task (str): Task to be evaluated.
@@ -316,8 +316,7 @@ class JSONDataset(_IDataset):
 
 
 class CSVDataset(_IDataset):
-    """Class to handle CSV files dataset. Subclass of _IDataset.
-    """
+    """Class to handle CSV files dataset. Subclass of _IDataset."""
 
     COLUMN_NAMES = {
         "text-classification": {
