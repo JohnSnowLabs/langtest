@@ -1,6 +1,6 @@
 import re
 from typing import List
-from ..transform.utils import CMU_dict
+from ..transform.constants import CMU_dict
 
 
 class G2p(object):
