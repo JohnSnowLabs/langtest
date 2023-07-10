@@ -831,6 +831,11 @@ class RuntimeSample(BaseModel):
         return self.expected_results <= self.actual_results
 
 class TranslationSample(BaseModel):
+    """
+    Helper object storing the original text, the perturbed one and the corresponding
+    predictions for each, for the translation task.
+
+    """
     original: str
     test_case: str = None
     expected_results: Result = None
@@ -846,6 +851,12 @@ class TranslationSample(BaseModel):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the TranslationSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the TranslationSample object.
+        """
 
         result = {
             'category': self.category,
