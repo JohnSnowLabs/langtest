@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
+from collections import defaultdict
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator
 from .helpers import Transformation, Span
@@ -735,21 +736,19 @@ class RuntimeSample(BaseModel):
         run_time (Dict[str, Union[int, float]]): The run times for different operations.
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
-    category: str
+    category: str = "runtime"
     test_type: str = "speed"
-    original: str = "-"
+    original: str = None
     test_case: str = "-"
     expected_results: Result = None
     actual_results: Result = None
+    transform_time: Union[int, float] = None
+    run_time: Union[int, float] = None
 
     def __init__(self, **data):
         super().__init__(**data)
 
-    def total_time(
-            self,
-            transform_time: Union[int, float],
-            run_time: Union[int, float],
-            unit='ms'):
+    def total_time(self, unit='ms'):
         """
         Calculates the total time for each operation.
 
@@ -760,7 +759,7 @@ class RuntimeSample(BaseModel):
             Dict[str, Union[int, float]]: A dictionary containing the total times for each operation.
         """
         self.actual_results = self.convert_ns_to_unit(
-            transform_time + run_time, unit=unit)
+            self.transform_time + self.run_time, unit=unit)
 
         return self
 
@@ -778,28 +777,6 @@ class RuntimeSample(BaseModel):
         unit_dict = {'ns': 1, 'us': 1e3, 'ms': 1e6,
                      's': 1e9, 'm': 6e10, 'h': 3.6e12}
         return time / unit_dict[unit]
-
-    def multi_model_total_time(self, unit='ms'):
-        """
-        Calculates the total time for each operation across multiple models.
-
-        Args:
-            unit (str, optional): The unit of time to convert to (default: 'ms').
-
-        Returns:
-            Dict[str, Union[int, float]]: A dictionary containing the total times for each operation across multiple models.
-        """
-        total = {}
-        if self.total:
-            return self.total
-        else:
-            for key in self.transform_time.keys():
-                total[key] = self.convert_ns_to_unit(
-                    sum(self.transform_time[key].values()
-                        ) + sum(self.run_time[key].values()),
-                    unit=unit)
-            self.total = total
-        return total
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -828,7 +805,42 @@ class RuntimeSample(BaseModel):
         """"""
         if self.actual_results is None:
             return False
-        return self.expected_results <= self.actual_results
+        return 0 <= self.actual_results
+
+    @classmethod
+    def bulk_create(cls, runtime_values: Dict[str, Dict[str, Union[int, float]]], unit='ms', **kwargs):
+        """
+        Creates a list of RuntimeSample objects from the specified runtime values.
+        
+        Args:
+            runtime_values (Dict[str, Dict[str, Union[int, float]]]): A dictionary containing the transfrom and run keys 
+            runtime values for each operation in nanoseconds.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[RuntimeSample]: A list of RuntimeSample objects."""
+        
+        rearranged_values = defaultdict(lambda: defaultdict(dict))
+
+        for k, v in runtime_values.items():
+            for k1, v1 in v.items():
+                for k2, v2 in v1.items():
+                    rearranged_values[k1][k2][k] = v2
+
+        samples = []
+        for _, values in rearranged_values.items():
+            for test_case, values in values.items():
+                temp_sample = RuntimeSample(
+                        original = test_case,
+                        transform_time=values['transform'],
+                        run_time=values['run'],
+                        **kwargs
+                    )
+                temp_sample.total_time(unit)
+                samples.append(temp_sample)
+        
+        return samples
+    
 
 class TranslationSample(BaseModel):
     """

@@ -172,7 +172,7 @@ class Harness:
 
         self._testcases = None
         self._generated_results = None
-        self._runtime = RuntimeSample()
+        self._runtime = {}
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -250,7 +250,7 @@ class Harness:
                 for k, v in self.model.items():
                     _ = [setattr(sample, 'expected_results', v(
                         sample.original)) for sample in m_data]
-                    self._testcases[k], self._runtime.transform_time[k] = TestFactory.transform(
+                    self._testcases[k], self._runtime['transform'] = TestFactory.transform(
                         self.task, self.data, tests, m_data=m_data)
 
                 return self
@@ -263,7 +263,7 @@ class Harness:
                         tests_to_filter, self.file_path.split('-')[0])
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != 'bias'}
-                        other_testcases, self._runtime.transform_time = TestFactory.transform(
+                        other_testcases, self._runtime['transform'] = TestFactory.transform(
                             self.task, self.data, tests, m_data=m_data)
                         self._testcases.extend(other_testcases)
                     return self
@@ -272,13 +272,14 @@ class Harness:
                         f"Bias tests are not applicable for {self.file_path} dataset.")
 
             else:
-                self._testcases, self._runtime.transform_time = TestFactory.transform(
+                self._testcases, self._runtime['transform'] = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data)
 
                 return self
 
-        self._testcases, self._runtime.transform_time = TestFactory.transform(
+        self._testcases, self._runtime['transform'] = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data)
+        
         return self
 
     def run(self) -> "Harness":
@@ -292,15 +293,17 @@ class Harness:
             raise RuntimeError("The test casess have not been generated yet. Please use the `.generate()` method before"
                                "calling the `.run()` method.")
         if not isinstance(self._testcases, dict):
-            self._generated_results, self._runtime.run_time = TestFactory.run(
+            self._generated_results, self._runtime['run'] = TestFactory.run(
                 self._testcases, self.model, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
         else:
             self._generated_results = {}
-            self._runtime.run_time = {}
+            self._runtime['run'] = {}
             for k, v in self.model.items():
-                self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
+                self._generated_results[k], self._runtime['run'][k] = TestFactory.run(
                     self._testcases[k], v, is_default=self.is_default, raw_data=self.data, **self._config.get("model_parameters", {}))
 
+        samples = RuntimeSample.bulk_create(self._runtime)
+        self._generated_results.extend(samples)
         return self
 
     def report(self, return_runtime=False, unit='ms', format="dataframe", save_dir=None) -> pd.DataFrame:

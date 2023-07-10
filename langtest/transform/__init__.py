@@ -1,4 +1,5 @@
 import time
+from collections import defaultdict
 from ..utils.custom_types.sample import QASample, SequenceClassificationSample, NERSample
 from langtest.utils.gender_classifier import GenderClassifier
 from ..utils.custom_types import Result, Sample
@@ -87,11 +88,12 @@ class TestFactory:
                 raise ValueError(f"The test category {test_category} does not exist. Available categories are: {all_categories.keys()}.")
                 
         # Generate testcases
+        runtime_results = {}
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             if each in all_categories:
                 sub_test_types = test_types[each]
-                sample_results, runtime_results = (
+                sample_results, runtime_results[each] = (
                     all_categories[each](m_data, sub_test_types,
                                         raw_data=data).transform()
                     if each in ["robustness", "bias"] and m_data
@@ -137,11 +139,12 @@ class TestFactory:
             samples_list, model_handler, **kwargs)
         temp_res = asyncio.run(async_tests)
         results = []
-        run_timing = {}
+        run_timing = defaultdict(lambda: defaultdict(dict))
         for each, runtime in temp_res:
             results.extend(each)
-            test_type = results[-1].test_type
-            run_timing[test_type] = runtime
+            category = each[-1].category
+            test_type = each[-1].test_type
+            run_timing[category][test_type] = runtime
         return results, run_timing
 
     @classmethod
