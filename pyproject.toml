@@ -40,7 +40,7 @@ per-file-ignores = '__init__.py:F401'
 
 [tool.black]
 line-length = 90
-extend-exclude = "langtest/transform/utils.py"
+extend-exclude = "langtest/transform/constants.py"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
