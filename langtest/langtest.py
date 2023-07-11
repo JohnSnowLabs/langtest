@@ -35,8 +35,14 @@ class Harness:
         "toxicity",
         "translation",
     ]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
-    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
+    SUPPORTED_HUBS = [
+        "spacy",
+        "huggingface",
+        "johnsnowlabs",
+        "openai",
+        "cohere",
+        "ai21",
+    ] + list(LANGCHAIN_HUBS.keys())
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
