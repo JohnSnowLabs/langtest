@@ -1374,7 +1374,7 @@ class StripAllPunctuation(BaseRobustness):
         whitelist: Optional[List[str]] = None,
     ) -> List[Sample]:
         if whitelist is None:
-            whitelist = ["!", "?", ",", ".", "-", ":", ";","/"]
+            whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
         def check_whitelist(text, whitelist):
             new_text = []
             transformations = []  # List to keep track of transformations
