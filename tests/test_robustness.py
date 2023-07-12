@@ -119,6 +119,12 @@ class RobustnessTestCase(unittest.TestCase):
                 original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them"
             ),
         ]
+        self.adj_sentences = [
+            SequenceClassificationSample(
+                original="Lisa is wearing a beautiful shirt today. This soup is not edible."
+            ),
+            SequenceClassificationSample(original="They have a beautiful house."),
+        ]
         self.test_qa = [
             "20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar to the current one, is being released. The European Central Bank will, in due time, announce when banknotes from the first series lose legal tender status.",
             "is the first series 20 euro note still legal tender",
@@ -364,3 +370,12 @@ class RobustnessTestCase(unittest.TestCase):
         )
         self.assertIsInstance(transformed_samples, list)
         self.assertNotEqual(original_qa, transformed_samples_qa)
+
+    def test_adj_synonym_swap(self) -> None:
+        """
+        Test the AdjectiveSynonymSwap transformation.
+        """
+        transformed_samples = AdjectiveSynonymSwap.transform(self.adj_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
