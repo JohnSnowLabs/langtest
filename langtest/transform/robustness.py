@@ -366,6 +366,85 @@ class StripPunctuation(BaseRobustness):
         return sample_list
 
 
+class StripAllPunctuation(BaseRobustness):
+    """A class for stripping punctuation to text samples."""
+
+    alias_name = "strip_punctuation_all"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        prob: Optional[float] = 1.0,
+        whitelist: Optional[List[str]] = None,
+    ) -> List[Sample]:
+        """Strip punctuation from the text samples in the given sample list.
+
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of stripping punctuation from each sample.
+                                    Defaults to 1.0, which means all words will be transformed.
+            whitelist (Optional[List[str]]): A list of punctuation characters to consider when stripping punctuation.
+                If None, the default whitelist ['!', '?', ',', '.', '-', ':', ';'] will be used. Defaults to None.
+
+        Returns:
+            List[Sample]: The transformed sample list with punctuation stripped.
+        """
+        if whitelist is None:
+            whitelist = ["!", "?", ",", ".", "-", ":", ";","/", '"', "'"]
+
+        def check_whitelist(text, whitelist):
+            new_text = []
+            for idx in range(len(text)):
+                if text[idx] not in whitelist:
+                    new_text.append(text[idx])
+                else:
+                    # Establishing some rules (0.5 MG Is dosage not punctuation)
+                    if text[idx-1].isdigit() and text[idx+1].isdigit():
+                        new_text.append(text[idx])
+                    elif text[idx-1].isalpha() and (idx+1 < len(text)) and text[idx+1].isalpha():
+                        if text[idx-1].lower() in ["h", "s"] and text[idx+1].lower() in ["o", "p"]:  # h/o, s/p -> / not to be removed
+                            new_text.append(text[idx])
+                        else:       
+                            new_text.append(" ")
+                    
+                    elif text[idx-1].isdigit() and text[idx+1].isalpha():        
+                        new_text.append(text[idx])   #arthrodesis at C5-C6 and C6-C7,  Lumbar L5-S1 surgery
+                
+            final_txt = "".join(new_text)
+            final_txt = final_txt.replace("  "," ")
+
+            return final_txt
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                if random.random() < prob:
+                    sample_list[idx] = check_whitelist(sample, whitelist)
+            else:
+                if random.random() < prob:
+                    sample.test_case = check_whitelist(sample.original, whitelist)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = [
+                            Transformation(
+                                original_span=Span(
+                                    start=len(sample.original),
+                                    end=len(sample.original),
+                                    word="",
+                                ),
+                                new_span=Span(
+                                    start=len(sample.test_case),
+                                    end=len(sample.test_case),
+                                    word="",
+                                ),
+                                ignore=True,
+                            )
+                        ]
+                else:
+                    sample.test_case = sample.original
+                sample.category = "robustness"
+    
+        return sample_list
+
+
 class AddTypo(BaseRobustness):
     """A class for adding typos to text samples."""
 
