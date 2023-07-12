@@ -366,88 +366,6 @@ class StripPunctuation(BaseRobustness):
         return sample_list
 
 
-class StripAllPunctuation(BaseRobustness):
-    """A class for stripping punctuation to text samples."""
-
-    alias_name = "strip_punctuation_all"
-
-    @staticmethod
-    def transform(
-        sample_list: List[Sample],
-        prob: Optional[float] = 1.0,
-        whitelist: Optional[List[str]] = None,
-    ) -> List[Sample]:
-        """Strip punctuation from the text samples in the given sample list.
-
-        Args:
-            sample_list (List[Sample]): A list of samples to be transformed.
-            prob (Optional[float]): The probability of stripping punctuation from each sample.
-                                    Defaults to 1.0, which means all words will be transformed.
-            whitelist (Optional[List[str]]): A list of punctuation characters to consider when stripping punctuation.
-                If None, the default whitelist ['!', '?', ',', '.', '-', ':', ';'] will be used. Defaults to None.
-
-        Returns:
-            List[Sample]: The transformed sample list with punctuation stripped.
-        """
-        if whitelist is None:
-            whitelist = ["!", "?", ",", ".", "-", ":", ";","/", '"', "'"]
-
-        def check_whitelist(text, whitelist):
-            new_text = []
-            for idx in range(len(text)):
-                if text[idx] not in whitelist:
-                    new_text.append(text[idx])
-                else:
-                    # Establishing some rules (0.5 MG Is dosage not punctuation)
-                    if text[idx-1].isdigit() and text[idx+1].isdigit():
-                        new_text.append(text[idx])
-                    elif text[idx-1].isalpha() and (idx+1 < len(text)) and text[idx+1].isalpha():
-                        if text[idx-1].lower() in ["h", "s"] and text[idx+1].lower() in ["o", "p"]:  # h/o, s/p -> / not to be removed
-                            new_text.append(text[idx])
-                        else:       
-                            new_text.append(" ")
-                    
-                    elif text[idx-1].isdigit() and text[idx+1].isalpha():        
-                        new_text.append(text[idx])   #arthrodesis at C5-C6 and C6-C7,  Lumbar L5-S1 surgery
-                
-            final_txt = "".join(new_text)
-            final_txt = final_txt.replace("  "," ")
-
-            return final_txt
-
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                if random.random() < prob:
-                    sample_list[idx] = check_whitelist(sample, whitelist)
-            else:
-                if random.random() < prob:
-                    sample.test_case = check_whitelist(sample.original, whitelist)
-                    if sample.task in ("ner", "text-classification"):
-                        transformation = []
-                        for c in range(len(sample.test_case)):
-                            inc = 0
-                            if sample.original[c] != sample.test_case[c]:
-                                inc += 1
-                            if sample.original[c+inc] == sample.test_case[c] and inc > 0:
-                                transformation.append(
-                                    Transformation(
-                                        original_span=Span(
-                                            start=c+inc, end=c+inc+1, word=sample.original[c+inc]
-                                        ),
-                                        new_span=Span(
-                                            start=c, end=c+1, word=sample.test_case[c]
-                                        ),
-                                        ignore=False,
-                                    )
-                                )
-                        sample.transformations = transformation
-                else:
-                    sample.test_case = sample.original
-                sample.category = "robustness"
-    
-        return sample_list
-
-
 class AddTypo(BaseRobustness):
     """A class for adding typos to text samples."""
 
@@ -1443,3 +1361,65 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = apply_transformation(sample_list, transformation, prob)
 
         return transformed_list
+
+class StripAllPunctuation(BaseRobustness):
+    """A class for stripping punctuation to text samples."""
+
+    alias_name = "strip_punctuation_all"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        prob: Optional[float] = 1.0,
+        whitelist: Optional[List[str]] = None,
+    ) -> List[Sample]:
+        if whitelist is None:
+            whitelist = ["!", "?", ",", ".", "-", ":", ";","/"]
+        def check_whitelist(text, whitelist):
+            new_text = []
+            transformations = []  # List to keep track of transformations
+            for idx in range(len(text)):
+                if text[idx] not in whitelist:
+                    new_text.append(text[idx])
+                else:
+                    # Establishing some rules (0.5 MG Is dosage not punctuation)
+                    if text[idx-1].isdigit() and text[idx+1].isdigit():
+                        new_text.append(text[idx])
+                    elif text[idx-1].isalpha() and (idx+1 < len(text)) and text[idx+1].isalpha():
+                        if text[idx-1].lower() in ["h", "s"] and text[idx+1].lower() in ["o", "p"]:  # h/o, s/p -> / not to be removed
+                            new_text.append(text[idx])
+                        else:       
+                            new_text.append(" ")
+                    
+                    elif text[idx-1].isdigit() and text[idx+1].isalpha():        
+                        new_text.append(text[idx])        #arthrodesis at C5-C6 and C6-C7,  Lumbar L5-S1 surgery
+                    
+                    # Track transformation
+                    if new_text and text[idx] != new_text[-1]:  # Check if transformation happened
+                        original_span = Span(start=idx, end=idx+1, word=text[idx])
+                        new_span = Span(start=len(new_text)-1, end=len(new_text), word=new_text[-1])
+                        transformations.append(Transformation(original_span=original_span, new_span=new_span))
+
+
+            final_txt = "".join(new_text)
+            final_txt = final_txt.replace("  "," ")
+            return final_txt, transformations
+
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                if random.random() < prob:
+                    transformed_text, transformations = check_whitelist(sample, whitelist)
+                    sample_list[idx] = transformed_text
+            else:
+                if random.random() < prob:
+                    transformed_text, transformations = check_whitelist(sample.original, whitelist)
+                    sample.test_case = transformed_text
+
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                else:
+                    sample.test_case = sample.original
+                sample.category = "robustness"
+
+        return sample_list
