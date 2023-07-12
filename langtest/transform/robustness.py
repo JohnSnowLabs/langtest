@@ -1397,7 +1397,7 @@ class StripAllPunctuation(BaseRobustness):
                     # Track transformation
                     if new_text and text[idx] != new_text[-1]:  # Check if transformation happened
                         original_span = Span(start=idx, end=idx+1, word=text[idx])
-                        new_span = Span(start=len(new_text)-1, end=len(new_text), word=new_text[-1])
+                        new_span = Span(start=len(new_text)-1, end=len(new_text), word="")
                         transformations.append(Transformation(original_span=original_span, new_span=new_span))
 
 
