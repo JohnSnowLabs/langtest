@@ -695,6 +695,7 @@ spacy = ">=3.5.0,<3.6.0"
 [package.source]
 type = "url"
 url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz"
+
 [[package]]
 name = "evaluate"
 version = "0.4.0"
@@ -3617,6 +3618,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 ai21 = ["ai21", "langchain"]
 cohere = ["cohere", "langchain"]
 evaluate = ["evaluate", "rouge-score"]
+huggingface-hub = ["huggingface_hub", "langchain"]
 johnsnowlabs = ["johnsnowlabs"]
 langchain = ["langchain"]
 openai = ["langchain", "openai"]
@@ -3626,4 +3628,4 @@ transformers = ["torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "e57eaeee14a38861eea760a704757b7e3e4a3397d2fcc631b4f5218838b498e5"
+content-hash = "cb5270e5e34f176275b7c248cabfc491ea8b13c96317f566973fceff501f8f00"
