@@ -423,19 +423,24 @@ class StripAllPunctuation(BaseRobustness):
                 if random.random() < prob:
                     sample.test_case = check_whitelist(sample.original, whitelist)
                     if sample.task in ("ner", "text-classification"):
-                        for c in range(len(sample.original)):
+                        transformation = []
+                        for c in range(len(sample.test_case)):
+                            inc = 0
                             if sample.original[c] != sample.test_case[c]:
-                                sample.transformations.append(
+                                inc += 1
+                            if sample.original[c+inc] == sample.test_case[c] and inc > 0:
+                                transformation.append(
                                     Transformation(
                                         original_span=Span(
-                                            start=c, end=c + 1, word=sample.original[c]
+                                            start=c+inc, end=c+inc+1, word=sample.original[c+inc]
                                         ),
                                         new_span=Span(
-                                            start=c, end=c + 1, word=sample.test_case[c]
+                                            start=c, end=c+1, word=sample.test_case[c]
                                         ),
                                         ignore=False,
                                     )
                                 )
+                        sample.transformations = transformation
                 else:
                     sample.test_case = sample.original
                 sample.category = "robustness"
