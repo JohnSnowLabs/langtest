@@ -1388,26 +1388,53 @@ class StripAllPunctuation(BaseRobustness):
         if whitelist is None:
             whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
 
-        pattern = "[\\" + "\\".join(whitelist) + "]"
+        exceptions = ["s/p", "h/o"]
+        letter_letter_pattern = r"\b\w/\w\b"
+        decimal_number_pattern = r"\b\d+\.\d+\b"
+        
+        exceptions_pattern = "|".join(
+            [f"(?<!{ex.split('/')[0]})/(?!{ex.split('/')[1]})" for ex in exceptions if '/' in ex]
+        )
+        whitelist_pattern = "|".join([f"\\{char}" for char in whitelist if char not in ['/', '.']])
+
+        pattern = "|".join([
+            decimal_number_pattern,  # to handle decimal numbers
+            exceptions_pattern,
+            whitelist_pattern,
+            letter_letter_pattern,  # to handle letter/letter
+            "(?<!\d)\.(?!\d)",  # to handle non-decimal periods
+        ])
 
         def check_whitelist(text):
             new_text = text
             transformations = []
             offset = 0
-            for match in re.finditer(pattern, text):
-                if text[match.start() - 1].isalpha():
-                    is_last_char = int(match.end() == len(text))
-                    span_start = match.start()
-                    span_end = match.end() + int(
-                        text[match.end() - is_last_char].isspace()
-                    )
-
+            for match in re.finditer(pattern, new_text):
+                if re.match(letter_letter_pattern, match.group()) and match.group() not in exceptions:
                     transformations.append(
                         Transformation(
                             original_span=Span(
-                                start=span_start - offset,
-                                end=span_end - offset,
-                                word=text[span_start:span_end],
+                                start=match.start() - offset,
+                                end=match.end() - offset,
+                                word=match.group(),
+                            ),
+                            new_span=Span(
+                                start=match.start() - offset,
+                                end=match.start() - offset + 5,
+                                word=" and ",
+                            ),
+                        )
+                    )
+                    new_text = new_text[:match.start() - offset] + " and " + new_text[match.end() - offset:]
+                    print("NEW : ", new_text)
+                    offset += 1
+                elif not re.match(decimal_number_pattern, match.group()): # Avoid removing punctuation from decimal numbers
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start() - offset,
+                                end=match.end() - offset,
+                                word=match.group(),
                             ),
                             new_span=Span(
                                 start=match.start() - offset,
@@ -1416,14 +1443,8 @@ class StripAllPunctuation(BaseRobustness):
                             ),
                         )
                     )
-                    new_text = (
-                        new_text[: span_start - offset] + new_text[span_end - offset :]
-                    )
-                    offset += (
-                        match.end()
-                        + int(text[match.end() - is_last_char].isspace())
-                        - span_start
-                    )
+                    new_text = new_text[:match.start() - offset] + new_text[match.end() - offset:]
+                    offset += len(match.group())
 
             return new_text, transformations
 
@@ -1431,14 +1452,12 @@ class StripAllPunctuation(BaseRobustness):
             if isinstance(sample, str):
                 if random.random() < prob:
                     transformed_text, transformations = check_whitelist(sample)
-                    sample_list[idx] = transformed_text
+                    sample_list[idx] = Sample(transformed_text, transformations=transformations)
             else:
                 if random.random() < prob:
                     transformed_text, transformations = check_whitelist(sample.original)
                     sample.test_case = transformed_text
-
-                    if sample.task in ("ner", "text-classification"):
-                        sample.transformations = transformations
+                    sample.transformations = transformations
                 else:
                     sample.test_case = sample.original
                 sample.category = "robustness"
