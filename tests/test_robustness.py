@@ -1,6 +1,6 @@
 import unittest
 from langtest.transform.robustness import *
-from langtest.transform.utils import A2B_DICT
+from langtest.transform.constants import A2B_DICT
 from langtest.utils.custom_types import SequenceClassificationSample
 
 

@@ -495,7 +495,7 @@ class QASample(BaseQASample):
         """
         from ...langtest import GLOBAL_MODEL as llm_model
         from langchain.evaluation.qa import QAEvalChain
-        from ...transform.utils import qa_prompt_template
+        from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
         if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac"]:
@@ -952,10 +952,8 @@ class TranslationSample(BaseModel):
 
     def _is_eval(self) -> bool:
         """"""
-
         if self.test_case == self.actual_results.translation_text:
             return False, 1
-
         else:
             from ..SentenceTransformer import SimpleSentenceTransformer
 

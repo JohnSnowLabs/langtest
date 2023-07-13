@@ -3,7 +3,7 @@ import copy
 import time
 from collections import defaultdict
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import nest_asyncio
 import pandas as pd
@@ -13,19 +13,17 @@ from langtest.transform.measure import BaseMeasure
 
 from .accuracy import BaseAccuracy
 from .bias import BaseBias
-from .custom_bias import add_custom_data
+from .custom_data import add_custom_data
 from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
-from .utils import (
+from .constants import (
     A2B_DICT,
     asian_names,
     black_names,
     country_economic_dict,
-    create_terminology,
     female_pronouns,
-    get_substitution_names,
     hispanic_names,
     inter_racial_names,
     male_pronouns,
@@ -34,6 +32,7 @@ from .utils import (
     religion_wise_names,
     white_names,
 )
+from .utils import get_substitution_names, create_terminology
 from ..modelhandler import ModelFactory
 from ..utils.custom_types.sample import (
     NERSample,
@@ -58,12 +57,12 @@ class TestFactory:
     # Additional operations can be performed here using the validated data
 
     @staticmethod
-    def call_add_custom_bias(data, name, append):
+    def call_add_custom_bias(data: Union[list, dict], name: str, append: bool) -> None:
         """
         Add custom bias to the given data.
 
         Args:
-            data (list): The data to which the custom bias will be added.
+            data (Union[list, dict]): The data to which the custom bias will be added.
             name (str): The name of the custom bias.
             append (bool): Indicates whether to append the custom bias or replace the existing bias.
 
@@ -679,11 +678,11 @@ class BiasTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the bias test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
         runtime_test = {}
@@ -748,11 +747,11 @@ class RepresentationTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the representation test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the representation test.
         """
         all_samples = []
         runtime_test = {}
@@ -816,11 +815,11 @@ class FairnessTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the fairness test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the fairness test.
         """
         all_samples = []
         runtime_tests = {}
@@ -1044,11 +1043,11 @@ class AccuracyTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the accuracy test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the accuracy test.
         """
         all_samples = []
         runtime_tests = {}
@@ -1240,11 +1239,11 @@ class ToxicityTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        Runs the toxicity test and returns the resulting `Sample` objects.
 
         Returns:
             List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+                A list of `Sample` objects representing the resulting dataset after running the toxicity test.
         """
         all_samples = []
         runtime_tests = {}

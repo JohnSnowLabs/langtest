@@ -59,8 +59,14 @@ class ModelFactory:
         "spacy",
         "langchain",
     ]
-    SUPPORTED_HUBS = ["johnsnowlabs", "spacy", "huggingface"]
-    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
+    SUPPORTED_HUBS = [
+        "spacy",
+        "huggingface",
+        "johnsnowlabs",
+        "openai",
+        "cohere",
+        "ai21",
+    ] + list(LANGCHAIN_HUBS.keys())
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
         """Initializes the ModelFactory object.
