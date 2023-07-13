@@ -1392,7 +1392,7 @@ class StripAllPunctuation(BaseRobustness):
 
         def check_whitelist(text):
             new_text = text
-            transformations = []  # List to keep track of transformations
+            transformations = []
             offset = 0
             for match in re.finditer(pattern, text):
                 if text[match.start() - 1].isalpha():
