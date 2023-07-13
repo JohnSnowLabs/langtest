@@ -1388,25 +1388,24 @@ class AdjectiveSynonymSwap(BaseRobustness):
             def replace_word(match):
                 original_word = match.group()
                 synonyms = adjective_synonym_dict.get(original_word, [original_word])
-                if synonyms:
-                    transformed_word = random.choice(synonyms)
-                    if transformed_word != original_word and (random.random() < prob):
-                        transformations.append(
-                            Transformation(
-                                original_span=Span(
-                                    start=match.start(),
-                                    end=match.end(),
-                                    word=original_word,
-                                ),
-                                new_span=Span(
-                                    start=match.start(),
-                                    end=match.start() + len(transformed_word),
-                                    word=transformed_word,
-                                ),
-                                ignore=False,
-                            )
+                transformed_word = random.choice(synonyms)
+                if transformed_word != original_word and (random.random() < prob):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(),
+                                end=match.end(),
+                                word=original_word,
+                            ),
+                            new_span=Span(
+                                start=match.start(),
+                                end=match.start() + len(transformed_word),
+                                word=transformed_word,
+                            ),
+                            ignore=False,
                         )
-                        return transformed_word
+                    )
+                    return transformed_word
                 return original_word
 
             pattern = r"\b\w+\b"  # Matches whole words using word boundaries
