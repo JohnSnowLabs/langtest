@@ -2,7 +2,6 @@ import asyncio
 from typing import Dict, List
 from abc import ABC, abstractmethod
 from langtest.modelhandler.modelhandler import ModelFactory
-from langtest.transform import ITests
 
 from langtest.utils.custom_types.sample import Sample, SpeedTestSample
 
@@ -60,62 +59,6 @@ class BaseMeasure(ABC):
         """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
-
-class MeasureTestFactory(ITests):
-    """Factory class for the robustness measure.
-
-    This class implements the robustness measure. The robustness measure is the number of test cases that the model fails to run on.
-
-    """
-
-    alias_name = "measure"
-
-    @staticmethod
-    def transform(params: dict, *args, **kwargs) -> List[Sample]:
-        """Transforms the sample data based on the implemented tests measure.
-
-        Args:
-            sample (Sample): The input data to be transformed.
-            **kwargs: Additional arguments to be passed to the tests measure.
-
-        Returns:
-            Sample: The transformed data based on the implemented
-            tests measure.
-
-        """
-        pass
-
-    @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
-        """Runs the robustness measure.
-
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the robustness measure.
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented robustness measure.
-
-        """
-        pass
-        
-    @classmethod
-    def available_tests(cls) -> Dict[str, str]:
-        """Returns the available robustness measure.
-
-        Returns:
-            Dict[str, str]: The available robustness measure.
-
-        """
-        tests = {
-            j: i
-            for i in BaseMeasure.__subclasses__()
-            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-        }
-        return tests
 
 class Speed(BaseMeasure):
     """Speed measure class.
