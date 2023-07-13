@@ -1377,34 +1377,34 @@ class StripAllPunctuation(BaseRobustness):
             whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
         def check_whitelist(text, whitelist):
             new_text = []
-            transformations = []  # List to keep track of transformations
+            transformations = [] 
             for idx in range(len(text)):
                 if text[idx] not in whitelist:
                     new_text.append(text[idx])
                 else:
-                    # Establishing some rules (0.5 MG Is dosage not punctuation)
-                    if text[idx-1].isdigit() and text[idx+1].isdigit():
-                        new_text.append(text[idx])
-                    elif text[idx-1].isalpha() and (idx+1 < len(text)) and text[idx+1].isalpha():
-                        if text[idx-1].lower() in ["h", "s"] and text[idx+1].lower() in ["o", "p"]:  # h/o, s/p -> / not to be removed
-                            new_text.append(text[idx])
-                        else:       
-                            new_text.append(" ")
-                    
-                    elif text[idx-1].isdigit() and text[idx+1].isalpha():        
-                        new_text.append(text[idx])        #arthrodesis at C5-C6 and C6-C7,  Lumbar L5-S1 surgery
-                    
-                    # Track transformation
-                    if new_text and text[idx] != new_text[-1]:  # Check if transformation happened
-                        original_span = Span(start=idx, end=idx+1, word=text[idx])
-                        new_span = Span(start=len(new_text)-1, end=len(new_text), word="")
-                        transformations.append(Transformation(original_span=original_span, new_span=new_span))
+                    transformed = False
+                    start_index = idx  # Start index of the transformed span
 
+                    # If the character is a punctuation and is in the whitelist
+                    if text[idx] in string.punctuation and text[idx] in whitelist:
+                        # Check if there is a whitespace before the punctuation
+                        if idx > 0 and new_text and new_text[-1] == " ":
+                            new_text.pop()  # remove the whitespace
+                            start_index -= 1  # Adjust start index of the transformed span
+                            transformed = True  # A transformation has occurred
+
+                    if not transformed:  # If no transformation has occurred, add the character as is
+                        new_text.append(text[idx])
+
+                    # Track transformation
+                    transformed_character = "" if transformed else new_text[-1]  
+                    if text[idx] != transformed_character or transformed: 
+                        original_span = Span(start=start_index, end=idx+1, word=text[start_index:idx+1])
+                        new_span = Span(start=len(new_text), end=len(new_text), word=transformed_character)
+                        transformations.append(Transformation(original_span=original_span, new_span=new_span, ignore=True))
 
             final_txt = "".join(new_text)
-            final_txt = final_txt.replace("  "," ")
             return final_txt, transformations
-
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
