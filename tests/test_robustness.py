@@ -379,3 +379,13 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
+
+    def test_adj_antonym_swap(self) -> None:
+        """
+        Test the AdjectiveSynonymSwap transformation.
+        """
+        transformed_samples = AdjectiveAntonymSwap.transform(self.adj_sentences)
+        print(transformed_samples)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
