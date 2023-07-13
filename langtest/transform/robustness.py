@@ -4,7 +4,7 @@ import re
 import string
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import SequenceClassificationSample
@@ -1362,6 +1362,7 @@ class MultiplePerturbations(BaseRobustness):
 
         return transformed_list
 
+
 class StripAllPunctuation(BaseRobustness):
     """A class for stripping punctuation to text samples."""
 
@@ -1369,51 +1370,71 @@ class StripAllPunctuation(BaseRobustness):
 
     @staticmethod
     def transform(
-        sample_list: List[Sample],
+        sample_list: List[Union[Sample, str]],
         prob: Optional[float] = 1.0,
         whitelist: Optional[List[str]] = None,
     ) -> List[Sample]:
+        """Transforms the given sample list by stripping all punctuations.
+
+        Args:
+            sample_list (List[Union[Sample, str]]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of samples to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed
+            whitelist (Optional[List[str]]): punctuations to look for.
+
+        Returns:
+            transformed_list: The transformed list of samples.
+        """
         if whitelist is None:
             whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
-        def check_whitelist(text, whitelist):
-            new_text = []
+
+        pattern = "[\\" + "\\".join(whitelist) + "]"
+
+        def check_whitelist(text):
+            new_text = text
             transformations = []  # List to keep track of transformations
-            for idx in range(len(text)):
-                if text[idx] not in whitelist:
-                    new_text.append(text[idx])
-                else:
-                    # Establishing some rules (0.5 MG Is dosage not punctuation)
-                    if text[idx-1].isdigit() and text[idx+1].isdigit():
-                        new_text.append(text[idx])
-                    elif text[idx-1].isalpha() and (idx+1 < len(text)) and text[idx+1].isalpha():
-                        if text[idx-1].lower() in ["h", "s"] and text[idx+1].lower() in ["o", "p"]:  # h/o, s/p -> / not to be removed
-                            new_text.append(text[idx])
-                        else:       
-                            new_text.append(" ")
-                    
-                    elif text[idx-1].isdigit() and text[idx+1].isalpha():        
-                        new_text.append(text[idx])        #arthrodesis at C5-C6 and C6-C7,  Lumbar L5-S1 surgery
-                    
-                    # Track transformation
-                    if new_text and text[idx] != new_text[-1]:  # Check if transformation happened
-                        original_span = Span(start=idx, end=idx+1, word=text[idx])
-                        new_span = Span(start=len(new_text)-1, end=len(new_text), word="")
-                        transformations.append(Transformation(original_span=original_span, new_span=new_span))
+            offset = 0
+            for match in re.finditer(pattern, text):
+                if text[match.start() - 1].isalpha():
+                    is_last_char = int(match.end() == len(text))
+                    span_start = match.start()
+                    span_end = match.end() + int(
+                        text[match.end() - is_last_char].isspace()
+                    )
 
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=span_start - offset,
+                                end=span_end - offset,
+                                word=text[span_start:span_end],
+                            ),
+                            new_span=Span(
+                                start=match.start() - offset,
+                                end=match.start() - offset,
+                                word="",
+                            ),
+                        )
+                    )
+                    new_text = (
+                        new_text[: span_start - offset] + new_text[span_end - offset :]
+                    )
+                    offset += (
+                        match.end()
+                        + int(text[match.end() - is_last_char].isspace())
+                        - span_start
+                    )
 
-            final_txt = "".join(new_text)
-            final_txt = final_txt.replace("  "," ")
-            return final_txt, transformations
-
+            return new_text, transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 if random.random() < prob:
-                    transformed_text, transformations = check_whitelist(sample, whitelist)
+                    transformed_text, transformations = check_whitelist(sample)
                     sample_list[idx] = transformed_text
             else:
                 if random.random() < prob:
-                    transformed_text, transformations = check_whitelist(sample.original, whitelist)
+                    transformed_text, transformations = check_whitelist(sample.original)
                     sample.test_case = transformed_text
 
                     if sample.task in ("ner", "text-classification"):

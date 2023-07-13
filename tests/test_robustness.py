@@ -1,6 +1,25 @@
 import unittest
-from langtest.transform.robustness import *
+
 from langtest.transform.constants import A2B_DICT
+from langtest.transform.robustness import (
+    AbbreviationInsertion,
+    AddContext,
+    AddContraction,
+    AddOcrTypo,
+    AddPunctuation,
+    AddSlangifyTypo,
+    AddSpeechToTextTypo,
+    ConvertAccent,
+    DyslexiaWordSwap,
+    LowerCase,
+    MultiplePerturbations,
+    NumberToWord,
+    StripAllPunctuation,
+    StripPunctuation,
+    SwapEntities,
+    TitleCase,
+    UpperCase,
+)
 from langtest.utils.custom_types import SequenceClassificationSample
 
 
@@ -364,3 +383,8 @@ class RobustnessTestCase(unittest.TestCase):
         )
         self.assertIsInstance(transformed_samples, list)
         self.assertNotEqual(original_qa, transformed_samples_qa)
+
+    def test_strip_all_punctuations(self) -> None:
+        """"""
+        transformed_samples = StripAllPunctuation.transform(self.test_qa)
+        self.assertIsInstance(transformed_samples, list)
