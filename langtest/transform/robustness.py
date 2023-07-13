@@ -743,11 +743,10 @@ class AddContraction(BaseRobustness):
             for contraction in CONTRACTION_MAP:
                 search = re.search(contraction, text, flags=re.IGNORECASE | re.DOTALL)
                 if search and (random.random() < prob):
-                    new_string = CONTRACTION_MAP.get(search.group(), search.group())
                     replaced_string = re.sub(
                         contraction,
                         custom_replace,
-                        new_string,
+                        replaced_string,
                         flags=re.IGNORECASE | re.DOTALL,
                     )
 

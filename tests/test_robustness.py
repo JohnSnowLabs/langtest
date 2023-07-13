@@ -123,6 +123,10 @@ class RobustnessTestCase(unittest.TestCase):
             "20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar to the current one, is being released. The European Central Bank will, in due time, announce when banknotes from the first series lose legal tender status.",
             "is the first series 20 euro note still legal tender",
         ]
+        self.add_contraction_QA_sample = [
+            "Who is angry?",
+            "We will be going to the beach today.",
+        ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
             ["O", "O", "O", "O", "B-COUN", "O", "O", "O", "O", "O"],
@@ -271,7 +275,7 @@ class RobustnessTestCase(unittest.TestCase):
 
     def test_add_contraction(self) -> None:
         """
-        Test the AddContraction transformation.
+        Test the AddContraction transformation
         """
         transformed_samples = AddContraction.transform(self.sentences)
         self.assertListEqual(
@@ -281,6 +285,14 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertEqual(
             [len(sample.transformations) for sample in transformed_samples], [0, 1]
         )
+
+        expected_corrected_sentences = [
+            "Who's angry?",
+            "We'll be going to the beach today.",
+        ]
+        transformed_samples_qa = AddContraction.transform(self.add_contraction_QA_sample)
+        self.assertIsInstance(transformed_samples, list)
+        self.assertEqual(expected_corrected_sentences, transformed_samples_qa)
 
     def test_dyslexia_swap(self) -> None:
         """
