@@ -747,7 +747,7 @@ class AddContraction(BaseRobustness):
                     replaced_string = re.sub(
                         contraction,
                         custom_replace,
-                        new_string,
+                        replaced_string,
                         flags=re.IGNORECASE | re.DOTALL,
                     )
 
