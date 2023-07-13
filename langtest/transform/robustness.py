@@ -1391,26 +1391,37 @@ class StripAllPunctuation(BaseRobustness):
         exceptions = ["s/p", "h/o"]
         letter_letter_pattern = r"\b\w/\w\b"
         decimal_number_pattern = r"\b\d+\.\d+\b"
-        
-        exceptions_pattern = "|".join(
-            [f"(?<!{ex.split('/')[0]})/(?!{ex.split('/')[1]})" for ex in exceptions if '/' in ex]
-        )
-        whitelist_pattern = "|".join([f"\\{char}" for char in whitelist if char not in ['/', '.']])
 
-        pattern = "|".join([
-            decimal_number_pattern,  # to handle decimal numbers
-            exceptions_pattern,
-            whitelist_pattern,
-            letter_letter_pattern,  # to handle letter/letter
-            "(?<!\d)\.(?!\d)",  # to handle non-decimal periods
-        ])
+        exceptions_pattern = "|".join(
+            [
+                f"(?<!{ex.split('/')[0]})/(?!{ex.split('/')[1]})"
+                for ex in exceptions
+                if "/" in ex
+            ]
+        )
+        whitelist_pattern = "|".join(
+            [f"\\{char}" for char in whitelist if char not in ["/", "."]]
+        )
+
+        pattern = "|".join(
+            [
+                decimal_number_pattern,  # to handle decimal numbers
+                exceptions_pattern,
+                whitelist_pattern,
+                letter_letter_pattern,  # to handle letter/letter
+                "(?<!\d)\.(?!\d)",  # to handle non-decimal periods
+            ]
+        )
 
         def check_whitelist(text):
             new_text = text
             transformations = []
             offset = 0
             for match in re.finditer(pattern, new_text):
-                if re.match(letter_letter_pattern, match.group()) and match.group() not in exceptions:
+                if (
+                    re.match(letter_letter_pattern, match.group())
+                    and match.group() not in exceptions
+                ):
                     transformations.append(
                         Transformation(
                             original_span=Span(
@@ -1425,9 +1436,15 @@ class StripAllPunctuation(BaseRobustness):
                             ),
                         )
                     )
-                    new_text = new_text[:match.start() - offset] + " and " + new_text[match.end() - offset:]
+                    new_text = (
+                        new_text[: match.start() - offset]
+                        + " and "
+                        + new_text[match.end() - offset :]
+                    )
                     offset += 1
-                elif not re.match(decimal_number_pattern, match.group()): # Avoid removing punctuation from decimal numbers
+                elif not re.match(
+                    decimal_number_pattern, match.group()
+                ):  # Avoid removing punctuation from decimal numbers
                     transformations.append(
                         Transformation(
                             original_span=Span(
@@ -1442,7 +1459,10 @@ class StripAllPunctuation(BaseRobustness):
                             ),
                         )
                     )
-                    new_text = new_text[:match.start() - offset] + new_text[match.end() - offset:]
+                    new_text = (
+                        new_text[: match.start() - offset]
+                        + new_text[match.end() - offset :]
+                    )
                     offset += len(match.group())
 
             return new_text, transformations
@@ -1456,7 +1476,7 @@ class StripAllPunctuation(BaseRobustness):
                     transformed_text, transformations = check_whitelist(sample.original)
                     sample.test_case = transformed_text
                     if sample.task in ("ner", "text-classification"):
-                       sample.transformations = transformations
+                        sample.transformations = transformations
                 else:
                     sample.test_case = sample.original
                 sample.category = "robustness"
