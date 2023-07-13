@@ -1426,7 +1426,6 @@ class StripAllPunctuation(BaseRobustness):
                         )
                     )
                     new_text = new_text[:match.start() - offset] + " and " + new_text[match.end() - offset:]
-                    print("NEW : ", new_text)
                     offset += 1
                 elif not re.match(decimal_number_pattern, match.group()): # Avoid removing punctuation from decimal numbers
                     transformations.append(
@@ -1452,12 +1451,12 @@ class StripAllPunctuation(BaseRobustness):
             if isinstance(sample, str):
                 if random.random() < prob:
                     transformed_text, transformations = check_whitelist(sample)
-                    sample_list[idx] = Sample(transformed_text, transformations=transformations)
-            else:
+                    sample_list[idx] = transformed_text
                 if random.random() < prob:
                     transformed_text, transformations = check_whitelist(sample.original)
                     sample.test_case = transformed_text
-                    sample.transformations = transformations
+                    if sample.task in ("ner", "text-classification"):
+                       sample.transformations = transformations
                 else:
                     sample.test_case = sample.original
                 sample.category = "robustness"
