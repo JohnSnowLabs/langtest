@@ -1364,7 +1364,7 @@ class MultiplePerturbations(BaseRobustness):
 
 
 class StripAllPunctuation(BaseRobustness):
-    """A class for stripping punctuation to text samples."""
+    """A class for stripping punctuation from text samples."""
 
     alias_name = "strip_punctuation_all"
 
@@ -1374,13 +1374,14 @@ class StripAllPunctuation(BaseRobustness):
         prob: Optional[float] = 1.0,
         whitelist: Optional[List[str]] = None,
     ) -> List[Sample]:
-        """Transforms the given sample list by stripping all punctuations.
+        """
+        Transforms the given sample list by stripping all punctuations.
 
         Args:
             sample_list (List[Union[Sample, str]]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of samples to be perturbed.
-                                    Defaults to 1.0, which means all samples will be transformed
-            whitelist (Optional[List[str]]): punctuations to look for.
+                                    Defaults to 1.0, which means all samples will be transformed.
+            whitelist (Optional[List[str]]): Punctuations to look for.
 
         Returns:
             transformed_list: The transformed list of samples.
@@ -1472,6 +1473,7 @@ class StripAllPunctuation(BaseRobustness):
                 if random.random() < prob:
                     transformed_text, transformations = check_whitelist(sample)
                     sample_list[idx] = transformed_text
+            else:
                 if random.random() < prob:
                     transformed_text, transformations = check_whitelist(sample.original)
                     sample.test_case = transformed_text
