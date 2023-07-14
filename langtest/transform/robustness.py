@@ -505,6 +505,7 @@ class SwapEntities(BaseRobustness):
                             break
 
                 replace_token = sent_tokens[replace_idx : replace_idx + len(replace_idxs)]
+                token_length = len(replace_token)
                 replace_token = " ".join(replace_token)
                 filtered_ents = [
                     ent
