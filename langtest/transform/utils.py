@@ -331,7 +331,8 @@ def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
 
                     chunk = None
                     ent_type = None
-            except:
+
+            except AttributeError:
                 continue
 
     return terminology
