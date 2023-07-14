@@ -2,15 +2,13 @@ import asyncio
 from typing import Dict, List
 from abc import ABC, abstractmethod
 from langtest.modelhandler.modelhandler import ModelFactory
-
 from langtest.utils.custom_types.sample import Sample, SpeedTestSample
 
-class BaseMeasure(ABC):
 
+class BaseMeasure(ABC):
     @staticmethod
     @abstractmethod
     def transform():
-        
         raise NotImplementedError("Please Implement this method")
 
     @staticmethod
@@ -59,6 +57,7 @@ class BaseMeasure(ABC):
         """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
+
 
 class Speed(BaseMeasure):
     """Speed measure class.

@@ -1276,6 +1276,7 @@ class ToxicityTestFactory(ITests):
         }
         return tests
 
+
 class MeasureTestFactory(ITests):
     """Factory class for the robustness measure.
 
@@ -1316,7 +1317,7 @@ class MeasureTestFactory(ITests):
 
         """
         pass
-        
+
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
         """Returns the available robustness measure.
