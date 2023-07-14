@@ -511,7 +511,7 @@ class SwapEntities(BaseRobustness):
                     if len(ent.split(" ")) == token_length
                 ]
                 if not filtered_ents:
-                    chosen_ent = replace_token
+                    chosen_ent = random.choice(terminology[ent_type])
                 else:
                     chosen_ent = random.choice(filtered_ents)
 
