@@ -491,8 +491,6 @@ class SwapEntities(BaseRobustness):
 
                 ent_start_pos = [1 if label[0] == "B" else 0 for label in sample_labels]
                 ent_idx = [i for i, value in enumerate(ent_start_pos) if value == 1]
-                if not ent_idx:
-                    continue
 
                 replace_idx = random.choice(ent_idx)
                 ent_type = sample_labels[replace_idx][2:]
