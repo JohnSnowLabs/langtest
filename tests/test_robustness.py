@@ -64,6 +64,16 @@ class RobustnessTestCase(unittest.TestCase):
                 original="I cannot live in USA due to torandos caramelized!"
             ),
         ]
+
+        self.strip_all_punctuation = [
+            SequenceClassificationSample(
+                original="12 . dutasteride 0.5 mg Capsule Sig : One ( 1 ) Capsule PO once a day ."
+            ),
+            SequenceClassificationSample(
+                original="In conclusion , RSDS is a relevant osteoarticular complication in patients receiving either anticalcineurinic drug ( CyA or tacrolimus ) , even under monotherapy or with a low steroid dose ."
+            ),
+        ]
+
         self.british_sentences = [
             SequenceClassificationSample(
                 original="I live in London, United Kingdom since 2019"
@@ -230,6 +240,17 @@ class RobustnessTestCase(unittest.TestCase):
             self.assertNotEqual(sample.test_case, sample.original)
             self.assertEqual(len(sample.transformations), 1)
 
+    def test_strip_all_punctuation(self) -> None:
+        """
+        Test the StripAllPunctuation transformation.
+        """
+        transformed_samples = StripAllPunctuation.transform(self.strip_all_punctuation)
+        self.assertIsInstance(transformed_samples, list)
+        self.assertEqual(len(self.sentences), len(transformed_samples))
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+            self.assertEqual(len(sample.transformations), 3)
+
     def test_swap_entities(self) -> None:
         """
         Test the SwapEntities transformation.
@@ -383,8 +404,3 @@ class RobustnessTestCase(unittest.TestCase):
         )
         self.assertIsInstance(transformed_samples, list)
         self.assertNotEqual(original_qa, transformed_samples_qa)
-
-    def test_strip_all_punctuations(self) -> None:
-        """"""
-        transformed_samples = StripAllPunctuation.transform(self.test_qa)
-        self.assertIsInstance(transformed_samples, list)
