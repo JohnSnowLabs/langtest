@@ -497,7 +497,7 @@ class QASample(BaseQASample):
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
-        if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac"]:
+        if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ"]:
             PROMPT = PromptTemplate(
                 input_variables=["query", "answer", "result"], template=qa_prompt_template
             )
