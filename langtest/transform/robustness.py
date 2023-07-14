@@ -17,6 +17,8 @@ from .constants import (
     abbreviation_dict,
     dyslexia_map,
     ocr_typo_dict,
+    adjective_synonym_dict,
+    adjective_antonym_dict,
 )
 from ..utils.SoundsLikeFunctions import Search
 from ..utils.custom_types import Sample, Span, Transformation
@@ -1360,3 +1362,129 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = apply_transformation(sample_list, transformation, prob)
 
         return transformed_list
+
+
+class AdjectiveSynonymSwap(BaseRobustness):
+    """A class for swaping adjectives to their synonyms"""
+
+    alias_name = "adjective_synonym_swap"
+
+    @staticmethod
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+        """Converts the input sentences by changing adjectives to their respective synonyms from the adjective synonym dictionary.
+
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of replacing adjectives words to their respective synonym for each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list with adjectives swapped with their respective synonyms.
+        """
+
+        def adjective_synonym_swap(text):
+            transformations = []
+
+            def replace_word(match):
+                original_word = match.group()
+                synonyms = adjective_synonym_dict.get(original_word, [original_word])
+                transformed_word = random.choice(synonyms)
+                if transformed_word != original_word and (random.random() < prob):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(),
+                                end=match.end(),
+                                word=original_word,
+                            ),
+                            new_span=Span(
+                                start=match.start(),
+                                end=match.start() + len(transformed_word),
+                                word=transformed_word,
+                            ),
+                            ignore=False,
+                        )
+                    )
+                    return transformed_word
+                return original_word
+
+            pattern = r"\b\w+\b"  # Matches whole words using word boundaries
+            transformed_text = re.sub(pattern, replace_word, text)
+
+            return transformed_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = adjective_synonym_swap(sample)
+            else:
+                sample.test_case, transformations = adjective_synonym_swap(
+                    sample.original
+                )
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+
+
+class AdjectiveAntonymSwap(BaseRobustness):
+    """A class for swaping adjectives to their antonyms"""
+
+    alias_name = "adjective_antonym_swap"
+
+    @staticmethod
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+        """Converts the input sentences by changing adjectives to their respective antonyms from the adjective antonym dictionary.
+
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of replacing adjectives words to their respective antonyms for each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list with adjectives swapped with their respective antonyms.
+        """
+
+        def adjective_antonym_swap(text):
+            transformations = []
+
+            def replace_word(match):
+                original_word = match.group()
+                antonyms = adjective_antonym_dict.get(original_word, [original_word])
+                transformed_word = random.choice(antonyms)
+                if transformed_word != original_word and (random.random() < prob):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(),
+                                end=match.end(),
+                                word=original_word,
+                            ),
+                            new_span=Span(
+                                start=match.start(),
+                                end=match.start() + len(transformed_word),
+                                word=transformed_word,
+                            ),
+                            ignore=False,
+                        )
+                    )
+                    return transformed_word
+                return original_word
+
+            pattern = r"\b\w+\b"  # Matches whole words using word boundaries
+            transformed_text = re.sub(pattern, replace_word, text)
+
+            return transformed_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = adjective_antonym_swap(sample)
+            else:
+                sample.test_case, transformations = adjective_antonym_swap(
+                    sample.original
+                )
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
