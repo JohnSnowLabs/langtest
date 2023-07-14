@@ -37,8 +37,7 @@ class _IDataset(ABC):
 
     @abstractmethod
     def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
             data (List[Sample]):
@@ -58,6 +57,7 @@ class DataFactory:
 
     def __init__(self, file_path: str, task: str, **kwargs) -> None:
         """Initializes DataFactory object.
+
         Args:
             file_path (str): Path to the dataset.
             task (str): Task to be evaluated.
@@ -182,6 +182,8 @@ class DataFactory:
             + "/HellaSwag/hellaswag-test-tiny.jsonl",
             "Translation-test": script_dir[:-7]
             + "/Translation/translation-test-tiny.jsonl",
+            "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
+            "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
         }
         return datasets_info[dataset_name]
 
@@ -267,8 +269,7 @@ class ConllDataset(_IDataset):
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
         Args:
             data (List[Sample]):
                 data to export
@@ -315,9 +316,7 @@ class JSONDataset(_IDataset):
 
 
 class CSVDataset(_IDataset):
-    """
-    Class to handle CSV files dataset. Subclass of _IDataset.
-    """
+    """Class to handle CSV files dataset. Subclass of _IDataset."""
 
     COLUMN_NAMES = {
         "text-classification": {
@@ -425,8 +424,7 @@ class CSVDataset(_IDataset):
         return delimiter
 
     def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
-        """
-        Convert a row from the dataset into a Sample for the NER task.
+        """Convert a row from the dataset into a Sample for the NER task.
         Args:
             row (Dict[str, List[str]]):
                 single row of the dataset
