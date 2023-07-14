@@ -1,25 +1,6 @@
 import unittest
-
+from langtest.transform.robustness import *
 from langtest.transform.constants import A2B_DICT
-from langtest.transform.robustness import (
-    AbbreviationInsertion,
-    AddContext,
-    AddContraction,
-    AddOcrTypo,
-    AddPunctuation,
-    AddSlangifyTypo,
-    AddSpeechToTextTypo,
-    ConvertAccent,
-    DyslexiaWordSwap,
-    LowerCase,
-    MultiplePerturbations,
-    NumberToWord,
-    StripAllPunctuation,
-    StripPunctuation,
-    SwapEntities,
-    TitleCase,
-    UpperCase,
-)
 from langtest.utils.custom_types import SequenceClassificationSample
 
 
