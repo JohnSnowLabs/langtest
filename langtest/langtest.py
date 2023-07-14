@@ -1,17 +1,20 @@
+import json
 import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Dict, List, Optional, Union, Any
+from typing import Any, Dict, List, Optional, Union
+
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
+
 from langtest.utils.custom_types.sample import RuntimeSample
 from .augmentation import AugmentRobustness
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
-from .modelhandler import ModelFactory, LANGCHAIN_HUBS
+from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
-import json
+from .transform.utils import RepresentationOperation
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -32,8 +35,14 @@ class Harness:
         "toxicity",
         "translation",
     ]
-    SUPPORTED_HUBS = ["spacy", "huggingface", "johnsnowlabs", "openai", "cohere", "ai21"]
-    SUPPORTED_HUBS.extend(list(LANGCHAIN_HUBS.keys()))
+    SUPPORTED_HUBS = [
+        "spacy",
+        "huggingface",
+        "johnsnowlabs",
+        "openai",
+        "cohere",
+        "ai21",
+    ] + list(LANGCHAIN_HUBS.keys())
     DEFAULTS_DATASET = {
         ("ner", "dslim/bert-base-NER", "huggingface"): "conll/sample.conll",
         ("ner", "en_core_web_sm", "spacy"): "conll/sample.conll",
@@ -913,22 +922,6 @@ class Harness:
 
         return harness
 
-    @staticmethod
-    def pass_custom_bias_data(
-        file_path: str, test_name: str = None, append: bool = False
-    ):
-        """Load custom data from a JSON file and store it in a class variable.
-
-        Args:
-            file_path (str): Path to the JSON file.
-            test_name (str, optional): Name parameter. Defaults to None.
-            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
-        """
-        with open(file_path, "r") as f:
-            data = json.load(f)
-
-        TestFactory.call_add_custom_bias(data, test_name, append)
-
     def edit_testcases(self, output_path: str, **kwargs):
         """Testcases are exported to a csv file to be edited.
 
@@ -984,3 +977,53 @@ class Harness:
             return {test_type: available_tests[test_type]}
 
         return available_tests
+
+    def pass_custom_data(
+        self,
+        file_path: str,
+        test_name: str = None,
+        task: str = None,
+        append: bool = False,
+    ) -> None:
+        """Load custom data from a JSON file and store it in a class variable.
+
+        Args:
+            file_path (str): Path to the JSON file.
+            test_name (str, optional): Name parameter. Defaults to None.
+            task (str, optional): Task type. Either "bias" or "representation". Defaults to None.
+            append (bool, optional): Whether to append the data or overwrite it. Defaults to False.
+        """
+        with open(file_path, "r") as f:
+            data = json.load(f)
+
+        if task == "bias":
+            if test_name not in (
+                "Country-Economic-Bias",
+                "Religion-Bias",
+                "Ethnicity-Name-Bias",
+                "Gender-Pronoun-Bias",
+            ):
+                raise ValueError(
+                    f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias."
+                )
+
+            TestFactory.call_add_custom_bias(data, test_name, append)
+        elif task == "representation":
+            if test_name not in (
+                "Country-Economic-Representation",
+                "Religion-Representation",
+                "Ethnicity-Representation",
+                "Label-Representation",
+            ):
+                raise ValueError(
+                    f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Representation, Religion-Representation, Ethnicity-Representation, Label-Representation."
+                )
+
+            RepresentationOperation.add_custom_representation(
+                data, test_name, append, check=self.task
+            )
+
+        else:
+            raise ValueError(
+                f"Invalid task type: {task}. Expected 'bias' or 'representation'."
+            )
