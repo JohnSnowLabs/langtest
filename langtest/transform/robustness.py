@@ -1409,7 +1409,7 @@ class StripAllPunctuation(BaseRobustness):
                 exceptions_pattern,
                 whitelist_pattern,
                 letter_letter_pattern,  # to handle letter/letter
-                "(?<!\d)\.(?!\d)",  # to handle non-decimal periods
+                "(?<!\\d)\\.(?!\\d)"    # to handle non-decimal periods
             ]
         )
 
