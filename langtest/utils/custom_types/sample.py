@@ -678,7 +678,9 @@ class SummarizationSample(BaseModel):
             bool: True if the sample ran successfully, False otherwise.
         """
         dataset_name = (
-            self.dataset_name.split("-")[0].lower() if self.dataset_name else "default_summarization_prompt"
+            self.dataset_name.split("-")[0].lower()
+            if self.dataset_name
+            else "default_summarization_prompt"
         )
 
         prompt_template = kwargs.get(
