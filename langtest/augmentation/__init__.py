@@ -243,8 +243,8 @@ class AugmentRobustness(BaseAugmentaion):
             )
         return config
 
-class TemplaticAugment(BaseAugmentaion):
 
+class TemplaticAugment(BaseAugmentaion):
     def __init__(self, templates: Union[str, List[str]], task: str) -> None:
         self.__templates = templates
         self.__task = task
@@ -252,18 +252,14 @@ class TemplaticAugment(BaseAugmentaion):
             self.__templates = DataFactory(self.__templates).load()
 
     def fix(self, input_path: str, output_path: str, *args, **kwargs):
-
         for template in self.__templates:
-            entites_variables =  self.extract_variable_names(template)
+            entites_variables = self.extract_variable_names(template)
             for entity in entites_variables:
                 lines = self.extract_lines(input_path, entites_variables)
 
-    def extract_lines(self, input_path: str, label: str, *args, **kwargs): 
+    def extract_lines(self, input_path: str, label: str, *args, **kwargs):
         with open(input_path, "r") as fread:
-            return (
-                line[:-1] for line in fread.readlines()
-                if line[:-1].endswith(label)
-            )
+            return (line[:-1] for line in fread.readlines() if line[:-1].endswith(label))
 
     def extract_variable_names(f_string: str):
         pattern = r"{([^{}]*)}"
@@ -278,12 +274,11 @@ class TemplaticAugment(BaseAugmentaion):
     @templates.setter
     def templates(self, templates: Union[str, List[str]]):
         self.__templates = templates
-    
+
     @property
     def task(self):
         return self.__task
-    
+
     @task.setter
     def task(self, task: str):
         self.__task = task
-    
