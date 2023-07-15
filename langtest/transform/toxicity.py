@@ -52,7 +52,8 @@ class BaseToxicity(ABC):
             sample_list (List[Sample]): list of samples to compute toxicity on
             model (ModelFactory): model to use for toxicity completion
         """
-        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        created_task = asyncio.create_task(
+            cls.run(sample_list, model, **kwargs))
         return created_task
 
 
@@ -133,7 +134,8 @@ class ToxicityTypes(BaseToxicity):
         """
         toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
         for sample in sample_list:
-            score = {x["label"]: x["score"] for x in toxicity_types(sample.prompt, top_k=None)}
+            score = {x["label"]: x["score"]
+                     for x in toxicity_types(sample.prompt, top_k=None)}
             sample.prompt_toxicity = score[test_name]
             sample.test_type = "toxicity"
             sample.category = "toxicity"
@@ -160,12 +162,12 @@ class ToxicityTypes(BaseToxicity):
                     sample_status = sample.run(model, *args, **kwargs)
                     if sample_status:
                         sample.completion_toxicity = {x["label"]: x["score"] for x in
-                            toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+                                                      toxicity_types(sample.completion, top_k=None)}[sample.test_type]
                         sample.state = "done"
                 else:
                     sample.completion = model(sample.prompt)
                     sample.completion_toxicity = {x["label"]: x["score"] for x in
-                        toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+                                                  toxicity_types(sample.completion, top_k=None)}[sample.test_type]
 
                     sample.state = "done"
 
