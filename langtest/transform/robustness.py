@@ -1364,126 +1364,6 @@ class MultiplePerturbations(BaseRobustness):
         return transformed_list
 
 
-class StripAllPunctuation(BaseRobustness):
-    """A class for stripping punctuation from text samples."""
-
-    alias_name = "strip_punctuation_all"
-
-    @staticmethod
-    def transform(
-        sample_list: List[Union[Sample, str]],
-        prob: Optional[float] = 1.0,
-        whitelist: Optional[List[str]] = None,
-    ) -> List[Sample]:
-        """
-        Transforms the given sample list by stripping all punctuations.
-
-        Args:
-            sample_list (List[Union[Sample, str]]): The list of samples to transform.
-            prob (Optional[float]): The probability controlling the proportion of samples to be perturbed.
-                                    Defaults to 1.0, which means all samples will be transformed.
-            whitelist (Optional[List[str]]): Punctuations to look for.
-
-        Returns:
-            transformed_list: The transformed list of samples.
-        """
-        if whitelist is None:
-            whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
-
-        exceptions = ["s/p", "h/o"]
-        letter_letter_pattern = r"\b\w/\w\b"
-        decimal_number_pattern = r"\b\d+\.\d+\b"
-
-        exceptions_pattern = "|".join(
-            [
-                f"(?<!{ex.split('/')[0]})/(?!{ex.split('/')[1]})"
-                for ex in exceptions
-                if "/" in ex
-            ]
-        )
-        whitelist_pattern = "|".join(
-            [f"\\{char}" for char in whitelist if char not in ["/", "."]]
-        )
-
-        pattern = "|".join(
-            [
-                decimal_number_pattern,  # to handle decimal numbers
-                exceptions_pattern,
-                whitelist_pattern,
-                letter_letter_pattern,  # to handle letter/letter
-                "(?<!\\d)\\.(?!\\d)",  # to handle non-decimal periods
-            ]
-        )
-
-        def check_whitelist(text):
-            new_text = text
-            transformations = []
-            offset = 0
-            for match in re.finditer(pattern, new_text):
-                if (
-                    re.match(letter_letter_pattern, match.group())
-                    and match.group() not in exceptions
-                ):
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=match.start() - offset,
-                                end=match.end() - offset,
-                                word=match.group(),
-                            ),
-                            new_span=Span(
-                                start=match.start() - offset,
-                                end=match.start() - offset + 5,
-                                word=" and ",
-                            ),
-                        )
-                    )
-                    new_text = (
-                        new_text[: match.start() - offset]
-                        + " and "
-                        + new_text[match.end() - offset :]
-                    )
-                    offset += 1
-                elif not re.match(
-                    decimal_number_pattern, match.group()
-                ):  # Avoid removing punctuation from decimal numbers
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=match.start() - offset,
-                                end=match.end() - offset,
-                                word=match.group(),
-                            ),
-                            new_span=Span(
-                                start=match.start() - offset,
-                                end=match.start() - offset,
-                                word="",
-                            ),
-                        )
-                    )
-                    new_text = (
-                        new_text[: match.start() - offset]
-                        + new_text[match.end() - offset :]
-                    )
-                    offset += len(match.group())
-
-            return new_text, transformations
-
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                if random.random() < prob:
-                    transformed_text, transformations = check_whitelist(sample)
-                    sample_list[idx] = transformed_text
-            else:
-                if random.random() < prob:
-                    transformed_text, transformations = check_whitelist(sample.original)
-                    sample.test_case = transformed_text
-                    if sample.task in ("ner", "text-classification"):
-                        sample.transformations = transformations
-                else:
-                    sample.test_case = sample.original
-
-
 class AdjectiveSynonymSwap(BaseRobustness):
     """A class for swaping adjectives to their synonyms"""
 
@@ -1606,5 +1486,127 @@ class AdjectiveAntonymSwap(BaseRobustness):
                 if sample.task in ("ner", "text-classification"):
                     sample.transformations = transformations
                 sample.category = "robustness"
+
+        return sample_list
+
+
+class StripAllPunctuation(BaseRobustness):
+    """A class for stripping punctuation from text samples."""
+
+    alias_name = "strip_punctuation_all"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Union[Sample, str]],
+        prob: Optional[float] = 1.0,
+        whitelist: Optional[List[str]] = None,
+    ) -> List[Sample]:
+        """
+        Transforms the given sample list by stripping all punctuations.
+
+        Args:
+            sample_list (List[Union[Sample, str]]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of samples to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
+            whitelist (Optional[List[str]]): Punctuations to look for.
+
+        Returns:
+            transformed_list: The transformed list of samples.
+        """
+        if whitelist is None:
+            whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
+
+        exceptions = ["s/p", "h/o"]
+        letter_letter_pattern = r"\b\w/\w\b"
+        decimal_number_pattern = r"\b\d+\.\d+\b"
+
+        exceptions_pattern = "|".join(
+            [
+                f"(?<!{ex.split('/')[0]})/(?!{ex.split('/')[1]})"
+                for ex in exceptions
+                if "/" in ex
+            ]
+        )
+        whitelist_pattern = "|".join(
+            [f"\\{char}" for char in whitelist if char not in ["/", "."]]
+        )
+
+        pattern = "|".join(
+            [
+                decimal_number_pattern,  # to handle decimal numbers
+                exceptions_pattern,
+                whitelist_pattern,
+                letter_letter_pattern,  # to handle letter/letter
+                "(?<!\\d)\\.(?!\\d)",  # to handle non-decimal periods
+            ]
+        )
+
+        def check_whitelist(text):
+            new_text = text
+            transformations = []
+            offset = 0
+            for match in re.finditer(pattern, new_text):
+                if (
+                    re.match(letter_letter_pattern, match.group())
+                    and match.group() not in exceptions
+                ):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start() - offset,
+                                end=match.end() - offset,
+                                word=match.group(),
+                            ),
+                            new_span=Span(
+                                start=match.start() - offset,
+                                end=match.start() - offset + 5,
+                                word=" and ",
+                            ),
+                        )
+                    )
+                    new_text = (
+                        new_text[: match.start() - offset]
+                        + " and "
+                        + new_text[match.end() - offset :]
+                    )
+                    offset += 1
+                elif not re.match(
+                    decimal_number_pattern, match.group()
+                ):  # Avoid removing punctuation from decimal numbers
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start() - offset,
+                                end=match.end() - offset,
+                                word=match.group(),
+                            ),
+                            new_span=Span(
+                                start=match.start() - offset,
+                                end=match.start() - offset,
+                                word="",
+                            ),
+                        )
+                    )
+                    new_text = (
+                        new_text[: match.start() - offset]
+                        + new_text[match.end() - offset :]
+                    )
+                    offset += len(match.group())
+
+            return new_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                if random.random() < prob:
+                    transformed_text, transformations = check_whitelist(sample)
+                    sample_list[idx] = transformed_text
+            else:
+                if random.random() < prob:
+                    transformed_text, transformations = check_whitelist(sample.original)
+                    sample.test_case = transformed_text
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                else:
+                    sample.test_case = sample.original
 
         return sample_list
