@@ -1,6 +1,8 @@
 import asyncio
+import evaluate
 from abc import ABC, abstractmethod
 from typing import List
+from transformers import Pipeline, pipeline
 
 from langtest.modelhandler import ModelFactory
 from ..utils.custom_types import Sample
@@ -38,27 +40,7 @@ class BaseToxicity(ABC):
             sample_list (List[Sample]): list of samples to compute toxicity on
             model (ModelFactory): model to use for toxicity completion
         """
-        progress = kwargs.get("progress_bar", False)
-        global toxicity_metric
-        for sample in sample_list:
-            if sample.state != "done":
-                if hasattr(sample, "run"):
-                    sample_status = sample.run(model, *args, **kwargs)
-                    if sample_status:
-                        sample.completion_toxicity = toxicity_metric.compute(
-                            predictions=[sample.completion]
-                        )["toxicity"][0]
-                        sample.state = "done"
-                else:
-                    sample.completion = model(sample.prompt)
-                    sample.completion_toxicity = toxicity_metric.compute(
-                        predictions=[sample.completion]
-                    )["toxicity"][0]
-                    sample.state = "done"
-
-            if progress:
-                progress.update(1)
-        return sample_list
+        raise NotImplementedError()
 
     @classmethod
     async def async_run(
@@ -80,7 +62,39 @@ class PromptToxicity(BaseToxicity):
     alias_name = "offensive"
 
     @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
+    async def run(
+        sample_list: List[Sample], model: ModelFactory, *args, **kwargs
+    ) -> List[Sample]:
+        """Computes the toxicity completion on the samples
+
+        Args:
+            sample_list (List[Sample]): list of samples to compute toxicity on
+            model (ModelFactory): model to use for toxicity completion
+        """
+        progress = kwargs.get("progress_bar", False)
+        global toxicity_metric
+        for sample in sample_list:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, *args, **kwargs)
+                    if sample_status:
+                        sample.completion_toxicity = toxicity_metric.compute(
+                            predictions=[sample.completion]
+                        )["toxicity"][0]
+                        sample.state = "done"
+                else:
+                    sample.completion = model(sample.prompt)
+                    sample.completion_toxicity = toxicity_metric.compute(
+                        predictions=[sample.completion]
+                    )["toxicity"][0]
+                    sample.state = "done"
+
+            if progress:
+                progress.update(1)
+        return sample_list
+    
+    @staticmethod
+    def transform(sample_list: List[Sample], **kwargs) -> List[Sample]:
         """Method that implements prompt toxicity transformations on the given samples
 
         Args:
@@ -89,7 +103,6 @@ class PromptToxicity(BaseToxicity):
         Returns:
             List[Sample]:  list of transformed samples
         """
-        import evaluate
 
         global toxicity_metric
         toxicity_metric = evaluate.load("toxicity", module_type="measurement")
@@ -100,4 +113,59 @@ class PromptToxicity(BaseToxicity):
             sample.test_type = "offensive"
             sample.category = "toxicity"
 
+        return sample_list
+
+class ToxicityTypes(BaseToxicity):
+    """Class for toxicity types"""
+
+    alias_name = ["lgbtqphobia", "ideology", "racism", "xenophobia", "sexism"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], test_name) -> List[Sample]:
+        """Method that implements prompt toxicity transformations on the given samples
+
+        Args:
+             sample_list (List[Sample]): list of samples to compute toxicity prompt on
+
+        Returns:
+            List[Sample]:  list of transformed samples
+        """
+        toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
+        for sample in sample_list:
+            score = {x["label"]:x["score"] for x in toxicity_types(sample.prompt, top_k=None)}
+            sample.prompt_toxicity = score[test_name]
+            sample.test_type = "toxicity"
+            sample.category = "toxicity"
+
+        return sample_list
+    
+    @staticmethod
+    async def run(
+        sample_list: List[Sample], model: ModelFactory,*args, **kwargs
+    ) -> List[Sample]:
+        """Computes the toxicity completion on the samples
+
+        Args:
+            sample_list (List[Sample]): list of samples to compute toxicity on
+            model (ModelFactory): model to use for toxicity completion
+        """
+        progress = kwargs.get("progress_bar", False)
+        
+        toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
+
+        for sample in sample_list:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, *args, **kwargs)
+                    if sample_status:
+                        sample.completion_toxicity = {x["label"]:x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+                        sample.state = "done"
+                else:
+                    sample.completion = model(sample.prompt)
+                    sample.completion_toxicity = {x["label"]:x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+
+                    sample.state = "done"
+
+            if progress:
+                progress.update(1)
         return sample_list
