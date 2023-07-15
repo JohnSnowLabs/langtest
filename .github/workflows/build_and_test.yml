@@ -42,11 +42,7 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          poetry install --with dev --all-extras --no-interaction --no-root
-
-      - name: Install project
-        run: |
-          poetry install --no-interaction
+          poetry install --with dev --all-extras
 
       - name: Check linting
         run: |
