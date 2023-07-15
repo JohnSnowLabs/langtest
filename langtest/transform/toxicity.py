@@ -1,7 +1,7 @@
 import asyncio
-import evaluate
-from abc import ABC, abstractmethod
 from typing import List
+from abc import ABC, abstractmethod
+import evaluate
 from transformers import pipeline
 
 from langtest.modelhandler import ModelFactory
