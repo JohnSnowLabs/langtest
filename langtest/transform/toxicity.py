@@ -92,7 +92,7 @@ class PromptToxicity(BaseToxicity):
             if progress:
                 progress.update(1)
         return sample_list
-    
+
     @staticmethod
     def transform(sample_list: List[Sample], **kwargs) -> List[Sample]:
         """Method that implements prompt toxicity transformations on the given samples
@@ -163,7 +163,7 @@ class ToxicityTypes(BaseToxicity):
                         sample.state = "done"
                 else:
                     sample.completion = model(sample.prompt)
-                    sample.completion_toxicity = {x["label"]: x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+                    sample.completion_toxicity = { x["label"]: x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
 
                     sample.state = "done"
 
