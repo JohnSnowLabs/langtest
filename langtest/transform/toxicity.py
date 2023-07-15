@@ -2,7 +2,7 @@ import asyncio
 import evaluate
 from abc import ABC, abstractmethod
 from typing import List
-from transformers import Pipeline, pipeline
+from transformers import pipeline
 
 from langtest.modelhandler import ModelFactory
 from ..utils.custom_types import Sample
@@ -115,6 +115,7 @@ class PromptToxicity(BaseToxicity):
 
         return sample_list
 
+
 class ToxicityTypes(BaseToxicity):
     """Class for toxicity types"""
 
@@ -132,16 +133,16 @@ class ToxicityTypes(BaseToxicity):
         """
         toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
         for sample in sample_list:
-            score = {x["label"]:x["score"] for x in toxicity_types(sample.prompt, top_k=None)}
+            score = {x["label"]: x["score"] for x in toxicity_types(sample.prompt, top_k=None)}
             sample.prompt_toxicity = score[test_name]
             sample.test_type = "toxicity"
             sample.category = "toxicity"
 
         return sample_list
-    
+
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory,*args, **kwargs
+        sample_list: List[Sample], model: ModelFactory, *args, **kwargs
     ) -> List[Sample]:
         """Computes the toxicity completion on the samples
 
@@ -150,7 +151,7 @@ class ToxicityTypes(BaseToxicity):
             model (ModelFactory): model to use for toxicity completion
         """
         progress = kwargs.get("progress_bar", False)
-        
+
         toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
 
         for sample in sample_list:
@@ -158,11 +159,11 @@ class ToxicityTypes(BaseToxicity):
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, *args, **kwargs)
                     if sample_status:
-                        sample.completion_toxicity = {x["label"]:x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+                        sample.completion_toxicity = {x["label"]: x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
                         sample.state = "done"
                 else:
                     sample.completion = model(sample.prompt)
-                    sample.completion_toxicity = {x["label"]:x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
+                    sample.completion_toxicity = {x["label"]: x["score"] for x in toxicity_types(sample.completion, top_k=None)}[sample.test_type]
 
                     sample.state = "done"
 
