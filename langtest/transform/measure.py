@@ -1,14 +1,35 @@
 import asyncio
-from typing import Dict, List
+from typing import List
 from abc import ABC, abstractmethod
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types.sample import Sample, SpeedTestSample
 
 
 class BaseMeasure(ABC):
+    """Abstract base class for implementing a robustness measure.
+
+    This class defines the interface for implementing a robustness measure.
+
+    Attributes:
+        None
+    """
+
     @staticmethod
     @abstractmethod
     def transform():
+        """Abstract method that transforms the sample data based on the implemented robustness measure.
+
+        Args:
+            params (dict): The input data to be transformed.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented robustness measure.
+
+        Raises:
+            NotImplementedError: This method must be implemented in the derived class.
+        """
         raise NotImplementedError("Please Implement this method")
 
     @staticmethod
