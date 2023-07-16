@@ -312,21 +312,25 @@ class TemplaticAugment(BaseAugmentaion):
         try:
             template = copy(template)
             matches = re.finditer(r"{([^{}]*)}", template.original)
+            cursor = 0
+            template_predictions = []
             if matches:
                 for match in matches:
-                    prediction = random.choice(self.__search_results[match.group(1)])
-                    word = " ".join(
-                        i.span.word for i in prediction if isinstance(i, NERPrediction)
-                    )
-                    start_index = template.original[: match.start()].count(" ")
-                    template.original = template.original.replace("{"+match.group(1)+"}", word, 1)
-                    if len(prediction) > 3:
-                        pass
-                    template.expected_results.predictions.pop(start_index)
-                    template.expected_results.predictions[
-                        start_index:start_index
-                    ] = prediction
-                temp = template
+                    for group in match.groups():
+                        prediction = random.choice(self.__search_results[match.group(1)])
+                        word = " ".join(
+                            i.span.word for i in prediction if isinstance(i, NERPrediction)
+                        )
+                        start_index = template.original[: match.start()].count(" ")
+                        template.original = template.original.replace("{"+group+"}", word, 1)
+                        for result in template.expected_results.predictions[cursor:]:
+                            if prediction[0].entity.endswith(result.entity):
+                                template_predictions.extend(prediction)
+                                break
+                            else:
+                                template_predictions.append(result)
+                            cursor += 1
+                template.expected_results.predictions = template_predictions
                 return template
             else:
                 return None
