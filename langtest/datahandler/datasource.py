@@ -397,15 +397,22 @@ class CSVDataset(_IDataset):
         """
         temp_id = None
         otext = ""
-        for i in data:
-            if isinstance(i, NEROutput):
+        if self.task == "ner":
+            for i in data:
                 text, temp_id = Formatter.process(i, output_format="csv", temp_id=temp_id)
-            else:
-                text = Formatter.process(i, output_format="csv")
-            otext += text
+                otext += text
 
-        with open(output_path, "wb") as fwriter:
-            fwriter.write(bytes(otext, encoding="utf-8"))
+            with open(output_path, "wb") as fwriter:
+                fwriter.write(bytes(otext, encoding="utf-8"))
+
+        elif self.task == "text-classification":
+            rows = []
+            for s in data:
+                row = Formatter.process(s, output_format="csv")
+                rows.append(row)
+
+            df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES.keys()))
+            df.to_csv(output_path, index=False, encoding="utf-8")
 
     @staticmethod
     def _find_delimiter(file_path: str) -> property:
@@ -823,12 +830,15 @@ class HuggingFaceDataset(_IDataset):
             output_path (str):
                 Path to save the data to.
         """
-        with open(output_path, "w") as file:
-            csv_writer = csv.writer(file)
-            csv_writer.writerow(list(self.COLUMN_NAMES["text-classification"].keys()))
-            for s in data:
-                row = self._sample_to_row(s)
-                csv_writer.writerow(row)
+        rows = []
+        for s in data:
+            row = Formatter.process(s, output_format="csv")
+            rows.append(row)
+
+        df = pd.DataFrame(
+            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
+        )
+        df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
         """
@@ -866,19 +876,3 @@ class HuggingFaceDataset(_IDataset):
             original=original,
             expected_results=SequenceClassificationOutput(predictions=[label]),
         )
-
-    @staticmethod
-    def _sample_to_row(s: Sample) -> List[str]:
-        """
-        Convert a Sample object into a row for exporting.
-
-        Args:
-            s (Sample):
-                Sample object to convert.
-
-        Returns:
-            List[str]:
-                Row formatted as a list of strings.
-        """
-        row = [s.original, s.expected_results.predictions[0].label]
-        return row

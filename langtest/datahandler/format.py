@@ -90,24 +90,23 @@ class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
     """
 
     @staticmethod
-    def to_csv(sample: Sample, delimiter: str = ",") -> str:
-        """Converts a custom type to a CSV string.
+    def to_csv(sample: Sample) -> str:
+        """
+        Convert a Sample object into a row for exporting.
 
         Args:
-            sample (Sample):
-                The input sample containing the `SequenceClassificationOutput` object to convert.
-            delimiter (str):
-                The delimiter character to use in the CSV string.
+            Sample :
+                Sample object to convert.
 
         Returns:
-            str: The CSV string representation of the `SequenceClassificationOutput` object.
+            List[str]:
+                Row formatted as a list of strings.
         """
-        original = sample.original
-        test_case = sample.test_case
-        if test_case:
-            return f"{test_case}{delimiter}{sample.expected_results.to_str_list()[0]}\n"
+        if sample.test_case:
+            row = [sample.test_case, sample.expected_results.predictions[0].label]
         else:
-            return f"{original}{delimiter}{sample.expected_results.to_str_list()[0]}\n"
+            row = [sample.original, sample.expected_results.predictions[0].label]
+        return row
 
 
 class NEROutputFormatter(BaseFormatter):
