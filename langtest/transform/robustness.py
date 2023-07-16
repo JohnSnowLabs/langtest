@@ -505,14 +505,27 @@ class SwapEntities(BaseRobustness):
                             break
 
                 replace_token = sent_tokens[replace_idx : replace_idx + len(replace_idxs)]
+                token_length = len(replace_token)
                 replace_token = " ".join(replace_token)
-
-                chosen_ent = random.choice(terminology[ent_type])
+                filtered_ents = [
+                    ent
+                    for ent in terminology[ent_type]
+                    if len(ent.split(" ")) == token_length
+                ]
+                if not filtered_ents:
+                    chosen_ent = random.choice(terminology[ent_type])
+                else:
+                    chosen_ent = random.choice(filtered_ents)
 
                 if random.random() < prob:
-                    replace_token_pos = re.search(replace_token, sample.original)
+                    replace_token_pos = re.search(
+                        re.escape(replace_token), sample.original
+                    )
                     sample.test_case = sample.original.replace(replace_token, chosen_ent)
-                    if sample.task in ("ner", "text-classification"):
+                    if (
+                        sample.task in ("ner", "text-classification")
+                        and replace_token_pos
+                    ):
                         sample.transformations = [
                             Transformation(
                                 original_span=Span(
