@@ -274,7 +274,7 @@ class TemplaticAugment(BaseAugmentaion):
         self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
 
-        if os.path.exists(self.__templates):
+        if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
         elif isinstance(self.__templates, str):
             self.__templates = [self.str_to_sample(self.__templates)]
@@ -341,39 +341,36 @@ class TemplaticAugment(BaseAugmentaion):
         variable_names = [match.strip() for match in matches]
         return variable_names
 
-    def new_sample(self, template: Sample, *args, **kwargs):
-        try:
-            template = copy(template)
-            matches = re.finditer(r"{([^{}]*)}", template.original)
-            cursor = 0
-            template_predictions = []
-            if matches:
-                for match in matches:
-                    for group in match.groups():
-                        prediction = random.choice(self.__search_results[match.group(1)])
-                        word = " ".join(
-                            i.span.word
-                            for i in prediction
-                            if isinstance(i, NERPrediction)
-                        )
-                        start_index = template.original[: match.start()].count(" ")
-                        template.original = template.original.replace(
-                            "{" + group + "}", word, 1
-                        )
-                        for result in template.expected_results.predictions[cursor:]:
-                            if prediction[0].entity.endswith(result.entity):
-                                template_predictions.extend(prediction)
-                                break
-                            else:
-                                template_predictions.append(result)
-                            cursor += 1
-                template.expected_results.predictions = template_predictions
-                return template
-            else:
-                return None
-        except KeyError:
-            raise ValueError(f"Invaild Entity {match.group(1)} found in template.")
+    def new_sample(self, template: Sample):
+        template = copy(template)
+        matches = re.finditer(r"{([^{}]*)}", template.original)
+        cursor = 0
+        other_predictions = []
+        if matches:
+            for match in matches:
+                entity = match.group(1)
+                if entity in self.__search_results:
+                    prediction = random.choice(self.__search_results[entity])
+                    word = " ".join(i.span.word for i in prediction if isinstance(i, NERPrediction))
 
+                    template.original = template.original.replace("{" + entity + "}", word, 1)
+                    for result in template.expected_results.predictions[cursor:]:
+                        if prediction[0].entity.endswith(result.entity):
+                            other_predictions.extend(prediction)
+                            cursor += 1
+                            break
+                        else:
+                            if re.search(r"{([^{}]*)}", result.span.word):
+                                continue
+                            other_predictions.append(result)
+                            cursor += 1
+                else:
+                    continue
+            template.expected_results.predictions = other_predictions + template.expected_results.predictions[cursor:]
+            return template
+        else:
+            return None
+        
     def str_to_sample(self, template: str):
         if self.__task == "ner":
             sample = NERSample()
@@ -382,15 +379,20 @@ class TemplaticAugment(BaseAugmentaion):
             predictions = []
             cursor = 0
             for word in words:
-                # if not re.search(r"{([^{}]*)}", word):
+                if re.search(r"{([^{}]*)}", word):
+                    entity = word.replace("{", "").replace("}", "")
+                else:
+                    entity = "O"
                 predictions.append(
                     NERPrediction.from_span(
-                        "O",
+                        entity,
                         word,
                         cursor,
                         cursor + len(word),
                         pos_tag="-X-",
                         chunk_tag="-X-",
+                        doc_id=0,
+                        doc_name="",
                     )
                 )
                 cursor += len(word) + 1
