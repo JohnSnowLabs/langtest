@@ -251,7 +251,26 @@ class AugmentRobustness(BaseAugmentaion):
 
 
 class TemplaticAugment(BaseAugmentaion):
+    """
+    This class is used for templatic augmentation. It is a subclass of the BaseAugmentation class.
+
+    Attributes:
+    __templates: A string or a list of strings or samples that represents the templates for the augmentation.
+    __task: The task for which the augmentation is being performed.
+
+    Methods:
+    __init__(self, templates: Union[str, List[str]], task: str): Initializes the TemplaticAugment class.
+    fix(self, input_path: str, output_path: str, *args, **kwargs): Performs the templatic augmentation and exports the results to a specified path.
+    """
+
     def __init__(self, templates: Union[str, List[str]], task: str) -> None:
+        """
+        This constructor for the TemplaticAugment class.
+
+        Parameters:
+        templates (Union[str, List[str]]): The templates to be used for the augmentation.
+        task (str): The task for which the augmentation is being performed.
+        """
         self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
 
@@ -263,6 +282,20 @@ class TemplaticAugment(BaseAugmentaion):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
     def fix(self, input_path: str, output_path: str, *args, **kwargs):
+        """
+        This method is used to perform the templatic augmentation.
+        It takes the input data, performs the augmentation and then saves the augmented data to the output path.
+
+        Parameters:
+        input_path (str): The path to the input data.
+        output_path (str): The path where the augmented data will be saved.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+        bool: Returns True upon successful completion of the method.
+        """
+
         df = DataFactory(input_path, self.__task)
         data = df.load()
         new_data = []
@@ -274,7 +307,7 @@ class TemplaticAugment(BaseAugmentaion):
                 new_sample = self.new_sample(template)
                 if new_sample:
                     new_data.append(new_sample)
-        
+
         df.export(new_data, output_path)
 
         return True
@@ -319,10 +352,14 @@ class TemplaticAugment(BaseAugmentaion):
                     for group in match.groups():
                         prediction = random.choice(self.__search_results[match.group(1)])
                         word = " ".join(
-                            i.span.word for i in prediction if isinstance(i, NERPrediction)
+                            i.span.word
+                            for i in prediction
+                            if isinstance(i, NERPrediction)
                         )
                         start_index = template.original[: match.start()].count(" ")
-                        template.original = template.original.replace("{"+group+"}", word, 1)
+                        template.original = template.original.replace(
+                            "{" + group + "}", word, 1
+                        )
                         for result in template.expected_results.predictions[cursor:]:
                             if prediction[0].entity.endswith(result.entity):
                                 template_predictions.extend(prediction)
