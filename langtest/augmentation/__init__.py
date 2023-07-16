@@ -1,14 +1,20 @@
+from collections import defaultdict
+import os
 import re
 import yaml
 import random
 import pandas as pd
 from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
+from copy import deepcopy as copy
 
 from langtest.transform import TestFactory
 from langtest.utils.custom_types import Sample
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform.utils import create_terminology
+from langtest.utils.custom_types.output import NEROutput
+from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
+from langtest.utils.custom_types.sample import NERSample
 
 
 class BaseAugmentaion(ABC):
@@ -246,26 +252,113 @@ class AugmentRobustness(BaseAugmentaion):
 
 class TemplaticAugment(BaseAugmentaion):
     def __init__(self, templates: Union[str, List[str]], task: str) -> None:
-        self.__templates = templates
+        self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
-        if isinstance(self.__templates, str):
-            self.__templates = DataFactory(self.__templates).load()
+
+        if os.path.exists(self.__templates):
+            self.__templates = DataFactory(self.__templates, self.__task).load()
+        elif isinstance(self.__templates, str):
+            self.__templates = [self.str_to_sample(self.__templates)]
+        elif isinstance(self.__templates, list):
+            self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
     def fix(self, input_path: str, output_path: str, *args, **kwargs):
+        df = DataFactory(input_path, self.__task)
+        data = df.load()
+        new_data = []
+        self.__search_results = self.search_sample_results(data)
+
         for template in self.__templates:
-            entites_variables = self.extract_variable_names(template)
-            for entity in entites_variables:
-                lines = self.extract_lines(input_path, entites_variables)
+            variable_names = self.extract_variable_names(template.original)
+            for sample_results in self.__search_results[variable_names[0]]:
+                new_sample = self.new_sample(template)
+                if new_sample:
+                    new_data.append(new_sample)
+        
+        df.export(new_data, output_path)
 
-    def extract_lines(self, input_path: str, label: str, *args, **kwargs):
-        with open(input_path, "r") as fread:
-            return (line[:-1] for line in fread.readlines() if line[:-1].endswith(label))
+        return True
 
-    def extract_variable_names(f_string: str):
+    def search_sample_results(
+        self, samples: List[Sample]
+    ) -> Dict[str, List[Union[NERPrediction, SequenceLabel]]]:
+        """"""
+        results_dict = defaultdict(list)
+        for sample in samples:
+            chunk = []
+            ent_name = ""
+            for result in sample.expected_results.predictions:
+                ent = result.entity.split("-")[-1]
+                if ent != "O" and ent_name == "":
+                    ent_name = ent
+                if result.entity.endswith(ent_name) and ent != "O":
+                    chunk.append(result)
+                elif len(chunk) > 0:
+                    results_dict[ent_name].append(tuple(chunk))
+                    ent_name = ""
+                    chunk = []
+
+            if chunk:
+                results_dict[ent_name].append(tuple(chunk))
+        return results_dict
+
+    def extract_variable_names(self, f_string: str):
         pattern = r"{([^{}]*)}"
         matches = re.findall(pattern, f_string)
         variable_names = [match.strip() for match in matches]
         return variable_names
+
+    def new_sample(self, template: Sample, *args, **kwargs):
+        try:
+            template = copy(template)
+            matches = re.finditer(r"{([^{}]*)}", template.original)
+            if matches:
+                for match in matches:
+                    prediction = random.choice(self.__search_results[match.group(1)])
+                    word = " ".join(
+                        i.span.word for i in prediction if isinstance(i, NERPrediction)
+                    )
+                    start_index = template.original[: match.start()].count(" ")
+                    template.original = template.original.replace("{"+match.group(1)+"}", word, 1)
+                    if len(prediction) > 3:
+                        pass
+                    template.expected_results.predictions.pop(start_index)
+                    template.expected_results.predictions[
+                        start_index:start_index
+                    ] = prediction
+                temp = template
+                return template
+            else:
+                return None
+        except KeyError:
+            raise ValueError(f"Invaild Entity {match.group(1)} found in template.")
+
+    def str_to_sample(self, template: str):
+        if self.__task == "ner":
+            sample = NERSample()
+            sample.original = template
+            words = template.split()
+            predictions = []
+            cursor = 0
+            for word in words:
+                # if not re.search(r"{([^{}]*)}", word):
+                predictions.append(
+                    NERPrediction.from_span(
+                        "O",
+                        word,
+                        cursor,
+                        cursor + len(word),
+                        pos_tag="-X-",
+                        chunk_tag="-X-",
+                    )
+                )
+                cursor += len(word) + 1
+            sample.expected_results = NEROutput(predictions=predictions)
+
+        elif self.__task == "text-classification":
+            raise NotImplementedError
+
+        return sample
 
     @property
     def templates(self):
