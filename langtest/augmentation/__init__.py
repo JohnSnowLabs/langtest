@@ -351,9 +351,13 @@ class TemplaticAugment(BaseAugmentaion):
                 entity = match.group(1)
                 if entity in self.__search_results:
                     prediction = random.choice(self.__search_results[entity])
-                    word = " ".join(i.span.word for i in prediction if isinstance(i, NERPrediction))
+                    word = " ".join(
+                        i.span.word for i in prediction if isinstance(i, NERPrediction)
+                    )
 
-                    template.original = template.original.replace("{" + entity + "}", word, 1)
+                    template.original = template.original.replace(
+                        "{" + entity + "}", word, 1
+                    )
                     for result in template.expected_results.predictions[cursor:]:
                         if prediction[0].entity.endswith(result.entity):
                             other_predictions.extend(prediction)
@@ -366,11 +370,13 @@ class TemplaticAugment(BaseAugmentaion):
                             cursor += 1
                 else:
                     continue
-            template.expected_results.predictions = other_predictions + template.expected_results.predictions[cursor:]
+            template.expected_results.predictions = (
+                other_predictions + template.expected_results.predictions[cursor:]
+            )
             return template
         else:
             return None
-        
+
     def str_to_sample(self, template: str):
         if self.__task == "ner":
             sample = NERSample()
