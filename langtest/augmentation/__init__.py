@@ -324,7 +324,7 @@ class TemplaticAugment(BaseAugmentaion):
 
         Returns:
         Dict[str, List[Union[NERPrediction, SequenceLabel]]]: A dictionary containing the search results.
-        
+
         """
         results_dict = defaultdict(list)
         for sample in samples:
@@ -354,7 +354,7 @@ class TemplaticAugment(BaseAugmentaion):
 
         Returns:
         List[str]: A list of variable names.
-        
+
         """
         pattern = r"{([^{}]*)}"
         matches = re.findall(pattern, f_string)
@@ -410,7 +410,7 @@ class TemplaticAugment(BaseAugmentaion):
     def str_to_sample(self, template: str):
         """
         This method is used to convert a template string to a Sample object.
-        
+
         Parameters:
         template (str): The template string to be converted.
 
