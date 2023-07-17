@@ -1,7 +1,12 @@
 import logging
 
 from metaflow import FlowSpec, JSONType, Parameter, step
-from transformers import AutoModelForTokenClassification, AutoTokenizer, Trainer
+from transformers import (
+    AutoModelForTokenClassification,
+    AutoTokenizer,
+    Trainer,
+    TrainingArguments,
+)
 
 from langtest import Harness
 from langtest.datahandler.datasource import ConllDataset
@@ -40,8 +45,7 @@ class NEREnd2EndPipeline(FlowSpec):
         """Performs all the necessary set up steps"""
         self.task = "ner"
         self.hub = "huggingface"
-        if "output_dir" not in self.training_args:
-            self.training_args["output_dir"] = "checkpoints"
+        self.output_dir = "checkpoints/"
 
         self.train_datasource = ConllDataset(file_path=self.train_data, task=self.task)
         self.eval_datasource = ConllDataset(file_path=self.eval_data, task=self.task)
@@ -71,14 +75,15 @@ class NEREnd2EndPipeline(FlowSpec):
             ignore_mismatched_sizes=True,
         )
 
-        self.trainer = Trainer(
+        print(self.training_args)
+        trainer = Trainer(
             model=self.model,
-            args=self.training_args,
+            args=TrainingArguments(output_dir=self.output_dir, **self.training_args),
             train_dataset=self.train_dataset,
             eval_dataset=self.eval_dataset,
             tokenizer=self.tokenizer,
         )
-        self.trainer.train()
+        trainer.train()
         self.model.save_pretrained(self.training_args["output_dir"])
         self.tokenizer.save_pretrained(self.training_args["output_dir"])
 
@@ -140,14 +145,14 @@ class NEREnd2EndPipeline(FlowSpec):
             ignore_mismatched_sizes=True,
         )
 
-        self.trainer = Trainer(
+        trainer = Trainer(
             model=self.model,
             args=self.training_args,
             train_dataset=self.augmented_train_dataset,
             eval_dataset=self.eval_dataset,
             tokenizer=self.tokenizer,
         )
-        self.trainer.train()
+        trainer.train()
         self.model.save_pretrained(f"augmented_{self.training_args['output_dir']}")
         self.tokenizer.save_pretrained(f"augmented_{self.training_args['output_dir']}")
 
