@@ -281,7 +281,7 @@ class TemplaticAugment(BaseAugmentaion):
         elif isinstance(self.__templates, list):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
-    def fix(self, input_path: str, output_path: str, min_samples=5000, *args, **kwargs):
+    def fix(self, input_path: str, output_path: str, max_num=None, *args, **kwargs):
         """
         This method is used to perform the templatic augmentation.
         It takes the input data, performs the augmentation and then saves the augmented data to the output path.
@@ -300,9 +300,11 @@ class TemplaticAugment(BaseAugmentaion):
         data = df.load()
         new_data = []
         self.__search_results = self.search_sample_results(data)
+        if not max_num:
+            max_num = max(len(i) for i in self.__search_results.values())
 
         for template in self.__templates:
-            for _ in range(min_samples):
+            for _ in range(max_num):
                 new_sample = self.new_sample(template)
                 if new_sample:
                     new_data.append(new_sample)
@@ -314,7 +316,16 @@ class TemplaticAugment(BaseAugmentaion):
     def search_sample_results(
         self, samples: List[Sample]
     ) -> Dict[str, List[Union[NERPrediction, SequenceLabel]]]:
-        """"""
+        """
+        This method is used to search the results of the samples for the entities in the templates.
+
+        Parameters:
+        samples (List[Sample]): The samples for which the results are to be searched.
+
+        Returns:
+        Dict[str, List[Union[NERPrediction, SequenceLabel]]]: A dictionary containing the search results.
+        
+        """
         results_dict = defaultdict(list)
         for sample in samples:
             chunk = []
@@ -335,12 +346,32 @@ class TemplaticAugment(BaseAugmentaion):
         return results_dict
 
     def extract_variable_names(self, f_string: str):
+        """
+        This method is used to extract the variable names from the templates.
+
+        Parameters:
+        f_string (str): The template string.
+
+        Returns:
+        List[str]: A list of variable names.
+        
+        """
         pattern = r"{([^{}]*)}"
         matches = re.findall(pattern, f_string)
         variable_names = [match.strip() for match in matches]
         return variable_names
 
     def new_sample(self, template: Sample):
+        """
+        This method is used to generate a new sample from a template.
+
+        Parameters:
+        template (Sample): The template from which the new sample is to be generated.
+
+        Returns:
+        Sample: The new sample generated from the template.
+
+        """
         template = copy(template)
         matches = re.finditer(r"{([^{}]*)}", template.original)
         cursor = 0
@@ -377,6 +408,16 @@ class TemplaticAugment(BaseAugmentaion):
             return None
 
     def str_to_sample(self, template: str):
+        """
+        This method is used to convert a template string to a Sample object.
+        
+        Parameters:
+        template (str): The template string to be converted.
+
+        Returns:
+        Sample: The Sample object generated from the template string.
+
+        """
         if self.__task == "ner":
             sample = NERSample()
             sample.original = template
