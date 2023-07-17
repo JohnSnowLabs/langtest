@@ -279,7 +279,7 @@ class TemplaticAugment(BaseAugmentaion):
             self.__templates = DataFactory(self.__templates, self.__task).load()
         elif isinstance(self.__templates, str):
             self.__templates = [self.str_to_sample(self.__templates)]
-        elif isinstance(self.__templates, list):
+        elif isinstance(self.__templates, list) and isinstance(self.__templates[0], str):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
     def fix(self, input_path: str, output_path: str, max_num=None, *args, **kwargs):
@@ -457,7 +457,7 @@ class TemplaticAugment(BaseAugmentaion):
 
     @templates.setter
     def templates(self, templates: Union[str, List[str]]):
-        self.__templates = templates
+        self.__init__(templates, self.__task)
 
     @property
     def task(self):
@@ -468,6 +468,15 @@ class TemplaticAugment(BaseAugmentaion):
         self.__task = task
 
     def add_spaces_around_punctuation(self, text: str):
+        """
+        This method is used to add spaces around punctuation in a string.
+
+        Parameters:
+        text (str): The string to which spaces are to be added.
+
+        Returns:
+        str: The string with spaces added around punctuation.
+        """
         for punct in string.punctuation:
             if punct not in ["{", "}", "_"]:
                 if punct == ".":
