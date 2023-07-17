@@ -966,7 +966,7 @@ class Harness:
         """
         test_scenarios = TestFactory.test_scenarios()
         available_tests = {
-            test: list(scenarios.items()) for test, scenarios in test_scenarios.items()
+            test: list(scenarios.keys()) for test, scenarios in test_scenarios.items()
         }
 
         if test_type:
