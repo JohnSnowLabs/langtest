@@ -1343,6 +1343,10 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = AddSpeechToTextTypo.transform(sample, prob)
             elif order == "add_slangs":
                 transformed_list = AddSlangifyTypo.transform(sample, prob)
+            elif order == "adjective_synonym_swap":
+                transformed_list = AdjectiveSynonymSwap.transform(sample, prob)
+            elif order == "adjective_antonym_swap":
+                transformed_list = AdjectiveAntonymSwap.transform(sample, prob)
             else:
                 raise ValueError(f"Unknown transformation: {order}")
             return transformed_list
