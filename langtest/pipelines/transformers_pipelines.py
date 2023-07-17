@@ -1,49 +1,58 @@
-from typing import Any, Dict
+import logging
 
+from metaflow import FlowSpec, JSONType, Parameter, step
 from transformers import AutoModelForTokenClassification, AutoTokenizer, Trainer
 
 from langtest import Harness
 from langtest.datahandler.datasource import ConllDataset
 from langtest.pipelines.utils.data_helpers import NERDataset
-from .pipeline import BaseEnd2EndPipeline
 
 
-class NEREnd2EndPipeline(BaseEnd2EndPipeline):
+class NEREnd2EndPipeline(FlowSpec):
     """NER pipeline for Huggingface models"""
 
-    def __init__(
-        self,
-        model_name: str,
-        train_data: str,
-        eval_data: str,
-        config: Dict,
-        training_args: Dict[str, Any],
-        **kwargs,
-    ):
-        """Constructor method
+    model_name = Parameter(
+        "model-name", help="Name of the pretrained model to load", type=str, required=True
+    )
+    train_data = Parameter(
+        "train-data", help="Path to the train dataset", type=str, required=True
+    )
+    eval_data = Parameter(
+        "eval-data", help="Path to the evaluation dataset", type=str, required=True
+    )
+    config = Parameter(
+        "config", help="Tests configuration", type=JSONType, required=False, default=None
+    )
+    training_args = Parameter(
+        "training-args",
+        help="Training arguments to pass to the Trainer",
+        type=JSONType,
+        required=True,
+    )
 
-        Args:
-            model_name (str): name of the pretrained model to load
-            train_data (str): path to the train dataset
-            eval_data (str): path to the evaluation dataset
-            config (Union[str, Dict[str, Any]]): tests configuration
-            training_args (Dict[str, Any]): training arguments to pass to the Trainer
-        """
-        super().__init__("ner", model_name, "huggingface", train_data, eval_data, config)
+    @step
+    def start(self):
+        """Starting step of the flow (required by Metaflow)"""
+        self.next(self.setup)
 
-        if "output_dir" not in training_args:
-            training_args["output_dir"] = "checkpoints"
-
-        self.training_args = training_args
-
+    @step
     def setup(self):
         """Performs all the necessary set up steps"""
+        self.task = "ner"
+        self.hub = "huggingface"
+        if "output_dir" not in self.training_args:
+            self.training_args["output_dir"] = "checkpoints"
+
         self.train_datasource = ConllDataset(file_path=self.train_data, task=self.task)
         self.eval_datasource = ConllDataset(file_path=self.eval_data, task=self.task)
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
+        self.next(self.train)
+
+    @step
     def train(self):
         """Performs the training procedure of the model"""
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+
         tokens, labels = self.train_datasource.load_raw_data()
         self.train_dataset = NERDataset(
             tokens=tokens, labels=labels, tokenizer=self.tokenizer
@@ -73,10 +82,15 @@ class NEREnd2EndPipeline(BaseEnd2EndPipeline):
         self.model.save_pretrained(self.training_args["output_dir"])
         self.tokenizer.save_pretrained(self.training_args["output_dir"])
 
+        self.next(self.evaluate)
+
+    @step
     def evaluate(self):
         """Performs the evaluation procedure on the given test set"""
         self.metrics = self.trainer.evaluate()
+        self.next(self.test)
 
+    @step
     def test(self):
         """Performs the testing procedure of the model on a set of tests using langtest"""
         self.harness = Harness(
@@ -85,12 +99,17 @@ class NEREnd2EndPipeline(BaseEnd2EndPipeline):
             hub=self.hub,
             data=self.train_data,
         )
-        self.harness.configure(self.config)
+        if self.config:
+            self.harness.configure(self.config)
+
         self.harness.generate()
         self.harness.save(save_dir="saved_harness")
         self.harness.run()
         self.harness.report(format="dataframe", save_dir="first_report")
 
+        self.next(self.augment)
+
+    @step
     def augment(self):
         """Performs the data augmentation procedure based on langtest"""
         self.harness.augment(
@@ -99,6 +118,9 @@ class NEREnd2EndPipeline(BaseEnd2EndPipeline):
             export_mode="add",
         )
 
+        self.next(self.retrain)
+
+    @step
     def retrain(self):
         """Performs the training procedure using the augmented data created by langtest"""
         self.augmented_train_datasource = ConllDataset(
@@ -129,11 +151,28 @@ class NEREnd2EndPipeline(BaseEnd2EndPipeline):
         self.model.save_pretrained(f"augmented_{self.training_args['output_dir']}")
         self.tokenizer.save_pretrained(f"augmented_{self.training_args['output_dir']}")
 
+        self.next(self.reevaluate)
+
+    @step
     def reevaluate(self):
         """Performs the evaluation procedure of the model training on the augmented dataset"""
         self.augmented_metrics = self.trainer.evaluate()
 
+        self.next(self.compare)
+
+    @step
     def compare(self):
         """Performs the comparison between the two trained models"""
         print("Metrics before augmentation:", self.metrics)
         print("Metrics after augmentation:", self.augmented_metrics)
+
+        self.next(self.end)
+
+    @step
+    def end(self):
+        """Ending step of the flow (required by Metaflow)"""
+        logging.info(f"{self.__class__} successfully ran!")
+
+
+if __name__ == "__main__":
+    NEREnd2EndPipeline()
