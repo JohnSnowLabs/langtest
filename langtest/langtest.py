@@ -775,13 +775,13 @@ class Harness:
                 raise ValueError(
                     f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types."
                 )
-        
+
         if templates:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
             ).fix(input_path=input_path, output_path=output_path)
-        
+
         else:
             _ = AugmentRobustness(
                 task=self.task,
