@@ -1512,7 +1512,7 @@ class AdjectiveAntonymSwap(BaseRobustness):
 class StripAllPunctuation(BaseRobustness):
     """A class for stripping punctuation from text samples."""
 
-    alias_name = "strip_punctuation_all"
+    alias_name = "strip_all_punctuation"
 
     @staticmethod
     def transform(
@@ -1537,7 +1537,7 @@ class StripAllPunctuation(BaseRobustness):
 
         exceptions = ["s/p", "h/o"]
         letter_letter_pattern = r"\b\w/\w\b"
-        decimal_number_pattern = r"\b\d+\.\d+\b"
+        number_pattern = r"\b\d+\.\d+\b|\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b\d{1,2}-\d{1,2}-\d{2,4}\b|\b\d+-\d+\b"
 
         exceptions_pattern = "|".join(
             [
@@ -1547,16 +1547,17 @@ class StripAllPunctuation(BaseRobustness):
             ]
         )
         whitelist_pattern = "|".join(
-            [f"\\{char}" for char in whitelist if char not in ["/", "."]]
+            [f"\\{char}" for char in whitelist if char not in ["/", ".", "-"]]
         )
 
         pattern = "|".join(
             [
-                decimal_number_pattern,  # to handle decimal numbers
+                number_pattern,  # to handle decimal numbers
                 exceptions_pattern,
                 whitelist_pattern,
                 letter_letter_pattern,  # to handle letter/letter
                 "(?<!\\d)\\.(?!\\d)",  # to handle non-decimal periods
+                "(?<!\\d)-(?!\\d)",  # to handle non-range hyphens
             ]
         )
 
@@ -1590,8 +1591,8 @@ class StripAllPunctuation(BaseRobustness):
                     )
                     offset += 1
                 elif not re.match(
-                    decimal_number_pattern, match.group()
-                ):  # Avoid removing punctuation from decimal numbers
+                    number_pattern, match.group()
+                ):  # Avoid removing punctuation from decimal numbers, date formats, and ranges
                     transformations.append(
                         Transformation(
                             original_span=Span(
@@ -1627,5 +1628,7 @@ class StripAllPunctuation(BaseRobustness):
                         sample.transformations = transformations
                 else:
                     sample.test_case = sample.original
+
+                sample.category = "robustness"
 
         return sample_list
