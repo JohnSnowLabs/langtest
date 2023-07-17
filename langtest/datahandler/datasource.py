@@ -217,7 +217,7 @@ class ConllDataset(_IDataset):
         Returns:
             Tuple[List[List[str]], List[List[str]]]: list of tokens and list of labels per sample
         """
-        tokens, labels = [], []
+        all_tokens, all_labels = [], []
         with open(self._file_path) as f:
             content = f.read()
             docs = [
@@ -240,9 +240,9 @@ class ConllDataset(_IDataset):
                     token_list = [t.split() for t in tokens]
 
                     #  get token and labels from the split
-                    tokens.append([elt[0] for elt in token_list])
-                    labels.append([elt[-1] for elt in token_list])
-        return tokens, labels
+                    all_tokens.append([elt[0] for elt in token_list])
+                    all_labels.append([elt[-1] for elt in token_list])
+        return all_tokens, all_labels
 
     def load_data(self) -> List[NERSample]:
         """Loads data from a CoNLL file.
