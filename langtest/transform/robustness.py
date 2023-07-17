@@ -1506,7 +1506,7 @@ class AdjectiveAntonymSwap(BaseRobustness):
 class StripAllPunctuation(BaseRobustness):
     """A class for stripping punctuation from text samples."""
 
-    alias_name = "strip_punctuation_all"
+    alias_name = "strip_all_punctuation"
 
     @staticmethod
     def transform(
