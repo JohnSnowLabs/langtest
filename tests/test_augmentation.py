@@ -4,11 +4,11 @@ import unittest
 import pandas as pd
 import yaml
 
-from langtest.augmentation import AugmentRobustness
+from langtest.augmentation import AugmentRobustness, TemplaticAugment
 from langtest.langtest import Harness
 
 
-class AugmentRobustnessTestCase(unittest.TestCase):
+class AugmentWorkflowTestCase(unittest.TestCase):
     """
     Test case for the AugmentRobustness class.
     """
@@ -157,3 +157,87 @@ class AugmentRobustnessTestCase(unittest.TestCase):
 
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
         self.assertTrue(is_file_exist)
+
+    def test_templatic_augmentation(self):
+        """
+        Test augmentation using templatic augmentation.
+        """
+        generator = TemplaticAugment(
+            templates=["I living in {LOC}", "you are working in {ORG}"],
+            task="ner",
+        )
+        self.assertIsInstance(generator, TemplaticAugment)
+        generator.fix(
+            "tests/fixtures/train.conll",
+            "tests/fixtures/augmentated_train.conll",
+        )
+        is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_spacy_templatic_augmentation(self):
+        """
+        Test augmentation using templatic augmentation with spaCy NER model.
+        """
+        harness = Harness(**self.params["spacy_ner"])
+        self.assertIsInstance(harness, Harness)
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+
+        harness.augment(
+            "tests/fixtures/train.conll",
+            "tests/fixtures/augmentated_train.conll",
+            templates=["I living in {LOC}", "you are working in {ORG}"],
+        )
+        is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
+        self.assertTrue(is_file_exist)
+
+
+class TestTemplaticAugmentation(unittest.TestCase):
+    """Test case for the TemplaticAugment class"""
+
+    def setUp(self):
+        """Set up the test case"""
+        self.generator = TemplaticAugment(
+            templates=[
+                "{PERSON} is {AGE} years old",
+                "The {ANIMAL} jumped over the {OBJECT}",
+            ],
+            task="ner",
+        )
+
+    def test_extract_variable_names(self):
+        """Test extracting variable names from a template"""
+        self.assertEqual(
+            self.generator.extract_variable_names("{PERSON} is {AGE} years old"),
+            ["PERSON", "AGE"],
+        )
+        self.assertEqual(
+            self.generator.extract_variable_names(
+                "The {ANIMAL} jumped over the {OBJECT}"
+            ),
+            ["ANIMAL", "OBJECT"],
+        )
+
+    def test_str_to_sample(self):
+        """Test converting a template to a Sample object"""
+        sample = self.generator.str_to_sample("{PERSON} is {AGE} years old")
+        self.assertEqual(sample.original, "{PERSON} is {AGE} years old")
+        self.assertEqual(len(sample.expected_results.predictions), 5)
+
+    def test_add_spaces_around_punctuation(self):
+        """Test adding spaces around punctuation"""
+        text = "Hello,world!"
+        self.assertEqual(
+            self.generator.add_spaces_around_punctuation(text), "Hello , world !"
+        )
+
+    def test_change_templates(self):
+        """Test changing templates"""
+        changed_template = [
+            "I was going to {LOCATION} in {COUNTRY}",
+            "He is {AGE} years old",
+        ]
+        self.generator.templates = changed_template
+        self.assertEqual(len(self.generator.templates), len(changed_template))
+        self.assertEqual(self.generator.templates[0].original, changed_template[0])
+        self.assertEqual(self.generator.templates[1].original, changed_template[1])

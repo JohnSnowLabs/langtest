@@ -336,6 +336,8 @@ class TemplaticAugment(BaseAugmentaion):
                 if ent != "O" and ent_name == "":
                     ent_name = ent
                 if result.entity.endswith(ent_name) and ent != "O":
+                    result.doc_id = 0
+                    result.doc_name = ""
                     chunk.append(result)
                 elif len(chunk) > 0:
                     results_dict[ent_name].append(tuple(chunk))
