@@ -1,6 +1,7 @@
 from collections import defaultdict
 import os
 import re
+import string
 import yaml
 import random
 import pandas as pd
@@ -419,6 +420,7 @@ class TemplaticAugment(BaseAugmentaion):
 
         """
         if self.__task == "ner":
+            template = self.add_spaces_around_punctuation(template)
             sample = NERSample()
             sample.original = template
             words = template.split()
@@ -464,3 +466,21 @@ class TemplaticAugment(BaseAugmentaion):
     @task.setter
     def task(self, task: str):
         self.__task = task
+
+    def add_spaces_around_punctuation(self, text: str):
+        for punct in string.punctuation:
+            if punct not in ["{", "}", "_"]:
+                if punct == ".":
+                    # To prevent spaces being added around decimal points
+                    text = re.sub(r"(\d)\.(\d)", r"\1[DOT]\2", text)
+
+                text = text.replace(punct, f" {punct} ")
+
+                if punct == ".":
+                    # Putting back the decimal points to original state
+                    text = text.replace("[DOT]", ".")
+
+        # Removing extra spaces
+        text = re.sub(r"\s+", " ", text).strip()
+
+        return text
