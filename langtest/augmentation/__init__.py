@@ -281,7 +281,7 @@ class TemplaticAugment(BaseAugmentaion):
         elif isinstance(self.__templates, list):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
-    def fix(self, input_path: str, output_path: str, *args, **kwargs):
+    def fix(self, input_path: str, output_path: str, min_samples=5000, *args, **kwargs):
         """
         This method is used to perform the templatic augmentation.
         It takes the input data, performs the augmentation and then saves the augmented data to the output path.
@@ -302,8 +302,7 @@ class TemplaticAugment(BaseAugmentaion):
         self.__search_results = self.search_sample_results(data)
 
         for template in self.__templates:
-            variable_names = self.extract_variable_names(template.original)
-            for sample_results in self.__search_results[variable_names[0]]:
+            for _ in range(min_samples):
                 new_sample = self.new_sample(template)
                 if new_sample:
                     new_data.append(new_sample)
@@ -364,7 +363,7 @@ class TemplaticAugment(BaseAugmentaion):
                             cursor += 1
                             break
                         else:
-                            if re.search(r"{([^{}]*)}", result.span.word):
+                            if "{" in result.span.word and "}" in result.span.word:
                                 continue
                             other_predictions.append(result)
                             cursor += 1
@@ -385,7 +384,7 @@ class TemplaticAugment(BaseAugmentaion):
             predictions = []
             cursor = 0
             for word in words:
-                if re.search(r"{([^{}]*)}", word):
+                if "{" in word and "}" in word:
                     entity = word.replace("{", "").replace("}", "")
                 else:
                     entity = "O"
