@@ -10,7 +10,7 @@ import yaml
 from pkg_resources import resource_filename
 
 from langtest.utils.custom_types.sample import RuntimeSample
-from .augmentation import AugmentRobustness
+from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
@@ -721,6 +721,7 @@ class Harness:
         output_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
+        templates: Optional[Union[str, List[str]]] = None,
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -781,12 +782,19 @@ class Harness:
                     f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types."
                 )
 
-        _ = AugmentRobustness(
-            task=self.task,
-            config=self._config,
-            h_report=self.df_report,
-            custom_proportions=custom_proportions,
-        ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
+        if templates:
+            _ = TemplaticAugment(
+                templates=templates,
+                task=self.task,
+            ).fix(input_path=input_path, output_path=output_path)
+
+        else:
+            _ = AugmentRobustness(
+                task=self.task,
+                config=self._config,
+                h_report=self.df_report,
+                custom_proportions=custom_proportions,
+            ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
 
         return self
 

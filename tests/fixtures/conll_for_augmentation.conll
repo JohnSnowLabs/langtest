@@ -1,0 +1,10 @@
+DOCSTART -X- -X- O
+
+Jean NN NN B-PER
+- NN NN I-PER
+Pierre NN NN I-PER
+is NN NN O
+in NN NN O
+New NN NN B-LOC
+York NN NN I-LOC
+City NN NN I-LOC

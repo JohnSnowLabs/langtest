@@ -1,13 +1,21 @@
+from collections import defaultdict
+import os
+import re
+import string
 import yaml
 import random
 import pandas as pd
 from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
+from copy import deepcopy as copy
 
 from langtest.transform import TestFactory
 from langtest.utils.custom_types import Sample
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform.utils import create_terminology
+from langtest.utils.custom_types.output import NEROutput
+from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
+from langtest.utils.custom_types.sample import NERSample
 
 
 class BaseAugmentaion(ABC):
@@ -251,3 +259,249 @@ class AugmentRobustness(BaseAugmentaion):
                 .get("labels")
             )
         return config
+
+
+class TemplaticAugment(BaseAugmentaion):
+    """
+    This class is used for templatic augmentation. It is a subclass of the BaseAugmentation class.
+
+    Attributes:
+    __templates: A string or a list of strings or samples that represents the templates for the augmentation.
+    __task: The task for which the augmentation is being performed.
+
+    Methods:
+    __init__(self, templates: Union[str, List[str]], task: str): Initializes the TemplaticAugment class.
+    fix(self, input_path: str, output_path: str, *args, **kwargs): Performs the templatic augmentation and exports the results to a specified path.
+    """
+
+    def __init__(self, templates: Union[str, List[str]], task: str) -> None:
+        """
+        This constructor for the TemplaticAugment class.
+
+        Parameters:
+        templates (Union[str, List[str]]): The templates to be used for the augmentation.
+        task (str): The task for which the augmentation is being performed.
+        """
+        self.__templates: Union[str, List[str], List[Sample]] = templates
+        self.__task = task
+
+        if isinstance(self.__templates, str) and os.path.exists(self.__templates):
+            self.__templates = DataFactory(self.__templates, self.__task).load()
+        elif isinstance(self.__templates, str):
+            self.__templates = [self.str_to_sample(self.__templates)]
+        elif isinstance(self.__templates, list) and isinstance(self.__templates[0], str):
+            self.__templates = [self.str_to_sample(i) for i in self.__templates]
+
+    def fix(self, input_path: str, output_path: str, max_num=None, *args, **kwargs):
+        """
+        This method is used to perform the templatic augmentation.
+        It takes the input data, performs the augmentation and then saves the augmented data to the output path.
+
+        Parameters:
+        input_path (str): The path to the input data.
+        output_path (str): The path where the augmented data will be saved.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+        bool: Returns True upon successful completion of the method.
+        """
+
+        df = DataFactory(input_path, self.__task)
+        data = df.load()
+        new_data = []
+        self.__search_results = self.search_sample_results(data)
+        if not max_num:
+            max_num = max(len(i) for i in self.__search_results.values())
+
+        for template in self.__templates:
+            for _ in range(max_num):
+                new_sample = self.new_sample(template)
+                if new_sample:
+                    new_data.append(new_sample)
+
+        df.export(new_data, output_path)
+
+        return True
+
+    def search_sample_results(
+        self, samples: List[Sample]
+    ) -> Dict[str, List[Union[NERPrediction, SequenceLabel]]]:
+        """
+        This method is used to search the results of the samples for the entities in the templates.
+
+        Parameters:
+        samples (List[Sample]): The samples for which the results are to be searched.
+
+        Returns:
+        Dict[str, List[Union[NERPrediction, SequenceLabel]]]: A dictionary containing the search results.
+
+        """
+        results_dict = defaultdict(list)
+        for sample in samples:
+            chunk = []
+            ent_name = ""
+            for result in sample.expected_results.predictions:
+                ent = result.entity.split("-")[-1]
+                if ent != "O" and ent_name == "":
+                    ent_name = ent
+                if result.entity.endswith(ent_name) and ent != "O":
+                    result.doc_id = 0
+                    result.doc_name = ""
+                    chunk.append(result)
+                elif len(chunk) > 0:
+                    results_dict[ent_name].append(tuple(chunk))
+                    ent_name = ""
+                    chunk = []
+
+            if chunk:
+                results_dict[ent_name].append(tuple(chunk))
+        return results_dict
+
+    def extract_variable_names(self, f_string: str):
+        """
+        This method is used to extract the variable names from the templates.
+
+        Parameters:
+        f_string (str): The template string.
+
+        Returns:
+        List[str]: A list of variable names.
+
+        """
+        pattern = r"{([^{}]*)}"
+        matches = re.findall(pattern, f_string)
+        variable_names = [match.strip() for match in matches]
+        return variable_names
+
+    def new_sample(self, template: Sample):
+        """
+        This method is used to generate a new sample from a template.
+
+        Parameters:
+        template (Sample): The template from which the new sample is to be generated.
+
+        Returns:
+        Sample: The new sample generated from the template.
+
+        """
+        template = copy(template)
+        matches = re.finditer(r"{([^{}]*)}", template.original)
+        cursor = 0
+        other_predictions = []
+        if matches:
+            for match in matches:
+                entity = match.group(1)
+                if entity in self.__search_results:
+                    prediction = random.choice(self.__search_results[entity])
+                    word = " ".join(
+                        i.span.word for i in prediction if isinstance(i, NERPrediction)
+                    )
+
+                    template.original = template.original.replace(
+                        "{" + entity + "}", word, 1
+                    )
+                    for result in template.expected_results.predictions[cursor:]:
+                        if prediction[0].entity.endswith(result.entity):
+                            other_predictions.extend(prediction)
+                            cursor += 1
+                            break
+                        else:
+                            if "{" in result.span.word and "}" in result.span.word:
+                                continue
+                            other_predictions.append(result)
+                            cursor += 1
+                else:
+                    continue
+            template.expected_results.predictions = (
+                other_predictions + template.expected_results.predictions[cursor:]
+            )
+            return template
+        else:
+            return None
+
+    def str_to_sample(self, template: str):
+        """
+        This method is used to convert a template string to a Sample object.
+
+        Parameters:
+        template (str): The template string to be converted.
+
+        Returns:
+        Sample: The Sample object generated from the template string.
+
+        """
+        if self.__task == "ner":
+            template = self.add_spaces_around_punctuation(template)
+            sample = NERSample()
+            sample.original = template
+            words = template.split()
+            predictions = []
+            cursor = 0
+            for word in words:
+                if "{" in word and "}" in word:
+                    entity = word.replace("{", "").replace("}", "")
+                else:
+                    entity = "O"
+                predictions.append(
+                    NERPrediction.from_span(
+                        entity,
+                        word,
+                        cursor,
+                        cursor + len(word),
+                        pos_tag="-X-",
+                        chunk_tag="-X-",
+                        doc_id=0,
+                        doc_name="",
+                    )
+                )
+                cursor += len(word) + 1
+            sample.expected_results = NEROutput(predictions=predictions)
+
+        elif self.__task == "text-classification":
+            raise NotImplementedError
+
+        return sample
+
+    @property
+    def templates(self):
+        return self.__templates
+
+    @templates.setter
+    def templates(self, templates: Union[str, List[str]]):
+        self.__init__(templates, self.__task)
+
+    @property
+    def task(self):
+        return self.__task
+
+    @task.setter
+    def task(self, task: str):
+        self.__task = task
+
+    def add_spaces_around_punctuation(self, text: str):
+        """
+        This method is used to add spaces around punctuation in a string.
+
+        Parameters:
+        text (str): The string to which spaces are to be added.
+
+        Returns:
+        str: The string with spaces added around punctuation.
+        """
+        for punct in string.punctuation:
+            if punct not in ["{", "}", "_"]:
+                if punct == ".":
+                    # To prevent spaces being added around decimal points
+                    text = re.sub(r"(\d)\.(\d)", r"\1[DOT]\2", text)
+
+                text = text.replace(punct, f" {punct} ")
+
+                if punct == ".":
+                    # Putting back the decimal points to original state
+                    text = text.replace("[DOT]", ".")
+
+        # Removing extra spaces
+        text = re.sub(r"\s+", " ", text).strip()
+
+        return text
