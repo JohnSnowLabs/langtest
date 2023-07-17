@@ -11,6 +11,7 @@ from transformers import (
 from langtest import Harness
 from langtest.datahandler.datasource import ConllDataset
 from langtest.pipelines.utils.data_helpers import NERDataset
+from langtest.pipelines.utils.metrics import compute_metrics
 
 
 class NEREnd2EndPipeline(FlowSpec):
@@ -75,24 +76,34 @@ class NEREnd2EndPipeline(FlowSpec):
             ignore_mismatched_sizes=True,
         )
 
-        print(self.training_args)
         trainer = Trainer(
             model=self.model,
             args=TrainingArguments(output_dir=self.output_dir, **self.training_args),
             train_dataset=self.train_dataset,
-            eval_dataset=self.eval_dataset,
             tokenizer=self.tokenizer,
         )
         trainer.train()
-        self.model.save_pretrained(self.training_args["output_dir"])
-        self.tokenizer.save_pretrained(self.training_args["output_dir"])
+        self.model.save_pretrained(self.output_dir)
+        self.tokenizer.save_pretrained(self.output_dir)
 
         self.next(self.evaluate)
 
     @step
     def evaluate(self):
         """Performs the evaluation procedure on the given test set"""
-        self.metrics = self.trainer.evaluate()
+        trained_model = AutoModelForTokenClassification.from_pretrained(
+            self.output_dir,
+            num_labels=len(self.train_dataset.label_map),
+            id2label=self.train_dataset.id2label,
+            label2id=self.train_dataset.label_map,
+            ignore_mismatched_sizes=True,
+        )
+        self.metrics = Trainer(
+            model=trained_model,
+            eval_dataset=self.eval_dataset,
+            compute_metrics=compute_metrics(list(self.train_dataset.label_map.keys())),
+        ).evaluate()
+
         self.next(self.test)
 
     @step
@@ -100,16 +111,16 @@ class NEREnd2EndPipeline(FlowSpec):
         """Performs the testing procedure of the model on a set of tests using langtest"""
         self.harness = Harness(
             task=self.task,
-            model=self.training_args["output_dir"],
+            model=self.output_dir,
             hub=self.hub,
             data=self.train_data,
         )
         if self.config:
             self.harness.configure(self.config)
 
-        self.harness.generate()
+        _ = self.harness.generate()
         self.harness.save(save_dir="saved_harness")
-        self.harness.run()
+        _ = self.harness.run()
         self.harness.report(format="dataframe", save_dir="first_report")
 
         self.next(self.augment)
@@ -147,21 +158,34 @@ class NEREnd2EndPipeline(FlowSpec):
 
         trainer = Trainer(
             model=self.model,
-            args=self.training_args,
+            args=TrainingArguments(
+                output_dir=f"augmented_{self.output_dir}", **self.training_args
+            ),
             train_dataset=self.augmented_train_dataset,
             eval_dataset=self.eval_dataset,
             tokenizer=self.tokenizer,
         )
         trainer.train()
-        self.model.save_pretrained(f"augmented_{self.training_args['output_dir']}")
-        self.tokenizer.save_pretrained(f"augmented_{self.training_args['output_dir']}")
+        self.model.save_pretrained(f"augmented_{self.output_dir}")
+        self.tokenizer.save_pretrained(f"augmented_{self.output_dir}")
 
         self.next(self.reevaluate)
 
     @step
     def reevaluate(self):
         """Performs the evaluation procedure of the model training on the augmented dataset"""
-        self.augmented_metrics = self.trainer.evaluate()
+        newly_trained_model = AutoModelForTokenClassification.from_pretrained(
+            f"augmented_{self.output_dir}",
+            num_labels=len(self.train_dataset.label_map),
+            id2label=self.train_dataset.id2label,
+            label2id=self.train_dataset.label_map,
+            ignore_mismatched_sizes=True,
+        )
+        self.augmented_metrics = Trainer(
+            model=newly_trained_model,
+            eval_dataset=self.eval_dataset,
+            compute_metrics=compute_metrics(list(self.train_dataset.label_map.keys())),
+        ).evaluate()
 
         self.next(self.compare)
 
