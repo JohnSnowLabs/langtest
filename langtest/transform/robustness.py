@@ -1347,6 +1347,8 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = AdjectiveSynonymSwap.transform(sample, prob)
             elif order == "adjective_antonym_swap":
                 transformed_list = AdjectiveAntonymSwap.transform(sample, prob)
+            elif order == "strip_all_punctuation":
+                transformed_list = StripAllPunctuation.transform(sample, prob)
             else:
                 raise ValueError(f"Unknown transformation: {order}")
             return transformed_list
