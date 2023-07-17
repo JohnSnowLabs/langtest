@@ -178,7 +178,7 @@ setup(
             "data/OpenBookQA/*",
             "data/MMLU/*",
             "data/NarrativeQA/*",
-            "data/Translation/*"
+            "data/Translation/*",
             "data/BBQ/*"
         ],
     },
