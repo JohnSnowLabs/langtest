@@ -204,6 +204,7 @@ class TestTemplaticAugmentation(unittest.TestCase):
             ],
             task="ner",
         )
+        self.conll_path = "tests/fixtures/conll_for_augmentation.conll"
 
     def test_extract_variable_names(self):
         """Test extracting variable names from a template"""
@@ -241,3 +242,31 @@ class TestTemplaticAugmentation(unittest.TestCase):
         self.assertEqual(len(self.generator.templates), len(changed_template))
         self.assertEqual(self.generator.templates[0].original, changed_template[0])
         self.assertEqual(self.generator.templates[1].original, changed_template[1])
+
+    def test_fix(self):
+        """Test the augmentation workflow"""
+        expected_result = [
+            "My -X- -X- O",
+            "name -X- -X- O",
+            "is -X- -X- O",
+            "Jean NN NN B-PER",
+            "- NN NN I-PER",
+            "Pierre NN NN I-PER",
+            "and -X- -X- O",
+            "I -X- -X- O",
+            "am -X- -X- O",
+            "from -X- -X- O",
+            "New NN NN B-LOC",
+            "York NN NN I-LOC",
+            "City NN NN I-LOC",
+        ]
+        generator = TemplaticAugment(
+            templates=["My name is {PER} and I am from {LOC}"], task="ner"
+        )
+        generator.fix(
+            input_path=self.conll_path, output_path="/tmp/augmented_conll.conll"
+        )
+        with open("/tmp/augmented_conll.conll", "r") as reader:
+            lines = [line.strip() for line in reader.readlines() if line.strip() != ""]
+
+        self.assertListEqual(lines, expected_result)
