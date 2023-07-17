@@ -1622,4 +1622,6 @@ class StripAllPunctuation(BaseRobustness):
                 else:
                     sample.test_case = sample.original
 
+                sample.category = "robustness"
+
         return sample_list
