@@ -17,7 +17,7 @@ The `Harness` `model` parameter accepts either a pretrained model or pipeline fr
 #### Pretrained Models
 
 ```bash
-pip install johnsnowlabs
+!pip install johnsnowlabs
 ```
 
 ```python
@@ -84,6 +84,10 @@ h.generate().run().report()
 
 #### Pretrained Models
 
+```bash
+!pip install langtest[transformers]
+```
+
 ```python
 from langtest import Harness
 
@@ -112,6 +116,10 @@ h.generate().run().report()
 
 Using any large language model from the [OpenAI API](https://platform.openai.com/docs/models/overview):
 
+```bash
+!pip install "langtest[langchain,openai,transformers]"
+```
+
 ```python
 from langtest import Harness
 
@@ -130,6 +138,10 @@ h.generate().run().report()
 ### Spacy
 
 #### Pretrained Models
+
+```bash
+!pip install spacy
+```
 
 ```python
 from langtest import Harness
@@ -158,6 +170,10 @@ h.generate().run().report()
 
 #### Pretrained Models
 
+```bash
+!pip install "langtest[transformers,langchain,cohere]"
+```
+
 ```python
 from langtest import Harness
 
@@ -177,6 +193,10 @@ h.generate().run().report()
 
 #### Pretrained Models
 
+```bash
+!pip install "langtest[transformers,langchain,ai21]"
+```
+
 ```python
 from langtest import Harness
 
@@ -194,6 +214,10 @@ h.generate().run().report()
 ### Azure OpenAI
 
 #### Pretrained Models
+
+```bash
+!pip install "langtest[transformers,langchain,openai]"
+```
 
 ```python
 from langtest import Harness
@@ -218,6 +242,10 @@ h.generate().run().report()
 ### Huggingface Inference-Api
 
 #### Pretrained Models
+
+```bash
+!pip install "langtest[transformers,langchain,huggingface-hub]"
+```
 
 ```python
 from langtest import Harness
