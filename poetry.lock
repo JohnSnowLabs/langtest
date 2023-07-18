@@ -1234,14 +1234,14 @@ attrs = ">=19.2.0"
 
 [[package]]
 name = "langchain"
-version = "0.0.40"
+version = "0.0.235"
 description = "Building applications with LLMs through composability"
 category = "main"
 optional = true
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "langchain-0.0.40-py3-none-any.whl", hash = "sha256:c9557b0b1311938a0f8df3c4edc5bb1a9ce204a08ddfe76f945dd8acec01d328"},
-    {file = "langchain-0.0.40.tar.gz", hash = "sha256:3a39647aa935a6d191eba9c8723510f53976acf38f9c5ab08625988021f8a6d0"},
+    {file = "langchain-0.0.235-py3-none-any.whl", hash = "sha256:aed680f62afc0031cc5b0df840a4c5f8fe6d874356fc5695b92f8c0f779462b0"},
+    {file = "langchain-0.0.235.tar.gz", hash = "sha256:6734849e111a4c60e187a1ce7856b31e623604326e48b96601316d108633abd1"},
 ]
 
 [package.dependencies]
