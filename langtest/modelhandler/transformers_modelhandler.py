@@ -4,34 +4,36 @@ import numpy as np
 from transformers import Pipeline, pipeline
 
 from .modelhandler import _ModelHandler
-from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput, TranslationOutput
+from ..utils.custom_types import (
+    NEROutput,
+    NERPrediction,
+    SequenceClassificationOutput,
+    TranslationOutput,
+)
 
 
 class PretrainedModelForNER(_ModelHandler):
-    """
+    """Transformers pretrained model for NER tasks
+
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
     """
 
-    def __init__(
-            self,
-            model
-    ):
-        """
-        Attributes:
-            model (transformers.pipeline.Pipeline):
-                Loaded NER pipeline for predictions.
-        """
+    def __init__(self, model):
+        """Constructor method
 
-        assert isinstance(model, Pipeline), \
-            ValueError(f"Invalid transformers pipeline! "
-                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
         self.model = model
 
     @staticmethod
     def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
-        """
-        Aggregates predictions at a word-level by taking the first token label.
+        """Aggregates predictions at a word-level by taking the first token label.
 
         Args:
             predictions (List[Dict]):
@@ -45,7 +47,10 @@ class PretrainedModelForNER(_ModelHandler):
             if prediction["word"].startswith("##"):
                 aggregated_words[-1]["word"] += prediction["word"][2:]
                 aggregated_words[-1]["end"] = prediction["end"]
-            elif len(aggregated_words) > 0 and prediction["start"] == aggregated_words[-1]["end"]:
+            elif (
+                len(aggregated_words) > 0
+                and prediction["start"] == aggregated_words[-1]["end"]
+            ):
                 aggregated_words[-1]["word"] += prediction["word"]
                 aggregated_words[-1]["end"] = prediction["end"]
             else:
@@ -54,7 +59,8 @@ class PretrainedModelForNER(_ModelHandler):
 
     @staticmethod
     def _get_tag(entity_label: str) -> Tuple[str, str]:
-        """"
+        """Retrieve the tag of a BIO label
+
         Args:
             entity_label (str):
                 BIO style label
@@ -69,8 +75,8 @@ class PretrainedModelForNER(_ModelHandler):
 
     @staticmethod
     def _group_sub_entities(entities: List[dict]) -> dict:
-        """
-        Group together the adjacent tokens with the same entity predicted.
+        """Group together the adjacent tokens with the same entity predicted.
+
         Args:
             entities (`dict`): The entities predicted by the pipeline.
         """
@@ -89,14 +95,15 @@ class PretrainedModelForNER(_ModelHandler):
         return entity_group
 
     def group_entities(self, entities: List[Dict]) -> List[Dict]:
-        """
-        Find and group together the adjacent tokens with the same entity predicted.
+        """Find and group together the adjacent tokens with the same entity predicted.
+
         Inspired and adapted from:
         https://github.com/huggingface/transformers/blob/68287689f2f0d8b7063c400230b3766987abf18d/src/transformers/pipelines/token_classification.py#L421
 
         Args:
             entities (List[Dict]):
                 The entities predicted by the pipeline.
+
         Returns:
             List[Dict]:
                 grouped entities
@@ -125,7 +132,7 @@ class PretrainedModelForNER(_ModelHandler):
         return entity_groups
 
     @classmethod
-    def load_model(cls, path: str) -> 'Pipeline':
+    def load_model(cls, path: str) -> "Pipeline":
         """Load the NER model into the `model` attribute.
 
         Args:
@@ -157,19 +164,21 @@ class PretrainedModelForNER(_ModelHandler):
         return NEROutput(
             predictions=[
                 NERPrediction.from_span(
-                    entity=prediction.get('entity_group', prediction.get('entity', None)),
-                    word=prediction['word'],
-                    start=prediction['start'],
-                    end=prediction['end']
-                ) for prediction in aggregated_predictions
+                    entity=prediction.get("entity_group", prediction.get("entity", None)),
+                    word=prediction["word"],
+                    start=prediction["start"],
+                    end=prediction["end"],
+                )
+                for prediction in aggregated_predictions
             ]
         )
 
     def predict_raw(self, text: str) -> List[str]:
-        """
-        Predict a list of labels.
+        """Predict a list of labels.
+
         Args:
             text (str): Input text to perform NER on.
+
         Returns:
             List[str]: A list of named entities recognized in the input text.
         """
@@ -187,19 +196,26 @@ class PretrainedModelForNER(_ModelHandler):
 
 
 class PretrainedModelForTextClassification(_ModelHandler):
-    """
+    """Transformers pretrained model for text classification tasks
+
     Attributes:
         model (transformers.pipeline.Pipeline):
             Loaded Text Classification pipeline for predictions.
     """
 
     def __init__(
-            self,
-            model: Pipeline,
+        self,
+        model: Pipeline,
     ):
-        assert isinstance(model, Pipeline), \
-            ValueError(f"Invalid transformers pipeline! "
-                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
         self.model = model
 
     @property
@@ -212,8 +228,14 @@ class PretrainedModelForTextClassification(_ModelHandler):
         """Load and return text classification transformers pipeline"""
         return pipeline(model=path, task="text-classification")
 
-    def predict(self, text: str, return_all_scores: bool = False, truncation_strategy: str = "longest_first", *args,
-                **kwargs) -> SequenceClassificationOutput:
+    def predict(
+        self,
+        text: str,
+        return_all_scores: bool = False,
+        truncation_strategy: str = "longest_first",
+        *args,
+        **kwargs,
+    ) -> SequenceClassificationOutput:
         """Perform predictions on the input text.
 
         Args:
@@ -229,12 +251,11 @@ class PretrainedModelForTextClassification(_ModelHandler):
             kwargs["top_k"] = len(self.labels)
 
         output = self.model(text, truncation_strategy=truncation_strategy, **kwargs)
-        return SequenceClassificationOutput(
-            text=text,
-            predictions=output
-        )
+        return SequenceClassificationOutput(text=text, predictions=output)
 
-    def predict_raw(self, text: str, truncation_strategy: str = "longest_first") -> List[str]:
+    def predict_raw(
+        self, text: str, truncation_strategy: str = "longest_first"
+    ) -> List[str]:
         """Perform predictions on the input text.
 
         Args:
@@ -244,36 +265,39 @@ class PretrainedModelForTextClassification(_ModelHandler):
         Returns:
             List[str]: Predictions as a list of strings.
         """
-        return [pred["label"] for pred in self.model(text, truncation_strategy=truncation_strategy)]
+        return [
+            pred["label"]
+            for pred in self.model(text, truncation_strategy=truncation_strategy)
+        ]
 
-    def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+    def __call__(
+        self, text: str, return_all_scores: bool = False, *args, **kwargs
+    ) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
+
 class PretrainedModelForTranslation(_ModelHandler):
-    """
+    """Transformers pretrained model for translation tasks
+
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
     """
 
-    def __init__(
-            self,
-            model
-    ):
-        """
-        Attributes:
-            model (transformers.pipeline.Pipeline):
-                Loaded translation pipeline for predictions.
-        """
+    def __init__(self, model):
+        """Constructor method
 
-        assert isinstance(model, Pipeline), \
-            ValueError(f"Invalid transformers pipeline! "
-                       f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'")
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
         self.model = model
 
-
     @classmethod
-    def load_model(cls, path: str) -> 'Pipeline':
+    def load_model(cls, path: str) -> "Pipeline":
         """Load the Translation model into the `model` attribute.
 
         Args:
@@ -284,15 +308,14 @@ class PretrainedModelForTranslation(_ModelHandler):
             'Pipeline':
         """
         from ..langtest import HARNESS_CONFIG as harness_config
-        
-        config = harness_config['model_parameters']
-        tgt_lang = config.get('target_language')
 
-        if 't5' in path:
+        config = harness_config["model_parameters"]
+        tgt_lang = config.get("target_language")
+
+        if "t5" in path:
             return pipeline(f"translation_en_to_{tgt_lang}", model=path)
         else:
-            return pipeline(model=path, src_lang='en', tgt_lang=tgt_lang)
-            
+            return pipeline(model=path, src_lang="en", tgt_lang=tgt_lang)
 
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
@@ -305,11 +328,9 @@ class PretrainedModelForTranslation(_ModelHandler):
         Returns:
             TranslationOutput: Output model for translation tasks
         """
-        prediction = self.model(text, **kwargs)[0]['translation_text']
-        return TranslationOutput(
-            translation_text = prediction
-        )
-    
+        prediction = self.model(text, **kwargs)[0]["translation_text"]
+        return TranslationOutput(translation_text=prediction)
+
     def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Alias of the 'predict' method"""
-        return self.predict(text=text, **kwargs)  
+        return self.predict(text=text, **kwargs)

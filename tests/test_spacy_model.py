@@ -1,4 +1,3 @@
-
 import unittest
 from langtest import Harness
 from langtest.modelhandler.modelhandler import ModelFactory
@@ -8,6 +7,7 @@ class SpacyTestCase(unittest.TestCase):
     """
     Test case for the Spacy integration in the langtest module.
     """
+
     def setUp(self) -> None:
         """
         Set up the test case.
@@ -15,11 +15,11 @@ class SpacyTestCase(unittest.TestCase):
         Initializes the parameters for the Harness class.
         """
         self.params = {
-            "task": 'ner',
+            "task": "ner",
             "model": "en_core_web_sm",
             "data": "langtest/data/conll/sample.conll",
             "config": "tests/fixtures/config_ner.yaml",
-            "hub": "spacy"
+            "hub": "spacy",
         }
 
     def test_Harness(self):
@@ -46,10 +46,7 @@ class SpacyTestCase(unittest.TestCase):
         Checks if the generate method returns a Harness instance.
         """
         harness = Harness(**self.params)
-        self.assertIsInstance(
-            harness.generate(),
-            Harness
-        )
+        self.assertIsInstance(harness.generate(), Harness)
 
     def test_run(self):
         """
@@ -59,7 +56,4 @@ class SpacyTestCase(unittest.TestCase):
         """
         harness = Harness(**self.params)
         harness.generate()
-        self.assertIsInstance(
-            harness.run(),
-            Harness
-        )
+        self.assertIsInstance(harness.run(), Harness)

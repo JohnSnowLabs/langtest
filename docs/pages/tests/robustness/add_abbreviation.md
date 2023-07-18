@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Insert Abbreviations
+## ADD Abbreviations
 
 This test replaces familiar words or expressions in texts with their abbreviations. These abbreviations are commonly used on social media platforms and some are generic. It evaluates the NLP model's ability to handle text with such abbreviations.
 
