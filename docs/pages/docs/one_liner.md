@@ -239,7 +239,7 @@ To compare different models (either from same or different hubs) on the same tas
         {% highlight python %}
 !pip install langtest[transformers]
 !pip install spacy
-pip install johnsnowlabs
+!pip install johnsnowlabs
 
 from langtest import Harness
 
