@@ -8,31 +8,39 @@ from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificatio
 
 
 class PretrainedModelForNER(_ModelHandler):
-    """
+    """SpaCy pretrained model for NER tasks
+
     Args:
         model: Pretrained SpaCy pipeline.
     """
 
-    def __init__(
-            self,
-            model
-    ):
-        annotation = getattr(model, '__call__').__annotations__
-        assert (annotation.get('return') and annotation['return'] is Doc), \
-            ValueError(f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
-                       f"but pipeline returns: {annotation.get('return', None)}")
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model: spacy model
+        """
+        annotation = getattr(model, "__call__").__annotations__
+        assert annotation.get("return") and annotation["return"] is Doc, ValueError(
+            f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
+            f"but pipeline returns: {annotation.get('return', None)}"
+        )
 
         self.model = model
 
     @classmethod
-    def load_model(cls, path):
-        """Load and return SpaCy pipeline"""
+    def load_model(cls, path: str):
+        """Load and return SpaCy pipeline
 
+        Args:
+            path (str): name of path to model to load
+        """
         try:
             return spacy.load(path)
         except OSError:
             raise ValueError(
-                f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
+                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
+            )
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -56,8 +64,9 @@ class PretrainedModelForNER(_ModelHandler):
                     entity=ent.label_,
                     word=ent.text,
                     start=ent.start_char,
-                    end=ent.end_char
-                ) for ent in doc.ents
+                    end=ent.end_char,
+                )
+                for ent in doc.ents
             ]
         )
 
@@ -66,8 +75,7 @@ class PretrainedModelForNER(_ModelHandler):
         return self.predict(text=text)
 
     def predict_raw(self, text: str) -> List[str]:
-        """
-        Predict a list of labels in form of strings.
+        """Predict a list of labels in form of strings.
 
         Args:
             text (str): Input text to perform NER on.
@@ -75,25 +83,31 @@ class PretrainedModelForNER(_ModelHandler):
         Returns:
             List[str]: A list of named entities recognized in the input text.
         """
-
         doc = self.model(text)
-        return [f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_ for token in doc]
+        return [
+            f"{token.ent_iob_}-{token.ent_type_}" if token.ent_type_ else token.ent_iob_
+            for token in doc
+        ]
 
 
 class PretrainedModelForTextClassification(_ModelHandler):
-    """
+    """SpaCy pretrained model for text classification tasks
+
     Args:
         model: Pretrained SpaCy pipeline.
     """
 
-    def __init__(
-            self,
-            model
-    ):
-        annotation = getattr(model, '__call__').__annotations__
-        assert (annotation.get('return') and annotation['return'] is Doc), \
-            ValueError(f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
-                       f"but pipeline returns: {annotation.get('return', None)}")
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model: pretrained SpaCy pipeline
+        """
+        annotation = getattr(model, "__call__").__annotations__
+        assert annotation.get("return") and annotation["return"] is Doc, ValueError(
+            f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
+            f"but pipeline returns: {annotation.get('return', None)}"
+        )
 
         self.model = model
 
@@ -104,14 +118,21 @@ class PretrainedModelForTextClassification(_ModelHandler):
 
     @classmethod
     def load_model(cls, path: str):
-        """Load and return SpaCy pipeline"""
+        """Load and return SpaCy pipeline
+
+        Args:
+            path (str): name of path to model to load
+        """
         try:
             return spacy.load(path)
         except OSError:
             raise ValueError(
-                f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
+                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
+            )
 
-    def predict(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+    def predict(
+        self, text: str, return_all_scores: bool = False, *args, **kwargs
+    ) -> SequenceClassificationOutput:
         """Perform text classification predictions on the input text.
 
         Args:
@@ -126,13 +147,9 @@ class PretrainedModelForTextClassification(_ModelHandler):
             label = max(output, key=output.get)
             output = [{"label": label, "score": output[label]}]
         else:
-            output = [{"label": key, "score": value}
-                      for key, value in output.items()]
+            output = [{"label": key, "score": value} for key, value in output.items()]
 
-        return SequenceClassificationOutput(
-            text=text,
-            predictions=output
-        )
+        return SequenceClassificationOutput(text=text, predictions=output)
 
     def predict_raw(self, text: str) -> List[str]:
         """Perform classification predictions on input text.
@@ -146,41 +163,47 @@ class PretrainedModelForTextClassification(_ModelHandler):
         output = self.model(text).cats
         return [max(output, key=output.get)]
 
-    def __call__(self, text: str, return_all_scores: bool = False, *args, **kwargs) -> SequenceClassificationOutput:
+    def __call__(
+        self, text: str, return_all_scores: bool = False, *args, **kwargs
+    ) -> SequenceClassificationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
 
 class PretrainedModelForTranslation(_ModelHandler):
-    """
+    """SpaCy pretrained model for translation tasks
+
     Args:
         model: Pretrained SpaCy pipeline.
     """
 
-    def __init__(
-            self,
-            model
-    ):
-        annotation = getattr(model, '__call__').__annotations__
-        assert (annotation.get('return') and annotation['return'] is Doc), \
-            ValueError(f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
-                       f"but pipeline returns: {annotation.get('return', None)}")
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model: Pretrained SpaCy pipeline.
+        """
+        annotation = getattr(model, "__call__").__annotations__
+        assert annotation.get("return") and annotation["return"] is Doc, ValueError(
+            f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
+            f"but pipeline returns: {annotation.get('return', None)}"
+        )
 
         self.model = model
 
     @classmethod
     def load_model(cls, path: str):
-        """Load and return SpaCy pipeline"""
+        """Load and return SpaCy pipeline
+
+        Args:
+            path (str): name of path to model to load
+        """
         try:
-            from ...langtest import HARNESS_CONFIG as harness_config
-
-            config = harness_config['model_parameters']
-            tgt_lang = config.get('target_language')
-
             return spacy.load(path)
         except OSError:
             raise ValueError(
-                f'''Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path.''')
+                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
+            )
 
     def predict(self, text: str, *args, **kwargs) -> str:
         """Perform translation predictions on the input text.

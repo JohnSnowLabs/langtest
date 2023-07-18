@@ -12,3 +12,5 @@ tests:
       min_pass_rate: 0.65
     uppercase:
       min_pass_rate: 0.65
+    swap_entities:
+      min_pass_rate: 0.65

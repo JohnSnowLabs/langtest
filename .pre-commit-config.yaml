@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/PyCQA/flake8
+    rev: '6.0.0'
+    hooks:
+      - id: flake8
+        args: [
+            "--max-line-length=90",
+            "--ignore=E203,E501,W503",
+            "--per-file-ignores=__init__.py:F401"
+        ]
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        args: [
+            "--line-length=90",
+            "--extend-exclude=langtest/transform/utils.py",
+            "--check"
+        ]
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: [
+            "--add-ignore=D100,D104,D105,D400,D415",
+            "--add-select=D417",
+            "--convention=google"
+        ]
+        exclude: "langtest/transform/utils.py"

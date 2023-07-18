@@ -1,51 +1,47 @@
+from collections import defaultdict
+import os
+import re
+import string
 import yaml
 import random
 import pandas as pd
-from typing import List
+from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
+from copy import deepcopy as copy
 
 from langtest.transform import TestFactory
 from langtest.utils.custom_types import Sample
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform.utils import create_terminology
+from langtest.utils.custom_types.output import NEROutput
+from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
+from langtest.utils.custom_types.sample import NERSample
 
 
 class BaseAugmentaion(ABC):
-
-    """
-    Abstract base class for data augmentation techniques.
-
-    Attributes:
-        None
+    """Abstract base class for data augmentation techniques.
 
     Methods:
         fix: Abstract method that should be implemented by child classes.
              This method should perform the data augmentation operation.
-
-             Returns:
-                 NotImplementedError: Raised if the method is not implemented by child classes.
     """
 
     @abstractmethod
-    def fix(self):
-        """
-        Abstract method that should be implemented by child classes.
+    def fix(self, *args, **kwargs):
+        """Abstract method that should be implemented by child classes.
+
         This method should perform the data augmentation operation.
 
         Returns:
             NotImplementedError: Raised if the method is not implemented by child classes.
         """
-
         return NotImplementedError
 
 
 class AugmentRobustness(BaseAugmentaion):
-
-    """
-    A class for performing a specified task with historical results.
+    """A class for performing a specified task with historical results.
 
     Attributes:
-
         task (str): A string indicating the task being performed.
         config (dict): A dictionary containing configuration parameters for the task.
         h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
@@ -53,7 +49,6 @@ class AugmentRobustness(BaseAugmentaion):
                         Defaults to 0.5.
 
     Methods:
-
         __init__(self, task, h_report, config, max_prop=0.5) -> None:
             Initializes an instance of MyClass with the specified parameters.
 
@@ -63,17 +58,23 @@ class AugmentRobustness(BaseAugmentaion):
         suggestions(self, prop) -> pandas.DataFrame:
             Calculates suggestions for improving test performance based on a given report.
 
-
     """
 
-    def __init__(self, task, h_report, config, custom_proportions=None, max_prop=0.5) -> None:
-        """
-        Initializes an instance of MyClass with the specified parameters.
+    def __init__(
+        self,
+        task: str,
+        h_report: "pd.DataFrame",
+        config: Dict,
+        custom_proportions: Union[Dict, List] = None,
+        max_prop=0.5,
+    ) -> None:
+        """Initializes an instance of MyClass with the specified parameters.
 
         Args:
             task (str): A string indicating the task being performed.
             h_report (pandas.DataFrame): A DataFrame containing a report of historical results for the task.
             config (dict): A dictionary containing configuration parameters for the task.
+            custom_proportions
             max_prop (float): The maximum proportion of improvement that can be suggested by the class methods.
                               Defaults to 0.5.
 
@@ -81,7 +82,6 @@ class AugmentRobustness(BaseAugmentaion):
             None
 
         """
-
         super().__init__()
         self.task = task
         self.config = config
@@ -93,84 +93,91 @@ class AugmentRobustness(BaseAugmentaion):
             with open(self.config) as fread:
                 self.config = yaml.safe_load(fread)
 
-    def fix(
-        self,
-        input_path: str,
-        output_path,
-        inplace: bool = False
-    ):
-        """
-        Applies perturbations to the input data based on the recommendations from harness reports.
+    def fix(self, input_path: str, output_path, export_mode: str = "add"):
+        """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
             input_path (str): The path to the input data file.
             output_path (str): The path to save the augmented data file.
-            inplace (bool, optional): If True, the list of samples is modified in place.
-                                      Otherwise, a new samples are add to input data. Defaults to False.
+            export_mode (str, optional): Determines how the samples are modified or exported.
+                                        - 'inplace': Modifies the list of samples in place.
+                                        - 'add': Adds new samples to the input data.
+                                        - 'transformed': Exports only the transformed data, excluding untransformed samples.
+                                        Defaults to 'add'.
 
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
-
         self.df = DataFactory(input_path, self.task)
         data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest: pd.DataFrame = self.suggestions(self.h_report)
-        sum_propotion = suggest['proportion_increase'].sum()
+        sum_propotion = suggest["proportion_increase"].sum()
         if suggest.shape[0] <= 0 or suggest.empty:
             print("All tests have passed. Augmentation will not be applied in this case.")
             return None
 
         self.config = self._parameters_overrides(self.config, data)
 
-        fianl_aug_data = []
+        final_aug_data = []
         hash_map = {k: v for k, v in enumerate(data)}
 
         for proportion in suggest.iterrows():
-            cat = proportion[-1]['category'].lower()
-            if cat not in ["robustness", 'bias']:
+            cat = proportion[-1]["category"].lower()
+            if cat not in ["robustness", "bias"]:
                 continue
-            test = proportion[-1]['test_type'].lower()
-            test_type = {
-                cat: {
-                    test: self.config.get('tests').get(cat).get(test)
-                }
-            }
-            if proportion[-1]['test_type'] in supported_tests[cat]:
-                sample_length = len(
-                    data) * self.max_prop * (proportion[-1]['proportion_increase']/sum_propotion)
-                if inplace:
+            test = proportion[-1]["test_type"].lower()
+            test_type = {cat: {test: self.config.get("tests").get(cat).get(test)}}
+            if proportion[-1]["test_type"] in supported_tests[cat]:
+                sample_length = (
+                    len(data)
+                    * self.max_prop
+                    * (proportion[-1]["proportion_increase"] / sum_propotion)
+                )
+                if export_mode in ("inplace", "transformed"):
                     sample_indices = random.sample(
-                        range(0, len(data)), int(sample_length))
+                        range(0, len(data)), int(sample_length)
+                    )
                     for each in sample_indices:
-                        if test == 'swap_entities':
-                            test_type['robustness']['swap_entities']['parameters']['labels'] = [
-                                self.label[each]]
+                        if test == "swap_entities":
+                            test_type["robustness"]["swap_entities"]["parameters"][
+                                "labels"
+                            ] = [self.label[each]]
                         res, _ = TestFactory.transform(
-                            self.task,
-                            [hash_map[each]], test_type)
+                            self.task, [hash_map[each]], test_type
+                        )
                         hash_map[each] = res[0]
-
                 else:
-                    sample_data = random.choices(data, k=int(sample_length))
-                    aug_data, _ = TestFactory.transform(
-                        self.task,
-                        sample_data, test_type)
-                    fianl_aug_data.extend(aug_data)
-        if inplace:
-            fianl_aug_data = list(hash_map.values())
-            self.df.export(fianl_aug_data, output_path)
-        else:
-            data.extend(fianl_aug_data)
-            self.df.export(data, output_path)
-        TestFactory.is_augment = False
-        return fianl_aug_data
+                    if test == "swap_entities":
+                        sample_data = data[: int(sample_length)]
+                        test_type["robustness"]["swap_entities"]["parameters"][
+                            "labels"
+                        ] = test_type["robustness"]["swap_entities"]["parameters"][
+                            "labels"
+                        ][
+                            : int(sample_length)
+                        ]
+                    else:
+                        sample_data = random.choices(data, k=int(sample_length))
+                    aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
+                    final_aug_data.extend(aug_data)
 
-    def suggestions(self, report):
-        """
-        Calculates suggestions for improving test performance based on a given report.
-        Supports for custom proportion values passes in dict or list.
+        if export_mode == "inplace":
+            final_aug_data = list(hash_map.values())
+            self.df.export(final_aug_data, output_path)
+        elif export_mode == "transformed":
+            final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
+            self.df.export(final_aug_data, output_path)
+        else:
+            data.extend(final_aug_data)
+            self.df.export(data, output_path)
+
+        TestFactory.is_augment = False
+        return final_aug_data
+
+    def suggestions(self, report: "pd.DataFrame") -> "pd.DataFrame":
+        """Calculates suggestions for improving test performance based on a given report.
 
         Args:
             report (pandas.DataFrame): A DataFrame containing test results by category and test type,
@@ -183,28 +190,27 @@ class AugmentRobustness(BaseAugmentaion):
                                 - ratio: the pass rate divided by the minimum pass rate for the test
                                 - proportion_increase: a proportion indicating how much the pass rate
                                                     should increase to reach the minimum pass rate
-
         """
-        report['ratio'] = report['pass_rate'] / report['minimum_pass_rate']
+        report["ratio"] = report["pass_rate"] / report["minimum_pass_rate"]
 
         if self.custom_proportions and isinstance(self.custom_proportions, dict):
-            report['proportion_increase'] = report['test_type'].map(
-                self.custom_proportions)
+            report["proportion_increase"] = report["test_type"].map(
+                self.custom_proportions
+            )
         elif self.custom_proportions and isinstance(self.custom_proportions, list):
-            report['proportion_increase'] = report['ratio'].apply(
-                self._proportion_values)
-            report = report[report['test_type'].isin(self.custom_proportions)]
+            report["proportion_increase"] = report["ratio"].apply(self._proportion_values)
+            report = report[report["test_type"].isin(self.custom_proportions)]
         else:
-            report['proportion_increase'] = report['ratio'].apply(
-                self._proportion_values)
+            report["proportion_increase"] = report["ratio"].apply(self._proportion_values)
 
-        report = report.dropna(subset=['proportion_increase'])[
-            ['category', 'test_type', 'ratio', 'proportion_increase']]
+        report = report.dropna(subset=["proportion_increase"])[
+            ["category", "test_type", "ratio", "proportion_increase"]
+        ]
         return report
 
-    def _proportion_values(self, x):
-        """
-        Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
+    @staticmethod
+    def _proportion_values(x: float) -> Optional[float]:
+        """Calculates a proportion indicating how much a pass rate should increase to reach a minimum pass rate.
 
         Args:
             x (float): The ratio of the pass rate to the minimum pass rate for a given test.
@@ -218,7 +224,6 @@ class AugmentRobustness(BaseAugmentaion):
                 If the pass rate is less than 0.7 times the minimum pass rate, returns 0.3.
 
         """
-
         if x >= 1:
             return None
         elif x > 0.9:
@@ -231,15 +236,272 @@ class AugmentRobustness(BaseAugmentaion):
             return 0.3
 
     def _parameters_overrides(self, config: dict, data_handler: List[Sample]) -> dict:
-        tests = config.get('tests', {}).get('robustness', {})
-        if 'swap_entities' in config.get('tests', {}).get('robustness', {}):
-            df = pd.DataFrame({'text': [sample.original for sample in data_handler],
-                               'label': [[i.entity for i in sample.expected_results.predictions]
-                                         for sample in data_handler]})
-            params = tests['swap_entities']
-            params['parameters'] = {}
-            params['parameters']['terminology'] = create_terminology(df)
-            params['parameters']['labels'] = df.label.tolist()
-            self.label = self.config.get('tests').get('robustness').get(
-                'swap_entities').get('parameters').get('labels')
+        tests = config.get("tests", {}).get("robustness", {})
+        if "swap_entities" in config.get("tests", {}).get("robustness", {}):
+            df = pd.DataFrame(
+                {
+                    "text": [sample.original for sample in data_handler],
+                    "label": [
+                        [i.entity for i in sample.expected_results.predictions]
+                        for sample in data_handler
+                    ],
+                }
+            )
+            params = tests["swap_entities"]
+            params["parameters"] = {}
+            params["parameters"]["terminology"] = create_terminology(df)
+            params["parameters"]["labels"] = df.label.tolist()
+            self.label = (
+                self.config.get("tests")
+                .get("robustness")
+                .get("swap_entities")
+                .get("parameters")
+                .get("labels")
+            )
         return config
+
+
+class TemplaticAugment(BaseAugmentaion):
+    """
+    This class is used for templatic augmentation. It is a subclass of the BaseAugmentation class.
+
+    Attributes:
+    __templates: A string or a list of strings or samples that represents the templates for the augmentation.
+    __task: The task for which the augmentation is being performed.
+
+    Methods:
+    __init__(self, templates: Union[str, List[str]], task: str): Initializes the TemplaticAugment class.
+    fix(self, input_path: str, output_path: str, *args, **kwargs): Performs the templatic augmentation and exports the results to a specified path.
+    """
+
+    def __init__(self, templates: Union[str, List[str]], task: str) -> None:
+        """
+        This constructor for the TemplaticAugment class.
+
+        Parameters:
+        templates (Union[str, List[str]]): The templates to be used for the augmentation.
+        task (str): The task for which the augmentation is being performed.
+        """
+        self.__templates: Union[str, List[str], List[Sample]] = templates
+        self.__task = task
+
+        if isinstance(self.__templates, str) and os.path.exists(self.__templates):
+            self.__templates = DataFactory(self.__templates, self.__task).load()
+        elif isinstance(self.__templates, str):
+            self.__templates = [self.str_to_sample(self.__templates)]
+        elif isinstance(self.__templates, list) and isinstance(self.__templates[0], str):
+            self.__templates = [self.str_to_sample(i) for i in self.__templates]
+
+    def fix(self, input_path: str, output_path: str, max_num=None, *args, **kwargs):
+        """
+        This method is used to perform the templatic augmentation.
+        It takes the input data, performs the augmentation and then saves the augmented data to the output path.
+
+        Parameters:
+        input_path (str): The path to the input data.
+        output_path (str): The path where the augmented data will be saved.
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+        bool: Returns True upon successful completion of the method.
+        """
+
+        df = DataFactory(input_path, self.__task)
+        data = df.load()
+        new_data = []
+        self.__search_results = self.search_sample_results(data)
+        if not max_num:
+            max_num = max(len(i) for i in self.__search_results.values())
+
+        for template in self.__templates:
+            for _ in range(max_num):
+                new_sample = self.new_sample(template)
+                if new_sample:
+                    new_data.append(new_sample)
+
+        df.export(new_data, output_path)
+
+        return True
+
+    def search_sample_results(
+        self, samples: List[Sample]
+    ) -> Dict[str, List[Union[NERPrediction, SequenceLabel]]]:
+        """
+        This method is used to search the results of the samples for the entities in the templates.
+
+        Parameters:
+        samples (List[Sample]): The samples for which the results are to be searched.
+
+        Returns:
+        Dict[str, List[Union[NERPrediction, SequenceLabel]]]: A dictionary containing the search results.
+
+        """
+        results_dict = defaultdict(list)
+        for sample in samples:
+            chunk = []
+            ent_name = ""
+            for result in sample.expected_results.predictions:
+                ent = result.entity.split("-")[-1]
+                if ent != "O" and ent_name == "":
+                    ent_name = ent
+                if result.entity.endswith(ent_name) and ent != "O":
+                    result.doc_id = 0
+                    result.doc_name = ""
+                    chunk.append(result)
+                elif len(chunk) > 0:
+                    results_dict[ent_name].append(tuple(chunk))
+                    ent_name = ""
+                    chunk = []
+
+            if chunk:
+                results_dict[ent_name].append(tuple(chunk))
+        return results_dict
+
+    def extract_variable_names(self, f_string: str):
+        """
+        This method is used to extract the variable names from the templates.
+
+        Parameters:
+        f_string (str): The template string.
+
+        Returns:
+        List[str]: A list of variable names.
+
+        """
+        pattern = r"{([^{}]*)}"
+        matches = re.findall(pattern, f_string)
+        variable_names = [match.strip() for match in matches]
+        return variable_names
+
+    def new_sample(self, template: Sample):
+        """
+        This method is used to generate a new sample from a template.
+
+        Parameters:
+        template (Sample): The template from which the new sample is to be generated.
+
+        Returns:
+        Sample: The new sample generated from the template.
+
+        """
+        template = copy(template)
+        matches = re.finditer(r"{([^{}]*)}", template.original)
+        cursor = 0
+        other_predictions = []
+        if matches:
+            for match in matches:
+                entity = match.group(1)
+                if entity in self.__search_results:
+                    prediction = random.choice(self.__search_results[entity])
+                    word = " ".join(
+                        i.span.word for i in prediction if isinstance(i, NERPrediction)
+                    )
+
+                    template.original = template.original.replace(
+                        "{" + entity + "}", word, 1
+                    )
+                    for result in template.expected_results.predictions[cursor:]:
+                        if prediction[0].entity.endswith(result.entity):
+                            other_predictions.extend(prediction)
+                            cursor += 1
+                            break
+                        else:
+                            if "{" in result.span.word and "}" in result.span.word:
+                                continue
+                            other_predictions.append(result)
+                            cursor += 1
+                else:
+                    continue
+            template.expected_results.predictions = (
+                other_predictions + template.expected_results.predictions[cursor:]
+            )
+            return template
+        else:
+            return None
+
+    def str_to_sample(self, template: str):
+        """
+        This method is used to convert a template string to a Sample object.
+
+        Parameters:
+        template (str): The template string to be converted.
+
+        Returns:
+        Sample: The Sample object generated from the template string.
+
+        """
+        if self.__task == "ner":
+            template = self.add_spaces_around_punctuation(template)
+            sample = NERSample()
+            sample.original = template
+            words = template.split()
+            predictions = []
+            cursor = 0
+            for word in words:
+                if "{" in word and "}" in word:
+                    entity = word.replace("{", "").replace("}", "")
+                else:
+                    entity = "O"
+                predictions.append(
+                    NERPrediction.from_span(
+                        entity,
+                        word,
+                        cursor,
+                        cursor + len(word),
+                        pos_tag="-X-",
+                        chunk_tag="-X-",
+                        doc_id=0,
+                        doc_name="",
+                    )
+                )
+                cursor += len(word) + 1
+            sample.expected_results = NEROutput(predictions=predictions)
+
+        elif self.__task == "text-classification":
+            raise NotImplementedError
+
+        return sample
+
+    @property
+    def templates(self):
+        return self.__templates
+
+    @templates.setter
+    def templates(self, templates: Union[str, List[str]]):
+        self.__init__(templates, self.__task)
+
+    @property
+    def task(self):
+        return self.__task
+
+    @task.setter
+    def task(self, task: str):
+        self.__task = task
+
+    def add_spaces_around_punctuation(self, text: str):
+        """
+        This method is used to add spaces around punctuation in a string.
+
+        Parameters:
+        text (str): The string to which spaces are to be added.
+
+        Returns:
+        str: The string with spaces added around punctuation.
+        """
+        for punct in string.punctuation:
+            if punct not in ["{", "}", "_"]:
+                if punct == ".":
+                    # To prevent spaces being added around decimal points
+                    text = re.sub(r"(\d)\.(\d)", r"\1[DOT]\2", text)
+
+                text = text.replace(punct, f" {punct} ")
+
+                if punct == ".":
+                    # Putting back the decimal points to original state
+                    text = text.replace("[DOT]", ".")
+
+        # Removing extra spaces
+        text = re.sub(r"\s+", " ", text).strip()
+
+        return text
