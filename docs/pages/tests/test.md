@@ -99,6 +99,7 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Multiple Perturbations](robustness#multiple-perturbations)                                                        |`text-classification`, `question-answering`, `summarization`, `translation`
 |[Robustness](robustness)		            |[Adjective Synonym Swap](robustness#adjective-synonym-swap)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
 |[Robustness](robustness)		            |[Adjective Antonym Swap](robustness#adjective-antonym-swap)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
+|[Robustness](robustness)		            |[Strip All Punctution](robustness#strip-all-punctuation)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
 |[Toxicity](toxicity)		            |[Offensive](toxicity#Offensive)                                                        |`toxicity`
 
 </div></div>
