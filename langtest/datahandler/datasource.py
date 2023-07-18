@@ -31,9 +31,14 @@ class _IDataset(ABC):
     """
 
     @abstractmethod
+    def load_raw_data(self):
+        """Load data from the file_path into raw format."""
+        raise NotImplementedError()
+
+    @abstractmethod
     def load_data(self):
-        """Load data from the file_path."""
-        return NotImplemented
+        """Load data from the file_path into the right Sample object."""
+        return NotImplementedError()
 
     @abstractmethod
     def export_data(self, data: List[Sample], output_path: str):
@@ -77,6 +82,13 @@ class DataFactory:
         self.init_cls = None
         self.kwargs = kwargs
 
+    def load_raw(self):
+        """Loads the data into a raw format"""
+        self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self._file_path, task=self.task, **self.kwargs
+        )
+        return self.init_cls.load_raw_data()
+
     def load(self) -> List[Sample]:
         """Loads the data for the correct Dataset type.
 
@@ -100,7 +112,9 @@ class DataFactory:
         self.init_cls.export_data(data, output_path)
 
     @classmethod
-    def load_curated_bias(cls, tests_to_filter, file_path) -> List[Sample]:
+    def load_curated_bias(
+        cls, tests_to_filter: List[str], file_path: str
+    ) -> List[Sample]:
         """Loads curated bias into a list of samples
 
         Args:
@@ -188,6 +202,8 @@ class DataFactory:
             + "/HellaSwag/hellaswag-test-tiny.jsonl",
             "Translation-test": script_dir[:-7]
             + "/Translation/translation-test-tiny.jsonl",
+            "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
+            "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
         }
         return datasets_info[dataset_name]
 
@@ -362,7 +378,7 @@ class CSVDataset(_IDataset):
             "label": ["label", "labels ", "class", "classes"],
         },
         "ner": {
-            "text": ["text", "sentences", "sentence", "sample"],
+            "text": ["text", "sentences", "sentence", "sample", "tokens"],
             "ner": [
                 "label",
                 "labels ",
@@ -401,6 +417,33 @@ class CSVDataset(_IDataset):
         self.column_map = None
         self.kwargs = kwargs
 
+    def load_raw_data(self) -> Tuple[List[List[str]], List[List[str]]]:
+        """Loads data from a csv file into raw lists of strings
+
+        Returns:
+            Tuple[List[List[str]], List[List[str]]]:
+                processed text and labels. Corresponds to a list of tokens and per-token labels
+                in case of 'ner' and lists of single element for 'text-classification'
+        """
+        all_texts, all_labels = [], []
+        df = pd.read_csv(self._file_path)
+
+        for _, row in df.iterrows():
+            if not self.column_map:
+                self.column_map = self._match_column_names(list(row.keys()))
+
+            label_col = (
+                self.column_map["ner"] if self.task == "ner" else self.column_map["label"]
+            )
+
+            text = row[self.column_map["text"]]
+            labels = row[label_col]
+            all_texts.append(text if isinstance(text, list) else eval(text))
+            all_labels.append(labels if isinstance(labels, list) else eval(text))
+
+        assert len(all_texts) == len(all_labels)
+        return all_texts, all_labels
+
     def load_data(self) -> List[Sample]:
         """Loads data from a csv file.
 
@@ -411,19 +454,19 @@ class CSVDataset(_IDataset):
             kwargs = self.kwargs.copy()
             kwargs.pop("is_import")
             return self._import_data(self._file_path, **kwargs)
-        with open(self._file_path, newline="", encoding="utf-8") as csv_file:
-            csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
-            samples = []
-            for sent_indx, row in enumerate(csv_reader):
-                if not self.column_map:
-                    self.column_map = self._match_column_names(list(row.keys()))
+        df = pd.read_csv(self._file_path)
 
-                if self.task == "ner":
-                    samples.append(self._row_to_ner_sample(row, sent_indx))
+        samples = []
+        for row_index, row in df.iterrows():
+            if not self.column_map:
+                self.column_map = self._match_column_names(list(row.keys()))
 
-                elif self.task == "text-classification":
-                    samples.append(self._row_to_seq_classification_sample(row))
+            if self.task == "ner":
+                samples.append(self._row_to_ner_sample(row.to_dict(), row_index))
+
+            elif self.task == "text-classification":
+                samples.append(self._row_to_seq_classification_sample(row.to_dict()))
 
         return samples
 
@@ -438,15 +481,22 @@ class CSVDataset(_IDataset):
         """
         temp_id = None
         otext = ""
-        for i in data:
-            if isinstance(i, NEROutput):
+        if self.task == "ner":
+            for i in data:
                 text, temp_id = Formatter.process(i, output_format="csv", temp_id=temp_id)
-            else:
-                text = Formatter.process(i, output_format="csv")
-            otext += text
+                otext += text
 
-        with open(output_path, "wb") as fwriter:
-            fwriter.write(bytes(otext, encoding="utf-8"))
+            with open(output_path, "wb") as fwriter:
+                fwriter.write(bytes(otext, encoding="utf-8"))
+
+        elif self.task == "text-classification":
+            rows = []
+            for s in data:
+                row = Formatter.process(s, output_format="csv")
+                rows.append(row)
+
+            df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES.keys()))
+            df.to_csv(output_path, index=False, encoding="utf-8")
 
     @staticmethod
     def _find_delimiter(file_path: str) -> property:
@@ -456,7 +506,7 @@ class CSVDataset(_IDataset):
             file_path (str):
                 location of the csv file to load
         Returns:
-            property: delimiter
+            property:
         """
         sniffer = csv.Sniffer()
         with open(file_path, encoding="utf-8") as fp:
@@ -475,18 +525,21 @@ class CSVDataset(_IDataset):
             Sample:
                 row formatted into a Sample object
         """
+        for key, value in row.items():
+            if isinstance(value, str):
+                row[key] = eval(value)
+
         assert all(isinstance(value, list) for value in row.values()), ValueError(
             f"Column ({sent_index}th) values should be list that contains tokens or labels. "
             "Given CSV file has invalid values"
         )
-
-        token_num = len(row["text"])
+        token_num = len(row[self.column_map["text"]])
         assert all(len(value) == token_num for value in row.values()), ValueError(
             f"Column ({sent_index}th) values should have same length with number of token in text, "
             f"which is {token_num}"
         )
 
-        original = " ".join(self.column_map["text"])
+        original = " ".join(row[self.column_map["text"]])
         ner_labels = list()
         cursor = 0
         for token_indx in range(len(self.column_map["text"])):
@@ -537,7 +590,6 @@ class CSVDataset(_IDataset):
         Args:
             column_names (List[str]):
                 list of column names of the csv file
-
         Returns:
             Dict[str, str]:
                 mapping from the original column names into 'standardized' names
@@ -551,7 +603,9 @@ class CSVDataset(_IDataset):
         not_referenced_columns = {
             k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None
         }
-        if not_referenced_columns:
+        if "text" in not_referenced_columns and (
+            "ner" in not_referenced_columns or "label" in not_referenced_columns
+        ):
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
                 f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
@@ -857,12 +911,15 @@ class HuggingFaceDataset(_IDataset):
             output_path (str):
                 Path to save the data to.
         """
-        with open(output_path, "w") as file:
-            csv_writer = csv.writer(file)
-            csv_writer.writerow(list(self.COLUMN_NAMES["text-classification"].keys()))
-            for s in data:
-                row = self._sample_to_row(s)
-                csv_writer.writerow(row)
+        rows = []
+        for s in data:
+            row = Formatter.process(s, output_format="csv")
+            rows.append(row)
+
+        df = pd.DataFrame(
+            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
+        )
+        df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
         """Convert a row from the dataset into a Sample for text classification.

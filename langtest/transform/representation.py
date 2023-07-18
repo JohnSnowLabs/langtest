@@ -549,7 +549,6 @@ class LabelRepresentation(BaseRepresentation):
         entity_representation = RepresentationOperation.get_label_representation_dict(
             kwargs["raw_data"]
         )
-
         for sample in sample_list:
             if progress:
                 progress.update(1)

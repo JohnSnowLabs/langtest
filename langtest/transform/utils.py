@@ -96,7 +96,7 @@ class RepresentationOperation:
                 elif isinstance(prediction, NERPrediction):
                     if prediction.entity == "O":
                         label_representation[prediction.entity] += 1
-                    elif prediction.entity in RepresentationOperation.entity_types:
+                    else:
                         label_representation[prediction.entity.split("-")[1]] += 1
 
         return label_representation

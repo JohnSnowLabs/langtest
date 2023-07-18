@@ -9,7 +9,7 @@ from transformers import (
 )
 
 from langtest import Harness
-from langtest.datahandler.datasource import ConllDataset
+from langtest.datahandler.datasource import DataFactory
 from langtest.pipelines.utils.data_helpers import NERDataset
 from langtest.pipelines.utils.metrics import compute_metrics
 
@@ -48,8 +48,8 @@ class NEREnd2EndPipeline(FlowSpec):
         self.hub = "huggingface"
         self.output_dir = "checkpoints/"
 
-        self.train_datasource = ConllDataset(file_path=self.train_data, task=self.task)
-        self.eval_datasource = ConllDataset(file_path=self.eval_data, task=self.task)
+        self.train_datasource = DataFactory(file_path=self.train_data, task=self.task)
+        self.eval_datasource = DataFactory(file_path=self.eval_data, task=self.task)
 
         self.next(self.train)
 
@@ -58,12 +58,12 @@ class NEREnd2EndPipeline(FlowSpec):
         """Performs the training procedure of the model"""
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
 
-        tokens, labels = self.train_datasource.load_raw_data()
+        tokens, labels = self.train_datasource.load_raw()
         self.train_dataset = NERDataset(
             tokens=tokens, labels=labels, tokenizer=self.tokenizer
         )
 
-        tokens, labels = self.eval_datasource.load_raw_data()
+        tokens, labels = self.eval_datasource.load_raw()
         self.eval_dataset = NERDataset(
             tokens=tokens, labels=labels, tokenizer=self.tokenizer
         )
@@ -139,10 +139,10 @@ class NEREnd2EndPipeline(FlowSpec):
     @step
     def retrain(self):
         """Performs the training procedure using the augmented data created by langtest"""
-        self.augmented_train_datasource = ConllDataset(
+        self.augmented_train_datasource = DataFactory(
             file_path=f"augmented_{self.train_data}", task=self.task
         )
-        tokens, labels = self.augmented_train_datasource.load_raw_data()
+        tokens, labels = self.augmented_train_datasource.load_raw()
 
         self.augmented_train_dataset = NERDataset(
             tokens=tokens, labels=labels, tokenizer=self.tokenizer
