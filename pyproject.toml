@@ -44,7 +44,7 @@ extend-exclude = "langtest/transform/constants.py"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
-langchain = { version = "^0.0.235", optional = true }
+langchain = { version = "^0.0.200", optional = true }
 pydantic = "1.10.6"
 johnsnowlabs = { version = "4.3.5", optional = true }
 rouge-score = { version = "^0.1.2", optional = true }
