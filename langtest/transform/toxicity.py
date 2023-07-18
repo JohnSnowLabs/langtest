@@ -1,8 +1,6 @@
 import asyncio
-from typing import List
 from abc import ABC, abstractmethod
-import evaluate
-from transformers import pipeline
+from typing import List
 
 from langtest.modelhandler import ModelFactory
 from ..utils.custom_types import Sample
@@ -103,6 +101,7 @@ class PromptToxicity(BaseToxicity):
         Returns:
             List[Sample]:  list of transformed samples
         """
+        import evaluate
 
         global toxicity_metric
         toxicity_metric = evaluate.load("toxicity", module_type="measurement")
@@ -131,6 +130,8 @@ class ToxicityTypes(BaseToxicity):
         Returns:
             List[Sample]:  list of transformed samples
         """
+        from transformers import pipeline
+
         toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
         for sample in sample_list:
             score = {
@@ -152,6 +153,8 @@ class ToxicityTypes(BaseToxicity):
             sample_list (List[Sample]): list of samples to compute toxicity on
             model (ModelFactory): model to use for toxicity completion
         """
+        from transformers import pipeline
+
         progress = kwargs.get("progress_bar", False)
 
         toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
