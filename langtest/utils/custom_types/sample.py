@@ -528,7 +528,7 @@ class QASample(BaseQASample):
                 prediction_key="text",
             )
 
-        return graded_outputs[0]["results"].strip() == "CORRECT"
+        return graded_outputs[0]["text"].strip() == "CORRECT"
 
 
 class MinScoreQASample(QASample):
