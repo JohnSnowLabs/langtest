@@ -26,8 +26,9 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from langtest import Harness
+!pip install langtest[johnsnowlabs] transformers==4.28.1
 
+from langtest import Harness
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
 
@@ -39,6 +40,8 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install langtest transformers==4.28.1
+
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
@@ -52,6 +55,8 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install langtest[spacy] transformers==4.28.1
+
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
@@ -79,6 +84,8 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install langtest[johnsnowlabs] transformers==4.28.1
+
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
@@ -92,7 +99,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-from langtest import Harness
+!pip install langtest transformers==4.28.1
 
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model='lvwerra/distilbert-imdb', hub='huggingface')
@@ -105,6 +112,8 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install langtest[spacy] transformers==4.28.1
+
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
@@ -131,6 +140,8 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install "langtest[transformers,langchain,openai]"
+
 from langtest import Harness
 
 # Set API keys
@@ -160,6 +171,8 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install "langtest[evaluate,transformers,langchain,openai]"
+
 from langtest import Harness
 
 # Set API keys
@@ -188,6 +201,8 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install "langtest[evaluate,transformers,langchain,openai]"
+
 from langtest import Harness
 
 # Set API keys
@@ -216,6 +231,7 @@ To compare different models (either from same or different hubs) on the same tas
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install "langtest[spacy,johnsnowlabs]" transformers==4.28.1
 from langtest import Harness
 
 # Define the dictionary
@@ -245,6 +261,8 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
+!pip install langtest[transformers]
+
 from langtest import Harness
 
 # Create a Harness object
