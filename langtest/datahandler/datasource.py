@@ -479,11 +479,12 @@ class CSVDataset(_IDataset):
             return self._import_data(self._file_path, **kwargs)
 
         df = pd.read_csv(self._file_path)
+
+        if not self.column_map:
+            self.column_map = self._match_column_names(list(df.columns))
+
         samples = []
         for row_index, row in df.iterrows():
-            if not self.column_map:
-                self.column_map = self._match_column_names(list(row.keys()))
-
             if self.task == "ner":
                 samples.append(self._row_to_ner_sample(row.to_dict(), row_index))
 
@@ -549,6 +550,8 @@ class CSVDataset(_IDataset):
             Sample:
                 row formatted into a Sample object
         """
+        text_col = self.column_map["text"]
+
         for key, value in row.items():
             if isinstance(value, str):
                 row[key] = eval(value)
@@ -557,17 +560,17 @@ class CSVDataset(_IDataset):
             f"Column ({sent_index}th) values should be list that contains tokens or labels. "
             "Given CSV file has invalid values"
         )
-        token_num = len(row[self.column_map["text"]])
+        token_num = len(row[text_col])
         assert all(len(value) == token_num for value in row.values()), ValueError(
             f"Column ({sent_index}th) values should have same length with number of token in text, "
             f"which is {token_num}"
         )
 
-        original = " ".join(row[self.column_map["text"]])
+        original = " ".join(row[text_col])
         ner_labels = list()
         cursor = 0
-        for token_indx in range(len(self.column_map["text"])):
-            token = row[self.column_map["text"]][token_indx]
+        for token_indx in range(len(row[text_col])):
+            token = row[text_col][token_indx]
             ner_labels.append(
                 NERPrediction.from_span(
                     entity=row[self.column_map["ner"]][token_indx],
@@ -670,6 +673,36 @@ class CSVDataset(_IDataset):
 class JSONLDataset(_IDataset):
     """Class to handle JSONL datasets. Subclass of _IDataset."""
 
+    COLUMN_NAMES = {
+        "text-classification": {
+            "text": ["text", "sentences", "sentence", "sample"],
+            "label": ["label", "labels ", "class", "classes"],
+        },
+        "ner": {
+            "text": ["text", "sentences", "sentence", "sample", "tokens"],
+            "ner": [
+                "label",
+                "labels ",
+                "class",
+                "classes",
+                "ner_tag",
+                "ner_tags",
+                "ner",
+                "entity",
+            ],
+            "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
+            "chunk": ["chunk_tags", "chunk_tag"],
+        },
+        "question-answering": {
+            "text": ["question"],
+            "context": ["context", "passage"],
+            "answer": ["answer", "answer_and_def_correct_predictions"],
+        },
+        "summarization": {"text": ["text", "document"], "summary": ["summary"]},
+        "toxicity": {"text": ["text"]},
+        "translation": {"text": ["text", "original", "sourcestring"]},
+    }
+
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes JSONLDataset object.
 
@@ -680,6 +713,38 @@ class JSONLDataset(_IDataset):
         super().__init__()
         self._file_path = file_path
         self.task = task
+        self.column_matcher = None
+
+    def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
+        """Helper function to map original column into standardized ones.
+
+        Args:
+            column_names (List[str]):
+                list of column names of the csv file
+
+        Returns:
+            Dict[str, str]:
+                mapping from the original column names into 'standardized' names
+        """
+        column_map = {}
+        for column in column_names:
+            for key, reference_columns in self.COLUMN_NAMES[self.task].items():
+                if column.lower() in reference_columns:
+                    column_map[key] = column
+
+        not_referenced_columns = [
+            col for col in self.COLUMN_NAMES[self.task] if col not in column_map
+        ]
+
+        if "text" in not_referenced_columns:
+            raise OSError(
+                f"Your dataset needs to have at least have a column with one of the following name: "
+                f"{self.COLUMN_NAMES[self.task]['text']}, found: {column_names}."
+            )
+
+        for missing_col in not_referenced_columns:
+            column_map[missing_col] = None
+        return column_map
 
     def load_raw_data(self) -> List[Dict]:
         """Loads data from a JSON file into a list"""
@@ -696,10 +761,11 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
+                if self.column_matcher is None:
+                    self.column_matcher = self._match_column_names(item.keys())
+
                 if self.task == "question-answering":
-                    expected_results = item.get(
-                        "answer_and_def_correct_predictions", item.get("answer", None)
-                    )
+                    expected_results = item.get(self.column_matcher["answer"])
                     if isinstance(expected_results, str) or isinstance(
                         expected_results, bool
                     ):
@@ -707,8 +773,10 @@ class JSONLDataset(_IDataset):
 
                     data.append(
                         QASample(
-                            original_question=item["question"],
-                            original_context=item.get("passage", "-"),
+                            original_question=item[self.column_matcher["text"]],
+                            original_context=item.get(
+                                self.column_matcher["context"], "-"
+                            ),
                             expected_results=expected_results,
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
@@ -716,14 +784,14 @@ class JSONLDataset(_IDataset):
                     )
 
                 elif self.task == "summarization":
-                    expected_results = item.get("summary", None)
+                    expected_results = item.get(self.column_matcher["summary"])
                     if isinstance(expected_results, str) or isinstance(
                         expected_results, bool
                     ):
                         expected_results = [str(expected_results)]
                     data.append(
                         SummarizationSample(
-                            original=item["document"],
+                            original=item[self.column_matcher["text"]],
                             expected_results=expected_results,
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
@@ -732,7 +800,7 @@ class JSONLDataset(_IDataset):
                 elif self.task == "toxicity":
                     data.append(
                         ToxicitySample(
-                            prompt=item["text"],
+                            prompt=item[self.column_matcher["text"]],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
@@ -741,7 +809,7 @@ class JSONLDataset(_IDataset):
                 elif self.task == "translation":
                     data.append(
                         TranslationSample(
-                            original=item["sourceString"],
+                            original=item[self.column_matcher["text"]],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
