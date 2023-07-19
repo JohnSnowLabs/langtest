@@ -40,7 +40,7 @@ Take a look at our official page for user documentation and examples: [langtest.
 
 ```python
 # Install langtest
-!pip install  langtest[transformers]
+!pip install langtest transformers==4.28.1
 
 # Import and create a Harness object
 from langtest import Harness
