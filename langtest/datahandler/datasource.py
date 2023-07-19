@@ -1,10 +1,13 @@
 import csv
+import importlib
 import os
 import re
-import jsonlines
-import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Dict, List
+
+import jsonlines
+import pandas as pd
+
 from langtest.utils.custom_types import sample
 from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
@@ -12,16 +15,14 @@ from ..utils.custom_types import (
     NEROutput,
     NERPrediction,
     NERSample,
+    QASample,
     Sample,
     SequenceClassificationOutput,
     SequenceClassificationSample,
     SequenceLabel,
-    QASample,
     SummarizationSample,
 )
-
 from ..utils.lib_manager import try_import_lib
-import importlib
 
 
 class _IDataset(ABC):
@@ -31,9 +32,14 @@ class _IDataset(ABC):
     """
 
     @abstractmethod
+    def load_raw_data(self):
+        """Load data from the file_path into raw format."""
+        raise NotImplementedError()
+
+    @abstractmethod
     def load_data(self):
-        """Load data from the file_path."""
-        return NotImplemented
+        """Load data from the file_path into the right Sample object."""
+        return NotImplementedError()
 
     @abstractmethod
     def export_data(self, data: List[Sample], output_path: str):
@@ -62,7 +68,6 @@ class DataFactory:
             file_path (str): Path to the dataset.
             task (str): Task to be evaluated.
         """
-
         self._file_path = file_path
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
@@ -78,6 +83,13 @@ class DataFactory:
         self.init_cls = None
         self.kwargs = kwargs
 
+    def load_raw(self):
+        """Loads the data into a raw format"""
+        self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self._file_path, task=self.task, **self.kwargs
+        )
+        return self.init_cls.load_raw_data()
+
     def load(self) -> List[Sample]:
         """Loads the data for the correct Dataset type.
 
@@ -90,8 +102,8 @@ class DataFactory:
         return self.init_cls.load_data()
 
     def export(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
+
         Args:
             data (List[Sample]):
                 data to export
@@ -101,7 +113,18 @@ class DataFactory:
         self.init_cls.export_data(data, output_path)
 
     @classmethod
-    def load_curated_bias(cls, tests_to_filter, file_path) -> List[Sample]:
+    def load_curated_bias(
+        cls, tests_to_filter: List[str], file_path: str
+    ) -> List[Sample]:
+        """Loads curated bias into a list of samples
+
+        Args:
+            tests_to_filter (List[str]): name of the tests to use
+            file_path(str): path to the file to load
+
+        Returns:
+            List[Sample]: list of processed samples
+        """
         data = []
         path = os.path.abspath(__file__)
         if file_path == "BoolQ":
@@ -141,7 +164,8 @@ class DataFactory:
 
     @classmethod
     def _load_dataset(cls, dataset_name: str):
-        """
+        """Loads a dataset
+
         Args:
             dataset_name (str): name of the dataset
 
@@ -189,14 +213,14 @@ class DataFactory:
 
 
 class ConllDataset(_IDataset):
-    """
-    Class to handle Conll files. Subclass of _IDataset.
-    """
+    """Class to handle Conll files. Subclass of _IDataset."""
 
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes ConllDataset object.
+
         Args:
             file_path (str): Path to the data file.
+            task (str): name of the task to perform
         """
         super().__init__()
         self._file_path = file_path
@@ -207,8 +231,46 @@ class ConllDataset(_IDataset):
             )
         self.task = task
 
+    def load_raw_data(self) -> List[Dict]:
+        """Loads dataset into a list tokens and labels
+
+        Returns:
+            List[Dict]: list of dict containing tokens and labels
+        """
+        raw_data = []
+        with open(self._file_path) as f:
+            content = f.read()
+            docs = [
+                i.strip()
+                for i in re.split(r"-DOCSTART- \S+ \S+ O", content.strip())
+                if i != ""
+            ]
+            for d_id, doc in enumerate(docs):
+                #  file content to sentence split
+                sentences = doc.strip().split("\n\n")
+
+                if sentences == [""]:
+                    continue
+
+                for sent in sentences:
+                    # sentence string to token level split
+                    tokens = sent.strip().split("\n")
+
+                    # get annotations from token level split
+                    token_list = [t.split() for t in tokens]
+
+                    #  get token and labels from the split
+                    raw_data.append(
+                        {
+                            "text": [elt[0] for elt in token_list],
+                            "labels": [elt[-1] for elt in token_list],
+                        }
+                    )
+        return raw_data
+
     def load_data(self) -> List[NERSample]:
         """Loads data from a CoNLL file.
+
         Returns:
             List[NERSample]: List of formatted sentences from the dataset.
         """
@@ -270,6 +332,7 @@ class ConllDataset(_IDataset):
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
+
         Args:
             data (List[Sample]):
                 data to export
@@ -287,25 +350,32 @@ class ConllDataset(_IDataset):
 
 
 class JSONDataset(_IDataset):
-    """
-    Class to handle JSON dataset files. Subclass of _IDataset.
-    """
+    """Class to handle JSON dataset files. Subclass of _IDataset."""
 
     def __init__(self, file_path: str):
         """Initializes JSONDataset object.
+
         Args:
             file_path (str): Path to the data file.
         """
         super().__init__()
         self._file_path = file_path
 
+    def load_raw_data(self):
+        """Loads data into a raw list"""
+        raise NotImplementedError()
+
     def load_data(self) -> List[Sample]:
-        """"""
+        """Loads data into a list of Sample
+
+        Returns:
+            List[Sample]: formatted samples
+        """
         raise NotImplementedError()
 
     def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
+
         Args:
             data (List[Sample]):
                 data to export
@@ -324,7 +394,7 @@ class CSVDataset(_IDataset):
             "label": ["label", "labels ", "class", "classes"],
         },
         "ner": {
-            "text": ["text", "sentences", "sentence", "sample"],
+            "text": ["text", "sentences", "sentence", "sample", "tokens"],
             "ner": [
                 "label",
                 "labels ",
@@ -342,10 +412,12 @@ class CSVDataset(_IDataset):
 
     def __init__(self, file_path: str, task: str, **kwargs) -> None:
         """Initializes CSVDataset object.
+
         Args:
             file_path (str):
                 Path to the data file.
-
+            task (str):
+                name of the task to perform
         """
         super().__init__()
         self._file_path = file_path
@@ -361,8 +433,43 @@ class CSVDataset(_IDataset):
         self.column_map = None
         self.kwargs = kwargs
 
+    def load_raw_data(self) -> List[Dict]:
+        """Loads data from a csv file into raw lists of strings
+
+        Returns:
+            List[Dict]:
+                parsed CSV file into list of dicts
+        """
+        raw_data = []
+        df = pd.read_csv(self._file_path)
+
+        for _, row in df.iterrows():
+            if not self.column_map:
+                self.column_map = self._match_column_names(list(row.keys()))
+
+            label_col = (
+                self.column_map["ner"] if self.task == "ner" else self.column_map["label"]
+            )
+
+            text = row[self.column_map["text"]]
+            labels = row[label_col]
+
+            raw_data.append(
+                {
+                    "text": text
+                    if (isinstance(text, list) or self.task != "ner")
+                    else eval(text),
+                    "labels": labels
+                    if (isinstance(labels, list) or self.task != "ner")
+                    else eval(labels),
+                }
+            )
+
+        return raw_data
+
     def load_data(self) -> List[Sample]:
         """Loads data from a csv file.
+
         Returns:
             List[Sample]: List of formatted sentences from the dataset.
         """
@@ -370,25 +477,24 @@ class CSVDataset(_IDataset):
             kwargs = self.kwargs.copy()
             kwargs.pop("is_import")
             return self._import_data(self._file_path, **kwargs)
-        with open(self._file_path, newline="", encoding="utf-8") as csv_file:
-            csv_reader = csv.DictReader(csv_file, delimiter=self.delimiter)
 
-            samples = []
-            for sent_indx, row in enumerate(csv_reader):
-                if not self.column_map:
-                    self.column_map = self._match_column_names(list(row.keys()))
+        df = pd.read_csv(self._file_path)
+        samples = []
+        for row_index, row in df.iterrows():
+            if not self.column_map:
+                self.column_map = self._match_column_names(list(row.keys()))
 
-                if self.task == "ner":
-                    samples.append(self._row_to_ner_sample(row, sent_indx))
+            if self.task == "ner":
+                samples.append(self._row_to_ner_sample(row.to_dict(), row_index))
 
-                elif self.task == "text-classification":
-                    samples.append(self._row_to_seq_classification_sample(row))
+            elif self.task == "text-classification":
+                samples.append(self._row_to_seq_classification_sample(row.to_dict()))
 
         return samples
 
     def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
+
         Args:
             data (List[Sample]):
                 data to export
@@ -416,13 +522,14 @@ class CSVDataset(_IDataset):
 
     @staticmethod
     def _find_delimiter(file_path: str) -> property:
-        """
-        Helper function in charge of finding the delimiter character in a csv file.
+        """Helper function in charge of finding the delimiter character in a csv file.
+
         Args:
             file_path (str):
                 location of the csv file to load
+
         Returns:
-            property:
+            property: delimiter
         """
         sniffer = csv.Sniffer()
         with open(file_path, encoding="utf-8") as fp:
@@ -432,26 +539,31 @@ class CSVDataset(_IDataset):
 
     def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
         """Convert a row from the dataset into a Sample for the NER task.
+
         Args:
             row (Dict[str, List[str]]):
                 single row of the dataset
-            sent_index (int):
+            sent_index (int): position of the sentence
+
         Returns:
             Sample:
                 row formatted into a Sample object
         """
+        for key, value in row.items():
+            if isinstance(value, str):
+                row[key] = eval(value)
+
         assert all(isinstance(value, list) for value in row.values()), ValueError(
             f"Column ({sent_index}th) values should be list that contains tokens or labels. "
             "Given CSV file has invalid values"
         )
-
-        token_num = len(row["text"])
+        token_num = len(row[self.column_map["text"]])
         assert all(len(value) == token_num for value in row.values()), ValueError(
             f"Column ({sent_index}th) values should have same length with number of token in text, "
             f"which is {token_num}"
         )
 
-        original = " ".join(self.column_map["text"])
+        original = " ".join(row[self.column_map["text"]])
         ner_labels = list()
         cursor = 0
         for token_indx in range(len(self.column_map["text"])):
@@ -477,11 +589,12 @@ class CSVDataset(_IDataset):
         )
 
     def _row_to_seq_classification_sample(self, row: Dict[str, str]) -> Sample:
-        """
-        Convert a row from the dataset into a Sample for the text-classification task
+        """Convert a row from the dataset into a Sample for the text-classification task
+
         Args:
             row (Dict[str, str]):
                 single row of the dataset
+
         Returns:
             Sample:
                 row formatted into a Sample object
@@ -496,11 +609,12 @@ class CSVDataset(_IDataset):
         )
 
     def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
-        """
-        Helper function to map original column into standardized ones.
+        """Helper function to map original column into standardized ones.
+
         Args:
             column_names (List[str]):
                 list of column names of the csv file
+
         Returns:
             Dict[str, str]:
                 mapping from the original column names into 'standardized' names
@@ -514,7 +628,9 @@ class CSVDataset(_IDataset):
         not_referenced_columns = {
             k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None
         }
-        if not_referenced_columns:
+        if "text" in not_referenced_columns and (
+            "ner" in not_referenced_columns or "label" in not_referenced_columns
+        ):
             raise OSError(
                 f"CSV file is invalid. CSV handler works with template column names!\n"
                 f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
@@ -523,14 +639,14 @@ class CSVDataset(_IDataset):
         return column_map
 
     def _import_data(self, file_name, **kwargs) -> List[Sample]:
-        """
-        Helper function to import testcases from csv file after editing.
+        """Helper function to import testcases from csv file after editing.
+
         Args:
             file_name (str):    path to the csv file
             **kwargs:           additional arguments to pass to pandas.read_csv
+
         Returns:
             List[Sample]:       list of samples
-
         """
         data = pd.read_csv(file_name, **kwargs)
         custom_names = {
@@ -552,25 +668,31 @@ class CSVDataset(_IDataset):
 
 
 class JSONLDataset(_IDataset):
-    """
-    Class to handle JSONL datasets. Subclass of _IDataset.
-    """
+    """Class to handle JSONL datasets. Subclass of _IDataset."""
 
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes JSONLDataset object.
+
         Args:
             file_path (str): Path to the data file.
+            task (str): name of the task to perform
         """
         super().__init__()
         self._file_path = file_path
         self.task = task
 
-    def load_data(self):
-        """Loads data from a JSONL file.
+    def load_raw_data(self) -> List[Dict]:
+        """Loads data from a JSON file into a list"""
+        with jsonlines.open(self._file_path) as reader:
+            data = [obj for obj in reader]
+        return data
+
+    def load_data(self) -> List[Sample]:
+        """Loads data from a JSONL file and format it into a list of Sample.
+
         Returns:
             list[QASample]: Loaded text data.
         """
-
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
@@ -628,8 +750,8 @@ class JSONLDataset(_IDataset):
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
+
         Args:
             data (List[Sample]):
                 data to export
@@ -640,9 +762,7 @@ class JSONLDataset(_IDataset):
 
 
 class HuggingFaceDataset(_IDataset):
-    """
-    Example dataset class that loads data using the Hugging Face dataset library.
-    """
+    """Example dataset class that loads data using the Hugging Face dataset library."""
 
     LIB_NAME = "datasets"
     COLUMN_NAMES = {
@@ -653,8 +773,7 @@ class HuggingFaceDataset(_IDataset):
     }
 
     def __init__(self, dataset_name: str, task: str):
-        """
-        Initialize the HuggingFaceDataset class.
+        """Initialize the HuggingFaceDataset class.
 
         Args:
             dataset_name (str):
@@ -667,11 +786,10 @@ class HuggingFaceDataset(_IDataset):
         self._check_datasets_package()
 
     def _check_datasets_package(self):
-        """
-        Check if the 'datasets' package is installed and import the load_dataset function.
+        """Check if the 'datasets' package is installed and import the load_dataset function.
+
         Raises an error if the package is not found.
         """
-
         if try_import_lib(self.LIB_NAME):
             dataset_module = importlib.import_module(self.LIB_NAME)
             self.load_dataset = getattr(dataset_module, "load_dataset")
@@ -687,8 +805,7 @@ class HuggingFaceDataset(_IDataset):
         split: str = "test",
         subset: str = None,
     ) -> List[Sample]:
-        """
-        Load the specified split from the dataset library.
+        """Load the specified split from the dataset library.
 
         Args:
             feature_column (str):
@@ -704,7 +821,6 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
-
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -728,8 +844,7 @@ class HuggingFaceDataset(_IDataset):
         split: str = "test",
         subset: str = None,
     ) -> List[Sample]:
-        """
-        Load the specified split from the dataset library for summarization task.
+        """Load the specified split from the dataset library for summarization task.
 
         Args:
             feature_column (str):
@@ -761,6 +876,34 @@ class HuggingFaceDataset(_IDataset):
         samples = [self._row_to_sample_summarization(example) for example in dataset]
         return samples
 
+    def load_raw_data(
+        self,
+        feature_column: str = "text",
+        target_column: str = "label",
+        split: str = "test",
+        subset: str = None,
+    ) -> List:
+        """Loads data into a list"""
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        if self.task in ["ner", "text-classification"]:
+            dataset = dataset.rename_columns(
+                {feature_column: "text", target_column: "labels"}
+            )
+        else:
+            dataset = dataset.rename_columns(
+                {
+                    feature_column: "document",
+                    target_column: "summary"
+                    if self.task == "summarization"
+                    else "answer",
+                }
+            )
+        return dataset.to_list()
+
     def load_data(
         self,
         feature_column: str = "text",
@@ -768,8 +911,7 @@ class HuggingFaceDataset(_IDataset):
         split: str = "test",
         subset: str = None,
     ) -> List[Sample]:
-        """
-        Load the specified data based on the task.
+        """Load the specified data based on the task.
 
         Args:
             feature_column (str):
@@ -802,8 +944,7 @@ class HuggingFaceDataset(_IDataset):
 
     @staticmethod
     def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:
-        """
-        Convert a row from the dataset into a Sample for summarization.
+        """Convert a row from the dataset into a Sample for summarization.
 
         Args:
             data_row (Dict[str, str]):
@@ -821,8 +962,7 @@ class HuggingFaceDataset(_IDataset):
         )
 
     def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
+        """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
             data (List[Sample]):
@@ -841,8 +981,7 @@ class HuggingFaceDataset(_IDataset):
         df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
-        """
-        Convert a row from the dataset into a Sample for text classification.
+        """Convert a row from the dataset into a Sample for text classification.
 
         Args:
             data_row (Dict[str, str]):
