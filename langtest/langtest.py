@@ -717,8 +717,8 @@ class Harness:
 
     def augment(
         self,
-        input_path: Optional[Union[str, dict]],
-        output_path: str,
+        training_data: dict,
+        augmented_data: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
@@ -726,10 +726,8 @@ class Harness:
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
         Args:
-           input_path (Union[str, dict]): The path to the input data file or a dictionary containing the huggingface dataset directly.
-                                        If a dictionary is provided, the keys 'name', 'feature_column', 'target_column',
-                                        'split', and 'subset' can be used to specify the dataset details.
-            output_path (str): Path to save the augmented data.
+            training_data (dict): A dictionary containing the input data for augmentation.
+            augmented_data (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
                                     - 'inplace': Modifies the list of samples in place.
@@ -746,9 +744,6 @@ class Harness:
         Note:
             This method uses an instance of `AugmentRobustness` to perform the augmentation.
 
-        Example:
-            >>> harness = Harness(...)
-            >>> harness.augment("train.conll", "augmented_train.conll")
         """
         dtypes = list(
             map(
@@ -788,7 +783,7 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(input_path=input_path, output_path=output_path)
+            ).fix(training_data=training_data, output_path=augmented_data)
 
         else:
             _ = AugmentRobustness(
@@ -796,7 +791,11 @@ class Harness:
                 config=self._config,
                 h_report=self.df_report,
                 custom_proportions=custom_proportions,
-            ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
+            ).fix(
+                training_data=training_data,
+                output_path=augmented_data,
+                export_mode=export_mode,
+            )
 
         return self
 
