@@ -11,7 +11,7 @@ from copy import deepcopy as copy
 
 from langtest.transform import TestFactory
 from langtest.utils.custom_types import Sample
-from langtest.datahandler.datasource import DataFactory
+from langtest.datahandler.datasource import DataFactory, HuggingFaceDataset
 from langtest.transform.utils import create_terminology
 from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
@@ -93,7 +93,12 @@ class AugmentRobustness(BaseAugmentaion):
             with open(self.config) as fread:
                 self.config = yaml.safe_load(fread)
 
-    def fix(self, input_path: str, output_path, export_mode: str = "add"):
+    def fix(
+        self,
+        input_path: Optional[Union[str, dict]],
+        output_path,
+        export_mode: str = "add",
+    ):
         """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
@@ -108,8 +113,17 @@ class AugmentRobustness(BaseAugmentaion):
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
-        self.df = DataFactory(input_path, self.task)
-        data = self.df.load()
+        if type(input_path) == dict:
+            self.df = HuggingFaceDataset(input_path["name"], self.task)
+            data = self.df.load_data(
+                feature_column=input_path.get("feature_column", "text"),
+                target_column=input_path.get("target_column", "label"),
+                split=input_path.get("split", "test"),
+                subset=input_path.get("subset", None),
+            )
+        else:
+            self.df = DataFactory(input_path, self.task)
+            data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest: pd.DataFrame = self.suggestions(self.h_report)
@@ -162,19 +176,33 @@ class AugmentRobustness(BaseAugmentaion):
                         sample_data = random.choices(data, k=int(sample_length))
                     aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
                     final_aug_data.extend(aug_data)
+        if type(input_path) == dict:
+            if export_mode == "inplace":
+                final_aug_data = list(hash_map.values())
+                self.df.export_data(final_aug_data, output_path)
+            elif export_mode == "transformed":
+                final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
+                self.df.export_data(final_aug_data, output_path)
+            else:
+                data.extend(final_aug_data)
+                self.df.export_data(data, output_path)
 
-        if export_mode == "inplace":
-            final_aug_data = list(hash_map.values())
-            self.df.export(final_aug_data, output_path)
-        elif export_mode == "transformed":
-            final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
-            self.df.export(final_aug_data, output_path)
+            TestFactory.is_augment = False
+            return final_aug_data
+
         else:
-            data.extend(final_aug_data)
-            self.df.export(data, output_path)
+            if export_mode == "inplace":
+                final_aug_data = list(hash_map.values())
+                self.df.export(final_aug_data, output_path)
+            elif export_mode == "transformed":
+                final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
+                self.df.export(final_aug_data, output_path)
+            else:
+                data.extend(final_aug_data)
+                self.df.export(data, output_path)
 
-        TestFactory.is_augment = False
-        return final_aug_data
+            TestFactory.is_augment = False
+            return final_aug_data
 
     def suggestions(self, report: "pd.DataFrame") -> "pd.DataFrame":
         """Calculates suggestions for improving test performance based on a given report.
