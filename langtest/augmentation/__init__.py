@@ -112,15 +112,14 @@ class AugmentRobustness(BaseAugmentaion):
             Returns:
         List[Dict[str, Any]]: A list of augmented data samples.
         """
-        if len(training_data) > 1:
-            if "." not in training_data["data_source"]:
-                self.df = HuggingFaceDataset(training_data["data_source"], self.task)
-                data = self.df.load_data(
-                    feature_column=training_data.get("feature_column", "text"),
-                    target_column=training_data.get("target_column", "label"),
-                    split=training_data.get("split", "test"),
-                    subset=training_data.get("subset", None),
-                )
+        if "." not in training_data["data_source"]:
+            self.df = HuggingFaceDataset(training_data["data_source"], self.task)
+            data = self.df.load_data(
+                feature_column=training_data.get("feature_column", "text"),
+                target_column=training_data.get("target_column", "label"),
+                split=training_data.get("split", "test"),
+                subset=training_data.get("subset", None),
+            )
         else:
             self.df = DataFactory(training_data["data_source"], self.task)
             data = self.df.load()
@@ -179,7 +178,7 @@ class AugmentRobustness(BaseAugmentaion):
 
                     if export_mode == "transformed":
                         transformed_data.extend(aug_data)
-        if len(training_data) > 1:
+        if "." not in training_data["data_source"]:
             if export_mode == "inplace":
                 final_aug_data = list(hash_map.values())
                 self.df.export_data(final_aug_data, output_path)
