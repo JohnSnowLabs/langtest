@@ -1,5 +1,6 @@
 import csv
 import importlib
+from collections import defaultdict
 import os
 import re
 from abc import ABC, abstractmethod
@@ -373,11 +374,10 @@ class ConllDataset(_IDataset):
             output_path (str):
                 path to save the data to
         """
-        temp_id = None
         otext = ""
         for i in data:
-            text, temp_id = Formatter.process(i, output_format="conll", temp_id=temp_id)
-            otext += text
+            text = Formatter.process(i, output_format="conll")
+            otext += text + "\n"
 
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
@@ -534,15 +534,26 @@ class CSVDataset(_IDataset):
             output_path (str):
                 path to save the data to
         """
-        temp_id = None
-        otext = ""
         if self.task == "ner":
-            for i in data:
-                text, temp_id = Formatter.process(i, output_format="csv", temp_id=temp_id)
-                otext += text
+            final_data = defaultdict(list)
+            for elt in data:
+                tokens, labels, testcase_tokens, testcase_labels = Formatter.process(
+                    elt, output_format="csv"
+                )
+                final_data["text"].append(tokens)
+                final_data["ner"].append(labels)
+                final_data["testcase_text"].append(testcase_tokens)
+                final_data["testcase_labels"].append(testcase_labels)
 
-            with open(output_path, "wb") as fwriter:
-                fwriter.write(bytes(otext, encoding="utf-8"))
+            if (
+                sum([len(labels) for labels in final_data["testcase_labels"]])
+                * sum([len(tokens) for tokens in final_data["testcase_text"]])
+                == 0
+            ):
+                final_data.pop("testcase_text")
+                final_data.pop("testcase_labels")
+
+            pd.DataFrame(data=final_data).to_csv(output_path, index=False)
 
         elif self.task == "text-classification":
             rows = []

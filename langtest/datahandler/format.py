@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
-
+from typing import Tuple, List, Union
+import re
 from ..utils.custom_types import Sample
 
 
@@ -91,11 +91,10 @@ class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
 
     @staticmethod
     def to_csv(sample: Sample) -> str:
-        """
-        Convert a Sample object into a row for exporting.
+        """Convert a Sample object into a row for exporting.
 
         Args:
-            Sample :
+            Sample:
                 Sample object to convert.
 
         Returns:
@@ -118,8 +117,8 @@ class NEROutputFormatter(BaseFormatter):
 
     @staticmethod
     def to_csv(
-        sample: Sample, delimiter: str = ",", temp_id: int = None
-    ) -> Tuple[str, int]:
+        sample: Sample, delimiter: str = ","
+    ) -> Tuple[List[str], List[str], List[str], List[str]]:
         """Converts a custom type to a CSV string.
 
         Args:
@@ -127,106 +126,92 @@ class NEROutputFormatter(BaseFormatter):
                 The input sample containing the `NEROutput` object to convert.
             delimiter (str):
                 The delimiter character to use in the CSV string.
-            temp_id (int):
-                A temporary ID to use for grouping entities by document.
 
         Returns:
-            Tuple[str, int]:
-                The CSV or CoNLL string representation of the `NEROutput` object along with the document id
+            Tuple[List[str], List[str], List[str], List[str]]:
+                tuple containing the list of tokens of the original sentence, the list of
+                labels of the original sentence, the list of tokens for the perturbed sentence
+                and the labels of the perturbed sentence.
         """
-        text = ""
         test_case = sample.test_case
         original = sample.original
-        if test_case:
-            test_case_items = test_case.split()
-            norm_test_case_items = test_case.lower().split()
-            norm_original_items = original.lower().split()
-            temp_len = 0
-            for jdx, item in enumerate(norm_test_case_items):
-                if item in norm_original_items and jdx >= norm_original_items.index(item):
-                    oitem_index = norm_original_items.index(item)
-                    j = sample.expected_results.predictions[oitem_index + temp_len]
-                    if temp_id != j.doc_id and jdx == 0:
-                        text += f"{j.doc_name}\n\n"
-                        temp_id = j.doc_id
-                    text += f"{test_case_items[jdx]}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
-                    norm_original_items.pop(oitem_index)
-                    temp_len += 1
-                else:
-                    o_item = norm_original_items[jdx - temp_len]
-                    letters_count = len(set(o_item) - set(item))
-                    if len(norm_test_case_items) == len(
-                        norm_original_items
-                    ) or letters_count < len(o_item):
-                        tl = sample.expected_results.predictions[jdx]
-                        text += f"{test_case_items[jdx]}{delimiter}{tl.pos_tag}{delimiter}{tl.chunk_tag}{delimiter}{tl.entity}\n"
-                    else:
-                        text += f"{test_case_items[jdx]}{delimiter}O{delimiter}O{delimiter}O\n"
-            text += "\n"
 
-        else:
-            for j in sample.expected_results.predictions:
-                if temp_id != j.doc_id:
-                    text += f"{j.doc_name}\n\n"
-                    temp_id = j.doc_id
-                text += f"{j.span.word}{delimiter}{j.pos_tag}{delimiter}{j.chunk_tag}{delimiter}{j.entity}\n"
-            text += "\n"
-        return text, temp_id
+        words = re.finditer(r"([^\s]+)", original)
+        tokens, labels = [], []
+
+        for word in words:
+            tokens.append(word.group())
+            match = sample.expected_results[word.group()]
+            labels.append(match.entity if match is not None else "O")
+
+        assert len([label for label in labels if label != "O"]) == len(
+            sample.expected_results
+        )
+
+        if test_case:
+            test_case_words = re.finditer(r"([^\s]+)", test_case)
+            test_case_tokens, test_case_labels = [], []
+
+            for word in test_case_words:
+                test_case_tokens.append(word.group())
+                match = sample.actual_results[word.group()]
+                test_case_labels.append(match.entity if match is not None else "O")
+
+            assert len([token for token in test_case_tokens if token != "O"]) == len(
+                sample.actual_results
+            )
+            return tokens, labels, test_case_tokens, test_case_labels
+        return tokens, labels, [], []
 
     @staticmethod
-    def to_conll(sample: Sample, temp_id: int = None) -> Tuple[str, int]:
+    def to_conll(
+        sample: Sample, writing_mode: str = "ignore"
+    ) -> Union[str, Tuple[str, str]]:
         """Converts a custom type to a CoNLL string.
 
         Args:
             sample (Sample):
                 The input sample containing the `NEROutput` object to convert.
-            temp_id (int):
-                A temporary ID to use for grouping entities by document.
+            writing_mode (str):
+                what to do with the expected results if present:
+                - ignore: simply ignores the expected_results
+                - append: the formatted expected_results to the original ones
+                - separate: returns a formatted string for the original sentence and one for
+                            the perturbed sentence
 
         Returns:
             The CoNLL string representation of the custom type.
         """
-        text = ""
+        assert writing_mode in [
+            "ignore",
+            "append",
+            "separate",
+        ], f"writing_mode: {writing_mode} not supported."
+
+        text, text_perturbed = "", ""
         test_case = sample.test_case
         original = sample.original
-        if test_case:
-            test_case_items = test_case.split()
-            norm_test_case_items = test_case.lower().split()
-            norm_original_items = original.lower().split()
-            temp_len = 0
-            for jdx, item in enumerate(norm_test_case_items):
-                try:
-                    if item in norm_original_items and jdx >= norm_original_items.index(
-                        item
-                    ):
-                        oitem_index = norm_original_items.index(item)
-                        j = sample.expected_results.predictions[oitem_index + temp_len]
-                        if temp_id != j.doc_id and jdx == 0:
-                            text += f"{j.doc_name}\n\n"
-                            temp_id = j.doc_id
-                        text += f"{test_case_items[jdx]} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
-                        norm_original_items.pop(oitem_index)
-                        temp_len += 1
-                    else:
-                        o_item = sample.expected_results.predictions[jdx].span.word
-                        letters_count = len(set(item) - set(o_item))
-                        if (
-                            len(norm_test_case_items) == len(original.lower().split())
-                            or letters_count < 2
-                        ):
-                            tl = sample.expected_results.predictions[jdx]
-                            text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
-                        else:
-                            text += f"{test_case_items[jdx]} O O O\n"
-                except IndexError:
-                    text += f"{test_case_items[jdx]} O O O\n"
-            text += "\n"
 
-        else:
-            for j in sample.expected_results.predictions:
-                if temp_id != j.doc_id:
-                    text += f"{j.doc_name}\n\n"
-                    temp_id = j.doc_id
-                text += f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
-            text += "\n"
-        return text, temp_id
+        words = re.finditer(r"([^\s]+)", original)
+
+        for word in words:
+            token = word.group()
+            match = sample.expected_results[word.group()]
+            label = match.entity if match is not None else "O"
+            text += f"{token} X X {label}\n"
+
+        if test_case and writing_mode != "ignore":
+            words = re.finditer(r"([^\s]+)", test_case)
+
+            for word in words:
+                token = word.group()
+                match = sample.actual_results[word.group()]
+                label = match.entity if match is not None else "O"
+                if writing_mode == "append":
+                    text += f"{token} X X {label}\n"
+                elif writing_mode == "separate":
+                    text_perturbed += f"{token} X X {label}\n"
+
+        if writing_mode == "separate":
+            return text, text_perturbed
+        return text
