@@ -95,16 +95,14 @@ class AugmentRobustness(BaseAugmentaion):
 
     def fix(
         self,
-        input_path: Optional[Union[str, dict]],
-        output_path,
+        training_data: dict,
+        output_path: str,
         export_mode: str = "add",
     ):
         """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
-            input_path (Union[str, dict]): The path to the input data file or a dictionary containing the huggingface dataset directly.
-                                        If a dictionary is provided, the keys 'name', 'feature_column', 'target_column',
-                                        'split', and 'subset' can be used to specify the dataset details.
+            training_data (dict): A dictionary containing the input data for augmentation.
             output_path (str): The path to save the augmented data file.
             export_mode (str, optional): Determines how the samples are modified or exported.
                                         - 'inplace': Modifies the list of samples in place.
@@ -114,16 +112,17 @@ class AugmentRobustness(BaseAugmentaion):
             Returns:
         List[Dict[str, Any]]: A list of augmented data samples.
         """
-        if type(input_path) == dict:
-            self.df = HuggingFaceDataset(input_path["name"], self.task)
-            data = self.df.load_data(
-                feature_column=input_path.get("feature_column", "text"),
-                target_column=input_path.get("target_column", "label"),
-                split=input_path.get("split", "test"),
-                subset=input_path.get("subset", None),
-            )
+        if len(training_data) > 1:
+            if "." not in training_data["data_source"]:
+                self.df = HuggingFaceDataset(training_data["data_source"], self.task)
+                data = self.df.load_data(
+                    feature_column=training_data.get("feature_column", "text"),
+                    target_column=training_data.get("target_column", "label"),
+                    split=training_data.get("split", "test"),
+                    subset=training_data.get("subset", None),
+                )
         else:
-            self.df = DataFactory(input_path, self.task)
+            self.df = DataFactory(training_data["data_source"], self.task)
             data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
@@ -180,7 +179,7 @@ class AugmentRobustness(BaseAugmentaion):
 
                     if export_mode == "transformed":
                         transformed_data.extend(aug_data)
-        if type(input_path) == dict:
+        if len(training_data) > 1:
             if export_mode == "inplace":
                 final_aug_data = list(hash_map.values())
                 self.df.export_data(final_aug_data, output_path)
@@ -301,7 +300,7 @@ class TemplaticAugment(BaseAugmentaion):
 
     Methods:
     __init__(self, templates: Union[str, List[str]], task: str): Initializes the TemplaticAugment class.
-    fix(self, input_path: str, output_path: str, *args, **kwargs): Performs the templatic augmentation and exports the results to a specified path.
+    fix(self, training_data: str, output_path: str, *args, **kwargs): Performs the templatic augmentation and exports the results to a specified path.
     """
 
     def __init__(self, templates: Union[str, List[str]], task: str) -> None:
@@ -322,13 +321,13 @@ class TemplaticAugment(BaseAugmentaion):
         elif isinstance(self.__templates, list) and isinstance(self.__templates[0], str):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
-    def fix(self, input_path: str, output_path: str, max_num=None, *args, **kwargs):
+    def fix(self, training_data: str, output_path: str, max_num=None, *args, **kwargs):
         """
         This method is used to perform the templatic augmentation.
         It takes the input data, performs the augmentation and then saves the augmented data to the output path.
 
         Parameters:
-        input_path (str): The path to the input data.
+        training_data (dict): A dictionary containing the input data for augmentation.
         output_path (str): The path where the augmented data will be saved.
         *args: Variable length argument list.
         **kwargs: Arbitrary keyword arguments.
@@ -337,7 +336,7 @@ class TemplaticAugment(BaseAugmentaion):
         bool: Returns True upon successful completion of the method.
         """
 
-        df = DataFactory(input_path, self.__task)
+        df = DataFactory(training_data["data_source"], self.__task)
         data = df.load()
         new_data = []
         self.__search_results = self.search_sample_results(data)
