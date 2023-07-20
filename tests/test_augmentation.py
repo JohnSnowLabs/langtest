@@ -37,6 +37,20 @@ class AugmentWorkflowTestCase(unittest.TestCase):
                 "config": "tests/fixtures/config_ner.yaml",
                 "hub": "huggingface",
             },
+            "spacy_textclassification_csv_dataset": {
+                "task": "text-classification",
+                "model": "textcat_imdb",
+                "data": "imdb/sample.csv",
+                "config": "tests/fixtures/config_ner.yaml",
+                "hub": "spacy",
+            },
+            "huggingface_textclassification_csv_dataset": {
+                "task": "text-classification",
+                "model": "lvwerra/distilbert-imdb",
+                "data": "imdb/sample.csv",
+                "config": "tests/fixtures/config_ner.yaml",
+                "hub": "huggingface",
+            },
         }
 
     def test_augment_robustness(self):
@@ -161,6 +175,46 @@ class AugmentWorkflowTestCase(unittest.TestCase):
             templates=["I living in {LOC}", "you are working in {ORG}"],
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_csv_dataset_textclassification_hf(self):
+        """
+        Test augmentation using Hugging Face NER model.
+        """
+        harness = Harness(**self.params["huggingface_textclassification_csv_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+
+        harness.augment(
+            input_path="imdb/sample.csv",
+            output_path="augmented_train_transformed.csv",
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_train_transformed.csv"
+        ).is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_csv_dataset_textclassification_spacy(self):
+        """
+        Test augmentation using Hugging Face NER model.
+        """
+        harness = Harness(**self.params["spacy_textclassification_csv_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+
+        harness.augment(
+            input_path="imdb/sample.csv",
+            output_path="augmented_train_transformed.csv",
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_train_transformed.csv"
+        ).is_file()
         self.assertTrue(is_file_exist)
 
 

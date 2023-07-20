@@ -181,7 +181,6 @@ class AugmentRobustness(BaseAugmentaion):
                     if export_mode == "transformed":
                         transformed_data.extend(aug_data)
         if type(input_path) == dict:
-
             if export_mode == "inplace":
                 final_aug_data = list(hash_map.values())
                 self.df.export_data(final_aug_data, output_path)
