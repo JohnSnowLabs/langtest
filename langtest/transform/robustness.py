@@ -1650,7 +1650,7 @@ class RandomAge(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples with abbreviations added
         """
-        age_expressions = [r"\d+ years old", r"\d+ months old"]
+        age_expressions = [r"\d+ years old", r"\d+ months old", r"\d+ days old"]
 
         def insert_abbreviation(text):
             perturbed_text = text
@@ -1664,7 +1664,7 @@ class RandomAge(BaseRobustness):
                     token = text[start:end]
                     new_age = random.randint(-random_amount, random_amount) + int(token.split(' ')[0])
                     new_age = new_age if new_age > 0 else 1
-                    corrected_token = re.sub("\d+",str(new_age),token)
+                    corrected_token = re.sub(r"\d+", str(new_age), token)
                     if corrected_token != token and (random.random() < prob):
                         perturbed_text = (
                             perturbed_text[:start]
