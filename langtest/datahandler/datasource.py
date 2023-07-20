@@ -24,6 +24,36 @@ from ..utils.custom_types import (
 )
 from ..utils.lib_manager import try_import_lib
 
+COLUMN_MAPPER = {
+    "text-classification": {
+        "text": ["text", "sentences", "sentence", "sample"],
+        "label": ["label", "labels ", "class", "classes"],
+    },
+    "ner": {
+        "text": ["text", "sentences", "sentence", "sample", "tokens"],
+        "ner": [
+            "label",
+            "labels ",
+            "class",
+            "classes",
+            "ner_tag",
+            "ner_tags",
+            "ner",
+            "entity",
+        ],
+        "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
+        "chunk": ["chunk_tags", "chunk_tag"],
+    },
+    "question-answering": {
+        "text": ["question"],
+        "context": ["context", "passage"],
+        "answer": ["answer", "answer_and_def_correct_predictions"],
+    },
+    "summarization": {"text": ["text", "document"], "summary": ["summary"]},
+    "toxicity": {"text": ["text"]},
+    "translation": {"text": ["text", "original", "sourcestring"]},
+}
+
 
 class _IDataset(ABC):
     """Abstract base class for Dataset.
@@ -215,6 +245,10 @@ class DataFactory:
 class ConllDataset(_IDataset):
     """Class to handle Conll files. Subclass of _IDataset."""
 
+    supported_tasks = ["ner"]
+
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
+
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes ConllDataset object.
 
@@ -388,27 +422,8 @@ class JSONDataset(_IDataset):
 class CSVDataset(_IDataset):
     """Class to handle CSV files dataset. Subclass of _IDataset."""
 
-    COLUMN_NAMES = {
-        "text-classification": {
-            "text": ["text", "sentences", "sentence", "sample"],
-            "label": ["label", "labels ", "class", "classes"],
-        },
-        "ner": {
-            "text": ["text", "sentences", "sentence", "sample", "tokens"],
-            "ner": [
-                "label",
-                "labels ",
-                "class",
-                "classes",
-                "ner_tag",
-                "ner_tags",
-                "ner",
-                "entity",
-            ],
-            "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
-            "chunk": ["chunk_tags", "chunk_tag"],
-        },
-    }
+    supported_tasks = ["ner", "text-classification"]
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
     def __init__(self, file_path: str, task: str, **kwargs) -> None:
         """Initializes CSVDataset object.
@@ -423,6 +438,7 @@ class CSVDataset(_IDataset):
         self._file_path = file_path
         self.task = task
         self.delimiter = self._find_delimiter(file_path)
+
         if task in self.COLUMN_NAMES:
             self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
         elif "is_import" not in kwargs:
@@ -433,15 +449,31 @@ class CSVDataset(_IDataset):
         self.column_map = None
         self.kwargs = kwargs
 
-    def load_raw_data(self) -> List[Dict]:
+    def load_raw_data(self, standardize_columns: bool = False) -> List[Dict]:
         """Loads data from a csv file into raw lists of strings
+
+        Args:
+            standardize_columns (bool): whether to standardize column names
 
         Returns:
             List[Dict]:
                 parsed CSV file into list of dicts
         """
-        raw_data = []
         df = pd.read_csv(self._file_path)
+
+        raw_data = []
+        if not standardize_columns:
+            data = df.to_dict(orient="records")
+            if self.task == "ner":
+                for row in data:
+                    raw_data.append(
+                        {
+                            key: (val if isinstance(val, list) else eval(val))
+                            for key, val in row.items()
+                        }
+                    )
+                return raw_data
+            return data
 
         for _, row in df.iterrows():
             if not self.column_map:
@@ -673,35 +705,15 @@ class CSVDataset(_IDataset):
 class JSONLDataset(_IDataset):
     """Class to handle JSONL datasets. Subclass of _IDataset."""
 
-    COLUMN_NAMES = {
-        "text-classification": {
-            "text": ["text", "sentences", "sentence", "sample"],
-            "label": ["label", "labels ", "class", "classes"],
-        },
-        "ner": {
-            "text": ["text", "sentences", "sentence", "sample", "tokens"],
-            "ner": [
-                "label",
-                "labels ",
-                "class",
-                "classes",
-                "ner_tag",
-                "ner_tags",
-                "ner",
-                "entity",
-            ],
-            "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
-            "chunk": ["chunk_tags", "chunk_tag"],
-        },
-        "question-answering": {
-            "text": ["question"],
-            "context": ["context", "passage"],
-            "answer": ["answer", "answer_and_def_correct_predictions"],
-        },
-        "summarization": {"text": ["text", "document"], "summary": ["summary"]},
-        "toxicity": {"text": ["text"]},
-        "translation": {"text": ["text", "original", "sourcestring"]},
-    }
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+        "toxicity",
+        "translation",
+    ]
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
     def __init__(self, file_path: str, task: str) -> None:
         """Initializes JSONLDataset object.
@@ -756,7 +768,7 @@ class JSONLDataset(_IDataset):
         """Loads data from a JSONL file and format it into a list of Sample.
 
         Returns:
-            list[QASample]: Loaded text data.
+            list[Sample]: Loaded text data.
         """
         data = []
         with jsonlines.open(self._file_path) as reader:
@@ -832,13 +844,10 @@ class JSONLDataset(_IDataset):
 class HuggingFaceDataset(_IDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
+    supported_tasks = ["text-classification", "summarization"]
+
     LIB_NAME = "datasets"
-    COLUMN_NAMES = {
-        "text-classification": {
-            "text": ["text", "sentences", "sentence", "sample"],
-            "label": ["label", "labels", "class", "classes"],
-        }
-    }
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
     def __init__(self, dataset_name: str, task: str):
         """Initialize the HuggingFaceDataset class.
@@ -957,19 +966,6 @@ class HuggingFaceDataset(_IDataset):
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
-        if self.task in ["ner", "text-classification"]:
-            dataset = dataset.rename_columns(
-                {feature_column: "text", target_column: "labels"}
-            )
-        else:
-            dataset = dataset.rename_columns(
-                {
-                    feature_column: "document",
-                    target_column: "summary"
-                    if self.task == "summarization"
-                    else "answer",
-                }
-            )
         return dataset.to_list()
 
     def load_data(
@@ -1043,9 +1039,7 @@ class HuggingFaceDataset(_IDataset):
             row = Formatter.process(s, output_format="csv")
             rows.append(row)
 
-        df = pd.DataFrame(
-            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
-        )
+        df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
         df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
