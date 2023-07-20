@@ -1,4 +1,5 @@
 import pytest
+import pandas as pd
 
 from langtest.datahandler.datasource import (
     CSVDataset,
@@ -6,7 +7,12 @@ from langtest.datahandler.datasource import (
     HuggingFaceDataset,
     JSONLDataset,
 )
-from langtest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
+from langtest.utils.custom_types.output import (
+    NEROutput,
+    SequenceClassificationOutput,
+    NERPrediction,
+    Span,
+)
 from langtest.utils.custom_types.sample import (
     NERSample,
     QASample,
@@ -17,24 +23,34 @@ from langtest.utils.custom_types.sample import (
 )
 
 
-@pytest.mark.parametrize(
-    "dataset,feature_col,target_col",
-    [
-        (
-            CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"),
-            "tokens",
-            "ner_tags",
-        ),
-        (
-            ConllDataset(file_path="tests/fixtures/test.conll", task="ner"),
-            "text",
-            "labels",
-        ),
-    ],
-)
 class TestNERDataset:
     """Test cases for ner datasets"""
 
+    sample = NERSample(
+        original="I do love KFC",
+        test_type="add_context",
+        expected_results=NEROutput(
+            predictions=[
+                NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+            ]
+        ),
+    )
+
+    @pytest.mark.parametrize(
+        "dataset,feature_col,target_col",
+        [
+            (
+                CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"),
+                "tokens",
+                "ner_tags",
+            ),
+            (
+                ConllDataset(file_path="tests/fixtures/test.conll", task="ner"),
+                "text",
+                "labels",
+            ),
+        ],
+    )
     def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
         raw_data = dataset.load_raw_data()
@@ -52,7 +68,14 @@ class TestNERDataset:
             for label in sample[target_col]:
                 assert isinstance(label, str)
 
-    def test_load_data(self, dataset, feature_col, target_col):
+    @pytest.mark.parametrize(
+        "dataset",
+        [
+            CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"),
+            ConllDataset(file_path="tests/fixtures/test.conll", task="ner"),
+        ],
+    )
+    def test_load_data(self, dataset):
         """"""
         samples = dataset.load_data()
 
@@ -61,6 +84,53 @@ class TestNERDataset:
         for sample in samples:
             assert isinstance(sample, NERSample)
             assert isinstance(sample.expected_results, NEROutput)
+
+    def test_export_data_csv(self):
+        """"""
+        dataset = CSVDataset(file_path="tests/fixtures/tner.csv", task="ner")
+        dataset.export_data(
+            data=[self.sample, self.sample], output_path="/tmp/exported_sample.csv"
+        )
+
+        df = pd.read_csv("/tmp/exported_sample.csv")
+        saved_sample = df.text[0]
+
+        assert isinstance(saved_sample, str)
+        assert " ".join(eval(saved_sample)) == self.sample.original
+
+    def test_export_data_conll(self):
+        """"""
+        dataset = ConllDataset(file_path="tests/fixtures/test.conll", task="ner")
+        dataset.export_data(
+            data=[self.sample, self.sample], output_path="/tmp/exported_sample.conll"
+        )
+
+        all_tokens, all_labels = [], []
+        tokens, labels = [], []
+        with open("/tmp/exported_sample.conll", "r") as reader:
+            content = reader.read()
+
+            for line in content.strip().split("\n"):
+                row = line.strip().split()
+                if len(row) == 0:
+                    if len(tokens) > 0:
+                        all_tokens.append(tokens)
+                        all_labels.append(labels)
+                        tokens = []
+                        labels = []
+                    continue
+                tokens.append(row[0])
+                labels.append(row[-1])
+
+            if len(tokens) != 0:
+                all_tokens.append(tokens)
+                all_labels.append(labels)
+
+        assert len(all_tokens) == len(all_labels) == 2
+        assert " ".join(all_tokens[0]) == self.sample.original
+
+        # assert isinstance(saved_sample, str)
+        # assert " ".join(eval(saved_sample)) == self.sample.original
 
 
 @pytest.mark.parametrize(
