@@ -38,14 +38,14 @@ class AugmentWorkflowTestCase(unittest.TestCase):
             "spacy_textclassification_csv_dataset": {
                 "task": "text-classification",
                 "model": "textcat_imdb",
-                "data": "imdb/sample.csv",
+                "data": "tests/fixtures/text_classification.csv",
                 "config": "tests/fixtures/config_ner.yaml",
                 "hub": "spacy",
             },
             "huggingface_textclassification_csv_dataset": {
                 "task": "text-classification",
                 "model": "lvwerra/distilbert-imdb",
-                "data": "imdb/sample.csv",
+                "data": "tests/fixtures/text_classification.csv",
                 "config": "tests/fixtures/config_ner.yaml",
                 "hub": "huggingface",
             },
@@ -192,12 +192,12 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
 
         harness.augment(
-            input_path="imdb/sample.csv",
-            output_path="augmented_train_transformed.csv",
+            input_path="tests/fixtures/text_classification.csv",
+            output_path="tests/fixtures/augmented_text_classification.csv",
             export_mode="transformed",
         )
         is_file_exist = pl.Path(
-            "tests/fixtures/augmented_train_transformed.csv"
+            "tests/fixtures/augmented_text_classification.csv"
         ).is_file()
         self.assertTrue(is_file_exist)
 
@@ -211,12 +211,12 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
 
         harness.augment(
-            input_path="imdb/sample.csv",
-            output_path="augmented_train_transformed.csv",
+            input_path="tests/fixtures/text_classification.csv",
+            output_path="tests/fixtures/augmented_text_classification.csv",
             export_mode="transformed",
         )
         is_file_exist = pl.Path(
-            "tests/fixtures/augmented_train_transformed.csv"
+            "tests/fixtures/augmented_text_classification.csv"
         ).is_file()
         self.assertTrue(is_file_exist)
 
@@ -231,7 +231,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         harness.augment(
             input_path={"name": "imdb"},
-            output_path="augmented_train_transformed.csv",
+            output_path="tests/fixtures/augmented_train_transformed.csv",
             export_mode="transformed",
         )
         is_file_exist = pl.Path(
@@ -250,7 +250,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         harness.augment(
             input_path={"name": "imdb"},
-            output_path="augmented_train_transformed.csv",
+            output_path="tests/fixtures/augmented_train_transformed.csv",
             export_mode="transformed",
         )
         is_file_exist = pl.Path(
