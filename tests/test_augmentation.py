@@ -9,9 +9,7 @@ from langtest.langtest import Harness
 
 
 class AugmentWorkflowTestCase(unittest.TestCase):
-    """
-    Test case for the AugmentRobustness class.
-    """
+    """Test case for the AugmentRobustness class."""
 
     def setUp(self) -> None:
         """"""
@@ -51,12 +49,24 @@ class AugmentWorkflowTestCase(unittest.TestCase):
                 "config": "tests/fixtures/config_ner.yaml",
                 "hub": "huggingface",
             },
+            "spacy_textclassification_hf_dataset": {
+                "task": "text-classification",
+                "model": "textcat_imdb",
+                "data": {"name": "imdb"},
+                "config": "tests/fixtures/config_ner.yaml",
+                "hub": "spacy",
+            },
+            "huggingface_textclassification_hf_dataset": {
+                "task": "text-classification",
+                "model": "lvwerra/distilbert-imdb",
+                "data": {"name": "imdb"},
+                "config": "tests/fixtures/config_ner.yaml",
+                "hub": "huggingface",
+            },
         }
 
     def test_augment_robustness(self):
-        """
-        Test augmenting data for robustness.
-        """
+        """Test augmenting data for robustness."""
         temp_df = pd.DataFrame(
             {
                 "test_type": [
@@ -90,9 +100,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_hf_ner_augmentation(self):
-        """
-        Test augmentation using Hugging Face NER model.
-        """
+        """Test augmentation using Hugging Face NER model."""
+
         harness = Harness(**self.params["huggingface_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -107,9 +116,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_spacy_ner_augmentation(self):
-        """
-        Test augmentation using spaCy NER model.
-        """
+        """Test augmentation using spaCy NER model."""
+
         harness = Harness(**self.params["spacy_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -124,9 +132,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_custom_proportions_augment_harness(self):
-        """
-        Test augmentation with custom proportions using Hugging Face NER model.
-        """
+        """Test augmentation with custom proportions using Hugging Face NER model."""
+
         harness = Harness(**self.params["huggingface_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -145,9 +152,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_templatic_augmentation(self):
-        """
-        Test augmentation using templatic augmentation.
-        """
+        """Test augmentation using templatic augmentation."""
+
         generator = TemplaticAugment(
             templates=["I living in {LOC}", "you are working in {ORG}"],
             task="ner",
@@ -161,9 +167,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_spacy_templatic_augmentation(self):
-        """
-        Test augmentation using templatic augmentation with spaCy NER model.
-        """
+        """Test augmentation using templatic augmentation with spaCy NER model."""
+
         harness = Harness(**self.params["spacy_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -178,9 +183,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_csv_dataset_textclassification_hf(self):
-        """
-        Test augmentation using Hugging Face NER model.
-        """
+        """Test augmentation using Hugging Face text-classification model."""
+
         harness = Harness(**self.params["huggingface_textclassification_csv_dataset"])
         self.assertIsInstance(harness, Harness)
         harness.data = harness.data[:50]
@@ -198,9 +202,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_csv_dataset_textclassification_spacy(self):
-        """
-        Test augmentation using Hugging Face NER model.
-        """
+        """Test augmentation using Spacy text-classification model."""
+
         harness = Harness(**self.params["spacy_textclassification_csv_dataset"])
         self.assertIsInstance(harness, Harness)
         harness.data = harness.data[:50]
@@ -209,6 +212,44 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         harness.augment(
             input_path="imdb/sample.csv",
+            output_path="augmented_train_transformed.csv",
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_train_transformed.csv"
+        ).is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_hf_dataset_textclassification_hf(self):
+        """Test augmentation using Hugging Face text-classification model."""
+
+        harness = Harness(**self.params["huggingface_textclassification_hf_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+
+        harness.augment(
+            input_path={"name": "imdb"},
+            output_path="augmented_train_transformed.csv",
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_train_transformed.csv"
+        ).is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_hf_dataset_textclassification_spacy(self):
+        """Test augmentation using Spacy text-classification model."""
+
+        harness = Harness(**self.params["spacy_textclassification_hf_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+
+        harness.augment(
+            input_path={"name": "imdb"},
             output_path="augmented_train_transformed.csv",
             export_mode="transformed",
         )
