@@ -102,16 +102,17 @@ class AugmentRobustness(BaseAugmentaion):
         """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
-            input_path (str): The path to the input data file.
+            input_path (Union[str, dict]): The path to the input data file or a dictionary containing the huggingface dataset directly.
+                                        If a dictionary is provided, the keys 'name', 'feature_column', 'target_column',
+                                        'split', and 'subset' can be used to specify the dataset details.
             output_path (str): The path to save the augmented data file.
             export_mode (str, optional): Determines how the samples are modified or exported.
                                         - 'inplace': Modifies the list of samples in place.
                                         - 'add': Adds new samples to the input data.
                                         - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                         Defaults to 'add'.
-
-        Returns:
-            List[Dict[str, Any]]: A list of augmented data samples.
+            Returns:
+        List[Dict[str, Any]]: A list of augmented data samples.
         """
         if type(input_path) == dict:
             self.df = HuggingFaceDataset(input_path["name"], self.task)
@@ -136,7 +137,7 @@ class AugmentRobustness(BaseAugmentaion):
 
         final_aug_data = []
         hash_map = {k: v for k, v in enumerate(data)}
-
+        transformed_data = []
         for proportion in suggest.iterrows():
             cat = proportion[-1]["category"].lower()
             if cat not in ["robustness", "bias"]:
@@ -149,7 +150,7 @@ class AugmentRobustness(BaseAugmentaion):
                     * self.max_prop
                     * (proportion[-1]["proportion_increase"] / sum_propotion)
                 )
-                if export_mode in ("inplace", "transformed"):
+                if export_mode in ("inplace"):
                     sample_indices = random.sample(
                         range(0, len(data)), int(sample_length)
                     )
@@ -176,13 +177,16 @@ class AugmentRobustness(BaseAugmentaion):
                         sample_data = random.choices(data, k=int(sample_length))
                     aug_data, _ = TestFactory.transform(self.task, sample_data, test_type)
                     final_aug_data.extend(aug_data)
+
+                    if export_mode == "transformed":
+                        transformed_data.extend(aug_data)
         if type(input_path) == dict:
+
             if export_mode == "inplace":
                 final_aug_data = list(hash_map.values())
                 self.df.export_data(final_aug_data, output_path)
             elif export_mode == "transformed":
-                final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
-                self.df.export_data(final_aug_data, output_path)
+                self.df.export_data(transformed_data, output_path)
             else:
                 data.extend(final_aug_data)
                 self.df.export_data(data, output_path)
@@ -195,8 +199,7 @@ class AugmentRobustness(BaseAugmentaion):
                 final_aug_data = list(hash_map.values())
                 self.df.export(final_aug_data, output_path)
             elif export_mode == "transformed":
-                final_aug_data = [hash_map[i] for i in hash_map if i in sample_indices]
-                self.df.export(final_aug_data, output_path)
+                self.df.export(transformed_data, output_path)
             else:
                 data.extend(final_aug_data)
                 self.df.export(data, output_path)
