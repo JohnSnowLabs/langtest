@@ -118,7 +118,7 @@ class TestTextClassificationDataset:
         ),
         (
             JSONLDataset(
-                file_path="tests/fixtures/Xsum-test-tiny.jsonl",
+                file_path="tests/fixtures/XSum-test-tiny.jsonl",
                 task="summarization",
             ),
             "document",
