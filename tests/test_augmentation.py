@@ -39,14 +39,14 @@ class AugmentWorkflowTestCase(unittest.TestCase):
                 "task": "text-classification",
                 "model": "textcat_imdb",
                 "data": "tests/fixtures/text_classification.csv",
-                "config": "tests/fixtures/config_ner.yaml",
+                "config": "tests/fixtures/config_text_classification.yaml",
                 "hub": "spacy",
             },
             "huggingface_textclassification_csv_dataset": {
                 "task": "text-classification",
                 "model": "lvwerra/distilbert-imdb",
                 "data": "tests/fixtures/text_classification.csv",
-                "config": "tests/fixtures/config_ner.yaml",
+                "config": "tests/fixtures/config_text_classification.yaml",
                 "hub": "huggingface",
             },
             "spacy_textclassification_hf_dataset": {
