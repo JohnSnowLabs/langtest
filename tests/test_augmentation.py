@@ -188,7 +188,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
-            training_data={"tests/fixtures/text_classification.csv"},
+            training_data={"data_source": "tests/fixtures/text_classification.csv"},
             augmented_data="tests/fixtures/augmented_text_classification.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
@@ -208,7 +208,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
-            training_data={"name": "imdb"},
+            training_data={"data_source": "imdb"},
             augmented_data="tests/fixtures/augmented_train_transformed.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
@@ -228,7 +228,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
-            training_data={"name": "imdb"},
+            training_data={"data_source": "imdb"},
             augmented_data="tests/fixtures/augmented_train_transformed.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
