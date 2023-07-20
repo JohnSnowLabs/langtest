@@ -717,7 +717,7 @@ class Harness:
 
     def augment(
         self,
-        input_path: str,
+        data: Optional[Union[str, dict]],
         output_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
