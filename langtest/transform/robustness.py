@@ -1632,3 +1632,66 @@ class StripAllPunctuation(BaseRobustness):
                 sample.category = "robustness"
 
         return sample_list
+
+class RandomAge(BaseRobustness):
+    """A class for adding abbreviations to the input text."""
+
+    alias_name = "randomize_age"
+
+    @staticmethod
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount = 5) -> List[Sample]:
+        """Transforms the given sample list by inserting abbreviations.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed list of samples with abbreviations added
+        """
+        age_expressions = [r"[\d]+ years old", r"[\d]+ months old"]
+
+        def insert_abbreviation(text):
+            perturbed_text = text
+            transformations = []
+
+            for expr in age_expressions:
+                matches = re.finditer(expr, text)
+                for match in matches:
+                    start = match.start()
+                    end = match.end()
+                    token = text[start:end]
+                    new_age = random.randint(-random_amount, random_amount) + int(token.split(' ')[0])
+                    new_age = new_age if new_age > 0 else 1
+                    corrected_token = str(new_age)
+                    if corrected_token != token and (random.random() < prob):
+                        perturbed_text = (
+                            perturbed_text[:start]
+                            + corrected_token
+                            + perturbed_text[end:]
+                        )
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(
+                                    start=start,
+                                    end=start + len(corrected_token),
+                                    word=corrected_token,
+                                ),
+                                ignore=False,
+                            )
+                        )
+
+            return perturbed_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = insert_abbreviation(sample)
+            else:
+                sample.test_case, transformations = insert_abbreviation(sample.original)
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
