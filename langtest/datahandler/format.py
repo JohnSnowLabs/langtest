@@ -198,7 +198,7 @@ class NEROutputFormatter(BaseFormatter):
             token = word.group()
             match = sample.expected_results[word.group()]
             label = match.entity if match is not None else "O"
-            text += f"{token} X X {label}\n"
+            text += f"{token} -X- -X- {label}\n"
 
         if test_case and writing_mode != "ignore":
             words = re.finditer(r"([^\s]+)", test_case)
@@ -208,9 +208,9 @@ class NEROutputFormatter(BaseFormatter):
                 match = sample.actual_results[word.group()]
                 label = match.entity if match is not None else "O"
                 if writing_mode == "append":
-                    text += f"{token} X X {label}\n"
+                    text += f"{token} -X- -X- {label}\n"
                 elif writing_mode == "separate":
-                    text_perturbed += f"{token} X X {label}\n"
+                    text_perturbed += f"{token} -X- -X- {label}\n"
 
         if writing_mode == "separate":
             return text, text_perturbed
