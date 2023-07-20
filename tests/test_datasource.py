@@ -1,5 +1,5 @@
 import pytest
-from pkg_resources import resource_filename
+
 from langtest.datahandler.datasource import (
     CSVDataset,
     ConllDataset,
@@ -9,10 +9,10 @@ from langtest.datahandler.datasource import (
 from langtest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
 from langtest.utils.custom_types.sample import (
     NERSample,
+    QASample,
     SequenceClassificationSample,
     SummarizationSample,
     ToxicitySample,
-    QASample,
     TranslationSample,
 )
 
@@ -118,7 +118,7 @@ class TestTextClassificationDataset:
         ),
         (
             JSONLDataset(
-                file_path=resource_filename("langtest", "data/Xsum/Xsum-test-tiny.jsonl"),
+                file_path="tests/fixtures/Xsum-test-tiny.jsonl",
                 task="summarization",
             ),
             "document",
@@ -166,9 +166,7 @@ class TestSummarizationDataset:
     "dataset",
     [
         JSONLDataset(
-            file_path=resource_filename(
-                "langtest", "data/Translation/translation-test-tiny.jsonl"
-            ),
+            file_path="tests/fixtures/translation-test-tiny.jsonl",
             task="translation",
         )
     ],
@@ -198,9 +196,7 @@ class TestTranslationDataset:
     "dataset",
     [
         JSONLDataset(
-            file_path=resource_filename(
-                "langtest", "data/toxicity/toxicity-test-tiny.jsonl"
-            ),
+            file_path="tests/fixtures/toxicity-test-tiny.jsonl",
             task="toxicity",
         )
     ],
@@ -230,9 +226,7 @@ class TestToxicityDataset:
     "dataset",
     [
         JSONLDataset(
-            file_path=resource_filename(
-                "langtest", "data/TruthfulQA/TruthfulQA-test-tiny.jsonl"
-            ),
+            file_path="tests/fixtures/TruthfulQA-test-tiny.jsonl",
             task="question-answering",
         )
     ],
