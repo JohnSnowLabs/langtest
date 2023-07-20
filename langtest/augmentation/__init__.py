@@ -102,16 +102,17 @@ class AugmentRobustness(BaseAugmentaion):
         """Applies perturbations to the input data based on the recommendations from harness reports.
 
         Args:
-            input_path (str): The path to the input data file.
+            input_path (Union[str, dict]): The path to the input data file or a dictionary containing the huggingface dataset directly.
+                                        If a dictionary is provided, the keys 'name', 'feature_column', 'target_column',
+                                        'split', and 'subset' can be used to specify the dataset details.
             output_path (str): The path to save the augmented data file.
             export_mode (str, optional): Determines how the samples are modified or exported.
                                         - 'inplace': Modifies the list of samples in place.
                                         - 'add': Adds new samples to the input data.
                                         - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                         Defaults to 'add'.
-
-        Returns:
-            List[Dict[str, Any]]: A list of augmented data samples.
+            Returns:
+        List[Dict[str, Any]]: A list of augmented data samples.
         """
         if type(input_path) == dict:
             self.df = HuggingFaceDataset(input_path["name"], self.task)

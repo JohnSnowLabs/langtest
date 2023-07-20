@@ -717,7 +717,7 @@ class Harness:
 
     def augment(
         self,
-        data: Optional[Union[str, dict]],
+        input_path: Optional[Union[str, dict]],
         output_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
@@ -726,7 +726,9 @@ class Harness:
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
         Args:
-            input_path (str): Path to the input file.
+           input_path (Union[str, dict]): The path to the input data file or a dictionary containing the huggingface dataset directly.
+                                        If a dictionary is provided, the keys 'name', 'feature_column', 'target_column',
+                                        'split', and 'subset' can be used to specify the dataset details.
             output_path (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
