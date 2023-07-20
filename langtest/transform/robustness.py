@@ -1639,7 +1639,7 @@ class RandomAge(BaseRobustness):
     alias_name = "randomize_age"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount = 5) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount = 5, count = 1) -> List[Sample]:
         """Transforms the given sample list by inserting abbreviations.
 
         Args:
@@ -1650,7 +1650,7 @@ class RandomAge(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples with abbreviations added
         """
-        age_expressions = [r"[\d]+ years old", r"[\d]+ months old"]
+        age_expressions = [r"\d+ years old", r"\d+ months old"]
 
         def insert_abbreviation(text):
             perturbed_text = text
@@ -1664,7 +1664,7 @@ class RandomAge(BaseRobustness):
                     token = text[start:end]
                     new_age = random.randint(-random_amount, random_amount) + int(token.split(' ')[0])
                     new_age = new_age if new_age > 0 else 1
-                    corrected_token = str(new_age)
+                    corrected_token = re.sub("\d+",str(new_age),token)
                     if corrected_token != token and (random.random() < prob):
                         perturbed_text = (
                             perturbed_text[:start]
@@ -1685,13 +1685,17 @@ class RandomAge(BaseRobustness):
 
             return perturbed_text, transformations
 
-        for idx, sample in enumerate(sample_list):
-            if isinstance(sample, str):
-                sample_list[idx], _ = insert_abbreviation(sample)
-            else:
-                sample.test_case, transformations = insert_abbreviation(sample.original)
-                if sample.task in ("ner", "text-classification"):
-                    sample.transformations = transformations
-                sample.category = "robustness"
+        perturbed_samples=[]
+        for sample in sample_list:
+            for i in range(count):
+                if isinstance(sample, str):
+                    s, _ = insert_abbreviation(sample)
+                    perturbed_samples.append(s)
+                else:
+                    s = deepcopy(sample)
+                    s.test_case, transformations = insert_abbreviation(s.original)
+                    if s.task in ("ner", "text-classification"):
+                        s.transformations = transformations
+                    s.category = "robustness"
 
-        return sample_list
+        return perturbed_samples
