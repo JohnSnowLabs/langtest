@@ -876,3 +876,218 @@ class HuggingFaceDataset(_IDataset):
             original=original,
             expected_results=SequenceClassificationOutput(predictions=[label]),
         )
+
+
+class CustomCSVDataset(_IDataset):
+    """
+    A class to handle CSV files datasets. Subclass of _IDataset.
+
+    Attributes:
+        _file_path (str):
+            The path to the data file.
+        task (str):
+            Specifies the task of the dataset, which can be either "text-classification"
+            or "summarization".
+        delimiter (str):
+            The delimiter used in the CSV file to separate columns.
+     """
+    def __init__(self, file_path: str, task: str, **kwargs) -> None:
+        """
+        Initializes a CustomCSVDataset object.
+
+        Args:
+            file_path (str):
+                The path to the data file containing the CSV data.
+            task (str):
+                Specifies the task of the dataset, which can be either "text-classification"
+                or "summarization".
+            **kwargs:
+                Additional keyword arguments that can be used to configure the dataset (optional).
+        """
+        super().__init__()
+        self._file_path = file_path
+        self.task = task
+        self.delimiter = self._find_delimiter(file_path)
+
+    def load_data_classification(
+        self,
+        dataset: pd.DataFrame,
+        feature_column: str = "text",
+        target_column: str = "label",
+    ) -> List[Sample]:
+        """
+        Load the specified split from the dataset library for classification task.
+
+        Args:
+            dataset (pd.DataFrame):
+                The input dataset containing the text data and corresponding labels.
+            feature_column (str, optional):
+                Name of the column in the dataset containing the input text data. 
+                Default is "text".
+            target_column (str, optional):
+                Name of the column in the dataset containing the target labels for classification.
+                Default is "label".
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects, where each Sample object consists
+                of an input text and its corresponding label.
+        """
+        
+        if feature_column and target_column:
+            dataset.rename(columns={feature_column: "text", target_column: "label"}, inplace=True)
+            
+
+        samples = [self._row_to_seq_classification_sample(row) for _, row in dataset.iterrows()]
+        return samples
+
+    
+
+    def load_data_summarization(
+        self,
+        dataset: pd.DataFrame,
+        feature_column: str = "document",
+        target_column: str = "summary",
+    ) -> List[Sample]:
+        """
+        Load the specified split from the dataset library for summarization task.
+
+        Args:
+            dataset (pd.DataFrame):
+                The input dataset containing the document data and corresponding summaries.
+            feature_column (str, optional):
+                Name of the column in the dataset containing the input document data.
+                Default is "document".
+            target_column (str, optional):
+                Name of the column in the dataset containing the target summaries for summarization.
+                Default is "summary".
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects for summarization task, where each
+                Sample object contains a document and its corresponding summary.
+        """
+
+        if feature_column and target_column:
+            dataset.rename(columns={feature_column: "document", target_column: "summary"},inplace=True)
+        samples = [self._row_to_sample_summarization(row) for _, row in dataset.iterrows()]
+        return samples
+
+
+
+    def load_data(
+        self,
+        feature_column: str,
+        target_column: str 
+        ) -> List[Sample]:
+        """
+        Load the specified split from the dataset library based on the task.
+
+        Args:
+            feature_column (str):
+                Name of the column in the dataset containing the input text data for classification
+                or the input document data for summarization.
+            target_column (str):
+                Name of the column in the dataset containing the target labels for classification
+                or the target summaries for summarization.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects based on the specified task. For text
+                classification task, each Sample object consists of an input text and its
+                corresponding label. For summarization task, each Sample object contains a
+                document and its corresponding summary.
+                
+        Raises:
+            ValueError:
+                If the specified task is not supported or recognized. Currently supported tasks
+                include "text-classification" and "summarization".
+        """
+        dataset = pd.read_csv(self._file_path, delimiter=self.delimiter)
+
+        if self.task == "text-classification":
+            return self.load_data_classification(dataset,
+                feature_column, target_column,
+            )
+        elif self.task == "summarization":
+            return self.load_data_summarization(dataset,
+                feature_column, target_column,
+            )
+        else:
+            raise ValueError(f"Unsupported task: {self.task}")
+        
+    
+    def _row_to_seq_classification_sample(self, row: pd.Series) -> Sample:
+        """
+        Convert a row from the dataset into a Sample for the text-classification task
+
+        Args:
+            row (pd.Series):
+                Single row of the dataset as a Pandas Series
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object
+        """
+        original = row.loc["text"]
+        label = SequenceLabel(label=row.loc["label"], score=1)
+
+        return SequenceClassificationSample(
+            original=original,
+            expected_results=SequenceClassificationOutput(predictions=[label]),
+        )
+
+    def _row_to_sample_summarization(self,row: pd.Series) -> Sample:
+        """
+        Convert a row from the dataset into a Sample for summarization.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object for summarization.
+        """
+        original = row.loc["document"]
+        summary  = row.loc["summary"]
+
+        return SummarizationSample(
+            original=original, expected_results=summary, task="summarization"
+        )
+    
+    def export_data(self, data: List[Sample], output_path: str):
+        """
+        Exports the data to the corresponding format and saves it to 'output_path'.
+
+        Args:
+            data (List[Sample]):
+                Data to export.
+            output_path (str):
+                Path to save the data to.
+        """
+        rows = []
+        for s in data:
+            row = Formatter.process(s, output_format="csv")
+            rows.append(row)
+
+        df = pd.DataFrame(
+            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
+        )
+        df.to_csv(output_path, index=False, encoding="utf-8")
+
+    @staticmethod
+    def _find_delimiter(file_path: str) -> property:
+        """
+        Helper function in charge of finding the delimiter character in a csv file.
+        Args:
+            file_path (str):
+                location of the csv file to load
+        Returns:
+            property:
+        """
+        sniffer = csv.Sniffer()
+        with open(file_path, encoding="utf-8") as fp:
+            first_line = fp.readline()
+            delimiter = sniffer.sniff(first_line).delimiter
+        return delimiter
