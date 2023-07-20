@@ -11,7 +11,7 @@ from pkg_resources import resource_filename
 
 from langtest.utils.custom_types.sample import RuntimeSample
 from .augmentation import AugmentRobustness, TemplaticAugment
-from .datahandler.datasource import DataFactory, HuggingFaceDataset,CustomCSVDataset
+from .datahandler.datasource import DataFactory, HuggingFaceDataset, CustomCSVDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
@@ -147,7 +147,6 @@ class Harness:
         ):
             if not data["name"].endswith(".csv"):
                 self.data = (
-                    
                     HuggingFaceDataset(data["name"], task=task).load_data(
                         feature_column=data.get("feature_column", "text"),
                         target_column=data.get("target_column", "label"),
@@ -182,8 +181,7 @@ class Harness:
                     model = resource_filename("langtest", "data/textcat_imdb")
 
         elif (
-            
-             type(data) is dict
+            type(data) is dict
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
         ):
@@ -195,7 +193,7 @@ class Harness:
                     subset=data.get("subset", None),
                 )
             elif data["name"].endswith(".csv"):
-                    self.data = CustomCSVDataset(data["name"], task=task).load_data(
+                self.data = CustomCSVDataset(data["name"], task=task).load_data(
                     feature_column=data.get("feature_column", "document"),
                     target_column=data.get("target_column", "summary"),
                 )
