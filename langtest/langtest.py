@@ -198,6 +198,19 @@ class Harness:
                     target_column=data.get("target_column", "summary"),
                 )
 
+        elif (
+            type(data) is dict
+            and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+            and task == "question-answering"
+        ):
+            if data["name"].endswith(".csv"):
+                self.data = CustomCSVDataset(data["name"], task=task).load_data(
+                    feature_column=data.get(
+                        "feature_column", {"passage": "passage", "question": "question"}
+                    ),
+                    target_column=data.get("target_column", "answer"),
+                )
+
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
                 "You haven't specified any value for the parameter 'data' and the configuration you "

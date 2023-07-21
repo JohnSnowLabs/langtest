@@ -980,6 +980,70 @@ class CustomCSVDataset(_IDataset):
         ]
         return samples
 
+    def load_data_question_answering(
+        self,
+        dataset: pd.DataFrame,
+        feature_column: dict = {"passage": "passage", "question": "question"},
+        target_column: str = "answer",
+    ) -> List[Sample]:
+        """
+        Load the specified split from the dataset library for question-answering task.
+
+        Args:
+            dataset (pd.DataFrame):
+                The input dataset containing the passage, question, and corresponding answers.
+            feature_column (dict, optional):
+                Dictionary of column names in the dataset containing the input passage and question data.
+                Default is {"passage": "passage", "question": "question"}.
+            target_column (str, optional):
+                Name of the column in the dataset containing the target answers for question-answering.
+                Default is "answer".
+
+        Returns:
+            List[QASample]:
+                Loaded split as a list of QASample objects for question-answering task, where each
+                QASample object contains an original question, original context (passage), and the task name.
+        """
+        passage_column = feature_column.get("passage")
+        question_column = feature_column.get("question")
+
+        if feature_column and target_column:
+            if passage_column in dataset.columns:
+                dataset.rename(columns={passage_column: "passage"}, inplace=True)
+            else:
+                dataset["passage"] = "-"
+
+            if question_column in dataset.columns:
+                dataset.rename(columns={question_column: "question"}, inplace=True)
+
+            dataset.rename(columns={target_column: "answer"}, inplace=True)
+
+        samples = [
+            self._row_to_sample_question_answering(row) for _, row in dataset.iterrows()
+        ]
+        return samples
+
+    def _row_to_sample_question_answering(self, row: pd.Series) -> QASample:
+        """
+        Convert a row from the dataset into a QASample for question-answering.
+
+        Args:
+            row (pd.Series):
+                Single row of the dataset.
+
+        Returns:
+            QASample:
+                Row formatted into a QASample object for question-answering.
+        """
+        question = row.loc["question"]
+        passage = row.loc["passage"]
+
+        return QASample(
+            original_question=question,
+            original_context=passage,
+            task="question-answering",
+        )
+
     def load_data(self, feature_column: str, target_column: str) -> List[Sample]:
         """
         Load the specified split from the dataset library based on the task.
@@ -1014,6 +1078,12 @@ class CustomCSVDataset(_IDataset):
             )
         elif self.task == "summarization":
             return self.load_data_summarization(
+                dataset,
+                feature_column,
+                target_column,
+            )
+        elif self.task == "question-answering":
+            return self.load_data_question_answering(
                 dataset,
                 feature_column,
                 target_column,
