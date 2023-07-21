@@ -228,7 +228,6 @@ class HarnessTestCase(unittest.TestCase):
         tc_harness = Harness(
             task="text-classification",
             hub="huggingface",
-            hub="huggingface",
             model="lvwerra/distilbert-imdb",
             data={
                 "name": "tests/fixtures/text_classification.csv",
