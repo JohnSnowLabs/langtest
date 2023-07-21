@@ -228,12 +228,13 @@ class HarnessTestCase(unittest.TestCase):
         tc_harness = Harness(
             task="text-classification",
             hub="huggingface",
+            hub="huggingface",
+            model="lvwerra/distilbert-imdb",
             data={
                 "name": "tests/fixtures/text_classification.csv",
                 "feature_column": "text",
                 "target_column": "label",
             },
-            model="aychang/roberta-base-imdb",
         )
         tc_harness.data = tc_harness.data[:10]
         tc_harness.generate()
@@ -242,7 +243,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="aychang/roberta-base-imdb",
+            model="lvwerra/distilbert-imdb",
             hub="huggingface",
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
