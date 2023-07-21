@@ -966,8 +966,6 @@ class HuggingFaceDataset(_IDataset):
 
     def load_raw_data(
         self,
-        feature_column: str = "text",
-        target_column: str = "label",
         split: str = "test",
         subset: str = None,
     ) -> List:
@@ -1255,6 +1253,15 @@ class CustomCSVDataset(_IDataset):
             original_context=passage,
             task="question-answering",
         )
+
+    def load_raw_data(self) -> List[Dict]:
+        """Loads data from a csv file into raw lists of strings
+        Returns:
+            List[Dict]:
+                parsed CSV file into list of dicts
+        """
+        df = pd.read_csv(self._file_path)
+        return df.to_dict(orient="records")
 
     def load_data(self, feature_column: str, target_column: str) -> List[Sample]:
         """
