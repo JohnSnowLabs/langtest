@@ -99,7 +99,7 @@ class TestRepresentation:
 
         harness = Harness(**model_params)
         self.configure_tests(harness)
-        harness.data = harness.data[:1]
+        harness.data = harness.data[:50]
         assert isinstance(harness, Harness)
         report = harness.generate().run().report()
         assert isinstance(report, pd.DataFrame)
