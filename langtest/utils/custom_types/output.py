@@ -5,7 +5,9 @@ from .predictions import NERPrediction, SequenceLabel
 
 
 class SequenceClassificationOutput(BaseModel):
-    """Output model for text classification tasks."""
+    """
+    Output model for text classification tasks.
+    """
 
     predictions: List[SequenceLabel]
 
@@ -66,7 +68,9 @@ class MaxScoreOutput(BaseModel):
 
 
 class NEROutput(BaseModel):
-    """Output model for NER tasks."""
+    """
+    Output model for NER tasks.
+    """
 
     predictions: List[NERPrediction]
 
@@ -80,16 +84,11 @@ class NEROutput(BaseModel):
         return len(self.predictions)
 
     def __getitem__(
-        self, item: Union[Span, int, str]
+        self, item: Union[Span, int]
     ) -> Optional[Union[List[NERPrediction], NERPrediction]]:
         """"""
         if isinstance(item, int):
             return self.predictions[item]
-        elif isinstance(item, str):
-            for pred in self.predictions:
-                if pred.span.word == item:
-                    return pred
-            return None
         elif isinstance(item, Span):
             for prediction in self.predictions:
                 if prediction.span == item:
@@ -99,7 +98,8 @@ class NEROutput(BaseModel):
             return [self.predictions[i] for i in range(item.start, item.stop)]
 
     def to_str_list(self) -> str:
-        """Converts predictions into a list of strings.
+        """
+        Converts predictions into a list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -122,24 +122,28 @@ class NEROutput(BaseModel):
 
 
 class TranslationOutput(BaseModel):
-    """Output model for translation tasks."""
+    """
+    Output model for translation tasks.
+    """
 
     translation_text: str  # Changed from List[str] to str
 
     def to_str_list(self) -> List[str]:
-        """Formatting helper
-
-        Returns:
-             List[str]: the translation_text as a list of strings.
+        """
+        Returns the translation_text as a list of strings.
         """
         return [self.translation_text]  # Wrap self.translation_text in a list
 
     def __str__(self):
-        """String representation of TranslationOutput."""
+        """
+        String representation of TranslationOutput.
+        """
         return self.translation_text  # Return translation_text directly
 
     def __eq__(self, other):
-        """Equality comparison method."""
+        """
+        Equality comparison method.
+        """
         if isinstance(other, TranslationOutput):
             return self.translation_text == other.translation_text
         if isinstance(other, list):
