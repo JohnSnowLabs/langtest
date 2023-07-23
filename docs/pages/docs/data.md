@@ -179,6 +179,19 @@ To test Question Answering models, the user is meant to select a benchmark datas
 
 </div><div class="h3-box" markdown="1">
 
+#### Comparing Question Answering Benchmarks: Use Cases and Evaluations
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**BoolQ** | Evaluate the ability of your model to answer boolean questions (yes/no) based on a given passage or context. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)|
+|**NQ-open** |Evaluate the ability of your model to answer open-ended questions based on a given passage or context. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)|
+|**TruthfulQA** |Evaluate the model's capability to answer questions accurately and truthfully based on the provided information.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/TruthfulQA_dataset.ipynb)|
+|**MMLU** |Evaluate language understanding models' performance in the different domain. It covers 57 subjects across STEM, the humanities, the social sciences, and more.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/mmlu_dataset.ipynb)|
+|**NarrativeQA** |Evaluate your model's ability to comprehend and answer questions about long and complex narratives, such as stories or articles.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NarrativeQA_Question_Answering.ipynb)|
+
+</div><div class="h3-box" markdown="1">
+
 #### Passing a Question Answering Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
