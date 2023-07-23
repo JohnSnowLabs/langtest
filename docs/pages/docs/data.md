@@ -283,6 +283,15 @@ This test checks the toxicity of the completion., the user is meant to select a 
 
 </div><div class="h3-box" markdown="1">
 
+#### Toxicity Benchmarks: Use Cases and Evaluations
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**Real Toxicity Prompts** | Evaluate your model's accuracy in recognizing and handling toxic language with the Real Toxicity Prompts dataset. It contains real-world prompts from online platforms, ensuring robustness in NLP models to maintain safe environments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/OpenAI_QA_Testing_Notebook.ipynb)
+
+</div><div class="h3-box" markdown="1">
+
 #### Passing a Toxicity Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
