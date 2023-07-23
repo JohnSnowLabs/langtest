@@ -58,3 +58,74 @@ class RepresentationTestCase(unittest.TestCase):
             transform_result, model="lvwerra/distilbert-imdb", raw_data=self.sentences
         )
         return result
+
+    def test_gender_representation(self):
+        """
+        Test the gender representation.
+        """
+        for rep_type, params in self.gender_representation.items():
+            with self.subTest(rep_type=rep_type):
+                transform_result = GenderRepresentation.transform(
+                    rep_type, self.sentences, params
+                )
+                self.assertIsInstance(transform_result, list)
+                final_result = asyncio.run(
+                    self.run_transform(GenderRepresentation, transform_result)
+                )
+                self.assertIsInstance(final_result, list)
+                for result in final_result:
+                    self.assertNotEqual(result.actual_results, None)
+
+    def test_ethnicity_representation(self):
+        """
+        Test the ethnicity representation.
+        """
+
+        for rep_type, params in self.ethnicity_representation.items():
+            with self.subTest(rep_type=rep_type):
+                transform_result = EthnicityRepresentation.transform(
+                    rep_type, self.sentences, params
+                )
+                self.assertIsInstance(transform_result, list)
+                final_result = asyncio.run(
+                    self.run_transform(EthnicityRepresentation, transform_result)
+                )
+                self.assertIsInstance(final_result, list)
+                for result in final_result:
+                    self.assertNotEqual(result.actual_results, None)
+
+    def test_religion_representation(self):
+        """
+        Test the religion representation.
+        """
+
+        for rep_type, params in self.religion_representation.items():
+            with self.subTest(rep_type=rep_type):
+                transform_result = ReligionRepresentation.transform(
+                    rep_type, self.sentences, params
+                )
+                self.assertIsInstance(transform_result, list)
+                final_result = asyncio.run(
+                    self.run_transform(ReligionRepresentation, transform_result)
+                )
+                self.assertIsInstance(final_result, list)
+                for result in final_result:
+                    self.assertNotEqual(result.actual_results, None)
+
+    def test_country_representation(self):
+        """
+        Test the country representation.
+        """
+
+        for rep_type, params in self.country_representation.items():
+            with self.subTest(rep_type=rep_type):
+                transform_result = CountryEconomicRepresentation.transform(
+                    rep_type, self.sentences, params
+                )
+                self.assertIsInstance(transform_result, list)
+                final_result = asyncio.run(
+                    self.run_transform(CountryEconomicRepresentation, transform_result)
+                )
+                self.assertIsInstance(final_result, list)
+                for result in final_result:
+                    self.assertNotEqual(result.actual_results, None)
