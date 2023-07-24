@@ -1650,7 +1650,7 @@ class RandomAge(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples with abbreviations added
         """
-        age_expressions = [r"\d+ years old", r"\d+ months old", r"\d+ days old"]
+        age_expressions = [r"\d+ years old", r"\d+ months old", r"\d+ weeks old", r"\d+ days old"]
 
         def randomize_ages(text):
             perturbed_text = text
