@@ -1,7 +1,8 @@
 import asyncio
+from typing import List, Type
 import pytest
 from langtest.transform.representation import *
-from langtest.utils.custom_types.sample import *
+from langtest.utils.custom_types.sample import SequenceClassificationSample
 
 
 class TestRepresentation:
@@ -20,12 +21,12 @@ class TestRepresentation:
     """
 
     @pytest.fixture
-    def sample_data(self):
+    def sample_data(self) -> List[SequenceClassificationSample]:
         """
         A fixture providing sample data for the representation transformation tests.
 
         Returns:
-            list: A list containing sample SequenceClassificationSample instances.
+            List[SequenceClassificationSample]: A list containing sample SequenceClassificationSample instances.
 
         """
         return [
@@ -55,13 +56,15 @@ class TestRepresentation:
             CountryEconomicRepresentation,
         ],
     )
-    def test_transform(self, representation, sample_data):
+    def test_transform(
+        self, representation: Type, sample_data: List[SequenceClassificationSample]
+    ) -> None:
         """
         Test case for representation classes.
 
         Args:
-            representation (Representation): The representation class to be tested.
-            sample_data (list): A list containing sample SequenceClassificationSample instances.
+            representation (Type[Representation]): The representation class to be tested.
+            sample_data (List[SequenceClassificationSample]): A list containing sample SequenceClassificationSample instances.
 
         Returns:
             None
@@ -70,7 +73,6 @@ class TestRepresentation:
             AssertionError: If the transformation or the final result is invalid.
 
         """
-        # Define the representation configurations
         representation_config = {
             "min_gender_representation_count": {"min_count": 5},
             "min_gender_representation_proportion": {"min_proportion": 0.1},
@@ -82,24 +84,19 @@ class TestRepresentation:
             "min_country_economic_representation_proportion": {"min_proportion": 0.1},
         }
 
-        # Call the representation's transform method with the representation type and parameters
         transform_result = representation.transform(
             representation, sample_data, representation_config
         )
 
-        # Ensure the transform result is a list
         assert isinstance(transform_result, list)
 
-        # Run the transform asynchronously using the representation class and sample data
         result = asyncio.run(
             representation.run(
                 transform_result, model="lvwerra/distilbert-imdb", raw_data=sample_data
             )
         )
 
-        # Ensure the final result is a list
         assert isinstance(result, list)
 
-        # Ensure each result in the list has a non-null value for the `actual_results` attribute
         for r in result:
             assert r.actual_results is not None
