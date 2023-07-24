@@ -1640,7 +1640,7 @@ class RandomAge(BaseRobustness):
 
     @staticmethod
     def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount = 5, count = 1) -> List[Sample]:
-        """Transforms the given sample list by inserting abbreviations.
+        """Transforms the given sample list by randomizing the ages by a certain amount.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
@@ -1652,7 +1652,7 @@ class RandomAge(BaseRobustness):
         """
         age_expressions = [r"\d+ years old", r"\d+ months old", r"\d+ days old"]
 
-        def insert_abbreviation(text):
+        def randomize_ages(text):
             perturbed_text = text
             transformations = []
 
@@ -1689,11 +1689,11 @@ class RandomAge(BaseRobustness):
         for sample in sample_list:
             for i in range(count):
                 if isinstance(sample, str):
-                    s, _ = insert_abbreviation(sample)
+                    s, _ = randomize_ages(sample)
                     perturbed_samples.append(s)
                 else:
                     s = deepcopy(sample)
-                    s.test_case, transformations = insert_abbreviation(s.original)
+                    s.test_case, transformations = randomize_ages(s.original)
                     if s.task in ("ner", "text-classification"):
                         s.transformations = transformations
                     s.category = "robustness"
