@@ -1639,13 +1639,16 @@ class RandomAge(BaseRobustness):
     alias_name = "randomize_age"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount = 5, count = 1) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float]=1.0, random_amount:int=5, count:int=1) -> List[Sample]:
         """Transforms the given sample list by randomizing the ages by a certain amount.
 
         Args:
             sample_list (List[Sample]): The list of samples to transform.
             prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
                                     Defaults to 1.0, which means all samples will be transformed.
+            random_amount (Optional[int]): The range to randomize the ages. +-random_amount is added to ages.
+                                    Default is 5.
+            count (Optional[int]): Number of variations to create from one sample.
 
         Returns:
             List[Sample]: The transformed list of samples with abbreviations added
