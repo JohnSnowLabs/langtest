@@ -1640,7 +1640,12 @@ class RandomAge(BaseRobustness):
     alias_name = "randomize_age"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount: int = 5, count: int = 1) -> List[Sample]:
+    def transform(
+        sample_list: List[Sample],
+        prob: Optional[float] = 1.0,
+        random_amount: int = 5,
+        count: int = 1,
+    ) -> List[Sample]:
         """Transforms the given sample list by randomizing the ages by a certain amount.
 
         Args:
@@ -1654,7 +1659,12 @@ class RandomAge(BaseRobustness):
         Returns:
             List[Sample]: The transformed list of samples with abbreviations added
         """
-        age_expressions = [r"\d+ years old", r"\d+ months old", r"\d+ weeks old", r"\d+ days old"]
+        age_expressions = [
+            r"\d+ years old",
+            r"\d+ months old",
+            r"\d+ weeks old",
+            r"\d+ days old",
+        ]
 
         def randomize_ages(text):
             perturbed_text = text
@@ -1666,7 +1676,9 @@ class RandomAge(BaseRobustness):
                     start = match.start()
                     end = match.end()
                     token = text[start:end]
-                    new_age = random.randint(-random_amount, random_amount) + int(token.split(' ')[0])
+                    new_age = random.randint(-random_amount, random_amount) + int(
+                        token.split(" ")[0]
+                    )
                     new_age = new_age if new_age > 0 else 1
                     corrected_token = re.sub(r"\d+", str(new_age), token)
                     if corrected_token != token and (random.random() < prob):
