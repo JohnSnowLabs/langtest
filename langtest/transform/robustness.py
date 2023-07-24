@@ -1633,13 +1633,14 @@ class StripAllPunctuation(BaseRobustness):
 
         return sample_list
 
+
 class RandomAge(BaseRobustness):
     """A class for adding abbreviations to the input text."""
 
     alias_name = "randomize_age"
 
     @staticmethod
-    def transform(sample_list: List[Sample], prob: Optional[float]=1.0, random_amount:int=5, count:int=1) -> List[Sample]:
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0, random_amount: int = 5, count: int = 1) -> List[Sample]:
         """Transforms the given sample list by randomizing the ages by a certain amount.
 
         Args:
@@ -1688,7 +1689,7 @@ class RandomAge(BaseRobustness):
 
             return perturbed_text, transformations
 
-        perturbed_samples=[]
+        perturbed_samples = []
         for sample in sample_list:
             for i in range(count):
                 if isinstance(sample, str):
