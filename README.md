@@ -68,6 +68,7 @@ We propose here an early stage open-source community project that aims to fill t
 [John Snow Labs](www.johnsnowlabs.com) has a full development team allocated to the project and is committed to improving the library for years, as we do with other open-source libraries. Expect frequent releases with new test types, tasks, languages, and platforms to be added regularly. We look forward to working together to make safe, reliable, and responsible NLP an everyday reality. 
 
 ### Comparing Benchmark Datasets: Use Cases and Evaluations
+
 Langtest comes with different datasets to test your models, covering a wide range of use cases and evaluation scenarios.
 
 | Dataset       | Use Case                                                                                           | Notebook                                                                                                                                             |
@@ -81,6 +82,9 @@ Langtest comes with different datasets to test your models, covering a wide rang
 | **Quac**      | Evaluate your model's ability to answer questions given a conversational context, focusing on dialogue-based question-answering.   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)   |
 | **OpenBookQA**| Evaluate your model's ability to answer questions that require complex reasoning and inference based on general knowledge, similar to an "open-book" exam.   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)   |
 | **BBQ**       | Evaluate how your model responds to questions in the presence of social biases against protected classes across various social dimensions. Assess biases in model outputs with both under-informative and adequately informative contexts, aiming to promote fair and unbiased question-answering models.   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)   |
+
+> **Note**
+> For usage and documentation, head over to [langtest.org](https://langtest.org/docs/pages/docs/data)
 
 ## Contributing
 
