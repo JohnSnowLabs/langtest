@@ -2,8 +2,11 @@ import asyncio
 import pytest
 from typing import List, Type
 from langtest.transform.representation import *
-from langtest.utils.custom_types.sample import SequenceClassificationSample
-from langtest.utils.custom_types import SequenceLabel
+from langtest.utils.custom_types import (
+    SequenceClassificationSample,
+    SequenceClassificationOutput,
+    SequenceLabel,
+)
 
 
 class TestRepresentation:
