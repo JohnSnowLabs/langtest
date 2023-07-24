@@ -15,7 +15,28 @@ from langtest.pipelines.utils.metrics import compute_ner_metrics
 
 
 class NEREnd2EndPipeline(FlowSpec):
-    """NER pipeline for Huggingface models"""
+    """NER pipeline for Huggingface models
+
+    It executes the following workflow in a sequential order:
+    - train a model on a given dataset
+    - evaluate the model on a given test dataset
+    - test the trained model on a set of tests
+    - augment the training set based on the tests outcome
+    - retrain the model on a the freshly generated augmented training set
+    - evaluate the retrained model on the test dataset
+    - compare the performance of the two models
+
+    The pipeline can directly be triggered through the CLI via the following one liner:
+    ```bash
+    python3 langtest/pipelines/transformers_pipelines.py run \
+            --model-name="bert-base-uncased" \
+            --train-data=tner.csv \
+            --eval-data=tner.csv \
+            --training-args='{"per_device_train_batch_size": 4, "max_steps": 3}' \
+            --feature-col="tokens" \
+            --target-col="ner_tags"
+    ```
+    """
 
     model_name = Parameter(
         "model-name", help="Name of the pretrained model to load", type=str, required=True
