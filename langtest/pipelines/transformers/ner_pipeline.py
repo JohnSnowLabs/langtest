@@ -1,3 +1,4 @@
+import os
 import logging
 
 from metaflow import FlowSpec, JSONType, Parameter, step
@@ -169,9 +170,11 @@ class NEREnd2EndPipeline(FlowSpec):
     @step
     def augment(self):
         """Performs the data augmentation procedure based on langtest"""
+        filename = os.path.basename(self.train_data)
+        self.path_augmented_file = os.path.join(os.getcwd(), f"augmented_{filename}")
         self.harness.augment(
             input_path=self.train_data,
-            output_path=f"augmented_{self.train_data}",
+            output_path=self.path_augmented_file,
             export_mode="add",
         )
 
@@ -181,7 +184,7 @@ class NEREnd2EndPipeline(FlowSpec):
     def retrain(self):
         """Performs the training procedure using the augmented data created by langtest"""
         self.augmented_train_datasource = DataFactory(
-            file_path=f"augmented_{self.train_data}", task=self.task
+            file_path=self.path_augmented_file, task=self.task
         )
         samples = self.augmented_train_datasource.load_raw()
 
