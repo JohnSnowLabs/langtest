@@ -26,7 +26,7 @@ jobs:
           installer-parallel: true
       - name: Publish langtest ${{ github.event.release.name }} to pypi
         env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          PYPI_SECRET: ${{ secrets.PYPI_SECRET }}
         run: |
-          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry config pypi-token.pypi $PYPI_SECRET
           poetry publish --build
