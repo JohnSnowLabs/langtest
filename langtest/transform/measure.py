@@ -49,7 +49,7 @@ class BaseMeasure(ABC):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list:
+        for sample in kwargs.get('raw_data', []):
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -88,6 +88,7 @@ class Speed(BaseMeasure):
     """
 
     alias_name = "speed"
+    supported_tasks = ["ner", "text-classification"]
 
     @staticmethod
     def transform(params: dict, *args, **kwargs) -> List[Sample]:
@@ -102,9 +103,10 @@ class Speed(BaseMeasure):
 
         """
         speed_samples = []
-        for each in params:
+        for test_name, value in params.items():
             sample = SpeedTestSample()
-            sample.test_case = each
+            sample.category = "measure"
+            sample.test_type = "speed"
+            sample.expected_results = value
             speed_samples.append(sample)
-
-    # def run():
+        return speed_samples

@@ -127,7 +127,7 @@ class TestFactory:
             tests.set_description(f"Generating testcases... ({each})")
             if each in all_categories:
                 sub_test_types = test_types[each]
-                sample_results, runtime_results[each] = (
+                sample_results = (
                     all_categories[each](
                         m_data, sub_test_types, raw_data=data
                     ).transform()
@@ -510,7 +510,7 @@ class RobustnessTestFactory(ITests):
                     sample.test_type = test_name
             all_samples.extend(transformed_samples)
             runtime_test[test_name] = end_time - start_time
-        return all_samples, runtime_test
+        return all_samples
 
     @staticmethod
     def available_tests() -> dict:
@@ -1286,8 +1286,15 @@ class MeasureTestFactory(ITests):
 
     alias_name = "measure"
 
-    @staticmethod
-    def transform(params: dict, *args, **kwargs) -> List[Sample]:
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the robustness measure."""
+
+        self.supported_tests = self.available_tests()
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
         """Transforms the sample data based on the implemented tests measure.
 
         Args:
@@ -1299,11 +1306,17 @@ class MeasureTestFactory(ITests):
             tests measure.
 
         """
-        pass
+        all_samples = []
+        for test_name, params in self.tests.items():
+            transformed_samples = self.supported_tests[test_name].transform(
+                params=params, **self.kwargs
+            )
+            all_samples.extend(transformed_samples)
+        return all_samples
 
-    @staticmethod
+    @classmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
         """Runs the robustness measure.
 
@@ -1316,7 +1329,14 @@ class MeasureTestFactory(ITests):
             List[Sample]: The transformed data based on the implemented robustness measure.
 
         """
-        pass
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            tasks.append(
+                supported_tests[test_name].async_run(samples, model, **kwargs)
+            )
+        
+        return tasks
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
