@@ -905,7 +905,8 @@ class HuggingFaceDataset(_IDataset):
             lambda example: {
                 "tokens": example[feature_column],
                 "ner_tags": [label_names[x] for x in example[target_column]],
-            }, dataset
+            },
+            dataset,
         )
 
         samples = [self._row_to_ner_sample(example) for example in dataset]
@@ -1039,9 +1040,7 @@ class HuggingFaceDataset(_IDataset):
                 feature_column, target_column, split, subset
             )
         elif self.task == "ner":
-            return self.load_data_ner(
-                split, subset, feature_column, target_column
-            )
+            return self.load_data_ner(split, subset, feature_column, target_column)
         else:
             raise ValueError(f"Unsupported task: {self.task}")
 
@@ -1119,19 +1118,11 @@ class HuggingFaceDataset(_IDataset):
 
     def _row_to_ner_sample(self, data_row: dict) -> Sample:
         input_column = next(
-            (
-                col
-                for col in self.COLUMN_NAMES["ner"]["text"]
-                if col in data_row
-            ),
+            (col for col in self.COLUMN_NAMES["ner"]["text"] if col in data_row),
             None,
         )
         output_column = next(
-            (
-                col
-                for col in self.COLUMN_NAMES["ner"]["ner"]
-                if col in data_row
-            ),
+            (col for col in self.COLUMN_NAMES["ner"]["ner"] if col in data_row),
             None,
         )
 
@@ -1159,6 +1150,5 @@ class HuggingFaceDataset(_IDataset):
 
         original = " ".join(tokens)
         return NERSample(
-            original=original,
-            expected_results=NEROutput(predictions=ner_labels)
+            original=original, expected_results=NEROutput(predictions=ner_labels)
         )
