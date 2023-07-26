@@ -60,6 +60,7 @@ class Harness:
             "johnsnowlabs",
         ): "imdb/sample.csv",
     }
+    SUPPORTED_HUBS_HF_DATASET_NER = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = [
         "openai",
@@ -143,7 +144,7 @@ class Harness:
         elif (
             isinstance(data, dict)
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            and (task == "text-classification" or task == "ner")
+            and task == "text-classification"
         ):
             self.data = (
                 HuggingFaceDataset(data["name"], task=task).load_data(
@@ -164,7 +165,19 @@ class Harness:
                 model = resource_filename("langtest", "data/textcat_imdb")
 
         elif (
-            type(data) is dict
+            isinstance(data, dict)
+            and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
+            and task == "ner"
+        ):
+            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
+                feature_column=data.get("feature_column", "tokens"),
+                target_column=data.get("target_column", "ner_tags"),
+                split=data.get("split", "test"),
+                subset=data.get("subset", None),
+            )
+
+        elif (
+            isinstance(data, dict)
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
         ):

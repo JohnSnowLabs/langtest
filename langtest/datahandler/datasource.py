@@ -1040,7 +1040,7 @@ class HuggingFaceDataset(_IDataset):
             )
         elif self.task == "ner":
             return self.load_data_ner(
-                feature_column, target_column, split, subset
+                split, subset, feature_column, target_column
             )
         else:
             raise ValueError(f"Unsupported task: {self.task}")
