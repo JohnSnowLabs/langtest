@@ -855,7 +855,7 @@ class JSONLDataset(_IDataset):
 class HuggingFaceDataset(_IDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
-    supported_tasks = ["text-classification", "summarization"]
+    supported_tasks = ["text-classification", "summarization", "ner"]
 
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
@@ -886,6 +886,31 @@ class HuggingFaceDataset(_IDataset):
                 f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'."
             )
 
+    def load_data_ner(
+        self,
+        split: str,
+        subset: str = None,
+        feature_column: str = "tokens",
+        target_column: str = "ner_tags",
+    ) -> List[Sample]:
+        """Load the specified split from the given ner dataset."""
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        label_names = dataset.features[target_column].feature.names
+
+        dataset = map(
+            lambda example: {
+                "tokens": example[feature_column],
+                "ner_tags": [label_names[x] for x in example[target_column]],
+            }, dataset
+        )
+
+        samples = [self._row_to_ner_sample(example) for example in dataset]
+        return samples
+
     def load_data_classification(
         self,
         feature_column: str = "text",
@@ -914,13 +939,12 @@ class HuggingFaceDataset(_IDataset):
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
-        if feature_column and target_column:
-            dataset = dataset.map(
-                lambda example: {
-                    "text": example[feature_column],
-                    "label": example[target_column],
-                }
-            )
+        dataset = dataset.map(
+            lambda example: {
+                "text": example[feature_column],
+                "label": example[target_column],
+            }
+        )
 
         samples = [self._row_to_sample_classification(example) for example in dataset]
         return samples
@@ -932,8 +956,8 @@ class HuggingFaceDataset(_IDataset):
         split: str = "test",
         subset: str = None,
     ) -> List[Sample]:
-        """Load the specified split from the dataset library for summarization task.
-
+        """Load the specified split from the dataset for summarization task.
+  
         Args:
             feature_column (str):
                 Name of the column containing the input text or document.
@@ -1014,6 +1038,10 @@ class HuggingFaceDataset(_IDataset):
             return self.load_data_summarization(
                 feature_column, target_column, split, subset
             )
+        elif self.task == "ner":
+            return self.load_data_ner(
+                feature_column, target_column, split, subset
+            )
         else:
             raise ValueError(f"Unsupported task: {self.task}")
 
@@ -1088,3 +1116,49 @@ class HuggingFaceDataset(_IDataset):
             original=original,
             expected_results=SequenceClassificationOutput(predictions=[label]),
         )
+
+    def _row_to_ner_sample(self, data_row: dict) -> Sample:
+        input_column = next(
+            (
+                col
+                for col in self.COLUMN_NAMES["ner"]["text"]
+                if col in data_row
+            ),
+            None,
+        )
+        output_column = next(
+            (
+                col
+                for col in self.COLUMN_NAMES["ner"]["ner"]
+                if col in data_row
+            ),
+            None,
+        )
+
+        tokens = data_row.get(input_column, [])
+        labels = data_row.get(output_column, [])
+
+        #  get token and labels from the split
+        ner_labels = []
+        cursor = 0
+        for token, label in zip(tokens, labels):
+            ner_labels.append(
+                NERPrediction.from_span(
+                    entity=label,
+                    word=token,
+                    start=cursor,
+                    end=cursor + len(token),
+                    doc_id=0,
+                    doc_name="",
+                    pos_tag="XX",
+                    chunk_tag="XX",
+                )
+            )
+            # +1 to account for the white space
+            cursor += len(token) + 1
+        
+        original = " ".join(tokens)
+        return NERSample(
+            original=original,
+            expected_results=NEROutput(predictions=ner_labels)
+            )
