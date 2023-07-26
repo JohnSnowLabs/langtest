@@ -141,9 +141,9 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif (
-            type(data) is dict
+            isinstance(data, dict)
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            and task == "text-classification"
+            and (task == "text-classification" or task == "ner")
         ):
             self.data = (
                 HuggingFaceDataset(data["name"], task=task).load_data(
