@@ -957,7 +957,7 @@ class HuggingFaceDataset(_IDataset):
         subset: str = None,
     ) -> List[Sample]:
         """Load the specified split from the dataset for summarization task.
-  
+
         Args:
             feature_column (str):
                 Name of the column containing the input text or document.
@@ -1156,9 +1156,9 @@ class HuggingFaceDataset(_IDataset):
             )
             # +1 to account for the white space
             cursor += len(token) + 1
-        
+
         original = " ".join(tokens)
         return NERSample(
             original=original,
             expected_results=NEROutput(predictions=ner_labels)
-            )
+        )
