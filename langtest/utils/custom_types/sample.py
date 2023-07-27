@@ -782,13 +782,11 @@ class SpeedTestSample(BaseModel):
     test_case: str = "-"
     expected_results: Result = None
     actual_results: Result = None
-    transform_time: Union[int, float] = None
-    run_time: Union[int, float] = None
 
     def __init__(self, **data):
         super().__init__(**data)
 
-    def total_time(self, unit="ms"):
+    def total_time(self, time_ns, unit="ms"):
         """
         Calculates the total time for each operation.
 
@@ -798,9 +796,7 @@ class SpeedTestSample(BaseModel):
         Returns:
             Dict[str, Union[int, float]]: A dictionary containing the total times for each operation.
         """
-        self.actual_results = self.convert_ns_to_unit(
-            self.transform_time + self.run_time, unit=unit
-        )
+        self.actual_results = self.convert_ns_to_unit(time_ns, unit=unit)
 
         return self
 
@@ -846,54 +842,7 @@ class SpeedTestSample(BaseModel):
         """"""
         if self.actual_results is None:
             return False
-        return 0 <= self.actual_results
-
-    @classmethod
-    def bulk_create(
-        cls, runtime_values: Dict[str, Dict[str, Union[int, float]]], unit="ms", **kwargs
-    ) -> List["SpeedTestSample"]:
-        """
-        Creates a list of SpeedTestSample objects from the specified runtime values.
-
-        Args:
-            runtime_values (Dict[str, Dict[str, Union[int, float]]]): A dictionary containing the transfrom and run keys
-            runtime values for each operation in nanoseconds.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            List[SpeedTestSample]: A list of SpeedTestSample objects."""
-
-        rearranged_values = defaultdict(lambda: defaultdict(dict))
-
-        for k, v in runtime_values.items():
-            for k1, v1 in v.items():
-                for k2, v2 in v1.items():
-                    rearranged_values[k1][k2][k] = v2
-
-        samples = []
-        for _, values in rearranged_values.items():
-            for test_case, values in values.items():
-                temp_sample = SpeedTestSample(
-                    original=test_case,
-                    transform_time=values["transform"],
-                    run_time=values["run"],
-                    **kwargs
-                )
-                temp_sample.total_time(unit)
-                samples.append(temp_sample)
-
-        return samples
-
-    @classmethod
-    def bulk_create_multi_model(
-        cls, runtime_values: Dict[str, Dict[str, Any]], unit="ms", **kwargs
-    ):
-        """"""
-        samples = {}
-        for each_model, values in runtime_values.items():
-            samples[each_model] = cls.bulk_create(values, unit, **kwargs)
-
-        return samples
+        return self.expected_results <= self.actual_results
 
 
 class TranslationSample(BaseModel):

@@ -233,7 +233,6 @@ class Harness:
 
         self._testcases = None
         self._generated_results = None
-        self._runtime = defaultdict(lambda: defaultdict(dict))
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -326,10 +325,9 @@ class Harness:
                         setattr(sample, "expected_results", v(sample.original))
                         for sample in m_data
                     ]
-                    (
-                        self._testcases[k],
-                        self._runtime[k]["transform"],
-                    ) = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    (self._testcases[k]) = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data
+                    )
 
                 return self
 
@@ -342,10 +340,7 @@ class Harness:
                     )
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != "bias"}
-                        (
-                            other_testcases,
-                            self._runtime["transform"],
-                        ) = TestFactory.transform(
+                        (other_testcases) = TestFactory.transform(
                             self.task, self.data, tests, m_data=m_data
                         )
                         self._testcases.extend(other_testcases)
@@ -356,13 +351,13 @@ class Harness:
                     )
 
             else:
-                self._testcases, self._runtime["transform"] = TestFactory.transform(
+                self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
 
                 return self
 
-        self._testcases, self._runtime["transform"] = TestFactory.transform(
+        self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
         )
         return self
@@ -379,29 +374,24 @@ class Harness:
                 "calling the `.run()` method."
             )
         if not isinstance(self._testcases, dict):
-            self._generated_results, self._runtime["run"] = TestFactory.run(
+            self._generated_results = TestFactory.run(
                 self._testcases,
                 self.model,
                 is_default=self.is_default,
                 raw_data=self.data,
                 **self._config.get("model_parameters", {}),
             )
-            samples = SpeedTestSample.bulk_create(self._runtime)
-            self._generated_results.extend(samples)
+
         else:
             self._generated_results = {}
             for k, v in self.model.items():
-                self._generated_results[k], self._runtime[k]["run"] = TestFactory.run(
+                self._generated_results[k] = TestFactory.run(
                     self._testcases[k],
                     v,
                     is_default=self.is_default,
                     raw_data=self.data,
                     **self._config.get("model_parameters", {}),
                 )
-
-            speedtest_samples = SpeedTestSample.bulk_create_multi_model(self._runtime)
-            for k, v in speedtest_samples.items():
-                self._generated_results[k].extend(v)
 
         return self
 
@@ -488,10 +478,6 @@ class Harness:
             df_report = df_report.reset_index(drop=True)
 
             self.df_report = df_report.fillna("-")
-            if return_runtime:
-                self.df_report[f"time_elapsed ({unit})"] = self.df_report[
-                    "test_type"
-                ].apply(lambda x: self._runtime.total_time(unit)[x])
 
             if format == "dataframe":
                 return self.df_report
@@ -568,12 +554,6 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
-
-                if return_runtime:
-                    if k not in time_elapsed:
-                        time_elapsed[k] = df_report["model_name"].apply(
-                            lambda x: self._runtime.multi_model_total_time(unit)[x]
-                        )
 
                 df_final_report = pd.concat([df_final_report, df_report])
 

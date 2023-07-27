@@ -122,7 +122,6 @@ class TestFactory:
                 )
 
         # Generate testcases
-        runtime_results = {}
         for each in tests:
             tests.set_description(f"Generating testcases... ({each})")
             if each in all_categories:
@@ -136,7 +135,7 @@ class TestFactory:
                 )
                 all_results.extend(sample_results)
         tests.close()
-        return all_results, runtime_results
+        return all_results
 
     @classmethod
     def test_categories(cls) -> Dict:
@@ -176,13 +175,12 @@ class TestFactory:
         async_tests = TestFactory.async_run(samples_list, model_handler, **kwargs)
         temp_res = asyncio.run(async_tests)
         results = []
-        run_timing = defaultdict(lambda: defaultdict(dict))
-        for each, runtime in temp_res:
-            results.extend(each)
-            category = each[-1].category
-            test_type = each[-1].test_type
-            run_timing[category][test_type] = runtime
-        return results, run_timing
+        for each in temp_res:
+            if hasattr(each, "_result"):
+                results.extend(each._result)
+            elif isinstance(each, list):
+                results.extend(each)
+        return results
 
     @classmethod
     async def async_run(
@@ -222,16 +220,9 @@ class TestFactory:
                 all_results.extend(category_output)
             else:
                 all_results.append(category_output)
-        run_results = await asyncio.gather(*map(cls.measure_timing, all_results))
+        run_results = await asyncio.gather(*all_results)
 
         return run_results
-
-    @classmethod
-    async def measure_timing(cls, coro):
-        start_time = time.time_ns()
-        res = await coro
-        end_time = time.time_ns()
-        return (await res), (end_time - start_time)
 
 
 class ITests(ABC):
@@ -372,7 +363,6 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
-        runtime_test = {}
         tests_copy = self.tests.copy()  # Create a copy of self.tests
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
@@ -384,7 +374,6 @@ class RobustnessTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            start_time = time.time_ns()
             if (
                 TestFactory.task in ("question-answering", "summarization")
                 and test_name != "multiple_perturbations"
@@ -504,12 +493,11 @@ class RobustnessTestFactory(ITests):
                     **params.get("parameters", {}),
                     prob=params.pop("prob", 1.0),
                 )
-            end_time = time.time_ns()
+
             for sample in transformed_samples:
                 if test_name != "multiple_perturbations":
                     sample.test_type = test_name
             all_samples.extend(transformed_samples)
-            runtime_test[test_name] = end_time - start_time
         return all_samples
 
     @staticmethod
@@ -685,19 +673,18 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
-        runtime_test = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time_ns()
+
             transformed_samples = self.supported_tests[test_name].transform(
                 data_handler_copy, **params.get("parameters", {})
             )
-            end_time = time.time_ns()
+
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-            runtime_test[test_name] = end_time - start_time
-        return all_samples, runtime_test
+
+        return all_samples
 
     @staticmethod
     def available_tests() -> Dict:
@@ -754,20 +741,19 @@ class RepresentationTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the representation test.
         """
         all_samples = []
-        runtime_test = {}
+
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time_ns()
+
             transformed_samples = self.supported_tests[test_name].transform(
                 test_name, data_handler_copy, params
             )
-            end_time = time.time_ns()
+
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-            runtime_test[test_name] = end_time - start_time
 
-        return all_samples, runtime_test
+        return all_samples
 
     @staticmethod
     def available_tests() -> Dict:
@@ -822,7 +808,6 @@ class FairnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the fairness test.
         """
         all_samples = []
-        runtime_tests = {}
 
         if self._data_handler[0].expected_results is None:
             raise RuntimeError(
@@ -831,7 +816,7 @@ class FairnessTestFactory(ITests):
 
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time_ns()
+
             if isinstance(data_handler_copy[0], NERSample):
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.entity for y in x.expected_results.predictions]
@@ -851,12 +836,12 @@ class FairnessTestFactory(ITests):
             transformed_samples = self.supported_tests[test_name].transform(
                 y_true, params
             )
-            end_time = time.time_ns()
+
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-            runtime_tests[test_name] = end_time - start_time
-        return all_samples, runtime_tests
+
+        return all_samples
 
     @staticmethod
     def available_tests() -> dict:
@@ -1050,7 +1035,6 @@ class AccuracyTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the accuracy test.
         """
         all_samples = []
-        runtime_tests = {}
 
         if self._data_handler[0].expected_results is None:
             raise RuntimeError(
@@ -1060,7 +1044,6 @@ class AccuracyTestFactory(ITests):
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
-            start_time = time.time_ns()
             if data_handler_copy[0].task == "ner":
                 y_true = pd.Series(data_handler_copy).apply(
                     lambda x: [y.entity for y in x.expected_results.predictions]
@@ -1090,12 +1073,11 @@ class AccuracyTestFactory(ITests):
                 y_true, params
             )
 
-            end_time = time.time_ns()
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-            runtime_tests[test_name] = end_time - start_time
-        return all_samples, runtime_tests
+
+        return all_samples
 
     @staticmethod
     def available_tests() -> dict:
@@ -1246,20 +1228,20 @@ class ToxicityTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the toxicity test.
         """
         all_samples = []
-        runtime_tests = {}
+
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
-            start_time = time.time_ns()
+
             test_func = self.supported_tests[test_name].transform
             transformed_samples = test_func(
                 data_handler_copy, **params.get("parameters", {})
             )
-            end_time = time.time_ns()
+
             for sample in transformed_samples:
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
-            runtime_tests[test_name] = end_time - start_time
-        return all_samples, runtime_tests
+
+        return all_samples
 
     @staticmethod
     def available_tests() -> dict:
@@ -1332,10 +1314,12 @@ class MeasureTestFactory(ITests):
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
-            tasks.append(
-                supported_tests[test_name].async_run(samples, model, **kwargs)
-            )
-        
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+
         return tasks
 
     @classmethod
