@@ -94,9 +94,12 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Add OCR Typo](robustness#add-ocr-typo)                                                                    |`ner`, `text-classification`, `question-answering`, `summarization`. `translation`
 |[Robustness](robustness)		            |[Dyslexia Word Swap](robustness#dyslexia-word-swap)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
 |[Robustness](robustness)		            |[Add Slangs](robustness#add-slangs)                                                                        |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
-|[Robustness](robustness)		            |[Speech to Text typos](robustness#add-speech-to-text-typo)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
-|[Robustness](robustness)		            |[Insert Abbreviations](robustness#add-abbreviation)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
+|[Robustness](robustness)		            |[Add Speech to Text Typo](robustness#add-speech-to-text-typo)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
+|[Robustness](robustness)		            |[Add Abbreviations](robustness#add-abbreviation)                                                        |`ner`, `text-classification`, `question-answering`, `summarization`
 |[Robustness](robustness)		            |[Multiple Perturbations](robustness#multiple-perturbations)                                                        |`text-classification`, `question-answering`, `summarization`, `translation`
+|[Robustness](robustness)		            |[Adjective Synonym Swap](robustness#adjective-synonym-swap)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
+|[Robustness](robustness)		            |[Adjective Antonym Swap](robustness#adjective-antonym-swap)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
+|[Robustness](robustness)		            |[Strip All Punctution](robustness#strip-all-punctuation)                                                 |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
 |[Toxicity](toxicity)		            |[Offensive](toxicity#Offensive)                                                        |`toxicity`
 
 </div></div>

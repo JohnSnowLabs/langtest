@@ -4,7 +4,7 @@ import re
 import string
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import SequenceClassificationSample
@@ -17,6 +17,8 @@ from .constants import (
     abbreviation_dict,
     dyslexia_map,
     ocr_typo_dict,
+    adjective_synonym_dict,
+    adjective_antonym_dict,
 )
 from ..utils.SoundsLikeFunctions import Search
 from ..utils.custom_types import Sample, Span, Transformation
@@ -503,14 +505,27 @@ class SwapEntities(BaseRobustness):
                             break
 
                 replace_token = sent_tokens[replace_idx : replace_idx + len(replace_idxs)]
+                token_length = len(replace_token)
                 replace_token = " ".join(replace_token)
-
-                chosen_ent = random.choice(terminology[ent_type])
+                filtered_ents = [
+                    ent
+                    for ent in terminology[ent_type]
+                    if len(ent.split(" ")) == token_length
+                ]
+                if not filtered_ents:
+                    chosen_ent = random.choice(terminology[ent_type])
+                else:
+                    chosen_ent = random.choice(filtered_ents)
 
                 if random.random() < prob:
-                    replace_token_pos = re.search(replace_token, sample.original)
+                    replace_token_pos = re.search(
+                        re.escape(replace_token), sample.original
+                    )
                     sample.test_case = sample.original.replace(replace_token, chosen_ent)
-                    if sample.task in ("ner", "text-classification"):
+                    if (
+                        sample.task in ("ner", "text-classification")
+                        and replace_token_pos
+                    ):
                         sample.transformations = [
                             Transformation(
                                 original_span=Span(
@@ -743,11 +758,10 @@ class AddContraction(BaseRobustness):
             for contraction in CONTRACTION_MAP:
                 search = re.search(contraction, text, flags=re.IGNORECASE | re.DOTALL)
                 if search and (random.random() < prob):
-                    new_string = CONTRACTION_MAP.get(search.group(), search.group())
                     replaced_string = re.sub(
                         contraction,
                         custom_replace,
-                        new_string,
+                        replaced_string,
                         flags=re.IGNORECASE | re.DOTALL,
                     )
 
@@ -1329,6 +1343,12 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = AddSpeechToTextTypo.transform(sample, prob)
             elif order == "add_slangs":
                 transformed_list = AddSlangifyTypo.transform(sample, prob)
+            elif order == "adjective_synonym_swap":
+                transformed_list = AdjectiveSynonymSwap.transform(sample, prob)
+            elif order == "adjective_antonym_swap":
+                transformed_list = AdjectiveAntonymSwap.transform(sample, prob)
+            elif order == "strip_all_punctuation":
+                transformed_list = StripAllPunctuation.transform(sample, prob)
             else:
                 raise ValueError(f"Unknown transformation: {order}")
             return transformed_list
@@ -1361,3 +1381,337 @@ class MultiplePerturbations(BaseRobustness):
                 transformed_list = apply_transformation(sample_list, transformation, prob)
 
         return transformed_list
+
+
+class AdjectiveSynonymSwap(BaseRobustness):
+    """A class for swaping adjectives to their synonyms"""
+
+    alias_name = "adjective_synonym_swap"
+
+    @staticmethod
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+        """Converts the input sentences by changing adjectives to their respective synonyms from the adjective synonym dictionary.
+
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of replacing adjectives words to their respective synonym for each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list with adjectives swapped with their respective synonyms.
+        """
+
+        def adjective_synonym_swap(text):
+            transformations = []
+
+            def replace_word(match):
+                original_word = match.group()
+                synonyms = adjective_synonym_dict.get(original_word, [original_word])
+                transformed_word = random.choice(synonyms)
+                if transformed_word != original_word and (random.random() < prob):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(),
+                                end=match.end(),
+                                word=original_word,
+                            ),
+                            new_span=Span(
+                                start=match.start(),
+                                end=match.start() + len(transformed_word),
+                                word=transformed_word,
+                            ),
+                            ignore=False,
+                        )
+                    )
+                    return transformed_word
+                return original_word
+
+            pattern = r"\b\w+\b"  # Matches whole words using word boundaries
+            transformed_text = re.sub(pattern, replace_word, text)
+
+            return transformed_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = adjective_synonym_swap(sample)
+            else:
+                sample.test_case, transformations = adjective_synonym_swap(
+                    sample.original
+                )
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+
+
+class AdjectiveAntonymSwap(BaseRobustness):
+    """A class for swaping adjectives to their antonyms"""
+
+    alias_name = "adjective_antonym_swap"
+
+    @staticmethod
+    def transform(sample_list: List[Sample], prob: Optional[float] = 1.0) -> List[Sample]:
+        """Converts the input sentences by changing adjectives to their respective antonyms from the adjective antonym dictionary.
+
+        Args:
+            sample_list (List[Sample]): A list of samples to be transformed.
+            prob (Optional[float]): The probability of replacing adjectives words to their respective antonyms for each sample.
+                                    Defaults to 1.0, which means all samples will be transformed.
+
+        Returns:
+            List[Sample]: The transformed sample list with adjectives swapped with their respective antonyms.
+        """
+
+        def adjective_antonym_swap(text):
+            transformations = []
+
+            def replace_word(match):
+                original_word = match.group()
+                antonyms = adjective_antonym_dict.get(original_word, [original_word])
+                transformed_word = random.choice(antonyms)
+                if transformed_word != original_word and (random.random() < prob):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start(),
+                                end=match.end(),
+                                word=original_word,
+                            ),
+                            new_span=Span(
+                                start=match.start(),
+                                end=match.start() + len(transformed_word),
+                                word=transformed_word,
+                            ),
+                            ignore=False,
+                        )
+                    )
+                    return transformed_word
+                return original_word
+
+            pattern = r"\b\w+\b"  # Matches whole words using word boundaries
+            transformed_text = re.sub(pattern, replace_word, text)
+
+            return transformed_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx], _ = adjective_antonym_swap(sample)
+            else:
+                sample.test_case, transformations = adjective_antonym_swap(
+                    sample.original
+                )
+                if sample.task in ("ner", "text-classification"):
+                    sample.transformations = transformations
+                sample.category = "robustness"
+
+        return sample_list
+
+
+class StripAllPunctuation(BaseRobustness):
+    """A class for stripping punctuation from text samples."""
+
+    alias_name = "strip_all_punctuation"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Union[Sample, str]],
+        prob: Optional[float] = 1.0,
+        whitelist: Optional[List[str]] = None,
+    ) -> List[Sample]:
+        """
+        Transforms the given sample list by stripping all punctuations.
+
+        Args:
+            sample_list (List[Union[Sample, str]]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of samples to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
+            whitelist (Optional[List[str]]): Punctuations to look for.
+
+        Returns:
+            transformed_list: The transformed list of samples.
+        """
+        if whitelist is None:
+            whitelist = ["!", "?", ",", ".", "-", ":", ";", "/", "'", '"']
+
+        exceptions = ["s/p", "h/o"]
+        letter_letter_pattern = r"\b\w/\w\b"
+        number_pattern = r"\b\d+\.\d+\b|\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b\d{1,2}-\d{1,2}-\d{2,4}\b|\b\d+-\d+\b"
+
+        exceptions_pattern = "|".join(
+            [
+                f"(?<!{ex.split('/')[0]})/(?!{ex.split('/')[1]})"
+                for ex in exceptions
+                if "/" in ex
+            ]
+        )
+        whitelist_pattern = "|".join(
+            [f"\\{char}" for char in whitelist if char not in ["/", ".", "-"]]
+        )
+
+        pattern = "|".join(
+            [
+                number_pattern,  # to handle decimal numbers
+                exceptions_pattern,
+                whitelist_pattern,
+                letter_letter_pattern,  # to handle letter/letter
+                "(?<!\\d)\\.(?!\\d)",  # to handle non-decimal periods
+                "(?<!\\d)-(?!\\d)",  # to handle non-range hyphens
+            ]
+        )
+
+        def check_whitelist(text):
+            new_text = text
+            transformations = []
+            offset = 0
+            for match in re.finditer(pattern, new_text):
+                if (
+                    re.match(letter_letter_pattern, match.group())
+                    and match.group() not in exceptions
+                ):
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start() - offset,
+                                end=match.end() - offset,
+                                word=match.group(),
+                            ),
+                            new_span=Span(
+                                start=match.start() - offset,
+                                end=match.start() - offset + 5,
+                                word=" and ",
+                            ),
+                        )
+                    )
+                    new_text = (
+                        new_text[: match.start() - offset]
+                        + " and "
+                        + new_text[match.end() - offset :]
+                    )
+                    offset += 1
+                elif not re.match(
+                    number_pattern, match.group()
+                ):  # Avoid removing punctuation from decimal numbers, date formats, and ranges
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=match.start() - offset,
+                                end=match.end() - offset,
+                                word=match.group(),
+                            ),
+                            new_span=Span(
+                                start=match.start() - offset,
+                                end=match.start() - offset,
+                                word="",
+                            ),
+                        )
+                    )
+                    new_text = (
+                        new_text[: match.start() - offset]
+                        + new_text[match.end() - offset :]
+                    )
+                    offset += len(match.group())
+
+            return new_text, transformations
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                if random.random() < prob:
+                    transformed_text, transformations = check_whitelist(sample)
+                    sample_list[idx] = transformed_text
+            else:
+                if random.random() < prob:
+                    transformed_text, transformations = check_whitelist(sample.original)
+                    sample.test_case = transformed_text
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                else:
+                    sample.test_case = sample.original
+
+                sample.category = "robustness"
+
+        return sample_list
+
+
+class RandomAge(BaseRobustness):
+    """A class for adding abbreviations to the input text."""
+
+    alias_name = "randomize_age"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        prob: Optional[float] = 1.0,
+        random_amount: int = 5,
+        count: int = 1,
+    ) -> List[Sample]:
+        """Transforms the given sample list by randomizing the ages by a certain amount.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
+            random_amount (Optional[int]): The range to randomize the ages. +-random_amount is added to ages.
+                                    Default is 5.
+            count (Optional[int]): Number of variations to create from one sample.
+
+        Returns:
+            List[Sample]: The transformed list of samples with abbreviations added
+        """
+        age_expressions = [
+            r"\d+ years old",
+            r"\d+ months old",
+            r"\d+ weeks old",
+            r"\d+ days old",
+        ]
+
+        def randomize_ages(text):
+            perturbed_text = text
+            transformations = []
+
+            for expr in age_expressions:
+                matches = re.finditer(expr, text)
+                for match in matches:
+                    start = match.start()
+                    end = match.end()
+                    token = text[start:end]
+                    new_age = random.randint(-random_amount, random_amount) + int(
+                        token.split(" ")[0]
+                    )
+                    new_age = new_age if new_age > 0 else 1
+                    corrected_token = re.sub(r"\d+", str(new_age), token)
+                    if corrected_token != token and (random.random() < prob):
+                        perturbed_text = (
+                            perturbed_text[:start]
+                            + corrected_token
+                            + perturbed_text[end:]
+                        )
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(
+                                    start=start,
+                                    end=start + len(corrected_token),
+                                    word=corrected_token,
+                                ),
+                                ignore=False,
+                            )
+                        )
+
+            return perturbed_text, transformations
+
+        perturbed_samples = []
+        for sample in sample_list:
+            for i in range(count):
+                if isinstance(sample, str):
+                    s, _ = randomize_ages(sample)
+                    perturbed_samples.append(s)
+                else:
+                    s = deepcopy(sample)
+                    s.test_case, transformations = randomize_ages(s.original)
+                    if s.task in ("ner", "text-classification"):
+                        s.transformations = transformations
+                    s.category = "robustness"
+
+        return perturbed_samples

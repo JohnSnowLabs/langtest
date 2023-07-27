@@ -45,6 +45,16 @@ class RobustnessTestCase(unittest.TestCase):
                 original="I cannot live in USA due to torandos caramelized!"
             ),
         ]
+
+        self.strip_all_punctuation = [
+            SequenceClassificationSample(
+                original="12 . dutasteride 0.5 mg Capsule Sig : One ( 1 ) Capsule PO once a day ."
+            ),
+            SequenceClassificationSample(
+                original="In conclusion , RSDS is a relevant osteoarticular complication in patients receiving either anticalcineurinic drug ( CyA or tacrolimus ) , even under monotherapy or with a low steroid dose ."
+            ),
+        ]
+
         self.british_sentences = [
             SequenceClassificationSample(
                 original="I live in London, United Kingdom since 2019"
@@ -119,9 +129,23 @@ class RobustnessTestCase(unittest.TestCase):
                 original="I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them"
             ),
         ]
+        self.adj_sentences = [
+            SequenceClassificationSample(
+                original="Lisa is wearing a beautiful shirt today. This soup is not edible."
+            ),
+            SequenceClassificationSample(original="They have a beautiful house."),
+        ]
+        self.age_sentences = [
+            SequenceClassificationSample(original="I am 75 years old."),
+            SequenceClassificationSample(original="The baby is 40 days old."),
+        ]
         self.test_qa = [
             "20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar to the current one, is being released. The European Central Bank will, in due time, announce when banknotes from the first series lose legal tender status.",
             "is the first series 20 euro note still legal tender",
+        ]
+        self.add_contraction_QA_sample = [
+            "Who is angry?",
+            "We will be going to the beach today.",
         ]
         self.labels = [
             ["O", "O", "O", "B-LOC", "B-COUN", "I-COUN", "O", "B-DATE"],
@@ -211,6 +235,17 @@ class RobustnessTestCase(unittest.TestCase):
             self.assertNotEqual(sample.test_case, sample.original)
             self.assertEqual(len(sample.transformations), 1)
 
+    def test_strip_all_punctuation(self) -> None:
+        """
+        Test the StripAllPunctuation transformation.
+        """
+        transformed_samples = StripAllPunctuation.transform(self.strip_all_punctuation)
+        self.assertIsInstance(transformed_samples, list)
+        self.assertEqual(len(self.sentences), len(transformed_samples))
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+            self.assertEqual(len(sample.transformations), 3)
+
     def test_swap_entities(self) -> None:
         """
         Test the SwapEntities transformation.
@@ -271,7 +306,7 @@ class RobustnessTestCase(unittest.TestCase):
 
     def test_add_contraction(self) -> None:
         """
-        Test the AddContraction transformation.
+        Test the AddContraction transformation
         """
         transformed_samples = AddContraction.transform(self.sentences)
         self.assertListEqual(
@@ -281,6 +316,14 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertEqual(
             [len(sample.transformations) for sample in transformed_samples], [0, 1]
         )
+
+        expected_corrected_sentences = [
+            "Who's angry?",
+            "We'll be going to the beach today.",
+        ]
+        transformed_samples_qa = AddContraction.transform(self.add_contraction_QA_sample)
+        self.assertIsInstance(transformed_samples, list)
+        self.assertEqual(expected_corrected_sentences, transformed_samples_qa)
 
     def test_dyslexia_swap(self) -> None:
         """
@@ -364,3 +407,30 @@ class RobustnessTestCase(unittest.TestCase):
         )
         self.assertIsInstance(transformed_samples, list)
         self.assertNotEqual(original_qa, transformed_samples_qa)
+
+    def test_adj_synonym_swap(self) -> None:
+        """
+        Test the AdjectiveSynonymSwap transformation.
+        """
+        transformed_samples = AdjectiveSynonymSwap.transform(self.adj_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+    def test_adj_antonym_swap(self) -> None:
+        """
+        Test the AdjectiveSynonymSwap transformation.
+        """
+        transformed_samples = AdjectiveAntonymSwap.transform(self.adj_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+    def test_random_age(self) -> None:
+        """
+        Test the RandomAge transformation.
+        """
+        transformed_samples = RandomAge.transform(self.age_sentences, random_amount=100)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)

@@ -10,7 +10,17 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-The `generate()` method automatically generates test cases (based on the provided configuration). 
+<div class="h3-box" markdown="1">
+
+### Listing Test Cases
+
+Listing the available test cases.
+
+```python
+h.available_tests()
+```
+</div>
+The `generate()` method automatically generates test cases (based on the provided configuration).
 
 ### Configuring Tests
 

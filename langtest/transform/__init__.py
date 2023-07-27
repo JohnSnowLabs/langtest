@@ -1234,7 +1234,7 @@ class ToxicityTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
             transformed_samples = test_func(
-                data_handler_copy, **params.get("parameters", {})
+                data_handler_copy, test_name=test_name, **params.get("parameters", {})
             )
 
             for sample in transformed_samples:

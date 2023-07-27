@@ -10,6 +10,9 @@ header:
   - title: Tests
     url: /docs/pages/tests/test
     key: tests
+  - title: Blog
+    url: https://www.johnsnowlabs.com/responsible-ai-blog/
+    key: blog
 
 
 docs-menu:

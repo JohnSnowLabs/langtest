@@ -1,7 +1,7 @@
 ---
 layout: landing
 title: 'LangTest <span>Deliver Safe & Effective Language Models</span>'
-excerpt: <br> 50+ Tests Evaluating Language Models
+excerpt: <br> 50+ Test Types for Comparing LLM & NLP Models on Accuracy, Bias, Fairness, Robustness & More
 permalink: /
 header: true
 article_header:

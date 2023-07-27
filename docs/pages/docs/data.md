@@ -133,7 +133,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task="text-classification", hub="huggingface",
-                   model="distilbert-base-uncased-finetuned-sst-2-english",
+                  model="distilbert-base-uncased-finetuned-sst-2-english",
                   data={"name":'glue',
                   "subset":"sst2",
                   "feature_column":"sentence",
@@ -174,6 +174,8 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**Quac-test-tiny** | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/) | Truncated version of the val set from the QuAC dataset with 50 examples.
 |**OpenBookQA-test** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions
 |**OpenBookQA-test-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.
+|**BBQ-test** | [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193) | Testing set from the BBQ dataset, containing 1000 question answers examples.
+|**BBQ-test-tiny** | [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193) | Truncated version of the test set from the BBQ dataset, containing 50 question and answers examples.
 
 </div><div class="h3-box" markdown="1">
 
@@ -223,6 +225,26 @@ harness = Harness(task='summarization',
                   hub ='openai',
                   data='XSum-test-tiny')
 ```
+
+#### Passing a Hugging Face Dataset for Summarization to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task="summarization", 
+                  hub="openai",
+                  model="text-davinci-003",
+                  data={"name":'samsum',
+                  "feature_column":"dialogue",
+                  "target_column":'summary',
+                  "split":"test"
+                  })
+```
+</div><div class="h3-box" markdown="1">
+
 ### Toxicity
 
 This test checks the toxicity of the completion., the user is meant to select a benchmark dataset from the following list:

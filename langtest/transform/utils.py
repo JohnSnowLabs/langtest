@@ -306,30 +306,34 @@ def create_terminology(ner_data: pd.DataFrame) -> Dict[str, List[str]]:
     for i, row in ner_data.iterrows():
         sent_labels = row.label
         for token_indx, label in enumerate(sent_labels):
-            if label.startswith("B"):
-                if chunk:
-                    if terminology.get(ent_type, None):
-                        terminology[ent_type].append(" ".join(chunk))
-                    else:
-                        terminology[ent_type] = [" ".join(chunk)]
+            try:
+                if label.startswith("B"):
+                    if chunk:
+                        if terminology.get(ent_type, None):
+                            terminology[ent_type].append(" ".join(chunk))
+                        else:
+                            terminology[ent_type] = [" ".join(chunk)]
 
-                sent_tokens = row.text.split(" ")
-                chunk = [sent_tokens[token_indx]]
-                ent_type = label[2:]
+                    sent_tokens = row.text.split(" ")
+                    chunk = [sent_tokens[token_indx]]
+                    ent_type = label[2:]
 
-            elif label.startswith("I"):
-                sent_tokens = row.text.split(" ")
-                chunk.append(sent_tokens[token_indx])
+                elif label.startswith("I"):
+                    sent_tokens = row.text.split(" ")
+                    chunk.append(sent_tokens[token_indx])
 
-            else:
-                if chunk:
-                    if terminology.get(ent_type, None):
-                        terminology[ent_type].append(" ".join(chunk))
-                    else:
-                        terminology[ent_type] = [" ".join(chunk)]
+                else:
+                    if chunk:
+                        if terminology.get(ent_type, None):
+                            terminology[ent_type].append(" ".join(chunk))
+                        else:
+                            terminology[ent_type] = [" ".join(chunk)]
 
-                chunk = None
-                ent_type = None
+                    chunk = None
+                    ent_type = None
+
+            except AttributeError:
+                continue
 
     return terminology
 
