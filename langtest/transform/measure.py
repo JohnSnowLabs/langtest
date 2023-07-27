@@ -15,6 +15,8 @@ class BaseMeasure(ABC):
         None
     """
 
+    TOKENS = 0
+
     @staticmethod
     @abstractmethod
     def transform():
@@ -50,14 +52,14 @@ class BaseMeasure(ABC):
 
         """
         progress = kwargs.get("progress_bar", False)
-        tokens = 0
+        BaseMeasure.TOKENS = 0
         for sample in kwargs.get("raw_data", []):
             if hasattr(sample, "run"):
                 sample_status = sample.run(model, **kwargs)
                 if sample_status:
                     sample.state = "done"
             else:
-                tokens += len(sample.original.split())
+                BaseMeasure.TOKENS += len(sample.original.split())
                 _ = model(sample.original)
         if progress:
             progress.update(1)
@@ -79,16 +81,17 @@ class BaseMeasure(ABC):
         start_time = time.time_ns()
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         created_task.add_done_callback(
-            lambda x: cls.time_measure(start_time, sample_list)
+            lambda x: cls.time_measure(start_time, sample_list, cls.TOKENS)
         )
         return await created_task
 
     @staticmethod
-    def time_measure(start_time, sample_list):
+    def time_measure(start_time, sample_list, tokens):
         end_time = time.time_ns()
-        time_taken = end_time - start_time
+        time_taken = end_time - start_time  # in nanoseconds
+
         for sample in sample_list:
-            sample.total_time(time_taken)
+            sample.total_time(time_taken, tokens)
 
         return sample_list
 
@@ -118,8 +121,6 @@ class Speed(BaseMeasure):
         speed_samples = []
         for test_name, value in params.items():
             sample = SpeedTestSample()
-            sample.category = "measure"
-            sample.test_type = "speed"
             sample.expected_results = value
             speed_samples.append(sample)
         return speed_samples

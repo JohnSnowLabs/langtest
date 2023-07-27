@@ -9,7 +9,6 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
-from langtest.utils.custom_types.sample import SpeedTestSample
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
@@ -452,7 +451,7 @@ class Harness:
                     min_pass_rate = self.min_pass_dict.get(
                         test_type, multiple_perturbations_min_pass_rate
                     )
-                if summary[test_type]["category"] == "Accuracy":
+                if summary[test_type]["category"] in ["Accuracy", "measure"]:
                     min_pass_rate = 1
 
                 report[test_type] = {
@@ -533,7 +532,7 @@ class Harness:
                         test_type, self.default_min_pass_dict
                     )
 
-                    if summary[test_type]["category"] == "Accuracy":
+                    if summary[test_type]["category"] in ["Accuracy", "measure"]:
                         min_pass_rate = 1
 
                     report[test_type] = {
