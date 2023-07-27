@@ -1,5 +1,5 @@
 # Description
-<!-- Thorougly explain what you are doing and why you are doing it -->
+<!-- Thoroughly explain what you are doing and why you are doing it -->
 
 -------------------------------------------------------------------------------------------------
 ➤ Fixes # (issue)
