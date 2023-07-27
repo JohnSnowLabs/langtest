@@ -397,16 +397,12 @@ class Harness:
 
     def report(
         self,
-        return_runtime: bool = False,
-        unit: str = "ms",
         format: str = "dataframe",
         save_dir: str = None,
     ) -> pd.DataFrame:
         """Generate a report of the test results.
 
         Args:
-            return_runtime (bool): whether to return runtime
-            unit (str): time unit to use
             format (str): format in which to save the report
             save_dir (str): name of the directory to save the file
         Returns:
@@ -518,7 +514,6 @@ class Harness:
 
         else:
             df_final_report = pd.DataFrame()
-            time_elapsed = {}
             for k, v in self.model.items():
                 for sample in self._generated_results[k]:
                     summary[sample.test_type]["category"] = sample.category
@@ -588,16 +583,6 @@ class Harness:
                 ]
 
             styled_df = pivot_df.style.apply(color_cells)
-            if return_runtime:
-                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
-                df_time_elapsed = pd.DataFrame(
-                    list(time_elapsed_mean.items()),
-                    columns=["model_name", f"time_elapsed ({unit})"],
-                )
-                df_time_elapsed.set_index("model_name", inplace=True)
-                from IPython.display import display
-
-                display(df_time_elapsed)
 
             if format == "dataframe":
                 return styled_df
