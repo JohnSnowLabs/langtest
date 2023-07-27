@@ -1117,6 +1117,16 @@ class HuggingFaceDataset(_IDataset):
         )
 
     def _row_to_ner_sample(self, data_row: dict) -> Sample:
+        """Convert a row from the dataset into a Sample for NER.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object.
+        """
         input_column = next(
             (col for col in self.COLUMN_NAMES["ner"]["text"] if col in data_row),
             None,
