@@ -69,15 +69,16 @@ class TestNERDataset:
                 assert isinstance(label, str)
 
     @pytest.mark.parametrize(
-        "dataset",
+        "dataset,params",
         [
-            CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"),
-            ConllDataset(file_path="tests/fixtures/test.conll", task="ner"),
+            (HuggingFaceDataset(dataset_name="wikiann", task="ner"), {"subset": "fo", "feature_column": "tokens", "target_column": "ner_tags"}),
+            (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
+            (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {})
         ],
     )
-    def test_load_data(self, dataset):
+    def test_load_data(self, dataset, params):
         """"""
-        samples = dataset.load_data()
+        samples = dataset.load_data(**params)
 
         assert isinstance(samples, list)
 
