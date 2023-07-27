@@ -71,9 +71,12 @@ class TestNERDataset:
     @pytest.mark.parametrize(
         "dataset,params",
         [
-            (HuggingFaceDataset(dataset_name="wikiann", task="ner"), {"subset": "fo", "feature_column": "tokens", "target_column": "ner_tags"}),
+            (
+                HuggingFaceDataset(dataset_name="wikiann", task="ner"),
+                {"subset": "fo", "feature_column": "tokens", "target_column": "ner_tags"},
+            ),
             (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
-            (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {})
+            (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
         ],
     )
     def test_load_data(self, dataset, params):
