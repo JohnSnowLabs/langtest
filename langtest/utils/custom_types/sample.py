@@ -780,7 +780,7 @@ class SpeedTestSample(BaseModel):
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
 
-    category: str = "measure"
+    category: str = "performance"
     test_type: str = "speed"
     original: str = "-"
     test_case: str = "-"

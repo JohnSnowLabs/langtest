@@ -447,7 +447,7 @@ class Harness:
                     min_pass_rate = self.min_pass_dict.get(
                         test_type, multiple_perturbations_min_pass_rate
                     )
-                if summary[test_type]["category"] in ["Accuracy", "measure"]:
+                if summary[test_type]["category"] in ["Accuracy", "performance"]:
                     min_pass_rate = 1
 
                 report[test_type] = {
@@ -527,7 +527,7 @@ class Harness:
                         test_type, self.default_min_pass_dict
                     )
 
-                    if summary[test_type]["category"] in ["Accuracy", "measure"]:
+                    if summary[test_type]["category"] in ["Accuracy", "performance"]:
                         min_pass_rate = 1
 
                     report[test_type] = {

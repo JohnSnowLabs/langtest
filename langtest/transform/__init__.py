@@ -9,7 +9,7 @@ import nest_asyncio
 import pandas as pd
 from tqdm.asyncio import tqdm
 
-from langtest.transform.measure import BaseMeasure
+from langtest.transform.performance import BasePerformance
 
 from .accuracy import BaseAccuracy
 from .bias import BaseBias
@@ -1259,17 +1259,17 @@ class ToxicityTestFactory(ITests):
         return tests
 
 
-class MeasureTestFactory(ITests):
-    """Factory class for the robustness measure.
+class PerformanceTestFactory(ITests):
+    """Factory class for the model performance
 
-    This class implements the robustness measure. The robustness measure is the number of test cases that the model fails to run on.
+    This class implements the model performance The robustness measure is the number of test cases that the model fails to run on.
 
     """
 
-    alias_name = "measure"
+    alias_name = "performance"
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the robustness measure."""
+        """Initializes the model performance"""
 
         self.supported_tests = self.available_tests()
         self.data_handler = data_handler
@@ -1300,15 +1300,15 @@ class MeasureTestFactory(ITests):
     async def run(
         cls, sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """Runs the robustness measure.
+        """Runs the model performance
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the robustness measure.
+            **kwargs: Additional arguments to be passed to the model performance
 
         Returns:
-            List[Sample]: The transformed data based on the implemented robustness measure.
+            List[Sample]: The transformed data based on the implemented model performance
 
         """
         supported_tests = cls.available_tests()
@@ -1324,15 +1324,15 @@ class MeasureTestFactory(ITests):
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
-        """Returns the available robustness measure.
+        """Returns the available model performance
 
         Returns:
-            Dict[str, str]: The available robustness measure.
+            Dict[str, str]: The available model performance
 
         """
         tests = {
             j: i
-            for i in BaseMeasure.__subclasses__()
+            for i in BasePerformance.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests

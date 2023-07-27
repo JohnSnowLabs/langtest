@@ -6,10 +6,10 @@ from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types.sample import Sample, SpeedTestSample
 
 
-class BaseMeasure(ABC):
-    """Abstract base class for implementing a robustness measure.
+class BasePerformance(ABC):
+    """Abstract base class for implementing a model performance.
 
-    This class defines the interface for implementing a robustness measure.
+    This class defines the interface for implementing a model performance.
 
     Attributes:
         None
@@ -20,7 +20,7 @@ class BaseMeasure(ABC):
     @staticmethod
     @abstractmethod
     def transform():
-        """Abstract method that transforms the sample data based on the implemented robustness measure.
+        """Abstract method that transforms the sample data based on the implemented model performance.
 
         Args:
             params (dict): The input data to be transformed.
@@ -28,7 +28,7 @@ class BaseMeasure(ABC):
             **kwargs: Additional keyword arguments.
 
         Returns:
-            List[Sample]: The transformed data based on the implemented robustness measure.
+            List[Sample]: The transformed data based on the implemented model performance.
 
         Raises:
             NotImplementedError: This method must be implemented in the derived class.
@@ -40,26 +40,26 @@ class BaseMeasure(ABC):
     async def run(
         sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """Abstract method that implements the robustness measure.
+        """Abstract method that implements the model performance.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the robustness measure.
+            **kwargs: Additional arguments to be passed to the model performance.
 
         Returns:
-            List[Sample]: The transformed data based on the implemented robustness measure.
+            List[Sample]: The transformed data based on the implemented model performance.
 
         """
         progress = kwargs.get("progress_bar", False)
-        BaseMeasure.TOKENS = 0
+        BasePerformance.TOKENS = 0
         for sample in kwargs.get("raw_data", []):
             if hasattr(sample, "run"):
                 sample_status = sample.run(model, **kwargs)
                 if sample_status:
                     sample.state = "done"
             else:
-                BaseMeasure.TOKENS += len(sample.original.split())
+                BasePerformance.TOKENS += len(sample.original.split())
                 _ = model(sample.original)
         if progress:
             progress.update(1)
@@ -67,15 +67,15 @@ class BaseMeasure(ABC):
 
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
-        """Creates a task to run the robustness measure.
+        """Creates a task to run the model performance.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the robustness measure.
+            **kwargs: Additional arguments to be passed to the model performance.
 
         Returns:
-            asyncio.Task: The task that runs the robustness measure.
+            asyncio.Task: The task that runs the model performance.
 
         """
         start_time = time.time_ns()
@@ -96,7 +96,7 @@ class BaseMeasure(ABC):
         return sample_list
 
 
-class Speed(BaseMeasure):
+class Speed(BasePerformance):
     """Speed measure class.
 
     This class implements the speed measure. The speed measure is the time it takes for the model to run on the test case.
