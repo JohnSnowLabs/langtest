@@ -1,3 +1,9 @@
+# Description
+<!-- Thorougly explain what you are doing and why you are doing it -->
+
+## Usage
+<!-- If applicable: show a code snippet or a command on how to use this new addition -->
+
 ## Checklist:
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
 - [ ] I've added Google style docstrings to my code.
