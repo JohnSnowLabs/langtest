@@ -207,9 +207,7 @@ class TestSummarizationDataset:
     def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
         if isinstance(dataset, HuggingFaceDataset):
-            raw_data = dataset.load_raw_data(
-                split="test[:30]"
-            )
+            raw_data = dataset.load_raw_data(split="test[:30]")
         else:
             raw_data = dataset.load_raw_data()
 
