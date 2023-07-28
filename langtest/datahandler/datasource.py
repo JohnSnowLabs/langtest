@@ -9,6 +9,7 @@ from typing import Dict, List
 import jsonlines
 import pandas as pd
 
+from langtest.utils.custom_types import sample
 from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
 from ..utils.custom_types import (
@@ -901,6 +902,11 @@ class CSVDataset(_IDataset):
         return raw_data
 
     def load_data(self) -> List[Sample]:
+        if self.kwargs.get("is_import", False):
+            kwargs = self.kwargs.copy()
+            kwargs.pop("is_import")
+            return self._import_data(self._file_path, **kwargs)
+
         if type(self._file_path) == dict:
             dataset = pd.read_csv(self._file_path["name"])
         else:
@@ -908,7 +914,6 @@ class CSVDataset(_IDataset):
             if not self.column_map:
                 self.column_map = self._match_column_names(list(dataset.columns))
 
-        task_function = getattr(self, f"load_data_{self.task}", None)
         task_functions = {
             "text-classification": self.load_data_classification,
             "ner": self.load_data_ner,
@@ -1251,3 +1256,31 @@ class CSVDataset(_IDataset):
                 f"You can use following namespaces:\n{not_referenced_columns}"
             )
         return column_map
+
+    def _import_data(self, file_name, **kwargs) -> List[Sample]:
+        """Helper function to import testcases from csv file after editing.
+
+        Args:
+            file_name (str):    path to the csv file
+            **kwargs:           additional arguments to pass to pandas.read_csv
+
+        Returns:
+            List[Sample]:       list of samples
+        """
+        data = pd.read_csv(file_name, **kwargs)
+        custom_names = {
+            "question-answering": "qa",
+            "text-classification": "sequenceclassification",
+        }
+        sample_models = {
+            k.lower(): v for k, v in sample.__dict__.items() if k.endswith("Sample")
+        }
+        samples = []
+
+        for i in data.to_dict(orient="records"):
+            if self.task in custom_names:
+                sample_name = custom_names[self.task] + "sample"
+            else:
+                sample_name = self.task.lower() + "sample"
+            samples.append(sample_models[sample_name](**i))
+        return samples
