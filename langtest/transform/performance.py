@@ -105,7 +105,12 @@ class Speed(BasePerformance):
     """
 
     alias_name = ["speed"]
-    supported_tasks = ["ner", "text-classification", "question-answering", "summarization"]
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+    ]
 
     @staticmethod
     def transform(params: dict, *args, **kwargs) -> List[Sample]:

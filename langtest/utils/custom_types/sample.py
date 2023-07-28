@@ -434,17 +434,22 @@ class BaseQASample(BaseModel):
                 "input_variables": ["context", "question"],
             },
         )
-        if (self.perturbed_context or self.perturbed_question):
+        if self.perturbed_context or self.perturbed_question:
             self.actual_results = model(
-                text={"context": self.perturbed_context, "question": self.perturbed_question},
+                text={
+                    "context": self.perturbed_context,
+                    "question": self.perturbed_question,
+                },
                 prompt={
                     "template": prompt_template,
                     "input_variables": ["context", "question"],
                 },
             )
 
-        tokens += len(self.original_question.split() + 
-                     (self.original_context.split() if self.original_context else ""))
+        tokens += len(
+            self.original_question.split()
+            + (self.original_context.split() if self.original_context else "")
+        )
         return tokens
 
 
