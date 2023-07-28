@@ -5,7 +5,7 @@ import json
 
 def pytest_sessionstart():
     """Called after the Session object has been created"""
-    os.environ["METAFLOW_DEFAULT_DATASTORE"] = "local"
+    os.environ["METAFLOW_PROFILE"] = "local"
 
 
 @pytest.fixture(scope="session", autouse=True)
