@@ -9,7 +9,6 @@ from typing import Dict, List
 import jsonlines
 import pandas as pd
 
-from langtest.utils.custom_types import sample
 from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
 from ..utils.custom_types import (
@@ -99,7 +98,11 @@ class DataFactory:
             file_path (str): Path to the dataset.
             task (str): Task to be evaluated.
         """
-        self._file_path = file_path
+        self._custom_label = file_path
+        if isinstance(self._custom_label, dict):
+            self._file_path = file_path["name"]
+        else:
+            self._file_path = file_path
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
             for cls in _IDataset.__subclasses__()
@@ -127,9 +130,14 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
-        self.init_cls = self._class_map[self.file_ext.replace(".", "")](
-            self._file_path, task=self.task, **self.kwargs
-        )
+        if isinstance(self._custom_label, dict):
+            self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+                self._custom_label, task=self.task, **self.kwargs
+            )
+        else:
+            self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+                self._file_path, task=self.task, **self.kwargs
+            )
         return self.init_cls.load_data()
 
     def export(self, data: List[Sample], output_path: str):
@@ -417,300 +425,6 @@ class JSONDataset(_IDataset):
                 path to save the data to
         """
         raise NotImplementedError()
-
-
-class CSVDataset(_IDataset):
-    """Class to handle CSV files dataset. Subclass of _IDataset."""
-
-    supported_tasks = ["ner", "text-classification"]
-    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
-
-    def __init__(self, file_path: str, task: str, **kwargs) -> None:
-        """Initializes CSVDataset object.
-
-        Args:
-            file_path (str):
-                Path to the data file.
-            task (str):
-                name of the task to perform
-        """
-        super().__init__()
-        self._file_path = file_path
-        self.task = task
-        self.delimiter = self._find_delimiter(file_path)
-
-        if task in self.COLUMN_NAMES:
-            self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
-        elif "is_import" not in kwargs:
-            raise ValueError(
-                f"Given task ({task}) is not matched with template. \
-                CSV dataset can ne only loaded for text-classification and ner!"
-            )
-        self.column_map = None
-        self.kwargs = kwargs
-
-    def load_raw_data(self, standardize_columns: bool = False) -> List[Dict]:
-        """Loads data from a csv file into raw lists of strings
-
-        Args:
-            standardize_columns (bool): whether to standardize column names
-
-        Returns:
-            List[Dict]:
-                parsed CSV file into list of dicts
-        """
-        df = pd.read_csv(self._file_path)
-
-        raw_data = []
-        if not standardize_columns:
-            data = df.to_dict(orient="records")
-            if self.task == "ner":
-                for row in data:
-                    raw_data.append(
-                        {
-                            key: (val if isinstance(val, list) else eval(val))
-                            for key, val in row.items()
-                        }
-                    )
-                return raw_data
-            return data
-
-        for _, row in df.iterrows():
-            if not self.column_map:
-                self.column_map = self._match_column_names(list(row.keys()))
-
-            label_col = (
-                self.column_map["ner"] if self.task == "ner" else self.column_map["label"]
-            )
-
-            text = row[self.column_map["text"]]
-            labels = row[label_col]
-
-            raw_data.append(
-                {
-                    "text": text
-                    if (isinstance(text, list) or self.task != "ner")
-                    else eval(text),
-                    "labels": labels
-                    if (isinstance(labels, list) or self.task != "ner")
-                    else eval(labels),
-                }
-            )
-
-        return raw_data
-
-    def load_data(self) -> List[Sample]:
-        """Loads data from a csv file.
-
-        Returns:
-            List[Sample]: List of formatted sentences from the dataset.
-        """
-        if self.kwargs.get("is_import", False):
-            kwargs = self.kwargs.copy()
-            kwargs.pop("is_import")
-            return self._import_data(self._file_path, **kwargs)
-
-        df = pd.read_csv(self._file_path)
-
-        if not self.column_map:
-            self.column_map = self._match_column_names(list(df.columns))
-
-        samples = []
-        for row_index, row in df.iterrows():
-            if self.task == "ner":
-                samples.append(self._row_to_ner_sample(row.to_dict(), row_index))
-
-            elif self.task == "text-classification":
-                samples.append(self._row_to_seq_classification_sample(row.to_dict()))
-
-        return samples
-
-    def export_data(self, data: List[Sample], output_path: str):
-        """Exports the data to the corresponding format and saves it to 'output_path'.
-
-        Args:
-            data (List[Sample]):
-                data to export
-            output_path (str):
-                path to save the data to
-        """
-        if self.task == "ner":
-            final_data = defaultdict(list)
-            for elt in data:
-                tokens, labels, testcase_tokens, testcase_labels = Formatter.process(
-                    elt, output_format="csv"
-                )
-                final_data["text"].append(tokens)
-                final_data["ner"].append(labels)
-                final_data["testcase_text"].append(testcase_tokens)
-                final_data["testcase_labels"].append(testcase_labels)
-
-            if (
-                sum([len(labels) for labels in final_data["testcase_labels"]])
-                * sum([len(tokens) for tokens in final_data["testcase_text"]])
-                == 0
-            ):
-                final_data.pop("testcase_text")
-                final_data.pop("testcase_labels")
-
-            pd.DataFrame(data=final_data).to_csv(output_path, index=False)
-
-        elif self.task == "text-classification":
-            rows = []
-            for s in data:
-                row = Formatter.process(s, output_format="csv")
-                rows.append(row)
-
-            df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES.keys()))
-            df.to_csv(output_path, index=False, encoding="utf-8")
-
-    @staticmethod
-    def _find_delimiter(file_path: str) -> property:
-        """Helper function in charge of finding the delimiter character in a csv file.
-
-        Args:
-            file_path (str):
-                location of the csv file to load
-
-        Returns:
-            property: delimiter
-        """
-        sniffer = csv.Sniffer()
-        with open(file_path, encoding="utf-8") as fp:
-            first_line = fp.readline()
-            delimiter = sniffer.sniff(first_line).delimiter
-        return delimiter
-
-    def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
-        """Convert a row from the dataset into a Sample for the NER task.
-
-        Args:
-            row (Dict[str, List[str]]):
-                single row of the dataset
-            sent_index (int): position of the sentence
-
-        Returns:
-            Sample:
-                row formatted into a Sample object
-        """
-        text_col = self.column_map["text"]
-
-        for key, value in row.items():
-            if isinstance(value, str):
-                row[key] = eval(value)
-
-        assert all(isinstance(value, list) for value in row.values()), ValueError(
-            f"Column ({sent_index}th) values should be list that contains tokens or labels. "
-            "Given CSV file has invalid values"
-        )
-        token_num = len(row[text_col])
-        assert all(len(value) == token_num for value in row.values()), ValueError(
-            f"Column ({sent_index}th) values should have same length with number of token in text, "
-            f"which is {token_num}"
-        )
-
-        original = " ".join(row[text_col])
-        ner_labels = list()
-        cursor = 0
-        for token_indx in range(len(row[text_col])):
-            token = row[text_col][token_indx]
-            ner_labels.append(
-                NERPrediction.from_span(
-                    entity=row[self.column_map["ner"]][token_indx],
-                    word=token,
-                    start=cursor,
-                    end=cursor + len(token),
-                    pos_tag=row[self.column_map["pos"]][token_indx]
-                    if row.get(self.column_map["pos"], None)
-                    else None,
-                    chunk_tag=row[self.column_map["chunk"]][token_indx]
-                    if row.get(self.column_map["chunk"], None)
-                    else None,
-                )
-            )
-            cursor += len(token) + 1  # +1 to account for the white space
-
-        return NERSample(
-            original=original, expected_results=NEROutput(predictions=ner_labels)
-        )
-
-    def _row_to_seq_classification_sample(self, row: Dict[str, str]) -> Sample:
-        """Convert a row from the dataset into a Sample for the text-classification task
-
-        Args:
-            row (Dict[str, str]):
-                single row of the dataset
-
-        Returns:
-            Sample:
-                row formatted into a Sample object
-        """
-        original = row[self.column_map["text"]]
-        #   label score should be 1 since it is ground truth, required for __eq__
-        label = SequenceLabel(label=row[self.column_map["label"]], score=1)
-
-        return SequenceClassificationSample(
-            original=original,
-            expected_results=SequenceClassificationOutput(predictions=[label]),
-        )
-
-    def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
-        """Helper function to map original column into standardized ones.
-
-        Args:
-            column_names (List[str]):
-                list of column names of the csv file
-
-        Returns:
-            Dict[str, str]:
-                mapping from the original column names into 'standardized' names
-        """
-        column_map = {k: None for k in self.COLUMN_NAMES}
-        for c in column_names:
-            for key, reference_columns in self.COLUMN_NAMES.items():
-                if c.lower() in reference_columns:
-                    column_map[key] = c
-
-        not_referenced_columns = {
-            k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None
-        }
-        if "text" in not_referenced_columns and (
-            "ner" in not_referenced_columns or "label" in not_referenced_columns
-        ):
-            raise OSError(
-                f"CSV file is invalid. CSV handler works with template column names!\n"
-                f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
-                f"You can use following namespaces:\n{not_referenced_columns}"
-            )
-        return column_map
-
-    def _import_data(self, file_name, **kwargs) -> List[Sample]:
-        """Helper function to import testcases from csv file after editing.
-
-        Args:
-            file_name (str):    path to the csv file
-            **kwargs:           additional arguments to pass to pandas.read_csv
-
-        Returns:
-            List[Sample]:       list of samples
-        """
-        data = pd.read_csv(file_name, **kwargs)
-        custom_names = {
-            "question-answering": "qa",
-            "text-classification": "sequenceclassification",
-        }
-        sample_models = {
-            k.lower(): v for k, v in sample.__dict__.items() if k.endswith("Sample")
-        }
-        samples = []
-
-        for i in data.to_dict(orient="records"):
-            if self.task in custom_names:
-                sample_name = custom_names[self.task] + "sample"
-            else:
-                sample_name = self.task.lower() + "sample"
-            samples.append(sample_models[sample_name](**i))
-        return samples
 
 
 class JSONLDataset(_IDataset):
@@ -1088,7 +802,10 @@ class HuggingFaceDataset(_IDataset):
         )
 
 
-class CustomCSVDataset(_IDataset):
+class CSVDataset(_IDataset):
+    supported_tasks = ["ner", "text-classification"]
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
+
     """
     A class to handle CSV files datasets. Subclass of _IDataset.
 
@@ -1118,13 +835,200 @@ class CustomCSVDataset(_IDataset):
         super().__init__()
         self._file_path = file_path
         self.task = task
-        self.delimiter = self._find_delimiter(file_path)
+        if type(file_path) == dict:
+            self.delimiter = self._find_delimiter(file_path["name"])
+        else:
+            if task in self.COLUMN_NAMES:
+                self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
+            elif "is_import" not in kwargs:
+                raise ValueError(
+                    f"Given task ({task}) is not matched with template. \
+                    CSV dataset can ne only loaded for text-classification and ner!"
+                )
+            self.delimiter = self._find_delimiter(file_path)
+
+        self.column_map = None
+        self.kwargs = kwargs
+
+    def load_raw_data(self, standardize_columns: bool = False) -> List[Dict]:
+        """Loads data from a csv file into raw lists of strings
+
+        Args:
+            standardize_columns (bool): whether to standardize column names
+
+        Returns:
+            List[Dict]:
+                parsed CSV file into list of dicts
+        """
+        df = pd.read_csv(self._file_path)
+
+        raw_data = []
+        if not standardize_columns:
+            data = df.to_dict(orient="records")
+            if self.task == "ner":
+                for row in data:
+                    raw_data.append(
+                        {
+                            key: (val if isinstance(val, list) else eval(val))
+                            for key, val in row.items()
+                        }
+                    )
+                return raw_data
+            return data
+
+        for _, row in df.iterrows():
+            if not self.column_map:
+                self.column_map = self._match_column_names(list(row.keys()))
+
+            label_col = (
+                self.column_map["ner"] if self.task == "ner" else self.column_map["label"]
+            )
+
+            text = row[self.column_map["text"]]
+            labels = row[label_col]
+
+            raw_data.append(
+                {
+                    "text": text
+                    if (isinstance(text, list) or self.task != "ner")
+                    else eval(text),
+                    "labels": labels
+                    if (isinstance(labels, list) or self.task != "ner")
+                    else eval(labels),
+                }
+            )
+
+        return raw_data
+
+    def load_data(self) -> List[Sample]:
+        if type(self._file_path) == dict:
+            dataset = pd.read_csv(self._file_path["name"])
+        else:
+            dataset = pd.read_csv(self._file_path)
+            if not self.column_map:
+                self.column_map = self._match_column_names(list(dataset.columns))
+
+        task_function = getattr(self, f"load_data_{self.task}", None)
+        task_functions = {
+            "text-classification": self.load_data_classification,
+            "ner": self.load_data_ner,
+            "summarization": self.load_data_summarization,
+            "question-answering": self.load_data_question_answering,
+        }
+
+        if self.task in task_functions:
+            task_function = task_functions[self.task]
+            return task_function(dataset)
+        else:
+            raise ValueError(f"Unsupported task: {self.task}")
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """Exports the data to the corresponding format and saves it to 'output_path'.
+
+        Args:
+            data (List[Sample]):
+                data to export
+            output_path (str):
+                path to save the data to
+        """
+        if self.task == "ner":
+            final_data = defaultdict(list)
+            for elt in data:
+                tokens, labels, testcase_tokens, testcase_labels = Formatter.process(
+                    elt, output_format="csv"
+                )
+                final_data["text"].append(tokens)
+                final_data["ner"].append(labels)
+                final_data["testcase_text"].append(testcase_tokens)
+                final_data["testcase_labels"].append(testcase_labels)
+
+            if (
+                sum([len(labels) for labels in final_data["testcase_labels"]])
+                * sum([len(tokens) for tokens in final_data["testcase_text"]])
+                == 0
+            ):
+                final_data.pop("testcase_text")
+                final_data.pop("testcase_labels")
+
+            pd.DataFrame(data=final_data).to_csv(output_path, index=False)
+
+        elif self.task == "text-classification":
+            rows = []
+            for s in data:
+                row = Formatter.process(s, output_format="csv")
+                rows.append(row)
+
+            df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES.keys()))
+            df.to_csv(output_path, index=False, encoding="utf-8")
+
+    def load_data_ner(
+        self,
+        dataset: pd.DataFrame,
+    ) -> List[Sample]:
+        samples = []
+        for row_index, row in dataset.iterrows():
+            samples.append(self._row_to_ner_sample(row.to_dict(), row_index))
+
+        return samples
+
+    def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
+        """Convert a row from the dataset into a Sample for the NER task.
+
+        Args:
+            row (Dict[str, List[str]]):
+                single row of the dataset
+            sent_index (int): position of the sentence
+
+        Returns:
+            Sample:
+                row formatted into a Sample object
+
+        """
+
+        text_col = self.column_map["text"]
+
+        for key, value in row.items():
+            if isinstance(value, str):
+                row[key] = eval(value)
+
+        assert all(isinstance(value, list) for value in row.values()), ValueError(
+            f"Column ({sent_index}th) values should be list that contains tokens or labels. "
+            "Given CSV file has invalid values"
+        )
+        token_num = len(row[text_col])
+        assert all(len(value) == token_num for value in row.values()), ValueError(
+            f"Column ({sent_index}th) values should have same length with number of token in text, "
+            f"which is {token_num}"
+        )
+
+        original = " ".join(row[text_col])
+        ner_labels = list()
+        cursor = 0
+        for token_indx in range(len(row[text_col])):
+            token = row[text_col][token_indx]
+            ner_labels.append(
+                NERPrediction.from_span(
+                    entity=row[self.column_map["ner"]][token_indx],
+                    word=token,
+                    start=cursor,
+                    end=cursor + len(token),
+                    pos_tag=row[self.column_map["pos"]][token_indx]
+                    if row.get(self.column_map["pos"], None)
+                    else None,
+                    chunk_tag=row[self.column_map["chunk"]][token_indx]
+                    if row.get(self.column_map["chunk"], None)
+                    else None,
+                )
+            )
+            cursor += len(token) + 1  # +1 to account for the white space
+
+        return NERSample(
+            original=original, expected_results=NEROutput(predictions=ner_labels)
+        )
 
     def load_data_classification(
         self,
         dataset: pd.DataFrame,
-        feature_column: str = "text",
-        target_column: str = "label",
     ) -> List[Sample]:
         """
         Load the specified split from the dataset library for classification task.
@@ -1144,11 +1048,14 @@ class CustomCSVDataset(_IDataset):
                 Loaded split as a list of Sample objects, where each Sample object consists
                 of an input text and its corresponding label.
         """
+        if type(self._file_path) == dict:
+            feature_column = (self._file_path.get("feature_column", "text"),)
+            target_column = (self._file_path.get("target_column", "label"),)
 
-        if feature_column and target_column:
-            dataset.rename(
-                columns={feature_column: "text", target_column: "label"}, inplace=True
-            )
+            if feature_column and target_column:
+                dataset.rename(
+                    columns={feature_column: "text", target_column: "label"}, inplace=True
+                )
 
         samples = [
             self._row_to_seq_classification_sample(row) for _, row in dataset.iterrows()
@@ -1158,8 +1065,6 @@ class CustomCSVDataset(_IDataset):
     def load_data_summarization(
         self,
         dataset: pd.DataFrame,
-        feature_column: str = "document",
-        target_column: str = "summary",
     ) -> List[Sample]:
         """
         Load the specified split from the dataset library for summarization task.
@@ -1179,12 +1084,13 @@ class CustomCSVDataset(_IDataset):
                 Loaded split as a list of Sample objects for summarization task, where each
                 Sample object contains a document and its corresponding summary.
         """
+        feature_column = self._file_path.get("feature_column", "document")
+        target_column = self._file_path.get("target_column", "summary")
 
-        if feature_column and target_column:
-            dataset.rename(
-                columns={feature_column: "document", target_column: "summary"},
-                inplace=True,
-            )
+        dataset.rename(
+            columns={feature_column: "document", target_column: "summary"}, inplace=True
+        )
+
         samples = [
             self._row_to_sample_summarization(row) for _, row in dataset.iterrows()
         ]
@@ -1193,8 +1099,6 @@ class CustomCSVDataset(_IDataset):
     def load_data_question_answering(
         self,
         dataset: pd.DataFrame,
-        feature_column: dict = {"passage": "passage", "question": "question"},
-        target_column: str = "answer",
     ) -> List[Sample]:
         """
         Load the specified split from the dataset library for question-answering task.
@@ -1214,19 +1118,23 @@ class CustomCSVDataset(_IDataset):
                 Loaded split as a list of QASample objects for question-answering task, where each
                 QASample object contains an original question, original context (passage), and the task name.
         """
+        feature_column = self._file_path.get(
+            "feature_column", {"passage": "passage", "question": "question"}
+        )
+        target_column = self._file_path.get("target_column", "answer")
+
         passage_column = feature_column.get("passage")
         question_column = feature_column.get("question")
 
-        if feature_column and target_column:
-            if passage_column in dataset.columns:
-                dataset.rename(columns={passage_column: "passage"}, inplace=True)
-            else:
-                dataset["passage"] = "-"
+        if passage_column in dataset.columns:
+            dataset.rename(columns={passage_column: "passage"}, inplace=True)
+        else:
+            dataset["passage"] = "-"
 
-            if question_column in dataset.columns:
-                dataset.rename(columns={question_column: "question"}, inplace=True)
+        if question_column in dataset.columns:
+            dataset.rename(columns={question_column: "question"}, inplace=True)
 
-            dataset.rename(columns={target_column: "answer"}, inplace=True)
+        dataset.rename(columns={target_column: "answer"}, inplace=True)
 
         samples = [
             self._row_to_sample_question_answering(row) for _, row in dataset.iterrows()
@@ -1254,62 +1162,6 @@ class CustomCSVDataset(_IDataset):
             task="question-answering",
         )
 
-    def load_raw_data(self) -> List[Dict]:
-        """Loads data from a csv file into raw lists of strings
-        Returns:
-            List[Dict]:
-                parsed CSV file into list of dicts
-        """
-        df = pd.read_csv(self._file_path)
-        return df.to_dict(orient="records")
-
-    def load_data(self, feature_column: str, target_column: str) -> List[Sample]:
-        """
-        Load the specified split from the dataset library based on the task.
-
-        Args:
-            feature_column (str):
-                Name of the column in the dataset containing the input text data for classification
-                or the input document data for summarization.
-            target_column (str):
-                Name of the column in the dataset containing the target labels for classification
-                or the target summaries for summarization.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects based on the specified task. For text
-                classification task, each Sample object consists of an input text and its
-                corresponding label. For summarization task, each Sample object contains a
-                document and its corresponding summary.
-
-        Raises:
-            ValueError:
-                If the specified task is not supported or recognized. Currently supported tasks
-                include "text-classification" and "summarization".
-        """
-        dataset = pd.read_csv(self._file_path, delimiter=self.delimiter)
-
-        if self.task == "text-classification":
-            return self.load_data_classification(
-                dataset,
-                feature_column,
-                target_column,
-            )
-        elif self.task == "summarization":
-            return self.load_data_summarization(
-                dataset,
-                feature_column,
-                target_column,
-            )
-        elif self.task == "question-answering":
-            return self.load_data_question_answering(
-                dataset,
-                feature_column,
-                target_column,
-            )
-        else:
-            raise ValueError(f"Unsupported task: {self.task}")
-
     def _row_to_seq_classification_sample(self, row: pd.Series) -> Sample:
         """
         Convert a row from the dataset into a Sample for the text-classification task
@@ -1322,8 +1174,13 @@ class CustomCSVDataset(_IDataset):
             Sample:
                 Row formatted into a Sample object
         """
-        original = row.loc["text"]
-        label = SequenceLabel(label=row.loc["label"], score=1)
+        if type(self._file_path) == dict:
+            original = row.loc["text"]
+            label = SequenceLabel(label=row.loc["label"], score=1)
+        else:
+            original = row[self.column_map["text"]]
+            #   label score should be 1 since it is ground truth, required for __eq__
+            label = SequenceLabel(label=row[self.column_map["label"]], score=1)
 
         return SequenceClassificationSample(
             original=original,
@@ -1349,26 +1206,6 @@ class CustomCSVDataset(_IDataset):
             original=original, expected_results=summary, task="summarization"
         )
 
-    def export_data(self, data: List[Sample], output_path: str):
-        """
-        Exports the data to the corresponding format and saves it to 'output_path'.
-
-        Args:
-            data (List[Sample]):
-                Data to export.
-            output_path (str):
-                Path to save the data to.
-        """
-        rows = []
-        for s in data:
-            row = Formatter.process(s, output_format="csv")
-            rows.append(row)
-
-        df = pd.DataFrame(
-            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
-        )
-        df.to_csv(output_path, index=False, encoding="utf-8")
-
     @staticmethod
     def _find_delimiter(file_path: str) -> property:
         """
@@ -1384,3 +1221,33 @@ class CustomCSVDataset(_IDataset):
             first_line = fp.readline()
             delimiter = sniffer.sniff(first_line).delimiter
         return delimiter
+
+    def _match_column_names(self, column_names: List[str]) -> Dict[str, str]:
+        """Helper function to map original column into standardized ones.
+
+        Args:
+            column_names (List[str]):
+                list of column names of the csv file
+
+        Returns:
+            Dict[str, str]:
+                mapping from the original column names into 'standardized' names
+        """
+        column_map = {k: None for k in self.COLUMN_NAMES}
+        for c in column_names:
+            for key, reference_columns in self.COLUMN_NAMES.items():
+                if c.lower() in reference_columns:
+                    column_map[key] = c
+
+        not_referenced_columns = {
+            k: self.COLUMN_NAMES[k] for k, v in column_map.items() if v is None
+        }
+        if "text" in not_referenced_columns and (
+            "ner" in not_referenced_columns or "label" in not_referenced_columns
+        ):
+            raise OSError(
+                f"CSV file is invalid. CSV handler works with template column names!\n"
+                f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
+                f"You can use following namespaces:\n{not_referenced_columns}"
+            )
+        return column_map
