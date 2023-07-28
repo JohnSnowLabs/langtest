@@ -118,9 +118,6 @@ class Speed(BasePerformance):
             Sample: The transformed data based on the implemented tests measure.
 
         """
-        speed_samples = []
-        for test_name, value in params.items():
-            sample = SpeedTestSample()
-            sample.expected_results = value
-            speed_samples.append(sample)
-        return speed_samples
+        sample = SpeedTestSample()
+        sample.expected_results = "{min_pass_rate} {unit}".format(**params)
+        return [sample]
