@@ -2,6 +2,11 @@ import pytest
 import json
 
 
+def pytest_sessionstart():
+    """Called after the Session object has been created"""
+    os.environ["METAFLOW_DEFAULT_DATASTORE"] = "local"
+
+
 @pytest.fixture(scope="session", autouse=True)
 def create_summarization_data():
     """Creates fake data files for summarization task"""
