@@ -421,11 +421,12 @@ class BaseQASample(BaseModel):
             self.category = func.__module__.split(".")[-1]
 
     def run(self, model, **kwargs):
+        """"""
+        tokens = 1
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )
-
         self.expected_results = model(
             text={"context": self.original_context, "question": self.original_question},
             prompt={
@@ -433,15 +434,18 @@ class BaseQASample(BaseModel):
                 "input_variables": ["context", "question"],
             },
         )
-        self.actual_results = model(
-            text={"context": self.perturbed_context, "question": self.perturbed_question},
-            prompt={
-                "template": prompt_template,
-                "input_variables": ["context", "question"],
-            },
-        )
+        if (self.perturbed_context or self.perturbed_question):
+            self.actual_results = model(
+                text={"context": self.perturbed_context, "question": self.perturbed_question},
+                prompt={
+                    "template": prompt_template,
+                    "input_variables": ["context", "question"],
+                },
+            )
 
-        return True
+        tokens += len(self.original_question.split() + 
+                     (self.original_context.split() if self.original_context else ""))
+        return tokens
 
 
 class QASample(BaseQASample):
@@ -782,8 +786,6 @@ class SpeedTestSample(BaseModel):
 
     category: str = "performance"
     test_type: str = "speed"
-    original: str = "-"
-    test_case: str = "-"
     expected_results: Result = None
     actual_results: Result = None
 
@@ -832,8 +834,6 @@ class SpeedTestSample(BaseModel):
         result = {
             "category": self.category,
             "test_type": self.test_type,
-            "original": self.original,
-            "test_case": self.test_case,
         }
 
         if self.actual_results is not None:

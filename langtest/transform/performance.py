@@ -57,6 +57,7 @@ class BasePerformance(ABC):
             if hasattr(sample, "run"):
                 sample_status = sample.run(model, **kwargs)
                 if sample_status:
+                    BasePerformance.TOKENS += sample_status
                     sample.state = "done"
             else:
                 BasePerformance.TOKENS += len(sample.original.split())
@@ -104,7 +105,7 @@ class Speed(BasePerformance):
     """
 
     alias_name = ["speed"]
-    supported_tasks = ["ner", "text-classification"]
+    supported_tasks = ["ner", "text-classification", "question-answering", "summarization"]
 
     @staticmethod
     def transform(params: dict, *args, **kwargs) -> List[Sample]:
