@@ -27,7 +27,7 @@ randomize_age:
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 - **random_amount (int):** Range of random value to be added/substracted from existing age value.
 - **prob (float):** Controls the proportion of statements to be changed.
-- **count (float):** Number of variations of sentence to be constructed.
+- **count (int):** Number of variations of sentence to be constructed.
 
 </div><div class="h3-box" markdown="1">
 
