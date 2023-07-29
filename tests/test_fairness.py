@@ -10,11 +10,21 @@ from langtest.transform.fairness import (
 from langtest.utils.custom_types import SequenceLabel, Span
 from langtest.utils.custom_types.output import (
     NEROutput,
-    MaxScoreSample,
-    MinScoreSample,
     NERPrediction,
     SequenceClassificationOutput,
+    TranslationOutput,
+)
+from langtest.utils.custom_types.sample import (
+    MinScoreQASample,
+    MaxScoreQASample,
+    MaxScoreSample,
+    MinScoreSample,
+    NERSample,
+    QASample,
+    SequenceClassificationSample,
     SummarizationSample,
+    ToxicitySample,
+    TranslationSample,
 )
 
 
