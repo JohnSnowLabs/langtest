@@ -4,14 +4,17 @@ from langtest.transform.fairness import (
     BaseFairness,
     MinGenderF1Score,
     MaxGenderF1Score,
+    MinGenderRougeScore,
+    MaxGenderRougeScore,
 )
 from langtest.utils.custom_types import SequenceLabel, Span
 from langtest.utils.custom_types.output import (
+    NEROutput,
     MaxScoreSample,
     MinScoreSample,
-    NEROutput,
     NERPrediction,
     SequenceClassificationOutput,
+    SummarizationSample,
 )
 
 
@@ -31,6 +34,14 @@ class Testfairness:
     fairness_config = {
         "min_gender_f1_score": {"min_score": 0.66},
         "max_gender_f1_score": {"max_score": 0.60},
+        "min_gender_rouge1_score": {"min_score": 0.66},
+        "min_gender_rouge2_score": {"min_score": 0.60},
+        "min_gender_rougeL_score": {"min_score": 0.66},
+        "min_gender_rougeLsum_score": {"min_score": 0.66},
+        "max_gender_rouge1_score": {"max_score": 0.66},
+        "max_gender_rouge2_score": {"max_score": 0.60},
+        "max_gender_rougeL_score": {"max_score": 0.66},
+        "max_gender_rougeLsum_score": {"max_score": 0.66},
     }
 
     @pytest.fixture
@@ -66,6 +77,30 @@ class Testfairness:
                             )
                         ]
                     ),
+                ),
+                NERSample(
+                    original="I do not love KFC",
+                    expected_results=NEROutput(
+                        predictions=[
+                            NERPrediction(
+                                entity="PROD", span=Span(start=14, end=17, word="KFC")
+                            )
+                        ]
+                    ),
+                ),
+            ],
+            "question-answering": [
+                QASample(
+                    original_question="What is John Snow Labs?",
+                    original_context="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
+                    expected_results="A healthcare company specializing in accelerating progress in data science. ",
+                )
+            ],
+            "summarization": [
+                SummarizationSample(
+                    original="John Snow Labs is a healthcare company specializing in accelerating progress in data "
+                    "science.",
+                    expected_results="JSL is a data science company",
                 )
             ],
         }
@@ -75,6 +110,8 @@ class Testfairness:
         [
             MinGenderF1Score,
             MaxGenderF1Score,
+            MinGenderRougeScore,
+            MaxGenderRougeScore,
         ],
     )
     def test_transform(self, fairness: BaseFairness, sample_data) -> None:
