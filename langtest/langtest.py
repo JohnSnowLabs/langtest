@@ -605,7 +605,7 @@ class Harness:
                 
                     import datetime
 
-                    experiment_name = self._actual_model
+                    experiment_name = k 
 
                     # Get the experiment
                     experiment = mlflow.get_experiment_by_name(experiment_name)
@@ -623,8 +623,6 @@ class Harness:
                     df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_rate", float(row['pass_rate'].rstrip('%')) / 100), axis=1)
                     df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_min_pass_rate", float(row['minimum_pass_rate'].rstrip('%')) / 100), axis=1)
                     df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_status", 1 if row['pass'] else 0), axis=1)
-                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_count", row['pass_count']), axis=1)
-                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_fail_count", row['fail_count']), axis=1)
                     mlflow.end_run()
 
                 if return_runtime:
