@@ -598,7 +598,11 @@ class Harness:
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
                 if mlflow_tracking:
-                    import mlflow
+                    try:
+                        import mlflow
+                    except ModuleNotFoundError:
+                        print("mlflow package not found. Install mlflow first")
+                
                     import datetime
 
                     experiment_name = self._actual_model
