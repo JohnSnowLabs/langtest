@@ -842,9 +842,9 @@ class FairnessTestFactory(ITests):
                 lambda x: x.split("-")[-1] if isinstance(x, str) else x
             )
             y_true = y_true.dropna()
-            params["test_name"] = test_name
+
             transformed_samples = self.supported_tests[test_name].transform(
-                y_true, params
+                test_name, y_true, params
             )
             end_time = time.time_ns()
             for sample in transformed_samples:
