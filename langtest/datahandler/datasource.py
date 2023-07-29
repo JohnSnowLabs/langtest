@@ -392,6 +392,42 @@ class ConllDataset(_IDataset):
             fwriter.write(bytes(otext, encoding="utf-8"))
 
 
+class JSONDataset(_IDataset):
+    """Class to handle JSON dataset files. Subclass of _IDataset."""
+
+    def __init__(self, file_path: str):
+        """Initializes JSONDataset object.
+
+        Args:
+            file_path (str): Path to the data file.
+        """
+        super().__init__()
+        self._file_path = file_path
+
+    def load_raw_data(self):
+        """Loads data into a raw list"""
+        raise NotImplementedError()
+
+    def load_data(self) -> List[Sample]:
+        """Loads data into a list of Sample
+
+        Returns:
+            List[Sample]: formatted samples
+        """
+        raise NotImplementedError()
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """Exports the data to the corresponding format and saves it to 'output_path'.
+
+        Args:
+            data (List[Sample]):
+                data to export
+            output_path (str):
+                path to save the data to
+        """
+        raise NotImplementedError()
+
+
 class CSVDataset(_IDataset):
     supported_tasks = [
         "ner",
@@ -922,42 +958,6 @@ class CSVDataset(_IDataset):
                 sample_name = self.task.lower() + "sample"
             samples.append(sample_models[sample_name](**i))
         return samples
-
-
-class JSONDataset(_IDataset):
-    """Class to handle JSON dataset files. Subclass of _IDataset."""
-
-    def __init__(self, file_path: str):
-        """Initializes JSONDataset object.
-
-        Args:
-            file_path (str): Path to the data file.
-        """
-        super().__init__()
-        self._file_path = file_path
-
-    def load_raw_data(self):
-        """Loads data into a raw list"""
-        raise NotImplementedError()
-
-    def load_data(self) -> List[Sample]:
-        """Loads data into a list of Sample
-
-        Returns:
-            List[Sample]: formatted samples
-        """
-        raise NotImplementedError()
-
-    def export_data(self, data: List[Sample], output_path: str):
-        """Exports the data to the corresponding format and saves it to 'output_path'.
-
-        Args:
-            data (List[Sample]):
-                data to export
-            output_path (str):
-                path to save the data to
-        """
-        raise NotImplementedError()
 
 
 class JSONLDataset(_IDataset):
