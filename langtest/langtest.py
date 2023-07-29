@@ -487,7 +487,7 @@ class Harness:
 
             self.df_report = df_report.fillna("-")
             
-            if mlflow_tracking :
+            if mlflow_tracking:
                 try:
                     import mlflow
                 except ModuleNotFoundError:
@@ -495,7 +495,7 @@ class Harness:
                 
                 import datetime
 
-                experiment_name = self._actual_model
+                experiment_name = self._actual_model if isinstance(self._actual_model, str) else self._actual_model.__class__.__module__
 
                 # Get the experiment
                 experiment = mlflow.get_experiment_by_name(experiment_name)
