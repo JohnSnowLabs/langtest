@@ -408,6 +408,7 @@ class Harness:
         unit: str = "ms",
         format: str = "dataframe",
         save_dir: str = None,
+        mlflow_tracking: bool = False
     ) -> pd.DataFrame:
         """Generate a report of the test results.
 
@@ -485,6 +486,33 @@ class Harness:
             df_report = df_report.reset_index(drop=True)
 
             self.df_report = df_report.fillna("-")
+            
+            if mlflow_tracking :
+                import mlflow
+                import datetime
+
+                experiment_name = self._actual_model
+
+                # Get the experiment
+                experiment = mlflow.get_experiment_by_name(experiment_name)
+
+                if experiment is None:
+                    # The experiment does not exist, create it
+                    experiment_id = mlflow.create_experiment(experiment_name)
+                else:
+                    # The experiment exists, get its ID
+                    experiment_id = experiment.experiment_id
+
+                current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                mlflow.start_run(run_name=self.task + "_testing_" + current_datetime, experiment_id=experiment_id)
+                
+                df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_rate", float(row['pass_rate'].rstrip('%')) / 100), axis=1)
+                df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_min_pass_rate", float(row['minimum_pass_rate'].rstrip('%')) / 100), axis=1)
+                df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_status", 1 if row['pass'] else 0), axis=1)
+                df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_count", row['pass_count']), axis=1)
+                df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_fail_count", row['fail_count']), axis=1)
+                mlflow.end_run()
+
             if return_runtime:
                 self.df_report[f"time_elapsed ({unit})"] = self.df_report[
                     "test_type"
@@ -565,6 +593,31 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
+                if mlflow_tracking:
+                    import mlflow
+                    import datetime
+
+                    experiment_name = self._actual_model
+
+                    # Get the experiment
+                    experiment = mlflow.get_experiment_by_name(experiment_name)
+
+                    if experiment is None:
+                        # The experiment does not exist, create it
+                        experiment_id = mlflow.create_experiment(experiment_name)
+                    else:
+                        # The experiment exists, get its ID
+                        experiment_id = experiment.experiment_id
+
+                    current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    mlflow.start_run(run_name=self.task + "_testing_" + current_datetime, experiment_id=experiment_id)
+
+                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_rate", float(row['pass_rate'].rstrip('%')) / 100), axis=1)
+                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_min_pass_rate", float(row['minimum_pass_rate'].rstrip('%')) / 100), axis=1)
+                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_status", 1 if row['pass'] else 0), axis=1)
+                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_pass_count", row['pass_count']), axis=1)
+                    df_report.apply(lambda row: mlflow.log_metric(row['test_type'] + "_fail_count", row['fail_count']), axis=1)
+                    mlflow.end_run()
 
                 if return_runtime:
                     if k not in time_elapsed:
@@ -582,6 +635,8 @@ class Harness:
             df_final_report["pass_rate"] = (
                 df_final_report["pass_rate"].str.rstrip("%").astype("float") / 100.0
             )
+            
+            
 
             pivot_df = df_final_report.pivot_table(
                 index="model_name",
