@@ -282,7 +282,7 @@ class ConllDataset(_IDataset):
             ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = re.split(r"\n\n|\n \n|\n\s+\n", doc.strip())
+                sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
 
                 if sentences == [""]:
                     continue
@@ -320,7 +320,7 @@ class ConllDataset(_IDataset):
             ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = re.split(r"\n\n|\n \n|\n\s+\n", doc.strip())
+                sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
 
                 if sentences == [""]:
                     continue
