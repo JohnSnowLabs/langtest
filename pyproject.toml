@@ -62,6 +62,7 @@ pyyaml = "^6.0"
 tqdm = "^4.65.0"
 cohere = { version = "^4.10.0", optional = true}
 ai21 = {version = "^1.1.0", optional = true}
+mlflow = {version = "^2.5.0", optional = true}
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch"]
