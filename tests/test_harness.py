@@ -251,13 +251,13 @@ class HarnessTestCase(unittest.TestCase):
 
     def test_ner_csv_custom_columns(self):
         """Test loading CSV data with custom column names for text classification."""
-        save_dir = "/tmp/saved_csv_data_text_classification_harness_test"
+        save_dir = "/tmp/saved_csv_data_ner_harness_test"
         tc_harness = Harness(
             task="ner",
             hub="huggingface",
             model="dslim/bert-base-NER",
             data={
-                "name": r"D:\full_stack\repo\1.2.0\csv\langtest\tests\fixtures\tner.csv",
+                "name": "tests/fixtures/tner.csv",
                 "feature_column": "tokens",
                 "target_column": "ner_tags",
             },
