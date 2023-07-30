@@ -74,6 +74,7 @@ openai = ["openai", "langchain"]
 cohere = ["cohere", "langchain"]
 ai21 = ["ai21", "langchain"]
 huggingface_hub = ["huggingface_hub", "langchain"]
+mlflow = ["mlflow"]
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"

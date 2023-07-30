@@ -4486,6 +4486,7 @@ evaluate = ["evaluate", "rouge-score"]
 huggingface-hub = ["huggingface_hub", "langchain"]
 johnsnowlabs = ["johnsnowlabs"]
 langchain = ["langchain"]
+mlflow = ["mlflow"]
 openai = ["langchain", "openai"]
 spacy = ["spacy"]
 transformers = ["torch", "transformers"]
@@ -4493,4 +4494,4 @@ transformers = ["torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "880528dce8225fdfad3b7d4fefc607dc4a40c688ee630c5cc355a55499618ec4"
+content-hash = "018ac793be687a87f6c82d7ebb6eb78893b9d3d4cb8a5cbd1b4f5d96f93e399b"
