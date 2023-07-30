@@ -139,16 +139,13 @@ class Testfairness:
             AssertionError: If the transformation or the final result is invalid.
         """
         for alias in fairness.alias_name:
-            print(alias)
             for task in fairness.supported_tasks:
                 transform_results = fairness.transform(
                     alias, sample_data[task], self.fairness_config[alias]
                 )
-                print(transform_results)
                 assert isinstance(transform_results, list)
 
                 for _, result in zip(sample_data, transform_results):
-                    print(transform_results)
                     assert isinstance(result, MaxScoreSample) or isinstance(
                         result, MinScoreSample
                     )
