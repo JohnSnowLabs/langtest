@@ -648,6 +648,24 @@ class CSVDataset(_IDataset):
             List[Sample]: Preprocessed data samples for NER task.
 
         """
+
+        if type(self._file_path) == dict:
+            feature_column = self._file_path.get("feature_column", "text")
+            target_column = self._file_path.get("target_column", "ner")
+
+            if (
+                feature_column not in dataset.columns
+                or target_column not in dataset.columns
+            ):
+                raise ValueError(
+                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                )
+
+            dataset.rename(
+                columns={feature_column: "text", target_column: "ner"},
+                inplace=True,
+            )
+
         samples = []
         for row_index, row in dataset.iterrows():
             samples.append(self._row_to_ner_sample(row.to_dict(), row_index))
@@ -677,8 +695,16 @@ class CSVDataset(_IDataset):
                 of an input text and its corresponding label.
         """
         if type(self._file_path) == dict:
-            feature_column = (self._file_path.get("feature_column", "text"),)
-            target_column = (self._file_path.get("target_column", "label"),)
+            feature_column = self._file_path.get("feature_column", "text")
+            target_column = self._file_path.get("target_column", "label")
+
+            if (
+                feature_column not in dataset.columns
+                or target_column not in dataset.columns
+            ):
+                raise ValueError(
+                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                )
 
             if feature_column and target_column:
                 dataset.rename(
@@ -715,6 +741,14 @@ class CSVDataset(_IDataset):
         if type(self._file_path) == dict:
             feature_column = self._file_path.get("feature_column", "document")
             target_column = self._file_path.get("target_column", "summary")
+
+            if (
+                feature_column not in dataset.columns
+                or target_column not in dataset.columns
+            ):
+                raise ValueError(
+                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                )
 
             dataset.rename(
                 columns={feature_column: "document", target_column: "summary"},
@@ -754,10 +788,27 @@ class CSVDataset(_IDataset):
             )
             target_column = self._file_path.get("target_column", "answer")
 
-            passage_column = feature_column.get("passage")
+            passage_column = feature_column.get("passage", None)
             question_column = feature_column.get("question")
 
+            dataset_columns = set(dataset.columns)
+            if (
+                "question" not in feature_column
+                or feature_column["question"] not in dataset_columns
+            ):
+                raise ValueError(
+                    f"'feature_column' '{feature_column['question']}' not found in the dataset."
+                )
+            if "answer" not in target_column or target_column not in dataset_columns:
+                raise ValueError(
+                    f"'target_column' '{target_column}' not found in the dataset."
+                )
+
             if passage_column in dataset.columns:
+                if passage_column not in dataset_columns:
+                    raise ValueError(
+                        f"'feature_column' '{passage_column}' not found in the dataset."
+                    )
                 dataset.rename(columns={passage_column: "passage"}, inplace=True)
             else:
                 dataset["passage"] = "-"
@@ -786,7 +837,16 @@ class CSVDataset(_IDataset):
 
         """
 
-        text_col = self.column_map["text"]
+        if type(self._file_path) == dict:
+            text_col = "text"
+            ner_col = "ner"
+            pos_col = "pos"
+            chunk_col = "chunk"
+        else:
+            text_col = self.column_map["text"]
+            ner_col = self.column_map["ner"]
+            pos_col = self.column_map["text"]
+            chunk_col = self.column_map["text"]
 
         for key, value in row.items():
             if isinstance(value, str):
@@ -809,15 +869,13 @@ class CSVDataset(_IDataset):
             token = row[text_col][token_indx]
             ner_labels.append(
                 NERPrediction.from_span(
-                    entity=row[self.column_map["ner"]][token_indx],
+                    entity=row[ner_col][token_indx],
                     word=token,
                     start=cursor,
                     end=cursor + len(token),
-                    pos_tag=row[self.column_map["pos"]][token_indx]
-                    if row.get(self.column_map["pos"], None)
-                    else None,
-                    chunk_tag=row[self.column_map["chunk"]][token_indx]
-                    if row.get(self.column_map["chunk"], None)
+                    pos_tag=row[pos_col][token_indx] if row.get(pos_col, None) else None,
+                    chunk_tag=row[chunk_col][token_indx]
+                    if row.get(chunk_col, None)
                     else None,
                 )
             )
