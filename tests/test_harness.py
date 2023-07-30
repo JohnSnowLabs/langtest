@@ -224,7 +224,7 @@ class HarnessTestCase(unittest.TestCase):
 
     def test_text_classification_csv_custom_columns(self):
         """Test loading CSV data with custom column names for text classification."""
-        save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
+        save_dir = "/tmp/saved_csv_data_text_classification_harness_test"
         tc_harness = Harness(
             task="text-classification",
             hub="huggingface",
@@ -243,6 +243,33 @@ class HarnessTestCase(unittest.TestCase):
             save_dir=save_dir,
             task="text-classification",
             model="lvwerra/distilbert-imdb",
+            hub="huggingface",
+        )
+        self.assertEqual(tc_harness._config, loaded_tc_harness._config)
+        self.assertEqual(tc_harness.data, loaded_tc_harness.data)
+        self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+
+    def test_ner_csv_custom_columns(self):
+        """Test loading CSV data with custom column names for text classification."""
+        save_dir = "/tmp/saved_csv_data_text_classification_harness_test"
+        tc_harness = Harness(
+            task="ner",
+            hub="huggingface",
+            model="dslim/bert-base-NER",
+            data={
+                "name": r"D:\full_stack\repo\1.2.0\csv\langtest\tests\fixtures\tner.csv",
+                "feature_column": "tokens",
+                "target_column": "ner_tags",
+            },
+        )
+        tc_harness.data = tc_harness.data[:10]
+        tc_harness.generate()
+        tc_harness.save(save_dir)
+
+        loaded_tc_harness = Harness.load(
+            save_dir=save_dir,
+            task="ner",
+            model="dslim/bert-base-NER",
             hub="huggingface",
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
