@@ -73,7 +73,12 @@ class TestNERDataset:
         [
             (
                 HuggingFaceDataset(dataset_name="wikiann", task="ner"),
-                {"subset": "fo", "feature_column": "tokens", "target_column": "ner_tags", "split": "test"},
+                {
+                    "subset": "fo",
+                    "feature_column": "tokens",
+                    "target_column": "ner_tags",
+                    "split": "test",
+                },
             ),
             (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
             (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
