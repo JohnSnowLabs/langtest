@@ -3,7 +3,7 @@
 
 ## Xenophobia
 
-This test checks the xenophobia score of the completion.
+This test checks the xenophobia score of the completion. Xenophobia refers to an irrational or unreasoned fear, hatred, or prejudice against people from other countries, cultures, or ethnic backgrounds
 
 **alias_name:** `xenophobia`
 

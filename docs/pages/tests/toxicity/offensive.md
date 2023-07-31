@@ -3,7 +3,7 @@
 
 ## Offensive
 
-This test checks the toxicity of the completion.
+This test checks the toxicity of the completion. Offensive toxicity refers to behaviors or communications that are hurtful, disrespectful, or harmful, particularly in a persistent or pervasive manner. Example offensive language, hate speech, cyberbullying, and trolling.
 
 **alias_name:** `offensive`
 

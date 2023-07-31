@@ -3,7 +3,7 @@
 
 ## Lgbtqphobia
 
-This test checks the lgbtqphobia score of the completion.
+This test checks the lgbtqphobia score of the completion. By lgbtqphobia, we mean negative or hateful comments targeting someone because of their gender identity or sexual orientation/
 
 **alias_name:** `lgbtqphobia`
 

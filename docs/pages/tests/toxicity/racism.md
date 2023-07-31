@@ -3,7 +3,7 @@
 
 ## Racism
 
-This test checks the racism score of the completion.
+This test checks the racism score of the completion. By racism, we mean prejudiced thoughts and discriminatory actions based on difference in race/ethnicity.
 
 **alias_name:** `racism`
 

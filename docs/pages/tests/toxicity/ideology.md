@@ -3,7 +3,7 @@
 
 ## Ideology
 
-This test checks the ideologic toxicity score of the completion.
+This test checks the ideological toxicity score of a given text. By ideological toxicity, we refer to demeaning speech targeted at individuals based on their political, philosophical, or social beliefs. Examples of this may include hate speech rooted in a person's ideologies, such as feminism, left-wing politics, or right-wing politics
 
 **alias_name:** `ideology`
 
