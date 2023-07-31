@@ -4,7 +4,7 @@ from collections import defaultdict
 import os
 import re
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import jsonlines
 import pandas as pd
@@ -888,12 +888,16 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data_ner(
         self,
-        split: str,
+        feature_column: str = None,
+        target_column: str = None,
+        split: str = None,
         subset: str = None,
-        feature_column: str = "tokens",
-        target_column: str = "ner_tags",
     ) -> List[Sample]:
         """Load the specified split from the given ner dataset."""
+        feature_column = "text" if feature_column is None else feature_column
+        target_column = "label" if target_column is None else target_column
+        split = "test" if split is None else split
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -914,9 +918,9 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data_classification(
         self,
-        feature_column: str = "text",
-        target_column: str = "label",
-        split: str = "test",
+        feature_column: str = None,
+        target_column: str = None,
+        split: str = None,
         subset: str = None,
     ) -> List[Sample]:
         """Load the specified split from the dataset library.
@@ -935,6 +939,10 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
+        feature_column = "text" if feature_column is None else feature_column
+        target_column = "label" if target_column is None else target_column
+        split = "test" if split is None else split
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -952,9 +960,9 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data_summarization(
         self,
-        feature_column: str = "document",
-        target_column: str = "summary",
-        split: str = "test",
+        feature_column: str,
+        target_column: str,
+        split: str,
         subset: str = None,
     ) -> List[Sample]:
         """Load the specified split from the dataset for summarization task.
@@ -973,6 +981,10 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects for summarization task.
         """
+        feature_column = "document" if feature_column is None else feature_column
+        target_column = "summary" if target_column is None else target_column
+        split = "test" if split is None else split
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -1006,10 +1018,10 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data(
         self,
-        feature_column: str = "text",
-        target_column: str = "label",
-        split: str = "test",
-        subset: str = None,
+        feature_column: Optional[str] = None,
+        target_column: Optional[str] = None,
+        split: Optional[str] = None,
+        subset: Optional[str] = None,
     ) -> List[Sample]:
         """Load the specified data based on the task.
 
@@ -1040,9 +1052,9 @@ class HuggingFaceDataset(_IDataset):
                 feature_column, target_column, split, subset
             )
         elif self.task == "ner":
-            return self.load_data_ner(split, subset, feature_column, target_column)
+            return self.load_data_ner(feature_column, target_column, split, subset)
         else:
-            raise ValueError(f"Unsupported task: {self.task}")
+            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
 
     @staticmethod
     def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:

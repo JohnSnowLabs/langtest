@@ -73,7 +73,7 @@ class TestNERDataset:
         [
             (
                 HuggingFaceDataset(dataset_name="wikiann", task="ner"),
-                {"subset": "fo", "feature_column": "tokens", "target_column": "ner_tags"},
+                {"subset": "fo", "feature_column": "tokens", "target_column": "ner_tags", "split": "test"},
             ),
             (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
             (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
@@ -169,7 +169,7 @@ class TestTextClassificationDataset:
     def test_load_data(self, dataset, feature_col, target_col):
         """"""
         if isinstance(dataset, HuggingFaceDataset):
-            samples = dataset.load_data(split="test[:30]")
+            samples = dataset.load_data(split="test")
         else:
             samples = dataset.load_data()
 
