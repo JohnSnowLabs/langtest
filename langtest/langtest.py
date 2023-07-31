@@ -9,7 +9,6 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
-from langtest.utils.custom_types.sample import RuntimeSample
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
@@ -234,7 +233,6 @@ class Harness:
 
         self._testcases = None
         self._generated_results = None
-        self._runtime = RuntimeSample()
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -322,16 +320,14 @@ class Harness:
                 ]
             else:
                 self._testcases = {}
-                self._runtime.transform_time = {}
                 for k, v in self.model.items():
                     _ = [
                         setattr(sample, "expected_results", v(sample.original))
                         for sample in m_data
                     ]
-                    (
-                        self._testcases[k],
-                        self._runtime.transform_time[k],
-                    ) = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    (self._testcases[k]) = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data
+                    )
 
                 return self
 
@@ -344,10 +340,7 @@ class Harness:
                     )
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != "bias"}
-                        (
-                            other_testcases,
-                            self._runtime.transform_time,
-                        ) = TestFactory.transform(
+                        (other_testcases) = TestFactory.transform(
                             self.task, self.data, tests, m_data=m_data
                         )
                         self._testcases.extend(other_testcases)
@@ -358,13 +351,13 @@ class Harness:
                     )
 
             else:
-                self._testcases, self._runtime.transform_time = TestFactory.transform(
+                self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
 
                 return self
 
-        self._testcases, self._runtime.transform_time = TestFactory.transform(
+        self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
         )
         return self
@@ -381,18 +374,18 @@ class Harness:
                 "calling the `.run()` method."
             )
         if not isinstance(self._testcases, dict):
-            self._generated_results, self._runtime.run_time = TestFactory.run(
+            self._generated_results = TestFactory.run(
                 self._testcases,
                 self.model,
                 is_default=self.is_default,
                 raw_data=self.data,
                 **self._config.get("model_parameters", {}),
             )
+
         else:
             self._generated_results = {}
-            self._runtime.run_time = {}
             for k, v in self.model.items():
-                self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
+                self._generated_results[k] = TestFactory.run(
                     self._testcases[k],
                     v,
                     is_default=self.is_default,
@@ -404,8 +397,6 @@ class Harness:
 
     def report(
         self,
-        return_runtime: bool = False,
-        unit: str = "ms",
         format: str = "dataframe",
         save_dir: str = None,
         mlflow_tracking: bool = False,
@@ -413,8 +404,6 @@ class Harness:
         """Generate a report of the test results.
 
         Args:
-            return_runtime (bool): whether to return runtime
-            unit (str): time unit to use
             format (str): format in which to save the report
             save_dir (str): name of the directory to save the file
         Returns:
@@ -459,7 +448,7 @@ class Harness:
                     min_pass_rate = self.min_pass_dict.get(
                         test_type, multiple_perturbations_min_pass_rate
                     )
-                if summary[test_type]["category"] == "Accuracy":
+                if summary[test_type]["category"] in ["Accuracy", "performance"]:
                     min_pass_rate = 1
 
                 report[test_type] = {
@@ -551,11 +540,6 @@ class Harness:
                 )
                 mlflow.end_run()
 
-            if return_runtime:
-                self.df_report[f"time_elapsed ({unit})"] = self.df_report[
-                    "test_type"
-                ].apply(lambda x: self._runtime.total_time(unit)[x])
-
             if format == "dataframe":
                 return self.df_report
             elif format == "dict":
@@ -595,7 +579,6 @@ class Harness:
 
         else:
             df_final_report = pd.DataFrame()
-            time_elapsed = {}
             for k, v in self.model.items():
                 for sample in self._generated_results[k]:
                     summary[sample.test_type]["category"] = sample.category
@@ -609,7 +592,7 @@ class Harness:
                         test_type, self.default_min_pass_dict
                     )
 
-                    if summary[test_type]["category"] == "Accuracy":
+                    if summary[test_type]["category"] in ["Accuracy", "performance"]:
                         min_pass_rate = 1
 
                     report[test_type] = {
@@ -681,12 +664,6 @@ class Harness:
                     )
                     mlflow.end_run()
 
-                if return_runtime:
-                    if k not in time_elapsed:
-                        time_elapsed[k] = df_report["model_name"].apply(
-                            lambda x: self._runtime.multi_model_total_time(unit)[x]
-                        )
-
                 df_final_report = pd.concat([df_final_report, df_report])
 
             df_final_report["minimum_pass_rate"] = (
@@ -720,16 +697,6 @@ class Harness:
                 ]
 
             styled_df = pivot_df.style.apply(color_cells)
-            if return_runtime:
-                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
-                df_time_elapsed = pd.DataFrame(
-                    list(time_elapsed_mean.items()),
-                    columns=["model_name", f"time_elapsed ({unit})"],
-                )
-                df_time_elapsed.set_index("model_name", inplace=True)
-                from IPython.display import display
-
-                display(df_time_elapsed)
 
             if format == "dataframe":
                 return styled_df
@@ -778,20 +745,19 @@ class Harness:
 
         if isinstance(self._generated_results, dict):
             generated_results_df = []
-            if isinstance(self._generated_results, dict):
-                for k, v in self._generated_results.items():
-                    model_generated_results_df = pd.DataFrame.from_dict(
-                        [x.to_dict() for x in v]
+            for k, v in self._generated_results.items():
+                model_generated_results_df = pd.DataFrame.from_dict(
+                    [x.to_dict() for x in v]
+                )
+                if (
+                    "test_case" in model_generated_results_df.columns
+                    and "original_question" in model_generated_results_df.columns
+                ):
+                    model_generated_results_df["original_question"].update(
+                        model_generated_results_df.pop("test_case")
                     )
-                    if (
-                        "test_case" in model_generated_results_df.columns
-                        and "original_question" in model_generated_results_df.columns
-                    ):
-                        model_generated_results_df["original_question"].update(
-                            model_generated_results_df.pop("test_case")
-                        )
-                    model_generated_results_df["model_name"] = k
-                    generated_results_df.append(model_generated_results_df)
+                model_generated_results_df["model_name"] = k
+                generated_results_df.append(model_generated_results_df)
             generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
 
         else:

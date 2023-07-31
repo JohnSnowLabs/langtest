@@ -23,7 +23,7 @@ class TranslationTestCase(unittest.TestCase):
             {
                 "model_parameters": {"target_language": "de"},
                 "tests": {
-                    "defaults": {"min_pass_rate": "1.0,"},
+                    "defaults": {"min_pass_rate": 1.0},
                     "robustness": {
                         "add_typo": {"min_pass_rate": 0.7},
                         "lowercase": {"min_pass_rate": 0.7},
