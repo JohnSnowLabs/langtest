@@ -49,6 +49,8 @@ docs-menu:
           url: /docs/pages/docs/run
         - title: Retrieving Reports
           url: /docs/pages/docs/report
+        - title: MlFlow Tracking
+          url: /docs/pages/docs/ml_flow
 
   - title: Saving & Loading
     url: /docs/pages/docs/save
