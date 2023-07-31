@@ -888,9 +888,9 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data_ner(
         self,
-        feature_column: str = None,
-        target_column: str = None,
-        split: str = None,
+        feature_column: str,
+        target_column: str,
+        split: str,
         subset: str = None,
     ) -> List[Sample]:
         """Load the specified split from the given ner dataset."""
@@ -918,9 +918,9 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data_classification(
         self,
-        feature_column: str = None,
-        target_column: str = None,
-        split: str = None,
+        feature_column: str,
+        target_column: str,
+        split: str,
         subset: str = None,
     ) -> List[Sample]:
         """Load the specified split from the dataset library.
