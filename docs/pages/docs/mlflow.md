@@ -16,9 +16,33 @@ For tracking the run metrics (logs) on mlflow, you just need to define a flag: `
 h.report(mlflow_tracking = True)
 !mlflow ui
 ```
-This guides us to the local mlflow tracking server. It has model-name specified as `experiment-name` and task-date specified as `run-name`. To check the logs, select the run-name and go to the metrics section. Mlflow helps us to maintain and compare different test configurations of same or different model runs. We can compare the metrics of different runs
+When you set `mlflow_tracking = True` in your report method, it initiates the tracking feature of MLflow. This leads us to a locally hosted MLflow tracking server.
 
-![MLFlow Tracking Server](https://github.com/JohnSnowLabs/langtest/blob/chore/webiste_updates/docs/assets/images/mlflow/experiment_run_name.png?raw=true)
+On this server, each run of your model is represented as an experiment. These experiments are identified by a unique experiment-name, which corresponds to the model-name. Alongside this, each experiment run is time-stamped and labeled as a run-name that corresponds to the task-date.
+
+If you want to review the metrics and logs of a specific run, you simply select the associated run-name. This will guide you to the metrics section, where all logged details for that run are stored. This system provides an organized and streamlined way to keep track of each model's performance during its different runs.
+
+The tracking server looks like this with experiments and run-names specified in following manner:
+
+![MLFlow Tracking Server](https://github.com/JohnSnowLabs/langtest/blob/main/docs/assets/images/mlflow/experiment_run_name.png?raw=true)
+
+To check the metrics, select the run-name and go to the metrics section.
+
+![MLFlow Metrics Checking](https://github.com/JohnSnowLabs/langtest/blob/main/docs/assets/images/mlflow/checking_metrics.png?raw=true)
+
+If you decide to run the same model again, whether with the same or different test configurations, MLflow will log this as a distinct entry in its tracking system.
+
+Each of these entries captures the specific state of your model at the time of the run, including the chosen parameters, the model's performance metrics, and more. This means that for every run, you get a comprehensive snapshot of your model's behavior under those particular conditions.
+
+You can then use the compare section to get a detailed comparison for the different runs.
+
+![MLFlow Run Comparisons](https://github.com/JohnSnowLabs/langtest/blob/main/docs/assets/images/mlflow/compare_runs.png?raw=true)
+
+![MLFlow Run Comparisons Detailed](https://github.com/JohnSnowLabs/langtest/blob/main/docs/assets/images/mlflow/view_comparisons.png?raw=true)
+
+Thus, MLflow acts as your tracking system, recording the details of each run, and providing a historical context to the evolution and performance of your model. This capability is instrumental in maintaining a disciplined and data-driven approach to improving machine learning models.
+
+
 
 
 </div><div class="h3-box" markdown="1">
