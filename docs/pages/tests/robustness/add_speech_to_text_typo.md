@@ -25,7 +25,7 @@ add_speech_to_text_typo:
 
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 - **prob (float):** Controls the proportion of words to be changed.
-- **count (float):** Number of variations of sentence to be constructed.
+- **count (int):** Number of variations of sentence to be constructed.
 
 </div><div class="h3-box" markdown="1">
 

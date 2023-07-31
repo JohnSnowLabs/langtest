@@ -332,7 +332,6 @@ class ConllDataset(_IDataset):
                 sentences = doc.strip().split("\n\n")
 
                 if sentences == [""]:
-                    data.append(([""], [""]))
                     continue
 
                 for sent in sentences:

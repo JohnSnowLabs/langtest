@@ -421,6 +421,8 @@ class BaseQASample(BaseModel):
             self.category = func.__module__.split(".")[-1]
 
     def run(self, model, **kwargs):
+        """"""
+        tokens = 1
         dataset_name = (
             self.dataset_name.split("-")[0].lower()
             if self.dataset_name
@@ -429,7 +431,6 @@ class BaseQASample(BaseModel):
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )
-
         self.expected_results = model(
             text={"context": self.original_context, "question": self.original_question},
             prompt={
@@ -437,15 +438,23 @@ class BaseQASample(BaseModel):
                 "input_variables": ["context", "question"],
             },
         )
-        self.actual_results = model(
-            text={"context": self.perturbed_context, "question": self.perturbed_question},
-            prompt={
-                "template": prompt_template,
-                "input_variables": ["context", "question"],
-            },
-        )
+        if self.perturbed_context or self.perturbed_question:
+            self.actual_results = model(
+                text={
+                    "context": self.perturbed_context,
+                    "question": self.perturbed_question,
+                },
+                prompt={
+                    "template": prompt_template,
+                    "input_variables": ["context", "question"],
+                },
+            )
 
-        return True
+        tokens += len(
+            self.original_question.split()
+            + (self.original_context.split() if self.original_context else "")
+        )
+        return tokens
 
 
 class QASample(BaseQASample):
@@ -774,9 +783,9 @@ class ToxicitySample(BaseModel):
         return True
 
 
-class RuntimeSample(BaseModel):
+class SpeedTestSample(BaseModel):
     """
-    A class Representing a sample for runtime task.
+    A class representing a sample for speed test.
 
     Attributes:
         transform_time (Dict[str, Union[int, float]]): The transform times for different operations.
@@ -784,14 +793,15 @@ class RuntimeSample(BaseModel):
         total (Dict[str, Union[int, float]]): The total times for different operations.
     """
 
-    transform_time: Dict[str, Union[int, float]] = {}
-    run_time: Dict[str, Union[int, float]] = {}
-    total: Dict[str, Union[int, float]] = {}
+    category: str = "performance"
+    test_type: str = "speed"
+    expected_results: Result = None
+    actual_results: Result = None
 
     def __init__(self, **data):
         super().__init__(**data)
 
-    def total_time(self, unit="ms"):
+    def total_time(self, time_ns, tokens):
         """
         Calculates the total time for each operation.
 
@@ -801,21 +811,15 @@ class RuntimeSample(BaseModel):
         Returns:
             Dict[str, Union[int, float]]: A dictionary containing the total times for each operation.
         """
-        total = {}
-        if self.total:
-            return self.total
-        else:
-            for key in self.transform_time.keys():
-                total[key] = self.convert_ns_to_unit(
-                    self.transform_time[key] + self.run_time[key], unit=unit
-                )
-            self.total = total
-        return total
+        unit = self.expected_results.split("/")[-1].strip()
+        time_taken_unit = self.convert_ns_to_unit(time_ns, unit=unit)
+        tokens_per_unit = tokens / time_taken_unit
+        self.actual_results = f"{tokens_per_unit:.2f} token/{unit}"
+        return self
 
     def convert_ns_to_unit(self, time: Union[int, float], unit: str = "ms"):
         """
         Converts time from nanoseconds to the specified unit.
-
 
         Args:
             time (Union[int, float]): The time value to convert.
@@ -823,34 +827,56 @@ class RuntimeSample(BaseModel):
         Returns:
             Union[int, float]: The converted time value.
         """
-        unit_dict = {"ns": 1, "us": 1e3, "ms": 1e6, "s": 1e9, "m": 6e10, "h": 3.6e12}
+        unit_dict = {"ns": 1, "us": 1e3, "ms": 1e6, "sec": 1e9, "min": 6e10, "hr": 3.6e12}
+
+        if unit not in unit_dict:
+            raise ValueError(f"Invalid unit {unit}. Valid units are {unit_dict.keys()}.")
         return time / unit_dict[unit]
 
-    def multi_model_total_time(self, unit="ms"):
+    def to_dict(self) -> Dict[str, Any]:
         """
-        Calculates the total time for each operation across multiple models.
-
-        Args:
-            unit (str, optional): The unit of time to convert to (default: 'ms').
+        Converts the SpeedTestSample object to a dictionary.
 
         Returns:
-            Dict[str, Union[int, float]]: A dictionary containing the total times for each operation across multiple models.
+            Dict[str, Any]: A dictionary representation of the SpeedTestSample object.
         """
-        total = {}
-        if self.total:
-            return self.total
-        else:
-            for key in self.transform_time.keys():
-                total[key] = self.convert_ns_to_unit(
-                    sum(self.transform_time[key].values())
-                    + sum(self.run_time[key].values()),
-                    unit=unit,
-                )
-            self.total = total
-        return total
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+        }
+
+        if self.actual_results is not None:
+            result.update(
+                {
+                    "expected_result": self.expected_results,
+                    "actual_result": self.actual_results,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        if self.actual_results is None:
+            return False
+        # 100 tokens/unit <= 1000 tokens/unit
+        expected_tokens = float(self.expected_results.split()[0])
+        actual_tokens = float(self.actual_results.split()[0])
+
+        expected_unit = self.expected_results.split("/")[1]
+        actual_unit = self.actual_results.split("/")[1]
+
+        return (expected_tokens >= actual_tokens) and (expected_unit == actual_unit)
 
 
 class TranslationSample(BaseModel):
+    """
+    Helper object storing the original text, the perturbed one and the corresponding
+    predictions for each, for the translation task.
+
+    """
+
     original: str
     test_case: str = None
     expected_results: Result = None
@@ -866,7 +892,13 @@ class TranslationSample(BaseModel):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
-        """"""
+        """
+        Converts the TranslationSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the TranslationSample object.
+        """
+
         result = {
             "category": self.category,
             "test_type": self.test_type,

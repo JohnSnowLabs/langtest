@@ -29,7 +29,7 @@ add_context:
 - **starting_context (<List[str]>):** Phrases to be added at the start of inputs.
 - **ending_context (<List[str]>):** Phrases to be added at the end of inputs.
 - **prob (float):** Controls the proportion of words to be changed.
-- **count (float):** Number of variations of sentence to be constructed.
+- **count (int):** Number of variations of sentence to be constructed.
 
 </div><div class="h3-box" markdown="1">
 

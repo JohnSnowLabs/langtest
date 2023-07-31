@@ -135,6 +135,10 @@ class RobustnessTestCase(unittest.TestCase):
             ),
             SequenceClassificationSample(original="They have a beautiful house."),
         ]
+        self.age_sentences = [
+            SequenceClassificationSample(original="I am 75 years old."),
+            SequenceClassificationSample(original="The baby is 40 days old."),
+        ]
         self.test_qa = [
             "20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar to the current one, is being released. The European Central Bank will, in due time, announce when banknotes from the first series lose legal tender status.",
             "is the first series 20 euro note still legal tender",
@@ -418,6 +422,15 @@ class RobustnessTestCase(unittest.TestCase):
         Test the AdjectiveSynonymSwap transformation.
         """
         transformed_samples = AdjectiveAntonymSwap.transform(self.adj_sentences)
+        self.assertIsInstance(transformed_samples, list)
+        for sample in transformed_samples:
+            self.assertNotEqual(sample.test_case, sample.original)
+
+    def test_random_age(self) -> None:
+        """
+        Test the RandomAge transformation.
+        """
+        transformed_samples = RandomAge.transform(self.age_sentences, random_amount=100)
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
