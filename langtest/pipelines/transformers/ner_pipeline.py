@@ -190,7 +190,7 @@ class NEREnd2EndPipeline(FlowSpec):
 
         self.augmented_train_dataset = NERDataset(
             tokens=[sample["text"] for sample in samples],
-            labels=[sample["ner"] for sample in samples],
+            labels=[sample["labels"] for sample in samples],
             tokenizer=self.tokenizer,
         )
 

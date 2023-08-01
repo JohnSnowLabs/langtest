@@ -25,7 +25,7 @@ class TestPipelineNERHf:
             "python",
             flow_path,
             "run",
-            "--model-name=microsoft/xtremedistil-l6-h256-uncased",
+            "--model-name=dslim/bert-base-NER",
             f"--train-data={data_path}",
             f"--eval-data={data_path}",
             f"--training-args={json.dumps(training_args)}",
