@@ -14,14 +14,14 @@ files = [
 
 [[package]]
 name = "accelerate"
-version = "0.21.0"
+version = "0.20.3"
 description = "Accelerate"
 category = "main"
 optional = true
-python-versions = ">=3.8.0"
+python-versions = ">=3.7.0"
 files = [
-    {file = "accelerate-0.21.0-py3-none-any.whl", hash = "sha256:e2609d37f2c6a56e36a0612feae6ff6d9daac9759f4899432b86b1dc97024ebb"},
-    {file = "accelerate-0.21.0.tar.gz", hash = "sha256:e2959a0bf74d97c0b3c0e036ed96065142a060242281d27970d4c4e34f11ca59"},
+    {file = "accelerate-0.20.3-py3-none-any.whl", hash = "sha256:147183e7a2215f7bd45a7af3b986a963daa8a61fa58b0912b9473049e011ad15"},
+    {file = "accelerate-0.20.3.tar.gz", hash = "sha256:79a896978c20dac270083d42bf033f4c9a80dcdd6b946f1ca92d8d6d0f0f5ba9"},
 ]
 
 [package.dependencies]
@@ -29,7 +29,7 @@ numpy = ">=1.17"
 packaging = ">=20.0"
 psutil = "*"
 pyyaml = "*"
-torch = ">=1.10.0"
+torch = ">=1.6.0"
 
 [package.extras]
 dev = ["black (>=23.1,<24.0)", "datasets", "deepspeed", "evaluate", "hf-doc-builder (>=0.3.0)", "parameterized", "pytest", "pytest-subtests", "pytest-xdist", "rich", "ruff (>=0.0.241)", "scikit-learn", "scipy", "tqdm", "transformers", "urllib3 (<2.0.0)"]
@@ -3871,4 +3871,4 @@ transformers = ["transformers", "torch", "accelerate"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "d210da9b21642ba776e7ec417d56cd5e1105709b8bd8ba54c9530c385ecfac76"
+content-hash = "14c3a18cc17872af9edede288d1cf96ea37fcd773e08146f198131d6189ae06d"
