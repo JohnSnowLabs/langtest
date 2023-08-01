@@ -144,11 +144,7 @@ class NEROutputFormatter(BaseFormatter):
             match = sample.expected_results[word.group()]
             labels.append(match.entity if match is not None else "O")
 
-        assert len([label for label in labels if label != "O"]) == len(
-            sample.expected_results
-        )
-
-        if test_case:
+        if test_case and sample.actual_results:
             test_case_words = re.finditer(r"([^\s]+)", test_case)
             test_case_tokens, test_case_labels = [], []
 

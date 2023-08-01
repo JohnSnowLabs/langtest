@@ -85,18 +85,26 @@ class MinGenderF1Score(BaseFairness):
             Transforms the input data into an output based on the minimum F1 score.
     """
 
-    alias_name = "min_gender_f1_score"
+    alias_name = ["min_gender_f1_score"]
 
-    @staticmethod
-    def transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, data: List[Sample], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum F1 score for the given data.
 
         Args:
+            test (str): name of the test
             data (List[Sample]): The input data to be transformed.
-            params (Dict): parameters for tests configuration
+            params (Dict): parameters for tests configuration.
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
+
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
@@ -163,18 +171,24 @@ class MaxGenderF1Score(BaseFairness):
             Transforms the input data into an output based on the maximum F1 score.
     """
 
-    alias_name = "max_gender_f1_score"
+    alias_name = ["max_gender_f1_score"]
 
-    @staticmethod
-    def transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, data: List[Sample], params: Dict
+    ) -> List[MaxScoreSample]:
         """Computes the maximum F1 score for the given data.
 
         Args:
+            test (str): name of the test.
             data (List[Sample]): The input data to be transformed.
             params (Dict): parameters for tests configuration
         Returns:
             List[MaxScoreSample]: The transformed data based on the maximum F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
         if isinstance(params["max_score"], dict):
             max_scores = params["max_score"]
         elif isinstance(params["max_score"], float):
@@ -250,16 +264,23 @@ class MinGenderRougeScore(BaseFairness):
     ]
     supported_tasks = ["question-answering", "summarization"]
 
-    @staticmethod
-    def transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, data: List[Sample], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the min rouge score for the given data.
 
         Args:
+            test (str): name of the test.
             data (List[Sample]): The input data to be transformed.
             params (Dict): parameters for tests configuration
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
         elif isinstance(params["min_score"], float):
@@ -274,7 +295,7 @@ class MinGenderRougeScore(BaseFairness):
             sample = MinScoreSample(
                 original=None,
                 category="fairness",
-                test_type=params["test_name"],
+                test_type=test,
                 test_case=key,
                 expected_results=MinScoreOutput(min_score=val),
             )
@@ -343,16 +364,23 @@ class MaxGenderRougeScore(BaseFairness):
     ]
     supported_tasks = ["question-answering", "summarization"]
 
-    @staticmethod
-    def transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, data: List[Sample], params: Dict
+    ) -> List[MaxScoreSample]:
         """Computes the rouge score for the given data.
 
         Args:
+            test (str): name of the test.
             data (List[Sample]): The input data to be transformed.
             params (Dict): parameters for tests configuration
         Returns:
             List[MaxScoreSample]: The transformed data based on the rouge score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         if isinstance(params["max_score"], dict):
             max_scores = params["max_score"]
         elif isinstance(params["max_score"], float):
@@ -367,7 +395,7 @@ class MaxGenderRougeScore(BaseFairness):
             sample = MaxScoreSample(
                 original=None,
                 category="fairness",
-                test_type=params["test_name"],
+                test_type=test,
                 test_case=key,
                 expected_results=MaxScoreOutput(max_score=val),
             )
