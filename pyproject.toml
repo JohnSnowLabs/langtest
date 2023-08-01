@@ -49,7 +49,7 @@ pydantic = "1.10.6"
 johnsnowlabs = { version = "4.3.5", optional = true }
 rouge-score = { version = "^0.1.2", optional = true }
 evaluate = { version = "^0.4.0", optional = true }
-transformers = { version = ">4.20.0", optional = true }
+transformers = { version = "4.28.1", optional = true }
 huggingface_hub = { version = ">0.16.0", optional = true}
 spacy = { version = ">=3.0.0", optional = true }
 nest-asyncio = "^1.5.0"
@@ -62,10 +62,13 @@ pyyaml = "^6.0"
 tqdm = "^4.65.0"
 cohere = { version = "^4.10.0", optional = true}
 ai21 = {version = "^1.1.0", optional = true}
+metaflow = {version = ">=2.9.0", optional = true}
+accelerate = {version = "<0.21.0", optional = true}
+seqeval = {version = ">1.2.0", optional = true}
 
 [tool.poetry.extras]
-transformers = ["transformers", "torch"]
-evaluate = ["evaluate", "rouge-score"]
+transformers = ["transformers", "torch", "accelerate"]
+evaluate = ["evaluate", "rouge-score", "seqeval"]
 spacy = ["spacy"]
 langchain = ["langchain"]
 johnsnowlabs = ["johnsnowlabs"]
@@ -73,6 +76,7 @@ openai = ["openai", "langchain"]
 cohere = ["cohere", "langchain"]
 ai21 = ["ai21", "langchain"]
 huggingface_hub = ["huggingface_hub", "langchain"]
+metaflow = ["metaflow"]
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"

@@ -540,7 +540,7 @@ class CSVDataset(_IDataset):
                     elt, output_format="csv"
                 )
                 final_data["text"].append(tokens)
-                final_data["ner"].append(labels)
+                final_data["labels"].append(labels)
                 final_data["testcase_text"].append(testcase_tokens)
                 final_data["testcase_labels"].append(testcase_labels)
 

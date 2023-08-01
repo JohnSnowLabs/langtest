@@ -1,5 +1,17 @@
+from pathlib import Path
+import os
 import pytest
 import json
+
+
+def pytest_sessionstart():
+    """Called after the Session object has been created"""
+    homewd = str(Path.home())
+    metaflow_config = os.path.join(homewd, ".metaflowconfig")
+    os.makedirs(metaflow_config, exist_ok=True)
+
+    with open(os.path.join(metaflow_config, "config_test.json"), "w") as writer:
+        json.dump({"METAFLOW_DEFAULT_DATASTORE": "local"}, writer)
 
 
 @pytest.fixture(scope="session", autouse=True)
