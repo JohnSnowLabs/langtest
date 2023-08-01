@@ -44,4 +44,31 @@ h.augment(
 
 This method applies perturbations to the input data based on the recommendations from the Harness report. This augmented dataset can then be used to retrain a model so as to make it more robust than its previous version.
 
-</div></div>
+</div></div><div class="h3-box" markdown="1">
+
+#### Passing a Hugging Face Dataset for Augmentation
+
+For Augmentations, we specify the HuggingFace data input in the following way:
+
+```python
+custom_proportions = {
+    'add_ocr_typo':0.3
+}
+
+data_kwargs = {
+      "data_source" : "glue",
+      "subset": "sst2",
+      "feature_column": "sentence",
+      "target_column": "label",
+      "split": "train"
+       }
+
+harness.augment(
+    training_data = data_kwargs,
+    augmented_data ="augmented_glue.csv",
+    custom_proportions=custom_proportions,
+    export_mode="add",
+)
+```
+
+</div>
