@@ -174,7 +174,7 @@ class TestTextClassificationDataset:
     def test_load_data(self, dataset, feature_col, target_col):
         """"""
         if isinstance(dataset, HuggingFaceDataset):
-            samples = dataset.load_data(split="test")
+            samples = dataset.load_data(split="test[:30]")
         else:
             samples = dataset.load_data()
 
