@@ -156,7 +156,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         )
         self.assertIsInstance(generator, TemplaticAugment)
         generator.fix(
-            save_data_path={"data_source": "tests/fixtures/train.conll"},
+            training_data={"data_source": "tests/fixtures/train.conll"},
             output_path="tests/fixtures/augmentated_train.conll",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
