@@ -16,7 +16,7 @@ Several parameters are available:
 
 - **`training_data`**: (Required) Specifies the source of the original training data. It should be a dictionary containing the necessary information about the dataset.
 
-- **`augmented_data`**: (Required) Name of the file to store the augmented data. The augmented dataset will be saved in this file.
+- **`save_data_path`**: (Required) Name of the file to store the augmented data. The augmented dataset will be saved in this file.
 
 - **`custom_proportions`**: (Required) custom_proportions is a dictionary with augmentation on test type as key and proportion as value. The proportion is the percentage of the test cases that will be augmented with the given augmentation type.
 
@@ -37,7 +37,7 @@ data_kwargs = {
 
 h.augment(
     training_data = data_kwargs,
-    augmented_data ="augmented_conll03.conll",
+    save_data_path ="augmented_conll03.conll",
     custom_proportions=custom_proportions,
     export_mode="transformed")
 ```
@@ -90,7 +90,7 @@ data_kwargs = {
 
 harness.augment(
     training_data = data_kwargs,
-    augmented_data ="augmented_glue.csv",
+    save_data_path ="augmented_glue.csv",
     custom_proportions=custom_proportions,
     export_mode="add",
 )
