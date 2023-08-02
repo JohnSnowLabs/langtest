@@ -85,7 +85,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```bash
-!pip install langtest
+!pip install langtest[transformers]
 ```
 
 ```python
@@ -117,7 +117,7 @@ h.generate().run().report()
 Using any large language model from the [OpenAI API](https://platform.openai.com/docs/models/overview):
 
 ```bash
-!pip install "langtest[langchain,openai]"
+!pip install "langtest[langchain,openai,transformers]"
 ```
 
 ```python
@@ -171,7 +171,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```bash
-!pip install "langtest[langchain,cohere]"
+!pip install "langtest[transformers,langchain,cohere]"
 ```
 
 ```python
@@ -194,7 +194,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```bash
-!pip install "langtest[langchain,ai21]"
+!pip install "langtest[transformers,langchain,ai21]"
 ```
 
 ```python
@@ -216,7 +216,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```bash
-!pip install "langtest[langchain,openai]"
+!pip install "langtest[transformers,langchain,openai]"
 ```
 
 ```python
@@ -244,7 +244,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```bash
-!pip install "langtest[langchain,huggingface-hub]"
+!pip install "langtest[transformers,langchain,huggingface-hub]"
 ```
 
 ```python
