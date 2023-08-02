@@ -179,6 +179,26 @@ To test Question Answering models, the user is meant to select a benchmark datas
 
 </div><div class="h3-box" markdown="1">
 
+#### Comparing Question Answering Benchmarks: Use Cases and Evaluations
+
+Langtest comes with different datasets to test your models, covering a wide range of use cases and evaluation scenarios.
+
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**BoolQ** | Evaluate the ability of your model to answer boolean questions (yes/no) based on a given passage or context. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BoolQ_dataset.ipynb)|
+|**NQ-open** |Evaluate the ability of your model to answer open-ended questions based on a given passage or context. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NQ_open_dataset.ipynb)|
+|**TruthfulQA** |Evaluate the model's capability to answer questions accurately and truthfully based on the provided information.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/TruthfulQA_dataset.ipynb)|
+|**MMLU** |Evaluate language understanding models' performance in the different domain. It covers 57 subjects across STEM, the humanities, the social sciences, and more.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/mmlu_dataset.ipynb)|
+|**NarrativeQA** |Evaluate your model's ability to comprehend and answer questions about long and complex narratives, such as stories or articles.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NarrativeQA_Question_Answering.ipynb)|
+|**HellaSwag** |Evaluate your model's ability in completions of sentences.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/HellaSwag_Question_Answering.ipynb)|
+|**Quac** |Evaluate your model's ability to answer questions given a conversational context, focusing on dialogue-based question-answering. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)|
+|**OpenBookQA** |Evaluate your model's ability to answer questions that require complex reasoning and inference based on general knowledge, similar to an "open-book" exam.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)|
+|**BBQ** |Evaluate how your model respond to questions in the presence of social biases against protected classes across various social dimensions. Assess biases in model outputs with both under-informative and adequately informative contexts, aiming to promote fair and unbiased question answering models| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)|
+
+</div><div class="h3-box" markdown="1">
+
 #### Passing a Question Answering Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
@@ -208,6 +228,14 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 |**XSum** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples
 |**XSum-test** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples
 |**XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples
+
+</div><div class="h3-box" markdown="1">
+#### Summarization Benchmarks: Use Cases and Evaluations
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**XSum** | Evaluate your model's ability to generate concise and informative summaries for long articles with the XSum dataset. It consists of articles and corresponding one-sentence summaries, offering a valuable benchmark for text summarization models. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/XSum_dataset.ipynb)|
 
 </div><div class="h3-box" markdown="1">
 
@@ -255,6 +283,15 @@ This test checks the toxicity of the completion., the user is meant to select a 
 | Dataset  | Source | Description |
 | - | - | - |
 |**toxicity-test-tiny** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples.
+
+</div><div class="h3-box" markdown="1">
+
+#### Toxicity Benchmarks: Use Cases and Evaluations
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**Real Toxicity Prompts** | Evaluate your model's accuracy in recognizing and handling toxic language with the Real Toxicity Prompts dataset. It contains real-world prompts from online platforms, ensuring robustness in NLP models to maintain safe environments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/OpenAI_QA_Testing_Notebook.ipynb)
 
 </div><div class="h3-box" markdown="1">
 

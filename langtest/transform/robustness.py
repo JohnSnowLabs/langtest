@@ -1632,3 +1632,86 @@ class StripAllPunctuation(BaseRobustness):
                 sample.category = "robustness"
 
         return sample_list
+
+
+class RandomAge(BaseRobustness):
+    """A class for adding abbreviations to the input text."""
+
+    alias_name = "randomize_age"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        prob: Optional[float] = 1.0,
+        random_amount: int = 5,
+        count: int = 1,
+    ) -> List[Sample]:
+        """Transforms the given sample list by randomizing the ages by a certain amount.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of words to be perturbed.
+                                    Defaults to 1.0, which means all samples will be transformed.
+            random_amount (Optional[int]): The range to randomize the ages. +-random_amount is added to ages.
+                                    Default is 5.
+            count (Optional[int]): Number of variations to create from one sample.
+
+        Returns:
+            List[Sample]: The transformed list of samples with abbreviations added
+        """
+        age_expressions = [
+            r"\d+ years old",
+            r"\d+ months old",
+            r"\d+ weeks old",
+            r"\d+ days old",
+        ]
+
+        def randomize_ages(text):
+            perturbed_text = text
+            transformations = []
+
+            for expr in age_expressions:
+                matches = re.finditer(expr, text)
+                for match in matches:
+                    start = match.start()
+                    end = match.end()
+                    token = text[start:end]
+                    new_age = random.randint(-random_amount, random_amount) + int(
+                        token.split(" ")[0]
+                    )
+                    new_age = new_age if new_age > 0 else 1
+                    corrected_token = re.sub(r"\d+", str(new_age), token)
+                    if corrected_token != token and (random.random() < prob):
+                        perturbed_text = (
+                            perturbed_text[:start]
+                            + corrected_token
+                            + perturbed_text[end:]
+                        )
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(
+                                    start=start,
+                                    end=start + len(corrected_token),
+                                    word=corrected_token,
+                                ),
+                                ignore=False,
+                            )
+                        )
+
+            return perturbed_text, transformations
+
+        perturbed_samples = []
+        for sample in sample_list:
+            for i in range(count):
+                if isinstance(sample, str):
+                    s, _ = randomize_ages(sample)
+                    perturbed_samples.append(s)
+                else:
+                    s = deepcopy(sample)
+                    s.test_case, transformations = randomize_ages(s.original)
+                    if s.task in ("ner", "text-classification"):
+                        s.transformations = transformations
+                    s.category = "robustness"
+
+        return perturbed_samples
