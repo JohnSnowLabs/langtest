@@ -173,8 +173,8 @@ class NEREnd2EndPipeline(FlowSpec):
         filename = os.path.basename(self.train_data)
         self.path_augmented_file = os.path.join(os.getcwd(), f"augmented_{filename}")
         self.harness.augment(
-            input_path=self.train_data,
-            output_path=self.path_augmented_file,
+            training_data={"data_source": self.train_data},
+            save_data_path=self.path_augmented_file,
             export_mode="add",
         )
 

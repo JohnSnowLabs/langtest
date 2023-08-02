@@ -698,7 +698,7 @@ class Harness:
     def augment(
         self,
         training_data: dict,
-        augmented_data: str,
+        save_data_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
@@ -707,13 +707,14 @@ class Harness:
 
         Args:
             training_data (dict): A dictionary containing the input data for augmentation.
-            augmented_data (str): Path to save the augmented data.
+            save_data_path (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
                                     - 'inplace': Modifies the list of samples in place.
                                     - 'add': Adds new samples to the input data.
                                     - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                     Defaults to 'add'.
+            templates (Optional[Union[str, List[str]]]):
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -763,7 +764,7 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(training_data=training_data, output_path=augmented_data)
+            ).fix(training_data=training_data, output_path=save_data_path)
 
         else:
             _ = AugmentRobustness(
@@ -773,7 +774,7 @@ class Harness:
                 custom_proportions=custom_proportions,
             ).fix(
                 training_data=training_data,
-                output_path=augmented_data,
+                output_path=save_data_path,
                 export_mode=export_mode,
             )
 
