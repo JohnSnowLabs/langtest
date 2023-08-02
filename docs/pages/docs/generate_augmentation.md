@@ -18,7 +18,7 @@ Several parameters are available:
 
 - **`save_data_path`**: (Required) Name of the file to store the augmented data. The augmented dataset will be saved in this file.
 
-- **`custom_proportions`**: (Required) custom_proportions is a dictionary with augmentation on test type as key and proportion as value. The proportion is the percentage of the test cases that will be augmented with the given augmentation type.
+- **`custom_proportions`**: (Optional) custom_proportions is a dictionary with augmentation on test type as key and proportion as value. The proportion is the percentage of the test cases that will be augmented with the given augmentation type.
 
 - **`export_mode`**: (Optional) Specifies how the augmented data should be exported. The possible values are:
     - `'inplace'`: Modifies the list of samples in place.
@@ -62,7 +62,7 @@ data_kwargs = {
       "data_source" : "conll03.conll",
        }
 
-harness.augment(
+h.augment(
     training_data=data_kwargs,
     augmented_data='augmented_conll03.conll',
     templates=template,
@@ -88,7 +88,7 @@ data_kwargs = {
       "split": "train"
        }
 
-harness.augment(
+h.augment(
     training_data = data_kwargs,
     save_data_path ="augmented_glue.csv",
     custom_proportions=custom_proportions,
