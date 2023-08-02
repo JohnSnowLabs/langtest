@@ -62,7 +62,7 @@ data_kwargs = {
       "data_source" : "conll03.conll",
        }
 
-harness.augment(
+h.augment(
     training_data=data_kwargs,
     augmented_data='augmented_conll03.conll',
     templates=template,
@@ -88,7 +88,7 @@ data_kwargs = {
       "split": "train"
        }
 
-harness.augment(
+h.augment(
     training_data = data_kwargs,
     save_data_path ="augmented_glue.csv",
     custom_proportions=custom_proportions,
