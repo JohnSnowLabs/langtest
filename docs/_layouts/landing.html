@@ -94,7 +94,7 @@ conda install -c johnsnowlabs langtest
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight python %}
-!pip install "langtest[johnsnowlabs, transformers]"
+!pip install "langtest[johnsnowlabs,transformers]"
 
 from langtest import Harness
 
@@ -261,7 +261,7 @@ h.generate().run().report()
               <h3 class="grey h3_title">{{ _section.title }}</h3>     
               <div class="highlight-box">
                 {% highlight python %}
-h.augment(input_path='training_data', output_path='augmented_data')
+h.augment(training_data=data, save_data_path='augmented_data')
 new_model = nlp.load('model_name').fit('augmented_data')
 Harness.load(save_dir='testsuite', model=new_model).run()
 {% endhighlight %}
