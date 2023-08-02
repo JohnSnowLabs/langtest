@@ -811,8 +811,8 @@ class Harness:
 
     def augment(
         self,
-        input_path: str,
-        output_path: str,
+        training_data: dict,
+        save_data_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
@@ -820,14 +820,15 @@ class Harness:
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
         Args:
-            input_path (str): Path to the input file.
-            output_path (str): Path to save the augmented data.
+            training_data (dict): A dictionary containing the input data for augmentation.
+            save_data_path (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
                                     - 'inplace': Modifies the list of samples in place.
                                     - 'add': Adds new samples to the input data.
                                     - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                     Defaults to 'add'.
+            templates (Optional[Union[str, List[str]]]):
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -838,9 +839,6 @@ class Harness:
         Note:
             This method uses an instance of `AugmentRobustness` to perform the augmentation.
 
-        Example:
-            >>> harness = Harness(...)
-            >>> harness.augment("train.conll", "augmented_train.conll")
         """
         dtypes = list(
             map(
@@ -880,7 +878,7 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(input_path=input_path, output_path=output_path)
+            ).fix(training_data=training_data, output_path=save_data_path)
 
         else:
             _ = AugmentRobustness(
@@ -888,7 +886,11 @@ class Harness:
                 config=self._config,
                 h_report=self.df_report,
                 custom_proportions=custom_proportions,
-            ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
+            ).fix(
+                training_data=training_data,
+                output_path=save_data_path,
+                export_mode=export_mode,
+            )
 
         return self
 

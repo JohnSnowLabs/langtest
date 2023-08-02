@@ -9,9 +9,7 @@ from langtest.langtest import Harness
 
 
 class AugmentWorkflowTestCase(unittest.TestCase):
-    """
-    Test case for the AugmentRobustness class.
-    """
+    """Test case for the AugmentRobustness class."""
 
     def setUp(self) -> None:
         """"""
@@ -37,12 +35,31 @@ class AugmentWorkflowTestCase(unittest.TestCase):
                 "config": "tests/fixtures/config_ner.yaml",
                 "hub": "huggingface",
             },
+            "huggingface_textclassification_csv_dataset": {
+                "task": "text-classification",
+                "model": "lvwerra/distilbert-imdb",
+                "data": "tests/fixtures/text_classification.csv",
+                "config": "tests/fixtures/config_text_classification.yaml",
+                "hub": "huggingface",
+            },
+            "spacy_textclassification_hf_dataset": {
+                "task": "text-classification",
+                "model": "textcat_imdb",
+                "data": {"name": "imdb"},
+                "config": "tests/fixtures/config_text_classification.yaml",
+                "hub": "spacy",
+            },
+            "huggingface_textclassification_hf_dataset": {
+                "task": "text-classification",
+                "model": "lvwerra/distilbert-imdb",
+                "data": {"name": "imdb"},
+                "config": "tests/fixtures/config_text_classification.yaml",
+                "hub": "huggingface",
+            },
         }
 
     def test_augment_robustness(self):
-        """
-        Test augmenting data for robustness.
-        """
+        """Test augmenting data for robustness."""
         temp_df = pd.DataFrame(
             {
                 "test_type": [
@@ -67,7 +84,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
             config=yaml.safe_load("tests/fixtures/config_ner.yaml"),
         )
         augment.fix(
-            "tests/fixtures/train.conll", "tests/fixtures/augmentated_train.conll"
+            training_data={"data_source": "tests/fixtures/train.conll"},
+            output_path="tests/fixtures/augmentated_train.conll",
         )
         self.assertIsInstance(augment, AugmentRobustness)
         self.assertIsInstance(augment.suggestions(temp_df), pd.DataFrame)
@@ -76,43 +94,42 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_hf_ner_augmentation(self):
-        """
-        Test augmentation using Hugging Face NER model.
-        """
+        """Test augmentation using Hugging Face NER model."""
+
         harness = Harness(**self.params["huggingface_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
         self.assertIsInstance(report, pd.DataFrame)
 
         harness.augment(
-            "tests/fixtures/train.conll",
-            "tests/fixtures/augmentated_train.conll",
+            training_data={
+                "data_source": "tests/fixtures/train.conll",
+            },
+            save_data_path="tests/fixtures/augmentated_train.conll",
             export_mode="inplace",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
         self.assertTrue(is_file_exist)
 
     def test_spacy_ner_augmentation(self):
-        """
-        Test augmentation using spaCy NER model.
-        """
+        """Test augmentation using spaCy NER model."""
+
         harness = Harness(**self.params["spacy_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
         self.assertIsInstance(report, pd.DataFrame)
 
         harness.augment(
-            "tests/fixtures/train.conll",
-            "tests/fixtures/augmentated_train.conll",
+            training_data={"data_source": "tests/fixtures/train.conll"},
+            save_data_path="tests/fixtures/augmentated_train.conll",
             export_mode="inplace",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
         self.assertTrue(is_file_exist)
 
     def test_custom_proportions_augment_harness(self):
-        """
-        Test augmentation with custom proportions using Hugging Face NER model.
-        """
+        """Test augmentation with custom proportions using Hugging Face NER model."""
+
         harness = Harness(**self.params["huggingface_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
@@ -121,8 +138,8 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         proportions = {"uppercase": 0.5, "lowercase": 0.5}
 
         harness.augment(
-            "tests/fixtures/train.conll",
-            "tests/fixtures/augmentated_train.conll",
+            training_data={"data_source": "tests/fixtures/train.conll"},
+            save_data_path="tests/fixtures/augmentated_train.conll",
             custom_proportions=proportions,
             export_mode="inplace",
         )
@@ -131,36 +148,94 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertTrue(is_file_exist)
 
     def test_templatic_augmentation(self):
-        """
-        Test augmentation using templatic augmentation.
-        """
+        """Test augmentation using templatic augmentation."""
+
         generator = TemplaticAugment(
             templates=["I living in {LOC}", "you are working in {ORG}"],
             task="ner",
         )
         self.assertIsInstance(generator, TemplaticAugment)
         generator.fix(
-            "tests/fixtures/train.conll",
-            "tests/fixtures/augmentated_train.conll",
+            training_data={"data_source": "tests/fixtures/train.conll"},
+            output_path="tests/fixtures/augmentated_train.conll",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
         self.assertTrue(is_file_exist)
 
     def test_spacy_templatic_augmentation(self):
-        """
-        Test augmentation using templatic augmentation with spaCy NER model.
-        """
+        """Test augmentation using templatic augmentation with spaCy NER model."""
+
         harness = Harness(**self.params["spacy_ner"])
         self.assertIsInstance(harness, Harness)
         report = harness.generate().run().report()
         self.assertIsInstance(report, pd.DataFrame)
 
         harness.augment(
-            "tests/fixtures/train.conll",
-            "tests/fixtures/augmentated_train.conll",
+            training_data={"data_source": "tests/fixtures/train.conll"},
+            save_data_path="tests/fixtures/augmentated_train.conll",
             templates=["I living in {LOC}", "you are working in {ORG}"],
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_csv_dataset_textclassification_hf(self):
+        """Test augmentation using Hugging Face text-classification model."""
+
+        harness = Harness(**self.params["huggingface_textclassification_csv_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+        custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
+        harness.augment(
+            training_data={"data_source": "tests/fixtures/text_classification.csv"},
+            save_data_path="tests/fixtures/augmented_text_classification.csv",
+            custom_proportions=custom_proportions,
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_text_classification.csv"
+        ).is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_hf_dataset_textclassification_hf(self):
+        """Test augmentation using Hugging Face text-classification model."""
+
+        harness = Harness(**self.params["huggingface_textclassification_hf_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+        custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
+        harness.augment(
+            training_data={"data_source": "imdb"},
+            save_data_path="tests/fixtures/augmented_train_transformed.csv",
+            custom_proportions=custom_proportions,
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_train_transformed.csv"
+        ).is_file()
+        self.assertTrue(is_file_exist)
+
+    def test_hf_dataset_textclassification_spacy(self):
+        """Test augmentation using Spacy text-classification model."""
+
+        harness = Harness(**self.params["spacy_textclassification_hf_dataset"])
+        self.assertIsInstance(harness, Harness)
+        harness.data = harness.data[:50]
+        report = harness.generate().run().report()
+        self.assertIsInstance(report, pd.DataFrame)
+        custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
+        harness.augment(
+            training_data={"data_source": "imdb"},
+            save_data_path="tests/fixtures/augmented_train_transformed.csv",
+            custom_proportions=custom_proportions,
+            export_mode="transformed",
+        )
+        is_file_exist = pl.Path(
+            "tests/fixtures/augmented_train_transformed.csv"
+        ).is_file()
         self.assertTrue(is_file_exist)
 
 
@@ -236,7 +311,8 @@ class TestTemplaticAugmentation(unittest.TestCase):
             templates=["My name is {PER} and I am from {LOC}"], task="ner"
         )
         generator.fix(
-            input_path=self.conll_path, output_path="/tmp/augmented_conll.conll"
+            training_data={"data_source": self.conll_path},
+            output_path="/tmp/augmented_conll.conll",
         )
         with open("/tmp/augmented_conll.conll", "r") as reader:
             lines = [line.strip() for line in reader.readlines() if line.strip() != ""]
