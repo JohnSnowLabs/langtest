@@ -105,7 +105,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
             training_data={
                 "data_source": "tests/fixtures/train.conll",
             },
-            augmented_data="tests/fixtures/augmentated_train.conll",
+            save_data_path="tests/fixtures/augmentated_train.conll",
             export_mode="inplace",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
@@ -121,7 +121,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         harness.augment(
             training_data={"data_source": "tests/fixtures/train.conll"},
-            augmented_data="tests/fixtures/augmentated_train.conll",
+            save_data_path="tests/fixtures/augmentated_train.conll",
             export_mode="inplace",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
@@ -139,7 +139,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         harness.augment(
             training_data={"data_source": "tests/fixtures/train.conll"},
-            augmented_data="tests/fixtures/augmentated_train.conll",
+            save_data_path="tests/fixtures/augmentated_train.conll",
             custom_proportions=proportions,
             export_mode="inplace",
         )
@@ -156,7 +156,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         )
         self.assertIsInstance(generator, TemplaticAugment)
         generator.fix(
-            training_data={"data_source": "tests/fixtures/train.conll"},
+            save_data_path={"data_source": "tests/fixtures/train.conll"},
             output_path="tests/fixtures/augmentated_train.conll",
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
@@ -172,7 +172,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         harness.augment(
             training_data={"data_source": "tests/fixtures/train.conll"},
-            augmented_data="tests/fixtures/augmentated_train.conll",
+            save_data_path="tests/fixtures/augmentated_train.conll",
             templates=["I living in {LOC}", "you are working in {ORG}"],
         )
         is_file_exist = pl.Path("tests/fixtures/augmentated_train.conll").is_file()
@@ -189,7 +189,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
             training_data={"data_source": "tests/fixtures/text_classification.csv"},
-            augmented_data="tests/fixtures/augmented_text_classification.csv",
+            save_data_path="tests/fixtures/augmented_text_classification.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
         )
@@ -209,7 +209,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
             training_data={"data_source": "imdb"},
-            augmented_data="tests/fixtures/augmented_train_transformed.csv",
+            save_data_path="tests/fixtures/augmented_train_transformed.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
         )
@@ -229,7 +229,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
             training_data={"data_source": "imdb"},
-            augmented_data="tests/fixtures/augmented_train_transformed.csv",
+            save_data_path="tests/fixtures/augmented_train_transformed.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
         )

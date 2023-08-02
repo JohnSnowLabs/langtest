@@ -1,18 +1,19 @@
-from collections import defaultdict
 import os
+import random
 import re
 import string
-import yaml
-import random
-import pandas as pd
-from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from copy import deepcopy as copy
+from typing import Any, Dict, List, Optional, Union
 
-from langtest.transform import TestFactory
-from langtest.utils.custom_types import Sample
+import pandas as pd
+import yaml
+
 from langtest.datahandler.datasource import DataFactory, HuggingFaceDataset
+from langtest.transform import TestFactory
 from langtest.transform.utils import create_terminology
+from langtest.utils.custom_types import Sample
 from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
@@ -57,7 +58,6 @@ class AugmentRobustness(BaseAugmentaion):
 
         suggestions(self, prop) -> pandas.DataFrame:
             Calculates suggestions for improving test performance based on a given report.
-
     """
 
     def __init__(
@@ -109,8 +109,9 @@ class AugmentRobustness(BaseAugmentaion):
                                         - 'add': Adds new samples to the input data.
                                         - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                         Defaults to 'add'.
-            Returns:
-        List[Dict[str, Any]]: A list of augmented data samples.
+
+        Returns:
+            List[Dict[str, Any]]: A list of augmented data samples.
         """
         if "." not in training_data["data_source"]:
             self.df = HuggingFaceDataset(training_data["data_source"], self.task)
@@ -290,25 +291,27 @@ class AugmentRobustness(BaseAugmentaion):
 
 
 class TemplaticAugment(BaseAugmentaion):
-    """
-    This class is used for templatic augmentation. It is a subclass of the BaseAugmentation class.
+    """This class is used for templatic augmentation. It is a subclass of the BaseAugmentation class.
 
     Attributes:
-    __templates: A string or a list of strings or samples that represents the templates for the augmentation.
-    __task: The task for which the augmentation is being performed.
+        __templates:
+            A string or a list of strings or samples that represents the templates for the augmentation.
+        __task:
+            The task for which the augmentation is being performed.
 
     Methods:
-    __init__(self, templates: Union[str, List[str]], task: str): Initializes the TemplaticAugment class.
-    fix(self, training_data: str, output_path: str, *args, **kwargs): Performs the templatic augmentation and exports the results to a specified path.
+        __init__(self, templates: Union[str, List[str]], task: str):
+            Initializes the TemplaticAugment class.
+        fix(self, training_data: str, output_path: str, *args, **kwargs):
+            Performs the templatic augmentation and exports the results to a specified path.
     """
 
     def __init__(self, templates: Union[str, List[str]], task: str) -> None:
-        """
-        This constructor for the TemplaticAugment class.
+        """This constructor for the TemplaticAugment class.
 
-        Parameters:
-        templates (Union[str, List[str]]): The templates to be used for the augmentation.
-        task (str): The task for which the augmentation is being performed.
+        Args:
+            templates (Union[str, List[str]]): The templates to be used for the augmentation.
+            task (str): The task for which the augmentation is being performed.
         """
         self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
@@ -320,21 +323,27 @@ class TemplaticAugment(BaseAugmentaion):
         elif isinstance(self.__templates, list) and isinstance(self.__templates[0], str):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
 
-    def fix(self, training_data: str, output_path: str, max_num=None, *args, **kwargs):
-        """
-        This method is used to perform the templatic augmentation.
+    def fix(
+        self,
+        training_data: Dict[str, Any],
+        output_path: str,
+        max_num=None,
+        *args,
+        **kwargs,
+    ):
+        """This method is used to perform the templatic augmentation.
+
         It takes the input data, performs the augmentation and then saves the augmented data to the output path.
 
-        Parameters:
-        training_data (dict): A dictionary containing the input data for augmentation.
-        output_path (str): The path where the augmented data will be saved.
-        *args: Variable length argument list.
-        **kwargs: Arbitrary keyword arguments.
+        Args:
+            training_data (dict): A dictionary containing the input data for augmentation.
+            output_path (str): The path where the augmented data will be saved.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
-        bool: Returns True upon successful completion of the method.
+            bool: Returns True upon successful completion of the method.
         """
-
         df = DataFactory(training_data["data_source"], self.__task)
         data = df.load()
         new_data = []
@@ -355,15 +364,13 @@ class TemplaticAugment(BaseAugmentaion):
     def search_sample_results(
         self, samples: List[Sample]
     ) -> Dict[str, List[Union[NERPrediction, SequenceLabel]]]:
-        """
-        This method is used to search the results of the samples for the entities in the templates.
+        """This method is used to search the results of the samples for the entities in the templates.
 
-        Parameters:
-        samples (List[Sample]): The samples for which the results are to be searched.
+        Args:
+            samples (List[Sample]): The samples for which the results are to be searched.
 
         Returns:
-        Dict[str, List[Union[NERPrediction, SequenceLabel]]]: A dictionary containing the search results.
-
+            Dict[str, List[Union[NERPrediction, SequenceLabel]]]: A dictionary containing the search results.
         """
         results_dict = defaultdict(list)
         for sample in samples:
@@ -386,16 +393,15 @@ class TemplaticAugment(BaseAugmentaion):
                 results_dict[ent_name].append(tuple(chunk))
         return results_dict
 
-    def extract_variable_names(self, f_string: str):
-        """
-        This method is used to extract the variable names from the templates.
+    @staticmethod
+    def extract_variable_names(f_string: str) -> List[str]:
+        """This method is used to extract the variable names from the templates.
 
-        Parameters:
-        f_string (str): The template string.
+        Args:
+            f_string (str): The template string.
 
         Returns:
-        List[str]: A list of variable names.
-
+            List[str]: A list of variable names.
         """
         pattern = r"{([^{}]*)}"
         matches = re.findall(pattern, f_string)
@@ -403,15 +409,13 @@ class TemplaticAugment(BaseAugmentaion):
         return variable_names
 
     def new_sample(self, template: Sample):
-        """
-        This method is used to generate a new sample from a template.
+        """This method is used to generate a new sample from a template.
 
-        Parameters:
-        template (Sample): The template from which the new sample is to be generated.
+        Args:
+            template (Sample): The template from which the new sample is to be generated.
 
         Returns:
-        Sample: The new sample generated from the template.
-
+            Sample: The new sample generated from the template.
         """
         template = copy(template)
         matches = re.finditer(r"{([^{}]*)}", template.original)
@@ -449,15 +453,13 @@ class TemplaticAugment(BaseAugmentaion):
             return None
 
     def str_to_sample(self, template: str):
-        """
-        This method is used to convert a template string to a Sample object.
+        """This method is used to convert a template string to a Sample object.
 
-        Parameters:
-        template (str): The template string to be converted.
+        Args:
+            template (str): The template string to be converted.
 
         Returns:
-        Sample: The Sample object generated from the template string.
-
+            Sample: The Sample object generated from the template string.
         """
         if self.__task == "ner":
             template = self.add_spaces_around_punctuation(template)
@@ -493,6 +495,7 @@ class TemplaticAugment(BaseAugmentaion):
 
     @property
     def templates(self):
+        """"""
         return self.__templates
 
     @templates.setter
@@ -501,21 +504,22 @@ class TemplaticAugment(BaseAugmentaion):
 
     @property
     def task(self):
+        """"""
         return self.__task
 
     @task.setter
     def task(self, task: str):
         self.__task = task
 
-    def add_spaces_around_punctuation(self, text: str):
-        """
-        This method is used to add spaces around punctuation in a string.
+    @staticmethod
+    def add_spaces_around_punctuation(text: str):
+        """This method is used to add spaces around punctuation in a string.
 
-        Parameters:
-        text (str): The string to which spaces are to be added.
+        Args:
+            text (str): The string to which spaces are to be added.
 
         Returns:
-        str: The string with spaces added around punctuation.
+            str: The string with spaces added around punctuation.
         """
         for punct in string.punctuation:
             if punct not in ["{", "}", "_"]:
