@@ -4,7 +4,7 @@ model_parameters:
   
 tests:
   defaults:
-    min_pass_rate: 1.0,
+    min_pass_rate: 1.0
   robustness:
     add_typo:
       min_pass_rate: 0.70

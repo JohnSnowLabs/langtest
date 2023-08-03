@@ -9,7 +9,6 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
-from langtest.utils.custom_types.sample import RuntimeSample
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
@@ -60,6 +59,7 @@ class Harness:
             "johnsnowlabs",
         ): "imdb/sample.csv",
     }
+    SUPPORTED_HUBS_HF_DATASET_NER = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = [
         "openai",
@@ -141,7 +141,7 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif (
-            type(data) is dict
+            isinstance(data, dict)
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             and task == "text-classification"
         ):
@@ -164,7 +164,19 @@ class Harness:
                 model = resource_filename("langtest", "data/textcat_imdb")
 
         elif (
-            type(data) is dict
+            isinstance(data, dict)
+            and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
+            and task == "ner"
+        ):
+            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
+                feature_column=data.get("feature_column", "tokens"),
+                target_column=data.get("target_column", "ner_tags"),
+                split=data.get("split", "test"),
+                subset=data.get("subset", None),
+            )
+
+        elif (
+            isinstance(data, dict)
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
         ):
@@ -234,7 +246,6 @@ class Harness:
 
         self._testcases = None
         self._generated_results = None
-        self._runtime = RuntimeSample()
         self.accuracy_results = None
         self.min_pass_dict = None
         self.default_min_pass_dict = None
@@ -322,16 +333,14 @@ class Harness:
                 ]
             else:
                 self._testcases = {}
-                self._runtime.transform_time = {}
                 for k, v in self.model.items():
                     _ = [
                         setattr(sample, "expected_results", v(sample.original))
                         for sample in m_data
                     ]
-                    (
-                        self._testcases[k],
-                        self._runtime.transform_time[k],
-                    ) = TestFactory.transform(self.task, self.data, tests, m_data=m_data)
+                    (self._testcases[k]) = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data
+                    )
 
                 return self
 
@@ -344,10 +353,7 @@ class Harness:
                     )
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != "bias"}
-                        (
-                            other_testcases,
-                            self._runtime.transform_time,
-                        ) = TestFactory.transform(
+                        (other_testcases) = TestFactory.transform(
                             self.task, self.data, tests, m_data=m_data
                         )
                         self._testcases.extend(other_testcases)
@@ -358,13 +364,13 @@ class Harness:
                     )
 
             else:
-                self._testcases, self._runtime.transform_time = TestFactory.transform(
+                self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
 
                 return self
 
-        self._testcases, self._runtime.transform_time = TestFactory.transform(
+        self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
         )
         return self
@@ -381,18 +387,18 @@ class Harness:
                 "calling the `.run()` method."
             )
         if not isinstance(self._testcases, dict):
-            self._generated_results, self._runtime.run_time = TestFactory.run(
+            self._generated_results = TestFactory.run(
                 self._testcases,
                 self.model,
                 is_default=self.is_default,
                 raw_data=self.data,
                 **self._config.get("model_parameters", {}),
             )
+
         else:
             self._generated_results = {}
-            self._runtime.run_time = {}
             for k, v in self.model.items():
-                self._generated_results[k], self._runtime.run_time[k] = TestFactory.run(
+                self._generated_results[k] = TestFactory.run(
                     self._testcases[k],
                     v,
                     is_default=self.is_default,
@@ -404,16 +410,13 @@ class Harness:
 
     def report(
         self,
-        return_runtime: bool = False,
-        unit: str = "ms",
         format: str = "dataframe",
         save_dir: str = None,
+        mlflow_tracking: bool = False,
     ) -> pd.DataFrame:
         """Generate a report of the test results.
 
         Args:
-            return_runtime (bool): whether to return runtime
-            unit (str): time unit to use
             format (str): format in which to save the report
             save_dir (str): name of the directory to save the file
         Returns:
@@ -458,7 +461,7 @@ class Harness:
                     min_pass_rate = self.min_pass_dict.get(
                         test_type, multiple_perturbations_min_pass_rate
                     )
-                if summary[test_type]["category"] == "Accuracy":
+                if summary[test_type]["category"] in ["Accuracy", "performance"]:
                     min_pass_rate = 1
 
                 report[test_type] = {
@@ -485,10 +488,70 @@ class Harness:
             df_report = df_report.reset_index(drop=True)
 
             self.df_report = df_report.fillna("-")
-            if return_runtime:
-                self.df_report[f"time_elapsed ({unit})"] = self.df_report[
-                    "test_type"
-                ].apply(lambda x: self._runtime.total_time(unit)[x])
+
+            if mlflow_tracking:
+                try:
+                    import mlflow
+                except ModuleNotFoundError:
+                    print("mlflow package not found. Install mlflow first")
+
+                import datetime
+
+                experiment_name = (
+                    self._actual_model
+                    if isinstance(self._actual_model, str)
+                    else self._actual_model.__class__.__module__
+                )
+
+                # Get the experiment
+                experiment = mlflow.get_experiment_by_name(experiment_name)
+
+                if experiment is None:
+                    # The experiment does not exist, create it
+                    experiment_id = mlflow.create_experiment(experiment_name)
+                else:
+                    # The experiment exists, get its ID
+                    experiment_id = experiment.experiment_id
+
+                current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                mlflow.start_run(
+                    run_name=self.task + "_testing_" + current_datetime,
+                    experiment_id=experiment_id,
+                )
+
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_pass_rate",
+                        float(row["pass_rate"].rstrip("%")) / 100,
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_min_pass_rate",
+                        float(row["minimum_pass_rate"].rstrip("%")) / 100,
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_pass_status", 1 if row["pass"] else 0
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_pass_count", row["pass_count"]
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_fail_count", row["fail_count"]
+                    ),
+                    axis=1,
+                )
+                mlflow.end_run()
 
             if format == "dataframe":
                 return self.df_report
@@ -529,7 +592,6 @@ class Harness:
 
         else:
             df_final_report = pd.DataFrame()
-            time_elapsed = {}
             for k, v in self.model.items():
                 for sample in self._generated_results[k]:
                     summary[sample.test_type]["category"] = sample.category
@@ -543,7 +605,7 @@ class Harness:
                         test_type, self.default_min_pass_dict
                     )
 
-                    if summary[test_type]["category"] == "Accuracy":
+                    if summary[test_type]["category"] in ["Accuracy", "performance"]:
                         min_pass_rate = 1
 
                     report[test_type] = {
@@ -565,12 +627,55 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
+                if mlflow_tracking:
+                    try:
+                        import mlflow
+                    except ModuleNotFoundError:
+                        print("mlflow package not found. Install mlflow first")
 
-                if return_runtime:
-                    if k not in time_elapsed:
-                        time_elapsed[k] = df_report["model_name"].apply(
-                            lambda x: self._runtime.multi_model_total_time(unit)[x]
-                        )
+                    import datetime
+
+                    experiment_name = k
+
+                    # Get the experiment
+                    experiment = mlflow.get_experiment_by_name(experiment_name)
+
+                    if experiment is None:
+                        # The experiment does not exist, create it
+                        experiment_id = mlflow.create_experiment(experiment_name)
+                    else:
+                        # The experiment exists, get its ID
+                        experiment_id = experiment.experiment_id
+
+                    current_datetime = datetime.datetime.now().strftime(
+                        "%Y-%m-%d_%H-%M-%S"
+                    )
+                    mlflow.start_run(
+                        run_name=self.task + "_testing_" + current_datetime,
+                        experiment_id=experiment_id,
+                    )
+
+                    df_report.apply(
+                        lambda row: mlflow.log_metric(
+                            row["test_type"] + "_pass_rate",
+                            float(row["pass_rate"].rstrip("%")) / 100,
+                        ),
+                        axis=1,
+                    )
+                    df_report.apply(
+                        lambda row: mlflow.log_metric(
+                            row["test_type"] + "_min_pass_rate",
+                            float(row["minimum_pass_rate"].rstrip("%")) / 100,
+                        ),
+                        axis=1,
+                    )
+                    df_report.apply(
+                        lambda row: mlflow.log_metric(
+                            row["test_type"] + "_pass_status", 1 if row["pass"] else 0
+                        ),
+                        axis=1,
+                    )
+                    mlflow.end_run()
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
@@ -605,16 +710,6 @@ class Harness:
                 ]
 
             styled_df = pivot_df.style.apply(color_cells)
-            if return_runtime:
-                time_elapsed_mean = {k: v.mean() for k, v in time_elapsed.items()}
-                df_time_elapsed = pd.DataFrame(
-                    list(time_elapsed_mean.items()),
-                    columns=["model_name", f"time_elapsed ({unit})"],
-                )
-                df_time_elapsed.set_index("model_name", inplace=True)
-                from IPython.display import display
-
-                display(df_time_elapsed)
 
             if format == "dataframe":
                 return styled_df
@@ -663,20 +758,19 @@ class Harness:
 
         if isinstance(self._generated_results, dict):
             generated_results_df = []
-            if isinstance(self._generated_results, dict):
-                for k, v in self._generated_results.items():
-                    model_generated_results_df = pd.DataFrame.from_dict(
-                        [x.to_dict() for x in v]
+            for k, v in self._generated_results.items():
+                model_generated_results_df = pd.DataFrame.from_dict(
+                    [x.to_dict() for x in v]
+                )
+                if (
+                    "test_case" in model_generated_results_df.columns
+                    and "original_question" in model_generated_results_df.columns
+                ):
+                    model_generated_results_df["original_question"].update(
+                        model_generated_results_df.pop("test_case")
                     )
-                    if (
-                        "test_case" in model_generated_results_df.columns
-                        and "original_question" in model_generated_results_df.columns
-                    ):
-                        model_generated_results_df["original_question"].update(
-                            model_generated_results_df.pop("test_case")
-                        )
-                    model_generated_results_df["model_name"] = k
-                    generated_results_df.append(model_generated_results_df)
+                model_generated_results_df["model_name"] = k
+                generated_results_df.append(model_generated_results_df)
             generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
 
         else:
@@ -717,8 +811,8 @@ class Harness:
 
     def augment(
         self,
-        input_path: str,
-        output_path: str,
+        training_data: dict,
+        save_data_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
@@ -726,14 +820,15 @@ class Harness:
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
         Args:
-            input_path (str): Path to the input file.
-            output_path (str): Path to save the augmented data.
+            training_data (dict): A dictionary containing the input data for augmentation.
+            save_data_path (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
                                     - 'inplace': Modifies the list of samples in place.
                                     - 'add': Adds new samples to the input data.
                                     - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                     Defaults to 'add'.
+            templates (Optional[Union[str, List[str]]]):
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -744,9 +839,6 @@ class Harness:
         Note:
             This method uses an instance of `AugmentRobustness` to perform the augmentation.
 
-        Example:
-            >>> harness = Harness(...)
-            >>> harness.augment("train.conll", "augmented_train.conll")
         """
         dtypes = list(
             map(
@@ -786,7 +878,7 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(input_path=input_path, output_path=output_path)
+            ).fix(training_data=training_data, output_path=save_data_path)
 
         else:
             _ = AugmentRobustness(
@@ -794,7 +886,11 @@ class Harness:
                 config=self._config,
                 h_report=self.df_report,
                 custom_proportions=custom_proportions,
-            ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
+            ).fix(
+                training_data=training_data,
+                output_path=save_data_path,
+                export_mode=export_mode,
+            )
 
         return self
 

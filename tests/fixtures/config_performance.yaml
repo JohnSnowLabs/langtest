@@ -1,0 +1,19 @@
+tests:
+  defaults:
+    min_pass_rate: 0.65
+    min_representation: 50
+  bias:
+    replace_to_female_pronouns:
+      min_pass_rate: 0.65
+    replace_to_male_pronouns:
+      min_pass_rate: 0.65
+  robustness:
+    lowercase:
+      min_pass_rate: 0.65
+    uppercase:
+      min_pass_rate: 0.65
+      
+  performance:
+    speed:
+      min_pass_rate: 80
+      unit: 'tokens/sec'

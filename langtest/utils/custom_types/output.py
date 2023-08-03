@@ -5,9 +5,7 @@ from .predictions import NERPrediction, SequenceLabel
 
 
 class SequenceClassificationOutput(BaseModel):
-    """
-    Output model for text classification tasks.
-    """
+    """Output model for text classification tasks."""
 
     predictions: List[SequenceLabel]
 
@@ -20,12 +18,12 @@ class SequenceClassificationOutput(BaseModel):
         return ",".join([x.label for x in self.predictions])
 
     def __str__(self):
-        """"""
+        """String representation"""
         labels = {elt.label: elt.score for elt in self.predictions}
         return f"SequenceClassificationOutput(predictions={labels})"
 
     def __eq__(self, other):
-        """"""
+        """Equality comparison method."""
         top_class = max(self.predictions, key=lambda x: x.score).label
         other_top_class = max(other.predictions, key=lambda x: x.score).label
         return top_class == other_top_class
@@ -37,15 +35,19 @@ class MinScoreOutput(BaseModel):
     min_score: float
 
     def to_str_list(self) -> float:
-        """"""
+        """Convert the output into list of strings.
+
+        Returns:
+            List[str]: predictions in form of a list of strings.
+        """
         return self.min_score
 
     def __repr__(self) -> str:
-        """"""
+        """Printable representation"""
         return f"{self.min_score}"
 
     def __str__(self) -> str:
-        """"""
+        """String representation"""
         return f"{self.min_score}"
 
 
@@ -55,40 +57,43 @@ class MaxScoreOutput(BaseModel):
     max_score: float
 
     def to_str_list(self) -> float:
-        """"""
+        """Formatting helper"""
         return self.max_score
 
     def __repr__(self) -> str:
-        """"""
+        """Printable representation"""
         return f"{self.max_score}"
 
     def __str__(self) -> str:
-        """"""
+        """String representation"""
         return f"{self.max_score}"
 
 
 class NEROutput(BaseModel):
-    """
-    Output model for NER tasks.
-    """
+    """Output model for NER tasks."""
 
     predictions: List[NERPrediction]
 
     @validator("predictions")
     def sort_by_appearance(cls, v):
-        """"""
+        """Sort spans by order of appearance in the text"""
         return sorted(v, key=lambda x: x.span.start)
 
     def __len__(self):
-        """"""
+        """Number of detected entities"""
         return len(self.predictions)
 
     def __getitem__(
-        self, item: Union[Span, int]
+        self, item: Union[Span, int, str]
     ) -> Optional[Union[List[NERPrediction], NERPrediction]]:
-        """"""
+        """Item getter"""
         if isinstance(item, int):
             return self.predictions[item]
+        elif isinstance(item, str):
+            for pred in self.predictions:
+                if pred.span.word == item:
+                    return pred
+            return None
         elif isinstance(item, Span):
             for prediction in self.predictions:
                 if prediction.span == item:
@@ -98,8 +103,7 @@ class NEROutput(BaseModel):
             return [self.predictions[i] for i in range(item.start, item.stop)]
 
     def to_str_list(self) -> str:
-        """
-        Converts predictions into a list of strings.
+        """Converts predictions into a list of strings.
 
         Returns:
             List[str]: predictions in form of a list of strings.
@@ -107,43 +111,39 @@ class NEROutput(BaseModel):
         return ", ".join([str(x) for x in self.predictions if str(x)[-3:] != ": O"])
 
     def __repr__(self) -> str:
-        """"""
+        """Printable representation"""
         return self.predictions.__repr__()
 
     def __str__(self) -> str:
-        """"""
+        """String representation"""
         return [str(x) for x in self.predictions].__repr__()
 
     def __eq__(self, other: "NEROutput"):
-        """"""
+        """Equality comparison method."""
         # NOTE: we need the list of transformations applied to the sample to be able
         # to align and compare two different NEROutput
         raise NotImplementedError()
 
 
 class TranslationOutput(BaseModel):
-    """
-    Output model for translation tasks.
-    """
+    """Output model for translation tasks."""
 
     translation_text: str  # Changed from List[str] to str
 
     def to_str_list(self) -> List[str]:
-        """
-        Returns the translation_text as a list of strings.
+        """Formatting helper
+
+        Returns:
+             List[str]: the translation_text as a list of strings.
         """
         return [self.translation_text]  # Wrap self.translation_text in a list
 
     def __str__(self):
-        """
-        String representation of TranslationOutput.
-        """
+        """String representation of TranslationOutput."""
         return self.translation_text  # Return translation_text directly
 
     def __eq__(self, other):
-        """
-        Equality comparison method.
-        """
+        """Equality comparison method."""
         if isinstance(other, TranslationOutput):
             return self.translation_text == other.translation_text
         if isinstance(other, list):
