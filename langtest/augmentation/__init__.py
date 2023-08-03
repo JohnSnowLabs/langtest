@@ -327,10 +327,10 @@ class TemplaticAugment(BaseAugmentaion):
         self,
         training_data: Dict[str, Any],
         output_path: str,
-        max_num=None,
+        max_num: int = None,
         *args,
         **kwargs,
-    ):
+    ) -> bool:
         """This method is used to perform the templatic augmentation.
 
         It takes the input data, performs the augmentation and then saves the augmented data to the output path.
@@ -338,6 +338,7 @@ class TemplaticAugment(BaseAugmentaion):
         Args:
             training_data (dict): A dictionary containing the input data for augmentation.
             output_path (str): The path where the augmented data will be saved.
+            max_num (int): Maximum number of new samples to generate
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
@@ -358,11 +359,11 @@ class TemplaticAugment(BaseAugmentaion):
                     new_data.append(new_sample)
 
         df.export(new_data, output_path)
-
         return True
 
+    @staticmethod
     def search_sample_results(
-        self, samples: List[Sample]
+        samples: List[Sample],
     ) -> Dict[str, List[Union[NERPrediction, SequenceLabel]]]:
         """This method is used to search the results of the samples for the entities in the templates.
 
@@ -495,7 +496,7 @@ class TemplaticAugment(BaseAugmentaion):
 
     @property
     def templates(self):
-        """"""
+        """Templates getter"""
         return self.__templates
 
     @templates.setter
@@ -504,7 +505,7 @@ class TemplaticAugment(BaseAugmentaion):
 
     @property
     def task(self):
-        """"""
+        """Task getter"""
         return self.__task
 
     @task.setter

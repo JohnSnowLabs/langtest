@@ -369,11 +369,11 @@ class ConllDataset(_IDataset):
 
         return data
 
-    def export_data(self, data: List[Sample], output_path: str):
+    def export_data(self, data: List[NERSample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
-            data (List[Sample]):
+            data (List[NERSample]):
                 data to export
             output_path (str):
                 path to save the data to
