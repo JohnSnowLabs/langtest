@@ -1,10 +1,12 @@
 import csv
 import importlib
-from collections import defaultdict
+import logging
 import os
 import re
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from collections import defaultdict
+from typing import Dict, List
+from typing import Optional
 
 import jsonlines
 import pandas as pd
@@ -132,7 +134,7 @@ class DataFactory:
         )
         return self.init_cls.load_data()
 
-    def export(self, data: List[Sample], output_path: str):
+    def export(self, data: List[Sample], output_path: str) -> None:
         """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
@@ -190,11 +192,14 @@ class DataFactory:
                                 dataset_name="XSum",
                             )
                         )
-
+        else:
+            logging.warning(
+                f"File {file_path} not supported for `load_curated_bias`, the biases will be empty."
+            )
         return data
 
     @classmethod
-    def _load_dataset(cls, dataset_name: str):
+    def _load_dataset(cls, dataset_name: str) -> str:
         """Loads a dataset
 
         Args:
@@ -364,11 +369,11 @@ class ConllDataset(_IDataset):
 
         return data
 
-    def export_data(self, data: List[Sample], output_path: str):
+    def export_data(self, data: List[NERSample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
-            data (List[Sample]):
+            data (List[NERSample]):
                 data to export
             output_path (str):
                 path to save the data to
@@ -1088,7 +1093,9 @@ class HuggingFaceDataset(_IDataset):
             row = Formatter.process(s, output_format="csv")
             rows.append(row)
 
-        df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
+        df = pd.DataFrame(
+            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
+        )
         df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
