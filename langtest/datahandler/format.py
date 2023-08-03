@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
-from typing import Tuple, List, Union
 import re
-from ..utils.custom_types import Sample
+from abc import ABC, abstractmethod
+from typing import List, Tuple, Union
+
+from ..utils.custom_types import NERSample, Sample, SequenceClassificationSample
 
 
 class BaseFormatter(ABC):
@@ -90,22 +91,19 @@ class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
     """
 
     @staticmethod
-    def to_csv(sample: Sample) -> str:
-        """Convert a Sample object into a row for exporting.
+    def to_csv(sample: SequenceClassificationSample) -> Tuple[str, str]:
+        """Convert a SequenceClassificationSample object into a row for exporting.
 
         Args:
-            Sample:
-                Sample object to convert.
+            sample (SequenceClassificationSample) : Sample object to convert.
 
         Returns:
-            List[str]:
+            Tuple[str, str]:
                 Row formatted as a list of strings.
         """
         if sample.test_case:
-            row = [sample.test_case, sample.expected_results.predictions[0].label]
-        else:
-            row = [sample.original, sample.expected_results.predictions[0].label]
-        return row
+            return [sample.test_case, sample.expected_results.predictions[0].label]
+        return [sample.original, sample.expected_results.predictions[0].label]
 
 
 class NEROutputFormatter(BaseFormatter):
@@ -117,21 +115,21 @@ class NEROutputFormatter(BaseFormatter):
 
     @staticmethod
     def to_csv(
-        sample: Sample, delimiter: str = ","
+        sample: NERSample, delimiter: str = ",", temp_id: int = None
     ) -> Tuple[List[str], List[str], List[str], List[str]]:
-        """Converts a custom type to a CSV string.
+        """Converts a NERSample to a CSV string.
 
         Args:
-            sample (Sample):
+            sample (NERSample):
                 The input sample containing the `NEROutput` object to convert.
             delimiter (str):
                 The delimiter character to use in the CSV string.
+            temp_id (int):
+                A temporary ID to use for grouping entities by document.
 
         Returns:
             Tuple[List[str], List[str], List[str], List[str]]:
-                tuple containing the list of tokens of the original sentence, the list of
-                labels of the original sentence, the list of tokens for the perturbed sentence
-                and the labels of the perturbed sentence.
+                The CSV or CoNLL string representation of the `NEROutput` object along with the document id
         """
         test_case = sample.test_case
         original = sample.original
@@ -161,12 +159,12 @@ class NEROutputFormatter(BaseFormatter):
 
     @staticmethod
     def to_conll(
-        sample: Sample, writing_mode: str = "ignore"
+        sample: NERSample, writing_mode: str = "ignore"
     ) -> Union[str, Tuple[str, str]]:
         """Converts a custom type to a CoNLL string.
 
         Args:
-            sample (Sample):
+            sample (NERSample):
                 The input sample containing the `NEROutput` object to convert.
             writing_mode (str):
                 what to do with the expected results if present:

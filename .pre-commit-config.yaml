@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: pydocstyle
         args: [
-            "--add-ignore=D100,D104,D105,D400,D415,D419",
+            "--add-ignore=D100,D104,D105,D400,D415",
             "--add-select=D417",
             "--convention=google"
         ]
