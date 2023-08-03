@@ -1,7 +1,8 @@
-from pathlib import Path
-import os
-import pytest
 import json
+import os
+from pathlib import Path
+
+import pytest
 
 
 def pytest_sessionstart():

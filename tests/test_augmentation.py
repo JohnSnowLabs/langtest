@@ -296,16 +296,16 @@ class TestTemplaticAugmentation(unittest.TestCase):
             "My -X- -X- O",
             "name -X- -X- O",
             "is -X- -X- O",
-            "Jean -X- -X- B-PER",
-            "- -X- -X- I-PER",
-            "Pierre -X- -X- I-PER",
+            "Jean NN NN B-PER",
+            "- NN NN I-PER",
+            "Pierre NN NN I-PER",
             "and -X- -X- O",
             "I -X- -X- O",
             "am -X- -X- O",
             "from -X- -X- O",
-            "New -X- -X- B-LOC",
-            "York -X- -X- I-LOC",
-            "City -X- -X- I-LOC",
+            "New NN NN B-LOC",
+            "York NN NN I-LOC",
+            "City NN NN I-LOC",
         ]
         generator = TemplaticAugment(
             templates=["My name is {PER} and I am from {LOC}"], task="ner"
