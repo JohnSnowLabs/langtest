@@ -1,5 +1,16 @@
 import pytest
 import pandas as pd
+from langtest.transform.accuracy import (
+    BaseAccuracy,
+    MinPrecisionScore,
+    MinF1Score,
+    MinMicroF1Score,
+    MinMacroF1Score,
+    MinWeightedF1Score,
+    MinEMcore,
+    MinBLEUcore,
+    MinROUGEcore,
+)
 from langtest.utils.custom_types import SequenceLabel, Span
 from langtest.utils.custom_types.output import (
     NEROutput,
@@ -7,6 +18,7 @@ from langtest.utils.custom_types.output import (
     SequenceClassificationOutput,
 )
 from langtest.utils.custom_types.sample import (
+    MinScoreSample,
     NERSample,
     QASample,
     SequenceClassificationSample,
@@ -94,3 +106,58 @@ class TestAccuracy:
                 )
             ],
         }
+
+    @pytest.mark.parametrize(
+        "accuracy",
+        [
+            MinPrecisionScore,
+            MinF1Score,
+            MinMicroF1Score,
+            MinMacroF1Score,
+            MinWeightedF1Score,
+            MinEMcore,
+            MinBLEUcore,
+            MinROUGEcore,
+        ],
+    )
+    def test_transform(self, accuracy: BaseAccuracy, sample_data) -> None:
+        """Test the transform method of accuracy-related classes.
+
+        Args:
+            accuracy (BaseAccuracy): An accuracy-related class to test.
+            sample_data (dict): Sample data for different tasks.
+
+        Returns:
+            None
+        """
+        for alias in accuracy.alias_name:
+            for task in accuracy.supported_tasks:
+                if task == "text-classification":
+                    y_true = (
+                        pd.Series(sample_data["text-classification"])
+                        .apply(
+                            lambda x: [y.label for y in x.expected_results.predictions]
+                        )
+                        .explode()
+                    )
+                elif task == "ner":
+                    y_true = pd.Series(sample_data["ner"]).apply(
+                        lambda x: [y.entity for y in x.expected_results.predictions]
+                    )
+                    y_true = y_true.explode().apply(
+                        lambda x: x.split("-")[-1] if isinstance(x, str) else x
+                    )
+
+                else:
+                    y_true = (
+                        pd.Series(sample_data[task])
+                        .apply(lambda x: x.expected_results)
+                        .explode()
+                    )
+                transform_results = accuracy.transform(
+                    alias, y_true, self.accuracy_config[alias]
+                )
+                assert isinstance(transform_results, list)
+
+                for _, result in zip(y_true, transform_results):
+                    assert isinstance(result, MinScoreSample)

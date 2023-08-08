@@ -494,8 +494,8 @@ class RobustnessTestCaseQaAndSummarization(unittest.TestCase):
         """
         prob = 1.0
         for test in self.perturbations_list:
-            for s in self.samples:
-                sample = self.samples[s][-1]
+            for task in self.samples:
+                sample = self.samples[task][-1]
                 test_func = self.supported_tests[test].transform
 
                 if test not in [
@@ -530,7 +530,7 @@ class RobustnessTestCaseQaAndSummarization(unittest.TestCase):
                         ],
                     )
 
-                if s == "question-answering":
+                if task == "question-answering":
                     assert (
                         sample.perturbed_question is not None
                         and sample.perturbed_context is not None
