@@ -2,6 +2,8 @@ import unittest
 from langtest.transform.robustness import *
 from langtest.transform.constants import A2B_DICT
 from langtest.utils.custom_types import SequenceClassificationSample
+from langtest.utils.custom_types.sample import QASample, SummarizationSample
+from langtest.transform import TestFactory
 
 
 class RobustnessTestCase(unittest.TestCase):
@@ -434,3 +436,51 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
+
+
+class RobustnessTestCaseQaAndSummarization(unittest.TestCase):
+    """
+    A test case class for testing QA and summarization samples on robustness classes.
+    """
+
+    def available_test(self) -> dict:
+        """
+        Get a dictionary of available robustness tests.
+
+        Returns:
+            dict: A dictionary containing available robustness tests.
+        """
+        tests = {
+            j: i
+            for i in BaseRobustness.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
+
+    def setUp(self) -> None:
+        """
+        Set up the test environment before each test.
+
+        Returns:
+            None
+        """
+        test_scenarios = TestFactory.test_scenarios()
+        self.available_tests = {
+            test: list(scenarios.keys()) for test, scenarios in test_scenarios.items()
+        }
+
+        self.perturbations_list = self.available_tests["robustness"]
+        self.supported_tests = self.available_test()
+        self.samples = {
+            "question-answering": [
+                QASample(
+                    original_question="What is John Snow Labs?",
+                    original_context="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
+                )
+            ],
+            "summarization": [
+                SummarizationSample(
+                    original="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
+                )
+            ],
+        }
