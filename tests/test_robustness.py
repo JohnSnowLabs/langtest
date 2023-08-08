@@ -484,3 +484,56 @@ class RobustnessTestCaseQaAndSummarization(unittest.TestCase):
                 )
             ],
         }
+
+    def test(self) -> None:
+        """
+        Test QA and summarization sample for robustness classes.
+
+        Returns:
+            None
+        """
+        prob = 1.0
+        for test in self.perturbations_list:
+            for s in self.samples:
+                sample = self.samples[s][-1]
+                test_func = self.supported_tests[test].transform
+
+                if test not in [
+                    "swap_entities",
+                    "american_to_british",
+                    "british_to_american",
+                    "add_context",
+                    "multiple_perturbations",
+                ]:
+                    sample.transform(test_func, {}, prob)
+                elif test in ["american_to_british", "british_to_american"]:
+                    sample.transform(test_func, {"accent_map": A2B_DICT}, prob)
+                elif test == "add_context":
+                    sample.transform(
+                        test_func,
+                        {
+                            "ending_context": ["Bye", "Reported"],
+                            "starting_context": ["Hi", "Good morning", "hello"],
+                        },
+                        prob,
+                    )
+                elif test == "multiple_perturbations":
+                    sample.transform(
+                        test_func,
+                        {},
+                        prob,
+                        perturbations=[
+                            "lowercase",
+                            "add_ocr_typo",
+                            "titlecase",
+                            "number_to_word",
+                        ],
+                    )
+
+                if s == "question-answering":
+                    assert (
+                        sample.perturbed_question is not None
+                        and sample.perturbed_context is not None
+                    )
+                else:
+                    assert sample.test_case is not None
