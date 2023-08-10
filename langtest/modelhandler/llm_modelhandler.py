@@ -161,3 +161,16 @@ class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForClinicalTests(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for clinical tests.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+
