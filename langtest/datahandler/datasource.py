@@ -738,6 +738,7 @@ class JSONLDataset(_IDataset):
         "summarization",
         "toxicity",
         "translation",
+        "clinical-tests",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -857,14 +858,13 @@ class JSONLDataset(_IDataset):
                 elif self.task == "clinical-tests":
                     data.append(
                         ClinicalSample(
-                            patient_info_A=item[self.column_matcher["Patient info A"]],
-                            patient_info_B=item[self.column_matcher["Patient info B"]],
-                            diagnosis=item[self.column_matcher["Diagnosis"]],
+                            patient_info_A=item["Patient info A"],
+                            patient_info_B=item["Patient info B"],
+                            diagnosis=item["Diagnosis"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-    
 
         return data
 
