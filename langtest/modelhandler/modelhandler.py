@@ -50,6 +50,7 @@ class ModelFactory:
         "summarization",
         "toxicity",
         "translation",
+        "clinical-tests",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
