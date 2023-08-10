@@ -41,3 +41,52 @@ Prior to proceeding, ensure that you have meticulously reviewed each step outlin
             .
             .
 ```
+
+### Span Tracking
+
+In Named Entity Recognition (NER) tasks, accurately identifying entities within text is crucial. This requires keeping track of spans, which are the positions of the original word and the transformed word within the sentence. Accurate span recognition improves NER system performance and ensures precise entity identification.
+
+```python
+    transformations.append(
+        Transformation(
+            original_span=Span(
+                start=match.start(),
+                end=match.end(),
+                word=original_word,
+            ),
+            new_span=Span(
+                start=match.start(),
+                end=match.start() + len(transformed_word),
+                word=transformed_word,
+            ),
+            ignore=False,
+        )
+    )
+```
+
+> Span tracking is only necessary for text classification and NER tests. For question answering and summarization tests, span tracking is not required.
+
+### Feature Implementation Guidelines
+- If your feature requires using specific data, you can add it to the **constants.py** file as a variable (e.g., a dictionary or a list).
+
+- Write the class name and it's corresponding alias name in the **constants.py** file within the `DEFAULT_PERTURBATIONS` and `PERTURB_CLASS_MAP` sections.
+
+- When contributing to LangTest, kindly ensure new features are added without introducing external dependencies
+
+### Testing Your Feature
+
+It is a good practive that you should add necessary tests after making any feature update or a fix etc.
+
+- You can find all of the test files neatly organized within the designated `test` directory. To ensure comprehensive testing coverage, it is of utmost importance that you create a test that corresponds specifically to your feature. 
+
+- This test should be integrated into the **test_robustness.py** file, which serves as a central hub for assessing the resilience and effectiveness of various components. 
+
+```python
+    def test_your_test_name(self) -> None:
+        """
+        Test the Yourclassname ...
+
+        """
+        transformed_samples = Yourclassname.transform(self.sentences)
+        # add assertions to validate the transformed_samples
+```
