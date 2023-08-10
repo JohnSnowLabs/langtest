@@ -86,3 +86,79 @@ Use Poetry to install the project dependencies:
    ```bash
    poetry install --with dev
    ```
+   
+7. ### Make necessary changes and commit those changes 
+
+Add those changes to the branch you just created using the `git add` command:
+
+```
+git add .
+```
+Now commit those changes using the `git commit` command with a meaningful message:
+
+```
+git commit -m "Add feature: feature-name" 
+```
+
+8. ### Push changes to GitHub
+
+Push your changes using the command `git push`:
+
+```
+git push -u origin your-branch-name
+```
+
+replacing `your-branch-name` with the name of the branch you created earlier.
+
+9. ### Submit your changes for review
+
+If you go to your repository on GitHub, you'll see a `Compare & pull request` button. Click on that button.
+
+<img style="float: right;" src="https://github.com/RakshitKhajuria/test/assets/71117423/86cb56af-1dad-467e-afc1-f4594615783b" alt="create a pull request" />
+
+10. ### Create a pull request (PR)
+
+Create a pull request (PR) from your forked repository to the main LangTest repository.
+- Clearly describe the changes you've made and the issue it addresses in the PR description.
+- If the PR is related to an existing issue, mention it using the syntax "Fixes #issue_number."
+> For pull request template click [here](https://github.com/JohnSnowLabs/langtest/blob/main/PULL_REQUEST_TEMPLATE.md)
+
+<img style="float: right;" src="https://github.com/RakshitKhajuria/test/assets/71117423/5c629508-53a7-4444-b036-15f694df675c" alt="submit pull request" />
+
+Our team will review your pull request, provide feedback, and work with you to ensure that your contribution meets the project's guidelines and quality standards
+
+## Proposing a New Issue
+
+1. If you have an idea for a new feature, improvement, or bug fix, you can propose a new issue.
+2. Go to the [Issue Tracker](https://github.com/JohnSnowLabs/langtest/issues) and click on "New Issue" or just create a new issue from [here](https://github.com/JohnSnowLabs/langtest/issues/new) 
+3. Choose the appropriate issue lables (feature, fix, bug, etc.).
+4. Provide a clear and concise title and description of the proposed issue.
+5. Add labels and assignees, if applicable, to help categorize and track the issue.
+
+We're excited to have you on board with us! Together, we can make NLP models safer, more reliable, and fairer for everyone. 
+
+### **Happy contributing!** 💫
+
+## Where to go from here?
+
+Congrats! You just completed the standard fork -> clone -> edit -> pull request workflow that you'll often encounter as a contributor!
+
+Celebrate your contribution and share it with your friends and followers by going to [LinkedIn](www.linkedin.com).
+
+You can join our community team if you need any help or have any questions. 
+
+- [Slack](https://www.johnsnowlabs.com/slack-redirect/) For live discussion with the LangTest community, join the `#langtest` channel
+- [GitHub](https://github.com/JohnSnowLabs/langtest/tree/main) For bug reports, feature requests, and contributions
+- [Discussions](https://github.com/JohnSnowLabs/langtest/discussions) To engage with other community members, share ideas, and show off how you use LangTest!
+  
+## Contributors
+
+We would like to acknowledge all contributors of this open-source community project. 
+
+<a href="https://github.com/johnsnowlabs/langtest/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=johnsnowlabs/langtest" />
+</a>
+
+## License
+
+LangTest is released under the [Apache License 2.0](https://github.com/JohnSnowLabs/langtest/blob/main/LICENSE), which guarantees commercial use, modification, distribution, patent use, private use and sets limitations on trademark use, liability and warranty.
