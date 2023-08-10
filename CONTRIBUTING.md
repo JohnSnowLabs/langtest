@@ -1,6 +1,9 @@
 # Contributing to LangTest
 
-Thank you for your interest in contributing to LangTest! We value the contributions of our community members and are excited to have you on board. To ensure a smooth and collaborative development process, please follow these guidelines:
+Thank you for your interest in contributing to LangTest! We value the contributions of our community members and are excited to have you on board. . To make the development journey smooth and collaborative, please adhere to the following steps:
+- Thoroughly review the guidelines provided below.
+- If you're eager to add a new feature to the LangTest library, navigate to the [documentation](https://langtest.org/docs/pages/docs/contribute) for a clear understanding.
+- To illustrate the process, we've included a simple example in the documentation to guide you.
 
 ## Finding an Issue
 
