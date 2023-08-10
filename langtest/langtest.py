@@ -33,7 +33,7 @@ class Harness:
         "summarization",
         "toxicity",
         "translation",
-        "clinical-tests"
+        "clinical-tests",
     ]
     SUPPORTED_HUBS = [
         "spacy",
