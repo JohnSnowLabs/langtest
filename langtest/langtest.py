@@ -238,13 +238,19 @@ class Harness:
                 path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
             )
 
-        elif type(model) == dict:
+        elif isinstance(model, list):
             model_dict = {}
-            for k, v in model.items():
-                model_dict[k] = ModelFactory.load_model(
-                    task=task, path=k, hub=v, **self._config.get("model_parameters", {})
+            for i in model:
+                model = i["model"]
+                hub = i["hub"]
+
+                model_dict[model] = ModelFactory.load_model(
+                    path=model,
+                    task=task,
+                    hub=hub,
+                    **self._config.get("model_parameters", {}),
                 )
-            self.model = model_dict
+                self.model = model_dict
 
         else:
             self.model = ModelFactory(
@@ -258,7 +264,7 @@ class Harness:
         print("Test Configuration : \n", formatted_config)
 
         global GLOBAL_MODEL
-        if not isinstance(model, dict):
+        if not isinstance(model, list):
             GLOBAL_MODEL = self.model
 
         self._testcases = None
@@ -307,13 +313,17 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
 
-            elif isinstance(model, dict):
+            elif isinstance(model, list):
                 model_dict = {}
-                for k, v in model.items():
-                    model_dict[k] = ModelFactory.load_model(
+
+                for i in model:
+                    model = i["model"]
+                    hub = i["hub"]
+
+                    model_dict[model] = ModelFactory.load_model(
+                        path=model,
                         task=task,
-                        path=k,
-                        hub=v,
+                        hub=hub,
                         **self._config.get("model_parameters", {}),
                     )
                 self.model = model_dict
