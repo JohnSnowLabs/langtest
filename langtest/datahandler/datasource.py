@@ -101,7 +101,7 @@ class DataFactory:
             file_path (str): Path to the dataset.
             task (str): Task to be evaluated.
         """
-        self._file_path = file_path
+        self._file_path = file_path["data_source"]
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
             for cls in _IDataset.__subclasses__()
