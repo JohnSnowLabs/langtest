@@ -16,45 +16,40 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.params = {
             "spacy_ner": {
                 "task": "ner",
-                "model": "en_core_web_sm",
+                "model": {"model": "en_core_web_sm", "hub": "spacy"},
                 "data": "tests/fixtures/test.conll",
                 "config": "tests/fixtures/config_ner.yaml",
-                "hub": "spacy",
             },
             "huggingface_ner": {
                 "task": "ner",
-                "model": "dslim/bert-base-NER",
+                "model": {"model": "dslim/bert-base-NER", "hub": "huggingface"},
                 "data": "tests/fixtures/test.conll",
                 "config": "tests/fixtures/config_ner.yaml",
-                "hub": "huggingface",
             },
             "huggingface_textclassification": {
                 "task": "text-classification",
-                "model": "distilbert-base-uncased",
+                "model": {"model": "distilbert-base-uncased", "hub": "huggingface"},
                 "data": "tests/fixtures/test.conll",
                 "config": "tests/fixtures/config_ner.yaml",
-                "hub": "huggingface",
             },
             "huggingface_textclassification_csv_dataset": {
                 "task": "text-classification",
-                "model": "lvwerra/distilbert-imdb",
+                "model": {"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
                 "data": "tests/fixtures/text_classification.csv",
                 "config": "tests/fixtures/config_text_classification.yaml",
-                "hub": "huggingface",
             },
             "spacy_textclassification_hf_dataset": {
                 "task": "text-classification",
-                "model": "textcat_imdb",
+                "model": {"model": "textcat_imdb", "hub": "spacy"},
                 "data": {"name": "imdb"},
                 "config": "tests/fixtures/config_text_classification.yaml",
-                "hub": "spacy",
+
             },
             "huggingface_textclassification_hf_dataset": {
                 "task": "text-classification",
-                "model": "lvwerra/distilbert-imdb",
+                "model": {"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
                 "data": {"name": "imdb"},
                 "config": "tests/fixtures/config_text_classification.yaml",
-                "hub": "huggingface",
             },
         }
 
