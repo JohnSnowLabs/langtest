@@ -153,8 +153,7 @@ class NEREnd2EndPipeline(FlowSpec):
         """Performs the testing procedure of the model on a set of tests using langtest"""
         self.harness = Harness(
             task=self.task,
-            model=self.output_dir,
-            hub=self.hub,
+            model={"model": self.output_dir, "hub": self.hub},
             data=self.train_data,
         )
         if self.config:
