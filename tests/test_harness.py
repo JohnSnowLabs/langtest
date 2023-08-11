@@ -18,10 +18,9 @@ class HarnessTestCase(unittest.TestCase):
         cls.config_path = "tests/fixtures/config_ner.yaml"
         cls.harness = Harness(
             task="ner",
-            model="dslim/bert-base-NER",
+            model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
             data=cls.data_path,
             config=cls.config_path,
-            hub="huggingface",
         )
 
         cls.harness.generate().run()
@@ -39,7 +38,7 @@ class HarnessTestCase(unittest.TestCase):
         with self.assertRaises(ValueError) as _:
             Harness(
                 task="ner",
-                model="dslim/bert-base-NER",
+                model={"model": "dslim/bert-base-NER"},
                 data=self.data_path,
                 config=self.config_path,
             )
@@ -93,10 +92,9 @@ class HarnessTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             Harness(
                 task="text-classifer",
-                model="dslim/bert-base-NER",
+                model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
                 data=self.data_path,
                 config=self.config_path,
-                hub="huggingface",
             )
 
     def test_unsupported_test_for_task(self):
@@ -106,7 +104,7 @@ class HarnessTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             h = Harness(
                 task="text-classification",
-                model="textcat_imdb",
+                model={"model": "textcat_imdb", "hub": "spacy"},
                 hub="spacy",
                 config={
                     "tests": {"robustness": {"swap_entities": {"min_pass_rate": 0.5}}}
@@ -146,10 +144,9 @@ class HarnessTestCase(unittest.TestCase):
         save_dir = "/tmp/saved_text_classification_harness_test"
         tc_harness = Harness(
             task="text-classification",
-            model="bert-base-cased",
+            model={"model": "bert-base-cased", "hub": "huggingface"},
             data="tests/fixtures/text_classification.csv",
             config="tests/fixtures/config_text_classification.yaml",
-            hub="huggingface",
         )
         tc_harness.generate()
         tc_harness.save(save_dir)
@@ -157,8 +154,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="bert-base-uncased",
-            hub="huggingface",
+            model={"model": "bert-base-cased", "hub": "huggingface"},
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
@@ -171,8 +167,7 @@ class HarnessTestCase(unittest.TestCase):
         save_dir = "/tmp/saved_HF_data_text_classification_harness_test"
         tc_harness = Harness(
             task="text-classification",
-            hub="huggingface",
-            model="aychang/roberta-base-imdb",
+            model={"model": "aychang/roberta-base-imdb", "hub": "huggingface"},
             data={"name": "imdb"},
         )
         tc_harness.data = tc_harness.data[:10]
@@ -182,8 +177,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="aychang/roberta-base-imdb",
-            hub="huggingface",
+            model={"model": "aychang/roberta-base-imdb", "hub": "huggingface"},
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
@@ -198,9 +192,8 @@ class HarnessTestCase(unittest.TestCase):
 
         harness = Harness(
             task="ner",
-            model="bert-base-cased",
+            model={"model": "bert-base-cased", "hub": "huggingface"},
             data="tests/fixtures/test.conll",
-            hub="huggingface",
         )
         harness.data = harness.data[:10]
         harness.generate()
@@ -246,21 +239,25 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
         """
         Test NER task with Hugging Face model.
         """
-        h = Harness(task="ner", model="dslim/bert-base-NER", hub="huggingface")
+        h = Harness(
+            task="ner", model={"model": "dslim/bert-base-NER", "hub": "huggingface"}
+        )
         h.generate().run().report()
 
     def test_ner_jsl(self):
         """
         Test NER task with John Snow Labs model.
         """
-        h = Harness(task="ner", model="ner_dl_bert", hub="johnsnowlabs")
+        h = Harness(task="ner", model={"model": "ner_dl_bert", "hub": "johnsnowlabs"})
         h.generate().run().report()
 
     def test_text_classification_spacy(self):
         """
         Test text classification task with Spacy model.
         """
-        h = Harness(task="text-classification", model="textcat_imdb", hub="spacy")
+        h = Harness(
+            task="text-classification", model={"model": "textcat_imdb", "hub": "spacy"}
+        )
         h.generate().run().report()
 
     def test_text_classification_hf(self):
@@ -268,7 +265,8 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
         Test text classification task with Hugging Face model.
         """
         h = Harness(
-            task="text-classification", model="lvwerra/distilbert-imdb", hub="huggingface"
+            task="text-classification",
+            model={"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
         )
         h.generate().run().report()
 
@@ -279,8 +277,7 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
         try:
             h = Harness(
                 task="text-classification",
-                model="en.sentiment.imdb.glove",
-                hub="johnsnowlabs",
+                model={"model": "en.sentiment.imdb.glove", "hub": "johnsnowlabs"},
             )
             h.generate().run().report()
         except Exception as e:
