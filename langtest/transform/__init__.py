@@ -1345,7 +1345,7 @@ class ComparativeTestFactory(ITests):
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the comparative tests"""
-        self.supported_tests = self.available_tests()
+
         self.data_handler = data_handler
         self.tests = tests
         self.kwargs = kwargs
@@ -1374,16 +1374,8 @@ class ComparativeTestFactory(ITests):
             List[Sample]: The transformed data based on the implemented comparative tests
 
         """
-        supported_tests = cls.available_tests()
-        tasks = []
-        for test_name, samples in sample_list.items():
-            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
-            if isinstance(out, list):
-                tasks.extend(out)
-            else:
-                tasks.append(out)
-
-        return tasks
+        task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        return task
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
@@ -1393,3 +1385,26 @@ class ComparativeTestFactory(ITests):
             Dict[str, str]: Empty dict, no comparative tests
         """
         return {}
+
+    async def run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs the comparative tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the comparative tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented comparative tests
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
