@@ -1342,6 +1342,9 @@ class ComparativeTestFactory(ITests):
     """Factory class for the comparative tests"""
 
     alias_name = "comparative"
+    supported_tasks = [
+        "clinical-tests",
+    ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the comparative tests"""
@@ -1357,7 +1360,10 @@ class ComparativeTestFactory(ITests):
             Empty list
 
         """
-        return []
+        for sample in self.data_handler:
+            sample.test_type = "comparative"
+            sample.category = "comparative"
+        return self.data_handler
 
     @classmethod
     async def run(
@@ -1384,7 +1390,7 @@ class ComparativeTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no comparative tests
         """
-        return {}
+        return {"comparative": cls}
 
     async def run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
         """Runs the comparative tests
@@ -1399,7 +1405,7 @@ class ComparativeTestFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list:
+        for sample in sample_list["comparative"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1407,4 +1413,4 @@ class ComparativeTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
-        return sample_list
+        return sample_list["comparative"]
