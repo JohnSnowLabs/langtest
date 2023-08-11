@@ -92,16 +92,17 @@ class Harness:
         self,
         task: str,
         model: Optional[Union[list, dict]] = None,
-        data: Optional[Union[str, dict]] = None,
+        data: Optional[dict] = None,
         config: Optional[Union[str, dict]] = None,
     ):
         """Initialize the Harness object.
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
-            hub (str, optional): model hub to load from the path. Required if path is passed as 'model'.
-            data (str, optional): Path to the data to be used for evaluation.
+            model (list | dict, optional): Specifies the model to be evaluated. 
+                If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
+                If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
+            data (dict, optional): The data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
 
         Raises:
@@ -150,7 +151,7 @@ class Harness:
 
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
-            data = resource_filename("langtest", data_path)
+            data = {"data_source":resource_filename("langtest", data_path)}
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
@@ -159,11 +160,12 @@ class Harness:
 
         elif (
             isinstance(data, dict)
+            and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             and task == "text-classification"
         ):
             self.data = (
-                HuggingFaceDataset(data["name"], task=task).load_data(
+                HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "text"),
                     target_column=data.get("target_column", "label"),
                     split=data.get("split", "test"),
@@ -182,10 +184,11 @@ class Harness:
 
         elif (
             isinstance(data, dict)
+            and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
             and task == "ner"
         ):
-            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
+            self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                 feature_column=data.get("feature_column", "tokens"),
                 target_column=data.get("target_column", "ner_tags"),
                 split=data.get("split", "test"),
@@ -194,10 +197,11 @@ class Harness:
 
         elif (
             isinstance(data, dict)
+            and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
         ):
-            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
+            self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                 feature_column=data.get("feature_column", "document"),
                 target_column=data.get("target_column", "summary"),
                 split=data.get("split", "test"),
@@ -210,8 +214,6 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
-        elif isinstance(data, list):
-            self.data = data
         else:
             self.file_path = data
             self.data = (
