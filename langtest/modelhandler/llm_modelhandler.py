@@ -171,6 +171,3 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
-
-
-

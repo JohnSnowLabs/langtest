@@ -124,7 +124,7 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForToxicity(
                 hub, model, *args, **kwargs
             )
-        
+
         elif task in ("clinical-tests"):
             _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForClinicalTests(
@@ -221,12 +221,11 @@ class ModelFactory:
             model_class = modelhandler_module.PretrainedModelForTranslation.load_model(
                 path
             )
-        
+
         elif task == "clinical-tests":
             model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
                 hub, path, *args, **kwargs
             )
-           
 
         else:
             model_class = (

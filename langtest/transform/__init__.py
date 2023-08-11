@@ -1336,3 +1336,60 @@ class PerformanceTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+
+class ComparativeTestFactory(ITests):
+    """Factory class for the comparative tests"""
+
+    alias_name = "comparative"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the comparative tests"""
+        self.supported_tests = self.available_tests()
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        return []
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the comparative tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the comparative tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented comparative tests
+
+        """
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+
+        return tasks
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Returns the empty dict, no comparative tests
+
+        Returns:
+            Dict[str, str]: Empty dict, no comparative tests
+        """
+        return {}

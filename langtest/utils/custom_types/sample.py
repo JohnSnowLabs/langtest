@@ -958,6 +958,7 @@ class TranslationSample(BaseModel):
 
         return True
 
+
 class ClinicalSample(BaseModel):
     """
     A class Representing a sample for clinical-tests task.
@@ -976,7 +977,7 @@ class ClinicalSample(BaseModel):
     """
 
     patient_info_A: str
-    patient_info_B: str 
+    patient_info_B: str
     diagnosis: str
     treatment_plan_A: str = None
     treatment_plan_B: str = None
@@ -1004,7 +1005,6 @@ class ClinicalSample(BaseModel):
             "patient_info_A": self.patient_info_A,
             "patient_info_B": self.patient_info_B,
             "diagnosis": self.diagnosis,
-            
         }
 
         if self.treatment_plan_A is not None:
@@ -1019,8 +1019,7 @@ class ClinicalSample(BaseModel):
             )
 
         return result
-    
-    
+
     def is_pass(self):
         """"""
         return self._is_eval()[0]
@@ -1029,17 +1028,41 @@ class ClinicalSample(BaseModel):
         """"""
 
         from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer('pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb')
-            
+
+        model = SentenceTransformer(
+            "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
+        )
+
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
         embeddings = model.encode(sentences)
-            
+
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
-      
-        return (
-                similarity < 0.85, similarity
-            )
-        
+
+        return (similarity < 0.85, similarity)
+
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt", default_user_prompt.get(dataset_name, "{context}")
+        )
+
+        self.treatment_plan_A = model(
+            text={"patient_info": self.patient_info_A, "diagnosis": self.diagnosis},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["patient_info", "diagnosis"],
+            },
+        )
+        self.treatment_plan_B = model(
+            text={"patient_info": self.patient_info_B, "diagnosis": self.diagnosis},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["patient_info", "diagnosis"],
+            },
+        )
+
+        return True
 
 
 Sample = TypeVar(

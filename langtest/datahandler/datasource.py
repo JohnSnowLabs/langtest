@@ -12,7 +12,11 @@ import jsonlines
 import pandas as pd
 
 from langtest.utils.custom_types import sample
-from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample, ClinicalSample
+from langtest.utils.custom_types.sample import (
+    ToxicitySample,
+    TranslationSample,
+    ClinicalSample,
+)
 from .format import Formatter
 from ..utils.custom_types import (
     NEROutput,
@@ -24,8 +28,7 @@ from ..utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
-    ClinicalSample
-    
+    ClinicalSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -57,13 +60,11 @@ COLUMN_MAPPER = {
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
     "translation": {"text": ["text", "original", "sourcestring"]},
-    
-    "clinical-tests":{
-        "Patient info A" : ["Patient info A"],
-        "Patient info B" : ["Patient info B"] ,
-        "Diagnosis" : ["Diagnosis"] ,
-        
-        },
+    "clinical-tests": {
+        "Patient info A": ["Patient info A"],
+        "Patient info B": ["Patient info B"],
+        "Diagnosis": ["Diagnosis"],
+    },
 }
 
 
@@ -255,7 +256,7 @@ class DataFactory:
             "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
             "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
         }
-        
+
         return datasets_info[dataset_name]
 
 
@@ -853,8 +854,7 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-                    
-                    
+
                 elif self.task == "clinical-tests":
                     data.append(
                         ClinicalSample(
