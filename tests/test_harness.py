@@ -19,7 +19,7 @@ class HarnessTestCase(unittest.TestCase):
         cls.harness = Harness(
             task="ner",
             model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
-            data=cls.data_path,
+            data={"data_source": cls.data_path},
             config=cls.config_path,
         )
 
@@ -39,7 +39,7 @@ class HarnessTestCase(unittest.TestCase):
             Harness(
                 task="ner",
                 model={"model": "dslim/bert-base-NER"},
-                data=self.data_path,
+                data={"data_source": self.data_path},
                 config=self.config_path,
             )
 
@@ -93,7 +93,7 @@ class HarnessTestCase(unittest.TestCase):
             Harness(
                 task="text-classifer",
                 model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
-                data=self.data_path,
+                data={"data_source": self.data_path},
                 config=self.config_path,
             )
 
@@ -145,7 +145,7 @@ class HarnessTestCase(unittest.TestCase):
         tc_harness = Harness(
             task="text-classification",
             model={"model": "bert-base-cased", "hub": "huggingface"},
-            data="tests/fixtures/text_classification.csv",
+            data={"data_source": "tests/fixtures/text_classification.csv"},
             config="tests/fixtures/config_text_classification.yaml",
         )
         tc_harness.generate()
@@ -168,7 +168,7 @@ class HarnessTestCase(unittest.TestCase):
         tc_harness = Harness(
             task="text-classification",
             model={"model": "aychang/roberta-base-imdb", "hub": "huggingface"},
-            data={"name": "imdb"},
+            data={"data_source": "imdb"},
         )
         tc_harness.data = tc_harness.data[:10]
         tc_harness.generate()
@@ -193,7 +193,7 @@ class HarnessTestCase(unittest.TestCase):
         harness = Harness(
             task="ner",
             model={"model": "bert-base-cased", "hub": "huggingface"},
-            data="tests/fixtures/test.conll",
+            data={"data_source": "tests/fixtures/test.conll"},
         )
         harness.data = harness.data[:10]
         harness.generate()
