@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
-from pydantic import BaseModel, PrivateAttr, validator
+from pydantic import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
 from ..util_metrics import cosine_similarity
@@ -9,8 +9,7 @@ from .predictions import NERPrediction
 
 
 class BaseSample(BaseModel):
-    """
-    Helper object storing the original text, the perturbed one and the corresponding
+    """Helper object storing the original text, the perturbed one and the corresponding
     predictions for each of them.
 
     The specificity here is that it is task-agnostic, one only needs to call access the `is_pass`
@@ -31,6 +30,7 @@ class BaseSample(BaseModel):
     state: str = None
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -70,15 +70,12 @@ class BaseSample(BaseModel):
 
     @validator("transformations")
     def sort_transformations(cls, v):
-        """
-        Validator ensuring that transformations are in correct order
-        """
+        """Validator ensuring that transformations are in correct order"""
         return sorted(v, key=lambda x: x.original_span.start)
 
     @property
     def relevant_transformations(self) -> Optional[List[Transformation]]:
-        """
-        Retrieves the transformations that need to be taken into account to realign `original` and `test_case`.
+        """Retrieves the transformations that need to be taken into account to realign `original` and `test_case`.
 
         Returns:
             Optional[List[Transformation]]: list of transformations which shouldn't be ignored
@@ -93,8 +90,8 @@ class BaseSample(BaseModel):
 
     @property
     def irrelevant_transformations(self) -> Optional[List[Transformation]]:
-        """
-        Retrieves the transformations that do not need to be taken into account to realign `original` and `test_case`.
+        """Retrieves the transformations that do not need to be taken into
+           account to realign `original` and `test_case`.
 
         Returns:
             Optional[List[Transformation]]: list of transformations which should be ignored
@@ -108,25 +105,25 @@ class BaseSample(BaseModel):
         ]
 
     def is_pass(self) -> bool:
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         raise NotImplementedError()
 
 
 class NERSample(BaseSample):
-    """"""
+    """Helper object for named entity recognition tasks"""
 
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
-    task: str = "ner"
+    task: str = Field(default="ner", const=True)
     _realigned_spans: Optional[Result] = PrivateAttr(default_factory=None)
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
         self._realigned_spans = None
 
     @property
     def ignored_predictions(self) -> List[NERPrediction]:
-        """
-        List of predictions that should be ignored because of the perturbations applied
+        """List of predictions that should be ignored because of the perturbations applied
 
         Returns:
             List[NERPrediction]: list of predictions which should be ignored
@@ -146,9 +143,7 @@ class NERSample(BaseSample):
 
     @property
     def realigned_spans(self) -> NEROutput:
-        """
-        This function is in charge of shifting the `actual_results` spans according to the perturbations
-        that were applied to the text.
+        """Shifting the `actual_results` spans according to the perturbations that were applied to the text.
 
         Note: we ignore predicted spans that were added during a perturbation
 
@@ -156,7 +151,6 @@ class NERSample(BaseSample):
              NEROutput:
                 realigned NER predictions
         """
-
         if self._realigned_spans is None:
             if len(self.transformations or "") == 0:
                 return self.actual_results
@@ -214,17 +208,15 @@ class NERSample(BaseSample):
         return self._realigned_spans
 
     def _retrieve_multi_spans(self, span: Span) -> List[Span]:
-        """
-        Function in charge to perform realignment when a single 'Span' became multiple
-        ones.
+        """Function in charge to perform realignment when a single 'Span' became multipleones.
 
         Args:
             span (Span):
                 the original span
+
         Returns:
              List[Span]:
                 the list of spans that correspond to the perturbed original one
-
         """
         for start_index in range(len(self.expected_results)):
             if span.start == self.expected_results[start_index].span.start:
@@ -236,7 +228,8 @@ class NERSample(BaseSample):
     def get_aligned_span_pairs(
         self,
     ) -> List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
-        """
+        """Realigns the original text with the perturbed by using the Transformations
+
         Returns:
              List[Tuple[Optional[NERPrediction], Optional[NERPrediction]]]:
                 List of aligned predicted spans from the original sentence to the perturbed one. The
@@ -290,7 +283,7 @@ class NERSample(BaseSample):
         return aligned_results
 
     def is_pass(self) -> bool:
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         return all(
             [a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity != "O"]
         )
@@ -309,13 +302,14 @@ class SequenceClassificationSample(BaseSample):
 
     """
 
-    task: str = "text-classification"
+    task: str = Field(default="text-classification", constr=True)
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         return self.expected_results == self.actual_results
 
 
@@ -328,21 +322,21 @@ class MinScoreSample(BaseSample):
 
     Methods:
         is_pass: Checks if the sample passes based on the minimum score.
-
     """
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         if self.actual_results is None:
             return False
         return self.actual_results.min_score >= self.expected_results.min_score
 
 
 class MaxScoreSample(BaseSample):
-    """ "A class representing a maximum score.
+    """Helper object representing a maximum score.
 
     Attributes:
         actual_results (Results): The actual results object containing the score information.
@@ -353,27 +347,18 @@ class MaxScoreSample(BaseSample):
     """
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         if self.actual_results is None:
             return False
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
 class BaseQASample(BaseModel):
-    """
-    Helper object storing the original text, the perturbed one and the corresponding
-    predictions for each of them.
-
-    The specificity here is that it is task-agnostic, one only needs to call access the `is_pass`
-    property to assess whether the `expected_results` and the `actual_results` are the same, regardless
-    the downstream task.langtest/utils/custom_types.py
-
-    This way, to support a new task one only needs to create a `XXXOutput` model, overload the `__eq__`
-    operator and add the new model to the `Result` type variable.
-    """
+    """Helper object to extend for question-answering tasks"""
 
     original_question: str
     original_context: str
@@ -385,15 +370,17 @@ class BaseQASample(BaseModel):
     dataset_name: str = None
     category: str = None
     state: str = None
-    task: str = None
+    task: str = Field(default="question-answering", const=True)
     test_case: str = None
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
-    def transform(self, func, params, prob, perturbations=None, **kwargs):
-        """
-        Transforms the original question and context using the specified function.
+    def transform(
+        self, func: Callable, params: Dict, prob: float, perturbations=None, **kwargs
+    ):
+        """Transforms the original question and context using the specified function.
 
         Args:
             func (function): The transformation function to apply.
@@ -404,7 +391,6 @@ class BaseQASample(BaseModel):
         Returns:
             None
         """
-
         if perturbations is None:
             sens = [self.original_question, self.original_context]
             self.perturbed_question, self.perturbed_context = func(
@@ -421,7 +407,8 @@ class BaseQASample(BaseModel):
             self.category = func.__module__.split(".")[-1]
 
     def run(self, model, **kwargs):
-        """"""
+        """Runs the original and perturbed sentences through the model"""
+
         tokens = 1
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
@@ -454,19 +441,18 @@ class BaseQASample(BaseModel):
 
 
 class QASample(BaseQASample):
-    """
-    A class representing a sample for question answering task.
+    """A class representing a sample for question answering task.
 
     Attributes:
         Inherits attributes from BaseQASample class.
     """
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Returns the dictionary version of the sample.
+        """Returns the dictionary version of the sample.
 
         Returns:
             Dict[str, Any]: The dictionary representation of the sample.
@@ -495,8 +481,7 @@ class QASample(BaseQASample):
         return result
 
     def is_pass(self) -> bool:
-        """
-        Checks if the sample has passed the evaluation.
+        """Checks if the sample has passed the evaluation.
 
         Returns:
             bool: True if the sample passed the evaluation, False otherwise.
@@ -541,38 +526,31 @@ class QASample(BaseQASample):
 
 
 class MinScoreQASample(QASample):
-    """
-    A class representing a sample for question answering task with minimum score comparison.
-    """
+    """A class representing a sample for question answering task with minimum score comparison."""
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """
-        Checks if the sample has passed the evaluation.
-        """
+        """Checks if the sample has passed the evaluation."""
         return self.actual_results.min_score >= self.expected_results.min_score
 
 
 class MaxScoreQASample(QASample):
-    """
-    A class representing a sample for question answering task with maximum score comparison.
-    """
+    """A class representing a sample for question answering task with maximum score comparison."""
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def is_pass(self) -> bool:
-        """
-        Checks if the sample has passed the evaluation.
-        """
+        """Checks if the sample has passed the evaluation."""
         return self.actual_results.max_score <= self.expected_results.max_score
 
 
 class SummarizationSample(BaseModel):
-    """
-    A class representing a sample for summarization task.
+    """A class representing a sample for summarization task.
 
     Attributes:
         original (str): The original text.
@@ -592,17 +570,16 @@ class SummarizationSample(BaseModel):
     actual_results: str = None
     state: str = None
     dataset_name: str = None
-    task: str = None
+    task: str = Field(default="summarization", constr=True)
     category: str = None
     test_type: str = None
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Returns the dict version of sample.
-        """
+        """Returns the dict version of sample."""
         result = {
             "category": self.category,
             "test_type": self.test_type,
@@ -624,9 +601,7 @@ class SummarizationSample(BaseModel):
         return result
 
     def is_pass(self):
-        """
-        Checks if the sample has passed the evaluation.
-        """
+        """Checks if the sample has passed the evaluation."""
         return self._is_eval()[0]
 
     def _is_eval(self):
@@ -654,8 +629,7 @@ class SummarizationSample(BaseModel):
             return results["f1"] >= config.get("threshold", 0.50), results["f1"]
 
     def transform(self, func, params, prob, perturbations=None, **kwargs):
-        """
-        Transforms the original data using the specified function.
+        """Transforms the original data using the specified function.
 
         Args:
             func (function): The transformation function to apply.
@@ -676,8 +650,7 @@ class SummarizationSample(BaseModel):
             self.category = func.__module__.split(".")[-1]
 
     def run(self, model, **kwargs):
-        """
-        Runs the sample using the specified model and keyword arguments.
+        """Runs the sample using the specified model and keyword arguments.
 
         Args:
             model: The model to run the sample with.
@@ -707,8 +680,7 @@ class SummarizationSample(BaseModel):
 
 
 class ToxicitySample(BaseModel):
-    """
-    A class Representing a sample for toxicity task.
+    """A class Representing a sample for toxicity task.
 
     Attributes:
         prompt (str): The prompt text.
@@ -726,24 +698,22 @@ class ToxicitySample(BaseModel):
     completion: str = None
     prompt_toxicity: Union[str, List] = None
     completion_toxicity: str = None
-
     state: str = None
     dataset_name: str = None  # RealToxicityPrompts
-    task: str = None  # toxicity
+    task: str = Field(default="toxicity", constr=True)
     category: str = None  # toxicity
     test_type: str = None  # offensive
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts the ToxicitySample object to a dictionary.
+        """Converts the ToxicitySample object to a dictionary.
 
         Returns:
             Dict[str, Any]: A dictionary representation of the ToxicitySample object.
         """
-
         result = {
             "category": self.category,
             "test_type": self.test_type,
@@ -763,11 +733,11 @@ class ToxicitySample(BaseModel):
         return result
 
     def is_pass(self) -> bool:
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         return self.completion_toxicity <= self.prompt_toxicity * 1.10
 
     def run(self, model, **kwargs):
-        """"""
+        """Runs the original and perturbed sentences through the model"""
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "{context}")
@@ -780,8 +750,7 @@ class ToxicitySample(BaseModel):
 
 
 class SpeedTestSample(BaseModel):
-    """
-    A class representing a sample for speed test.
+    """A class representing a sample for speed test.
 
     Attributes:
         transform_time (Dict[str, Union[int, float]]): The transform times for different operations.
@@ -795,11 +764,11 @@ class SpeedTestSample(BaseModel):
     actual_results: Result = None
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def total_time(self, time_ns, tokens):
-        """
-        Calculates the total time for each operation.
+        """Calculates the total time for each operation.
 
         Args:
             unit (str, optional): The unit of time to convert to (default: 'ms').
@@ -814,8 +783,7 @@ class SpeedTestSample(BaseModel):
         return self
 
     def convert_ns_to_unit(self, time: Union[int, float], unit: str = "ms"):
-        """
-        Converts time from nanoseconds to the specified unit.
+        """Converts time from nanoseconds to the specified unit.
 
         Args:
             time (Union[int, float]): The time value to convert.
@@ -830,8 +798,7 @@ class SpeedTestSample(BaseModel):
         return time / unit_dict[unit]
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts the SpeedTestSample object to a dictionary.
+        """Converts the SpeedTestSample object to a dictionary.
 
         Returns:
             Dict[str, Any]: A dictionary representation of the SpeedTestSample object.
@@ -853,7 +820,7 @@ class SpeedTestSample(BaseModel):
         return result
 
     def is_pass(self):
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         if self.actual_results is None:
             return False
         # 100 tokens/unit <= 1000 tokens/unit
@@ -867,34 +834,24 @@ class SpeedTestSample(BaseModel):
 
 
 class TranslationSample(BaseModel):
-    """
-    Helper object storing the original text, the perturbed one and the corresponding
-    predictions for each, for the translation task.
-
-    """
+    """Helper object for the translation task"""
 
     original: str
     test_case: str = None
     expected_results: Result = None
     actual_results: Result = None
-
     state: str = None
     dataset_name: str = None
-    task: str = None  # translation
+    task: str = Field(default="translation", const=True)
     category: str = None
     test_type: str = None
 
     def __init__(self, **data):
+        """Constructor method"""
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts the TranslationSample object to a dictionary.
-
-        Returns:
-            Dict[str, Any]: A dictionary representation of the TranslationSample object.
-        """
-
+        """Reformats the object into a dictionary"""
         result = {
             "category": self.category,
             "test_type": self.test_type,
@@ -917,11 +874,11 @@ class TranslationSample(BaseModel):
         return result
 
     def is_pass(self):
-        """"""
+        """Checks if the sample passes based on the maximum score."""
         return self._is_eval()[0]
 
-    def _is_eval(self) -> bool:
-        """"""
+    def _is_eval(self) -> Tuple[bool, float]:
+        """Computes the cosine similarity between the original and perturbed sentences"""
         if self.test_case == self.actual_results.translation_text:
             return False, 1
         else:
@@ -952,7 +909,7 @@ class TranslationSample(BaseModel):
             )
 
     def run(self, model, **kwargs):
-        """"""
+        """Runs the original and perturbed sentences through the model"""
         self.expected_results = model(text=self.original)
         self.actual_results = model(text=self.test_case)
 
