@@ -1069,8 +1069,7 @@ class HuggingFaceDataset(_IDataset):
         original = data_row.get("document", "")
         summary = data_row.get("summary", "")
 
-        return SummarizationSample(
-            original=original, expected_results=summary)
+        return SummarizationSample(original=original, expected_results=summary)
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
