@@ -154,7 +154,7 @@ class NEREnd2EndPipeline(FlowSpec):
         self.harness = Harness(
             task=self.task,
             model={"model": self.output_dir, "hub": self.hub},
-            data=self.train_data,
+            data={"data_source": self.train_data},
         )
         if self.config:
             self.harness.configure(self.config)
