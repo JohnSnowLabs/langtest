@@ -13,7 +13,7 @@ class SparkNLPTestCase(unittest.TestCase):
         self.params = {
             "task": "ner",
             "model": {"model": "ner_dl_bert", "hub": "johnsnowlabs"},
-            "data": "tests/fixtures/test.conll",
+            "data": {"data_source": "tests/fixtures/test.conll"},
             "config": "tests/fixtures/config_ner.yaml",
         }
 

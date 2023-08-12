@@ -10,19 +10,19 @@ class TestPerformance(unittest.TestCase):
             "spacy_ner": {
                 "task": "ner",
                 "model": {"model": "en_core_web_sm", "hub": "spacy"},
-                "data": "tests/fixtures/test.conll",
+                "data": {"data_source": "tests/fixtures/test.conll"},
                 "config": "tests/fixtures/config_performance.yaml",
             },
             "huggingface_ner": {
                 "task": "ner",
                 "model": {"model": "dslim/bert-base-NER", "hub": "huggingface"},
-                "data": "tests/fixtures/test.conll",
+                "data": {"data_source": "tests/fixtures/test.conll"},
                 "config": "tests/fixtures/config_performance.yaml",
             },
             "huggingface_textclassification": {
                 "task": "text-classification",
                 "model": {"model": "distilbert-base-uncased", "hub": "huggingface"},
-                "data": "tests/fixtures/text_classification.csv",
+                "data": {"data_source": "tests/fixtures/text_classification.csv"},
                 "config": "tests/fixtures/config_performance.yaml",
             },
         }

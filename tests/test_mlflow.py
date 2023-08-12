@@ -17,7 +17,7 @@ class MlFlowTesting(unittest.TestCase):
         self.params = {
             "task": "ner",
             "model": {"model": "dslim/bert-base-NER", "hub": "huggingface"},
-            "data": "tests/fixtures/test.conll",
+            "data": {"data_source": "tests/fixtures/test.conll"},
             "config": "tests/fixtures/config_ner.yaml",
         }
 

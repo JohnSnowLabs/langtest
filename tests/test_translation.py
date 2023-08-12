@@ -14,7 +14,7 @@ class TranslationTestCase(unittest.TestCase):
         self.harness = Harness(
             task="translation",
             model={"model": "t5-base", "hub": "huggingface"},
-            data="Translation-test",
+            data={"data_source": "Translation-test"},
         )
 
         # configure the harness
