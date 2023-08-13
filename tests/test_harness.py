@@ -226,13 +226,13 @@ class DefaultCodeBlocksTestCase(unittest.TestCase):
         Test handling of non-existing default models.
         """
         with self.assertRaises(ValueError):
-            h = Harness(task="ner", model="xxxxxxxxx", hub="spacy")
+            h = Harness(task="ner", model={"model": "xxxxxxxxx", "hub": "spacy"}) 
 
     def test_ner_spacy(self):
         """
         Test NER task with Spacy model.
         """
-        h = Harness(task="ner", model="en_core_web_sm", hub="spacy")
+        h = Harness(task="ner", model={"model": "en_core_web_sm", "hub": "spacy"})
         h.generate().run().report()
 
     def test_ner_hf(self):
