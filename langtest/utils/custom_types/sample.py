@@ -1013,7 +1013,7 @@ class ClinicalSample(BaseModel):
                 {
                     "treatment_plan_A": self.treatment_plan_A,
                     "treatment_plan_B": self.treatment_plan_B,
-                    "similarity_Score": similarity_score,
+                    "similarity_score": similarity_score,
                     "pass": bool_pass,
                 }
             )
@@ -1036,7 +1036,7 @@ class ClinicalSample(BaseModel):
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
         embeddings = model.encode(sentences)
 
-        similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
+        similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
 
         return (similarity < 0.85, similarity)
 

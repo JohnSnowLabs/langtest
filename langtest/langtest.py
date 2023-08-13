@@ -798,11 +798,17 @@ class Harness:
             "test_case",
             "perturbed_context",
             "perturbed_question",
+            "patient_info_A",
+            "patient_info_B",
+            "diagnosis",
+            "treatment_plan_A",
+            "treatment_plan_B",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
             "completion_toxicity",
             "eval_score",
+            "similarity_score",
             "pass",
         ]
         columns = [c for c in column_order if c in generated_results_df.columns]
