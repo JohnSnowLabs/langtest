@@ -1044,7 +1044,8 @@ class ClinicalSample(BaseModel):
         """"""
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
-            "user_prompt", default_user_prompt.get(dataset_name, "{patient_info}\n{diagnosis}\n")
+            "user_prompt",
+            default_user_prompt.get(dataset_name, "{patient_info}\n{diagnosis}\n"),
         )
 
         self.treatment_plan_A = model(
