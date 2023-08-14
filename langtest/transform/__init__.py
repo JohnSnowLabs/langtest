@@ -1338,16 +1338,16 @@ class PerformanceTestFactory(ITests):
         return tests
 
 
-class ComparativeTestFactory(ITests):
-    """Factory class for the comparative tests"""
+class ClinicalTestFactory(ITests):
+    """Factory class for the clinical tests"""
 
-    alias_name = "comparative"
+    alias_name = "clinical"
     supported_tasks = [
         "clinical-tests",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the comparative tests"""
+        """Initializes the clinical tests"""
 
         self.data_handler = data_handler
         self.tests = tests
@@ -1361,23 +1361,23 @@ class ComparativeTestFactory(ITests):
 
         """
         for sample in self.data_handler:
-            sample.test_type = "comparative"
-            sample.category = "comparative"
+            sample.test_type = "demographic-bias"
+            sample.category = "clinical"
         return self.data_handler
 
     @classmethod
     async def run(
         cls, sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """Runs the comparative tests
+        """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the comparative tests
+            **kwargs: Additional arguments to be passed to the clinical tests
 
         Returns:
-            List[Sample]: The transformed data based on the implemented comparative tests
+            List[Sample]: The transformed data based on the implemented clinical tests
 
         """
         task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
@@ -1385,27 +1385,27 @@ class ComparativeTestFactory(ITests):
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
-        """Returns the empty dict, no comparative tests
+        """Returns the empty dict, no clinical tests
 
         Returns:
-            Dict[str, str]: Empty dict, no comparative tests
+            Dict[str, str]: Empty dict, no clinical tests
         """
-        return {"comparative": cls}
+        return {"clinical": cls}
 
     async def run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
-        """Runs the comparative tests
+        """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the comparative tests
+            **kwargs: Additional arguments to be passed to the clinical tests
 
         Returns:
-            List[Sample]: The transformed data based on the implemented comparative tests
+            List[Sample]: The transformed data based on the implemented clinical tests@
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["comparative"]:
+        for sample in sample_list["clinical"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1413,4 +1413,4 @@ class ComparativeTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
-        return sample_list["comparative"]
+        return sample_list["clinical"]
