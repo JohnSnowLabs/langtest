@@ -1390,7 +1390,7 @@ class ClinicalTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no clinical tests
         """
-        return {"clinical": cls}
+        return {"demographic-bias": cls}
 
     async def run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
         """Runs the clinical tests
@@ -1405,7 +1405,7 @@ class ClinicalTestFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["clinical"]:
+        for sample in sample_list["demographic-bias"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1413,4 +1413,4 @@ class ClinicalTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
-        return sample_list["clinical"]
+        return sample_list["demographic-bias"]
