@@ -1038,7 +1038,7 @@ class ClinicalSample(BaseModel):
 
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
 
-        return (similarity < 0.85, similarity)
+        return (similarity > 0.80, similarity)
 
     def run(self, model, **kwargs):
         """"""
