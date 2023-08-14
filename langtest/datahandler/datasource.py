@@ -255,6 +255,9 @@ class DataFactory:
             "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
             "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
             "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
+            "Gastroenterology-files": script_dir[:-7] + "/Clinical-Tests/Gastroenterology-files.jsonl",
+            "Oromaxillofacial-files": script_dir[:-7] + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
+            
         }
 
         return datasets_info[dataset_name]
