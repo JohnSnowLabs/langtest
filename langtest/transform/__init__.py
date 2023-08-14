@@ -1068,9 +1068,9 @@ class AccuracyTestFactory(ITests):
                 )
 
             y_true = y_true.dropna()
-            params["test_name"] = test_name
+
             transformed_samples = self.supported_tests[test_name].transform(
-                y_true, params
+                test_name, y_true, params
             )
 
             for sample in transformed_samples:
