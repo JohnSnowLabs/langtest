@@ -80,6 +80,7 @@ class Harness:
         },
         "task": {
             "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
+            "clinical-tests":  resource_filename("langtest", "data/config/clinical_config.yml"),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
             ),
