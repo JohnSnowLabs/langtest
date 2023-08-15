@@ -105,7 +105,6 @@ class HarnessTestCase(unittest.TestCase):
             h = Harness(
                 task="text-classification",
                 model={"model": "textcat_imdb", "hub": "spacy"},
-                hub="spacy",
                 config={
                     "tests": {"robustness": {"swap_entities": {"min_pass_rate": 0.5}}}
                 },
