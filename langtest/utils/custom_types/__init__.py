@@ -9,6 +9,7 @@ from .sample import (
     MinScoreQASample,
     SummarizationSample,
     TranslationSample,
+    SecuritySample
 )
 from .helpers import Span, Transformation
 from .output import (
