@@ -160,7 +160,8 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif (
-            isinstance(data["data_source"], str)
+            isinstance(data, dict)
+            and isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             and task == "text-classification"
@@ -184,7 +185,8 @@ class Harness:
                 model = resource_filename("langtest", "data/textcat_imdb")
 
         elif (
-            isinstance(data["data_source"], str)
+            isinstance(data, dict)
+            and isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
             and task == "ner"
@@ -197,7 +199,8 @@ class Harness:
             )
 
         elif (
-            isinstance(data["data_source"], str)
+            isinstance(data, dict)
+            and isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
