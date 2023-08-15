@@ -12,13 +12,8 @@ import jsonlines
 import pandas as pd
 
 from langtest.utils.custom_types import sample
-from langtest.utils.custom_types.sample import (
-    ToxicitySample,
-    TranslationSample,
-    ClinicalSample,
-)
 from .format import Formatter
-from ..utils.custom_types import (
+from langtest.utils.custom_types import (
     NEROutput,
     NERPrediction,
     NERSample,
@@ -28,6 +23,8 @@ from ..utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
+    ToxicitySample,
+    TranslationSample,
     ClinicalSample,
 )
 from ..utils.lib_manager import try_import_lib

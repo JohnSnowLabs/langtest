@@ -1380,7 +1380,7 @@ class ClinicalTestFactory(ITests):
             List[Sample]: The transformed data based on the implemented clinical tests
 
         """
-        task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
         return task
 
     @classmethod
@@ -1392,7 +1392,7 @@ class ClinicalTestFactory(ITests):
         """
         return {"demographic-bias": cls}
 
-    async def run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
