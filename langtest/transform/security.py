@@ -59,5 +59,5 @@ class PromptInjection(BaseSecurity):
         for sample in sample_list:
             sample.test_type = "prompt_injection_attack"
             sample.category = "security"
-        
+
         return sample_list
