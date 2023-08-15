@@ -3,7 +3,7 @@ import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
@@ -99,7 +99,7 @@ class Harness:
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (list | dict, optional): Specifies the model to be evaluated. 
+            model (list | dict, optional): Specifies the model to be evaluated.
                 If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
                 If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
             data (dict, optional): The data to be used for evaluation.
@@ -151,7 +151,7 @@ class Harness:
 
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
-            data = {"data_source":resource_filename("langtest", data_path)}
+            data = {"data_source": resource_filename("langtest", data_path)}
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
