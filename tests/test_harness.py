@@ -154,7 +154,8 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model={"model": "bert-base-cased", "hub": "huggingface"},
+            model="bert-base-cased",
+            hub="huggingface",
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
@@ -177,7 +178,8 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model={"model": "aychang/roberta-base-imdb", "hub": "huggingface"},
+            model="aychang/roberta-base-imdb",
+            hub="huggingface",
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)

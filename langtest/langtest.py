@@ -128,6 +128,7 @@ class Harness:
 
         if isinstance(model, dict):
             hub, model = model["hub"], model["model"]
+            self.hub = hub
             self._actual_model = model
         else:
             hub = None
