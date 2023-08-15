@@ -1344,9 +1344,6 @@ class SecurityTestFactory(ITests):
     """"""
 
     alias_name = "security"
-    # supported_tasks = [
-    #     "security",
-    # ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         self.supported_tests = self.available_tests()
