@@ -1019,11 +1019,25 @@ class SecuritySample(BaseModel):
         """"""
         return self.expected_results == self.actual_results
 
+    
     def run(self, model, **kwargs):
         """"""
-        self.actual_results = model(text=self.prompt)
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get(dataset_name, "{promt}\n"),
+        )
+
+        self.actual_results = model(
+            text={"prompt": self.prompt},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["prompt"],
+            },
+        )
 
         return True
+    
 
 
 Sample = TypeVar(
