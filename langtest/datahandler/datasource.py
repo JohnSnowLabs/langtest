@@ -244,6 +244,7 @@ class DataFactory:
             + "/Translation/translation-test-tiny.jsonl",
             "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
             "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
+            "Security": script_dir[:-7] + "/Security/Prompt-Injection-Attack.jsonl",
         }
         return datasets_info[dataset_name]
 
