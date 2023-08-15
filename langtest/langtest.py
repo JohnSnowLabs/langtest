@@ -1048,7 +1048,7 @@ class Harness:
         harness = Harness(
             task=task,
             model={"model": model, "hub": hub},
-            data=data,
+            data={"data_source": data},
             config=os.path.join(save_dir, "config.yaml"),
         )
         harness.generate()
