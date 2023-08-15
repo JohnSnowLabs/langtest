@@ -86,6 +86,9 @@ class Harness:
             "translation-johnsnowlabs": resource_filename(
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
+            "security": resource_filename(
+                "langtest", "data/config/security_config.yml"
+            ),
         },
     }
 
