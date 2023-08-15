@@ -129,7 +129,9 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForTranslation(model)
 
         elif task == "security":
-            self.model_class = model_handler.PretrainedModelForSecurity(model)
+            self.model_class = model_handler.PretrainedModelForSecurity(
+                hub, model, *args, **kwargs
+            )
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -220,7 +222,9 @@ class ModelFactory:
             )
 
         elif task == "security":
-            model_class = modelhandler_module.PretrainedModelForSecurity.load_model(path)
+            model_class = modelhandler_module.PretrainedModelForSecurity.load_model(
+                hub, path, *args, **kwargs
+            )
 
         else:
             model_class = (

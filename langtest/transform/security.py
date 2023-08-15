@@ -42,7 +42,7 @@ class BaseSecurity(ABC):
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
         """Abstract method that implements the model security."""
-        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        created_task = await asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
 
 
@@ -52,10 +52,12 @@ class PromptInjection(BaseSecurity):
     """
 
     alias_name = ["prompt_injection_attack"]
-    supported_task = ["security"]
+    supported_tasks = ["security"]
 
-    def transform(sample_list):
+    def transform(sample_list: List[Sample], *args, **kwargs):
         """"""
         for sample in sample_list:
             sample.test_type = "prompt_injection_attack"
             sample.category = "security"
+        
+        return sample_list

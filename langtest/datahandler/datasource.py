@@ -59,6 +59,7 @@ COLUMN_MAPPER = {
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
     "translation": {"text": ["text", "original", "sourcestring"]},
+    "security": {"text": ["text", "prompt"]},
 }
 
 
@@ -732,6 +733,7 @@ class JSONLDataset(_IDataset):
         "summarization",
         "toxicity",
         "translation",
+        "security",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 

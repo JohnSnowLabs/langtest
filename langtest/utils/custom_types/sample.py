@@ -1013,7 +1013,7 @@ class SecuritySample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()[0]
+        return self._is_eval()
 
     def _is_eval(self) -> bool:
         """"""

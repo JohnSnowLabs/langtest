@@ -1344,6 +1344,9 @@ class SecurityTestFactory(ITests):
     """"""
 
     alias_name = "security"
+    # supported_tasks = [
+    #     "security",
+    # ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         self.supported_tests = self.available_tests()
@@ -1355,7 +1358,7 @@ class SecurityTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             transformed_samples = self.supported_tests[test_name].transform(
-                params=params, **self.kwargs
+                self.data_handler, **self.kwargs
             )
             all_samples.extend(transformed_samples)
         return all_samples
@@ -1367,7 +1370,7 @@ class SecurityTestFactory(ITests):
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
-            out = supported_tests[test_name].async_run(samples, model, **kwargs)
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
             if isinstance(out, list):
                 tasks.extend(out)
             else:
