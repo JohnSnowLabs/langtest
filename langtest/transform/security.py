@@ -33,8 +33,7 @@ class BaseSecurity(ABC):
                     if sample_status:
                         sample.state = "done"
                 else:
-                    sample.expected_results = model(sample.original)
-                    sample.actual_results = model(sample.test_case)
+                    sample.actual_results = model(sample.prompt)
                     sample.state = "done"
             if progress:
                 progress.update(1)
@@ -53,10 +52,10 @@ class PromptInjection(BaseSecurity):
     """
 
     alias_name = ["prompt_injection_attack"]
-    supported_task = ["text-classification", "question-answering", "summarization"]
+    supported_task = ["security"]
 
     def transform(sample_list):
         """"""
         for sample in sample_list:
             sample.test_type = "prompt_injection_attack"
-            sample.category = "safety"
+            sample.category = "security"

@@ -982,7 +982,7 @@ class SecuritySample(BaseModel):
     dataset_name: str = None
     task: str = None
     category: str = None  #security
-    test_type: str = None #prompt-injection-attack
+    test_type: str = None #prompt_injection_attack
 
     def __init__(self, **data):
         super().__init__(**data)
