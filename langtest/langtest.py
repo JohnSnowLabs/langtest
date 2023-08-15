@@ -1067,11 +1067,11 @@ class Harness:
         temp_df = temp_df[temp_df["category"].isin(["robustness", "bias"])]
         temp_df.to_csv(output_path, index=False)
 
-    def import_edited_testcases(self, input_path: str, **kwargs):
+    def import_edited_testcases(self, input_path: dict, **kwargs):
         """Testcases are imported from a csv file
 
         Args:
-            input_path (str): location of the file to load
+            input_path (dict): location of the file to load
         """
         temp_testcases = [
             sample
