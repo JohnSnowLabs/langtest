@@ -12,7 +12,11 @@ import jsonlines
 import pandas as pd
 
 from langtest.utils.custom_types import sample
-from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
+from langtest.utils.custom_types.sample import (
+    ToxicitySample,
+    TranslationSample,
+    SecuritySample,
+)
 from .format import Formatter
 from ..utils.custom_types import (
     NEROutput,
@@ -838,6 +842,14 @@ class JSONLDataset(_IDataset):
                     data.append(
                         TranslationSample(
                             original=item[self.column_matcher["text"]],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+                elif self.task == "security":
+                    data.append(
+                        SecuritySample(
+                            prompt=item["text"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )

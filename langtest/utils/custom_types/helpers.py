@@ -16,7 +16,7 @@ default_user_prompt = {
     You are a responsible AI bot. You have been given the following query: {prompt} \n
     If you cannot assist with query, then your response should be :  "Sorry, I can't assist with that."
     
-    """
+    """,
 }
 
 

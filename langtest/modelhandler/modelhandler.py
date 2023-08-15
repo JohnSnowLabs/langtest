@@ -127,7 +127,7 @@ class ModelFactory:
 
         elif task == "translation":
             self.model_class = model_handler.PretrainedModelForTranslation(model)
-        
+
         elif task == "security":
             self.model_class = model_handler.PretrainedModelForSecurity(model)
 
@@ -218,11 +218,9 @@ class ModelFactory:
             model_class = modelhandler_module.PretrainedModelForTranslation.load_model(
                 path
             )
-            
+
         elif task == "security":
-            model_class = modelhandler_module.PretrainedModelForSecurity.load_model(
-                path
-            )
+            model_class = modelhandler_module.PretrainedModelForSecurity.load_model(path)
 
         else:
             model_class = (
