@@ -1035,6 +1035,8 @@ class SecuritySample(BaseModel):
             },
         )
 
+        self.actual_results = self.actual_results.replace("\n", "")
+
         return True
 
 
