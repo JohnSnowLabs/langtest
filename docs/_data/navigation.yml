@@ -66,6 +66,12 @@ docs-menu:
         - title: Generating Augmentations
           url: /docs/pages/docs/generate_augmentation
 
+  - title: Contribute to LangTest
+    url: /docs/pages/docs/contribute
+    children:
+        - title: Contribution Guidelines
+          url: /docs/pages/docs/contribute
+          
 tutorials:
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials
