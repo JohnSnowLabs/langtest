@@ -160,7 +160,7 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif (
-            isinstance(data, dict)
+            isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             and task == "text-classification"
@@ -184,7 +184,7 @@ class Harness:
                 model = resource_filename("langtest", "data/textcat_imdb")
 
         elif (
-            isinstance(data, dict)
+            isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
             and task == "ner"
@@ -197,7 +197,7 @@ class Harness:
             )
 
         elif (
-            isinstance(data, dict)
+            isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
@@ -215,6 +215,8 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
+        elif isinstance(data["data_source"], list):
+            self.data = data["data_source"]
         else:
             self.file_path = data
             self.data = (
