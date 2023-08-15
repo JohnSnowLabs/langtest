@@ -959,6 +959,64 @@ class TranslationSample(BaseModel):
         return True
 
 
+class SafetySample(BaseModel):
+    """"""
+
+    prompt: str
+    expected_results: Union[str, List] = None
+    actual_results: str = None
+    state: str = None
+    dataset_name: str = None
+    task: str = None
+    category: str = None
+    test_type: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the SafetySample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the SafetySample object.
+        """
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "prompt": self.prompt,
+        }
+
+        if self.actual_results is not None:
+            result.update(
+                {
+                    "expected_result": self.expected_results,
+                    "actual_result": self.actual_results,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()[0]
+
+    def _is_eval(self) -> bool:
+        """"""
+        if self.actual_results is None:
+            return False, 1
+        else:
+            return self.expected_results == self.actual_results
+
+    def run(self, model, **kwargs):
+        """"""
+        self.expected_results = model(text=self.prompt)
+        self.actual_results = model(text=self.prompt)
+
+        return True
+
+
 Sample = TypeVar(
     "Sample",
     MaxScoreSample,

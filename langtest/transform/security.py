@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+import asyncio
 from typing import List
 from langtest.modelhandler.modelhandler import ModelFactory
 
 from langtest.utils.custom_types.sample import Sample
+
 
 class BaseSecurity(ABC):
     """Abstract base class for implementing a model security.
@@ -16,26 +18,34 @@ class BaseSecurity(ABC):
     @staticmethod
     @abstractmethod
     def transform():
-        """Abstract method that transforms the sample data based on the implemented model security.
-
-        """
+        """Abstract method that transforms the sample data based on the implemented model security."""
         raise NotImplementedError("Please Implement this method")
-    
+
     @staticmethod
     @abstractmethod
-    async def run():
-        """Abstract method that implements the model security.
+    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs):
+        """Abstract method that implements the model security."""
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+                else:
+                    sample.expected_results = model(sample.original)
+                    sample.actual_results = model(sample.test_case)
+                    sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
 
-        """
-        raise NotImplementedError("Please Implement this method")
-    
     @classmethod
     async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
-        """Abstract method that implements the model security.
+        """Abstract method that implements the model security."""
+        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
+        return created_task
 
-        """
-        raise NotImplementedError("Please Implement this method")
-    
 
 class PromptInjection(BaseSecurity):
     """
@@ -43,10 +53,10 @@ class PromptInjection(BaseSecurity):
     """
 
     alias_name = ["prompt_injection_attack"]
-    supported_task = [
-        "text-classification",
-        "question-answering",
-        "summarization"]
+    supported_task = ["text-classification", "question-answering", "summarization"]
 
     def transform(sample_list):
-        pass
+        """"""
+        for sample in sample_list:
+            sample.test_type = "prompt_injection_attack"
+            sample.category = "safety"

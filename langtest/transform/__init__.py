@@ -10,6 +10,7 @@ import pandas as pd
 from tqdm.asyncio import tqdm
 
 from langtest.transform.performance import BasePerformance
+from langtest.transform.security import BaseSecurity
 
 from .accuracy import BaseAccuracy
 from .bias import BaseBias
@@ -1333,6 +1334,52 @@ class PerformanceTestFactory(ITests):
         tests = {
             j: i
             for i in BasePerformance.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
+
+
+class SafetyTestFactory(ITests):
+
+    """"""
+
+    alias_name = "safety"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        self.supported_tests = self.available_tests()
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        all_samples = []
+        for test_name, params in self.tests.items():
+            transformed_samples = self.supported_tests[test_name].transform(
+                params=params, **self.kwargs
+            )
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+
+        return tasks
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        tests = {
+            j: i
+            for i in BaseSecurity.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
