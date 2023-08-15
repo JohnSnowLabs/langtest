@@ -981,8 +981,8 @@ class SecuritySample(BaseModel):
     state: str = None
     dataset_name: str = None
     task: str = None
-    category: str = None  #security
-    test_type: str = None #prompt_injection_attack
+    category: str = None  # security
+    test_type: str = None  # prompt_injection_attack
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1019,7 +1019,6 @@ class SecuritySample(BaseModel):
         """"""
         return self.expected_results == self.actual_results
 
-    
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split("-")[0].lower()
@@ -1037,7 +1036,6 @@ class SecuritySample(BaseModel):
         )
 
         return True
-    
 
 
 Sample = TypeVar(

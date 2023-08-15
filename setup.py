@@ -179,7 +179,8 @@ setup(
             "data/MMLU/*",
             "data/NarrativeQA/*",
             "data/Translation/*",
-            "data/BBQ/*"
+            "data/BBQ/*",
+            "data/Security/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

@@ -162,6 +162,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
 
     pass
 
+
 class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
     """A class representing a pretrained model for security detection.
 
