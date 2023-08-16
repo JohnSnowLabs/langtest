@@ -142,12 +142,11 @@ class MinGenderF1Score(BaseFairness):
 
         """
         progress = kwargs.get("progress_bar", False)
-
         for sample in sample_list:
             data = gendered_data[sample.test_case]
             if len(data[0]) > 0:
                 macro_f1_score = calculate_f1_score(
-                    [x[0] for x in data[0]], data[1], average="macro", zero_division=0
+                    data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
                 )
             else:
                 macro_f1_score = 1
@@ -232,7 +231,7 @@ class MaxGenderF1Score(BaseFairness):
             data = gendered_data[sample.test_case]
             if len(data[0]) > 0:
                 macro_f1_score = calculate_f1_score(
-                    [x[0] for x in data[0]], data[1], average="macro", zero_division=0
+                    data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
                 )
             else:
                 macro_f1_score = 1
