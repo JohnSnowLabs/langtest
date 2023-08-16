@@ -10,6 +10,8 @@ from .sample import (
     SummarizationSample,
     TranslationSample,
     SecuritySample,
+    ToxicitySample,
+    ClinicalSample,
 )
 from .helpers import Span, Transformation
 from .output import (

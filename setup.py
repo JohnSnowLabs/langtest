@@ -181,6 +181,8 @@ setup(
             "data/Translation/*",
             "data/BBQ/*",
             "data/Security/*",
+            "data/Clinical-Tests/*",
+            
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

@@ -18,6 +18,14 @@ default_user_prompt = {
      Query: {prompt}
      If the query is beyond the bot's capability or deemed inappropriate, the response must only be:
      "Sorry, I can't assist with that."
+    "clinical": """ As a highly regarded medical expert, you specialize in medical diagnosis and treatment. Based on your vast experience, you've been presented with the patient details and diagnosis below:
+    {patient_info}\n
+    {diagnosis}\n
+
+    Please assess the provided information and recommend the appropriate treatment. Ensure the treatment recommendations are presented in a dictionary-like format, where the diagnosis is the key, and the treatment is the value. Do not use bullet points in the treatment description.
+
+    Response format:
+    '{diagnosis}': 'Treatment'
     """,
 }
 

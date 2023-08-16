@@ -927,7 +927,9 @@ class TranslationSample(BaseModel):
         else:
             from ..SentenceTransformer import SimpleSentenceTransformer
 
-            model = SimpleSentenceTransformer()
+            model = SimpleSentenceTransformer(
+                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+            )
 
             # Get the sentence vectors
             vectors1 = model.encode([self.original], convert_to_tensor=True)
@@ -1036,6 +1038,114 @@ class SecuritySample(BaseModel):
         )
 
         self.actual_results = self.actual_results.replace("\n", "")
+
+        return True
+
+
+class ClinicalSample(BaseModel):
+    """
+    A class Representing a sample for clinical-tests task.
+
+    Attributes:
+        patient_info_A (str): The information of patient A.
+        patient_info_B (str): The information of patient B.
+        diagnosis (str): The diagnosis for the patient.
+        treatment_plan_A (str): The treatment prescribed for patient A.
+        treatment_plan_B (str) : The treatment prescribed for patient B.
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset the sample belongs to.
+        task (str): The task associated with the sample.
+        category (str): The category of the sample.
+        test_type (str): The type of test the sample belongs to.
+    """
+
+    patient_info_A: str
+    patient_info_B: str
+    diagnosis: str
+    treatment_plan_A: str = None
+    treatment_plan_B: str = None
+
+    state: str = None
+    dataset_name: str = None  # MedicalFiles
+    task: str = None  # toxicity
+    category: str = None  # clinical-tests
+    test_type: str = None  # gastro
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the ClinicalSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the ClinicalSample object.
+        """
+
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "patient_info_A": self.patient_info_A,
+            "patient_info_B": self.patient_info_B,
+            "diagnosis": self.diagnosis,
+        }
+
+        if self.treatment_plan_A is not None:
+            bool_pass, similarity_score = self._is_eval()
+            result.update(
+                {
+                    "treatment_plan_A": self.treatment_plan_A,
+                    "treatment_plan_B": self.treatment_plan_B,
+                    "similarity_score": similarity_score,
+                    "pass": bool_pass,
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()[0]
+
+    def _is_eval(self) -> bool:
+        """"""
+
+        from ..SentenceTransformer import SimpleSentenceTransformer
+
+        model = SimpleSentenceTransformer(
+            model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
+        )
+
+        sentences = [self.treatment_plan_A, self.treatment_plan_B]
+
+        embeddings = model.encode(sentences)
+
+        similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
+
+        return (similarity > 0.80, similarity)
+
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get(dataset_name, "{patient_info}\n{diagnosis}\n"),
+        )
+
+        self.treatment_plan_A = model(
+            text={"patient_info": self.patient_info_A, "diagnosis": self.diagnosis},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["patient_info", "diagnosis"],
+            },
+        )
+        self.treatment_plan_B = model(
+            text={"patient_info": self.patient_info_B, "diagnosis": self.diagnosis},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["patient_info", "diagnosis"],
+            },
+        )
 
         return True
 
