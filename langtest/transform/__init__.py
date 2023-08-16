@@ -1069,9 +1069,8 @@ class AccuracyTestFactory(ITests):
                 )
 
             y_true = y_true.dropna()
-            params["test_name"] = test_name
             transformed_samples = self.supported_tests[test_name].transform(
-                y_true, params
+                test_name, y_true, params
             )
 
             for sample in transformed_samples:
@@ -1355,7 +1354,7 @@ class SecurityTestFactory(ITests):
         all_samples = []
         for test_name, params in self.tests.items():
             transformed_samples = self.supported_tests[test_name].transform(
-                params=params, **self.kwargs
+                self.data_handler, **self.kwargs
             )
             all_samples.extend(transformed_samples)
         return all_samples
@@ -1367,7 +1366,7 @@ class SecurityTestFactory(ITests):
         supported_tests = cls.available_tests()
         tasks = []
         for test_name, samples in sample_list.items():
-            out = supported_tests[test_name].async_run(samples, model, **kwargs)
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
             if isinstance(out, list):
                 tasks.extend(out)
             else:
