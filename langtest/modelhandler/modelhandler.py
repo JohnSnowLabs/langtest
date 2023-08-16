@@ -50,6 +50,7 @@ class ModelFactory:
         "summarization",
         "toxicity",
         "translation",
+        "clinical-tests",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -121,6 +122,12 @@ class ModelFactory:
         elif task in ("toxicity"):
             _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForToxicity(
+                hub, model, *args, **kwargs
+            )
+
+        elif task in ("clinical-tests"):
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            self.model_class = model_handler.PretrainedModelForClinicalTests(
                 hub, model, *args, **kwargs
             )
 
@@ -213,6 +220,11 @@ class ModelFactory:
         elif task == "translation":
             model_class = modelhandler_module.PretrainedModelForTranslation.load_model(
                 path
+            )
+
+        elif task == "clinical-tests":
+            model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
+                hub, path, *args, **kwargs
             )
 
         else:

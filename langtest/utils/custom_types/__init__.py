@@ -9,6 +9,8 @@ from .sample import (
     MinScoreQASample,
     SummarizationSample,
     TranslationSample,
+    ToxicitySample,
+    ClinicalSample,
 )
 from .helpers import Span, Transformation
 from .output import (

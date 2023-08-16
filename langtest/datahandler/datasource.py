@@ -12,9 +12,8 @@ import jsonlines
 import pandas as pd
 
 from langtest.utils.custom_types import sample
-from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
-from ..utils.custom_types import (
+from langtest.utils.custom_types import (
     NEROutput,
     NERPrediction,
     NERSample,
@@ -24,6 +23,9 @@ from ..utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
+    ToxicitySample,
+    TranslationSample,
+    ClinicalSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -55,6 +57,11 @@ COLUMN_MAPPER = {
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
     "translation": {"text": ["text", "original", "sourcestring"]},
+    "clinical-tests": {
+        "Patient info A": ["Patient info A"],
+        "Patient info B": ["Patient info B"],
+        "Diagnosis": ["Diagnosis"],
+    },
 }
 
 
@@ -244,7 +251,13 @@ class DataFactory:
             + "/Translation/translation-test-tiny.jsonl",
             "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
             "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
+            "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
+            "Gastroenterology-files": script_dir[:-7]
+            + "/Clinical-Tests/Gastroenterology-files.jsonl",
+            "Oromaxillofacial-files": script_dir[:-7]
+            + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
         }
+
         return datasets_info[dataset_name]
 
 
@@ -727,6 +740,7 @@ class JSONLDataset(_IDataset):
         "summarization",
         "toxicity",
         "translation",
+        "clinical-tests",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -837,6 +851,17 @@ class JSONLDataset(_IDataset):
                     data.append(
                         TranslationSample(
                             original=item[self.column_matcher["text"]],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+
+                elif self.task == "clinical-tests":
+                    data.append(
+                        ClinicalSample(
+                            patient_info_A=item["Patient info A"],
+                            patient_info_B=item["Patient info B"],
+                            diagnosis=item["Diagnosis"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
