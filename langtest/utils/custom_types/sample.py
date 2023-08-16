@@ -927,7 +927,7 @@ class TranslationSample(BaseModel):
         else:
             from ..SentenceTransformer import SimpleSentenceTransformer
 
-            model = SimpleSentenceTransformer()
+            model = SimpleSentenceTransformer(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
 
             # Get the sentence vectors
             vectors1 = model.encode([self.original], convert_to_tensor=True)
@@ -1027,13 +1027,12 @@ class ClinicalSample(BaseModel):
     def _is_eval(self) -> bool:
         """"""
 
-        from sentence_transformers import SentenceTransformer
+        from ..SentenceTransformer import SimpleSentenceTransformer
 
-        model = SentenceTransformer(
-            "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
-        )
-
+        model = SimpleSentenceTransformer(model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb")
+        
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
+    
         embeddings = model.encode(sentences)
 
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
