@@ -42,6 +42,7 @@ from ..utils.custom_types.sample import (
     Result,
 )
 from ..utils.custom_types.helpers import default_user_prompt
+from ..utils.util_metrics import calculate_f1_score
 
 nest_asyncio.apply()
 
@@ -893,8 +894,12 @@ class FairnessTestFactory(ITests):
                     y_pred = y_pred[valid_indices]
                     y_true = y_true.explode()
                     y_pred = y_pred.explode()
-                    y_pred = y_pred.apply(lambda x: x.split("-")[-1])
-                    y_true = y_true.apply(lambda x: x.split("-")[-1])
+                    y_pred = y_pred.apply(lambda x: x.split("-")[-1]).reset_index(
+                        drop=True
+                    )
+                    y_true = y_true.apply(lambda x: x.split("-")[-1]).reset_index(
+                        drop=True
+                    )
 
                 elif isinstance(data[0], SequenceClassificationSample):
                     y_true = pd.Series(data).apply(
