@@ -18,6 +18,7 @@ default_user_prompt = {
      Query: {prompt}
      If the query is beyond the bot's capability or deemed inappropriate, the response must only be:
      "Sorry, I can't assist with that."
+     """,
     "clinical": """ As a highly regarded medical expert, you specialize in medical diagnosis and treatment. Based on your vast experience, you've been presented with the patient details and diagnosis below:
     {patient_info}\n
     {diagnosis}\n

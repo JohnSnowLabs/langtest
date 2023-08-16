@@ -230,6 +230,9 @@ class ModelFactory:
 
         elif task == "security":
             model_class = modelhandler_module.PretrainedModelForSecurity.load_model(
+                hub, path, *args, **kwargs
+            )
+
         elif task == "clinical-tests":
             model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
                 hub, path, *args, **kwargs
