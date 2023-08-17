@@ -506,38 +506,59 @@ class QASample(BaseQASample):
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
-        if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ"]:
-            PROMPT = PromptTemplate(
-                input_variables=["query", "answer", "result"], template=qa_prompt_template
-            )
-            eval_chain = QAEvalChain.from_llm(
-                llm=llm_model.model_class.model, prompt=PROMPT
-            )
-            inputs = [
-                {"question": self.original_question, "answer": self.expected_results}
-            ]
+        if "llm" in str(type(llm_model.model_class)):
+            if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ"]:
+                PROMPT = PromptTemplate(
+                    input_variables=["query", "answer", "result"],
+                    template=qa_prompt_template,
+                )
+                eval_chain = QAEvalChain.from_llm(
+                    llm=llm_model.model_class.model, prompt=PROMPT
+                )
+                inputs = [
+                    {"question": self.original_question, "answer": self.expected_results}
+                ]
 
-            predictions = [
-                {"question": self.perturbed_question, "text": self.actual_results}
-            ]
+                predictions = [
+                    {"question": self.perturbed_question, "text": self.actual_results}
+                ]
 
-            graded_outputs = eval_chain.evaluate(
-                inputs,
-                predictions,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
+                graded_outputs = eval_chain.evaluate(
+                    inputs,
+                    predictions,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+            else:
+                eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
+                graded_outputs = eval_chain.evaluate(
+                    [
+                        {
+                            "question": self.original_question,
+                            "answer": self.expected_results,
+                        }
+                    ],
+                    [{"question": self.perturbed_question, "text": self.actual_results}],
+                    question_key="question",
+                    prediction_key="text",
+                )
+
+            return graded_outputs[0]["text"].strip() == "CORRECT"
         else:
-            eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
-            graded_outputs = eval_chain.evaluate(
-                [{"question": self.original_question, "answer": self.expected_results}],
-                [{"question": self.perturbed_question, "text": self.actual_results}],
-                question_key="question",
-                prediction_key="text",
+            prediction = llm_model(
+                text={
+                    "query": self.perturbed_question,
+                    "answer": self.expected_results,
+                    "result": self.actual_results,
+                },
+                prompt={
+                    "input_variables": ["query", "answer", "result"],
+                    "template": qa_prompt_template,
+                },
+                max_new_tokens=512,
             )
-
-        return graded_outputs[0]["text"].strip() == "CORRECT"
+            return prediction == "CORRECT"
 
 
 class MinScoreQASample(QASample):

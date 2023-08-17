@@ -303,7 +303,6 @@ class RobustnessTestFactory(ITests):
             tests Optional[Dict]:
                 A dictionary of test names and corresponding parameters (default is None).
         """
-
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
