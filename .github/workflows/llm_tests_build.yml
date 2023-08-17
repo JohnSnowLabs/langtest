@@ -1,6 +1,6 @@
 name: Manual Tests
 
-# This allows you to run the workflow manually from the GitHub Actions UI
+# This allows you to run the workflow manually from the GitHub Actions UI. We use it for running llm-tests.
 on: 
   workflow_dispatch:
 
