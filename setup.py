@@ -180,6 +180,7 @@ setup(
             "data/NarrativeQA/*",
             "data/Translation/*",
             "data/BBQ/*",
+            "data/Security/*",
             "data/Clinical-Tests/*",
             
         ],

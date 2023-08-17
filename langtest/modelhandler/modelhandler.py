@@ -50,6 +50,7 @@ class ModelFactory:
         "summarization",
         "toxicity",
         "translation",
+        "security",
         "clinical-tests",
     ]
     SUPPORTED_MODULES = [
@@ -133,6 +134,11 @@ class ModelFactory:
 
         elif task == "translation":
             self.model_class = model_handler.PretrainedModelForTranslation(model)
+
+        elif task == "security":
+            self.model_class = model_handler.PretrainedModelForSecurity(
+                hub, model, *args, **kwargs
+            )
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -220,6 +226,11 @@ class ModelFactory:
         elif task == "translation":
             model_class = modelhandler_module.PretrainedModelForTranslation.load_model(
                 path
+            )
+
+        elif task == "security":
+            model_class = modelhandler_module.PretrainedModelForSecurity.load_model(
+                hub, path, *args, **kwargs
             )
 
         elif task == "clinical-tests":

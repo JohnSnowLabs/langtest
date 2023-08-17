@@ -9,6 +9,7 @@ from .sample import (
     MinScoreQASample,
     SummarizationSample,
     TranslationSample,
+    SecuritySample,
     ToxicitySample,
     ClinicalSample,
 )

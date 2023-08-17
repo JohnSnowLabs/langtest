@@ -26,6 +26,7 @@ from langtest.utils.custom_types import (
     ToxicitySample,
     TranslationSample,
     ClinicalSample,
+    SecuritySample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -57,6 +58,7 @@ COLUMN_MAPPER = {
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
     "translation": {"text": ["text", "original", "sourcestring"]},
+    "security": {"text": ["text", "prompt"]},
     "clinical-tests": {
         "Patient info A": ["Patient info A"],
         "Patient info B": ["Patient info B"],
@@ -249,6 +251,8 @@ class DataFactory:
             + "/Translation/translation-test-tiny.jsonl",
             "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
             "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
+            "Prompt-Injection-Attack": script_dir[:-7]
+            + "/Security/Prompt-Injection-Attack.jsonl",
             "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
             "Gastroenterology-files": script_dir[:-7]
             + "/Clinical-Tests/Gastroenterology-files.jsonl",
@@ -738,6 +742,7 @@ class JSONLDataset(_IDataset):
         "summarization",
         "toxicity",
         "translation",
+        "security",
         "clinical-tests",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
@@ -846,6 +851,14 @@ class JSONLDataset(_IDataset):
                     data.append(
                         TranslationSample(
                             original=item[self.column_matcher["text"]],
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+                elif self.task == "security":
+                    data.append(
+                        SecuritySample(
+                            prompt=item["text"],
+                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
