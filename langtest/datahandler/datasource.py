@@ -117,6 +117,7 @@ class DataFactory:
             raise ValueError(
                 "The 'data_source' key must be provided in the 'file_path' dictionary."
             )
+        self._custom_label = file_path
         self._file_path = file_path.get("data_source")
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
@@ -145,7 +146,7 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
-        if isinstance(self._custom_label, dict):
+        if len(self._custom_label) >1 and self.file_ext== "csv":
             self.init_cls = self._class_map[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
@@ -478,7 +479,7 @@ class CSVDataset(_IDataset):
 
         Args:
             file_path (Union[str, Dict]):
-                The path to the data file or a dictionary containing "name" key with the path
+                The path to the data file or a dictionary containing "data_source" key with the path
             task (str):
                 Specifies the task of the dataset, which can be either "text-classification","ner"
                 "question-answering" and "summarization".
@@ -489,7 +490,7 @@ class CSVDataset(_IDataset):
         self._file_path = file_path
         self.task = task
         if type(file_path) == dict:
-            self.delimiter = self._find_delimiter(file_path["name"])
+            self.delimiter = self._find_delimiter(file_path["data_source"])
         else:
             if task in self.COLUMN_NAMES:
                 self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
@@ -582,7 +583,7 @@ class CSVDataset(_IDataset):
             return self._import_data(self._file_path, **kwargs)
 
         if type(self._file_path) == dict:
-            dataset = pd.read_csv(self._file_path["name"])
+            dataset = pd.read_csv(self._file_path["data_source"])
         else:
             dataset = pd.read_csv(self._file_path)
             if not self.column_map:
