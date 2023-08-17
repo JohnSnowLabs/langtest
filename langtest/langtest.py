@@ -1257,7 +1257,6 @@ class Harness:
         token: str,
         exist_ok: bool = False,
         split: str = "train",
-        private: bool = False,
     ):
         if token is None:
             raise ValueError(
