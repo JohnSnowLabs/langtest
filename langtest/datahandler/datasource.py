@@ -178,7 +178,6 @@ class DataFactory:
                                 original_context=item.get("original_context", "-"),
                                 perturbed_question=item["perturbed_question"],
                                 perturbed_context=item.get("perturbed_context", "-"),
-                                task="question-answering",
                                 test_type=item["test_type"],
                                 category=item["category"],
                                 dataset_name="BoolQ",
@@ -193,7 +192,6 @@ class DataFactory:
                             SummarizationSample(
                                 original=item["original"],
                                 test_case=item["test_case"],
-                                task="summarization",
                                 test_type=item["test_type"],
                                 category=item["category"],
                                 dataset_name="XSum",
@@ -819,7 +817,6 @@ class JSONLDataset(_IDataset):
                                 self.column_matcher["context"], "-"
                             ),
                             expected_results=expected_results,
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -834,7 +831,6 @@ class JSONLDataset(_IDataset):
                         SummarizationSample(
                             original=item[self.column_matcher["text"]],
                             expected_results=expected_results,
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -842,7 +838,6 @@ class JSONLDataset(_IDataset):
                     data.append(
                         ToxicitySample(
                             prompt=item[self.column_matcher["text"]],
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -851,7 +846,6 @@ class JSONLDataset(_IDataset):
                     data.append(
                         TranslationSample(
                             original=item[self.column_matcher["text"]],
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -1100,9 +1094,7 @@ class HuggingFaceDataset(_IDataset):
         original = data_row.get("document", "")
         summary = data_row.get("summary", "")
 
-        return SummarizationSample(
-            original=original, expected_results=summary, task="summarization"
-        )
+        return SummarizationSample(original=original, expected_results=summary)
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
