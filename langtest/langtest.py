@@ -1179,7 +1179,7 @@ class Harness:
                 f"Invalid task type: {task}. Expected 'bias' or 'representation'."
             )
 
-    def push_to_huggingface_hub(
+    def upload_folder_to_hub(
         repo_name: str,
         repo_type: str,
         folder_path: str,
@@ -1187,6 +1187,10 @@ class Harness:
         model_type: str = "huggingface",
         exist_ok: bool = False,
     ):
+        if token is None:
+            raise ValueError(
+                "A valid token is required for Hugging Face Hub authentication."
+            )
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         if (
