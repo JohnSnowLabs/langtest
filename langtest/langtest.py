@@ -1212,3 +1212,36 @@ class Harness:
                 repo_id=repo_name,
                 repo_type=repo_type,
             )
+        elif model_type == "spacy" and repo_type == "model":
+            LIB_NAME = "spacy_huggingface_hub"
+
+            if try_import_lib(LIB_NAME):
+                dataset_module = importlib.import_module(LIB_NAME)
+                push = getattr(dataset_module, "push")
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+            meta_path = os.path.join(folder_path, "meta.json")
+            with open(meta_path, "r") as meta_file:
+                meta_data = json.load(meta_file)
+
+            lang = meta_data["lang"]
+            version = meta_data["version"]
+
+            v = f"{lang}_pipeline-{version}"
+            wheel_filename = f"{v}-py3-none-any.whl"
+
+            output_dir_base = "output"
+            output_dir = output_dir_base
+            index = 1
+            while os.path.exists(output_dir):
+                output_dir = f"{output_dir_base}{index}"
+                index += 1
+
+            os.makedirs(output_dir, exist_ok=True)
+            wheel_path = os.path.join(output_dir, v, "dist", wheel_filename)
+
+            os.system(f"python -m spacy package {folder_path} {output_dir} --build wheel")
+
+            push(wheel_path)
