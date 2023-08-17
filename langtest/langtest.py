@@ -216,7 +216,7 @@ class Harness:
                 "or use a default configuration."
             )
         else:
-            self.file_path = data
+            self.file_path = data["data_source"]
             self.data = (
                 DataFactory(data, task=self.task).load() if data is not None else None
             )
