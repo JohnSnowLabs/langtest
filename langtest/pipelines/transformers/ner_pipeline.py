@@ -84,8 +84,12 @@ class NEREnd2EndPipeline(FlowSpec):
         self.hub = "huggingface"
         self.output_dir = "checkpoints/"
 
-        self.train_datasource = DataFactory(file_path=self.train_data, task=self.task)
-        self.eval_datasource = DataFactory(file_path=self.eval_data, task=self.task)
+        self.train_datasource = DataFactory(
+            file_path={"data_source": self.train_data}, task=self.task
+        )
+        self.eval_datasource = DataFactory(
+            file_path={"data_source": self.eval_data}, task=self.task
+        )
 
         self.next(self.train)
 
@@ -183,7 +187,7 @@ class NEREnd2EndPipeline(FlowSpec):
     def retrain(self):
         """Performs the training procedure using the augmented data created by langtest"""
         self.augmented_train_datasource = DataFactory(
-            file_path=self.path_augmented_file, task=self.task
+            file_path={"data_source": self.path_augmented_file}, task=self.task
         )
         samples = self.augmented_train_datasource.load_raw()
 

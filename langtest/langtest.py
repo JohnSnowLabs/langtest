@@ -161,6 +161,7 @@ class Harness:
 
         elif (
             isinstance(data, dict)
+            and isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             and task == "text-classification"
@@ -185,6 +186,7 @@ class Harness:
 
         elif (
             isinstance(data, dict)
+            and isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
             and task == "ner"
@@ -198,6 +200,7 @@ class Harness:
 
         elif (
             isinstance(data, dict)
+            and isinstance(data["data_source"], str)
             and "." not in data["data_source"]
             and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             and task == "summarization"
@@ -215,6 +218,8 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
+        elif isinstance(data["data_source"], list):
+            self.data = data["data_source"]
         else:
             self.file_path = data["data_source"]
             self.data = (
@@ -1067,11 +1072,11 @@ class Harness:
         temp_df = temp_df[temp_df["category"].isin(["robustness", "bias"])]
         temp_df.to_csv(output_path, index=False)
 
-    def import_edited_testcases(self, input_path: str, **kwargs):
+    def import_edited_testcases(self, input_path: dict, **kwargs):
         """Testcases are imported from a csv file
 
         Args:
-            input_path (str): location of the file to load
+            input_path (dict): location of the file to load
         """
         temp_testcases = [
             sample
