@@ -1175,3 +1175,38 @@ class Harness:
             raise ValueError(
                 f"Invalid task type: {task}. Expected 'bias' or 'representation'."
             )
+
+    def push_to_huggingface_hub(
+        repo_name: str,
+        repo_type: str,
+        folder_path: str,
+        token: str,
+        model_type: str = "huggingface",
+        exist_ok: bool = False,
+    ):
+        subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
+
+        if (
+            model_type == "huggingface" and repo_type == "model"
+        ) or repo_type == "dataset":
+            LIB_NAME = "huggingface_hub"
+
+            if try_import_lib(LIB_NAME):
+                dataset_module = importlib.import_module(LIB_NAME)
+                create_repo = getattr(dataset_module, "create_repo")
+                HfApi = getattr(dataset_module, "HfApi")
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+
+            api = HfApi()
+
+            repo_id = repo_name.split("/")[1]
+            repo_info = api.create_repo(repo_id, repo_type=repo_type, exist_ok=exist_ok)
+
+            api.upload_folder(
+                folder_path=folder_path,
+                repo_id=repo_name,
+                repo_type=repo_type,
+            )
