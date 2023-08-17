@@ -1267,6 +1267,7 @@ class Harness:
         file_extension = file_path.split(".")[-1]
         path_in_repo = os.path.basename(file_path)
         if file_extension != "conll":
+            LIB_NAME = "huggingface_hub"
             if try_import_lib(LIB_NAME):
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
@@ -1284,5 +1285,44 @@ class Harness:
                 path_in_repo=path_in_repo,
                 repo_id=repo_name,
                 repo_type=repo_type,
+                token=token,
+            )
+        else:
+            LIB_NAME = "datasets"
+            if try_import_lib(LIB_NAME):
+                dataset_module = importlib.import_module(LIB_NAME)
+                DatasetDict = getattr(dataset_module, "DatasetDict")
+                Dataset = getattr(dataset_module, "Dataset")
+
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            data = []
+            tokens = []
+            ner_tags = []
+
+            for line in lines:
+                line = line.strip()
+                if line:
+                    if not line.startswith("-DOCSTART-"):
+                        parts = line.split()
+                        tokens.append(parts[0])
+                        ner_tags.append(parts[-1])
+                elif tokens:
+                    data.append({"tokens": tokens, "ner_tags": ner_tags})
+                    tokens = []
+                    ner_tags = []
+
+            df = pd.DataFrame(data)
+            dataset = Dataset.from_pandas(df)
+            ds = DatasetDict({split: dataset})
+
+            ds.push_to_hub(
+                repo_id=repo_name,
                 token=token,
             )
