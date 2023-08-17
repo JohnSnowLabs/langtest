@@ -101,6 +101,13 @@ class DataFactory:
             file_path (dict): Dictionary containing 'data_source' key with the path to the dataset.
             task (str): Task to be evaluated.
         """
+        if not isinstance(file_path, dict):
+            raise ValueError("'file_path' must be a dictionary.")
+
+        if "data_source" not in file_path:
+            raise ValueError(
+                "The 'data_source' key must be provided in the 'file_path' dictionary."
+            )
         self._file_path = file_path.get("data_source")
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
