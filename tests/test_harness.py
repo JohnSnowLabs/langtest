@@ -168,7 +168,7 @@ class HarnessTestCase(unittest.TestCase):
         tc_harness = Harness(
             task="text-classification",
             model={"model": "aychang/roberta-base-imdb", "hub": "huggingface"},
-            data={"data_source": "imdb"},
+            data={"data_source": "imdb", "source": "huggingface"},
         )
         tc_harness.data = tc_harness.data[:10]
         tc_harness.generate()
@@ -211,7 +211,7 @@ class HarnessTestCase(unittest.TestCase):
         df.to_csv(save_dir + "/test_cases.csv", index=False)
 
         # import the testcases
-        harness.import_edited_testcases({"data_source": save_dir + "/test_cases.csv"})
+        harness.import_edited_testcases(save_dir + "/test_cases.csv")
 
         # test working of the harness
         harness.run().report()

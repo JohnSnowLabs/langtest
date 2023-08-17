@@ -41,13 +41,13 @@ class AugmentWorkflowTestCase(unittest.TestCase):
             "spacy_textclassification_hf_dataset": {
                 "task": "text-classification",
                 "model": {"model": "textcat_imdb", "hub": "spacy"},
-                "data": {"data_source": "imdb"},
+                "data": {"data_source": "imdb", "source": "huggingface"},
                 "config": "tests/fixtures/config_text_classification.yaml",
             },
             "huggingface_textclassification_hf_dataset": {
                 "task": "text-classification",
                 "model": {"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
-                "data": {"data_source": "imdb"},
+                "data": {"data_source": "imdb", "source": "huggingface"},
                 "config": "tests/fixtures/config_text_classification.yaml",
             },
         }

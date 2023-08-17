@@ -161,56 +161,45 @@ class Harness:
 
         elif (
             isinstance(data, dict)
-            and isinstance(data["data_source"], str)
-            and "." not in data["data_source"]
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            and task == "text-classification"
+            and "source" in data
+            and data["source"] == "huggingface"
         ):
-            self.data = (
-                HuggingFaceDataset(data["data_source"], task=task).load_data(
+            if (
+                task == "text-classification"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "text"),
                     target_column=data.get("target_column", "label"),
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-                if data is not None
-                else None
-            )
 
-            if hub == "spacy" and (model == "textcat_imdb" or model is None):
-                if model is None:
-                    logging.warning(
-                        "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
-                    )
-                model = resource_filename("langtest", "data/textcat_imdb")
+                if hub == "spacy" and (model == "textcat_imdb" or model is None):
+                    if model is None:
+                        logging.warning(
+                            "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
+                        )
+                    model = resource_filename("langtest", "data/textcat_imdb")
 
-        elif (
-            isinstance(data, dict)
-            and isinstance(data["data_source"], str)
-            and "." not in data["data_source"]
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
-            and task == "ner"
-        ):
-            self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                feature_column=data.get("feature_column", "tokens"),
-                target_column=data.get("target_column", "ner_tags"),
-                split=data.get("split", "test"),
-                subset=data.get("subset", None),
-            )
+            elif task == "ner" and hub in self.SUPPORTED_HUBS_HF_DATASET_NER:
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", "tokens"),
+                    target_column=data.get("target_column", "ner_tags"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
 
-        elif (
-            isinstance(data, dict)
-            and isinstance(data["data_source"], str)
-            and "." not in data["data_source"]
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
-            and task == "summarization"
-        ):
-            self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                feature_column=data.get("feature_column", "document"),
-                target_column=data.get("target_column", "summary"),
-                split=data.get("split", "test"),
-                subset=data.get("subset", None),
-            )
+            elif (
+                task == "summarization"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", "document"),
+                    target_column=data.get("target_column", "summary"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
@@ -221,6 +210,10 @@ class Harness:
         elif isinstance(data["data_source"], list):
             self.data = data["data_source"]
         else:
+            if "data_source" not in data:
+                raise ValueError(
+                    "The 'data_source' key must be provided in the 'data' parameter."
+                )
             self.file_path = data["data_source"]
             self.data = (
                 DataFactory(data, task=self.task).load() if data is not None else None
@@ -1072,11 +1065,11 @@ class Harness:
         temp_df = temp_df[temp_df["category"].isin(["robustness", "bias"])]
         temp_df.to_csv(output_path, index=False)
 
-    def import_edited_testcases(self, input_path: dict, **kwargs):
+    def import_edited_testcases(self, input_path: str, **kwargs):
         """Testcases are imported from a csv file
 
         Args:
-            input_path (dict): location of the file to load
+            input_path (str): location of the file to load
         """
         temp_testcases = [
             sample
@@ -1084,7 +1077,9 @@ class Harness:
             if sample.category not in ["robustness", "bias"]
         ]
 
-        self._testcases = DataFactory(input_path, task=self.task, is_import=True).load()
+        self._testcases = DataFactory(
+            {"data_source": input_path}, task=self.task, is_import=True
+        ).load()
         self._testcases.extend(temp_testcases)
 
         return self
