@@ -946,15 +946,23 @@ class HuggingFaceDataset(_IDataset):
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
-        label_names = dataset.features[target_column].feature.names
-
-        dataset = map(
-            lambda example: {
-                "tokens": example[feature_column],
-                "ner_tags": [label_names[x] for x in example[target_column]],
-            },
-            dataset,
-        )
+        if "label" in str(type(dataset.features[target_column].feature)):
+            label_names = dataset.features[target_column].feature.names
+            dataset = map(
+                lambda example: {
+                    "tokens": example[feature_column],
+                    "ner_tags": [label_names[x] for x in example[target_column]],
+                },
+                dataset,
+            )
+        else:
+            dataset = map(
+                lambda example: {
+                    "tokens": example[feature_column],
+                    "ner_tags": example[target_column],
+                },
+                dataset,
+            )
 
         samples = [self._row_to_ner_sample(example) for example in dataset]
         return samples
