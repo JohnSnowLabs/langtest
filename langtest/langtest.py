@@ -1249,3 +1249,41 @@ class Harness:
             os.system(f"python -m spacy package {folder_path} {output_dir} --build wheel")
 
             push(wheel_path)
+
+    def push_file_to_hub(
+        repo_name: str,
+        repo_type: str,
+        file_path: str,
+        token: str,
+        exist_ok: bool = False,
+        split: str = "train",
+        private: bool = False,
+    ):
+        if token is None:
+            raise ValueError(
+                "A valid token is required for Hugging Face Hub authentication."
+            )
+        subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
+
+        file_extension = file_path.split(".")[-1]
+        path_in_repo = os.path.basename(file_path)
+        if file_extension != "conll":
+            if try_import_lib(LIB_NAME):
+                huggingface_hub = importlib.import_module(LIB_NAME)
+                HfApi = getattr(huggingface_hub, "HfApi")
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+
+            api = HfApi()
+            repo_id = repo_name.split("/")[1]
+            api.create_repo(repo_id, repo_type=repo_type, exist_ok=exist_ok)
+
+            api.upload_file(
+                path_or_fileobj=file_path,
+                path_in_repo=path_in_repo,
+                repo_id=repo_name,
+                repo_type=repo_type,
+                token=token,
+            )
