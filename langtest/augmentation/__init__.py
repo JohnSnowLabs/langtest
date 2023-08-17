@@ -113,7 +113,8 @@ class AugmentRobustness(BaseAugmentaion):
         Returns:
             List[Dict[str, Any]]: A list of augmented data samples.
         """
-        if "." not in training_data["data_source"]:
+
+        if "source" in training_data and training_data["source"] == "huggingface":
             self.df = HuggingFaceDataset(training_data["data_source"], self.task)
             data = self.df.load_data(
                 feature_column=training_data.get("feature_column", "text"),
@@ -122,7 +123,7 @@ class AugmentRobustness(BaseAugmentaion):
                 subset=training_data.get("subset", None),
             )
         else:
-            self.df = DataFactory(training_data["data_source"], self.task)
+            self.df = DataFactory(training_data, self.task)
             data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
@@ -345,7 +346,7 @@ class TemplaticAugment(BaseAugmentaion):
         Returns:
             bool: Returns True upon successful completion of the method.
         """
-        df = DataFactory(training_data["data_source"], self.__task)
+        df = DataFactory(training_data, self.__task)
         data = df.load()
         new_data = []
         self.__search_results = self.search_sample_results(data)

@@ -103,14 +103,21 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    def __init__(self, file_path: str, task: str, **kwargs) -> None:
+    def __init__(self, file_path: dict, task: str, **kwargs) -> None:
         """Initializes DataFactory object.
 
         Args:
-            file_path (str): Path to the dataset.
+            file_path (dict): Dictionary containing 'data_source' key with the path to the dataset.
             task (str): Task to be evaluated.
         """
-        self._file_path = file_path
+        if not isinstance(file_path, dict):
+            raise ValueError("'file_path' must be a dictionary.")
+
+        if "data_source" not in file_path:
+            raise ValueError(
+                "The 'data_source' key must be provided in the 'file_path' dictionary."
+            )
+        self._file_path = file_path.get("data_source")
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
             for cls in _IDataset.__subclasses__()
