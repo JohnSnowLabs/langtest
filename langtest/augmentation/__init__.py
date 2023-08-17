@@ -114,7 +114,7 @@ class AugmentRobustness(BaseAugmentaion):
             List[Dict[str, Any]]: A list of augmented data samples.
         """
 
-        if "source" in data and data["source"] == "huggingface":
+        if "source" in training_data and training_data["source"] == "huggingface":
             self.df = HuggingFaceDataset(training_data["data_source"], self.task)
             data = self.df.load_data(
                 feature_column=training_data.get("feature_column", "text"),
