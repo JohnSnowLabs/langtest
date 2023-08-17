@@ -1250,7 +1250,7 @@ class Harness:
 
             push(wheel_path)
 
-    def push_file_to_hub(
+    def upload_file_to_hub(
         repo_name: str,
         repo_type: str,
         file_path: str,
