@@ -101,6 +101,12 @@ The following tables give an overview of the different categories and tests.
 |[Robustness](robustness)		            |[Adjective Antonym Swap](robustness#adjective-antonym-swap)                                                    |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
 |[Robustness](robustness)		            |[Strip All Punctution](robustness#strip-all-punctuation)                                                       |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
 |[Robustness](robustness)		            |[Randomize Age](robustness#random-age)                                                                         |`ner`, `text-classification`, `question-answering`, `summarization`, `translation`
-|[Toxicity](toxicity)		                |[Offensive](toxicity#Offensive)                                                                                |`toxicity`
+|[Toxicity](toxicity)		            |[Offensive](toxicity#Offensive)                                                                         |`toxicity`
+|[Toxicity](toxicity)		            |[ideology](toxicity#ideology)                                                                         |`toxicity`
+|[Toxicity](toxicity)		            |[lgbtqphobia](toxicity#lgbtqphobia)                                                                         |`toxicity`
+|[Toxicity](toxicity)		            |[racism](toxicity#racism)                                                                         |`toxicity`
+|[Toxicity](toxicity)		            |[sexism](toxicity#sexism)                                                                         |`toxicity`
+|[Toxicity](toxicity)		            |[xenophobia](toxicity#xenophobia)                                                                         |`toxicity`
+|[Clinical](clinical)		            |[demographic-bias](clinical#demographic-bias)                                                                         |`clinical-tests`
 
 </div></div>

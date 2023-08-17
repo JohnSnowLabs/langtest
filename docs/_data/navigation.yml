@@ -92,3 +92,5 @@ tests:
     url: /docs/pages/tests/robustness
   - title: Toxicity
     url: /docs/pages/tests/toxicity
+  - title: Clinical
+    url: /docs/pages/tests/clinical
