@@ -2,9 +2,9 @@
 layout: docs
 header: true
 seotitle: Clinical Tests | LangTest | John Snow Labs
-title: Clinical Tests
+title: Clinical 
 key: tests
-permalink: /docs/pages/tests/clinical-tests
+permalink: /docs/pages/tests/clinical
 aside:
     toc: true
 sidebar:
@@ -16,10 +16,10 @@ modify_date: "2023-08-17"
 
 <div class="main-docs" markdown="1">
 
-{% assign parent_path = "pages/tests/clinical-tests" %}
+{% assign parent_path = "pages/tests/clinical" %}
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}
-        {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "clinical-tests/" %}
+        {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "clinical/" %}
         {% include_relative {{ file_name }} %}        
     {% endif %}
 {% endfor %}
