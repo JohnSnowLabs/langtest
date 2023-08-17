@@ -1258,6 +1258,23 @@ class Harness:
         exist_ok: bool = False,
         split: str = "train",
     ):
+        """Uploads a file or a Dataset to the Hugging Face Model Hub.
+
+        Args:
+            repo_name (str): The name of the repository in the format 'username/repository'.
+            repo_type (str): The type of the repository, e.g: 'dataset'.
+            file_path (str): Path to the file to be uploaded.
+            token (str): Hugging Face Hub authentication token.
+            exist_ok (bool, optional): If True, do not raise an error if repo already exists.
+            split (str, optional): The split of the dataset. Defaults to 'train'.
+
+        Raises:
+            ValueError: Raised if a valid token is not provided.
+            ModuleNotFoundError: Raised if required packages are not installed.
+
+        Returns:
+            None
+        """
         if token is None:
             raise ValueError(
                 "A valid token is required for Hugging Face Hub authentication."
