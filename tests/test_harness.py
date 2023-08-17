@@ -221,7 +221,7 @@ class HarnessTestCase(unittest.TestCase):
         save_dir = "/tmp/saved_csv_data_text_classification_harness_test"
         tc_harness = Harness(
             task="text-classification",
-            model={"model":"lvwerra/distilbert-imdb", "hub":"huggingface"},
+            model={"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
             data={
                 "data_source": "tests/fixtures/text_classification.csv",
                 "feature_column": "text",
@@ -247,7 +247,7 @@ class HarnessTestCase(unittest.TestCase):
         save_dir = "/tmp/saved_csv_data_ner_harness_test"
         tc_harness = Harness(
             task="ner",
-            model={"model":"dslim/bert-base-NER", "hub":"huggingface"},
+            model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
             data={
                 "data_source": "tests/fixtures/tner.csv",
                 "feature_column": "tokens",
