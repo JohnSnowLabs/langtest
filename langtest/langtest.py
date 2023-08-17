@@ -2,6 +2,8 @@ import json
 import logging
 import os
 import pickle
+import importlib
+import subprocess
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
 
@@ -14,6 +16,7 @@ from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
+from langtest.utils.lib_manager import try_import_lib
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -1192,9 +1195,8 @@ class Harness:
             LIB_NAME = "huggingface_hub"
 
             if try_import_lib(LIB_NAME):
-                dataset_module = importlib.import_module(LIB_NAME)
-                create_repo = getattr(dataset_module, "create_repo")
-                HfApi = getattr(dataset_module, "HfApi")
+                huggingface_hub = importlib.import_module(LIB_NAME)
+                HfApi = getattr(huggingface_hub, "HfApi")
             else:
                 raise ModuleNotFoundError(
                     f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
@@ -1203,7 +1205,7 @@ class Harness:
             api = HfApi()
 
             repo_id = repo_name.split("/")[1]
-            repo_info = api.create_repo(repo_id, repo_type=repo_type, exist_ok=exist_ok)
+            api.create_repo(repo_id, repo_type=repo_type, exist_ok=exist_ok)
 
             api.upload_folder(
                 folder_path=folder_path,
