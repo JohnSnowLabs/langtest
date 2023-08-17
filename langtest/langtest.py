@@ -3,7 +3,7 @@ import logging
 import os
 import pickle
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
@@ -33,6 +33,8 @@ class Harness:
         "summarization",
         "toxicity",
         "translation",
+        "security",
+        "clinical-tests",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -59,6 +61,7 @@ class Harness:
             "johnsnowlabs",
         ): "imdb/sample.csv",
     }
+    SUPPORTED_HUBS_HF_DATASET_NER = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = [
         "openai",
@@ -78,30 +81,34 @@ class Harness:
         },
         "task": {
             "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
+            "clinical-tests": resource_filename(
+                "langtest", "data/config/clinical_config.yml"
+            ),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
             ),
             "translation-johnsnowlabs": resource_filename(
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
+            "security": resource_filename("langtest", "data/config/security_config.yml"),
         },
     }
 
     def __init__(
         self,
         task: str,
-        model: Optional[Union[str, Any]] = None,
-        hub: Optional[str] = None,
-        data: Optional[Union[str, dict]] = None,
+        model: Optional[Union[list, dict]] = None,
+        data: Optional[dict] = None,
         config: Optional[Union[str, dict]] = None,
     ):
         """Initialize the Harness object.
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
-            hub (str, optional): model hub to load from the path. Required if path is passed as 'model'.
-            data (str, optional): Path to the data to be used for evaluation.
+            model (list | dict, optional): Specifies the model to be evaluated.
+                If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
+                If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
+            data (dict, optional): The data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
 
         Raises:
@@ -110,8 +117,27 @@ class Harness:
         super().__init__()
 
         self.is_default = False
-        self._actual_model = model
-        self.hub = hub
+
+        if isinstance(model, list):
+            for item in model:
+                if not isinstance(item, dict):
+                    raise ValueError("Each item in the list must be a dictionary")
+                if "model" not in item or "hub" not in item:
+                    raise ValueError(
+                        "Each dictionary in the list must have 'model' and 'hub' keys"
+                    )
+        elif isinstance(model, dict):
+            if "model" not in model or "hub" not in model:
+                raise ValueError("The dictionary must have 'model' and 'hub' keys")
+        else:
+            raise ValueError("Invalid 'model' parameter type")
+
+        if isinstance(model, dict):
+            hub, model = model["hub"], model["model"]
+            self.hub = hub
+            self._actual_model = model
+        else:
+            hub = None
 
         if task not in self.SUPPORTED_TASKS:
             raise ValueError(
@@ -132,7 +158,7 @@ class Harness:
 
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
-            data = resource_filename("langtest", data_path)
+            data = {"data_source": resource_filename("langtest", data_path)}
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
@@ -140,41 +166,46 @@ class Harness:
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
         elif (
-            type(data) is dict
-            and not data["name"].endswith(".csv")
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            and task == "text-classification"
+            isinstance(data, dict)
+            and "source" in data
+            and data["source"] == "huggingface"
         ):
-            self.data = (
-                HuggingFaceDataset(data["name"], task=task).load_data(
+            if (
+                task == "text-classification"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "text"),
                     target_column=data.get("target_column", "label"),
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-                if data is not None
-                else None
-            )
 
-            if hub == "spacy" and (model == "textcat_imdb" or model is None):
-                if model is None:
-                    logging.warning(
-                        "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
-                    )
-                model = resource_filename("langtest", "data/textcat_imdb")
+                if hub == "spacy" and (model == "textcat_imdb" or model is None):
+                    if model is None:
+                        logging.warning(
+                            "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
+                        )
+                    model = resource_filename("langtest", "data/textcat_imdb")
 
-        elif (
-            type(data) is dict
-            and not data["name"].endswith(".csv")
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
-            and task == "summarization"
-        ):
-            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
-                feature_column=data.get("feature_column", "document"),
-                target_column=data.get("target_column", "summary"),
-                split=data.get("split", "test"),
-                subset=data.get("subset", None),
-            )
+            elif task == "ner" and hub in self.SUPPORTED_HUBS_HF_DATASET_NER:
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", "tokens"),
+                    target_column=data.get("target_column", "ner_tags"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
+
+            elif (
+                task == "summarization"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", "document"),
+                    target_column=data.get("target_column", "summary"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
@@ -182,10 +213,14 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
-        elif isinstance(data, list):
-            self.data = data
+        elif isinstance(data["data_source"], list):
+            self.data = data["data_source"]
         else:
-            self.file_path = data
+            if "data_source" not in data:
+                raise ValueError(
+                    "The 'data_source' key must be provided in the 'data' parameter."
+                )
+            self.file_path = data["data_source"]
             self.data = (
                 DataFactory(data, task=self.task).load() if data is not None else None
             )
@@ -210,13 +245,19 @@ class Harness:
                 path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
             )
 
-        elif type(model) == dict:
+        elif isinstance(model, list):
             model_dict = {}
-            for k, v in model.items():
-                model_dict[k] = ModelFactory.load_model(
-                    task=task, path=k, hub=v, **self._config.get("model_parameters", {})
+            for i in model:
+                model = i["model"]
+                hub = i["hub"]
+
+                model_dict[model] = ModelFactory.load_model(
+                    path=model,
+                    task=task,
+                    hub=hub,
+                    **self._config.get("model_parameters", {}),
                 )
-            self.model = model_dict
+                self.model = model_dict
 
         else:
             self.model = ModelFactory(
@@ -230,7 +271,7 @@ class Harness:
         print("Test Configuration : \n", formatted_config)
 
         global GLOBAL_MODEL
-        if not isinstance(model, dict):
+        if not isinstance(model, list):
             GLOBAL_MODEL = self.model
 
         self._testcases = None
@@ -279,13 +320,17 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
 
-            elif isinstance(model, dict):
+            elif isinstance(model, list):
                 model_dict = {}
-                for k, v in model.items():
-                    model_dict[k] = ModelFactory.load_model(
+
+                for i in model:
+                    model = i["model"]
+                    hub = i["hub"]
+
+                    model_dict[model] = ModelFactory.load_model(
+                        path=model,
                         task=task,
-                        path=k,
-                        hub=v,
+                        hub=hub,
                         **self._config.get("model_parameters", {}),
                     )
                 self.model = model_dict
@@ -401,6 +446,7 @@ class Harness:
         self,
         format: str = "dataframe",
         save_dir: str = None,
+        mlflow_tracking: bool = False,
     ) -> pd.DataFrame:
         """Generate a report of the test results.
 
@@ -477,6 +523,70 @@ class Harness:
 
             self.df_report = df_report.fillna("-")
 
+            if mlflow_tracking:
+                try:
+                    import mlflow
+                except ModuleNotFoundError:
+                    print("mlflow package not found. Install mlflow first")
+
+                import datetime
+
+                experiment_name = (
+                    self._actual_model
+                    if isinstance(self._actual_model, str)
+                    else self._actual_model.__class__.__module__
+                )
+
+                # Get the experiment
+                experiment = mlflow.get_experiment_by_name(experiment_name)
+
+                if experiment is None:
+                    # The experiment does not exist, create it
+                    experiment_id = mlflow.create_experiment(experiment_name)
+                else:
+                    # The experiment exists, get its ID
+                    experiment_id = experiment.experiment_id
+
+                current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                mlflow.start_run(
+                    run_name=self.task + "_testing_" + current_datetime,
+                    experiment_id=experiment_id,
+                )
+
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_pass_rate",
+                        float(row["pass_rate"].rstrip("%")) / 100,
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_min_pass_rate",
+                        float(row["minimum_pass_rate"].rstrip("%")) / 100,
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_pass_status", 1 if row["pass"] else 0
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_pass_count", row["pass_count"]
+                    ),
+                    axis=1,
+                )
+                df_report.apply(
+                    lambda row: mlflow.log_metric(
+                        row["test_type"] + "_fail_count", row["fail_count"]
+                    ),
+                    axis=1,
+                )
+                mlflow.end_run()
+
             if format == "dataframe":
                 return self.df_report
             elif format == "dict":
@@ -551,6 +661,55 @@ class Harness:
 
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
+                if mlflow_tracking:
+                    try:
+                        import mlflow
+                    except ModuleNotFoundError:
+                        print("mlflow package not found. Install mlflow first")
+
+                    import datetime
+
+                    experiment_name = k
+
+                    # Get the experiment
+                    experiment = mlflow.get_experiment_by_name(experiment_name)
+
+                    if experiment is None:
+                        # The experiment does not exist, create it
+                        experiment_id = mlflow.create_experiment(experiment_name)
+                    else:
+                        # The experiment exists, get its ID
+                        experiment_id = experiment.experiment_id
+
+                    current_datetime = datetime.datetime.now().strftime(
+                        "%Y-%m-%d_%H-%M-%S"
+                    )
+                    mlflow.start_run(
+                        run_name=self.task + "_testing_" + current_datetime,
+                        experiment_id=experiment_id,
+                    )
+
+                    df_report.apply(
+                        lambda row: mlflow.log_metric(
+                            row["test_type"] + "_pass_rate",
+                            float(row["pass_rate"].rstrip("%")) / 100,
+                        ),
+                        axis=1,
+                    )
+                    df_report.apply(
+                        lambda row: mlflow.log_metric(
+                            row["test_type"] + "_min_pass_rate",
+                            float(row["minimum_pass_rate"].rstrip("%")) / 100,
+                        ),
+                        axis=1,
+                    )
+                    df_report.apply(
+                        lambda row: mlflow.log_metric(
+                            row["test_type"] + "_pass_status", 1 if row["pass"] else 0
+                        ),
+                        axis=1,
+                    )
+                    mlflow.end_run()
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
@@ -672,11 +831,17 @@ class Harness:
             "test_case",
             "perturbed_context",
             "perturbed_question",
+            "patient_info_A",
+            "patient_info_B",
+            "diagnosis",
+            "treatment_plan_A",
+            "treatment_plan_B",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
             "completion_toxicity",
             "eval_score",
+            "similarity_score",
             "pass",
         ]
         columns = [c for c in column_order if c in generated_results_df.columns]
@@ -686,8 +851,8 @@ class Harness:
 
     def augment(
         self,
-        input_path: str,
-        output_path: str,
+        training_data: dict,
+        save_data_path: str,
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
@@ -695,14 +860,15 @@ class Harness:
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
         Args:
-            input_path (str): Path to the input file.
-            output_path (str): Path to save the augmented data.
+            training_data (dict): A dictionary containing the input data for augmentation.
+            save_data_path (str): Path to save the augmented data.
             custom_proportions (Union[Dict, List]):
             export_mode (str, optional): Determines how the samples are modified or exported.
                                     - 'inplace': Modifies the list of samples in place.
                                     - 'add': Adds new samples to the input data.
                                     - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                     Defaults to 'add'.
+            templates (Optional[Union[str, List[str]]]):
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -713,9 +879,6 @@ class Harness:
         Note:
             This method uses an instance of `AugmentRobustness` to perform the augmentation.
 
-        Example:
-            >>> harness = Harness(...)
-            >>> harness.augment("train.conll", "augmented_train.conll")
         """
         dtypes = list(
             map(
@@ -755,7 +918,7 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(input_path=input_path, output_path=output_path)
+            ).fix(training_data=training_data, output_path=save_data_path)
 
         else:
             _ = AugmentRobustness(
@@ -763,7 +926,11 @@ class Harness:
                 config=self._config,
                 h_report=self.df_report,
                 custom_proportions=custom_proportions,
-            ).fix(input_path=input_path, output_path=output_path, export_mode=export_mode)
+            ).fix(
+                training_data=training_data,
+                output_path=save_data_path,
+                export_mode=export_mode,
+            )
 
         return self
 
@@ -814,6 +981,9 @@ class Harness:
             "original_context",
             "original_question",
             "test_case",
+            "patient_info_A",
+            "patient_info_B",
+            "diagnosis",
             "perturbed_context",
             "perturbed_question",
             "expected_result",
@@ -890,9 +1060,8 @@ class Harness:
 
         harness = Harness(
             task=task,
-            model=model,
-            data=data,
-            hub=hub,
+            model={"model": model, "hub": hub},
+            data={"data_source": data},
             config=os.path.join(save_dir, "config.yaml"),
         )
         harness.generate()
@@ -923,7 +1092,9 @@ class Harness:
             if sample.category not in ["robustness", "bias"]
         ]
 
-        self._testcases = DataFactory(input_path, task=self.task, is_import=True).load()
+        self._testcases = DataFactory(
+            {"data_source": input_path}, task=self.task, is_import=True
+        ).load()
         self._testcases.extend(temp_testcases)
 
         return self

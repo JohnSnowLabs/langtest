@@ -49,6 +49,8 @@ docs-menu:
           url: /docs/pages/docs/run
         - title: Retrieving Reports
           url: /docs/pages/docs/report
+        - title: MlFlow Tracking
+          url: /docs/pages/docs/ml_flow
 
   - title: Saving & Loading
     url: /docs/pages/docs/save
@@ -64,6 +66,12 @@ docs-menu:
         - title: Generating Augmentations
           url: /docs/pages/docs/generate_augmentation
 
+  - title: Contribute to LangTest
+    url: /docs/pages/docs/contribute
+    children:
+        - title: Contribution Guidelines
+          url: /docs/pages/docs/contribute
+          
 tutorials:
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials

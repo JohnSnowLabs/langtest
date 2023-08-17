@@ -2,6 +2,8 @@ import unittest
 from langtest.transform.robustness import *
 from langtest.transform.constants import A2B_DICT
 from langtest.utils.custom_types import SequenceClassificationSample
+from langtest.utils.custom_types.sample import QASample, SummarizationSample
+from langtest.transform import TestFactory
 
 
 class RobustnessTestCase(unittest.TestCase):
@@ -434,3 +436,104 @@ class RobustnessTestCase(unittest.TestCase):
         self.assertIsInstance(transformed_samples, list)
         for sample in transformed_samples:
             self.assertNotEqual(sample.test_case, sample.original)
+
+
+class RobustnessTestCaseQaAndSummarization(unittest.TestCase):
+    """
+    A test case class for testing QA and summarization samples on robustness classes.
+    """
+
+    def available_test(self) -> dict:
+        """
+        Get a dictionary of available robustness tests.
+
+        Returns:
+            dict: A dictionary containing available robustness tests.
+        """
+        tests = {
+            j: i
+            for i in BaseRobustness.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
+
+    def setUp(self) -> None:
+        """
+        Set up the test environment before each test.
+
+        Returns:
+            None
+        """
+        test_scenarios = TestFactory.test_scenarios()
+        self.available_tests = {
+            test: list(scenarios.keys()) for test, scenarios in test_scenarios.items()
+        }
+
+        self.perturbations_list = self.available_tests["robustness"]
+        self.supported_tests = self.available_test()
+        self.samples = {
+            "question-answering": [
+                QASample(
+                    original_question="What is John Snow Labs?",
+                    original_context="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
+                )
+            ],
+            "summarization": [
+                SummarizationSample(
+                    original="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
+                )
+            ],
+        }
+
+    def test(self) -> None:
+        """
+        Test QA and summarization sample for robustness classes.
+
+        Returns:
+            None
+        """
+        prob = 1.0
+        for test in self.perturbations_list:
+            for task in self.samples:
+                sample = self.samples[task][-1]
+                test_func = self.supported_tests[test].transform
+
+                if test not in [
+                    "swap_entities",
+                    "american_to_british",
+                    "british_to_american",
+                    "add_context",
+                    "multiple_perturbations",
+                ]:
+                    sample.transform(test_func, {}, prob)
+                elif test in ["american_to_british", "british_to_american"]:
+                    sample.transform(test_func, {"accent_map": A2B_DICT}, prob)
+                elif test == "add_context":
+                    sample.transform(
+                        test_func,
+                        {
+                            "ending_context": ["Bye", "Reported"],
+                            "starting_context": ["Hi", "Good morning", "hello"],
+                        },
+                        prob,
+                    )
+                elif test == "multiple_perturbations":
+                    sample.transform(
+                        test_func,
+                        {},
+                        prob,
+                        perturbations=[
+                            "lowercase",
+                            "add_ocr_typo",
+                            "titlecase",
+                            "number_to_word",
+                        ],
+                    )
+
+                if task == "question-answering":
+                    assert (
+                        sample.perturbed_question is not None
+                        and sample.perturbed_context is not None
+                    )
+                else:
+                    assert sample.test_case is not None

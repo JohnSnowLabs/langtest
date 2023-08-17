@@ -35,12 +35,14 @@ class BaseRepresentation(ABC):
         "text-classification",
         "question-answering",
         "summarization",
+        "toxicity",
+        "translation",
     ]
 
-    @staticmethod
+    @classmethod
     @abstractmethod
     def transform(
-        test: str, data: List[Sample], params: Dict
+        cls, test: str, data: List[Sample], params: Dict
     ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
         """Abstract method that implements the representation measure.
 
@@ -53,10 +55,10 @@ class BaseRepresentation(ABC):
         """
         raise NotImplementedError()
 
-    @staticmethod
+    @classmethod
     @abstractmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
         """Computes the score for the given data.
 
@@ -97,9 +99,9 @@ class GenderRepresentation(BaseRepresentation):
         "min_gender_representation_proportion",
     ]
 
-    @staticmethod
+    @classmethod
     def transform(
-        test: str, data: List[Sample], params: Dict
+        cls, test: str, data: List[Sample], params: Dict
     ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
         """Compute the gender representation measure
 
@@ -114,6 +116,10 @@ class GenderRepresentation(BaseRepresentation):
         Returns:
             Union[List[MinScoreQASample], List[MinScoreSample]]: Gender Representation test results.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         samples = []
         if test == "min_gender_representation_count":
             if isinstance(params["min_count"], dict):
@@ -148,7 +154,7 @@ class GenderRepresentation(BaseRepresentation):
                         expected_results=MinScoreOutput(min_score=value),
                     )
                     samples.append(sample)
-        elif test == "min_gender_representation_proportion":
+        else:
             min_proportions = {"male": 0.26, "female": 0.26, "unknown": 0.26}
 
             if isinstance(params["min_proportion"], dict):
@@ -240,7 +246,7 @@ class GenderRepresentation(BaseRepresentation):
 
             elif sample.test_type == "min_gender_representation_count":
                 sample.actual_results = MinScoreOutput(
-                    min_score=round(gender_counts[sample.test_case], 2)
+                    min_score=gender_counts[sample.test_case]
                 )
                 sample.state = "done"
         return sample_list
@@ -259,9 +265,9 @@ class EthnicityRepresentation(BaseRepresentation):
         "min_ethnicity_name_representation_proportion",
     ]
 
-    @staticmethod
+    @classmethod
     def transform(
-        test: str, data: List[Sample], params: Dict
+        cls, test: str, data: List[Sample], params: Dict
     ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
         """Compute the ethnicity representation measure
 
@@ -276,8 +282,11 @@ class EthnicityRepresentation(BaseRepresentation):
         Returns:
             Union[List[MinScoreQASample], List[MinScoreSample]]: Ethnicity Representation test results.
         """
-        sample_list = []
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
 
+        sample_list = []
         if test == "min_ethnicity_name_representation_count":
             if not params:
                 expected_representation = {
@@ -323,7 +332,7 @@ class EthnicityRepresentation(BaseRepresentation):
                     )
                     sample_list.append(sample)
 
-        if test == "min_ethnicity_name_representation_proportion":
+        else:
             if not params:
                 expected_representation = {
                     "black": 0.13,
@@ -447,9 +456,9 @@ class LabelRepresentation(BaseRepresentation):
 
     supported_tasks = ["ner", "text-classification"]
 
-    @staticmethod
+    @classmethod
     def transform(
-        test: str, data: List[Sample], params: Dict
+        cls, test: str, data: List[Sample], params: Dict
     ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
         """Compute the label representation measure
 
@@ -464,6 +473,10 @@ class LabelRepresentation(BaseRepresentation):
         Returns:
             Union[List[MinScoreQASample], List[MinScoreSample]]: Label Representation test results.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         sample_list = []
         labels = [s.expected_results.predictions for s in data]
         if isinstance(data[0].expected_results, NEROutput):
@@ -493,7 +506,7 @@ class LabelRepresentation(BaseRepresentation):
                 )
                 sample_list.append(sample)
 
-        if test == "min_label_representation_proportion":
+        else:
             if not params:
                 expected_representation = {k: (1 / len(k)) * 0.8 for k in labels}
 
@@ -587,10 +600,16 @@ class ReligionRepresentation(BaseRepresentation):
         "min_religion_name_representation_count",
         "min_religion_name_representation_proportion",
     ]
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+    ]
 
-    @staticmethod
+    @classmethod
     def transform(
-        test: str, data: List[Sample], params: Dict
+        cls, test: str, data: List[Sample], params: Dict
     ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
         """Compute the religion representation measure
 
@@ -605,8 +624,11 @@ class ReligionRepresentation(BaseRepresentation):
         Returns:
             Union[List[MinScoreQASample], List[MinScoreSample]]: Religion Representation test results.
         """
-        sample_list = []
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
 
+        sample_list = []
         if test == "min_religion_name_representation_count":
             if not params:
                 expected_representation = {
@@ -652,7 +674,7 @@ class ReligionRepresentation(BaseRepresentation):
                     )
                     sample_list.append(sample)
 
-        if test == "min_religion_name_representation_proportion":
+        else:
             if not params:
                 expected_representation = {
                     "muslim": 0.11,
@@ -797,9 +819,9 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_proportion",
     ]
 
-    @staticmethod
+    @classmethod
     def transform(
-        test: str, data: List[Sample], params: Dict
+        cls, test: str, data: List[Sample], params: Dict
     ) -> Union[List[MinScoreQASample], List[MinScoreSample]]:
         """Compute the country economic representation measure
 
@@ -858,7 +880,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     )
                     sample_list.append(sample)
 
-        if test == "min_country_economic_representation_proportion":
+        else:
             if not params:
                 expected_representation = {
                     "high_income": 0.20,

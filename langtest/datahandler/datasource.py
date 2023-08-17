@@ -1,18 +1,19 @@
 import csv
 import importlib
-from collections import defaultdict
+import logging
 import os
 import re
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from typing import Dict, List, Union
+from typing import Optional
 
 import jsonlines
 import pandas as pd
 
 from langtest.utils.custom_types import sample
-from langtest.utils.custom_types.sample import ToxicitySample, TranslationSample
 from .format import Formatter
-from ..utils.custom_types import (
+from langtest.utils.custom_types import (
     NEROutput,
     NERPrediction,
     NERSample,
@@ -22,6 +23,10 @@ from ..utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
+    ToxicitySample,
+    TranslationSample,
+    ClinicalSample,
+    SecuritySample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -53,6 +58,12 @@ COLUMN_MAPPER = {
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
     "translation": {"text": ["text", "original", "sourcestring"]},
+    "security": {"text": ["text", "prompt"]},
+    "clinical-tests": {
+        "Patient info A": ["Patient info A"],
+        "Patient info B": ["Patient info B"],
+        "Diagnosis": ["Diagnosis"],
+    },
 }
 
 
@@ -92,18 +103,21 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    def __init__(self, file_path: str, task: str, **kwargs) -> None:
+    def __init__(self, file_path: dict, task: str, **kwargs) -> None:
         """Initializes DataFactory object.
 
         Args:
-            file_path (str): Path to the dataset.
+            file_path (dict): Dictionary containing 'data_source' key with the path to the dataset.
             task (str): Task to be evaluated.
         """
-        self._custom_label = file_path
-        if isinstance(self._custom_label, dict):
-            self._file_path = file_path["name"]
-        else:
-            self._file_path = file_path
+        if not isinstance(file_path, dict):
+            raise ValueError("'file_path' must be a dictionary.")
+
+        if "data_source" not in file_path:
+            raise ValueError(
+                "The 'data_source' key must be provided in the 'file_path' dictionary."
+            )
+        self._file_path = file_path.get("data_source")
         self._class_map = {
             cls.__name__.replace("Dataset", "").lower(): cls
             for cls in _IDataset.__subclasses__()
@@ -141,7 +155,7 @@ class DataFactory:
             )
         return self.init_cls.load_data()
 
-    def export(self, data: List[Sample], output_path: str):
+    def export(self, data: List[Sample], output_path: str) -> None:
         """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
@@ -178,7 +192,6 @@ class DataFactory:
                                 original_context=item.get("original_context", "-"),
                                 perturbed_question=item["perturbed_question"],
                                 perturbed_context=item.get("perturbed_context", "-"),
-                                task="question-answering",
                                 test_type=item["test_type"],
                                 category=item["category"],
                                 dataset_name="BoolQ",
@@ -193,17 +206,19 @@ class DataFactory:
                             SummarizationSample(
                                 original=item["original"],
                                 test_case=item["test_case"],
-                                task="summarization",
                                 test_type=item["test_type"],
                                 category=item["category"],
                                 dataset_name="XSum",
                             )
                         )
-
+        else:
+            logging.warning(
+                f"File {file_path} not supported for `load_curated_bias`, the biases will be empty."
+            )
         return data
 
     @classmethod
-    def _load_dataset(cls, dataset_name: str):
+    def _load_dataset(cls, dataset_name: str) -> str:
         """Loads a dataset
 
         Args:
@@ -248,7 +263,15 @@ class DataFactory:
             + "/Translation/translation-test-tiny.jsonl",
             "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
             "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
+            "Prompt-Injection-Attack": script_dir[:-7]
+            + "/Security/Prompt-Injection-Attack.jsonl",
+            "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
+            "Gastroenterology-files": script_dir[:-7]
+            + "/Clinical-Tests/Gastroenterology-files.jsonl",
+            "Oromaxillofacial-files": script_dir[:-7]
+            + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
         }
+
         return datasets_info[dataset_name]
 
 
@@ -291,7 +314,7 @@ class ConllDataset(_IDataset):
             ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = doc.strip().split("\n\n")
+                sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
 
                 if sentences == [""]:
                     continue
@@ -329,7 +352,7 @@ class ConllDataset(_IDataset):
             ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = doc.strip().split("\n\n")
+                sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
 
                 if sentences == [""]:
                     continue
@@ -373,11 +396,11 @@ class ConllDataset(_IDataset):
 
         return data
 
-    def export_data(self, data: List[Sample], output_path: str):
+    def export_data(self, data: List[NERSample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
 
         Args:
-            data (List[Sample]):
+            data (List[NERSample]):
                 data to export
             output_path (str):
                 path to save the data to
@@ -594,7 +617,7 @@ class CSVDataset(_IDataset):
                     elt, output_format="csv"
                 )
                 final_data["text"].append(tokens)
-                final_data["ner"].append(labels)
+                final_data["labels"].append(labels)
                 final_data["testcase_text"].append(testcase_tokens)
                 final_data["testcase_labels"].append(testcase_labels)
 
@@ -1027,6 +1050,8 @@ class JSONLDataset(_IDataset):
         "summarization",
         "toxicity",
         "translation",
+        "security",
+        "clinical-tests",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1105,7 +1130,6 @@ class JSONLDataset(_IDataset):
                                 self.column_matcher["context"], "-"
                             ),
                             expected_results=expected_results,
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -1120,7 +1144,6 @@ class JSONLDataset(_IDataset):
                         SummarizationSample(
                             original=item[self.column_matcher["text"]],
                             expected_results=expected_results,
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -1128,7 +1151,6 @@ class JSONLDataset(_IDataset):
                     data.append(
                         ToxicitySample(
                             prompt=item[self.column_matcher["text"]],
-                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
@@ -1137,6 +1159,24 @@ class JSONLDataset(_IDataset):
                     data.append(
                         TranslationSample(
                             original=item[self.column_matcher["text"]],
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+                elif self.task == "security":
+                    data.append(
+                        SecuritySample(
+                            prompt=item["text"],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+
+                elif self.task == "clinical-tests":
+                    data.append(
+                        ClinicalSample(
+                            patient_info_A=item["Patient info A"],
+                            patient_info_B=item["Patient info B"],
+                            diagnosis=item["Diagnosis"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
@@ -1159,7 +1199,7 @@ class JSONLDataset(_IDataset):
 class HuggingFaceDataset(_IDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
-    supported_tasks = ["text-classification", "summarization"]
+    supported_tasks = ["text-classification", "summarization", "ner"]
 
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
@@ -1190,11 +1230,41 @@ class HuggingFaceDataset(_IDataset):
                 f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'."
             )
 
+    def load_data_ner(
+        self,
+        feature_column: str,
+        target_column: str,
+        split: str,
+        subset: str = None,
+    ) -> List[Sample]:
+        """Load the specified split from the given ner dataset."""
+        feature_column = "text" if feature_column is None else feature_column
+        target_column = "label" if target_column is None else target_column
+        split = "test" if split is None else split
+
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        label_names = dataset.features[target_column].feature.names
+
+        dataset = map(
+            lambda example: {
+                "tokens": example[feature_column],
+                "ner_tags": [label_names[x] for x in example[target_column]],
+            },
+            dataset,
+        )
+
+        samples = [self._row_to_ner_sample(example) for example in dataset]
+        return samples
+
     def load_data_classification(
         self,
-        feature_column: str = "text",
-        target_column: str = "label",
-        split: str = "test",
+        feature_column: str,
+        target_column: str,
+        split: str,
         subset: str = None,
     ) -> List[Sample]:
         """Load the specified split from the dataset library.
@@ -1213,30 +1283,33 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects.
         """
+        feature_column = "text" if feature_column is None else feature_column
+        target_column = "label" if target_column is None else target_column
+        split = "test" if split is None else split
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
-        if feature_column and target_column:
-            dataset = dataset.map(
-                lambda example: {
-                    "text": example[feature_column],
-                    "label": example[target_column],
-                }
-            )
+        dataset = dataset.map(
+            lambda example: {
+                "text": example[feature_column],
+                "label": example[target_column],
+            }
+        )
 
         samples = [self._row_to_sample_classification(example) for example in dataset]
         return samples
 
     def load_data_summarization(
         self,
-        feature_column: str = "document",
-        target_column: str = "summary",
-        split: str = "test",
+        feature_column: str,
+        target_column: str,
+        split: str,
         subset: str = None,
     ) -> List[Sample]:
-        """Load the specified split from the dataset library for summarization task.
+        """Load the specified split from the dataset for summarization task.
 
         Args:
             feature_column (str):
@@ -1252,6 +1325,10 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects for summarization task.
         """
+        feature_column = "document" if feature_column is None else feature_column
+        target_column = "summary" if target_column is None else target_column
+        split = "test" if split is None else split
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -1283,10 +1360,10 @@ class HuggingFaceDataset(_IDataset):
 
     def load_data(
         self,
-        feature_column: str = "text",
-        target_column: str = "label",
-        split: str = "test",
-        subset: str = None,
+        feature_column: Optional[str] = None,
+        target_column: Optional[str] = None,
+        split: Optional[str] = None,
+        subset: Optional[str] = None,
     ) -> List[Sample]:
         """Load the specified data based on the task.
 
@@ -1316,8 +1393,10 @@ class HuggingFaceDataset(_IDataset):
             return self.load_data_summarization(
                 feature_column, target_column, split, subset
             )
+        elif self.task == "ner":
+            return self.load_data_ner(feature_column, target_column, split, subset)
         else:
-            raise ValueError(f"Unsupported task: {self.task}")
+            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
 
     @staticmethod
     def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:
@@ -1334,9 +1413,7 @@ class HuggingFaceDataset(_IDataset):
         original = data_row.get("document", "")
         summary = data_row.get("summary", "")
 
-        return SummarizationSample(
-            original=original, expected_results=summary, task="summarization"
-        )
+        return SummarizationSample(original=original, expected_results=summary)
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
@@ -1352,7 +1429,9 @@ class HuggingFaceDataset(_IDataset):
             row = Formatter.process(s, output_format="csv")
             rows.append(row)
 
-        df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
+        df = pd.DataFrame(
+            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
+        )
         df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
@@ -1389,4 +1468,51 @@ class HuggingFaceDataset(_IDataset):
         return SequenceClassificationSample(
             original=original,
             expected_results=SequenceClassificationOutput(predictions=[label]),
+        )
+
+    def _row_to_ner_sample(self, data_row: dict) -> Sample:
+        """Convert a row from the dataset into a Sample for NER.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object.
+        """
+        input_column = next(
+            (col for col in self.COLUMN_NAMES["ner"]["text"] if col in data_row),
+            None,
+        )
+        output_column = next(
+            (col for col in self.COLUMN_NAMES["ner"]["ner"] if col in data_row),
+            None,
+        )
+
+        tokens = data_row.get(input_column, [])
+        labels = data_row.get(output_column, [])
+
+        #  get token and labels from the split
+        ner_labels = []
+        cursor = 0
+        for token, label in zip(tokens, labels):
+            ner_labels.append(
+                NERPrediction.from_span(
+                    entity=label,
+                    word=token,
+                    start=cursor,
+                    end=cursor + len(token),
+                    doc_id=0,
+                    doc_name="",
+                    pos_tag="XX",
+                    chunk_tag="XX",
+                )
+            )
+            # +1 to account for the white space
+            cursor += len(token) + 1
+
+        original = " ".join(tokens)
+        return NERSample(
+            original=original, expected_results=NEROutput(predictions=ner_labels)
         )
