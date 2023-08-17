@@ -1187,6 +1187,26 @@ class Harness:
         model_type: str = "huggingface",
         exist_ok: bool = False,
     ):
+        """
+        Uploads a folder containing a model or dataset to the Hugging Face Model Hub or Dataset Hub.
+
+        This function facilitates the process of uploading a local folder containing a model or dataset to the Hugging Face
+        Model Hub or Dataset Hub. It requires proper authentication through a valid token.
+
+        Args:
+            repo_name (str): The name of the repository on the Hub.
+            repo_type (str): The type of the repository, either "model" or "dataset".
+            folder_path (str): The local path to the folder containing the model or dataset files to be uploaded.
+            token (str): The authentication token for accessing the Hugging Face Hub services.
+            model_type (str, optional): The type of the model, currently supports "huggingface" and "spacy".
+                                    Defaults to "huggingface".
+            exist_ok (bool, optional): If True, do not raise an error if repo already exists.
+
+        Raises:
+            ValueError: If a valid token is not provided for Hugging Face Hub authentication.
+            ModuleNotFoundError: If required package is not installed. This package needs to be installed based on
+                                model_type ("huggingface" or "spacy").
+        """
         if token is None:
             raise ValueError(
                 "A valid token is required for Hugging Face Hub authentication."
@@ -1262,7 +1282,7 @@ class Harness:
 
         Args:
             repo_name (str): The name of the repository in the format 'username/repository'.
-            repo_type (str): The type of the repository, e.g: 'dataset'.
+            repo_type (str): The type of the repository, e.g: 'dataset' or 'model'.
             file_path (str): Path to the file to be uploaded.
             token (str): Hugging Face Hub authentication token.
             exist_ok (bool, optional): If True, do not raise an error if repo already exists.
