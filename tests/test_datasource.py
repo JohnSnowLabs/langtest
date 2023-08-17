@@ -80,6 +80,14 @@ class TestNERDataset:
                     "split": "test",
                 },
             ),
+            (
+                HuggingFaceDataset(dataset_name="Prikshit7766/12", task="ner"),
+                {
+                    "feature_column": "tokens",
+                    "target_column": "ner_tags",
+                    "split": "test",
+                },
+            ),
             (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
             (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
         ],
