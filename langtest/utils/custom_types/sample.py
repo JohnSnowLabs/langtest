@@ -410,7 +410,11 @@ class BaseQASample(BaseModel):
         """Runs the original and perturbed sentences through the model"""
 
         tokens = 1
-        dataset_name = self.dataset_name.split("-")[0].lower()
+        dataset_name = (
+            self.dataset_name.split("-")[0].lower()
+            if self.dataset_name
+            else "default_question_answering_prompt"
+        )
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )

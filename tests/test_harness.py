@@ -216,6 +216,58 @@ class HarnessTestCase(unittest.TestCase):
         # test working of the harness
         harness.run().report()
 
+    def test_text_classification_csv_custom_columns(self):
+        """Test loading CSV data with custom column names for text classification."""
+        save_dir = "/tmp/saved_csv_data_text_classification_harness_test"
+        tc_harness = Harness(
+            task="text-classification",
+            model={"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
+            data={
+                "data_source": "tests/fixtures/text_classification.csv",
+                "feature_column": "text",
+                "target_column": "label",
+            },
+        )
+        tc_harness.data = tc_harness.data[:10]
+        tc_harness.generate()
+        tc_harness.save(save_dir)
+
+        loaded_tc_harness = Harness.load(
+            save_dir=save_dir,
+            task="text-classification",
+            model="lvwerra/distilbert-imdb",
+            hub="huggingface",
+        )
+        self.assertEqual(tc_harness._config, loaded_tc_harness._config)
+        self.assertEqual(tc_harness.data, loaded_tc_harness.data)
+        self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+
+    def test_ner_csv_custom_columns(self):
+        """Test loading CSV data with custom column names for text classification."""
+        save_dir = "/tmp/saved_csv_data_ner_harness_test"
+        tc_harness = Harness(
+            task="ner",
+            model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
+            data={
+                "data_source": "tests/fixtures/tner.csv",
+                "feature_column": "tokens",
+                "target_column": "ner_tags",
+            },
+        )
+        tc_harness.data = tc_harness.data[:10]
+        tc_harness.generate()
+        tc_harness.save(save_dir)
+
+        loaded_tc_harness = Harness.load(
+            save_dir=save_dir,
+            task="ner",
+            model="dslim/bert-base-NER",
+            hub="huggingface",
+        )
+        self.assertEqual(tc_harness._config, loaded_tc_harness._config)
+        self.assertEqual(tc_harness.data, loaded_tc_harness.data)
+        self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
+
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """
