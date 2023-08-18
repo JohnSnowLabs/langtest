@@ -173,7 +173,8 @@ class TestNERDataset:
                 },
                 task="text-classification",
             ),
-            {},
+            "text",
+            "label",
         ),
         (
             HuggingFaceDataset(dataset_name="dbrd", task="text-classification"),
