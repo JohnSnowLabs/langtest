@@ -85,7 +85,8 @@ data_kwargs = {
       "subset": "sst2",
       "feature_column": "sentence",
       "target_column": "label",
-      "split": "train"
+      "split": "train",
+      "source": "huggingface"
        }
 
 h.augment(
