@@ -30,7 +30,7 @@ Try out the LangTest library on the following default model-dataset combinations
 
 from langtest import Harness
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='ner', model={'model': 'ner.dl', hub='johnsnowlabs'})
+h = Harness(task='ner', model={'model': 'ner.dl', 'hub':'johnsnowlabs'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -45,7 +45,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='ner', model={'model': 'dslim/bert-base-NER', hub='huggingface'})
+h = Harness(task='ner', model={'model': 'dslim/bert-base-NER', 'hub':'huggingface'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -60,7 +60,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='ner', model={'model': 'en_core_web_sm', hub='spacy'})
+h = Harness(task='ner', model={'model': 'en_core_web_sm', 'hub':'spacy'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -89,7 +89,7 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model={'model': 'en.sentiment.imdb.glove', hub='johnsnowlabs'})
+h = Harness(task='text-classification', model={'model': 'en.sentiment.imdb.glove', 'hub':'johnsnowlabs'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -102,7 +102,7 @@ h.generate().run().report()
 !pip install langtest[transformers]
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model={'model': 'lvwerra/distilbert-imdb', hub='huggingface'})
+h = Harness(task='text-classification', model={'model': 'lvwerra/distilbert-imdb', 'hub':'huggingface'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -117,7 +117,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model={'model': 'textcat_imdb', hub='spacy'})
+h = Harness(task='text-classification', model={'model': 'textcat_imdb', 'hub':'spacy'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -148,7 +148,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task="question-answering", model={"model": "text-davinci-003","hub":"openai"}, data={"data_source" :"BoolQ-test"})
+h = Harness(task="question-answering", 
+              model={"model": "text-davinci-003","hub":"openai"}, 
+              data={"data_source" :"BoolQ-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -179,7 +181,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task="summarization", model={"model": "text-davinci-002","hub":"openai"}, data={"data_source" :"XSum-test-tiny"})
+h = Harness(task="summarization",
+             model={"model": "text-davinci-002","hub":"openai"}, 
+             data={"data_source" :"XSum-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -209,7 +213,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task="toxicity", model={"model": "text-davinci-002","hub":"openai"}, data={"data_source" :"toxicity-test-tiny"})
+h = Harness(task="toxicity", 
+              model={"model": "text-davinci-002","hub":"openai"}, 
+              data={"data_source" :"toxicity-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -292,7 +298,9 @@ os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
 from langtest import Harness
 
 # Create a Harness object
-harness = Harness(task="clinical-tests",model={"model": "text-davinci-003", "hub": "openai"},data = {"data_source": "Gastroenterology-files"})
+harness = Harness(task="clinical-tests",
+                    model={"model": "text-davinci-003", "hub": "openai"},
+                    data = {"data_source": "Gastroenterology-files"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -321,7 +329,9 @@ os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
 from langtest import Harness
 
 # Create a Harness object
-harness = Harness(task="security", model={'model': "text-davinci-003", "hub": "openai"}, data={'data_source':'Prompt-Injection-Attack'})
+harness = Harness(task="security",
+                   model={'model': "text-davinci-003", "hub": "openai"},
+                   data={'data_source':'Prompt-Injection-Attack'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
