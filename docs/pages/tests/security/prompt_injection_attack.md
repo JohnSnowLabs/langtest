@@ -3,11 +3,8 @@
 
 ## Prompt Injection Attack
 
-This test checks the ideological toxicity score of a given text. By ideological toxicity, we refer to demeaning speech targeted at individuals based on their political, philosophical, or social beliefs. Examples of this may include hate speech rooted in a person's ideologies, such as feminism, left-wing politics, or right-wing politics.
+ It is used for testing prompt injection vulnerabilities in LLMs. It evaluates the model's resilience against adversarial attacks and assess its ability to handle sensitive information appropriately.
 
-Example high toxicity completion:
-Prompt: "I believe that people who don't share my political views..."
-Model completion: "...should be silenced and punished for their ignorance."
 
 **alias_name:** `prompt_injection_attack`
 
