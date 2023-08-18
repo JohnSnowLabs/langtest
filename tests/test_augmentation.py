@@ -16,45 +16,39 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.params = {
             "spacy_ner": {
                 "task": "ner",
-                "model": "en_core_web_sm",
-                "data": "tests/fixtures/test.conll",
+                "model": {"model": "en_core_web_sm", "hub": "spacy"},
+                "data": {"data_source": "tests/fixtures/test.conll"},
                 "config": "tests/fixtures/config_ner.yaml",
-                "hub": "spacy",
             },
             "huggingface_ner": {
                 "task": "ner",
-                "model": "dslim/bert-base-NER",
-                "data": "tests/fixtures/test.conll",
+                "model": {"model": "dslim/bert-base-NER", "hub": "huggingface"},
+                "data": {"data_source": "tests/fixtures/test.conll"},
                 "config": "tests/fixtures/config_ner.yaml",
-                "hub": "huggingface",
             },
             "huggingface_textclassification": {
                 "task": "text-classification",
-                "model": "distilbert-base-uncased",
-                "data": "tests/fixtures/test.conll",
+                "model": {"model": "distilbert-base-uncased", "hub": "huggingface"},
+                "data": {"data_source": "tests/fixtures/test.conll"},
                 "config": "tests/fixtures/config_ner.yaml",
-                "hub": "huggingface",
             },
             "huggingface_textclassification_csv_dataset": {
                 "task": "text-classification",
-                "model": "lvwerra/distilbert-imdb",
-                "data": "tests/fixtures/text_classification.csv",
+                "model": {"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
+                "data": {"data_source": "tests/fixtures/text_classification.csv"},
                 "config": "tests/fixtures/config_text_classification.yaml",
-                "hub": "huggingface",
             },
             "spacy_textclassification_hf_dataset": {
                 "task": "text-classification",
-                "model": "textcat_imdb",
-                "data": {"name": "imdb"},
+                "model": {"model": "textcat_imdb", "hub": "spacy"},
+                "data": {"data_source": "imdb", "source": "huggingface"},
                 "config": "tests/fixtures/config_text_classification.yaml",
-                "hub": "spacy",
             },
             "huggingface_textclassification_hf_dataset": {
                 "task": "text-classification",
-                "model": "lvwerra/distilbert-imdb",
-                "data": {"name": "imdb"},
+                "model": {"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
+                "data": {"data_source": "imdb", "source": "huggingface"},
                 "config": "tests/fixtures/config_text_classification.yaml",
-                "hub": "huggingface",
             },
         }
 
@@ -208,7 +202,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
-            training_data={"data_source": "imdb"},
+            training_data={"data_source": "imdb", "source": "huggingface"},
             save_data_path="tests/fixtures/augmented_train_transformed.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",
@@ -228,7 +222,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         self.assertIsInstance(report, pd.DataFrame)
         custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
         harness.augment(
-            training_data={"data_source": "imdb"},
+            training_data={"data_source": "imdb", "source": "huggingface"},
             save_data_path="tests/fixtures/augmented_train_transformed.csv",
             custom_proportions=custom_proportions,
             export_mode="transformed",

@@ -16,10 +16,9 @@ class SpacyTestCase(unittest.TestCase):
         """
         self.params = {
             "task": "ner",
-            "model": "en_core_web_sm",
-            "data": "langtest/data/conll/sample.conll",
+            "model": {"model": "en_core_web_sm", "hub": "spacy"},
+            "data": {"data_source": "langtest/data/conll/sample.conll"},
             "config": "tests/fixtures/config_ner.yaml",
-            "hub": "spacy",
         }
 
     def test_Harness(self):

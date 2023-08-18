@@ -161,3 +161,23 @@ class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForClinicalTests(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
