@@ -465,7 +465,7 @@ class CSVDataset(_IDataset):
 
     Attributes:
         _file_path (Union[str, Dict]):
-            The path to the data file or a dictionary containing "name" key with the path.
+            The path to the data file or a dictionary containing "data_source" key with the path.
         task (str):
             Specifies the task of the dataset, which can be either "text-classification","ner"
             "question-answering" and "summarization".
@@ -479,10 +479,16 @@ class CSVDataset(_IDataset):
 
         Args:
             file_path (Union[str, Dict]):
-                The path to the data file or a dictionary containing "data_source" key with the path
+                The path to the data file or a dictionary containing the following keys:
+                - "data_source": The path to the data file.
+                - "feature_column" (optional): Specifies the column containing input features.
+                - "target_column" (optional): Specifies the column containing target labels.
             task (str):
-                Specifies the task of the dataset, which can be either "text-classification","ner"
-                "question-answering" and "summarization".
+                Specifies the task of the dataset, which can be one of the following:
+                - "text-classification"
+                - "ner" (Named Entity Recognition)
+                - "question-answering"
+                - "summarization"
             **kwargs:
                 Additional keyword arguments that can be used to configure the dataset (optional).
         """

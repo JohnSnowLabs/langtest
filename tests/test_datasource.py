@@ -81,6 +81,17 @@ class TestNERDataset:
                 },
             ),
             (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
+            (
+                CSVDataset(
+                    file_path={
+                        "data_source": "tests/fixtures/tner.csv",
+                        "feature_column": "tokens",
+                        "target_column": "ner_tags",
+                    },
+                    task="ner",
+                ),
+                {},
+            ),
             (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
         ],
     )
@@ -152,6 +163,17 @@ class TestNERDataset:
             ),
             "text",
             "label",
+        ),
+        (
+            CSVDataset(
+                file_path={
+                    "data_source": "tests/fixtures/text_classification.csv",
+                    "feature_column": "text",
+                    "target_column": "label",
+                },
+                task="text-classification",
+            ),
+            {},
         ),
         (
             HuggingFaceDataset(dataset_name="dbrd", task="text-classification"),
