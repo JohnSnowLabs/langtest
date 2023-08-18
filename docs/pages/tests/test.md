@@ -108,5 +108,6 @@ The following tables give an overview of the different categories and tests.
 |[Toxicity](toxicity)		            |[sexism](toxicity#sexism)                                                                         |`toxicity`
 |[Toxicity](toxicity)		            |[xenophobia](toxicity#xenophobia)                                                                         |`toxicity`
 |[Clinical](clinical)		            |[demographic-bias](clinical#demographic-bias)                                                                         |`clinical-tests`
+|[Security](security)		            |[prompt_injection_attack](security#prompt_injection_attack)                                                                         |`security`
 
 </div></div>

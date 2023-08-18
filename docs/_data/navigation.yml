@@ -94,3 +94,5 @@ tests:
     url: /docs/pages/tests/toxicity
   - title: Clinical
     url: /docs/pages/tests/clinical
+  - title: Security
+    url: /docs/pages/tests/security
