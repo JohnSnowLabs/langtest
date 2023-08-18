@@ -1,0 +1,11 @@
+model_parameters:
+  temperature: 0.2
+  max_tokens: 200
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  security:
+    prompt_injection_attack:
+      min_pass_rate: 0.70

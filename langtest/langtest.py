@@ -2,8 +2,10 @@ import json
 import logging
 import os
 import pickle
+import importlib
+import subprocess
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
@@ -14,6 +16,7 @@ from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
+from langtest.utils.lib_manager import try_import_lib
 
 GLOBAL_MODEL = None
 HARNESS_CONFIG = None
@@ -33,6 +36,8 @@ class Harness:
         "summarization",
         "toxicity",
         "translation",
+        "security",
+        "clinical-tests",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -79,30 +84,34 @@ class Harness:
         },
         "task": {
             "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
+            "clinical-tests": resource_filename(
+                "langtest", "data/config/clinical_config.yml"
+            ),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
             ),
             "translation-johnsnowlabs": resource_filename(
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
+            "security": resource_filename("langtest", "data/config/security_config.yml"),
         },
     }
 
     def __init__(
         self,
         task: str,
-        model: Optional[Union[str, Any]] = None,
-        hub: Optional[str] = None,
-        data: Optional[Union[str, dict]] = None,
+        model: Optional[Union[list, dict]] = None,
+        data: Optional[dict] = None,
         config: Optional[Union[str, dict]] = None,
     ):
         """Initialize the Harness object.
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (str | ModelFactory): ModelFactory object or path to the model to be evaluated.
-            hub (str, optional): model hub to load from the path. Required if path is passed as 'model'.
-            data (str, optional): Path to the data to be used for evaluation.
+            model (list | dict, optional): Specifies the model to be evaluated.
+                If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
+                If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
+            data (dict, optional): The data to be used for evaluation.
             config (str | dict, optional): Configuration for the tests to be performed.
 
         Raises:
@@ -111,8 +120,27 @@ class Harness:
         super().__init__()
 
         self.is_default = False
-        self._actual_model = model
-        self.hub = hub
+
+        if isinstance(model, list):
+            for item in model:
+                if not isinstance(item, dict):
+                    raise ValueError("Each item in the list must be a dictionary")
+                if "model" not in item or "hub" not in item:
+                    raise ValueError(
+                        "Each dictionary in the list must have 'model' and 'hub' keys"
+                    )
+        elif isinstance(model, dict):
+            if "model" not in model or "hub" not in model:
+                raise ValueError("The dictionary must have 'model' and 'hub' keys")
+        else:
+            raise ValueError("Invalid 'model' parameter type")
+
+        if isinstance(model, dict):
+            hub, model = model["hub"], model["model"]
+            self.hub = hub
+            self._actual_model = model
+        else:
+            hub = None
 
         if task not in self.SUPPORTED_TASKS:
             raise ValueError(
@@ -133,7 +161,7 @@ class Harness:
 
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
-            data = resource_filename("langtest", data_path)
+            data = {"data_source": resource_filename("langtest", data_path)}
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
@@ -142,50 +170,45 @@ class Harness:
 
         elif (
             isinstance(data, dict)
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            and task == "text-classification"
+            and "source" in data
+            and data["source"] == "huggingface"
         ):
-            self.data = (
-                HuggingFaceDataset(data["name"], task=task).load_data(
+            if (
+                task == "text-classification"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "text"),
                     target_column=data.get("target_column", "label"),
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-                if data is not None
-                else None
-            )
 
-            if hub == "spacy" and (model == "textcat_imdb" or model is None):
-                if model is None:
-                    logging.warning(
-                        "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
-                    )
-                model = resource_filename("langtest", "data/textcat_imdb")
+                if hub == "spacy" and (model == "textcat_imdb" or model is None):
+                    if model is None:
+                        logging.warning(
+                            "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
+                        )
+                    model = resource_filename("langtest", "data/textcat_imdb")
 
-        elif (
-            isinstance(data, dict)
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_NER
-            and task == "ner"
-        ):
-            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
-                feature_column=data.get("feature_column", "tokens"),
-                target_column=data.get("target_column", "ner_tags"),
-                split=data.get("split", "test"),
-                subset=data.get("subset", None),
-            )
+            elif task == "ner" and hub in self.SUPPORTED_HUBS_HF_DATASET_NER:
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", "tokens"),
+                    target_column=data.get("target_column", "ner_tags"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
 
-        elif (
-            isinstance(data, dict)
-            and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
-            and task == "summarization"
-        ):
-            self.data = HuggingFaceDataset(data["name"], task=task).load_data(
-                feature_column=data.get("feature_column", "document"),
-                target_column=data.get("target_column", "summary"),
-                split=data.get("split", "test"),
-                subset=data.get("subset", None),
-            )
+            elif (
+                task == "summarization"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", "document"),
+                    target_column=data.get("target_column", "summary"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
@@ -193,10 +216,14 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
-        elif isinstance(data, list):
-            self.data = data
+        elif isinstance(data["data_source"], list):
+            self.data = data["data_source"]
         else:
-            self.file_path = data
+            if "data_source" not in data:
+                raise ValueError(
+                    "The 'data_source' key must be provided in the 'data' parameter."
+                )
+            self.file_path = data["data_source"]
             self.data = (
                 DataFactory(data, task=self.task).load() if data is not None else None
             )
@@ -221,13 +248,19 @@ class Harness:
                 path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
             )
 
-        elif type(model) == dict:
+        elif isinstance(model, list):
             model_dict = {}
-            for k, v in model.items():
-                model_dict[k] = ModelFactory.load_model(
-                    task=task, path=k, hub=v, **self._config.get("model_parameters", {})
+            for i in model:
+                model = i["model"]
+                hub = i["hub"]
+
+                model_dict[model] = ModelFactory.load_model(
+                    path=model,
+                    task=task,
+                    hub=hub,
+                    **self._config.get("model_parameters", {}),
                 )
-            self.model = model_dict
+                self.model = model_dict
 
         else:
             self.model = ModelFactory(
@@ -241,7 +274,7 @@ class Harness:
         print("Test Configuration : \n", formatted_config)
 
         global GLOBAL_MODEL
-        if not isinstance(model, dict):
+        if not isinstance(model, list):
             GLOBAL_MODEL = self.model
 
         self._testcases = None
@@ -290,13 +323,17 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
 
-            elif isinstance(model, dict):
+            elif isinstance(model, list):
                 model_dict = {}
-                for k, v in model.items():
-                    model_dict[k] = ModelFactory.load_model(
+
+                for i in model:
+                    model = i["model"]
+                    hub = i["hub"]
+
+                    model_dict[model] = ModelFactory.load_model(
+                        path=model,
                         task=task,
-                        path=k,
-                        hub=v,
+                        hub=hub,
                         **self._config.get("model_parameters", {}),
                     )
                 self.model = model_dict
@@ -797,11 +834,17 @@ class Harness:
             "test_case",
             "perturbed_context",
             "perturbed_question",
+            "patient_info_A",
+            "patient_info_B",
+            "diagnosis",
+            "treatment_plan_A",
+            "treatment_plan_B",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
             "completion_toxicity",
             "eval_score",
+            "similarity_score",
             "pass",
         ]
         columns = [c for c in column_order if c in generated_results_df.columns]
@@ -941,6 +984,9 @@ class Harness:
             "original_context",
             "original_question",
             "test_case",
+            "patient_info_A",
+            "patient_info_B",
+            "diagnosis",
             "perturbed_context",
             "perturbed_question",
             "expected_result",
@@ -1017,9 +1063,8 @@ class Harness:
 
         harness = Harness(
             task=task,
-            model=model,
-            data=data,
-            hub=hub,
+            model={"model": model, "hub": hub},
+            data={"data_source": data},
             config=os.path.join(save_dir, "config.yaml"),
         )
         harness.generate()
@@ -1050,7 +1095,9 @@ class Harness:
             if sample.category not in ["robustness", "bias"]
         ]
 
-        self._testcases = DataFactory(input_path, task=self.task, is_import=True).load()
+        self._testcases = DataFactory(
+            {"data_source": input_path}, task=self.task, is_import=True
+        ).load()
         self._testcases.extend(temp_testcases)
 
         return self
@@ -1130,4 +1177,189 @@ class Harness:
         else:
             raise ValueError(
                 f"Invalid task type: {task}. Expected 'bias' or 'representation'."
+            )
+
+    def upload_folder_to_hub(
+        repo_name: str,
+        repo_type: str,
+        folder_path: str,
+        token: str,
+        model_type: str = "huggingface",
+        exist_ok: bool = False,
+    ):
+        """
+        Uploads a folder containing a model or dataset to the Hugging Face Model Hub or Dataset Hub.
+
+        This function facilitates the process of uploading a local folder containing a model or dataset to the Hugging Face
+        Model Hub or Dataset Hub. It requires proper authentication through a valid token.
+
+        Args:
+            repo_name (str): The name of the repository on the Hub.
+            repo_type (str): The type of the repository, either "model" or "dataset".
+            folder_path (str): The local path to the folder containing the model or dataset files to be uploaded.
+            token (str): The authentication token for accessing the Hugging Face Hub services.
+            model_type (str, optional): The type of the model, currently supports "huggingface" and "spacy".
+                                    Defaults to "huggingface".
+            exist_ok (bool, optional): If True, do not raise an error if repo already exists.
+
+        Raises:
+            ValueError: If a valid token is not provided for Hugging Face Hub authentication.
+            ModuleNotFoundError: If required package is not installed. This package needs to be installed based on
+                                model_type ("huggingface" or "spacy").
+        """
+        if token is None:
+            raise ValueError(
+                "A valid token is required for Hugging Face Hub authentication."
+            )
+        subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
+
+        if (
+            model_type == "huggingface" and repo_type == "model"
+        ) or repo_type == "dataset":
+            LIB_NAME = "huggingface_hub"
+
+            if try_import_lib(LIB_NAME):
+                huggingface_hub = importlib.import_module(LIB_NAME)
+                HfApi = getattr(huggingface_hub, "HfApi")
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+
+            api = HfApi()
+
+            repo_id = repo_name.split("/")[1]
+            api.create_repo(repo_id, repo_type=repo_type, exist_ok=exist_ok)
+
+            api.upload_folder(
+                folder_path=folder_path,
+                repo_id=repo_name,
+                repo_type=repo_type,
+            )
+        elif model_type == "spacy" and repo_type == "model":
+            LIB_NAME = "spacy_huggingface_hub"
+
+            if try_import_lib(LIB_NAME):
+                dataset_module = importlib.import_module(LIB_NAME)
+                push = getattr(dataset_module, "push")
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+            meta_path = os.path.join(folder_path, "meta.json")
+            with open(meta_path, "r") as meta_file:
+                meta_data = json.load(meta_file)
+
+            lang = meta_data["lang"]
+            version = meta_data["version"]
+
+            v = f"{lang}_pipeline-{version}"
+            wheel_filename = f"{v}-py3-none-any.whl"
+
+            output_dir_base = "output"
+            output_dir = output_dir_base
+            index = 1
+            while os.path.exists(output_dir):
+                output_dir = f"{output_dir_base}{index}"
+                index += 1
+
+            os.makedirs(output_dir, exist_ok=True)
+            wheel_path = os.path.join(output_dir, v, "dist", wheel_filename)
+
+            os.system(f"python -m spacy package {folder_path} {output_dir} --build wheel")
+
+            push(wheel_path)
+
+    def upload_file_to_hub(
+        repo_name: str,
+        repo_type: str,
+        file_path: str,
+        token: str,
+        exist_ok: bool = False,
+        split: str = "train",
+    ):
+        """Uploads a file or a Dataset to the Hugging Face Model Hub.
+
+        Args:
+            repo_name (str): The name of the repository in the format 'username/repository'.
+            repo_type (str): The type of the repository, e.g: 'dataset' or 'model'.
+            file_path (str): Path to the file to be uploaded.
+            token (str): Hugging Face Hub authentication token.
+            exist_ok (bool, optional): If True, do not raise an error if repo already exists.
+            split (str, optional): The split of the dataset. Defaults to 'train'.
+
+        Raises:
+            ValueError: Raised if a valid token is not provided.
+            ModuleNotFoundError: Raised if required packages are not installed.
+
+        Returns:
+            None
+        """
+        if token is None:
+            raise ValueError(
+                "A valid token is required for Hugging Face Hub authentication."
+            )
+        subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
+
+        file_extension = file_path.split(".")[-1]
+        path_in_repo = os.path.basename(file_path)
+        if file_extension != "conll":
+            LIB_NAME = "huggingface_hub"
+            if try_import_lib(LIB_NAME):
+                huggingface_hub = importlib.import_module(LIB_NAME)
+                HfApi = getattr(huggingface_hub, "HfApi")
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+
+            api = HfApi()
+            repo_id = repo_name.split("/")[1]
+            api.create_repo(repo_id, repo_type=repo_type, exist_ok=exist_ok)
+
+            api.upload_file(
+                path_or_fileobj=file_path,
+                path_in_repo=path_in_repo,
+                repo_id=repo_name,
+                repo_type=repo_type,
+                token=token,
+            )
+        else:
+            LIB_NAME = "datasets"
+            if try_import_lib(LIB_NAME):
+                dataset_module = importlib.import_module(LIB_NAME)
+                DatasetDict = getattr(dataset_module, "DatasetDict")
+                Dataset = getattr(dataset_module, "Dataset")
+
+            else:
+                raise ModuleNotFoundError(
+                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+                )
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            data = []
+            tokens = []
+            ner_tags = []
+
+            for line in lines:
+                line = line.strip()
+                if line:
+                    if not line.startswith("-DOCSTART-"):
+                        parts = line.split()
+                        tokens.append(parts[0])
+                        ner_tags.append(parts[-1])
+                elif tokens:
+                    data.append({"tokens": tokens, "ner_tags": ner_tags})
+                    tokens = []
+                    ner_tags = []
+
+            df = pd.DataFrame(data)
+            dataset = Dataset.from_pandas(df)
+            ds = DatasetDict({split: dataset})
+
+            ds.push_to_hub(
+                repo_id=repo_name,
+                token=token,
             )
