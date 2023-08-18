@@ -39,5 +39,7 @@ jobs:
           poetry install --with dev --all-extras
 
       - name: Run manual_tests
+        env: 
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           poetry run pytest manual_tests/
