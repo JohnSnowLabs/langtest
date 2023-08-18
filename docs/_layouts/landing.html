@@ -99,7 +99,7 @@ conda install -c johnsnowlabs langtest
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
+h = Harness(task='ner', model={'model': 'ner.dl', 'hub':'johnsnowlabs'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -114,7 +114,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
+h = Harness(task='ner', model={'model': 'dslim/bert-base-NER', 'hub':'huggingface'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -133,7 +133,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task='question-answering', model='gpt-3.5-turbo', hub='openai', data='BoolQ-test')
+h = Harness(task="question-answering", 
+              model={"model": "text-davinci-003","hub":"openai"}, 
+              data={"data_source" :"BoolQ-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -148,7 +150,7 @@ h.generate().run().report()
 from langtest import Harness                    
 
 # Create a Harness object
-h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
+h = Harness(task='ner', model={'model': 'en_core_web_sm', 'hub':'spacy'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
