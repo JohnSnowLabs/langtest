@@ -520,7 +520,32 @@ class CSVDataset(_IDataset):
             List[Dict]:
                 parsed CSV file into list of dicts
         """
-        df = pd.read_csv(self._file_path)
+
+        if type(self._file_path) == dict:
+            df = pd.read_csv(self._file_path["data_source"])
+
+            if self.task == "text-classification":
+                feature_column = self._file_path.get("feature_column", "text")
+                target_column = self._file_path.get("target_column", "label")
+            elif self.task == "ner":
+                feature_column = self._file_path.get("feature_column", "text")
+                target_column = self._file_path.get("target_column", "ner")
+
+            if feature_column not in df.columns or target_column not in df.columns:
+                raise ValueError(
+                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                )
+
+            if self.task == "text-classification":
+                df.rename(
+                    columns={feature_column: "text", target_column: "label"}, inplace=True
+                )
+            elif self.task == "ner":
+                df.rename(
+                    columns={feature_column: "text", target_column: "ner"}, inplace=True
+                )
+        else:
+            df = pd.read_csv(self._file_path)
 
         raw_data = []
         if not standardize_columns:
