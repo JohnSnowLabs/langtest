@@ -303,3 +303,32 @@ h.generate().run().report()
     </div>
   </div>
 </div>
+
+
+
+### One Liner - Security-Test
+
+Try out the LangTest library on the following default model-dataset combinations for Security Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[openai]
+
+import os
+os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+
+from langtest import Harness
+
+# Create a Harness object
+harness = Harness(task="security", model={'model': "text-davinci-003", "hub": "openai"}, data={'data_source':'Prompt-Injection-Attack'})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
