@@ -1,6 +1,6 @@
 # Contributing to LangTest
 
-Thank you for your interest in contributing to LangTest! We value the contributions of our community members and are excited to have you on board. . To make the development journey smooth and collaborative, please adhere to the following steps:
+Thank you for your interest in contributing to LangTest! We value the contributions of our community members and are excited to have you on board. To make the development journey smooth and collaborative, please adhere to the following steps:
 - Thoroughly review the guidelines provided below.
 - If you're eager to add a new feature to the LangTest library, navigate to the [documentation](https://langtest.org/docs/pages/docs/contribute) for a clear understanding.
 - To illustrate the process, we've included a simple example in the documentation to guide you.
@@ -146,7 +146,7 @@ We're excited to have you on board with us! Together, we can make NLP models saf
 
 Congrats! You just completed the standard fork -> clone -> edit -> pull request workflow that you'll often encounter as a contributor!
 
-Celebrate your contribution and share it with your friends and followers by going to [LinkedIn](www.linkedin.com).
+Celebrate your contribution and share it with your friends and followers by going to [LinkedIn](https://www.linkedin.com/feed/) 
 
 You can join our community team if you need any help or have any questions. 
 
