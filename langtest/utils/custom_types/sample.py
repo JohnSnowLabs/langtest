@@ -545,7 +545,6 @@ class QASample(BaseQASample):
                     "input_variables": ["query", "answer", "result"],
                     "template": qa_prompt_template,
                 },
-                max_new_tokens=512,
             )
             return prediction == "CORRECT"
 
