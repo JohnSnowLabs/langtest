@@ -19,7 +19,7 @@ class BaseAccuracy(ABC):
     alias_name = None
     supported_tasks = ["ner", "text-classification"]
 
-    @staticmethod
+    @classmethod
     @abstractmethod
     def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
         """Abstract method that implements the accuracy measure.
@@ -77,10 +77,12 @@ class MinPrecisionScore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_precision_score"
+    alias_name = ["min_precision_score"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum precision score for the given data.
 
         Args:
@@ -90,6 +92,10 @@ class MinPrecisionScore(BaseAccuracy):
         Returns:
             List[MinScoreSample]: Precision test results.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         labels = set(y_true)  # .union(set(y_pred))
 
         if isinstance(params["min_score"], dict):
@@ -149,10 +155,12 @@ class MinRecallScore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_recall_score"
+    alias_name = ["min_recall_score"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum recall score for the given data.
 
         Args:
@@ -162,6 +170,10 @@ class MinRecallScore(BaseAccuracy):
         Returns:
             List[MinScoreSample]: minimum recall results.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         labels = set(y_true)  # .union(set(y_pred))
 
         if isinstance(params["min_score"], dict):
@@ -221,10 +233,12 @@ class MinF1Score(BaseAccuracy):
 
     """
 
-    alias_name = "min_f1_score"
+    alias_name = ["min_f1_score"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum F1 score for the given data.
 
         Args:
@@ -234,6 +248,10 @@ class MinF1Score(BaseAccuracy):
         Returns:
             List[MinScoreSample]: F1 score test results.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         labels = set(y_true)
 
         if isinstance(params["min_score"], dict):
@@ -292,10 +310,12 @@ class MinMicroF1Score(BaseAccuracy):
         alias_name (str): The name for config.
     """
 
-    alias_name = "min_micro_f1_score"
+    alias_name = ["min_micro_f1_score"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum micro F1 score for the given data.
 
         Args:
@@ -305,6 +325,10 @@ class MinMicroF1Score(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum micro F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -351,10 +375,12 @@ class MinMacroF1Score(BaseAccuracy):
         transform(y_true, params) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_macro_f1_score"
+    alias_name = ["min_macro_f1_score"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum macro F1 score for the given data.
 
         Args:
@@ -364,6 +390,9 @@ class MinMacroF1Score(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum macro F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -409,10 +438,12 @@ class MinWeightedF1Score(BaseAccuracy):
         transform(y_true, params) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_weighted_f1_score"
+    alias_name = ["min_weighted_f1_score"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum weighted F1 score for the given data.
 
         Args:
@@ -422,6 +453,9 @@ class MinWeightedF1Score(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -466,11 +500,13 @@ class MinEMcore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_exact_match_score"
+    alias_name = ["min_exact_match_score"]
     supported_tasks = ["question-answering", "summarization"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum F1 score for the given data.
 
         Args:
@@ -480,6 +516,9 @@ class MinEMcore(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -528,11 +567,13 @@ class MinBLEUcore(BaseAccuracy):
         transform(y_true, y_pred) -> Any: Creates accuracy test results.
     """
 
-    alias_name = "min_bleu_score"
+    alias_name = ["min_bleu_score"]
     supported_tasks = ["question-answering", "summarization"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum F1 score for the given data.
 
         Args:
@@ -542,6 +583,9 @@ class MinBLEUcore(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
         min_score = params["min_score"]
 
         sample = MinScoreSample(
@@ -598,8 +642,10 @@ class MinROUGEcore(BaseAccuracy):
     ]
     supported_tasks = ["question-answering", "summarization"]
 
-    @staticmethod
-    def transform(y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
         """Computes the minimum F1 score for the given data.
 
         Args:
@@ -610,11 +656,14 @@ class MinROUGEcore(BaseAccuracy):
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
         min_score = params["min_score"]
 
         sample = MinScoreSample(
             category="accuracy",
-            test_type=params["test_name"],
+            test_type=test,
             expected_results=MinScoreOutput(min_score=min_score),
         )
 

@@ -30,7 +30,7 @@ Try out the LangTest library on the following default model-dataset combinations
 
 from langtest import Harness
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='ner', model='ner.dl', hub='johnsnowlabs')
+h = Harness(task='ner', model={'model': 'ner.dl', 'hub':'johnsnowlabs'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -45,7 +45,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
+h = Harness(task='ner', model={'model': 'dslim/bert-base-NER', 'hub':'huggingface'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -60,7 +60,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='ner', model='en_core_web_sm', hub='spacy')
+h = Harness(task='ner', model={'model': 'en_core_web_sm', 'hub':'spacy'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -89,7 +89,7 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model='en.sentiment.imdb.glove', hub='johnsnowlabs')
+h = Harness(task='text-classification', model={'model': 'en.sentiment.imdb.glove', 'hub':'johnsnowlabs'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -102,7 +102,7 @@ h.generate().run().report()
 !pip install langtest[transformers]
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model='lvwerra/distilbert-imdb', hub='huggingface')
+h = Harness(task='text-classification', model={'model': 'lvwerra/distilbert-imdb', 'hub':'huggingface'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -117,7 +117,7 @@ h.generate().run().report()
 from langtest import Harness
 
 # Make sure to specify data='path_to_data' when using custom models
-h = Harness(task='text-classification', model='textcat_imdb', hub='spacy')
+h = Harness(task='text-classification', model={'model': 'textcat_imdb', 'hub':'spacy'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -148,7 +148,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task='question-answering', model='gpt-3.5-turbo', hub='openai', data='BoolQ-test')
+h = Harness(task="question-answering", 
+              model={"model": "text-davinci-003","hub":"openai"}, 
+              data={"data_source" :"BoolQ-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -179,7 +181,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task='summarization', model='text-davinci-002', hub='openai', data='XSum-test-tiny')
+h = Harness(task="summarization",
+             model={"model": "text-davinci-002","hub":"openai"}, 
+             data={"data_source" :"XSum-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -209,7 +213,9 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
-h = Harness(task='toxicity', model='text-davinci-002', hub='openai', data='toxicity-test-tiny')
+h = Harness(task="toxicity", 
+              model={"model": "text-davinci-002","hub":"openai"}, 
+              data={"data_source" :"toxicity-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -234,15 +240,11 @@ To compare different models (either from same or different hubs) on the same tas
 !pip install "langtest[spacy,johnsnowlabs,transformers]" 
 from langtest import Harness
 
-# Define the dictionary
-model_comparison_dict = {
-    "ner.dl":"johnsnowlabs",
-    "dslim/bert-base-NER":"huggingface",
-    "en_core_web_sm":"spacy"
-}
+# Define the list
+models = [{"model": "ner.dl" , "hub":"johnsnowlabs"} , {"model":"en_core_web_sm", "hub": "spacy"}]
 
 # Create a Harness object
-harness = Harness(task='ner', model=model_comparison_dict, data="/path-to-test-conll")
+h = Harness(task="ner", model=models, data={"data_source":'/path-to-test-conll'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -266,8 +268,70 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="translation",  model='t5-base',
-                  hub="huggingface", data="Translation-test")
+
+h = Harness(task="translation",
+                  model={"model":'t5-base', "hub": "huggingface"},
+                  data={"data_source": "Translation-test"}
+                  )
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Clinical-Tests
+
+Try out the LangTest library on the following default model-dataset combinations for Clinical-Tests.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[langchain,openai,transformers]"
+
+import os
+os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+
+from langtest import Harness
+
+# Create a Harness object
+harness = Harness(task="clinical-tests",
+                    model={"model": "text-davinci-003", "hub": "openai"},
+                    data = {"data_source": "Gastroenterology-files"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+### One Liner - Security-Test
+
+Try out the LangTest library on the following default model-dataset combinations for Security Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[openai]
+
+import os
+os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+
+from langtest import Harness
+
+# Create a Harness object
+harness = Harness(task="security",
+                   model={'model': "text-davinci-003", "hub": "openai"},
+                   data={'data_source':'Prompt-Injection-Attack'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()

@@ -16,10 +16,9 @@ class MlFlowTesting(unittest.TestCase):
         """
         self.params = {
             "task": "ner",
-            "model": "dslim/bert-base-NER",
-            "data": "tests/fixtures/test.conll",
+            "model": {"model": "dslim/bert-base-NER", "hub": "huggingface"},
+            "data": {"data_source": "tests/fixtures/test.conll"},
             "config": "tests/fixtures/config_ner.yaml",
-            "hub": "huggingface",
         }
 
     def test_mlflow(self):
@@ -29,5 +28,5 @@ class MlFlowTesting(unittest.TestCase):
         harness = Harness(**self.params)
         harness.data = harness.data[0:5]
         harness.generate().run().report(mlflow_tracking=True)
-        experiment_id = mlflow.get_experiment_by_name(self.params["model"])
+        experiment_id = mlflow.get_experiment_by_name(self.params["model"]["model"])
         self.assertIsNotNone(experiment_id)

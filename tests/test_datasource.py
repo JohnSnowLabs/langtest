@@ -80,7 +80,26 @@ class TestNERDataset:
                     "split": "test",
                 },
             ),
+            (
+                HuggingFaceDataset(dataset_name="Prikshit7766/12", task="ner"),
+                {
+                    "feature_column": "tokens",
+                    "target_column": "ner_tags",
+                    "split": "test",
+                },
+            ),
             (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
+            (
+                CSVDataset(
+                    file_path={
+                        "data_source": "tests/fixtures/tner.csv",
+                        "feature_column": "tokens",
+                        "target_column": "ner_tags",
+                    },
+                    task="ner",
+                ),
+                {},
+            ),
             (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
         ],
     )
@@ -154,6 +173,18 @@ class TestNERDataset:
             "label",
         ),
         (
+            CSVDataset(
+                file_path={
+                    "data_source": "tests/fixtures/text_classification.csv",
+                    "feature_column": "text",
+                    "target_column": "label",
+                },
+                task="text-classification",
+            ),
+            "text",
+            "label",
+        ),
+        (
             HuggingFaceDataset(dataset_name="dbrd", task="text-classification"),
             "text",
             "label",
@@ -216,9 +247,7 @@ class TestSummarizationDataset:
     def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
         if isinstance(dataset, HuggingFaceDataset):
-            raw_data = dataset.load_raw_data(
-                feature_column=feature_col, target_column=target_col, split="test[:30]"
-            )
+            raw_data = dataset.load_raw_data(split="test[:30]")
         else:
             raw_data = dataset.load_raw_data()
 
