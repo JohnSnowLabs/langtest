@@ -399,7 +399,7 @@ class PretrainedModelForSummarization(_ModelHandler):
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
     """
 
-    def __init__(self, hub, model):
+    def __init__(self, hub, model, **kwargs):
         """Constructor method
 
         Args:
@@ -412,7 +412,7 @@ class PretrainedModelForSummarization(_ModelHandler):
         self.model = model
 
     @staticmethod
-    def load_model(hub: str, path: str) -> "Pipeline":
+    def load_model(hub: str, path: str, **kwargs) -> "Pipeline":
         """Load the QA model into the `model` attribute.
 
         Args:
