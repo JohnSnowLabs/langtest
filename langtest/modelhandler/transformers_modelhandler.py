@@ -423,7 +423,7 @@ class PretrainedModelForSummarization(_ModelHandler):
             'Pipeline':
         """
 
-        return pipeline(model=path)
+        return pipeline(model=path, **kwargs)
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Perform predictions on the input text.
