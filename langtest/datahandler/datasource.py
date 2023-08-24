@@ -276,6 +276,14 @@ class DataFactory:
             + "/Bigbench/CausalJudgment/casual-judgement-test.jsonl",
             "Bigbench-disfl-qa-test": script_dir[:-7]
             + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
+            "Bigbench-Abstract-understanding-test-tiny": script_dir[:-7]
+            + "/Bigbench/AbstractUnderstanding/Abstract-understanding-test-tiny.jsonl",
+            "Bigbench-Abstract-understanding-test": script_dir[:-7]
+            + "/Bigbench/AbstractUnderstanding/Abstract-understanding-test.jsonl",
+            "Bigbench-DisambiguationQA-test": script_dir[:-7]
+            + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
+            "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
+            "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
         }
 
         return datasets_info[dataset_name]
