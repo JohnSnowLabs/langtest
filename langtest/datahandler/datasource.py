@@ -271,6 +271,11 @@ class DataFactory:
             + "/Clinical-Tests/Gastroenterology-files.jsonl",
             "Oromaxillofacial-files": script_dir[:-7]
             + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
+            "asdiv-test": script_dir[:-7] + "/asdiv/asdiv-test.jsonl",
+            "Bigbench-casual-judgement-test": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/casual-judgement-test.jsonl",
+            "Bigbench-disfl-qa-test": script_dir[:-7]
+            + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
         }
 
         return datasets_info[dataset_name]
