@@ -61,10 +61,9 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='ner',
-                  model='en_core_web_sm',
-                  config='config.yml',
-                  hub='spacy',
-                  data='sample.conll') #Either of the two formats can be specified.
+                  model={'model': 'en_core_web_sm', 'hub':'spacy'},
+                  data={"data_source":'test.conll'},
+                  config='config.yml') #Either of the two formats can be specified.
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -101,10 +100,9 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='text-classification',
-                  model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
-                  config='config.yml',
-                  hub ='huggingface',
-                  data='sample.csv')
+                  model={'model': 'mrm8488/distilroberta-finetuned-tweets-hate-speech', 'hub':'huggingface'},
+                  data={"data_source":'sample.csv'},
+                  config='config.yml')
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -117,11 +115,12 @@ To handle text classification task for Hugging Face Datasets, the Harness class 
 
 ```python
 {
-   "name": "",
+   "data_source": "",
    "subset": "",
    "feature_column": "",
    "target_column": "",
-   "split": ""
+   "split": "",
+   "source": "huggingface"
 }
 ```
 
@@ -133,13 +132,14 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task="text-classification", hub="huggingface",
-                  model="distilbert-base-uncased-finetuned-sst-2-english",
-                  data={"name":'glue',
+harness = Harness(task="text-classification",
+                  model={'model': 'mrm8488/distilroberta-finetuned-tweets-hate-speech', 'hub':'huggingface'},
+                  data={"data_source":'glue',
                   "subset":"sst2",
                   "feature_column":"sentence",
                   "target_column":'label',
-                  "split":"train"
+                  "split":"train",
+                  "source": "huggingface"
                   })
 ```
 
@@ -209,10 +209,9 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='question-answering',
-                  model='gpt-3.5-turbo',
-                  config='config.yml',
-                  hub ='openai',
-                  data='BoolQ-test')
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'BoolQ-test'}, 
+                  config='config.yml')
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -249,10 +248,9 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='summarization',
-                  model='text-davinci-002',
-                  config='config.yml',
-                  hub ='openai',
-                  data='XSum-test-tiny')
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'XSum-test-tiny'}, 
+                  config='config.yml')
 ```
 
 #### Passing a Hugging Face Dataset for Summarization to the Harness
@@ -264,12 +262,12 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task="summarization", 
-                  hub="openai",
-                  model="text-davinci-003",
-                  data={"name":'samsum',
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'samsum',
                   "feature_column":"dialogue",
                   "target_column":'summary',
-                  "split":"test"
+                  "split":"test",
+                  "source": "huggingface"
                   })
 ```
 </div><div class="h3-box" markdown="1">
@@ -305,9 +303,8 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='toxicity',
-                  model='text-davinci-002',
-                  hub='openai',
-                  data='toxicity-test-tiny')
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'toxicity-test-tiny'})
 ```
 
 </div></div>
