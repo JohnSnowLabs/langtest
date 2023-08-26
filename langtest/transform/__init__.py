@@ -496,10 +496,24 @@ class RobustnessTestFactory(ITests):
                     prob=params.pop("prob", 1.0),
                 )
 
-            for sample in transformed_samples:
-                if test_name != "multiple_perturbations":
-                    sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+            new_transformed_samples = []
+            if TestFactory.task == "question-answering":
+                for sample in transformed_samples:
+                    if (sample.original_question != sample.perturbed_question) or (
+                        sample.original_context != sample.perturbed_context
+                    ):
+                        if test_name != "multiple_perturbations":
+                            sample.test_type = test_name
+                        new_transformed_samples.append(sample)
+            else:
+                for sample in transformed_samples:
+                    if sample.original != sample.test_case:
+                        if test_name != "multiple_perturbations":
+                            sample.test_type = test_name
+                        new_transformed_samples.append(sample)
+
+            all_samples.extend(new_transformed_samples)
+
         return all_samples
 
     @staticmethod
@@ -682,9 +696,21 @@ class BiasTestFactory(ITests):
                 data_handler_copy, **params.get("parameters", {})
             )
 
-            for sample in transformed_samples:
-                sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+            new_transformed_samples = []
+            if TestFactory.task == "question-answering":
+                for sample in transformed_samples:
+                    if (sample.original_question != sample.perturbed_question) or (
+                        sample.original_context != sample.perturbed_context
+                    ):
+                        sample.test_type = test_name
+                        new_transformed_samples.append(sample)
+            else:
+                for sample in transformed_samples:
+                    if sample.original != sample.test_case:
+                        sample.test_type = test_name
+                        new_transformed_samples.append(sample)
+
+            all_samples.extend(new_transformed_samples)
 
         return all_samples
 
