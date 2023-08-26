@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import time
+import logging
 from collections import defaultdict
 from abc import ABC, abstractmethod
 from typing import Dict, List, Union
@@ -512,6 +513,9 @@ class RobustnessTestFactory(ITests):
                             sample.test_type = test_name
                         new_transformed_samples.append(sample)
 
+            if len(transformed_samples) > len(new_transformed_samples):
+                logging.info("Removing samples where no transformation has been applied.")
+
             all_samples.extend(new_transformed_samples)
 
         return all_samples
@@ -709,6 +713,9 @@ class BiasTestFactory(ITests):
                     if sample.original != sample.test_case:
                         sample.test_type = test_name
                         new_transformed_samples.append(sample)
+
+            if len(transformed_samples) > len(new_transformed_samples):
+                logging.info("Removing samples where no transformation has been applied.")
 
             all_samples.extend(new_transformed_samples)
 
