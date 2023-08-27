@@ -27,7 +27,7 @@ class HuggingFaceTestCase(unittest.TestCase):
 
         self.tasks = ["ner", "text-classifier"]
 
-    def test_transformers_models(self):
+    def test_transformers_ner_models(self):
         """
         Test loading Hugging Face models.
 
@@ -36,6 +36,18 @@ class HuggingFaceTestCase(unittest.TestCase):
         """
         model = ModelFactory.load_model(
             task=self.tasks[0], hub="huggingface", path=self.models[0]
+        )
+        self.assertIsInstance(model, ModelFactory)
+
+    def test_transformers_QA_models(self):
+        """
+        Test loading Hugging Face models.
+
+        This method tests the loading of a Hugging Face model using the `ModelFactory` class.
+        It asserts that the loaded model is an instance of `ModelFactory`.
+        """
+        model = ModelFactory.load_model(
+            task="question-answering", hub="huggingface", path="gpt2"
         )
         self.assertIsInstance(model, ModelFactory)
 

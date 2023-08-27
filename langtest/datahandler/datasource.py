@@ -1385,6 +1385,50 @@ class HuggingFaceDataset(_IDataset):
         samples = [self._row_to_sample_summarization(example) for example in dataset]
         return samples
 
+    def load_data_qa(
+        self,
+        question_column: str,
+        context_column: str,
+        target_column: str,
+        split: str,
+        subset: str = None,
+    ) -> List[Sample]:
+        """Load the specified split from the dataset for QA task.
+
+        Args:
+            feature_column (str):
+                Name of the column containing the input text or document.
+            target_column (str):
+                Name of the column containing the target summary.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration or subset to load.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects for QA task.
+        """
+        question_column = "question" if question_column is None else question_column
+        target_column = "answer" if target_column is None else target_column
+        split = "test" if split is None else split
+
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        dataset = dataset.map(
+            lambda example: {
+                "question": example[question_column],
+                "context": example[context_column],
+                "answer": example[target_column],
+            }
+        )
+
+        samples = [self._row_to_sample_qa(example) for example in dataset]
+        return samples
+
     def load_raw_data(
         self,
         split: str = "test",
@@ -1454,6 +1498,30 @@ class HuggingFaceDataset(_IDataset):
         summary = data_row.get("summary", "")
 
         return SummarizationSample(original=original, expected_results=summary)
+
+    @staticmethod
+    def _row_to_sample_qa(data_row: Dict[str, str]) -> Sample:
+        """Convert a row from the dataset into a Sample for summarization.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object for summarization.
+        """
+        context = data_row.get("context", "")
+        question = data_row.get("question", "")
+        answer = data_row.get("answer", "")
+        if isinstance(answer, str):
+            answer = [answer]
+
+        return QASample(
+            original_question=question,
+            original_context=context,
+            actual_results=answer,
+        )
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
