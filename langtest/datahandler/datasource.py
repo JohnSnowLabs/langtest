@@ -281,9 +281,9 @@ class DataFactory:
             + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
             "Bigbench-disfl-qa-test-tiny": script_dir[:-7]
             + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
-            "Bigbench-Abstract-understanding-test-tiny": script_dir[:-7]
+            "Bigbench-Abstract-narrative-understanding-test-tiny": script_dir[:-7]
             + "/Bigbench/AbstractUnderstanding/Abstract-understanding-test-tiny.jsonl",
-            "Bigbench-Abstract-understanding-test": script_dir[:-7]
+            "Bigbench-Abstract-narrative-understanding-test": script_dir[:-7]
             + "/Bigbench/AbstractUnderstanding/Abstract-understanding-test.jsonl",
             "Bigbench-DisambiguationQA-test": script_dir[:-7]
             + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
