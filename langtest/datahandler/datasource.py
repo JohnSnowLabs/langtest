@@ -275,8 +275,12 @@ class DataFactory:
             "ASDiv-test-tiny": script_dir[:-7] + "/ASDiv/ASDiv-test-tiny.jsonl",
             "Bigbench-casual-judgement-test": script_dir[:-7]
             + "/Bigbench/CausalJudgment/casual-judgement-test.jsonl",
+            "Bigbench-casual-judgement-test-tiny": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/casual-judgement-test-tiny.jsonl",
             "Bigbench-disfl-qa-test": script_dir[:-7]
             + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
+            "Bigbench-disfl-qa-test-tiny": script_dir[:-7]
+            + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
             "Bigbench-Abstract-understanding-test-tiny": script_dir[:-7]
             + "/Bigbench/AbstractUnderstanding/Abstract-understanding-test-tiny.jsonl",
             "Bigbench-Abstract-understanding-test": script_dir[:-7]
