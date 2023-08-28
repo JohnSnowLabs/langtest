@@ -366,8 +366,8 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
-        tests_copy = self.tests.copy()  # Create a copy of self.tests
-        no_transformation_applied_tests = []
+        no_transformation_applied_tests = set()
+        tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
@@ -501,21 +501,28 @@ class RobustnessTestFactory(ITests):
             new_transformed_samples = []
             if TestFactory.task == "question-answering":
                 for sample in transformed_samples:
-                    if (sample.original_question != sample.perturbed_question) or (
-                        sample.original_context != sample.perturbed_context
+                    if (sample.original_question.replace(" ", "") != sample.perturbed_question.replace(" ", "")) or (
+                        sample.original_context.replace(" ", "") != sample.perturbed_context.replace(" ", "")
                     ):
                         if test_name != "multiple_perturbations":
                             sample.test_type = test_name
                         new_transformed_samples.append(sample)
+                    else:
+                        if test_name == "multiple_perturbations":
+                            no_transformation_applied_tests.add(sample.test_type)
+                        else:
+                            no_transformation_applied_tests.add(test_name)
             else:
                 for sample in transformed_samples:
-                    if sample.original != sample.test_case:
+                    if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
                         if test_name != "multiple_perturbations":
                             sample.test_type = test_name
                         new_transformed_samples.append(sample)
-
-            if len(transformed_samples) > len(new_transformed_samples):
-                no_transformation_applied_tests.append(test_name)
+                    else:
+                        if test_name == "multiple_perturbations":
+                            no_transformation_applied_tests.add(sample.test_type)
+                        else:
+                            no_transformation_applied_tests.add(test_name)
 
             all_samples.extend(new_transformed_samples)
 
@@ -700,7 +707,7 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
-        no_transformation_applied_tests = []
+        no_transformation_applied_tests = set()
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
@@ -711,19 +718,20 @@ class BiasTestFactory(ITests):
             new_transformed_samples = []
             if TestFactory.task == "question-answering":
                 for sample in transformed_samples:
-                    if (sample.original_question != sample.perturbed_question) or (
-                        sample.original_context != sample.perturbed_context
+                    if (sample.original_question.replace(" ", "") != sample.perturbed_question.replace(" ", "")) or (
+                        sample.original_context.replace(" ", "") != sample.perturbed_context.replace(" ", "")
                     ):
                         sample.test_type = test_name
                         new_transformed_samples.append(sample)
+                    else:
+                        no_transformation_applied_tests.add(test_name)
             else:
                 for sample in transformed_samples:
-                    if sample.original != sample.test_case:
+                    if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
                         sample.test_type = test_name
                         new_transformed_samples.append(sample)
-
-            if len(transformed_samples) > len(new_transformed_samples):
-                no_transformation_applied_tests.append(test_name)
+                    else:
+                        no_transformation_applied_tests.add(test_name)
 
             all_samples.extend(new_transformed_samples)
 
