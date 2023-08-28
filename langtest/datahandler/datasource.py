@@ -273,13 +273,13 @@ class DataFactory:
             + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
             "ASDiv-test": script_dir[:-7] + "/asdiv/asdiv-test.jsonl",
             "ASDiv-test-tiny": script_dir[:-7] + "/asdiv/asdiv-test-tiny.jsonl",
-            "Bigbench-casual-judgement-test": script_dir[:-7]
-            + "/Bigbench/CausalJudgment/casual-judgement-test.jsonl",
-            "Bigbench-casual-judgement-test-tiny": script_dir[:-7]
-            + "/Bigbench/CausalJudgment/casual-judgement-test-tiny.jsonl",
-            "Bigbench-disfl-qa-test": script_dir[:-7]
+            "Bigbench-Causal-judgment-test": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/causal-judgment-test.jsonl",
+            "Bigbench-Causal-judgment-test-tiny": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/causal-judgment-test-tiny.jsonl",
+            "Bigbench-DisflQA-test": script_dir[:-7]
             + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
-            "Bigbench-disfl-qa-test-tiny": script_dir[:-7]
+            "Bigbench-DisflQA-test-tiny": script_dir[:-7]
             + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
             "Bigbench-Abstract-narrative-understanding-test-tiny": script_dir[:-7]
             + "/Bigbench/AbstractUnderstanding/Abstract-narrative-understanding-test-tiny.jsonl",
