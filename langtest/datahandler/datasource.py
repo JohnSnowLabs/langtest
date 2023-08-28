@@ -287,6 +287,8 @@ class DataFactory:
             + "/Bigbench/AbstractUnderstanding/Abstract-understanding-test.jsonl",
             "Bigbench-DisambiguationQA-test": script_dir[:-7]
             + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
+            "Bigbench-DisambiguationQA-test-tiny": script_dir[:-7]
+            + "/Bigbench/DisambiguationQA/DisambiguationQA-test-tiny.jsonl",
             "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
             "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
         }
