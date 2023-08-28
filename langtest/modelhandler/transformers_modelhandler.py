@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 from transformers import Pipeline, pipeline
 
-from .modelhandler import _ModelHandler
+from .modelhandler import ModelLoader
 from ..utils.custom_types import (
     NEROutput,
     NERPrediction,
@@ -12,7 +12,7 @@ from ..utils.custom_types import (
 )
 
 
-class PretrainedModelForNER(_ModelHandler):
+class PretrainedModelForNER(ModelLoader):
     """Transformers pretrained model for NER tasks
 
     Args:
@@ -195,7 +195,7 @@ class PretrainedModelForNER(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForTextClassification(_ModelHandler):
+class PretrainedModelForTextClassification(ModelLoader):
     """Transformers pretrained model for text classification tasks
 
     Attributes:
@@ -277,7 +277,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
 
-class PretrainedModelForTranslation(_ModelHandler):
+class PretrainedModelForTranslation(ModelLoader):
     """Transformers pretrained model for translation tasks
 
     Args:

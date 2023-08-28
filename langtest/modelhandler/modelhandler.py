@@ -23,7 +23,7 @@ else:
     LANGCHAIN_HUBS = {}
 
 
-class _ModelHandler(ABC):
+class ModelLoader(ABC):
     """Abstract base class for handling different models.
 
     Implementations should inherit from this class and override load_model() and predict() methods.
@@ -158,7 +158,7 @@ class ModelFactory:
                 model hub to load custom model from the path, either to hub or local disk.
 
         Returns:
-            ModelHandler:
+            ModelLoader:
         """
         assert task in cls.SUPPORTED_TASKS, ValueError(
             f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"
