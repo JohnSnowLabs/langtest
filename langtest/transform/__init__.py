@@ -501,8 +501,12 @@ class RobustnessTestFactory(ITests):
             new_transformed_samples = []
             if TestFactory.task == "question-answering":
                 for sample in transformed_samples:
-                    if (sample.original_question.replace(" ", "") != sample.perturbed_question.replace(" ", "")) or (
-                        sample.original_context.replace(" ", "") != sample.perturbed_context.replace(" ", "")
+                    if (
+                        sample.original_question.replace(" ", "")
+                        != sample.perturbed_question.replace(" ", "")
+                    ) or (
+                        sample.original_context.replace(" ", "")
+                        != sample.perturbed_context.replace(" ", "")
                     ):
                         if test_name != "multiple_perturbations":
                             sample.test_type = test_name
@@ -514,7 +518,9 @@ class RobustnessTestFactory(ITests):
                             no_transformation_applied_tests.add(test_name)
             else:
                 for sample in transformed_samples:
-                    if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
+                    if sample.original.replace(" ", "") != sample.test_case.replace(
+                        " ", ""
+                    ):
                         if test_name != "multiple_perturbations":
                             sample.test_type = test_name
                         new_transformed_samples.append(sample)
@@ -718,8 +724,12 @@ class BiasTestFactory(ITests):
             new_transformed_samples = []
             if TestFactory.task == "question-answering":
                 for sample in transformed_samples:
-                    if (sample.original_question.replace(" ", "") != sample.perturbed_question.replace(" ", "")) or (
-                        sample.original_context.replace(" ", "") != sample.perturbed_context.replace(" ", "")
+                    if (
+                        sample.original_question.replace(" ", "")
+                        != sample.perturbed_question.replace(" ", "")
+                    ) or (
+                        sample.original_context.replace(" ", "")
+                        != sample.perturbed_context.replace(" ", "")
                     ):
                         sample.test_type = test_name
                         new_transformed_samples.append(sample)
@@ -727,7 +737,9 @@ class BiasTestFactory(ITests):
                         no_transformation_applied_tests.add(test_name)
             else:
                 for sample in transformed_samples:
-                    if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
+                    if sample.original.replace(" ", "") != sample.test_case.replace(
+                        " ", ""
+                    ):
                         sample.test_type = test_name
                         new_transformed_samples.append(sample)
                     else:
