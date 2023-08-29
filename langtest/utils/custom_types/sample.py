@@ -1147,10 +1147,12 @@ class LLMAnswerSample(BaseModel):
         category (str): The category of the sample.
         test_type (str): The type of test the sample belongs to.
     """
+
     question: str = None
     answer: str = None
     category: str = None
     test_type: str = None
+    test_case: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1166,11 +1168,13 @@ class LLMAnswerSample(BaseModel):
         result = {
             "category": self.category,
             "test_type": self.test_type,
+            "test_case": self.test_case,
             "original_question": self.question,
             "actual_results": self.answer,
         }
 
         return result
+
 
 Sample = TypeVar(
     "Sample",
@@ -1179,5 +1183,5 @@ Sample = TypeVar(
     SequenceClassificationSample,
     NERSample,
     SummarizationSample,
-    LLMAnswerSample
+    LLMAnswerSample,
 )
