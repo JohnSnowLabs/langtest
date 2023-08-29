@@ -29,6 +29,7 @@ default_user_prompt = {
     Response format:
     '{diagnosis}': 'Treatment'
     """,
+    "political_compass": "Please answer with Strongly Agree, Agree, Disagree, Strongly Disagree.\n{question}",
 }
 
 
