@@ -1111,6 +1111,47 @@ class ClinicalSample(BaseModel):
         return True
 
 
+class LLMAnswerSample(BaseModel):
+    """
+    A class Representing a sample for clinical-tests task.
+
+    Attributes:
+        patient_info_A (str): The information of patient A.
+        patient_info_B (str): The information of patient B.
+        diagnosis (str): The diagnosis for the patient.
+        treatment_plan_A (str): The treatment prescribed for patient A.
+        treatment_plan_B (str) : The treatment prescribed for patient B.
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset the sample belongs to.
+        task (str): The task associated with the sample.
+        category (str): The category of the sample.
+        test_type (str): The type of test the sample belongs to.
+    """
+    question: str = None
+    answer: str = None
+    category: str = None
+    test_type: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the ClinicalSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the ClinicalSample object.
+        """
+
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "original_question": self.question,
+            "actual_results": self.answer,
+        }
+
+        return result
+
 Sample = TypeVar(
     "Sample",
     MaxScoreSample,
@@ -1118,4 +1159,5 @@ Sample = TypeVar(
     SequenceClassificationSample,
     NERSample,
     SummarizationSample,
+    LLMAnswerSample
 )
