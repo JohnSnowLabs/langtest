@@ -4,7 +4,7 @@ from typing import Any, List, Union, Dict, Tuple
 
 from langtest.utils.custom_types.output import TranslationOutput
 
-from ..modelhandler import ModelLoader
+from ..modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
 
@@ -132,6 +132,7 @@ class PretrainedJSLModel(ABC):
         model (Union["NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"]):
             Loaded SparkNLP LightPipeline for inference.
     """
+
     hub = "johnsnowlabs"
 
     @abstractmethod
@@ -208,8 +209,9 @@ class PretrainedJSLModel(ABC):
         return self.predict(text=text)
 
 
-class PretrainedModelForNER(PretrainedJSLModel, ModelLoader):
+class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
     """Pretrained model for NER tasks."""
+
     task = "ner"
 
     def __init__(
@@ -385,8 +387,9 @@ class PretrainedModelForNER(PretrainedJSLModel, ModelLoader):
         return False
 
 
-class PretrainedModelForTextClassification(PretrainedJSLModel, ModelLoader):
+class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
     """Pretrained model for text classification tasks"""
+
     task = "text-classification"
 
     def __init__(
@@ -465,8 +468,9 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelLoader):
         return [x["label"] for x in prediction]
 
 
-class PretrainedModelForTranslation(PretrainedJSLModel, ModelLoader):
+class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
     """Pretrained model for translations tasks"""
+
     task = "translation"
 
     def __init__(

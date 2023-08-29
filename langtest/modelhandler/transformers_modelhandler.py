@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 import numpy as np
 from transformers import Pipeline, pipeline
 
-from .modelhandler import ModelLoader
+from .modelhandler import ModelAPI
 from ..utils.custom_types import (
     NEROutput,
     NERPrediction,
@@ -12,7 +12,7 @@ from ..utils.custom_types import (
 )
 
 
-class PretrainedModelForNER(ModelLoader):
+class PretrainedModelForNER(ModelAPI):
     """Transformers pretrained model for NER tasks
 
     Args:
@@ -142,7 +142,7 @@ class PretrainedModelForNER(ModelLoader):
         Returns:
             'Pipeline':
         """
-        return pipeline(model=path, task="ner", ignore_labels=[])
+        return cls(pipeline(model=path, task="ner", ignore_labels=[]))
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -195,7 +195,7 @@ class PretrainedModelForNER(ModelLoader):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForTextClassification(ModelLoader):
+class PretrainedModelForTextClassification(ModelAPI):
     """Transformers pretrained model for text classification tasks
 
     Attributes:
@@ -226,7 +226,7 @@ class PretrainedModelForTextClassification(ModelLoader):
     @classmethod
     def load_model(cls, path: str) -> "Pipeline":
         """Load and return text classification transformers pipeline"""
-        return pipeline(model=path, task="text-classification")
+        return cls(pipeline(model=path, task="text-classification"))
 
     def predict(
         self,
@@ -277,7 +277,7 @@ class PretrainedModelForTextClassification(ModelLoader):
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
 
-class PretrainedModelForTranslation(ModelLoader):
+class PretrainedModelForTranslation(ModelAPI):
     """Transformers pretrained model for translation tasks
 
     Args:

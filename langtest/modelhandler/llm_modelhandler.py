@@ -3,10 +3,10 @@ from typing import Union
 import langchain.llms as lc
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
-from ..modelhandler.modelhandler import ModelLoader, LANGCHAIN_HUBS
+from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
 
-class PretrainedModelForQA(ModelLoader):
+class PretrainedModelForQA(ModelAPI):
     """A class representing a pretrained model for question answering.
 
     Attributes:
@@ -143,7 +143,7 @@ class ConfigError(BaseException):
         return self.message
 
 
-class PretrainedModelForSummarization(PretrainedModelForQA, ModelLoader):
+class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for summarization.
 
     Inherits:
@@ -153,7 +153,7 @@ class PretrainedModelForSummarization(PretrainedModelForQA, ModelLoader):
     pass
 
 
-class PretrainedModelForToxicity(PretrainedModelForQA, ModelLoader):
+class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for toxicity detection.
 
     Inherits:
@@ -163,7 +163,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, ModelLoader):
     pass
 
 
-class PretrainedModelForSecurity(PretrainedModelForQA, ModelLoader):
+class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for security detection.
 
     Inherits:
@@ -173,7 +173,7 @@ class PretrainedModelForSecurity(PretrainedModelForQA, ModelLoader):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelLoader):
+class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for security detection.
 
     Inherits:

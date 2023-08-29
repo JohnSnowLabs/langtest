@@ -1,5 +1,6 @@
 import importlib
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from typing import List, Union
 
 from langtest.utils.lib_manager import try_import_lib
@@ -23,11 +24,13 @@ else:
     LANGCHAIN_HUBS = {}
 
 
-class ModelLoader(ABC):
+class ModelAPI(ABC):
     """Abstract base class for handling different models.
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
+
+    model_registry = defaultdict(lambda: defaultdict(lambda: ModelAPI))
 
     @abstractmethod
     def load_model(cls, *args, **kwargs):
@@ -38,6 +41,14 @@ class ModelLoader(ABC):
     def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform predictions on input text."""
         raise NotImplementedError()
+
+    def __init_subclass__(cls, *args, **kwargs) -> None:
+        hub = cls.__module__.split(".")[-1].split("_")[0]
+        if hub == "transformers":
+            hub = "huggingface"
+        task = cls.__name__.replace("PretrainedModelFor", "").lower()
+        ModelAPI.model_registry[hub][task] = cls
+        return super().__init_subclass__(*args, **kwargs)
 
 
 class ModelFactory:
@@ -158,7 +169,7 @@ class ModelFactory:
                 model hub to load custom model from the path, either to hub or local disk.
 
         Returns:
-            ModelLoader:
+            ModelAPI:
         """
         assert task in cls.SUPPORTED_TASKS, ValueError(
             f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"

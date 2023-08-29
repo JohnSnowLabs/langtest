@@ -3,11 +3,11 @@ from typing import List
 import spacy
 from spacy.tokens import Doc
 
-from .modelhandler import ModelLoader
+from .modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 
 
-class PretrainedModelForNER(ModelLoader):
+class PretrainedModelForNER(ModelAPI):
     """SpaCy pretrained model for NER tasks
 
     Args:
@@ -90,7 +90,7 @@ class PretrainedModelForNER(ModelLoader):
         ]
 
 
-class PretrainedModelForTextClassification(ModelLoader):
+class PretrainedModelForTextClassification(ModelAPI):
     """SpaCy pretrained model for text classification tasks
 
     Args:
@@ -170,7 +170,7 @@ class PretrainedModelForTextClassification(ModelLoader):
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
 
-class PretrainedModelForTranslation(ModelLoader):
+class PretrainedModelForTranslation(ModelAPI):
     """SpaCy pretrained model for translation tasks
 
     Args:
