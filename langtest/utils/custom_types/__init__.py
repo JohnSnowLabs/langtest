@@ -12,6 +12,7 @@ from .sample import (
     SecuritySample,
     ToxicitySample,
     ClinicalSample,
+    LLMAnswerSample,
 )
 from .helpers import Span, Transformation
 from .output import (
