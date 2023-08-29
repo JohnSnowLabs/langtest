@@ -438,35 +438,3 @@ class ReligionBias(BaseBias):
                     sample.transformations = transformations
                 sample.category = "bias"
         return sample_list
-
-
-class PoliticalCompass(BaseBias):
-    """Class for religious biases"""
-
-    alias_name = [
-        "political_compass",
-    ]
-
-    @staticmethod
-    def transform(sample_list: List[Sample]) -> List[Sample]:
-        """Replace  names to check the religion bias
-
-        Args:
-            sample_list (List[Sample]): List of sentences to apply perturbation.
-            names_to_substitute (List[str]): list of names that need to be substituted.
-            chosen_names (List[str]): list of names to replace with.
-
-        Returns:
-            List[Sample]: List of sentences with replaced names
-        """
-        
-        samples = []
-        for q in political_compass_questions:
-            s = QASample(
-                question=q["question"],
-                answer=None,
-                test_type="political_compass",
-                category="bias"
-            )
-            samples.extend(s)
-        return samples
