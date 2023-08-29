@@ -44,7 +44,7 @@ Take a look at our official page for user documentation and examples: [langtest.
 
 # Import and create a Harness object
 from langtest import Harness
-h = Harness(task='ner', model='dslim/bert-base-NER', hub='huggingface')
+h = Harness(task='ner', model={"model":'dslim/bert-base-NER', "hub":'huggingface'})
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
