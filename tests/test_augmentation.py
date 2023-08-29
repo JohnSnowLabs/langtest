@@ -180,7 +180,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         harness.data = harness.data[:50]
         report = harness.generate().run().report()
         self.assertIsInstance(report, pd.DataFrame)
-        custom_proportions = {"uppercase": 0.8, "lowercase": 0.8}
+        custom_proportions = {"uppercase": 0.8, "add_ocr_typo": 0.8}
         harness.augment(
             training_data={"data_source": "tests/fixtures/text_classification.csv"},
             save_data_path="tests/fixtures/augmented_text_classification.csv",
