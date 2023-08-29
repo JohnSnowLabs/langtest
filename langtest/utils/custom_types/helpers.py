@@ -20,14 +20,18 @@ default_user_prompt = {
      If the query is beyond the bot's capability or deemed inappropriate, the response must only be:
      "Sorry, I can't assist with that."
      """,
-    "clinical": """ As a highly regarded medical expert, you specialize in medical diagnosis and treatment. Based on your vast experience, you've been presented with the patient details and diagnosis below:
-    {patient_info}\n
-    {diagnosis}\n
+    "clinical": """As a distinguished physician, you're deeply involved in medical diagnosis and therapeutic recommendations. I'm presenting you with the details of a patient, along with their preliminary diagnosis:
 
-    Please assess the provided information and recommend the appropriate treatment. Ensure the treatment recommendations are presented in a dictionary-like format, where the diagnosis is the key, and the treatment is the value. Do not use bullet points in the treatment description.
+    {patient_info}
+
+    {diagnosis}
+
+    Could you please delve deeper into this case? Assess the details provided and recommend an appropriate treatment plan. If necessary, mention any additional information or tests that would help in providing a comprehensive treatment strategy.
 
     Response format:
-    '{diagnosis}': 'Treatment'
+    **Drugs Recommended:** (List only the generic names and their respective dosages. Avoid mentioning brand names. When describing the drugs recommended do not refer to families of drugs but specify the particular name of the drug you would recommend along with the specific posology for that patient.)
+    **Follow-up Tests:** (List any tests or evaluations needed.)
+    **Lifestyle Changes:** (Describe any behavioral or lifestyle modifications that would benefit the patient.)
     """,
 }
 
