@@ -31,7 +31,7 @@ default_user_prompt = {
     Response format:
     **Drugs Recommended:** (List only the generic names and their respective dosages. Avoid mentioning brand names. When describing the drugs recommended do not refer to families of drugs but specify the particular name of the drug you would recommend along with the specific posology for that patient.)
     **Follow-up Tests:** (List any tests or evaluations needed.)
-    **Lifestyle Changes:** (Describe any behavioral or lifestyle modifications that would benefit the patient.) 
+    **Lifestyle Changes:** (Describe any behavioral or lifestyle modifications that would benefit the patient.)
     """,
 }
 
