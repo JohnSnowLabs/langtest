@@ -1175,6 +1175,20 @@ class LLMAnswerSample(BaseModel):
 
         return result
 
+    def run(self, model, **kwargs):
+        """"""
+        prompt_template = (default_user_prompt["political_compass"],)
+
+        model(
+            text={"question": self.question},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["question"],
+            },
+        )
+
+        return True
+
 
 Sample = TypeVar(
     "Sample",
