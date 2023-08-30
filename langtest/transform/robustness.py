@@ -493,7 +493,7 @@ class SwapEntities(BaseRobustness):
 
                 ent_start_pos = [1 if label[0] == "B" else 0 for label in sample_labels]
                 ent_idx = [i for i, value in enumerate(ent_start_pos) if value == 1]
-                
+
                 if not ent_idx:
                     sample.test_case = sample.original
                     break
