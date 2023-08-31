@@ -1472,6 +1472,50 @@ class ClinicalTestFactory(ITests):
         return sample_list["demographic-bias"]
 
 
+class DisinformationTestFactory(ITests):
+    """Factory class for disinformation test"""
+
+    alias_name = "disinformation"
+    supported_tasks = [
+        "disinformation-test",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        for sample in self.data_handler:
+            sample.test_type = "disinfo"
+            sample.category = "disinformation"
+
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        return {"disinfo": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["disinfo"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["disinfo"]
+
+
 class PoliticalTestFactory(ITests):
     """Factory class for the clinical tests"""
 

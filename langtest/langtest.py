@@ -39,6 +39,7 @@ class Harness:
         "translation",
         "security",
         "clinical-tests",
+        "disinformation-test",
         "political",
     ]
     SUPPORTED_HUBS = [
@@ -88,6 +89,15 @@ class Harness:
             "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
+            ),
+            "disinformation-test-huggingface-inference-api": resource_filename(
+                "langtest", "data/config/disinformation_huggingface_config.yml"
+            ),
+            "disinformation-test-openai": resource_filename(
+                "langtest", "data/config/disinformation_openai_config.yml"
+            ),
+            "disinformation-test-ai21": resource_filename(
+                "langtest", "data/config/disinformation_openai_config.yml"
             ),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
@@ -236,6 +246,10 @@ class Harness:
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
+            elif task == "disinformation-test":
+                self._config = self.configure(
+                    self.DEFAULTS_CONFIG["task"][task + "-" + hub]
+                )
             else:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
@@ -901,6 +915,9 @@ class Harness:
             "prompt_toxicity",
             "actual_result",
             "completion_toxicity",
+            "hypothesis",
+            "statements",
+            "model_response",
             "eval_score",
             "similarity_score",
             "pass",
@@ -1045,6 +1062,8 @@ class Harness:
             "patient_info_A",
             "patient_info_B",
             "diagnosis",
+            "hypothesis",
+            "statements",
             "perturbed_context",
             "perturbed_question",
             "expected_result",

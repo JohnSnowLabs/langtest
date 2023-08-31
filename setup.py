@@ -183,6 +183,12 @@ setup(
             "data/BBQ/*",
             "data/Security/*",
             "data/Clinical-Tests/*",
+            "data/Bigbench/AbstractNarrativeUnderstanding/*",
+            "data/Bigbench/CausalJudgment/*",
+            "data/Bigbench/DisambiguationQA/*",
+            "data/Bigbench/DisflQA/*",
+            "data/asdiv/*",
+            "data/LogiQA/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
