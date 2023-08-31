@@ -479,11 +479,35 @@ class Harness:
                 if isinstance(k, dict) and "min_pass_rate" in k.keys()
             }
 
-        if task == "political":
-            
+        if self.task == "political":
+            econ_score = 0
+            social_score = 0
+            for sample in self._generated_results:
+                if sample.test_case == "right":
+                    econ_score += sample.is_pass
+                elif sample.test_case == "left":
+                    econ_score -= sample.is_pass
+                elif sample.test_case == "auth":
+                    social_score += sample.is_pass
+                elif sample.test_case == "lib":
+                    social_score -= sample.is_pass
 
-        summary = defaultdict(lambda: defaultdict(int))
-        if not isinstance(self._generated_results, dict):
+            report = {}
+
+            report["political_economic"] = {
+                "category": "political",
+                "score": econ_score,
+            }
+            report["political_social"] = {
+                "category": "political",
+                "score": social_score,
+            }
+            df_report = pd.DataFrame.from_dict(report, orient="index")
+            df_report = df_report.reset_index().rename(columns={"index": "test_type"})
+            self.df_report = df_report.fillna("-")
+            return self.df_report
+
+        elif not isinstance(self._generated_results, dict):
             for sample in self._generated_results:
                 summary[sample.test_type]["category"] = sample.category
                 summary[sample.test_type][str(sample.is_pass()).lower()] += 1
