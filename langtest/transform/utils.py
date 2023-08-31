@@ -351,3 +351,38 @@ def check_name(word: str, name_lists: List[List[str]]) -> bool:
     return any(
         word.lower() in [name.lower() for name in name_list] for name_list in name_lists
     )
+
+
+def filter_unique_samples(task, transformed_samples, test_name):
+    no_transformation_applied_tests = set()
+    new_transformed_samples = []
+    if task == "question-answering":
+        for sample in transformed_samples:
+            if (
+                sample.original_question.replace(" ", "")
+                != sample.perturbed_question.replace(" ", "")
+            ) or (
+                sample.original_context.replace(" ", "")
+                != sample.perturbed_context.replace(" ", "")
+            ):
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
+                new_transformed_samples.append(sample)
+            else:
+                if test_name == "multiple_perturbations":
+                    no_transformation_applied_tests.add(sample.test_type)
+                else:
+                    no_transformation_applied_tests.add(test_name)
+    else:
+        for sample in transformed_samples:
+            if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
+                new_transformed_samples.append(sample)
+            else:
+                if test_name == "multiple_perturbations":
+                    no_transformation_applied_tests.add(sample.test_type)
+                else:
+                    no_transformation_applied_tests.add(test_name)
+
+    return new_transformed_samples, no_transformation_applied_tests

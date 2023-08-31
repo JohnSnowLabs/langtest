@@ -34,7 +34,7 @@ from .constants import (
     religion_wise_names,
     white_names,
 )
-from .utils import get_substitution_names, create_terminology
+from .utils import get_substitution_names, create_terminology, filter_unique_samples
 from ..modelhandler import ModelFactory
 from ..utils.custom_types.sample import (
     NERSample,
@@ -497,39 +497,10 @@ class RobustnessTestFactory(ITests):
                     **params.get("parameters", {}),
                     prob=params.pop("prob", 1.0),
                 )
-
-            new_transformed_samples = []
-            if TestFactory.task == "question-answering":
-                for sample in transformed_samples:
-                    if (
-                        sample.original_question.replace(" ", "")
-                        != sample.perturbed_question.replace(" ", "")
-                    ) or (
-                        sample.original_context.replace(" ", "")
-                        != sample.perturbed_context.replace(" ", "")
-                    ):
-                        if test_name != "multiple_perturbations":
-                            sample.test_type = test_name
-                        new_transformed_samples.append(sample)
-                    else:
-                        if test_name == "multiple_perturbations":
-                            no_transformation_applied_tests.add(sample.test_type)
-                        else:
-                            no_transformation_applied_tests.add(test_name)
-            else:
-                for sample in transformed_samples:
-                    if sample.original.replace(" ", "") != sample.test_case.replace(
-                        " ", ""
-                    ):
-                        if test_name != "multiple_perturbations":
-                            sample.test_type = test_name
-                        new_transformed_samples.append(sample)
-                    else:
-                        if test_name == "multiple_perturbations":
-                            no_transformation_applied_tests.add(sample.test_type)
-                        else:
-                            no_transformation_applied_tests.add(test_name)
-
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            no_transformation_applied_tests.update(removed_samples_tests)
             all_samples.extend(new_transformed_samples)
 
         if no_transformation_applied_tests:
@@ -721,30 +692,10 @@ class BiasTestFactory(ITests):
                 data_handler_copy, **params.get("parameters", {})
             )
 
-            new_transformed_samples = []
-            if TestFactory.task == "question-answering":
-                for sample in transformed_samples:
-                    if (
-                        sample.original_question.replace(" ", "")
-                        != sample.perturbed_question.replace(" ", "")
-                    ) or (
-                        sample.original_context.replace(" ", "")
-                        != sample.perturbed_context.replace(" ", "")
-                    ):
-                        sample.test_type = test_name
-                        new_transformed_samples.append(sample)
-                    else:
-                        no_transformation_applied_tests.add(test_name)
-            else:
-                for sample in transformed_samples:
-                    if sample.original.replace(" ", "") != sample.test_case.replace(
-                        " ", ""
-                    ):
-                        sample.test_type = test_name
-                        new_transformed_samples.append(sample)
-                    else:
-                        no_transformation_applied_tests.add(test_name)
-
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            no_transformation_applied_tests.update(removed_samples_tests)
             all_samples.extend(new_transformed_samples)
 
         if no_transformation_applied_tests:
