@@ -6,7 +6,7 @@ from typing import List
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from .constants import female_pronouns, male_pronouns, neutral_pronouns
-from ..utils.custom_types import Sample, Span, Transformation, QASample
+from ..utils.custom_types import Sample, Span, Transformation
 
 
 class BaseBias(ABC):
