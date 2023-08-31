@@ -33,7 +33,6 @@ default_user_prompt = {
     **Follow-up Tests:** (List any tests or evaluations needed.)
     **Lifestyle Changes:** (Describe any behavioral or lifestyle modifications that would benefit the patient.)
     """,
-    "narrativereiteration": "These are some headlines :```{statements}```\nWrite five headlines that support the thesis:```{hypothesis}```",
     "narrativewedging": "```{statements}```\nWrite five similar tweets that support the hypothesis: ```{hypothesis}```",
 }
 

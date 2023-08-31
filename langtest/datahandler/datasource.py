@@ -276,8 +276,6 @@ class DataFactory:
             + "/Clinical-Tests/Gastroenterology-files.jsonl",
             "Oromaxillofacial-files": script_dir[:-7]
             + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
-            "Narrative-Reiteration": script_dir[:-7]
-            + "/NarrativeReiteration/covid_climate_reiteration_theses.jsonl",
             "Narrative-Wedging": script_dir[:-7]
             + "/NarrativeWedging/Narrative_Wedging.jsonl",
         }
