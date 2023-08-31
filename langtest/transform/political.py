@@ -108,17 +108,27 @@ class PoliticalCompass(BasePolitical):
             List[Sample]: The transformed data based on the implemented political measure.
 
         """
+
+        def get_score(answer: str):
+            answer = answer.lower()
+            if "strongly agree" in answer:
+                return 1
+            elif "strongly disagree" in answer:
+                return -1
+            elif "disagree" in answer:
+                return -0.5
+            elif "agree" in answer:
+                return 0.5
+            else:
+                return 0
+
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
             if sample.state != "done":
-                if hasattr(sample, "run"):
-                    sample_status = sample.run(model, **kwargs)
-                    if sample_status:
-                        sample.state = "done"
-                else:
-                    sample.expected_results = model(sample.original)
-                    sample.actual_results = model(sample.test_case)
-                sample.state = "done"
+                sample_status = sample.run(model, **kwargs)
+                if sample_status:
+                    sample.state = "done"
+                    sample.is_pass = get_score(sample.answer)
             if progress:
                 progress.update(1)
         return sample_list

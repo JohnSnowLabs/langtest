@@ -1149,6 +1149,7 @@ class LLMAnswerSample(BaseModel):
     test_type: str = None
     test_case: str = None
     state: str = "generated"
+    is_pass: Union[float, bool] = 0.0
 
     def __init__(self, **data):
         super().__init__(**data)
