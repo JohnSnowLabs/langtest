@@ -38,7 +38,7 @@ class Harness:
         "translation",
         "security",
         "clinical-tests",
-        "disinformation-tests",
+        "disinformation-test",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -88,13 +88,13 @@ class Harness:
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
             ),
-            "disinformation-tests-huggingface-inference-api": resource_filename(
+            "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
-            "disinformation-tests-openai": resource_filename(
+            "disinformation-test-openai": resource_filename(
                 "langtest", "data/config/disinformation_openai_config.yml"
             ),
-            "disinformation-tests-ai21": resource_filename(
+            "disinformation-test-ai21": resource_filename(
                 "langtest", "data/config/disinformation_openai_config.yml"
             ),
             "translation-huggingface": resource_filename(
@@ -243,7 +243,7 @@ class Harness:
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-            elif task == "disinformation-tests":
+            elif task == "disinformation-test":
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG["task"][task + "-" + hub]
                 )

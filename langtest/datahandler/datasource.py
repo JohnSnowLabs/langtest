@@ -65,7 +65,7 @@ COLUMN_MAPPER = {
         "Patient info B": ["Patient info B"],
         "Diagnosis": ["Diagnosis"],
     },
-    "disinformation-tests": {
+    "disinformation-test": {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
@@ -1091,7 +1091,7 @@ class JSONLDataset(_IDataset):
         "translation",
         "security",
         "clinical-tests",
-        "disinformation-tests",
+        "disinformation-test",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1221,7 +1221,7 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-                elif self.task == "disinformation-tests":
+                elif self.task == "disinformation-test":
                     data.append(
                         DisinformationSample(
                             hypothesis=item["hypothesis"],

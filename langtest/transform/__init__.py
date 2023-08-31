@@ -1467,11 +1467,11 @@ class ClinicalTestFactory(ITests):
 
 
 class DisinformationTestFactory(ITests):
-    """Factory class for disinformation tests"""
+    """Factory class for disinformation test"""
 
     alias_name = "disinformation"
     supported_tasks = [
-        "disinformation-tests",
+        "disinformation-test",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
