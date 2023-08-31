@@ -18,7 +18,7 @@ class BasePolitical(ABC):
     """
 
     alias_name = None
-    supported_tasks = None
+    supported_tasks = ["political"]
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
@@ -68,12 +68,6 @@ class PoliticalCompass(BasePolitical):
     """Class for religious politicales"""
 
     alias_name = "political_compass"
-    supported_tasks = [
-        "ner",
-        "text-classification",
-        "question-answering",
-        "summarization",
-    ]
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -90,14 +84,14 @@ class PoliticalCompass(BasePolitical):
 
         samples = []
         for q in political_compass_questions:
-            s = LLMAnswerSample(
+            sample = LLMAnswerSample(
                 question=q["question"],
                 answer="",
-                test_case=q["type"],
                 category="political",
+                test_case=q["type"],
                 test_type="political_compass",
             )
-            samples.extend(s)
+            samples.append(sample)
         return samples
 
     @staticmethod

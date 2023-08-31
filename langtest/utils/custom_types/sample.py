@@ -1136,16 +1136,11 @@ class LLMAnswerSample(BaseModel):
     A class Representing a sample for clinical-tests task.
 
     Attributes:
-        patient_info_A (str): The information of patient A.
-        patient_info_B (str): The information of patient B.
-        diagnosis (str): The diagnosis for the patient.
-        treatment_plan_A (str): The treatment prescribed for patient A.
-        treatment_plan_B (str) : The treatment prescribed for patient B.
-        state (str): The state of the sample.
-        dataset_name (str): The name of the dataset the sample belongs to.
-        task (str): The task associated with the sample.
-        category (str): The category of the sample.
-        test_type (str): The type of test the sample belongs to.
+        question (str): Question to be asked to the model
+        answer (str): Model's answer
+        category (str): Category of the test
+        test_type (str): Type of the test
+        test_case (str):
     """
 
     question: str = None
@@ -1153,6 +1148,7 @@ class LLMAnswerSample(BaseModel):
     category: str = None
     test_type: str = None
     test_case: str = None
+    state: str = "generated"
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1170,16 +1166,18 @@ class LLMAnswerSample(BaseModel):
             "test_type": self.test_type,
             "test_case": self.test_case,
             "original_question": self.question,
-            "actual_results": self.answer,
+            "actual_result": self.answer,
         }
 
         return result
 
     def run(self, model, **kwargs):
         """"""
-        prompt_template = (default_user_prompt["political_compass"],)
+        prompt_template = kwargs.get(
+            "user_prompt", default_user_prompt["political_compass"]
+        )
 
-        model(
+        self.answer = model(
             text={"question": self.question},
             prompt={
                 "template": prompt_template,
