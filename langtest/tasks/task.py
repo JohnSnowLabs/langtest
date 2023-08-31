@@ -5,6 +5,21 @@ from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.sample import NERSample
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
+from langtest.utils.custom_types import (
+    NEROutput,
+    NERPrediction,
+    NERSample,
+    QASample,
+    Sample,
+    SequenceClassificationOutput,
+    SequenceClassificationSample,
+    SequenceLabel,
+    SummarizationSample,
+    ToxicitySample,
+    TranslationSample,
+    ClinicalSample,
+    SecuritySample,
+)
 
 class BaseTask(ABC):
     """Abstract base class for all tasks."""
@@ -53,10 +68,10 @@ class TaskManager:
 class NERTask(BaseTask):
     """Named Entity Recognition task."""
 
-    def create_sample(original, expected_results) -> NERSample:
+    def create_sample(original, ner_labels) -> NERSample:
         """Create a sample."""
         return NERSample(
-            original=original, expected_results=NEROutput(predicted=expected_results)
+            original=original, expected_results=NEROutput(predictions=ner_labels)
         )
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
@@ -64,4 +79,122 @@ class NERTask(BaseTask):
 
         model = ModelAPI.model_registry[model_hub]["ner"]
         return model.load_model(model_path, *args, **kwargs)
-        # return model
+
+class TextClassificationTask(BaseTask):
+    """Text Classification task."""
+
+    def create_sample(original, labels: SequenceLabel) -> SequenceClassificationSample:
+        """Create a sample."""
+        return SequenceClassificationSample(
+            original,
+            expected_results=SequenceClassificationOutput(predictions=[labels]),
+        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["textclassification"]
+        return model.load_model(model_path, *args, **kwargs)
+
+class QuestionAnsweringTask(BaseTask):
+    """Question Answering task."""
+
+    def create_sample(original_question,original_context, expected_results, dataset_name) -> QASample:
+        """Create a sample."""
+        return QASample(
+                            original_question,
+                            original_context,
+                            expected_results,
+                            dataset_name,
+                        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["qa"]
+        return model.load_model(model_path, *args, **kwargs)
+
+class SummerizationTask(BaseTask):
+    """ Summerization task."""
+
+    def create_sample(original, expected_results, dataset_name) -> SummarizationSample:
+        """Create a sample."""
+        return SummarizationSample(
+                            original,
+                            expected_results,
+                            dataset_name,
+                        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["summarization"]
+        return model.load_model(model_path, *args, **kwargs)
+
+class TranslationTask(BaseTask):
+    """ Translation task."""
+
+    def create_sample(original, dataset_name) -> TranslationSample:
+        """Create a sample."""
+        return TranslationSample(
+                            original,
+                            dataset_name,
+                        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["translation"]
+        return model.load_model(model_path, *args, **kwargs)
+
+class ToxicityTask(BaseTask):
+    """ Toxicity task."""
+
+    def create_sample(prompt, dataset_name) -> ToxicitySample:
+        """Create a sample."""
+        return ToxicitySample(
+                            prompt,
+                            dataset_name,
+                        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["toxicity"]
+        return model.load_model(model_path, *args, **kwargs)
+
+
+class SecurityTask(BaseTask):
+    """ Security task."""
+
+    def create_sample(prompt, task, dataset_name) -> SecuritySample:
+        """Create a sample."""
+        return SecuritySample(
+                            prompt,
+                            task,
+                            dataset_name,
+                        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["security"]
+        return model.load_model(model_path, *args, **kwargs)
+
+class ClinicalTestsTask(BaseTask):
+    """ Clinical Tests task. """
+
+    def create_sample(patient_info_A, patient_info_B, diagnosis, dataset_name) -> ClinicalSample:
+        """Create a sample."""
+        return ClinicalSample(
+                            patient_info_A,
+                            patient_info_B,
+                            diagnosis,
+                            dataset_name,
+                        )
+
+    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+        """Load the model."""
+
+        model = ModelAPI.model_registry[model_hub]["clinicaltests"]
+        return model.load_model(model_path, *args, **kwargs)

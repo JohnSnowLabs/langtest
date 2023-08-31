@@ -142,7 +142,9 @@ class PretrainedModelForNER(ModelAPI):
         Returns:
             'Pipeline':
         """
-        return cls(pipeline(model=path, task="ner", ignore_labels=[]))
+        if isinstance(path, str):
+            return cls(pipeline(model=path, task="ner", ignore_labels=[]))
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
