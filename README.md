@@ -100,7 +100,7 @@ You can check out the following langtest blogs:
 | [**Beyond Accuracy: Robustness Testing of Named Entity Recognition Models with LangTest**](https://medium.com/@prikshit7766/fb046ace7eb9) | While accuracy is undoubtedly crucial, robustness testing takes natural language processing (NLP) models evaluation to the next level by ensuring that models can perform reliably and consistently across a wide array of real-world conditions. |
 
 > **Note**
-> To checkout all blogs, head over to [langtest.org](https://www.johnsnowlabs.com/responsible-ai-blog/)
+> To checkout all blogs, head over to [Blogs](https://www.johnsnowlabs.com/responsible-ai-blog/)
 
 ## Contributing
 
