@@ -271,6 +271,26 @@ class DataFactory:
             + "/Clinical-Tests/Gastroenterology-files.jsonl",
             "Oromaxillofacial-files": script_dir[:-7]
             + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
+            "ASDiv-test": script_dir[:-7] + "/asdiv/asdiv-test.jsonl",
+            "ASDiv-test-tiny": script_dir[:-7] + "/asdiv/asdiv-test-tiny.jsonl",
+            "Bigbench-Causal-judgment-test": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/causal-judgment-test.jsonl",
+            "Bigbench-Causal-judgment-test-tiny": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/causal-judgment-test-tiny.jsonl",
+            "Bigbench-DisflQA-test": script_dir[:-7]
+            + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
+            "Bigbench-DisflQA-test-tiny": script_dir[:-7]
+            + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
+            "Bigbench-Abstract-narrative-understanding-test-tiny": script_dir[:-7]
+            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test-tiny.jsonl",
+            "Bigbench-Abstract-narrative-understanding-test": script_dir[:-7]
+            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test.jsonl",
+            "Bigbench-DisambiguationQA-test": script_dir[:-7]
+            + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
+            "Bigbench-DisambiguationQA-test-tiny": script_dir[:-7]
+            + "/Bigbench/DisambiguationQA/DisambiguationQA-test-tiny.jsonl",
+            "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
+            "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
         }
 
         return datasets_info[dataset_name]
