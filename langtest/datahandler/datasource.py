@@ -427,8 +427,9 @@ class ConllDataset(_IDataset):
                 path to save the data to
         """
         otext = ""
+        temp_id = None
         for i in data:
-            text = Formatter.process(i, output_format="conll")
+            text, temp_id = Formatter.process(i, output_format="conll", temp_id=temp_id)
             otext += text + "\n"
 
         with open(output_path, "wb") as fwriter:
