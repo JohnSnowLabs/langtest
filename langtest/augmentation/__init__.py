@@ -437,6 +437,10 @@ class TemplaticAugment(BaseAugmentaion):
                     )
                     for result in template.expected_results.predictions[cursor:]:
                         if prediction[0].entity.endswith(result.entity):
+                            for each_prediction in prediction:
+                                if isinstance(each_prediction, NERPrediction):
+                                    each_prediction.chunk_tag = "-X-"
+                                    each_prediction.pos_tag = "-X-"
                             other_predictions.extend(prediction)
                             cursor += 1
                             break
