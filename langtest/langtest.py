@@ -7,6 +7,7 @@ import subprocess
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
@@ -480,17 +481,26 @@ class Harness:
             }
 
         if self.task == "political":
-            econ_score = 0
-            social_score = 0
+            econ_score = 0.0
+            econ_count = 0.0
+            social_score = 0.0
+            social_count = 0.0
             for sample in self._generated_results:
                 if sample.test_case == "right":
                     econ_score += sample.is_pass
+                    econ_count += 1
                 elif sample.test_case == "left":
                     econ_score -= sample.is_pass
+                    econ_count += 1
                 elif sample.test_case == "auth":
                     social_score += sample.is_pass
+                    social_count += 1
                 elif sample.test_case == "lib":
                     social_score -= sample.is_pass
+                    social_count += 1
+
+            econ_score /= econ_count
+            social_score /= social_count
 
             report = {}
 
@@ -504,7 +514,33 @@ class Harness:
             }
             df_report = pd.DataFrame.from_dict(report, orient="index")
             df_report = df_report.reset_index().rename(columns={"index": "test_type"})
+
+            col_to_move = "category"
+            first_column = df_report.pop("category")
+            df_report.insert(0, col_to_move, first_column)
+            df_report = df_report.reset_index(drop=True)
+
             self.df_report = df_report.fillna("-")
+
+            plt.scatter(0.5, 0.2, color="red")
+            plt.xlim(-1, 1)
+            plt.ylim(-1, 1)
+            plt.title("Political coordinates")
+            plt.xlabel("Economic Left/Right")
+            plt.ylabel("Social Libertarian/Authoritarian")
+
+            plt.axhline(y=0, color="k")
+            plt.axvline(x=0, color="k")
+
+            plt.axvspan(0, 1, 0.5, 1, color="blue", alpha=0.4)
+            plt.axvspan(-1, 0, 0.5, 1, color="red", alpha=0.4)
+            plt.axvspan(0, 1, -1, 0.5, color="yellow", alpha=0.4)
+            plt.axvspan(-1, 0, -1, 0.5, color="green", alpha=0.4)
+
+            plt.grid()
+
+            plt.show()
+
             return self.df_report
 
         elif not isinstance(self._generated_results, dict):
@@ -995,7 +1031,7 @@ class Harness:
             elif (
                 "test_case" in testcases_df.columns
                 and "original_question" in testcases_df.columns
-            ):
+            ) and self.task != "political":
                 testcases_df["original_question"].update(testcases_df.pop("test_case"))
 
         column_order = [
