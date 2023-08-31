@@ -86,6 +86,9 @@ class Harness:
             ),
         },
         "task": {
+            "political": resource_filename(
+                "langtest", "data/config/political_config.yml"
+            ),
             "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
@@ -493,6 +496,8 @@ class Harness:
                 for j, k in v.items()
                 if isinstance(k, dict) and "min_pass_rate" in k.keys()
             }
+
+        summary = defaultdict(lambda: defaultdict(int))
 
         if self.task == "political":
             econ_score = 0.0
