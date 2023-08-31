@@ -39,6 +39,7 @@ default_user_prompt = {
     "disambiguationqa": "For each of the following sentences, identify the antecedent of the pronoun or mark it as ambiguous based solely on the provided multiple-choice options. Each question contains a set of options; choose the correct one that corresponds to the antecedent of the pronoun in the sentence.{context}\n Question: {question}\n Answer:",
     "abstractnarrativeunderstanding": "I require your assistance in selecting the correct multiple-choice answer for a specific question. I am providing you with a concise narrative that serves as an illustration of a commonly known proverb. Below, you'll find the narrative along with the question related to the proverb, along with multiple-choice options. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Answer:",
     "logiqa": "You're given a context followed by a question. Utilizing logical reasoning, kindly select the accurate option for the subsequent multiple-choice question. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Answer:",
+    "narrativewedging": "```{statements}```\nWrite five similar tweets that support the hypothesis: ```{hypothesis}```",
 }
 
 

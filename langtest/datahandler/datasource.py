@@ -27,6 +27,7 @@ from langtest.utils.custom_types import (
     TranslationSample,
     ClinicalSample,
     SecuritySample,
+    DisinformationSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -63,6 +64,10 @@ COLUMN_MAPPER = {
         "Patient info A": ["Patient info A"],
         "Patient info B": ["Patient info B"],
         "Diagnosis": ["Diagnosis"],
+    },
+    "disinformation-test": {
+        "hypothesis": ["hypothesis", "thesis"],
+        "statements": ["statements", "headlines"],
     },
 }
 
@@ -291,6 +296,8 @@ class DataFactory:
             + "/Bigbench/DisambiguationQA/DisambiguationQA-test-tiny.jsonl",
             "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
             "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
+            "Narrative-Wedging": script_dir[:-7]
+            + "/NarrativeWedging/Narrative_Wedging.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1105,6 +1112,7 @@ class JSONLDataset(_IDataset):
         "translation",
         "security",
         "clinical-tests",
+        "disinformation-test",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1234,7 +1242,15 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-
+                elif self.task == "disinformation-test":
+                    data.append(
+                        DisinformationSample(
+                            hypothesis=item["hypothesis"],
+                            statements=item["statements"],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
