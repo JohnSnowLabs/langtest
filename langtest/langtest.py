@@ -38,6 +38,7 @@ class Harness:
         "translation",
         "security",
         "clinical-tests",
+        "political",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -209,7 +210,8 @@ class Harness:
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-
+        elif data is None and task == "political":
+            self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
                 "You haven't specified any value for the parameter 'data' and the configuration you "
@@ -476,6 +478,9 @@ class Harness:
                 for j, k in v.items()
                 if isinstance(k, dict) and "min_pass_rate" in k.keys()
             }
+
+        if task == "political":
+            
 
         summary = defaultdict(lambda: defaultdict(int))
         if not isinstance(self._generated_results, dict):
@@ -814,13 +819,6 @@ class Harness:
             generated_results_df = pd.DataFrame.from_dict(
                 [x.to_dict() for x in self._generated_results]
             )
-            if (
-                "test_case" in generated_results_df.columns
-                and "original_question" in generated_results_df.columns
-            ):
-                generated_results_df["original_question"].update(
-                    generated_results_df.pop("test_case")
-                )
 
         column_order = [
             "model_name",
