@@ -182,7 +182,12 @@ class TestFactory:
             if hasattr(each, "_result"):
                 results.extend(each._result)
             elif isinstance(each, list):
-                results.extend(each)
+                for i in each:
+                    if hasattr(i, "_result"):
+                        results.extend(i._result)
+                    else:
+                        results.append(i)
+
         return results
 
     @classmethod
@@ -675,7 +680,6 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
-        print("hey", self.tests)
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
@@ -1482,7 +1486,6 @@ class PoliticalTestFactory(ITests):
         self.kwargs = kwargs
         self.supported_tests = self.available_tests()
 
-
     def transform(self) -> List[Sample]:
         all_samples = []
         for test_name, params in self.tests.items():
@@ -1496,19 +1499,26 @@ class PoliticalTestFactory(ITests):
     async def run(
         cls, sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """Runs the clinical tests
+        """Runs the model performance
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the clinical tests
+            **kwargs: Additional arguments to be passed to the model performance
 
         Returns:
-            List[Sample]: The transformed data based on the implemented clinical tests
+            List[Sample]: The transformed data based on the implemented model performance
 
         """
-        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
-        return task
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+        return tasks
 
     @staticmethod
     def available_tests() -> Dict:
@@ -1526,26 +1536,3 @@ class PoliticalTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
-
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
-        """Runs the clinical tests
-
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the clinical tests
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented clinical tests@
-
-        """
-        progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["demographic-bias"]:
-            if sample.state != "done":
-                if hasattr(sample, "run"):
-                    sample_status = sample.run(model, **kwargs)
-                    if sample_status:
-                        sample.state = "done"
-            if progress:
-                progress.update(1)
-        return sample_list["demographic-bias"]
