@@ -368,7 +368,8 @@ class PretrainedModelForQA(_ModelHandler):
         Returns:
             'Pipeline':
         """
-
+        if "task" in kwargs.keys():
+            kwargs.pop("task")
         return pipeline(model=path, **kwargs)
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
@@ -392,55 +393,41 @@ class PretrainedModelForQA(_ModelHandler):
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
-class PretrainedModelForSummarization(_ModelHandler):
-    """Transformers pretrained model for QA tasks
+class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
 
     Args:
-        model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
     """
 
-    def __init__(self, hub, model, **kwargs):
-        """Constructor method
-
-        Args:
-            model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
-        """
-        assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
-        )
-        self.model = model
-
-    @staticmethod
-    def load_model(hub: str, path: str, **kwargs) -> "Pipeline":
-        """Load the QA model into the `model` attribute.
-
-        Args:
-            path (str):
-                path to model or model name
-
-        Returns:
-            'Pipeline':
-        """
-
-        return pipeline(model=path, **kwargs)
-
-    def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
-        """Perform predictions on the input text.
-
-        Args:
-            text (str): Input text to perform QA on.
-            kwargs: Additional keyword arguments.
+    pass
 
 
-        Returns:
-            str: Output model for QA tasks
-        """
-        prompt_template = PromptTemplate(**prompt)
-        p = prompt_template.format(**text)
-        prediction = self.model(p, **kwargs)
-        return prediction[0]["generated_text"][len(p) :]
+class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
 
-    def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
-        """Alias of the 'predict' method"""
-        return self.predict(text=text, prompt=prompt, **kwargs)
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass
+
+
+class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass
+
+
+class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass

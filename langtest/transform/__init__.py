@@ -19,6 +19,7 @@ from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
+from .political import BasePolitical
 from .constants import (
     A2B_DICT,
     asian_names,
@@ -181,7 +182,12 @@ class TestFactory:
             if hasattr(each, "_result"):
                 results.extend(each._result)
             elif isinstance(each, list):
-                results.extend(each)
+                for i in each:
+                    if hasattr(i, "_result"):
+                        results.extend(i._result)
+                    else:
+                        results.append(i)
+
         return results
 
     @classmethod
@@ -1508,3 +1514,69 @@ class DisinformationTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["disinfo"]
+
+
+class PoliticalTestFactory(ITests):
+    """Factory class for the clinical tests"""
+
+    alias_name = "political"
+    supported_tasks = ["question_answering", "summarization"]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the clinical tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+        self.supported_tests = self.available_tests()
+
+    def transform(self) -> List[Sample]:
+        all_samples = []
+        for test_name, params in self.tests.items():
+            transformed_samples = self.supported_tests[test_name].transform(
+                self.data_handler, **self.kwargs
+            )
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the model performance
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the model performance
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented model performance
+
+        """
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+        return tasks
+
+    @staticmethod
+    def available_tests() -> Dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            Dict: A dictionary of test names and classes.
+
+        """
+
+        tests = {
+            j: i
+            for i in BasePolitical.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests

@@ -190,3 +190,13 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass

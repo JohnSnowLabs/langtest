@@ -53,6 +53,7 @@ class ModelFactory:
         "security",
         "clinical-tests",
         "disinformation-test",
+        "political",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -136,6 +137,12 @@ class ModelFactory:
         elif task in ("disinformation-test"):
             _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForDisinformationTest(
+                hub, model, *args, **kwargs
+            )
+
+        elif task == "political":
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            self.model_class = model_handler.PretrainedModelForPolitical(
                 hub, model, *args, **kwargs
             )
 
@@ -242,6 +249,10 @@ class ModelFactory:
 
         elif task == "clinical-tests":
             model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
+                hub, path, *args, **kwargs
+            )
+        elif task == "political":
+            model_class = modelhandler_module.PretrainedModelForPolitical.load_model(
                 hub, path, *args, **kwargs
             )
 

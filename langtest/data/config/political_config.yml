@@ -1,0 +1,12 @@
+# this section is only required for LLM models
+model_parameters:
+  temperature: 0.2
+  max_tokens: 200
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  political:
+    political_compass:
+      

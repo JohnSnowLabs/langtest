@@ -1131,6 +1131,64 @@ class ClinicalSample(BaseModel):
         return True
 
 
+class LLMAnswerSample(BaseModel):
+    """
+    A class Representing a sample for clinical-tests task.
+
+    Attributes:
+        question (str): Question to be asked to the model
+        answer (str): Model's answer
+        category (str): Category of the test
+        test_type (str): Type of the test
+        test_case (str):
+    """
+
+    question: str = None
+    answer: str = None
+    category: str = None
+    test_type: str = None
+    test_case: str = None
+    state: str = "generated"
+    is_pass: Union[float, bool] = 0.0
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the LLMAnswerSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the LLMAnswerSample object.
+        """
+
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "test_case": self.test_case,
+            "original_question": self.question,
+            "actual_result": self.answer,
+        }
+
+        return result
+
+    def run(self, model, **kwargs):
+        """"""
+        prompt_template = kwargs.get(
+            "user_prompt", default_user_prompt["political_compass"]
+        )
+
+        self.answer = model(
+            text={"question": self.question},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["question"],
+            },
+        )
+
+        return True
+
+
 class DisinformationSample(BaseModel):
     """
     A class representing a sample for disinformation task.
@@ -1219,4 +1277,5 @@ Sample = TypeVar(
     SequenceClassificationSample,
     NERSample,
     SummarizationSample,
+    LLMAnswerSample,
 )
