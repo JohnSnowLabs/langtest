@@ -63,6 +63,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 | Templatic-Augmentation              | John Snow Labs                    | NER                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Templatic_Augmentation_Notebook.ipynb)                                 |
 | Clinical-Tests-Notebook             | OpenAI                            | Clinical-Tests                    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb)                                         |
 | Prompt-Injection-Notebook           | OpenAI                            | Security                          | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Prompt_Injections_Tests.ipynb)                                |
+| Disinformation-Test-Notebook           | 	AI21                            | Disinformation-Test                          | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb)                                |
 
 
 <style>
