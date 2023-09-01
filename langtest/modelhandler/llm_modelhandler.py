@@ -183,7 +183,7 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for disinformation test.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -192,7 +192,7 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for security detection.
 
     Inherits:

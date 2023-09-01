@@ -12,6 +12,7 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
+from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
@@ -157,11 +158,7 @@ class Harness:
         else:
             hub = None
 
-        if task not in self.SUPPORTED_TASKS:
-            raise ValueError(
-                f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}"
-            )
-        self.task = task
+        self.task = TaskManager(task)
 
         if isinstance(model, str) and hub is None:
             raise ValueError(
@@ -174,6 +171,7 @@ class Harness:
                 f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}"
             )
 
+        # data loadinf
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = {"data_source": resource_filename("langtest", data_path)}
@@ -262,11 +260,12 @@ class Harness:
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
-
+        # model section
         if isinstance(model, str):
-            self.model = ModelFactory.load_model(
-                path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
-            )
+            # self.model = ModelFactory.load_model(
+            #     path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
+            # )
+            self.model = self.task.model(model, hub, **self._config.get("model_parameters", {}))
 
         elif isinstance(model, list):
             model_dict = {}
@@ -274,22 +273,13 @@ class Harness:
                 model = i["model"]
                 hub = i["hub"]
 
-                model_dict[model] = ModelFactory.load_model(
-                    path=model,
-                    task=task,
-                    hub=hub,
-                    **self._config.get("model_parameters", {}),
-                )
+                model_dict[model] = self.task.model(model, hub, **self._config.get("model_parameters", {}))
+
                 self.model = model_dict
 
         else:
-            self.model = ModelFactory(
-                task=task,
-                model=model,
-                hub=hub,
-                **self._config.get("model_parameters", {}),
-            )
-
+            self.model = self.task.model(model, hub, **self._config.get("model_parameters", {}))
+        # end model selection
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)
 

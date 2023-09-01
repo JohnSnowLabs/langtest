@@ -320,10 +320,6 @@ class ConllDataset(_IDataset):
         super().__init__()
         self._file_path = file_path
 
-        if task != "ner":
-            raise ValueError(
-                f"Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!"
-            )
         self.task = task
 
     def load_raw_data(self) -> List[Dict]:
@@ -1184,6 +1180,7 @@ class JSONLDataset(_IDataset):
                     ):
                         expected_results = [str(expected_results)]
 
+                    
                     data.append(
                         QASample(
                             original_question=item[self.column_matcher["text"]],

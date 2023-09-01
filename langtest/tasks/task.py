@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import re
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types.output import NEROutput
 
@@ -42,8 +43,18 @@ class BaseTask(ABC):
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        task_name = cls.__name__.lower().replace("task", "")
+        task_name = re.sub(
+            r'(?<!^)(?=[A-Z])', '-', 
+            cls.__name__.replace("Task", "")
+        ).lower()
+       
         cls.task_registry[task_name] = cls
+    
+    def __eq__(self, __value: object) -> bool:
+        """Check if the task is equal to another task."""
+        if isinstance(__value, str):
+            return self.__class__.__name__.replace("Task","").lower() == __value.lower()
+        return super().__eq__(__value)
 
 
 class TaskManager:
@@ -52,8 +63,9 @@ class TaskManager:
     def __init__(self, task_name: str):
         if task_name not in BaseTask.task_registry:
             raise ValueError(
-                f"Task {task_name} not supported. Please choose from {list(BaseTask.task_registry.keys())}"
+                f"Provided task is not supported. Please choose one of the supported tasks: {list(BaseTask.task_registry.keys())}"
             )
+        self.__task_name = task_name
         self.__task: BaseTask = BaseTask.task_registry[task_name]
 
     def create_sample(self, *args, **kwargs):
@@ -63,7 +75,11 @@ class TaskManager:
     def model(self, *args, **kwargs) -> "ModelAPI":
         """Add a task to the task manager."""
         return self.__task.load_model(*args, **kwargs)
-
+    
+    def __eq__(self, __value: str) -> bool:
+        """Check if the task is equal to another task."""
+        return self.__task_name == __value.lower()
+        
 
 class NERTask(BaseTask):
     """Named Entity Recognition task."""

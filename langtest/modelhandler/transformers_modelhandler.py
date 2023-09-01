@@ -340,7 +340,7 @@ class PretrainedModelForTranslation(ModelAPI):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForQA(_ModelHandler):
+class PretrainedModelForQA(ModelAPI):
     """Transformers pretrained model for QA tasks
 
     Args:
@@ -395,7 +395,7 @@ class PretrainedModelForQA(_ModelHandler):
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
-class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -405,7 +405,7 @@ class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -415,7 +415,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -425,7 +425,7 @@ class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
