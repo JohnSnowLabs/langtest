@@ -4563,6 +4563,7 @@ evaluate = ["evaluate", "rouge-score", "seqeval"]
 huggingface-hub = ["huggingface_hub", "langchain"]
 johnsnowlabs = ["johnsnowlabs"]
 langchain = ["langchain"]
+matplotlib = ["matplotlib"]
 metaflow = ["metaflow"]
 mlflow = ["mlflow"]
 openai = ["langchain", "openai"]
@@ -4572,4 +4573,4 @@ transformers = ["accelerate", "datasets", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "4035870d1e1b2f9430083c7bacd96b7c8af64f7c9bdccc9ca1cc6c95b0dc1c30"
+content-hash = "7e27c44a6ab497cab475da136e680611fcd8517edda90d2835f39ef15e5a6412"
