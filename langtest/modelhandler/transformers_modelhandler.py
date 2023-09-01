@@ -345,15 +345,6 @@ class PretrainedModelForQA(_ModelHandler):
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
     """
 
-    LIB_NAME = "langchain"
-    if try_import_lib(LIB_NAME):
-        langchain = importlib.import_module(LIB_NAME)
-        PromptTemplate = getattr(langchain, "PromptTemplate")
-    else:
-        raise ModuleNotFoundError(
-            f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-        )
-
     def __init__(self, hub, model, **kwargs):
         """Constructor method
 
@@ -365,6 +356,16 @@ class PretrainedModelForQA(_ModelHandler):
             f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
         )
         self.model = model
+
+    def _check_langchain_package(self):
+        LIB_NAME = "langchain"
+        if try_import_lib(LIB_NAME):
+            langchain = importlib.import_module(LIB_NAME)
+            PromptTemplate = getattr(langchain, "PromptTemplate")
+        else:
+            raise ModuleNotFoundError(
+                f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+            )
 
     @staticmethod
     def load_model(hub: str, path: str, **kwargs) -> "Pipeline":
