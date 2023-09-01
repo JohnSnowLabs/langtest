@@ -149,8 +149,8 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="question-answering", 
-              model={"model": "text-davinci-003","hub":"openai"}, 
-              data={"data_source" :"BoolQ-test"})
+            model={"model": "text-davinci-003","hub":"openai"}, 
+            data={"data_source" :"BoolQ-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -182,8 +182,8 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="summarization",
-             model={"model": "text-davinci-002","hub":"openai"}, 
-             data={"data_source" :"XSum-test-tiny"})
+            model={"model": "text-davinci-002","hub":"openai"}, 
+            data={"data_source" :"XSum-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -214,8 +214,8 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="toxicity", 
-              model={"model": "text-davinci-002","hub":"openai"}, 
-              data={"data_source" :"toxicity-test-tiny"})
+            model={"model": "text-davinci-002","hub":"openai"}, 
+            data={"data_source" :"toxicity-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -298,9 +298,9 @@ os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
 from langtest import Harness
 
 # Create a Harness object
-harness = Harness(task="clinical-tests",
-                    model={"model": "text-davinci-003", "hub": "openai"},
-                    data = {"data_source": "Gastroenterology-files"})
+h = Harness(task="clinical-tests",
+            model={"model": "text-davinci-003", "hub": "openai"},
+            data = {"data_source": "Gastroenterology-files"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -329,9 +329,40 @@ os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
 from langtest import Harness
 
 # Create a Harness object
-harness = Harness(task="security",
-                   model={'model': "text-davinci-003", "hub": "openai"},
-                   data={'data_source':'Prompt-Injection-Attack'})
+h = Harness(task="security",
+            model={'model': "text-davinci-003", "hub": "openai"},
+            data={'data_source':'Prompt-Injection-Attack'})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+### One Liner - Disinformation-Test
+
+Try out the LangTest library on the following default model-dataset combinations for Disinformation-Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[ai21,langchain,transformers]" 
+
+import os
+os.environ["AI21_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h  =  Harness(task="disinformation-test",
+              model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+              data = {"data_source": "Narrative-Wedging"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
