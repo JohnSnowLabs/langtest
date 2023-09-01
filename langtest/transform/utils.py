@@ -351,3 +351,51 @@ def check_name(word: str, name_lists: List[List[str]]) -> bool:
     return any(
         word.lower() in [name.lower() for name in name_list] for name_list in name_lists
     )
+
+
+def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
+    """
+    Filter and remove samples with no applied transformations from the list of transformed_samples.
+
+    Args:
+        task (str): The type of task.
+        transformed_samples (list): List of transformed samples to be filtered.
+        test_name (str): Name of the test.
+
+    Returns:
+        new_transformed_samples (list): List of filtered samples with unique transformations.
+        no_transformation_applied_tests (set): Set of test names for which no transformation
+            was applied due to non-uniqueness.
+    """
+    no_transformation_applied_tests = set()
+    new_transformed_samples = []
+    if task == "question-answering":
+        for sample in transformed_samples:
+            if (
+                sample.original_question.replace(" ", "")
+                != sample.perturbed_question.replace(" ", "")
+            ) or (
+                sample.original_context.replace(" ", "")
+                != sample.perturbed_context.replace(" ", "")
+            ):
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
+                new_transformed_samples.append(sample)
+            else:
+                if test_name == "multiple_perturbations":
+                    no_transformation_applied_tests.add(sample.test_type)
+                else:
+                    no_transformation_applied_tests.add(test_name)
+    else:
+        for sample in transformed_samples:
+            if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
+                new_transformed_samples.append(sample)
+            else:
+                if test_name == "multiple_perturbations":
+                    no_transformation_applied_tests.add(sample.test_type)
+                else:
+                    no_transformation_applied_tests.add(test_name)
+
+    return new_transformed_samples, no_transformation_applied_tests

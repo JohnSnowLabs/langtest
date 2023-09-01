@@ -162,6 +162,8 @@ class AugmentRobustness(BaseAugmentaion):
                         res = TestFactory.transform(
                             self.task, [hash_map[each]], test_type
                         )
+                        if len(res) == 0:
+                            continue
                         hash_map[each] = res[0]
                 else:
                     if test == "swap_entities":

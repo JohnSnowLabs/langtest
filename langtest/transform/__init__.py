@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import time
+import logging
 from collections import defaultdict
 from abc import ABC, abstractmethod
 from typing import Dict, List, Union
@@ -34,7 +35,7 @@ from .constants import (
     religion_wise_names,
     white_names,
 )
-from .utils import get_substitution_names, create_terminology
+from .utils import get_substitution_names, create_terminology, filter_unique_samples
 from ..modelhandler import ModelFactory
 from ..utils.custom_types.sample import (
     NERSample,
@@ -370,7 +371,8 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
-        tests_copy = self.tests.copy()  # Create a copy of self.tests
+        no_transformation_applied_tests = set()
+        tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
@@ -500,11 +502,18 @@ class RobustnessTestFactory(ITests):
                     **params.get("parameters", {}),
                     prob=params.pop("prob", 1.0),
                 )
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            no_transformation_applied_tests.update(removed_samples_tests)
+            all_samples.extend(new_transformed_samples)
 
-            for sample in transformed_samples:
-                if test_name != "multiple_perturbations":
-                    sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+        if no_transformation_applied_tests:
+            logging.warning(
+                "Removing samples where no transformation has been applied in the following tests: "
+                + ", ".join(no_transformation_applied_tests)
+            )
+
         return all_samples
 
     @staticmethod
@@ -680,6 +689,7 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
+        no_transformation_applied_tests = set()
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
@@ -687,9 +697,17 @@ class BiasTestFactory(ITests):
                 data_handler_copy, **params.get("parameters", {})
             )
 
-            for sample in transformed_samples:
-                sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            no_transformation_applied_tests.update(removed_samples_tests)
+            all_samples.extend(new_transformed_samples)
+
+        if no_transformation_applied_tests:
+            logging.warning(
+                "Removing samples where no transformation has been applied in the following tests: "
+                + ", ".join(no_transformation_applied_tests)
+            )
 
         return all_samples
 
