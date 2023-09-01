@@ -7,5 +7,5 @@ tests:
     min_pass_rate: 1.0
 
   disinformation:
-    disinfo:
+    narrative_wedging:
       min_pass_rate: 0.70
