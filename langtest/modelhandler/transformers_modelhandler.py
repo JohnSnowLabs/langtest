@@ -361,7 +361,7 @@ class PretrainedModelForQA(_ModelHandler):
         LIB_NAME = "langchain"
         if try_import_lib(LIB_NAME):
             langchain = importlib.import_module(LIB_NAME)
-            PromptTemplate = getattr(langchain, "PromptTemplate")
+            self.PromptTemplate = getattr(langchain, "PromptTemplate")
         else:
             raise ModuleNotFoundError(
                 f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
