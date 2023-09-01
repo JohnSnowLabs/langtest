@@ -27,6 +27,7 @@ from langtest.utils.custom_types import (
     TranslationSample,
     ClinicalSample,
     SecuritySample,
+    DisinformationSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -63,6 +64,10 @@ COLUMN_MAPPER = {
         "Patient info A": ["Patient info A"],
         "Patient info B": ["Patient info B"],
         "Diagnosis": ["Diagnosis"],
+    },
+    "disinformation-test": {
+        "hypothesis": ["hypothesis", "thesis"],
+        "statements": ["statements", "headlines"],
     },
 }
 
@@ -271,6 +276,28 @@ class DataFactory:
             + "/Clinical-Tests/Gastroenterology-files.jsonl",
             "Oromaxillofacial-files": script_dir[:-7]
             + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
+            "ASDiv-test": script_dir[:-7] + "/asdiv/asdiv-test.jsonl",
+            "ASDiv-test-tiny": script_dir[:-7] + "/asdiv/asdiv-test-tiny.jsonl",
+            "Bigbench-Causal-judgment-test": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/causal-judgment-test.jsonl",
+            "Bigbench-Causal-judgment-test-tiny": script_dir[:-7]
+            + "/Bigbench/CausalJudgment/causal-judgment-test-tiny.jsonl",
+            "Bigbench-DisflQA-test": script_dir[:-7]
+            + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
+            "Bigbench-DisflQA-test-tiny": script_dir[:-7]
+            + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
+            "Bigbench-Abstract-narrative-understanding-test-tiny": script_dir[:-7]
+            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test-tiny.jsonl",
+            "Bigbench-Abstract-narrative-understanding-test": script_dir[:-7]
+            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test.jsonl",
+            "Bigbench-DisambiguationQA-test": script_dir[:-7]
+            + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
+            "Bigbench-DisambiguationQA-test-tiny": script_dir[:-7]
+            + "/Bigbench/DisambiguationQA/DisambiguationQA-test-tiny.jsonl",
+            "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
+            "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
+            "Narrative-Wedging": script_dir[:-7]
+            + "/NarrativeWedging/Narrative_Wedging.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -407,8 +434,9 @@ class ConllDataset(_IDataset):
                 path to save the data to
         """
         otext = ""
+        temp_id = None
         for i in data:
-            text = Formatter.process(i, output_format="conll")
+            text, temp_id = Formatter.process(i, output_format="conll", temp_id=temp_id)
             otext += text + "\n"
 
         with open(output_path, "wb") as fwriter:
@@ -1084,6 +1112,7 @@ class JSONLDataset(_IDataset):
         "translation",
         "security",
         "clinical-tests",
+        "disinformation-test",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1213,7 +1242,15 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-
+                elif self.task == "disinformation-test":
+                    data.append(
+                        DisinformationSample(
+                            hypothesis=item["hypothesis"],
+                            statements=item["statements"],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -1385,6 +1422,50 @@ class HuggingFaceDataset(_IDataset):
         samples = [self._row_to_sample_summarization(example) for example in dataset]
         return samples
 
+    def load_data_qa(
+        self,
+        question_column: str,
+        context_column: str,
+        target_column: str,
+        split: str,
+        subset: str = None,
+    ) -> List[Sample]:
+        """Load the specified split from the dataset for QA task.
+
+        Args:
+            feature_column (str):
+                Name of the column containing the input text or document.
+            target_column (str):
+                Name of the column containing the target summary.
+            split (str):
+                Name of the split to load (e.g., train, validation, test).
+            subset (str):
+                Name of the configuration or subset to load.
+
+        Returns:
+            List[Sample]:
+                Loaded split as a list of Sample objects for QA task.
+        """
+        question_column = "question" if question_column is None else question_column
+        target_column = "answer" if target_column is None else target_column
+        split = "test" if split is None else split
+
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        else:
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        dataset = dataset.map(
+            lambda example: {
+                "question": example[question_column],
+                "context": example[context_column],
+                "answer": example[target_column],
+            }
+        )
+
+        samples = [self._row_to_sample_qa(example) for example in dataset]
+        return samples
+
     def load_raw_data(
         self,
         split: str = "test",
@@ -1454,6 +1535,30 @@ class HuggingFaceDataset(_IDataset):
         summary = data_row.get("summary", "")
 
         return SummarizationSample(original=original, expected_results=summary)
+
+    @staticmethod
+    def _row_to_sample_qa(data_row: Dict[str, str]) -> Sample:
+        """Convert a row from the dataset into a Sample for summarization.
+
+        Args:
+            data_row (Dict[str, str]):
+                Single row of the dataset.
+
+        Returns:
+            Sample:
+                Row formatted into a Sample object for summarization.
+        """
+        context = data_row.get("context", "")
+        question = data_row.get("question", "")
+        answer = data_row.get("answer", "")
+        if isinstance(answer, str):
+            answer = [answer]
+
+        return QASample(
+            original_question=question,
+            original_context=context,
+            actual_results=answer,
+        )
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.

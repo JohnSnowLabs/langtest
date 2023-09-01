@@ -268,6 +268,22 @@ class HarnessTestCase(unittest.TestCase):
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
         self.assertNotEqual(tc_harness.model, loaded_tc_harness.model)
 
+    def test_filtering_Out_Same_Original_And_TestCase(self):
+        """
+        Test filtering out records where 'original' and 'test_case' are the same for text classification task.
+        """
+        save_dir = "/tmp/saved_text_classification_harness_test"
+        tc_harness = Harness(
+            task="text-classification",
+            model={"model": "bert-base-cased", "hub": "huggingface"},
+            data={"data_source": "tests/fixtures/text_classification.csv"},
+            config="tests/fixtures/config_text_classification.yaml",
+        )
+        tc_harness.generate()
+        df = tc_harness.testcases()
+        filtered_df = df[df["original"] == df["test_case"]]
+        self.assertTrue(filtered_df.empty)
+
 
 class DefaultCodeBlocksTestCase(unittest.TestCase):
     """

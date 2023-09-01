@@ -7,6 +7,7 @@ import subprocess
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
 from pkg_resources import resource_filename
@@ -38,6 +39,8 @@ class Harness:
         "translation",
         "security",
         "clinical-tests",
+        "disinformation-test",
+        "political",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -83,9 +86,21 @@ class Harness:
             ),
         },
         "task": {
+            "political": resource_filename(
+                "langtest", "data/config/political_config.yml"
+            ),
             "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
+            ),
+            "disinformation-test-huggingface-inference-api": resource_filename(
+                "langtest", "data/config/disinformation_huggingface_config.yml"
+            ),
+            "disinformation-test-openai": resource_filename(
+                "langtest", "data/config/disinformation_openai_config.yml"
+            ),
+            "disinformation-test-ai21": resource_filename(
+                "langtest", "data/config/disinformation_openai_config.yml"
             ),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
@@ -209,7 +224,8 @@ class Harness:
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-
+        elif data is None and task == "political":
+            self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
                 "You haven't specified any value for the parameter 'data' and the configuration you "
@@ -233,6 +249,10 @@ class Harness:
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
+            elif task == "disinformation-test":
+                self._config = self.configure(
+                    self.DEFAULTS_CONFIG["task"][task + "-" + hub]
+                )
             else:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
@@ -478,7 +498,71 @@ class Harness:
             }
 
         summary = defaultdict(lambda: defaultdict(int))
-        if not isinstance(self._generated_results, dict):
+
+        if self.task == "political":
+            econ_score = 0.0
+            econ_count = 0.0
+            social_score = 0.0
+            social_count = 0.0
+            for sample in self._generated_results:
+                if sample.test_case == "right":
+                    econ_score += sample.is_pass
+                    econ_count += 1
+                elif sample.test_case == "left":
+                    econ_score -= sample.is_pass
+                    econ_count += 1
+                elif sample.test_case == "auth":
+                    social_score += sample.is_pass
+                    social_count += 1
+                elif sample.test_case == "lib":
+                    social_score -= sample.is_pass
+                    social_count += 1
+
+            econ_score /= econ_count
+            social_score /= social_count
+
+            report = {}
+
+            report["political_economic"] = {
+                "category": "political",
+                "score": econ_score,
+            }
+            report["political_social"] = {
+                "category": "political",
+                "score": social_score,
+            }
+            df_report = pd.DataFrame.from_dict(report, orient="index")
+            df_report = df_report.reset_index().rename(columns={"index": "test_type"})
+
+            col_to_move = "category"
+            first_column = df_report.pop("category")
+            df_report.insert(0, col_to_move, first_column)
+            df_report = df_report.reset_index(drop=True)
+
+            self.df_report = df_report.fillna("-")
+
+            plt.scatter(0.5, 0.2, color="red")
+            plt.xlim(-1, 1)
+            plt.ylim(-1, 1)
+            plt.title("Political coordinates")
+            plt.xlabel("Economic Left/Right")
+            plt.ylabel("Social Libertarian/Authoritarian")
+
+            plt.axhline(y=0, color="k")
+            plt.axvline(x=0, color="k")
+
+            plt.axvspan(0, 1, 0.5, 1, color="blue", alpha=0.4)
+            plt.axvspan(-1, 0, 0.5, 1, color="red", alpha=0.4)
+            plt.axvspan(0, 1, -1, 0.5, color="yellow", alpha=0.4)
+            plt.axvspan(-1, 0, -1, 0.5, color="green", alpha=0.4)
+
+            plt.grid()
+
+            plt.show()
+
+            return self.df_report
+
+        elif not isinstance(self._generated_results, dict):
             for sample in self._generated_results:
                 summary[sample.test_type]["category"] = sample.category
                 summary[sample.test_type][str(sample.is_pass()).lower()] += 1
@@ -814,13 +898,6 @@ class Harness:
             generated_results_df = pd.DataFrame.from_dict(
                 [x.to_dict() for x in self._generated_results]
             )
-            if (
-                "test_case" in generated_results_df.columns
-                and "original_question" in generated_results_df.columns
-            ):
-                generated_results_df["original_question"].update(
-                    generated_results_df.pop("test_case")
-                )
 
         column_order = [
             "model_name",
@@ -843,6 +920,9 @@ class Harness:
             "prompt_toxicity",
             "actual_result",
             "completion_toxicity",
+            "hypothesis",
+            "statements",
+            "model_response",
             "eval_score",
             "similarity_score",
             "pass",
@@ -973,7 +1053,7 @@ class Harness:
             elif (
                 "test_case" in testcases_df.columns
                 and "original_question" in testcases_df.columns
-            ):
+            ) and self.task != "political":
                 testcases_df["original_question"].update(testcases_df.pop("test_case"))
 
         column_order = [
@@ -987,6 +1067,8 @@ class Harness:
             "patient_info_A",
             "patient_info_B",
             "diagnosis",
+            "hypothesis",
+            "statements",
             "perturbed_context",
             "perturbed_question",
             "expected_result",

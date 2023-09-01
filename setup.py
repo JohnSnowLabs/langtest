@@ -15,18 +15,19 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 REQUIRED_PKGS = [
-    'numpy',
-    'pandas',
-    'transformers<=4.28.1',
-    'torch',
-    'sentencepiece',
-    'pydantic',
-    'nest-asyncio',
-    'jsonlines',
-    'langchain',
-    'evaluate',
-    'rouge_score',
-    'typing-extensions < 4.6.0' #Remove it once spacy issue is resolved
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "transformers<=4.28.1",
+    "torch",
+    "sentencepiece",
+    "pydantic",
+    "nest-asyncio",
+    "jsonlines",
+    "langchain",
+    "evaluate",
+    "rouge_score",
+    "typing-extensions < 4.6.0",  # Remove it once spacy issue is resolved
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -131,7 +132,7 @@ setup(
     #
     #   py_modules=["my_module"],
     #
-    packages=find_packages(exclude=['test']),  # Required
+    packages=find_packages(exclude=["test"]),  # Required
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. See
@@ -182,7 +183,12 @@ setup(
             "data/BBQ/*",
             "data/Security/*",
             "data/Clinical-Tests/*",
-            
+            "data/Bigbench/AbstractNarrativeUnderstanding/*",
+            "data/Bigbench/CausalJudgment/*",
+            "data/Bigbench/DisambiguationQA/*",
+            "data/Bigbench/DisflQA/*",
+            "data/asdiv/*",
+            "data/LogiQA/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

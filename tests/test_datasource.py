@@ -31,7 +31,10 @@ class TestNERDataset:
         test_type="add_context",
         expected_results=NEROutput(
             predictions=[
-                NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC"))
+                NERPrediction(entity="O", span=Span(start=10, end=13, word="I")),
+                NERPrediction(entity="O", span=Span(start=10, end=13, word="do")),
+                NERPrediction(entity="O", span=Span(start=10, end=13, word="love")),
+                NERPrediction(entity="PROD", span=Span(start=10, end=13, word="KFC")),
             ]
         ),
     )
