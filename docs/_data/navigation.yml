@@ -96,3 +96,5 @@ tests:
     url: /docs/pages/tests/clinical
   - title: Security
     url: /docs/pages/tests/security
+  - title: Disinformation
+    url: /docs/pages/tests/disinformation
