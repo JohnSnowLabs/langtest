@@ -353,7 +353,20 @@ def check_name(word: str, name_lists: List[List[str]]) -> bool:
     )
 
 
-def filter_unique_samples(task, transformed_samples, test_name):
+def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
+    """
+    Filter and remove samples with no applied transformations from the list of transformed_samples.
+
+    Args:
+        task (str): The type of task.
+        transformed_samples (list): List of transformed samples to be filtered.
+        test_name (str): Name of the test.
+
+    Returns:
+        new_transformed_samples (list): List of filtered samples with unique transformations.
+        no_transformation_applied_tests (set): Set of test names for which no transformation
+            was applied due to non-uniqueness.
+    """
     no_transformation_applied_tests = set()
     new_transformed_samples = []
     if task == "question-answering":
