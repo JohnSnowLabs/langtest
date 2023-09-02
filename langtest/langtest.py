@@ -264,9 +264,6 @@ class Harness:
             )
         # model section
         if isinstance(model, str):
-            # self.model = ModelFactory.load_model(
-            #     path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
-            # )
             self.model = self.task.model(
                 model_path=model,
                 model_hub=hub,
@@ -1121,8 +1118,8 @@ class Harness:
                 path to folder containing all the needed files to load an saved `Harness`
             task (str):
                 task for which the model is to be evaluated.
-            model (str | ModelFactory):
-                ModelFactory object or path to the model to be evaluated.
+            model (str | ModelAPI):
+                ModelAPI object or path to the model to be evaluated.
             hub (str, optional):
                 model hub to load from the path. Required if path is passed as 'model'.
 
