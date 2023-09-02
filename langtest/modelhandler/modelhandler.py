@@ -1,10 +1,8 @@
-import importlib
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import List, Union
+from typing import Union
 
 from langtest.utils.lib_manager import try_import_lib
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",

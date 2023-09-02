@@ -41,9 +41,7 @@ class BaseToxicity(ABC):
         raise NotImplementedError()
 
     @classmethod
-    async def async_run(
-        cls, sample_list: List[Sample], model: ModelAPI, *args, **kwargs
-    ):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Computes the toxicity completion on the samples in async mode.
 
         Args:

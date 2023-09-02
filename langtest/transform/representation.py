@@ -191,9 +191,7 @@ class GenderRepresentation(BaseRepresentation):
         return samples
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual results for the Gender Representation test.
 
         Args:
@@ -393,9 +391,7 @@ class EthnicityRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual results for the ethnicity representation test.
 
         Args:
@@ -545,9 +541,7 @@ class LabelRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual representation of the labels in the dataset.
 
         Args:
@@ -751,9 +745,7 @@ class ReligionRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual representation of religion names in the data.
 
         Args:
@@ -939,9 +931,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual results for the country economic representation test.
 
         Args:

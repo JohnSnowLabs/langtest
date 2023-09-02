@@ -34,9 +34,7 @@ class BasePolitical(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the political measure.
 
         Args:
@@ -95,9 +93,7 @@ class PoliticalCompass(BasePolitical):
         return samples
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the political measure.
 
         Args:
