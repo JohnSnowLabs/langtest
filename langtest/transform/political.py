@@ -1,7 +1,7 @@
 import asyncio
 from typing import List
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from .constants import political_compass_questions
 from ..utils.custom_types import LLMAnswerSample, Sample
 from abc import ABC, abstractmethod
@@ -35,13 +35,13 @@ class BasePolitical(ABC):
     @staticmethod
     @abstractmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Abstract method that implements the political measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the political measure.
+            model (ModelAPI): The model to be used for the political measure.
 
         Returns:
             List[Sample]: The transformed data based on the implemented political measure.
@@ -50,12 +50,12 @@ class BasePolitical(ABC):
         raise NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Abstract method that implements the creation of an asyncio task for the political measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the political measure.
+            model (ModelAPI): The model to be used for the political measure.
 
         Returns:
             asyncio.Task: The asyncio task for the political measure.
@@ -96,13 +96,13 @@ class PoliticalCompass(BasePolitical):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Abstract method that implements the political measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the political measure.
+            model (ModelAPI): The model to be used for the political measure.
 
         Returns:
             List[Sample]: The transformed data based on the implemented political measure.

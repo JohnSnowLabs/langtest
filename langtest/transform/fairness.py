@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import List, Dict, Union
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types import (
     MaxScoreOutput,
     MaxScoreSample,
@@ -51,7 +51,7 @@ class BaseFairness(ABC):
 
         Args:
             sample_list (List[MinScoreSample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             List[MinScoreSample]: The transformed samples.
@@ -59,12 +59,12 @@ class BaseFairness(ABC):
         raise NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Creates a task for the run method.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             asyncio.Task: The task for the run method.
@@ -135,7 +135,7 @@ class MinGenderF1Score(BaseFairness):
 
         Args:
             sample_list (List[MinScoreSample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             List[MinScoreSample]: The transformed samples.
@@ -218,7 +218,7 @@ class MaxGenderF1Score(BaseFairness):
 
         Args:
             sample_list (List[MaxScoreSample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
 
         Returns:
@@ -310,7 +310,7 @@ class MinGenderRougeScore(BaseFairness):
 
         Args:
             sample_list (List[MinScoreSample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             List[MinScoreSample]: The transformed samples.
@@ -410,7 +410,7 @@ class MaxGenderRougeScore(BaseFairness):
 
         Args:
             sample_list (List[MaxScoreSample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             List[MaxScoreSample]: The transformed samples.

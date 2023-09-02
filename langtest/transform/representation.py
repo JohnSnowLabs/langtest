@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import List, Dict, Union
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types import (
     MinScoreOutput,
     MinScoreQASample,
@@ -58,13 +58,13 @@ class BaseRepresentation(ABC):
     @classmethod
     @abstractmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the score for the given data.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             List[Sample]: The transformed samples.
@@ -72,12 +72,12 @@ class BaseRepresentation(ABC):
         raise NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Creates a task for the run method.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             asyncio.Task: The task for the run method.
@@ -192,13 +192,13 @@ class GenderRepresentation(BaseRepresentation):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the actual results for the Gender Representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model factory object.
+            model (ModelAPI): The model factory object.
 
         Returns:
             List[Sample]: The list of samples with actual results.
@@ -394,13 +394,13 @@ class EthnicityRepresentation(BaseRepresentation):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the actual results for the ethnicity representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
 
         Returns:
             List[Sample]: The list of samples with actual results.
@@ -546,13 +546,13 @@ class LabelRepresentation(BaseRepresentation):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the actual representation of the labels in the dataset.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be evaluated.
+            model (ModelAPI): The model to be evaluated.
 
         Returns:
             List[Sample]: Label Representation test results.
@@ -752,13 +752,13 @@ class ReligionRepresentation(BaseRepresentation):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the actual representation of religion names in the data.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be evaluated.
+            model (ModelAPI): The model to be evaluated.
 
         Returns:
             List[Sample]: Religion Representation test results.
@@ -940,13 +940,13 @@ class CountryEconomicRepresentation(BaseRepresentation):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
+        sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the actual results for the country economic representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
 
         Returns:
             List[Sample]: Country Economic Representation test results.
