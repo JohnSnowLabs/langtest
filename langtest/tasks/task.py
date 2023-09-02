@@ -27,6 +27,7 @@ class BaseTask(ABC):
     """Abstract base class for all tasks."""
 
     task_registry = {}
+    _name = None
 
     @classmethod
     @abstractmethod
@@ -35,13 +36,26 @@ class BaseTask(ABC):
         pass
 
     @classmethod
-    @abstractmethod
     def load_model(cls, model_path: str, model_hub: str, *args, **kwargs):
         """Load the model."""
-        if model_hub in LANGCHAIN_HUBS:
-            cls.model = ModelAPI.model_registry["llm"]
+        models = ModelAPI.model_registry
+
+        if model_hub in list(models.keys()) + list(LANGCHAIN_HUBS.keys()):
+            if model_hub in LANGCHAIN_HUBS:
+                # LLM models
+                cls.model = models["llm"][cls._name].load_model(
+                    model_hub, model_path, *args, **kwargs
+                )
+            else:
+                # JSL, Huggingface, and Spacy models
+                cls.model = models[model_hub][cls._name].load_model(
+                    model_path, *args, **kwargs
+                )
+            return cls.model
         else:
-            cls.model = None
+            raise ValueError(
+                f"Provided model hub is not supported. Please choose one of the supported model hubs: {list(models.keys())}"
+            )
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -81,14 +95,17 @@ class TaskManager:
     def __eq__(self, __value: str) -> bool:
         """Check if the task is equal to another task."""
         return self.__task_name == __value.lower()
-    
+
     @property
     def task_name(self):
+        """Return the task name."""
         return self.__task_name
 
 
 class NERTask(BaseTask):
     """Named Entity Recognition task."""
+
+    _name = "ner"
 
     def create_sample(original, ner_labels) -> NERSample:
         """Create a sample."""
@@ -96,18 +113,11 @@ class NERTask(BaseTask):
             original=original, expected_results=NEROutput(predictions=ner_labels)
         )
 
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-        super().load_model(model_path, model_hub, *args, **kwargs)
-        if model:
-            model = ModelAPI.model_registry[model_hub]
-            return model["ner"].load_model(model_path, *args, **kwargs)
-        else:
-            return model["ner"].load_model(model_hub, model_path, *args, **kwargs)
-
 
 class TextClassificationTask(BaseTask):
     """Text Classification task."""
+
+    _name = "textclassification"
 
     def create_sample(original, labels: SequenceLabel) -> SequenceClassificationSample:
         """Create a sample."""
@@ -116,17 +126,15 @@ class TextClassificationTask(BaseTask):
             expected_results=SequenceClassificationOutput(predictions=[labels]),
         )
 
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-
-        model = ModelAPI.model_registry[model_hub]["textclassification"]
-        return model.load_model(model_path, *args, **kwargs)
-
 
 class QuestionAnsweringTask(BaseTask):
     """Question Answering task."""
 
-    def create_sample(row_data: dict, column_matcher: dict, dataset_name: str="qa") -> QASample:
+    _name = "qa"
+
+    def create_sample(
+        row_data: dict, column_matcher: dict, dataset_name: str = "qa"
+    ) -> QASample:
         """Create a sample."""
         expected_results = row_data.get(column_matcher["answer"])
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
@@ -138,18 +146,14 @@ class QuestionAnsweringTask(BaseTask):
             dataset_name=dataset_name,
         )
 
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-
-        model = ModelAPI.model_registry[model_hub]["qa"]
-        return model.load_model(model_path, *args, **kwargs)
-
 
 class SummerizationTask(BaseTask):
     """Summerization task."""
 
+    _name = "summarization"
+
     def create_sample(
-        row_data: dict, column_matcher: dict, dataset_name: str="xsum"
+        row_data: dict, column_matcher: dict, dataset_name: str = "xsum"
     ) -> SummarizationSample:
         """Create a sample."""
         expected_results = row_data.get(column_matcher["summary"])
@@ -161,37 +165,29 @@ class SummerizationTask(BaseTask):
             dataset_name=dataset_name,
         )
 
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-
-        model = ModelAPI.model_registry[model_hub]["summarization"]
-        return model.load_model(model_path, *args, **kwargs)
-
 
 class TranslationTask(BaseTask):
     """Translation task."""
 
+    _name = "translation"
+
     def create_sample(
-            row_data: dict, column_matcher: dict, dataset_name: str="translation"
+        row_data: dict, column_matcher: dict, dataset_name: str = "translation"
     ) -> TranslationSample:
         """Create a sample."""
         return TranslationSample(
             original=row_data[column_matcher["text"]],
-            dataset_name = dataset_name,
+            dataset_name=dataset_name,
         )
-
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-
-        model = ModelAPI.model_registry[model_hub]["translation"]
-        return model.load_model(model_path, *args, **kwargs)
 
 
 class ToxicityTask(BaseTask):
     """Toxicity task."""
 
+    _name = "toxicity"
+
     def create_sample(
-            row_data: dict, column_matcher: dict, dataset_name: str="toxicity"
+        cls, row_data: dict, column_matcher: dict, dataset_name: str = "toxicity"
     ) -> ToxicitySample:
         """Create a sample."""
         return ToxicitySample(
@@ -199,18 +195,14 @@ class ToxicityTask(BaseTask):
             dataset_name=dataset_name,
         )
 
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-
-        model = ModelAPI.model_registry[model_hub]["toxicity"]
-        return model.load_model(model_path, *args, **kwargs)
-
 
 class SecurityTask(BaseTask):
     """Security task."""
 
+    _name = "security"
+
     def create_sample(
-            cls, row_data: dict, column_matcher: dict, dataset_name: str="security"
+        cls, row_data: dict, column_matcher: dict, dataset_name: str = "security"
     ) -> SecuritySample:
         """Create a sample."""
         return SecuritySample(
@@ -218,22 +210,14 @@ class SecurityTask(BaseTask):
             dataset_name=dataset_name,
         )
 
-    def load_model(cls, model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-        super().load_model(model_path, model_hub, *args, **kwargs)
-        if cls.model:
-            return cls.model["security"].load_model(model_hub, model_path, *args, **kwargs)
-        else:
-            cls.model = ModelAPI.model_registry[model_hub]
-            return cls.model["security"].load_model(model_path, *args, **kwargs)
-
-
 
 class ClinicalTestsTask(BaseTask):
     """Clinical Tests task."""
 
+    _name = "clinicaltests"
+
     def create_sample(
-        row_data: dict, column_matcher: dict, dataset_name: str="clinicaltests"
+        row_data: dict, column_matcher: dict, dataset_name: str = "clinicaltests"
     ) -> ClinicalSample:
         """Create a sample."""
         return ClinicalSample(
@@ -242,9 +226,3 @@ class ClinicalTestsTask(BaseTask):
             diagnosis=row_data["Diagnosis"],
             dataset_name=dataset_name,
         )
-
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
-        """Load the model."""
-
-        model = ModelAPI.model_registry[model_hub]["clinicaltests"]
-        return model.load_model(model_path, *args, **kwargs)

@@ -36,7 +36,7 @@ class PretrainedModelForNER(ModelAPI):
             path (str): name of path to model to load
         """
         try:
-            return spacy.load(path)
+            return cls(spacy.load(path))
         except OSError:
             raise ValueError(
                 f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
@@ -124,7 +124,7 @@ class PretrainedModelForTextClassification(ModelAPI):
             path (str): name of path to model to load
         """
         try:
-            return spacy.load(path)
+            return cls(spacy.load(path))
         except OSError:
             raise ValueError(
                 f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
@@ -199,7 +199,7 @@ class PretrainedModelForTranslation(ModelAPI):
             path (str): name of path to model to load
         """
         try:
-            return spacy.load(path)
+            return cls(spacy.load(path))
         except OSError:
             raise ValueError(
                 f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""

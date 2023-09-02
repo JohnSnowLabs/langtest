@@ -266,7 +266,9 @@ class Harness:
             #     path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
             # )
             self.model = self.task.model(
-                model_path=model, model_hub=hub, **self._config.get("model_parameters", {})
+                model_path=model,
+                model_hub=hub,
+                **self._config.get("model_parameters", {}),
             )
 
         elif isinstance(model, list):

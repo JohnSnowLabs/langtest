@@ -1173,8 +1173,8 @@ class JSONLDataset(_IDataset):
             for item in reader:
                 if self.column_matcher is None:
                     self.column_matcher = self._match_column_names(item.keys())
-                
-                dataset_name=self._file_path.split("/")[-2]
+
+                dataset_name = self._file_path.split("/")[-2]
                 sample = self.task.create_sample(item, self.column_matcher, dataset_name)
                 data.append(sample)
 

@@ -191,7 +191,7 @@ class PretrainedJSLModel(ABC):
                     "In order to use NLP Models Hub, johnsnowlabs should be installed!"
                 )
 
-        return loaded_model
+        return cls(loaded_model)
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs) -> Any:

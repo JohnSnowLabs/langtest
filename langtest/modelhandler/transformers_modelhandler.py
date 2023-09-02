@@ -230,7 +230,9 @@ class PretrainedModelForTextClassification(ModelAPI):
     @classmethod
     def load_model(cls, path: str) -> "Pipeline":
         """Load and return text classification transformers pipeline"""
-        return cls(pipeline(model=path, task="text-classification"))
+        if isinstance(path, str):
+            return cls(pipeline(model=path, task="text-classification"))
+        return cls(path)
 
     def predict(
         self,
@@ -317,9 +319,9 @@ class PretrainedModelForTranslation(ModelAPI):
         tgt_lang = config.get("target_language")
 
         if "t5" in path:
-            return pipeline(f"translation_en_to_{tgt_lang}", model=path)
+            return cls(pipeline(f"translation_en_to_{tgt_lang}", model=path))
         else:
-            return pipeline(model=path, src_lang="en", tgt_lang=tgt_lang)
+            return cls(pipeline(model=path, src_lang="en", tgt_lang=tgt_lang))
 
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
@@ -359,8 +361,8 @@ class PretrainedModelForQA(ModelAPI):
         )
         self.model = model
 
-    @staticmethod
-    def load_model(hub: str, path: str, **kwargs) -> "Pipeline":
+    @classmethod
+    def load_model(cls, hub: str, path: str, **kwargs) -> "Pipeline":
         """Load the QA model into the `model` attribute.
 
         Args:
@@ -372,7 +374,7 @@ class PretrainedModelForQA(ModelAPI):
         """
         if "task" in kwargs.keys():
             kwargs.pop("task")
-        return pipeline(model=path, **kwargs)
+        return cls(pipeline(model=path, **kwargs))
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Perform predictions on the input text.

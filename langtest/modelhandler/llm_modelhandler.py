@@ -62,9 +62,9 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(model_id=path, *args, **kwargs)
             elif "repo_id" in default_args:
                 cls.model = model(repo_id=path, model_kwargs=kwargs)
-            
+
             return cls(hub, cls.model, *args, **kwargs)
-        
+
         except ImportError:
             raise ValueError(
                 f"""Model "{path}" is not found online or local.
