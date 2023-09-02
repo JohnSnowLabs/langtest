@@ -1,6 +1,6 @@
 import unittest
 from langtest import Harness
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 
 
 class SpacyTestCase(unittest.TestCase):
@@ -34,7 +34,7 @@ class SpacyTestCase(unittest.TestCase):
         """
         harness = Harness(**self.params)
         self.assertIsInstance(harness.task, str)
-        self.assertIsInstance(harness.model, (str, ModelFactory))
+        self.assertIsInstance(harness.model, (str, ModelAPI))
         # self.assertIsInstance(self.harness.data, (str, DataFactory))
         self.assertIsInstance(harness._config, (str, dict))
 

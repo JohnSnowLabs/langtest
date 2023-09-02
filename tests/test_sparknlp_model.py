@@ -1,7 +1,7 @@
 import unittest
 
 from langtest import Harness
-from langtest.modelhandler import ModelFactory
+from langtest.modelhandler import ModelAPI
 
 
 class SparkNLPTestCase(unittest.TestCase):
@@ -29,5 +29,5 @@ class SparkNLPTestCase(unittest.TestCase):
         Testing Attributes of Harness Class
         """
         harness = Harness(**self.params)
-        self.assertIsInstance(harness.model, (str, ModelFactory))
+        self.assertIsInstance(harness.model, (str, ModelAPI))
         self.assertIsInstance(harness.model.model_class.output_col, str)
