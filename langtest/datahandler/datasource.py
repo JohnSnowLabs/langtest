@@ -24,11 +24,6 @@ from langtest.utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
-    ToxicitySample,
-    TranslationSample,
-    ClinicalSample,
-    SecuritySample,
-    DisinformationSample,
 )
 from ..utils.lib_manager import try_import_lib
 

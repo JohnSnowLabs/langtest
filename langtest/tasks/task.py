@@ -1,14 +1,9 @@
-from abc import ABC, abstractmethod
 import re
-from langtest.modelhandler.modelhandler import ModelFactory
-from langtest.utils.custom_types.output import NEROutput
-
-from langtest.utils.custom_types.sample import NERSample
+from abc import ABC, abstractmethod
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
 from langtest.utils.custom_types import (
     NEROutput,
-    NERPrediction,
     NERSample,
     QASample,
     Sample,

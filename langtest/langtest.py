@@ -12,10 +12,12 @@ import pandas as pd
 import yaml
 from pkg_resources import resource_filename
 
+from langtest.modelhandler import ModelAPI
+
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset
-from .modelhandler import LANGCHAIN_HUBS, ModelFactory
+from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
@@ -331,13 +333,11 @@ class Harness:
         if self.task == "translation" and model:
             hub = self.hub
             model = self._actual_model
-            task = self.task
 
             if isinstance(model, str):
-                self.model = ModelFactory.load_model(
-                    path=model,
-                    task=task,
-                    hub=hub,
+                self.model = self.task.model(
+                    model,
+                    hub,
                     **self._config.get("model_parameters", {}),
                 )
 
@@ -348,18 +348,16 @@ class Harness:
                     model = i["model"]
                     hub = i["hub"]
 
-                    model_dict[model] = ModelFactory.load_model(
-                        path=model,
-                        task=task,
-                        hub=hub,
+                    model_dict[model] = self.task.model(
+                        model,
+                        hub,
                         **self._config.get("model_parameters", {}),
                     )
                 self.model = model_dict
             else:
-                self.model = ModelFactory(
-                    task=task,
-                    model=model,
-                    hub=hub,
+                self.model = self.task.model(
+                    model,
+                    hub,
                     **self._config.get("model_parameters", {}),
                 )
 
@@ -1112,7 +1110,7 @@ class Harness:
     def load(
         cls,
         save_dir: str,
-        model: Union[str, "ModelFactory"],
+        model: Union[str, "ModelAPI"],
         task: str,
         hub: Optional[str] = None,
     ) -> "Harness":
