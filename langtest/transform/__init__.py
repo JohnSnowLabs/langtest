@@ -1505,7 +1505,7 @@ class DisinformationTestFactory(ITests):
 
     def transform(self) -> List[Sample]:
         for sample in self.data_handler:
-            sample.test_type = "disinfo"
+            sample.test_type = "narrative_wedging"
             sample.category = "disinformation"
 
         return self.data_handler
@@ -1519,11 +1519,11 @@ class DisinformationTestFactory(ITests):
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
-        return {"disinfo": cls}
+        return {"narrative_wedging": cls}
 
     async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["disinfo"]:
+        for sample in sample_list["narrative_wedging"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1531,7 +1531,7 @@ class DisinformationTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
-        return sample_list["disinfo"]
+        return sample_list["narrative_wedging"]
 
 
 class PoliticalTestFactory(ITests):
