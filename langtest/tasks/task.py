@@ -22,38 +22,40 @@ from langtest.utils.custom_types import (
     SecuritySample,
 )
 
+
 class BaseTask(ABC):
     """Abstract base class for all tasks."""
 
     task_registry = {}
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def create_sample(self):
+    def create_sample(cls, *args, **kwargs) -> Sample:
         """Run the task."""
         pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def load_model(self, model_path: str, model_hub: str):
+    def load_model(cls, model_path: str, model_hub: str, *args, **kwargs):
         """Load the model."""
         if model_hub in LANGCHAIN_HUBS:
-            model_hub = LANGCHAIN_HUBS[model_hub]
+            cls.model = ModelAPI.model_registry["llm"]
+        else:
+            cls.model = None
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         task_name = re.sub(
-            r'(?<!^)(?=[A-Z])', '-', 
-            cls.__name__.replace("Task", "")
+            r"(?<=[a-z])(?=[A-Z][a-z])", "-", cls.__name__.replace("Task", "")
         ).lower()
-       
+
         cls.task_registry[task_name] = cls
-    
+
     def __eq__(self, __value: object) -> bool:
         """Check if the task is equal to another task."""
         if isinstance(__value, str):
-            return self.__class__.__name__.replace("Task","").lower() == __value.lower()
+            return self.__class__.__name__.replace("Task", "").lower() == __value.lower()
         return super().__eq__(__value)
 
 
@@ -66,7 +68,7 @@ class TaskManager:
                 f"Provided task is not supported. Please choose one of the supported tasks: {list(BaseTask.task_registry.keys())}"
             )
         self.__task_name = task_name
-        self.__task: BaseTask = BaseTask.task_registry[task_name]
+        self.__task: BaseTask = BaseTask.task_registry[task_name]()
 
     def create_sample(self, *args, **kwargs):
         """Add a task to the task manager."""
@@ -75,11 +77,15 @@ class TaskManager:
     def model(self, *args, **kwargs) -> "ModelAPI":
         """Add a task to the task manager."""
         return self.__task.load_model(*args, **kwargs)
-    
+
     def __eq__(self, __value: str) -> bool:
         """Check if the task is equal to another task."""
         return self.__task_name == __value.lower()
-        
+    
+    @property
+    def task_name(self):
+        return self.__task_name
+
 
 class NERTask(BaseTask):
     """Named Entity Recognition task."""
@@ -92,9 +98,13 @@ class NERTask(BaseTask):
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""
+        super().load_model(model_path, model_hub, *args, **kwargs)
+        if model:
+            model = ModelAPI.model_registry[model_hub]
+            return model["ner"].load_model(model_path, *args, **kwargs)
+        else:
+            return model["ner"].load_model(model_hub, model_path, *args, **kwargs)
 
-        model = ModelAPI.model_registry[model_hub]["ner"]
-        return model.load_model(model_path, *args, **kwargs)
 
 class TextClassificationTask(BaseTask):
     """Text Classification task."""
@@ -112,17 +122,21 @@ class TextClassificationTask(BaseTask):
         model = ModelAPI.model_registry[model_hub]["textclassification"]
         return model.load_model(model_path, *args, **kwargs)
 
+
 class QuestionAnsweringTask(BaseTask):
     """Question Answering task."""
 
-    def create_sample(original_question,original_context, expected_results, dataset_name) -> QASample:
+    def create_sample(row_data: dict, column_matcher: dict, dataset_name: str="qa") -> QASample:
         """Create a sample."""
+        expected_results = row_data.get(column_matcher["answer"])
+        if isinstance(expected_results, str) or isinstance(expected_results, bool):
+            expected_results = [str(expected_results)]
         return QASample(
-                            original_question,
-                            original_context,
-                            expected_results,
-                            dataset_name,
-                        )
+            original_question=row_data[column_matcher["text"]],
+            original_context=row_data.get(column_matcher["context"], "-"),
+            expected_results=expected_results,
+            dataset_name=dataset_name,
+        )
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""
@@ -130,16 +144,22 @@ class QuestionAnsweringTask(BaseTask):
         model = ModelAPI.model_registry[model_hub]["qa"]
         return model.load_model(model_path, *args, **kwargs)
 
-class SummerizationTask(BaseTask):
-    """ Summerization task."""
 
-    def create_sample(original, expected_results, dataset_name) -> SummarizationSample:
+class SummerizationTask(BaseTask):
+    """Summerization task."""
+
+    def create_sample(
+        row_data: dict, column_matcher: dict, dataset_name: str="xsum"
+    ) -> SummarizationSample:
         """Create a sample."""
+        expected_results = row_data.get(column_matcher["summary"])
+        if isinstance(expected_results, str) or isinstance(expected_results, bool):
+            expected_results = [str(expected_results)]
         return SummarizationSample(
-                            original,
-                            expected_results,
-                            dataset_name,
-                        )
+            original=row_data[column_matcher["text"]],
+            expected_results=expected_results,
+            dataset_name=dataset_name,
+        )
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""
@@ -147,15 +167,18 @@ class SummerizationTask(BaseTask):
         model = ModelAPI.model_registry[model_hub]["summarization"]
         return model.load_model(model_path, *args, **kwargs)
 
-class TranslationTask(BaseTask):
-    """ Translation task."""
 
-    def create_sample(original, dataset_name) -> TranslationSample:
+class TranslationTask(BaseTask):
+    """Translation task."""
+
+    def create_sample(
+            row_data: dict, column_matcher: dict, dataset_name: str="translation"
+    ) -> TranslationSample:
         """Create a sample."""
         return TranslationSample(
-                            original,
-                            dataset_name,
-                        )
+            original=row_data[column_matcher["text"]],
+            dataset_name = dataset_name,
+        )
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""
@@ -163,15 +186,18 @@ class TranslationTask(BaseTask):
         model = ModelAPI.model_registry[model_hub]["translation"]
         return model.load_model(model_path, *args, **kwargs)
 
-class ToxicityTask(BaseTask):
-    """ Toxicity task."""
 
-    def create_sample(prompt, dataset_name) -> ToxicitySample:
+class ToxicityTask(BaseTask):
+    """Toxicity task."""
+
+    def create_sample(
+            row_data: dict, column_matcher: dict, dataset_name: str="toxicity"
+    ) -> ToxicitySample:
         """Create a sample."""
         return ToxicitySample(
-                            prompt,
-                            dataset_name,
-                        )
+            prompt=row_data[column_matcher["text"]],
+            dataset_name=dataset_name,
+        )
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""
@@ -181,33 +207,41 @@ class ToxicityTask(BaseTask):
 
 
 class SecurityTask(BaseTask):
-    """ Security task."""
+    """Security task."""
 
-    def create_sample(prompt, task, dataset_name) -> SecuritySample:
+    def create_sample(
+            cls, row_data: dict, column_matcher: dict, dataset_name: str="security"
+    ) -> SecuritySample:
         """Create a sample."""
         return SecuritySample(
-                            prompt,
-                            task,
-                            dataset_name,
-                        )
+            prompt=row_data["text"],
+            dataset_name=dataset_name,
+        )
 
-    def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
+    def load_model(cls, model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""
+        super().load_model(model_path, model_hub, *args, **kwargs)
+        if cls.model:
+            return cls.model["security"].load_model(model_hub, model_path, *args, **kwargs)
+        else:
+            cls.model = ModelAPI.model_registry[model_hub]
+            return cls.model["security"].load_model(model_path, *args, **kwargs)
 
-        model = ModelAPI.model_registry[model_hub]["security"]
-        return model.load_model(model_path, *args, **kwargs)
+
 
 class ClinicalTestsTask(BaseTask):
-    """ Clinical Tests task. """
+    """Clinical Tests task."""
 
-    def create_sample(patient_info_A, patient_info_B, diagnosis, dataset_name) -> ClinicalSample:
+    def create_sample(
+        row_data: dict, column_matcher: dict, dataset_name: str="clinicaltests"
+    ) -> ClinicalSample:
         """Create a sample."""
         return ClinicalSample(
-                            patient_info_A,
-                            patient_info_B,
-                            diagnosis,
-                            dataset_name,
-                        )
+            patient_info_A=row_data["Patient info A"],
+            patient_info_B=row_data["Patient info B"],
+            diagnosis=row_data["Diagnosis"],
+            dataset_name=dataset_name,
+        )
 
     def load_model(model_path: str, model_hub: str, *args, **kwargs) -> "ModelAPI":
         """Load the model."""

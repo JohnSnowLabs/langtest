@@ -1,5 +1,5 @@
 import inspect
-from typing import Union
+from typing import Any, Union
 import langchain.llms as lc
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
@@ -19,7 +19,7 @@ class PretrainedModelForQA(ModelAPI):
         ConfigError: If there is an error in the model configuration.
     """
 
-    def __init__(self, hub: str, model: str, *args, **kwargs):
+    def __init__(self, hub: str, model: Any, *args, **kwargs):
         """Constructor class
 
         Args:
@@ -31,6 +31,8 @@ class PretrainedModelForQA(ModelAPI):
         self.model = model
         self.hub = LANGCHAIN_HUBS[hub]
         self.kwargs = kwargs
+        if isinstance(model, str):
+            self.model = self.load_model(hub, model, *args, **kwargs).model
 
     @classmethod
     def load_model(cls, hub: str, path: str, *args, **kwargs) -> "PretrainedModelForQA":
@@ -60,7 +62,9 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(model_id=path, *args, **kwargs)
             elif "repo_id" in default_args:
                 cls.model = model(repo_id=path, model_kwargs=kwargs)
-            return cls.model
+            
+            return cls(hub, cls.model, *args, **kwargs)
+        
         except ImportError:
             raise ValueError(
                 f"""Model "{path}" is not found online or local.

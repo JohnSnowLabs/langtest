@@ -265,7 +265,9 @@ class Harness:
             # self.model = ModelFactory.load_model(
             #     path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
             # )
-            self.model = self.task.model(model, hub, **self._config.get("model_parameters", {}))
+            self.model = self.task.model(
+                model_path=model, model_hub=hub, **self._config.get("model_parameters", {})
+            )
 
         elif isinstance(model, list):
             model_dict = {}
@@ -273,12 +275,16 @@ class Harness:
                 model = i["model"]
                 hub = i["hub"]
 
-                model_dict[model] = self.task.model(model, hub, **self._config.get("model_parameters", {}))
+                model_dict[model] = self.task.model(
+                    model, hub, **self._config.get("model_parameters", {})
+                )
 
                 self.model = model_dict
 
         else:
-            self.model = self.task.model(model, hub, **self._config.get("model_parameters", {}))
+            self.model = self.task.model(
+                model, hub, **self._config.get("model_parameters", {})
+            )
         # end model selection
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)

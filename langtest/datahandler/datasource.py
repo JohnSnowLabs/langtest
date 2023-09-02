@@ -10,6 +10,7 @@ from typing import Optional
 
 import jsonlines
 import pandas as pd
+from langtest.tasks.task import TaskManager
 
 from langtest.utils.custom_types import sample
 from .format import Formatter
@@ -108,7 +109,7 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    def __init__(self, file_path: dict, task: str, **kwargs) -> None:
+    def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
 
         Args:
@@ -310,7 +311,7 @@ class ConllDataset(_IDataset):
 
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, file_path: str, task: str) -> None:
+    def __init__(self, file_path: str, task: TaskManager) -> None:
         """Initializes ConllDataset object.
 
         Args:
@@ -412,7 +413,7 @@ class ConllDataset(_IDataset):
                     original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                        NERSample(
+                        self.task.create_sample(
                             original=original,
                             expected_results=NEROutput(predictions=ner_labels),
                         )
@@ -1112,7 +1113,7 @@ class JSONLDataset(_IDataset):
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, file_path: str, task: str) -> None:
+    def __init__(self, file_path: str, task: TaskManager) -> None:
         """Initializes JSONLDataset object.
 
         Args:
@@ -1137,18 +1138,18 @@ class JSONLDataset(_IDataset):
         """
         column_map = {}
         for column in column_names:
-            for key, reference_columns in self.COLUMN_NAMES[self.task].items():
+            for key, reference_columns in self.COLUMN_NAMES[self.task.task_name].items():
                 if column.lower() in reference_columns:
                     column_map[key] = column
 
         not_referenced_columns = [
-            col for col in self.COLUMN_NAMES[self.task] if col not in column_map
+            col for col in self.COLUMN_NAMES[self.task.task_name] if col not in column_map
         ]
 
         if "text" in not_referenced_columns:
             raise OSError(
                 f"Your dataset needs to have at least have a column with one of the following name: "
-                f"{self.COLUMN_NAMES[self.task]['text']}, found: {column_names}."
+                f"{self.COLUMN_NAMES[self.task.task_name]['text']}, found: {column_names}."
             )
 
         for missing_col in not_referenced_columns:
@@ -1172,82 +1173,11 @@ class JSONLDataset(_IDataset):
             for item in reader:
                 if self.column_matcher is None:
                     self.column_matcher = self._match_column_names(item.keys())
+                
+                dataset_name=self._file_path.split("/")[-2]
+                sample = self.task.create_sample(item, self.column_matcher, dataset_name)
+                data.append(sample)
 
-                if self.task == "question-answering":
-                    expected_results = item.get(self.column_matcher["answer"])
-                    if isinstance(expected_results, str) or isinstance(
-                        expected_results, bool
-                    ):
-                        expected_results = [str(expected_results)]
-
-                    
-                    data.append(
-                        QASample(
-                            original_question=item[self.column_matcher["text"]],
-                            original_context=item.get(
-                                self.column_matcher["context"], "-"
-                            ),
-                            expected_results=expected_results,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "summarization":
-                    expected_results = item.get(self.column_matcher["summary"])
-                    if isinstance(expected_results, str) or isinstance(
-                        expected_results, bool
-                    ):
-                        expected_results = [str(expected_results)]
-                    data.append(
-                        SummarizationSample(
-                            original=item[self.column_matcher["text"]],
-                            expected_results=expected_results,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-                elif self.task == "toxicity":
-                    data.append(
-                        ToxicitySample(
-                            prompt=item[self.column_matcher["text"]],
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "translation":
-                    data.append(
-                        TranslationSample(
-                            original=item[self.column_matcher["text"]],
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-                elif self.task == "security":
-                    data.append(
-                        SecuritySample(
-                            prompt=item["text"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "clinical-tests":
-                    data.append(
-                        ClinicalSample(
-                            patient_info_A=item["Patient info A"],
-                            patient_info_B=item["Patient info B"],
-                            diagnosis=item["Diagnosis"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-                elif self.task == "disinformation-test":
-                    data.append(
-                        DisinformationSample(
-                            hypothesis=item["hypothesis"],
-                            statements=item["statements"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
