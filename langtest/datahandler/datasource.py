@@ -493,7 +493,7 @@ class CSVDataset(_IDataset):
             The delimiter used in the CSV file to separate columns (only for file_path as str).
     """
 
-    def __init__(self, file_path: Union[str, Dict], task: str, **kwargs) -> None:
+    def __init__(self, file_path: Union[str, Dict], task: TaskManager, **kwargs) -> None:
         """
         Initializes a CustomCSVDataset object.
 
@@ -1195,7 +1195,7 @@ class HuggingFaceDataset(_IDataset):
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, dataset_name: str, task: str):
+    def __init__(self, dataset_name: str, task: TaskManager):
         """Initialize the HuggingFaceDataset class.
 
         Args:

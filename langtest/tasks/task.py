@@ -102,10 +102,10 @@ class NERTask(BaseTask):
 
     _name = "ner"
 
-    def create_sample(cls, original, ner_labels) -> NERSample:
+    def create_sample(cls, original, expected_results: NEROutput) -> NERSample:
         """Create a sample."""
         return NERSample(
-            original=original, expected_results=NEROutput(predictions=ner_labels)
+            original=original, expected_results=expected_results
         )
 
 
@@ -119,7 +119,7 @@ class TextClassificationTask(BaseTask):
     ) -> SequenceClassificationSample:
         """Create a sample."""
         return SequenceClassificationSample(
-            original,
+            original=original,
             expected_results=SequenceClassificationOutput(predictions=[labels]),
         )
 

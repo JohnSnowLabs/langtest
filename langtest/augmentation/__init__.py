@@ -17,6 +17,7 @@ from langtest.utils.custom_types import Sample
 from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
+from langtest.tasks import TaskManager
 
 
 class BaseAugmentaion(ABC):
@@ -62,7 +63,7 @@ class AugmentRobustness(BaseAugmentaion):
 
     def __init__(
         self,
-        task: str,
+        task: TaskManager,
         h_report: "pd.DataFrame",
         config: Dict,
         custom_proportions: Union[Dict, List] = None,
@@ -309,7 +310,7 @@ class TemplaticAugment(BaseAugmentaion):
             Performs the templatic augmentation and exports the results to a specified path.
     """
 
-    def __init__(self, templates: Union[str, List[str]], task: str) -> None:
+    def __init__(self, templates: Union[str, List[str]], task: TaskManager) -> None:
         """This constructor for the TemplaticAugment class.
 
         Args:
