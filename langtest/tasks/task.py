@@ -44,12 +44,12 @@ class BaseTask(ABC):
             if model_hub in LANGCHAIN_HUBS:
                 # LLM models
                 cls.model = models["llm"][cls._name].load_model(
-                    model_hub, model_path, *args, **kwargs
+                    hub=model_hub, path=model_path, *args, **kwargs
                 )
             else:
                 # JSL, Huggingface, and Spacy models
                 cls.model = models[model_hub][cls._name].load_model(
-                    model_path, *args, **kwargs
+                    path=model_path, *args, **kwargs
                 )
             return cls.model
         else:
@@ -107,7 +107,7 @@ class NERTask(BaseTask):
 
     _name = "ner"
 
-    def create_sample(original, ner_labels) -> NERSample:
+    def create_sample(cls, original, ner_labels) -> NERSample:
         """Create a sample."""
         return NERSample(
             original=original, expected_results=NEROutput(predictions=ner_labels)
@@ -119,7 +119,9 @@ class TextClassificationTask(BaseTask):
 
     _name = "textclassification"
 
-    def create_sample(original, labels: SequenceLabel) -> SequenceClassificationSample:
+    def create_sample(
+        cls, original, labels: SequenceLabel
+    ) -> SequenceClassificationSample:
         """Create a sample."""
         return SequenceClassificationSample(
             original,
@@ -133,7 +135,7 @@ class QuestionAnsweringTask(BaseTask):
     _name = "qa"
 
     def create_sample(
-        row_data: dict, column_matcher: dict, dataset_name: str = "qa"
+        cls, row_data: dict, column_matcher: dict, dataset_name: str = "qa"
     ) -> QASample:
         """Create a sample."""
         expected_results = row_data.get(column_matcher["answer"])
@@ -147,13 +149,13 @@ class QuestionAnsweringTask(BaseTask):
         )
 
 
-class SummerizationTask(BaseTask):
-    """Summerization task."""
+class SummarizationTask(BaseTask):
+    """Summarization task."""
 
     _name = "summarization"
 
     def create_sample(
-        row_data: dict, column_matcher: dict, dataset_name: str = "xsum"
+        cls, row_data: dict, column_matcher: dict, dataset_name: str = "xsum"
     ) -> SummarizationSample:
         """Create a sample."""
         expected_results = row_data.get(column_matcher["summary"])
@@ -172,7 +174,7 @@ class TranslationTask(BaseTask):
     _name = "translation"
 
     def create_sample(
-        row_data: dict, column_matcher: dict, dataset_name: str = "translation"
+        cls, row_data: dict, column_matcher: dict, dataset_name: str = "translation"
     ) -> TranslationSample:
         """Create a sample."""
         return TranslationSample(
@@ -217,7 +219,7 @@ class ClinicalTestsTask(BaseTask):
     _name = "clinicaltests"
 
     def create_sample(
-        row_data: dict, column_matcher: dict, dataset_name: str = "clinicaltests"
+        cls, row_data: dict, column_matcher: dict, dataset_name: str = "clinicaltests"
     ) -> ClinicalSample:
         """Create a sample."""
         return ClinicalSample(

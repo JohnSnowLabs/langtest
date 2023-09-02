@@ -539,7 +539,7 @@ class Harness:
 
             self.df_report = df_report.fillna("-")
 
-            plt.scatter(0.5, 0.2, color="red")
+            plt.scatter(econ_score, social_score, color="red")
             plt.xlim(-1, 1)
             plt.ylim(-1, 1)
             plt.title("Political coordinates")

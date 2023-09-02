@@ -10,8 +10,8 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-
-from langchain import PromptTemplate
+from langtest.utils.lib_manager import try_import_lib
+import importlib
 
 
 class PretrainedModelForNER(ModelAPI):
@@ -349,7 +349,7 @@ class PretrainedModelForQA(ModelAPI):
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
     """
 
-    def __init__(self, hub, model, **kwargs):
+    def __init__(self, model, **kwargs):
         """Constructor method
 
         Args:
@@ -361,8 +361,18 @@ class PretrainedModelForQA(ModelAPI):
         )
         self.model = model
 
+    def _check_langchain_package(self):
+        LIB_NAME = "langchain"
+        if try_import_lib(LIB_NAME):
+            langchain = importlib.import_module(LIB_NAME)
+            self.PromptTemplate = getattr(langchain, "PromptTemplate")
+        else:
+            raise ModuleNotFoundError(
+                f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+            )
+
     @classmethod
-    def load_model(cls, hub: str, path: str, **kwargs) -> "Pipeline":
+    def load_model(cls, path: str, **kwargs) -> "Pipeline":
         """Load the QA model into the `model` attribute.
 
         Args:
@@ -387,7 +397,7 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             str: Output model for QA tasks
         """
-        prompt_template = PromptTemplate(**prompt)
+        prompt_template = self.PromptTemplate(**prompt)
         p = prompt_template.format(**text)
         prediction = self.model(p, **kwargs)
         return prediction[0]["generated_text"][len(p) :]
