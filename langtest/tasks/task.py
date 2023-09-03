@@ -33,24 +33,29 @@ class BaseTask(ABC):
     @classmethod
     def load_model(cls, model_path: str, model_hub: str, *args, **kwargs):
         """Load the model."""
+
         models = ModelAPI.model_registry
 
-        if model_hub in list(models.keys()) + list(LANGCHAIN_HUBS.keys()):
-            if model_hub in LANGCHAIN_HUBS:
-                # LLM models
-                cls.model = models["llm"][cls._name].load_model(
-                    hub=model_hub, path=model_path, *args, **kwargs
-                )
-            else:
-                # JSL, Huggingface, and Spacy models
-                cls.model = models[model_hub][cls._name].load_model(
-                    path=model_path, *args, **kwargs
-                )
-            return cls.model
-        else:
-            raise ValueError(
-                f"Provided model hub is not supported. Please choose one of the supported model hubs: {list(models.keys())}"
+        base_hubs = list(models.keys())
+        base_hubs.remove("llm")
+        supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
+
+        if model_hub not in supported_hubs:
+            raise AssertionError(
+                f"Provided model hub is not supported. Please choose one of the supported model hubs: {supported_hubs}"
             )
+
+        if model_hub in LANGCHAIN_HUBS:
+            # LLM models
+            cls.model = models["llm"][cls._name].load_model(
+                hub=model_hub, path=model_path, *args, **kwargs
+            )
+        else:
+            # JSL, Huggingface, and Spacy models
+            cls.model = models[model_hub][cls._name].load_model(
+                path=model_path, *args, **kwargs
+            )
+        return cls.model
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -73,7 +78,7 @@ class TaskManager:
 
     def __init__(self, task_name: str):
         if task_name not in BaseTask.task_registry:
-            raise ValueError(
+            raise AssertionError(
                 f"Provided task is not supported. Please choose one of the supported tasks: {list(BaseTask.task_registry.keys())}"
             )
         self.__task_name = task_name
