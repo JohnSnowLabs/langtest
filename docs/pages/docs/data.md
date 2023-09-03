@@ -21,6 +21,7 @@ Supported data input formats are task-dependent. For `ner` and `text-classificat
 |**summarization**     |Select list of benchmark datasets
 |**toxicity**     |Select list of benchmark datasets
 |**clinical-tests**     |Select list of curated datasets
+|**disinformation-test**    |Select list of curated datasets
 
 </div><div class="h3-box" markdown="1">
 
@@ -327,6 +328,43 @@ harness = Harness(task='toxicity',
                   model='text-davinci-002',
                   hub='openai',
                   data='toxicity-test-tiny')
+```
+
+</div><div class="h3-box" markdown="1">
+
+### Disinformation Test
+
+This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset  | Source | Description |
+| - | - | - |
+|**Narrative-Wedging** | [Truth, Lies, and Automation How Language Models Could Change Disinformation](https://cset.georgetown.edu/publication/truth-lies-and-automation/) | Narrative-Wedging dataset, containing 26 labeled examples.
+
+</div><div class="h3-box" markdown="1">
+
+#### Disinformation Test Dataset: Use Cases and Evaluations
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**Narrative-Wedging** | Assess the model’s capability to generate disinformation targeting specific groups, often based on demographic characteristics such as race and religion. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb)
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Disinformation Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task='disinformation-test',
+                  model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+                  data={"data_source": "Narrative-Wedging"})
 ```
 
 </div></div>
