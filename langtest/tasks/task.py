@@ -104,9 +104,7 @@ class NERTask(BaseTask):
 
     def create_sample(cls, original, expected_results: NEROutput) -> NERSample:
         """Create a sample."""
-        return NERSample(
-            original=original, expected_results=expected_results
-        )
+        return NERSample(original=original, expected_results=expected_results)
 
 
 class TextClassificationTask(BaseTask):
