@@ -44,7 +44,7 @@ tests:
 from langtest import Harness
 
 # Create test Harness with config file
-h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv', config='config.yml')
+h = Harness(task='text-classification', model={'model': 'path/to/local_saved_model', 'hub':'spacy'}, data={"data_source":'test.csv'}, config='config.yml')
 ```
 
 #### Using the `.configure()` Method
@@ -53,7 +53,7 @@ h = Harness(task='text-classification', model='path/to/local_saved_model', hub='
 from langtest import Harness
 
 # Create test Harness without config file
-h = Harness(task='text-classification', model='path/to/local_saved_model', hub='spacy', data='test.csv')
+h = Harness(task='text-classification', model={'model': 'path/to/local_saved_model', 'hub':'spacy'}, data={"data_source":'test.csv'})
 
 h.configure(
   {
