@@ -10,15 +10,39 @@ modify_date: "2019-05-16"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-Supported data input formats are task-dependent. For `ner` and `text-classification`, the user is meant to provide a **`CoNLL`** or **`CSV`** dataset. For `question-answering`, `summarization`,`clinical-tests` and `toxicity`  the user is meant to choose from a list of benchmark datasets we support.
+The provided code initializes an instance of the Harness class. It accepts a data parameter, which can be specified as a `dictionary` with the following attributes.
+
+```python
+{
+   "data_source": "",
+   "subset": "",
+   "feature_column": "",
+   "target_column": "",
+   "split": "",
+   "source": "huggingface"
+}
+```
+<br/>
+
+{:.table2}
+| Key  | Description |
+| - | - |
+|**data_source**(mandatory)     |Represents the name of the dataset being used.|
+|**subset**(optional)     |Indicates the subset of the dataset being considered.
+|**feature_column**(optional)       |Specifies the column that contains the input features.
+|**target_column**(optional)     |Represents the column that contains the target labels or categories.
+|**split**(optional)       |Denotes which split of the dataset should be used.|
+|**source**(optional)|Set to ‘huggingface’ when loading Hugging Face dataset.|
+
+Supported `data_source` formats are task-dependent. The following table provides an overview of the compatible data sources for each specific task.
 
 {:.table2}
 | Task  | Supported Data Inputs |  
 | - | - | 
-|**ner**     |CoNLL and CSV|
-|**text-classification**     |CSV or a Dictionary (containing the name, subset, split, feature_column and target_column for loading the HF dataset.)
-|**question-answering**     |Select list of benchmark datasets
-|**summarization**     |Select list of benchmark datasets
+|**ner**     |CoNLL, CSV and HuggingFace Datasets|
+|**text-classification**     |CSV and HuggingFace Datsets
+|**question-answering**     |Select list of benchmark datasets or HuggingFace Datsets
+|**summarization**     |Select list of benchmark datasets or HuggingFace Datsets
 |**toxicity**     |Select list of benchmark datasets
 |**clinical-tests**     |Select list of curated datasets
 |**disinformation-test**    |Select list of curated datasets
@@ -27,7 +51,7 @@ Supported data input formats are task-dependent. For `ner` and `text-classificat
 
 ### NER
 
-There are 2 options for datasets to test NER models: **`CoNLL`** or **`CSV`** datasets. Here are some details of what these may look like:
+There are three options for datasets to test NER models: **`CoNLL`**, **`CSV`** and **HuggingFace** datasets. Here are some details of what these may look like:
 
 #### CoNLL Format for NER
 
@@ -67,11 +91,31 @@ harness = Harness(task='ner',
                   config='config.yml') #Either of the two formats can be specified.
 ```
 
+#### Passing a Hugging Face Dataset for NER to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task="ner",
+                  model={"model": "en_core_web_sm", "hub": "spacy"},
+                  data={"data_source":'wikiann',
+                  "subset":"en",
+                  "feature_column":"tokens",
+                  "target_column":'ner_tags',
+                  "split":"test",
+                  "source": "huggingface"
+                  })
+```
+
+
 </div><div class="h3-box" markdown="1">
 
 ### Text Classification
 
-There are 2 options for datasets to test Text Classification models: **`CSV`** datasets or a **`Dictionary`** containing the name, subset, split, feature_column and target_column for loading the HF datasets. Here are some details of what these may look like:
+There are 2 options for datasets to test Text Classification models: **`CSV`** datasets or loading **`HuggingFace Datasets`** containing the name, subset, split, feature_column and target_column for loading the HF datasets. Here are some details of what these may look like:
 
 #### CSV Format for Text Classification
 
@@ -107,23 +151,6 @@ harness = Harness(task='text-classification',
 ```
 
 </div><div class="h3-box" markdown="1">
-
-#### Dictionary Format for Text Classification
-To handle text classification task for Hugging Face Datasets, the Harness class accepts the data parameter as a dictionary with following attributes:
-
-<i class="fa fa-info-circle"></i>
-<em>It's important to note that the default values for the **`split`**, **`feature_column`**, and **`target_column`** attributes are **`test`**, **`text`**, and **`label`**, respectively.</em>
-
-```python
-{
-   "data_source": "",
-   "subset": "",
-   "feature_column": "",
-   "target_column": "",
-   "split": "",
-   "source": "huggingface"
-}
-```
 
 #### Passing a Hugging Face Dataset for Text Classification to the Harness
 
