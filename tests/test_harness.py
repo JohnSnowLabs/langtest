@@ -3,6 +3,7 @@ import unittest
 import pandas as pd
 from langtest import Harness
 from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.tasks.task import TaskManager
 from langtest.utils.custom_types import Sample
 
 
@@ -47,7 +48,7 @@ class HarnessTestCase(unittest.TestCase):
         """
         Test the attributes of the Harness class.
         """
-        self.assertIsInstance(self.harness.task, str)
+        self.assertIsInstance(self.harness.task, TaskManager)
         self.assertIsInstance(self.harness.model, (str, ModelAPI))
         self.assertIsInstance(self.harness._config, (str, dict))
 
@@ -89,7 +90,7 @@ class HarnessTestCase(unittest.TestCase):
         """
         Test handling of incompatible tasks.
         """
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AssertionError):
             Harness(
                 task="text-classifer",
                 model={"model": "dslim/bert-base-NER", "hub": "huggingface"},

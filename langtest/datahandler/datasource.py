@@ -518,7 +518,7 @@ class CSVDataset(_IDataset):
         if type(file_path) == dict:
             self.delimiter = self._find_delimiter(file_path["data_source"])
         else:
-            if task in self.COLUMN_NAMES:
+            if task.task_name in self.COLUMN_NAMES:
                 self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
             elif "is_import" not in kwargs:
                 raise ValueError(

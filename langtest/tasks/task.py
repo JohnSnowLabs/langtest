@@ -96,6 +96,10 @@ class TaskManager:
         """Check if the task is equal to another task."""
         return self.__task_name == __value.lower()
 
+    def __hash__(self) -> int:
+        """Return the hash of the task name."""
+        return hash(self.__task_name)
+
     @property
     def task_name(self):
         """Return the task name."""

@@ -7,6 +7,8 @@ from langtest.utils.lib_manager import try_import_lib
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
     "huggingfacehub": "huggingface-inference-api",
+    "transformers": "huggingface",
+    "jsl": "johnsnowlabs",
 }
 
 if try_import_lib("langchain"):
@@ -42,8 +44,8 @@ class ModelAPI(ABC):
 
     def __init_subclass__(cls, *args, **kwargs) -> None:
         hub = cls.__module__.split(".")[-1].split("_")[0]
-        if hub == "transformers":
-            hub = "huggingface"
+        if hub in RENAME_HUBS:
+            hub = RENAME_HUBS[hub]
         task = cls.__name__.replace("PretrainedModelFor", "").lower()
         ModelAPI.model_registry[hub][task] = cls
         return super().__init_subclass__(*args, **kwargs)
