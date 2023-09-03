@@ -49,7 +49,9 @@ class TestNERDataset:
                 "ner_tags",
             ),
             (
-                ConllDataset(file_path="tests/fixtures/test.conll", task=TaskManager("ner")),
+                ConllDataset(
+                    file_path="tests/fixtures/test.conll", task=TaskManager("ner")
+                ),
                 "text",
                 "labels",
             ),
@@ -85,14 +87,19 @@ class TestNERDataset:
                 },
             ),
             (
-                HuggingFaceDataset(dataset_name="Prikshit7766/12", task=TaskManager("ner")),
+                HuggingFaceDataset(
+                    dataset_name="Prikshit7766/12", task=TaskManager("ner")
+                ),
                 {
                     "feature_column": "tokens",
                     "target_column": "ner_tags",
                     "split": "test",
                 },
             ),
-            (CSVDataset(file_path="tests/fixtures/tner.csv", task=TaskManager("ner")), {}),
+            (
+                CSVDataset(file_path="tests/fixtures/tner.csv", task=TaskManager("ner")),
+                {},
+            ),
             (
                 CSVDataset(
                     file_path={
@@ -104,7 +111,12 @@ class TestNERDataset:
                 ),
                 {},
             ),
-            (ConllDataset(file_path="tests/fixtures/test.conll", task=TaskManager("ner")), {}),
+            (
+                ConllDataset(
+                    file_path="tests/fixtures/test.conll", task=TaskManager("ner")
+                ),
+                {},
+            ),
         ],
     )
     def test_load_data(self, dataset, params):
@@ -132,7 +144,9 @@ class TestNERDataset:
 
     def test_export_data_conll(self):
         """"""
-        dataset = ConllDataset(file_path="tests/fixtures/test.conll", task=TaskManager("ner"))
+        dataset = ConllDataset(
+            file_path="tests/fixtures/test.conll", task=TaskManager("ner")
+        )
         dataset.export_data(
             data=[self.sample, self.sample], output_path="/tmp/exported_sample.conll"
         )
@@ -189,7 +203,9 @@ class TestNERDataset:
             "label",
         ),
         (
-            HuggingFaceDataset(dataset_name="dbrd", task=TaskManager("text-classification")),
+            HuggingFaceDataset(
+                dataset_name="dbrd", task=TaskManager("text-classification")
+            ),
             "text",
             "label",
         ),
@@ -239,7 +255,9 @@ class TestTextClassificationDataset:
             "summary",
         ),
         (
-            JSONLDataset(file_path="/tmp/summarization_1.jsonl", task=TaskManager("summarization")),
+            JSONLDataset(
+                file_path="/tmp/summarization_1.jsonl", task=TaskManager("summarization")
+            ),
             "text",
             "summary",
         ),
