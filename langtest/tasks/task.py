@@ -99,7 +99,7 @@ class TaskManager:
     def __hash__(self) -> int:
         """Return the hash of the task name."""
         return hash(self.__task_name)
-    
+
     def __str__(self) -> str:
         """Return the task name."""
         return self.__task_name

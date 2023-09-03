@@ -48,7 +48,7 @@ class HuggingFaceTestCase(unittest.TestCase):
         """
         task = TaskManager("question-answering")
         model = task.model(model_path="gpt2", model_hub="huggingface")
-        
+
         self.assertIsInstance(model, ModelAPI)
 
     def test_unsupported_task(self):

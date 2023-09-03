@@ -188,7 +188,8 @@ class NEREnd2EndPipeline(FlowSpec):
     def retrain(self):
         """Performs the training procedure using the augmented data created by langtest"""
         self.augmented_train_datasource = DataFactory(
-            file_path={"data_source": self.path_augmented_file}, task=TaskManager(self.task)
+            file_path={"data_source": self.path_augmented_file},
+            task=TaskManager(self.task),
         )
         samples = self.augmented_train_datasource.load_raw()
 
