@@ -629,7 +629,7 @@ class Harness:
 
                 current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 mlflow.start_run(
-                    run_name=self.task + "_testing_" + current_datetime,
+                    run_name=self.task.task_name + "_testing_" + current_datetime,
                     experiment_id=experiment_id,
                 )
 

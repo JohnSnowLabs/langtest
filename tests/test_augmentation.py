@@ -147,7 +147,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         generator = TemplaticAugment(
             templates=["I living in {LOC}", "you are working in {ORG}"],
-            task="ner",
+            task=TaskManager("ner"),
         )
         self.assertIsInstance(generator, TemplaticAugment)
         generator.fix(

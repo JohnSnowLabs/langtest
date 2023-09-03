@@ -1,5 +1,6 @@
 import unittest
 from langtest.modelhandler import ModelAPI
+from langtest.tasks import TaskManager
 
 
 class HuggingFaceTestCase(unittest.TestCase):
@@ -34,9 +35,8 @@ class HuggingFaceTestCase(unittest.TestCase):
         This method tests the loading of a Hugging Face model using the `ModelAPI` class.
         It asserts that the loaded model is an instance of `ModelAPI`.
         """
-        model = ModelAPI.load_model(
-            task=self.tasks[0], hub="huggingface", path=self.models[0]
-        )
+        task = TaskManager(self.tasks[0])
+        model = task.model(model_path=self.models[0], model_hub="huggingface")
         self.assertIsInstance(model, ModelAPI)
 
     def test_transformers_QA_models(self):
@@ -46,9 +46,9 @@ class HuggingFaceTestCase(unittest.TestCase):
         This method tests the loading of a Hugging Face model using the `ModelAPI` class.
         It asserts that the loaded model is an instance of `ModelAPI`.
         """
-        model = ModelAPI.load_model(
-            task="question-answering", hub="huggingface", path="gpt2"
-        )
+        task = TaskManager("question-answering")
+        model = task.model(model_path="gpt2", model_hub="huggingface")
+        
         self.assertIsInstance(model, ModelAPI)
 
     def test_unsupported_task(self):
@@ -60,4 +60,5 @@ class HuggingFaceTestCase(unittest.TestCase):
         """
         # Raises with unsupported task to model Factory
         with self.assertRaises(AssertionError):
-            ModelAPI(self.models[0], self.tasks[1], hub="huggingface")
+            task = TaskManager(self.tasks[1])
+            task.model(model_path=self.models[0], model_hub="huggingface")

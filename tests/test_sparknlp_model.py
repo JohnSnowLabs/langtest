@@ -30,4 +30,4 @@ class SparkNLPTestCase(unittest.TestCase):
         """
         harness = Harness(**self.params)
         self.assertIsInstance(harness.model, (str, ModelAPI))
-        self.assertIsInstance(harness.model.model_class.output_col, str)
+        self.assertIsInstance(harness.model.output_col, str)

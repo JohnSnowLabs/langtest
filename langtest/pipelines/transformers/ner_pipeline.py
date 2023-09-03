@@ -13,6 +13,7 @@ from langtest import Harness
 from langtest.datahandler.datasource import DataFactory
 from langtest.pipelines.utils.data_helpers.ner_dataset import NERDataset
 from langtest.pipelines.utils.metrics import compute_ner_metrics
+from langtest.tasks import TaskManager
 
 
 class NEREnd2EndPipeline(FlowSpec):
@@ -85,10 +86,10 @@ class NEREnd2EndPipeline(FlowSpec):
         self.output_dir = "checkpoints/"
 
         self.train_datasource = DataFactory(
-            file_path={"data_source": self.train_data}, task=self.task
+            file_path={"data_source": self.train_data}, task=TaskManager(self.task)
         )
         self.eval_datasource = DataFactory(
-            file_path={"data_source": self.eval_data}, task=self.task
+            file_path={"data_source": self.eval_data}, task=TaskManager(self.task)
         )
 
         self.next(self.train)
@@ -187,7 +188,7 @@ class NEREnd2EndPipeline(FlowSpec):
     def retrain(self):
         """Performs the training procedure using the augmented data created by langtest"""
         self.augmented_train_datasource = DataFactory(
-            file_path={"data_source": self.path_augmented_file}, task=self.task
+            file_path={"data_source": self.path_augmented_file}, task=TaskManager(self.task)
         )
         samples = self.augmented_train_datasource.load_raw()
 
