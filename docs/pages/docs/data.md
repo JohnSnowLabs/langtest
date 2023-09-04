@@ -41,7 +41,7 @@ Supported `data_source` formats are task-dependent. The following table provides
 | - | - | 
 |**ner**     |CoNLL, CSV and HuggingFace Datasets|
 |**text-classification**     |CSV and HuggingFace Datsets
-|**question-answering**     |Select list of benchmark datasets or HuggingFace Datsets
+|**question-answering**     |Select list of benchmark datasets
 |**summarization**     |Select list of benchmark datasets or HuggingFace Datsets
 |**toxicity**     |Select list of benchmark datasets
 |**clinical-tests**     |Select list of curated datasets
