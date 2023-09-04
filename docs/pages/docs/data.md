@@ -10,23 +10,48 @@ modify_date: "2019-05-16"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-Supported data input formats are task-dependent. For `ner` and `text-classification`, the user is meant to provide a **`CoNLL`** or **`CSV`** dataset. For `question-answering`, `summarization`,`clinical-tests` and `toxicity`  the user is meant to choose from a list of benchmark datasets we support.
+The provided code initializes an instance of the Harness class. It accepts a data parameter, which can be specified as a `dictionary` with the following attributes.
+
+```python
+{
+   "data_source": "",
+   "subset": "",
+   "feature_column": "",
+   "target_column": "",
+   "split": "",
+   "source": "huggingface"
+}
+```
+<br/>
+
+{:.table2}
+| Key  | Description |
+| - | - |
+|**data_source**(mandatory)     |Represents the name of the dataset being used.|
+|**subset**(optional)     |Indicates the subset of the dataset being considered.
+|**feature_column**(optional)       |Specifies the column that contains the input features.
+|**target_column**(optional)     |Represents the column that contains the target labels or categories.
+|**split**(optional)       |Denotes which split of the dataset should be used.|
+|**source**(optional)|Set to ‘huggingface’ when loading Hugging Face dataset.|
+
+Supported `data_source` formats are task-dependent. The following table provides an overview of the compatible data sources for each specific task.
 
 {:.table2}
 | Task  | Supported Data Inputs |  
 | - | - | 
-|**ner**     |CoNLL and CSV|
-|**text-classification**     |CSV or a Dictionary (containing the name, subset, split, feature_column and target_column for loading the HF dataset.)
-|**question-answering**     |Select list of benchmark datasets
-|**summarization**     |Select list of benchmark datasets
+|**ner**     |CoNLL, CSV and HuggingFace Datasets|
+|**text-classification**     |CSV and HuggingFace Datsets
+|**question-answering**     |Select list of benchmark datasets or HuggingFace Datsets
+|**summarization**     |Select list of benchmark datasets or HuggingFace Datsets
 |**toxicity**     |Select list of benchmark datasets
 |**clinical-tests**     |Select list of curated datasets
+|**disinformation-test**    |Select list of curated datasets
 
 </div><div class="h3-box" markdown="1">
 
 ### NER
 
-There are 2 options for datasets to test NER models: **`CoNLL`** or **`CSV`** datasets. Here are some details of what these may look like:
+There are three options for datasets to test NER models: **`CoNLL`**, **`CSV`** and **HuggingFace** datasets. Here are some details of what these may look like:
 
 #### CoNLL Format for NER
 
@@ -61,17 +86,36 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='ner',
-                  model='en_core_web_sm',
-                  config='config.yml',
-                  hub='spacy',
-                  data='sample.conll') #Either of the two formats can be specified.
+                  model={'model': 'en_core_web_sm', 'hub':'spacy'},
+                  data={"data_source":'test.conll'},
+                  config='config.yml') #Either of the two formats can be specified.
 ```
+
+#### Passing a Hugging Face Dataset for NER to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task="ner",
+                  model={"model": "en_core_web_sm", "hub": "spacy"},
+                  data={"data_source":'wikiann',
+                  "subset":"en",
+                  "feature_column":"tokens",
+                  "target_column":'ner_tags',
+                  "split":"test",
+                  "source": "huggingface"
+                  })
+```
+
 
 </div><div class="h3-box" markdown="1">
 
 ### Text Classification
 
-There are 2 options for datasets to test Text Classification models: **`CSV`** datasets or a **`Dictionary`** containing the name, subset, split, feature_column and target_column for loading the HF datasets. Here are some details of what these may look like:
+There are 2 options for datasets to test Text Classification models: **`CSV`** datasets or loading **`HuggingFace Datasets`** containing the name, subset, split, feature_column and target_column for loading the HF datasets. Here are some details of what these may look like:
 
 #### CSV Format for Text Classification
 
@@ -101,29 +145,12 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='text-classification',
-                  model='mrm8488/distilroberta-finetuned-tweets-hate-speech',
-                  config='config.yml',
-                  hub ='huggingface',
-                  data='sample.csv')
+                  model={'model': 'mrm8488/distilroberta-finetuned-tweets-hate-speech', 'hub':'huggingface'},
+                  data={"data_source":'sample.csv'},
+                  config='config.yml')
 ```
 
 </div><div class="h3-box" markdown="1">
-
-#### Dictionary Format for Text Classification
-To handle text classification task for Hugging Face Datasets, the Harness class accepts the data parameter as a dictionary with following attributes:
-
-<i class="fa fa-info-circle"></i>
-<em>It's important to note that the default values for the **`split`**, **`feature_column`**, and **`target_column`** attributes are **`test`**, **`text`**, and **`label`**, respectively.</em>
-
-```python
-{
-   "name": "",
-   "subset": "",
-   "feature_column": "",
-   "target_column": "",
-   "split": ""
-}
-```
 
 #### Passing a Hugging Face Dataset for Text Classification to the Harness
 
@@ -133,13 +160,14 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task="text-classification", hub="huggingface",
-                  model="distilbert-base-uncased-finetuned-sst-2-english",
-                  data={"name":'glue',
+harness = Harness(task="text-classification",
+                  model={'model': 'mrm8488/distilroberta-finetuned-tweets-hate-speech', 'hub':'huggingface'},
+                  data={"data_source":'glue',
                   "subset":"sst2",
                   "feature_column":"sentence",
                   "target_column":'label',
-                  "split":"train"
+                  "split":"train",
+                  "source": "huggingface"
                   })
 ```
 
@@ -177,6 +205,19 @@ To test Question Answering models, the user is meant to select a benchmark datas
 |**OpenBookQA-test-tiny** | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa) | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.
 |**BBQ-test** | [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193) | Testing set from the BBQ dataset, containing 1000 question answers examples.
 |**BBQ-test-tiny** | [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193) | Truncated version of the test set from the BBQ dataset, containing 50 question and answers examples.
+|**LogiQA-test** | [LogiQA](https://aclanthology.org/2020.findings-emnlp.301/) | Testing set from the LogiQA dataset, containing 1000 question answers examples.
+|**LogiQA-test-tiny** | [LogiQA](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated version of the test set from the LogiQA dataset, containing 50 question and answers examples.
+|**ASDiv-test** | [ASDiv](https://arxiv.org/abs/2106.15772) | Testing set from the ASDiv dataset, containing 1000 question answers examples.
+|**ASDiv-test-tiny** | [ASDiv](https://arxiv.org/abs/2106.15772) | Truncated version of the test set from the ASDiv dataset, containing 50 question and answers examples.
+|**Bigbench-Abstract-narrative-understanding-test** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Testing set from the Bigbench/Abstract Narrative Understanding dataset, containing 1000 question answers examples.
+|**Bigbench-Abstract-narrative-understanding-test-tiny** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Truncated version of the test set from the Bigbench/Abstract Narrative Understanding dataset, containing 50 question and answers examples.
+|**Bigbench-DisambiguationQA-test** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Testing set from the Bigbench/DisambiguationQA dataset, containing 207 question answers examples.
+|**Bigbench-DisambiguationQA-test-tiny** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Truncated version of the test set from the Bigbench/DisambiguationQA dataset, containing 50 question and answers examples.
+|**Bigbench-DisflQA-test** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Testing set from the Bigbench/DisflQA dataset, containing 1000 question answers examples.
+|**Bigbench-DisflQA-test** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Truncated version of the test set from the Bigbench/DisflQA dataset, containing 50 question and answers examples.
+|**Bigbench-Causal-judgment-test** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Testing set from the Bigbench/Causal Judgment dataset, containing 190 question and answers examples.
+|**Bigbench-Causal-judgment-test-tiny** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615) | Truncated version of the test set from the Bigbench/Causal Judgment dataset, containing 50 question and answers examples.
+
 
 </div><div class="h3-box" markdown="1">
 
@@ -197,6 +238,12 @@ Langtest comes with different datasets to test your models, covering a wide rang
 |**Quac** |Evaluate your model's ability to answer questions given a conversational context, focusing on dialogue-based question-answering. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)|
 |**OpenBookQA** |Evaluate your model's ability to answer questions that require complex reasoning and inference based on general knowledge, similar to an "open-book" exam.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)|
 |**BBQ** |Evaluate how your model respond to questions in the presence of social biases against protected classes across various social dimensions. Assess biases in model outputs with both under-informative and adequately informative contexts, aiming to promote fair and unbiased question answering models| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)|
+|**LogiQA** |Evaluate your model's accuracy on Machine Reading Comprehension with Logical Reasoning questions. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LogiQA_dataset.ipynb)|
+|**ASDiv** |Evaluate your model's ability to answer questions given a conversational context, focusing on dialogue-based question-answering. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/ASDiv_dataset.ipynb)|
+|**BigBench Abstract narrative understanding** |Evaluate your model's performance in selecting the most relevant proverb for a given narrative. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)|
+|**BigBench Causal Judgment** |Evaluate your model's performance in measuring the ability to reason about cause and effect. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)|
+|**BigBench DisambiguationQA** |Evaluate your model's performance on determining the interpretation of sentences containing ambiguous pronoun references. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)|
+|**BigBench DisflQA** |Evaluate your model's performance in picking the correct answer span from the context given the disfluent question. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)|
 
 </div><div class="h3-box" markdown="1">
 
@@ -209,10 +256,9 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='question-answering',
-                  model='gpt-3.5-turbo',
-                  config='config.yml',
-                  hub ='openai',
-                  data='BoolQ-test')
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'BoolQ-test'}, 
+                  config='config.yml')
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -249,10 +295,9 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='summarization',
-                  model='text-davinci-002',
-                  config='config.yml',
-                  hub ='openai',
-                  data='XSum-test-tiny')
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'XSum-test-tiny'}, 
+                  config='config.yml')
 ```
 
 #### Passing a Hugging Face Dataset for Summarization to the Harness
@@ -264,12 +309,12 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task="summarization", 
-                  hub="openai",
-                  model="text-davinci-003",
-                  data={"name":'samsum',
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'samsum',
                   "feature_column":"dialogue",
                   "target_column":'summary',
-                  "split":"test"
+                  "split":"test",
+                  "source": "huggingface"
                   })
 ```
 </div><div class="h3-box" markdown="1">
@@ -305,9 +350,45 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task='toxicity',
-                  model='text-davinci-002',
-                  hub='openai',
-                  data='toxicity-test-tiny')
+                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  data={"data_source":'toxicity-test-tiny'})
+```
+
+</div><div class="h3-box" markdown="1">
+
+### Disinformation Test
+
+This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset  | Source | Description |
+| - | - | - |
+|**Narrative-Wedging** | [Truth, Lies, and Automation How Language Models Could Change Disinformation](https://cset.georgetown.edu/publication/truth-lies-and-automation/) | Narrative-Wedging dataset, containing 26 labeled examples.
+
+</div><div class="h3-box" markdown="1">
+
+#### Disinformation Test Dataset: Use Cases and Evaluations
+
+{:.table2}
+| Dataset  | Use Case |Notebook|
+|-|
+|**Narrative-Wedging** | Assess the model’s capability to generate disinformation targeting specific groups, often based on demographic characteristics such as race and religion. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb)
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Disinformation Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task='disinformation-test',
+                  model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+                  data={"data_source": "Narrative-Wedging"})
 ```
 
 </div></div>

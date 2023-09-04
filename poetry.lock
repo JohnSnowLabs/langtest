@@ -4568,9 +4568,9 @@ metaflow = ["metaflow"]
 mlflow = ["mlflow"]
 openai = ["langchain", "openai"]
 spacy = ["spacy"]
-transformers = ["accelerate", "datasets", "torch", "transformers"]
+transformers = ["accelerate", "datasets", "transformers", "torch"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "7e27c44a6ab497cab475da136e680611fcd8517edda90d2835f39ef15e5a6412"
+content-hash = "329c8b3e81f5d255b38bddbccae08e75c8917578b502a95e8277268ad08c76fe"

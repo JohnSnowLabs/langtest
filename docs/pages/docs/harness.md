@@ -30,9 +30,8 @@ Here is a list of the different parameters that can be passed to the `Harness` c
 | Parameter   | Description |  
 | - | - | 
 |**task**     |Task for which the model is to be evaluated ('text-classification', 'question-answering', 'ner')|
-|**model**    |Pretrained pipeline or model from the corresponding hub, or path to a saved model from the corresponding hub, or PipelineModel object or a dictionary containing the names of the models you want to compare, each paired with its respective hub - see [Model Input](https://langtest.org/docs/pages/docs/model_input) for more details
-|**hub**      |Hub (library) to use in back-end for loading model from public models hub or from path|
-|**data**     |Path to the data to be used for evaluation. Should be `.csv` or a dictionary containing the name, subset, split, feature_column and target_column for loading the HF dataset for text classification, or `.conll` or `.txt` file in CoNLL format for NER - see [Data Input](https://langtest.org/docs/pages/docs/data_input) for more details
+| **model**     | Specifies the model(s) to be evaluated. This parameter can be provided as either a dictionary or a list of dictionaries. Each dictionary should contain the following keys: <BR>• model (mandatory): 	PipelineModel or path to a saved model or pretrained pipeline/model from hub.<BR>• hub (mandatory): Hub (library) to use in back-end for loading model from public models hub or from path|
+| **data**      | The data to be used for evaluation. A dictionary providing flexibility and options for data sources. It should include the following keys: <BR>• data_source (mandatory): The source of the data.<BR>• subset (optional): The subset of the data.<BR>• feature_column (optional): The column containing the features.<BR>• target_column (optional): The column containing the target labels.<BR>• split (optional): The data split to be used.<BR>• source (optional): Set to 'huggingface' when loading Hugging Face dataset. |
 |**config**   |Path to the YAML file with configuration of tests to be performed
 
 </div></div>
