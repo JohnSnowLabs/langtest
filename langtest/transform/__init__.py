@@ -371,7 +371,7 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
-        no_transformation_applied_tests = set()
+        no_transformation_applied_tests = {}
         tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
@@ -505,14 +505,18 @@ class RobustnessTestFactory(ITests):
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
                 TestFactory.task, transformed_samples, test_name
             )
-            no_transformation_applied_tests.update(removed_samples_tests)
             all_samples.extend(new_transformed_samples)
 
+            no_transformation_applied_tests.update(removed_samples_tests)
+
         if no_transformation_applied_tests:
-            logging.warning(
-                "Removing samples where no transformation has been applied in the following tests: "
-                + ", ".join(no_transformation_applied_tests)
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
             )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
 
         return all_samples
 
@@ -689,7 +693,7 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
-        no_transformation_applied_tests = set()
+        no_transformation_applied_tests = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
@@ -700,14 +704,18 @@ class BiasTestFactory(ITests):
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
                 TestFactory.task, transformed_samples, test_name
             )
-            no_transformation_applied_tests.update(removed_samples_tests)
             all_samples.extend(new_transformed_samples)
 
+            no_transformation_applied_tests.update(removed_samples_tests)
+
         if no_transformation_applied_tests:
-            logging.warning(
-                "Removing samples where no transformation has been applied in the following tests: "
-                + ", ".join(no_transformation_applied_tests)
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
             )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
 
         return all_samples
 
