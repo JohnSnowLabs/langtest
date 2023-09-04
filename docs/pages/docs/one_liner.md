@@ -371,3 +371,30 @@ h.generate().run().report()
     </div>
   </div>
 </div>
+
+### One Liner - Political-Test
+
+Try out the LangTest library on the following default model for Political Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[openai]
+
+import os
+os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="political", model={'model': "text-davinci-003", "hub": "openai"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
