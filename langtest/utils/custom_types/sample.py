@@ -495,6 +495,9 @@ class QASample(BaseQASample):
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
+        if self.dataset_name in ["BoolQ"] and (self.actual_results == self.expected_results):
+            return True
+
         if "llm" in str(type(llm_model.model_class)):
             if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ"]:
                 PROMPT = PromptTemplate(
