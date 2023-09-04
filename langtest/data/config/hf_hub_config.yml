@@ -1,0 +1,11 @@
+# this section is only required for LLM models
+model_parameters:
+  max_new_tokens: 128
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  robustness:
+    lowercase:
+      min_pass_rate: 0.70

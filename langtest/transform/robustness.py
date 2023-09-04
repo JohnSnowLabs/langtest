@@ -487,12 +487,16 @@ class SwapEntities(BaseRobustness):
                 sample.category = "robustness"
                 if all([label == "O" for label in sample_labels]):
                     sample.test_case = sample.original
-                    continue
+                    break
 
                 sent_tokens = sample.original.split(" ")
 
                 ent_start_pos = [1 if label[0] == "B" else 0 for label in sample_labels]
                 ent_idx = [i for i, value in enumerate(ent_start_pos) if value == 1]
+
+                if not ent_idx:
+                    sample.test_case = sample.original
+                    break
 
                 replace_idx = random.choice(ent_idx)
                 ent_type = sample_labels[replace_idx][2:]

@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import numpy as np
 from transformers import Pipeline, pipeline
@@ -10,6 +10,8 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
+from langtest.utils.lib_manager import try_import_lib
+import importlib
 
 
 class PretrainedModelForNER(_ModelHandler):
@@ -334,3 +336,108 @@ class PretrainedModelForTranslation(_ModelHandler):
     def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
+
+
+class PretrainedModelForQA(_ModelHandler):
+    """Transformers pretrained model for QA tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
+    """
+
+    def __init__(self, hub, model, **kwargs):
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
+        self.model = model
+
+    def _check_langchain_package(self):
+        LIB_NAME = "langchain"
+        if try_import_lib(LIB_NAME):
+            langchain = importlib.import_module(LIB_NAME)
+            self.PromptTemplate = getattr(langchain, "PromptTemplate")
+        else:
+            raise ModuleNotFoundError(
+                f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
+            )
+
+    @staticmethod
+    def load_model(hub: str, path: str, **kwargs) -> "Pipeline":
+        """Load the QA model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+        if "task" in kwargs.keys():
+            kwargs.pop("task")
+        return pipeline(model=path, **kwargs)
+
+    def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform QA on.
+            kwargs: Additional keyword arguments.
+
+
+        Returns:
+            str: Output model for QA tasks
+        """
+        prompt_template = self.PromptTemplate(**prompt)
+        p = prompt_template.format(**text)
+        prediction = self.model(p, **kwargs)
+        return prediction[0]["generated_text"][len(p) :]
+
+    def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, prompt=prompt, **kwargs)
+
+
+class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass
+
+
+class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass
+
+
+class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass
+
+
+class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+    """Transformers pretrained model for summarization tasks
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
+    """
+
+    pass

@@ -351,3 +351,63 @@ def check_name(word: str, name_lists: List[List[str]]) -> bool:
     return any(
         word.lower() in [name.lower() for name in name_list] for name_list in name_lists
     )
+
+
+def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
+    """
+    Filter and remove samples with no applied transformations from the list of transformed_samples.
+
+    Args:
+        task (str): The type of task.
+        transformed_samples (list): List of transformed samples to be filtered.
+        test_name (str): Name of the test.
+
+    Returns:
+        new_transformed_samples (list): List of filtered samples with unique transformations.
+        no_transformation_applied_tests (dict): A dictionary where keys are test names and
+            values are the number of samples removed from each test.
+    """
+    no_transformation_applied_tests = {}
+    new_transformed_samples = []
+    if task == "question-answering":
+        for sample in transformed_samples:
+            if (
+                sample.original_question.replace(" ", "")
+                != sample.perturbed_question.replace(" ", "")
+            ) or (
+                sample.original_context.replace(" ", "")
+                != sample.perturbed_context.replace(" ", "")
+            ):
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
+                new_transformed_samples.append(sample)
+            else:
+                if test_name == "multiple_perturbations":
+                    if sample.test_type in no_transformation_applied_tests:
+                        no_transformation_applied_tests[sample.test_type] += 1
+                    else:
+                        no_transformation_applied_tests[sample.test_type] = 1
+                else:
+                    if test_name in no_transformation_applied_tests:
+                        no_transformation_applied_tests[test_name] += 1
+                    else:
+                        no_transformation_applied_tests[test_name] = 1
+    else:
+        for sample in transformed_samples:
+            if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):
+                if test_name != "multiple_perturbations":
+                    sample.test_type = test_name
+                new_transformed_samples.append(sample)
+            else:
+                if test_name == "multiple_perturbations":
+                    if sample.test_type in no_transformation_applied_tests:
+                        no_transformation_applied_tests[sample.test_type] += 1
+                    else:
+                        no_transformation_applied_tests[sample.test_type] = 1
+                else:
+                    if test_name in no_transformation_applied_tests:
+                        no_transformation_applied_tests[test_name] += 1
+                    else:
+                        no_transformation_applied_tests[test_name] = 1
+
+    return new_transformed_samples, no_transformation_applied_tests

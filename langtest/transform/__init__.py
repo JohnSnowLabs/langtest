@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import time
+import logging
 from collections import defaultdict
 from abc import ABC, abstractmethod
 from typing import Dict, List, Union
@@ -19,6 +20,7 @@ from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
+from .political import BasePolitical
 from .constants import (
     A2B_DICT,
     asian_names,
@@ -33,7 +35,7 @@ from .constants import (
     religion_wise_names,
     white_names,
 )
-from .utils import get_substitution_names, create_terminology
+from .utils import get_substitution_names, create_terminology, filter_unique_samples
 from ..modelhandler import ModelFactory
 from ..utils.custom_types.sample import (
     NERSample,
@@ -181,7 +183,12 @@ class TestFactory:
             if hasattr(each, "_result"):
                 results.extend(each._result)
             elif isinstance(each, list):
-                results.extend(each)
+                for i in each:
+                    if hasattr(i, "_result"):
+                        results.extend(i._result)
+                    else:
+                        results.append(i)
+
         return results
 
     @classmethod
@@ -305,7 +312,6 @@ class RobustnessTestFactory(ITests):
             tests Optional[Dict]:
                 A dictionary of test names and corresponding parameters (default is None).
         """
-
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
@@ -365,7 +371,8 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
-        tests_copy = self.tests.copy()  # Create a copy of self.tests
+        no_transformation_applied_tests = {}
+        tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
                 data_handler_copy = [x.copy() for x in self._data_handler]
@@ -495,11 +502,22 @@ class RobustnessTestFactory(ITests):
                     **params.get("parameters", {}),
                     prob=params.pop("prob", 1.0),
                 )
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            all_samples.extend(new_transformed_samples)
 
-            for sample in transformed_samples:
-                if test_name != "multiple_perturbations":
-                    sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+            no_transformation_applied_tests.update(removed_samples_tests)
+
+        if no_transformation_applied_tests:
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
+            )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
+
         return all_samples
 
     @staticmethod
@@ -675,6 +693,7 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
+        no_transformation_applied_tests = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
@@ -682,9 +701,21 @@ class BiasTestFactory(ITests):
                 data_handler_copy, **params.get("parameters", {})
             )
 
-            for sample in transformed_samples:
-                sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            all_samples.extend(new_transformed_samples)
+
+            no_transformation_applied_tests.update(removed_samples_tests)
+
+        if no_transformation_applied_tests:
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
+            )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
 
         return all_samples
 
@@ -1465,3 +1496,113 @@ class ClinicalTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["demographic-bias"]
+
+
+class DisinformationTestFactory(ITests):
+    """Factory class for disinformation test"""
+
+    alias_name = "disinformation"
+    supported_tasks = [
+        "disinformation-test",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        for sample in self.data_handler:
+            sample.test_type = "narrative_wedging"
+            sample.category = "disinformation"
+
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        return {"narrative_wedging": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["narrative_wedging"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["narrative_wedging"]
+
+
+class PoliticalTestFactory(ITests):
+    """Factory class for the clinical tests"""
+
+    alias_name = "political"
+    supported_tasks = ["question_answering", "summarization"]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the clinical tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+        self.supported_tests = self.available_tests()
+
+    def transform(self) -> List[Sample]:
+        all_samples = []
+        for test_name, params in self.tests.items():
+            transformed_samples = self.supported_tests[test_name].transform(
+                self.data_handler, **self.kwargs
+            )
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the model performance
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the model performance
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented model performance
+
+        """
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+        return tasks
+
+    @staticmethod
+    def available_tests() -> Dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            Dict: A dictionary of test names and classes.
+
+        """
+
+        tests = {
+            j: i
+            for i in BasePolitical.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
