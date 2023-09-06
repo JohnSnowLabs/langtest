@@ -98,3 +98,5 @@ tests:
     url: /docs/pages/tests/security
   - title: Disinformation
     url: /docs/pages/tests/disinformation
+  - title: Political Compass
+    url: /docs/pages/tests/political
