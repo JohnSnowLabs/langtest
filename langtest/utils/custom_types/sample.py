@@ -501,7 +501,7 @@ class QASample(BaseQASample):
             "LogiQA",
             "MMLU",
             "OpenBookQA",
-        ] and (self.actual_results == self.expected_results):
+        ] and (self.actual_results.lower() == self.expected_results.lower()):
             return True
 
         if "llm" in str(type(llm_model.model_class)):
