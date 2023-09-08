@@ -257,6 +257,7 @@ class Harness:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
+
         else:
             logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(
@@ -330,7 +331,17 @@ class Harness:
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
         model = GLOBAL_MODEL
-        if self.task == "translation" and model:
+
+        if (
+            self.task in ("question-answering", "summarization")
+            and "bias" in self._config["tests"]
+        ):
+            if self.file_path.split("-")[0] in ("BoolQ", "XSum"):
+                self.data = DataFactory.load_curated_bias(
+                    self._config["tests"]["bias"].keys(), self.file_path.split("-")[0]
+                )
+
+        elif self.task == "translation" and model:
             hub = self.hub
             model = self._actual_model
             task = self.task
