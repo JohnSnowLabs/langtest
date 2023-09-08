@@ -94,6 +94,9 @@ class Harness:
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
             ),
+            "wino-bias": resource_filename(
+                "langtest", "data/config/wino_config.yml"
+            ),
             "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
@@ -914,6 +917,7 @@ class Harness:
             "perturbed_question",
             "patient_info_A",
             "patient_info_B",
+            "anti_stereotype",
             "diagnosis",
             "treatment_plan_A",
             "treatment_plan_B",
@@ -1067,6 +1071,7 @@ class Harness:
             "test_case",
             "patient_info_A",
             "patient_info_B",
+            "anti_stereotype",
             "diagnosis",
             "hypothesis",
             "statements",
