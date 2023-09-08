@@ -201,6 +201,7 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
 
     pass
 
+
 class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
     """A class representing a pretrained model for wino-bias detection.
 

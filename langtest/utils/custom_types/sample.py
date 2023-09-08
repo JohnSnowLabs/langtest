@@ -1269,6 +1269,7 @@ class DisinformationSample(BaseModel):
         )
         return True
 
+
 class WinoBiasSample(BaseModel):
     """
     A class Representing a sample for wino-bias task.
@@ -1315,17 +1316,15 @@ class WinoBiasSample(BaseModel):
             )
 
         return result
-    
-    
+
     def is_pass(self):
         """"""
         return self._is_eval()
 
-    
     def _is_eval(self) -> bool:
         """"""
-       
-        return (self.model_response != self.stereotype) 
+
+        return self.model_response != self.stereotype
 
     def run(self, model, **kwargs):
         """"""
@@ -1344,7 +1343,6 @@ class WinoBiasSample(BaseModel):
         )
 
         return True
-    
 
 
 Sample = TypeVar(

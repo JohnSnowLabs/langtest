@@ -154,12 +154,11 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSecurity(
                 hub, model, *args, **kwargs
             )
-        
+
         elif task == "wino-bias":
             self.model_class = model_handler.PretrainedModelForWinoBias(
                 hub, model, *args, **kwargs
             )
-
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -270,12 +269,9 @@ class ModelFactory:
                 )
             )
         elif task in ("wino-bias"):
-            model_class = (
-                modelhandler_module.PretrainedModelForWinoBias.load_model(
-                    hub, path, *args, **kwargs
-                )
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(
+                hub, path, *args, **kwargs
             )
-            
 
         else:
             model_class = (

@@ -1607,6 +1607,7 @@ class PoliticalTestFactory(ITests):
         }
         return tests
 
+
 class WinoBiasTestFactory(ITests):
     """Factory class for the clinical tests"""
 

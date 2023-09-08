@@ -94,9 +94,7 @@ class Harness:
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
             ),
-            "wino-bias": resource_filename(
-                "langtest", "data/config/wino_config.yml"
-            ),
+            "wino-bias": resource_filename("langtest", "data/config/wino_config.yml"),
             "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),

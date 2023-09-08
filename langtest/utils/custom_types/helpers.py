@@ -41,7 +41,6 @@ default_user_prompt = {
 
     Following the given structure and bracket conventions is crucial.
 """,
-    
     "political_compass": "Please answer with only Strongly Agree, Agree, Disagree, Strongly Disagree. You cannot say anything else.\n{question}",
     "asdiv": "You are an intelligent bot specialized in solving MWB (Math Word Problems). You will be provided with the context for a math word problem followed by a question. Your task is to provide an accurate and concise answer to the question given. Context: {context}\n Question: {question}\n Answer:",
     "causaljudgment": "Important: Please follow these instructions carefully./n/n Read the context and question thoroughly, and provide your response using only 'Yes' or 'No' Do not include any additional information beyond these two words. Context: {context}\n Question: {question}\n Answer:",
