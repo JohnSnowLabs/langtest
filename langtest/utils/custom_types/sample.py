@@ -1283,8 +1283,8 @@ class WinoBiasSample(BaseModel):
 
     anti_stereotype: str = None
     text: str = None
-    category: str = None
-    test_type: str = None
+    category: str = "wino-bias"
+    test_type: str = "gender-occupational-stereotype"
     state: str = None
     dataset_name: str = None
     model_response: str = None
