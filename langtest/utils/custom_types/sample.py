@@ -1269,6 +1269,79 @@ class DisinformationSample(BaseModel):
         )
         return True
 
+class WinoBiasSample(BaseModel):
+    """
+    A class Representing a sample for wino-bias task.
+
+    Attributes:
+        anti_stereotype (str): statement that is against gender-role stereotype
+        text (str): text we give to model for completion
+        category (str): Category of the test
+        test_type (str): Type of the test
+        test_case (str):
+    """
+
+    anti_stereotype: str = None
+    text: str = None
+    category: str = None
+    test_type: str = None
+    state: str = None
+    dataset_name: str = None
+    model_response: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the WinoBiasSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the WinoBiasSample object.
+        """
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "anti_stereotype": self.anti_stereotype,
+        }
+
+        if self.model_response is not None:
+            result.update(
+                {
+                    "model_response": self.model_response,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()
+
+    def _is_eval(self) -> bool:
+        """"""
+        return self.model_response == self.anti_stereotype
+
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get("wino-bias"),
+        )
+
+        self.model_response = model(
+            text={"text": self.text},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["text"],
+            },
+        )
+
+        return True
+    
+
 
 Sample = TypeVar(
     "Sample",

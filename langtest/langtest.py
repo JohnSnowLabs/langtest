@@ -41,6 +41,7 @@ class Harness:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "wino-bias",
     ]
     SUPPORTED_HUBS = [
         "spacy",
