@@ -1281,7 +1281,7 @@ class WinoBiasSample(BaseModel):
         test_case (str):
     """
 
-    anti_stereotype: str = None
+    stereotype: str = None
     text: str = None
     category: str = "wino-bias"
     test_type: str = "gender-occupational-stereotype"
@@ -1302,10 +1302,11 @@ class WinoBiasSample(BaseModel):
         result = {
             "category": self.category,
             "test_type": self.test_type,
-            "anti_stereotype": self.anti_stereotype,
+            "stereotype": self.stereotype,
         }
 
         if self.model_response is not None:
+            self.model_response = self.model_response.replace("\n", "").strip()
             result.update(
                 {
                     "model_response": self.model_response,
@@ -1314,14 +1315,17 @@ class WinoBiasSample(BaseModel):
             )
 
         return result
-
+    
+    
     def is_pass(self):
         """"""
         return self._is_eval()
 
+    
     def _is_eval(self) -> bool:
         """"""
-        return self.model_response == self.anti_stereotype
+       
+        return (self.model_response != self.stereotype) 
 
     def run(self, model, **kwargs):
         """"""

@@ -1262,7 +1262,7 @@ class JSONLDataset(_IDataset):
                 elif self.task == "wino-bias":
                     data.append(
                        WinoBiasSample(
-                            anti_stereotype=item["anti_stereotype"],
+                            stereotype=item["stereotype"],
                             text=item["text"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
