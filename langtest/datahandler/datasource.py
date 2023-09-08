@@ -1119,6 +1119,7 @@ class JSONLDataset(_IDataset):
         "security",
         "clinical-tests",
         "disinformation-test",
+        "wino-bias",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
