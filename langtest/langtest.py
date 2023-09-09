@@ -232,6 +232,13 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
+        elif (
+            isinstance(data, dict)
+            and data["data_source"] in ("BoolQ-bias", "XSum-bias")
+            and task in ("question-answering", "summarization")
+        ):
+            self.data = DataFactory.load_curated_bias(data["data_source"])
+
         elif isinstance(data["data_source"], list):
             self.data = data["data_source"]
         else:
@@ -332,16 +339,7 @@ class Harness:
         HARNESS_CONFIG = self._config
         model = GLOBAL_MODEL
 
-        if (
-            self.task in ("question-answering", "summarization")
-            and "bias" in self._config["tests"]
-        ):
-            if self.file_path.split("-")[0] in ("BoolQ", "XSum"):
-                self.data = DataFactory.load_curated_bias(
-                    self._config["tests"]["bias"].keys(), self.file_path.split("-")[0]
-                )
-
-        elif self.task == "translation" and model:
+        if self.task == "translation" and model:
             hub = self.hub
             model = self._actual_model
             task = self.task
@@ -414,29 +412,16 @@ class Harness:
 
         elif self.task in ("question-answering", "summarization"):
             if "bias" in tests.keys():
-                if self.file_path.split("-")[0] in ("BoolQ", "XSum"):
-                    tests_to_filter = tests["bias"].keys()
-                    self._testcases = DataFactory.load_curated_bias(
-                        tests_to_filter, self.file_path.split("-")[0]
-                    )
-                    if len(tests.keys()) > 2:
-                        tests = {k: v for k, v in tests.items() if k != "bias"}
-                        (other_testcases) = TestFactory.transform(
-                            self.task, self.data, tests, m_data=m_data
-                        )
-                        self._testcases.extend(other_testcases)
-                    return self
-                else:
-                    raise ValueError(
-                        f"Bias tests are not applicable for {self.file_path} dataset."
-                    )
-
+                tests_to_filter = tests["bias"].keys()
+                self._testcases = DataFactory.filter_curated_bias(
+                    tests_to_filter, self.data
+                )
             else:
                 self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
 
-                return self
+            return self
 
         self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
