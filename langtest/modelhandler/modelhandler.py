@@ -54,6 +54,7 @@ class ModelFactory:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "sensitivity-test",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -73,6 +74,7 @@ class ModelFactory:
     ] + list(LANGCHAIN_HUBS.keys())
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
+        print(model)
         """Initializes the ModelFactory object.
 
         Args:
@@ -89,7 +91,13 @@ class ModelFactory:
             f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}"
         )
 
-        module_name = model.__module__.split(".")[0]
+        if isinstance(model, str):
+            module_name = model.__module__.split(".")[0]
+        elif isinstance(model, tuple):
+            module_name = model[0].__module__.split(".")[0]
+        else:
+            raise ValueError("Invalid model format. Model should be a string or a tuple.")
+
         assert module_name in self.SUPPORTED_MODULES, ValueError(
             f"Module '{module_name}' is not supported. "
             f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
@@ -153,6 +161,8 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSecurity(
                 hub, model, *args, **kwargs
             )
+        elif task == "sensitivity-test":
+            self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -262,7 +272,10 @@ class ModelFactory:
                     hub, path, *args, **kwargs
                 )
             )
-
+        elif task == "sensitivity-test":
+            model_class = (
+                modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
+            )
         else:
             model_class = (
                 modelhandler_module.PretrainedModelForTextClassification.load_model(path)

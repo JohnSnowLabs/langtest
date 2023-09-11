@@ -22,4 +22,4 @@ def get_model_n_tokenizer(model_name):
             raise GatedRepoAccessError(
                 "You are trying to access a gated repo. "
                 "Make sure to request access at "
-                f"{model_name} and pass a token having permission to this repo either by logging in with `huggingface-cli login` or by setting the `HUGGINGFACEHUB_API_TOKEN` environment variable with your API token."
+                f"{model_name} and pass a token having permission to this repo either by logging in with `huggingface-cli login` or by setting the `HUGGINGFACEHUB_API_TOKEN` environment variable with your API token.")
