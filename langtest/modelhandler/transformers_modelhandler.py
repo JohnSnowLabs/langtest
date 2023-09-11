@@ -10,6 +10,7 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
+
 from langtest.utils.lib_manager import try_import_lib
 import importlib
 
@@ -441,3 +442,76 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForSensitivityTest(_ModelHandler):
+    def __init__(self, model):
+
+        assert isinstance(model, tuple), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
+
+        self.model, self.tokenizer = model
+
+    @classmethod
+    def load_model(cls, path: str):
+        """Load the NER model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+        from ..utils.hf_model_n_tokenizer import get_model_n_tokenizer
+
+        model, tokenizer = get_model_n_tokenizer(model_name=path)
+        return model, tokenizer
+
+    def predict(self, text: str, text_transformed: str, **kwargs):
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform NER on.
+            return_all_scores (bool): Option to group entities.
+            truncation_strategy (str): strategy to use to truncate too long sequences
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            SequenceClassificationOutput: text classification from the input text.
+        """
+
+        self.model.eval()  # Ensure the model is in evaluation mode
+
+        input_encoded = self.tokenizer(
+            text, return_tensors="pt", truncation=True, max_length=128
+        ).to(self.model.device)
+        input_encoded_transformed = self.tokenizer(
+            text_transformed, return_tensors="pt", truncation=True, max_length=128
+        ).to(self.model.device)
+
+        outputs = self.model(**input_encoded, labels=input_encoded["input_ids"])
+        outputs_transformed = self.model(
+            **input_encoded_transformed, labels=input_encoded_transformed["input_ids"]
+        )
+        loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
+
+        # Extract and decode the generated text
+        expected_result = self.tokenizer.decode(
+            outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
+        )
+        actual_result = self.tokenizer.decode(
+            outputs_transformed.logits[0].argmax(dim=-1), skip_special_tokens=True
+        )
+
+        return {
+            "loss_diff": loss_diff,
+            "expected_result": expected_result,
+            "actual_result": actual_result,
+        }
+
+    def __call__(self, text: str, text_transformed: str, **kwargs):
+        """Alias of the 'predict' method."""
+        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
