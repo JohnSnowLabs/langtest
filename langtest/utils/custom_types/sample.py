@@ -1273,6 +1273,32 @@ class DisinformationSample(BaseModel):
 class SensitivitySample(BaseModel):
     """
     A class representing a sample for sensitivity task.
+
+    Attributes:
+        original (str): The original text input.
+        test_case (str): The transformed text input for testing.
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset the sample belongs to.
+        task (str): The type of task, default is "sensitivity-test".
+        category (str): The category or module name associated with the sample.
+        test_type (str): The type of test being performed.
+        expected_result (Result): The expected result of the sensitivity test.
+        actual_result (Result): The actual result obtained from the sensitivity test.
+        loss_diff (float): The difference in loss between expected and actual results.
+
+    Methods:
+        to_dict(self) -> Dict[str, Any]:
+            Convert the SensitivitySample instance to a dictionary.
+
+        is_pass(self) -> bool:
+            Check if the sensitivity test passes based on loss difference threshold.
+
+        run(self, model, **kwargs) -> bool:
+            Run the sensitivity test using the provided model.
+
+        transform(self, func: Callable, params: Dict, **kwargs):
+            Transform the original text using a specified function.
+
     """
 
     original: str = None
@@ -1290,6 +1316,12 @@ class SensitivitySample(BaseModel):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the SensitivitySample instance to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the sample.
+        """
         result = {
             "original": self.original,
             "test_case": self.test_case,
@@ -1311,8 +1343,16 @@ class SensitivitySample(BaseModel):
         return result
 
     def is_pass(self):
-        min_range = -0.2
-        max_range = 0.2
+        """
+        Check if the sensitivity test passes based on loss difference threshold.
+
+        Returns:
+            bool: True if the test passes, False otherwise.
+        """
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        config = harness_config["tests"]["defaults"]
+        min_range, max_range = config.get("threshold", (-0.2, 0.2))
 
         if min_range <= self.loss_diff <= max_range:
             return False
@@ -1320,7 +1360,16 @@ class SensitivitySample(BaseModel):
             return True
 
     def run(self, model, **kwargs):
-        """"""
+        """
+        Run the sensitivity test using the provided model.
+
+        Args:
+            model: The model used for sensitivity testing.
+            **kwargs: Additional keyword arguments for the model.
+
+        Returns:
+            bool: True if the test was successful, False otherwise.
+        """
         op = model(text=self.original, text_transformed=self.test_case)
         self.expected_result = op["expected_result"]
         self.actual_result = op["actual_result"]
@@ -1328,6 +1377,15 @@ class SensitivitySample(BaseModel):
         return True
 
     def transform(self, func: Callable, params: Dict, **kwargs):
+        """
+        Transform the original text using a specified function.
+
+        Args:
+            func (Callable): The transformation function.
+            params (Dict): Parameters for the transformation function.
+            **kwargs: Additional keyword arguments for the transformation.
+
+        """
         sens = [self.original]
         self.test_case = func(sens, **params, **kwargs)[0]
         self.category = func.__module__.split(".")[-1]
