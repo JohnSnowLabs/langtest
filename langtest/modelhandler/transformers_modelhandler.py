@@ -445,8 +445,32 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
 
 
 class PretrainedModelForSensitivityTest(_ModelHandler):
-    def __init__(self, model):
+    """A class for handling a pretrained model for sensitivity testing.
 
+    This class wraps a pretrained transformer model for performing sensitivity testing
+
+    Args:
+        model (tuple): A tuple containing the model and tokenizer.
+
+    Raises:
+        ValueError: If the input model is not a tuple.
+
+    Attributes:
+        model (Any): The pretrained transformer model.
+        tokenizer (Any): The tokenizer associated with the model.
+
+    """
+
+    def __init__(self, model):
+        """Initialize a PretrainedModelForSensitivityTest instance.
+
+        Args:
+            model (tuple): A tuple containing the model and tokenizer.
+
+        Raises:
+            ValueError: If the input model is not a tuple.
+
+        """
         assert isinstance(model, tuple), ValueError(
             f"Invalid transformers pipeline! "
             f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
@@ -456,14 +480,13 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
     @classmethod
     def load_model(cls, path: str):
-        """Load the NER model into the `model` attribute.
+        """Load the model into the `model` attribute.
 
         Args:
-            path (str):
-                path to model or model name
+            path (str): Path to model or model name.
 
         Returns:
-            'Pipeline':
+            tuple: A tuple containing the loaded model and tokenizer.
         """
         from ..utils.hf_model_n_tokenizer import get_model_n_tokenizer
 
@@ -475,15 +498,17 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
         Args:
             text (str): Input text to perform NER on.
-            return_all_scores (bool): Option to group entities.
-            truncation_strategy (str): strategy to use to truncate too long sequences
+            text_transformed (str): Transformed input text.
             kwargs: Additional keyword arguments.
 
         Returns:
-            SequenceClassificationOutput: text classification from the input text.
-        """
+            dict: A dictionary containing the following keys:
+                - 'loss_diff' (float): Difference in loss between transformed and original text.
+                - 'expected_result' (str): Decoded result from the original text.
+                - 'actual_result' (str): Decoded result from the transformed text.
 
-        self.model.eval()  # Ensure the model is in evaluation mode
+        """
+        self.model.eval()
 
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
@@ -498,7 +523,6 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         )
         loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
 
-        # Extract and decode the generated text
         expected_result = self.tokenizer.decode(
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
@@ -514,4 +538,5 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
     def __call__(self, text: str, text_transformed: str, **kwargs):
         """Alias of the 'predict' method."""
+
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
