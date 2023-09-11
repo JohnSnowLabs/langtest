@@ -3,6 +3,7 @@ from langtest.transform.sensitivity import *
 from langtest.utils.custom_types.sample import SensitivitySample
 from langtest.transform import TestFactory
 
+
 class SensitivityTestCase(unittest.TestCase):
     """
     A test case class for testing sensitivity samples on sensitivity classes.
@@ -29,3 +30,31 @@ class SensitivityTestCase(unittest.TestCase):
                 )
             ]
         }
+
+    def available_test(self) -> dict:
+        """
+        Get a dictionary of available sensitivity tests.
+
+        Returns:
+            dict: A dictionary containing available sensitivity tests.
+        """
+        tests = {
+            j: i
+            for i in BaseSensitivity.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
+
+    def test(self) -> None:
+        """
+        Test sensitivity sample for sensitivity classes.
+
+        Returns:
+            None
+        """
+        for test in self.perturbations_list:
+            for task in self.samples:
+                sample = self.samples[task][-1]
+                test_func = self.supported_tests[test].transform
+            sample.transform(test_func, {})
+            assert sample.test_case is not None
