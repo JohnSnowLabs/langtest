@@ -28,6 +28,7 @@ from langtest.utils.custom_types import (
     ClinicalSample,
     SecuritySample,
     DisinformationSample,
+    SensitivitySample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -69,6 +70,7 @@ COLUMN_MAPPER = {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
+    "sensitivity-test": {"text": ["text", "question"]},
 }
 
 
@@ -1113,6 +1115,7 @@ class JSONLDataset(_IDataset):
         "security",
         "clinical-tests",
         "disinformation-test",
+        "sensitivity-test",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1248,6 +1251,13 @@ class JSONLDataset(_IDataset):
                             hypothesis=item["hypothesis"],
                             statements=item["statements"],
                             task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+                elif self.task == "sensitivity-test":
+                    data.append(
+                        SensitivitySample(
+                            original=item[self.column_matcher["text"]],
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
