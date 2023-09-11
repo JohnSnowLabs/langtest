@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
 import os
 from huggingface_hub import login
 
@@ -25,21 +25,26 @@ def get_model_n_tokenizer(model_name):
 
     Raises:
         GatedRepoAccessError: If there is an attempt to access a gated repository without proper authorization.
-
     """
     if "HUGGINGFACEHUB_API_TOKEN" in os.environ:
         login(os.environ["HUGGINGFACEHUB_API_TOKEN"])
+
     try:
+        # Try loading the model as AutoModelForCausalLM
         model = AutoModelForCausalLM.from_pretrained(model_name)
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        tokenizer.pad_token = tokenizer.eos_token
-        model.eval()
-        return model, tokenizer
-    except OSError as e:
-        error_message = str(e)
-        if "You are trying to access a gated repo" in error_message:
-            raise GatedRepoAccessError(
-                "You are trying to access a gated repo. "
-                "Make sure to request access at "
-                f"{model_name} and pass a token having permission to this repo either by logging in with `huggingface-cli login` or by setting the `HUGGINGFACEHUB_API_TOKEN` environment variable with your API token."
-            )
+
+    except ValueError:
+        # Try loading the model as AutoModelForSeq2SeqLM
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+    except OSError:
+        raise GatedRepoAccessError(
+            "You are trying to access a gated repo. "
+            "Make sure to request access at "
+            f"{model_name} and pass a token having permission to this repo either by logging in with `huggingface-cli login` or by setting the `HUGGINGFACEHUB_API_TOKEN` environment variable with your API token."
+        )
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer.pad_token = tokenizer.eos_token
+    model.eval()
+    return model, tokenizer
