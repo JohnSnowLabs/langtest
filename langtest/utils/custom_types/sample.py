@@ -1270,6 +1270,69 @@ class DisinformationSample(BaseModel):
         return True
 
 
+class SensitivitySample(BaseModel):
+    """
+    A class representing a sample for sensitivity task.
+    """
+
+    original: str = None
+    test_case: str = None
+    state: str = None
+    dataset_name: str = None
+    task: str = Field(default="sensitivity", constr=True)
+    category: str = None
+    test_type: str = None
+    expected_result: Result = None
+    actual_result: Result = None
+    loss_diff: float = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        result = {
+            "original": self.original,
+            "test_case": self.test_case,
+            "category": self.category,
+            "test_type": self.test_type,
+        }
+
+        if self.expected_result is not None and self.actual_result is not None:
+            bool_pass = self.is_pass()
+            result.update(
+                {
+                    "expected_result": self.expected_result,
+                    "actual_result": self.actual_result,
+                    "eval_score": self.loss_diff,
+                    "pass": bool_pass,
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        min_range = -0.2
+        max_range = 0.2
+
+        if min_range <= self.loss_diff <= max_range:
+            return False
+        else:
+            return True
+
+    def run(self, model, **kwargs):
+        """"""
+        op = model(text=self.original, text_transformed=self.test_case)
+        self.expected_result = op["expected_result"]
+        self.actual_result = op["actual_result"]
+        self.loss_diff = op["loss_diff"]
+        return True
+
+    def transform(self, func: Callable, params: Dict, **kwargs):
+        sens = [self.original]
+        self.test_case = func(sens, **params, **kwargs)[0]
+        self.category = func.__module__.split(".")[-1]
+
+
 Sample = TypeVar(
     "Sample",
     MaxScoreSample,
@@ -1278,4 +1341,6 @@ Sample = TypeVar(
     NERSample,
     SummarizationSample,
     LLMAnswerSample,
+    DisinformationSample,
+    SensitivitySample,
 )
