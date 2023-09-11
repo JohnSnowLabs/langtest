@@ -1610,22 +1610,31 @@ class PoliticalTestFactory(ITests):
 
 
 class SensitivityTestFactory(ITests):
-    """
-    A class for performing Sensitivity tests on a given dataset.
+    """A class for performing Sensitivity tests on a given dataset.
+
+    This class provides functionality to perform sensitivity tests on a given dataset
+    using various test configurations.
+
+    Attributes:
+        alias_name (str): A string representing the alias name for this test factory.
+
     """
 
     alias_name = "sensitivity"
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """
-        Initializes a new instance of the `Robustness` class.
+        """Initialize a new SensitivityTestFactory instance.
 
         Args:
-            data_handler (List[Sample]):
-                A list of `Sample` objects representing the input dataset.
-            tests Optional[Dict]:
-                A dictionary of test names and corresponding parameters (default is None).
+            data_handler (List[Sample]): A list of `Sample` objects representing the input dataset.
+            tests (Optional[Dict]): A dictionary of test names and corresponding parameters (default is None).
+            **kwargs: Additional keyword arguments.
+
+        Raises:
+            ValueError: If the `tests` argument is not a dictionary.
+
         """
+
         self.supported_tests = self.available_tests()
         self._data_handler = data_handler
         self.tests = tests
@@ -1647,12 +1656,11 @@ class SensitivityTestFactory(ITests):
             )
 
     def transform(self) -> List[Sample]:
-        """
-        Runs the robustness test and returns the resulting `Sample` objects.
+        """Run the sensitivity test and return the resulting `Sample` objects.
 
         Returns:
-            List[Sample]
-                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+            List[Sample]: A list of `Sample` objects representing the resulting dataset after running the sensitivity test.
+
         """
         all_samples = []
         no_transformation_applied_tests = {}
