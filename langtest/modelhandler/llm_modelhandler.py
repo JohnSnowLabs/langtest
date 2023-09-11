@@ -5,7 +5,7 @@ from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
-from utils.util_metrics import cosine_similarity
+from ..utils.util_metrics import cosine_similarity
 from langchain import OpenAI
 from langchain.embeddings import OpenAIEmbeddings
 import os
@@ -268,3 +268,51 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             return llm, embeddings_model
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
+
+    def predict(self, text: str, text_transformed: str, **kwargs):
+        """
+        Predict the sensitivity of the model to text transformations.
+
+        Args:
+            text (str): The original text.
+            text_transformed (str): The transformed text.
+
+        Returns:
+            dict: A dictionary containing the loss difference, expected result, and actual result.
+                - 'loss_diff' (float): The cosine similarity-based loss difference.
+                - 'expected_result' (str): The model's output for the original text.
+                - 'actual_result' (str): The model's output for the transformed text.
+        """
+
+        expected_result = self.model(text)
+        actual_result = self.model(text_transformed)
+
+        expected_result_embeddings = self.embeddings_model.embed_documents(
+            [expected_result]
+        )
+        actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
+
+        loss = 1 - cosine_similarity(expected_result_embeddings, actual_result_embeddings)
+
+        return {
+            "loss_diff": loss,
+            "expected_result": expected_result,
+            "actual_result": actual_result,
+        }
+
+    def __call__(self, text: str, text_transformed: str, **kwargs):
+        """
+        Alias of the 'predict' method.
+
+        Args:
+            text (str): The original text.
+            text_transformed (str): The transformed text.
+
+        Returns:
+            dict: A dictionary containing the loss difference, expected result, and actual result.
+                - 'loss_diff' (float): The cosine similarity-based loss difference.
+                - 'expected_result' (str): The model's output for the original text.
+                - 'actual_result' (str): The model's output for the transformed text.
+        """
+
+        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
