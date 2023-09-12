@@ -295,7 +295,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         loss = 1 - cosine_similarity(expected_result_embeddings, actual_result_embeddings)
 
         return {
-            "loss_diff": loss,
+            "loss_diff": loss[0],
             "expected_result": expected_result,
             "actual_result": actual_result,
         }
