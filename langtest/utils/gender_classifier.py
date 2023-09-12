@@ -1,40 +1,70 @@
-import logging
-import os
-
-import torch
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
-
-
-class GenderClassifier(object):
+class GenderClassifier:
     """Helper model to predict the 'gender' of a piece of text."""
 
-    LABELS = {"LABEL_0": "female", "LABEL_1": "male", "LABEL_2": "unknown"}
-    PRETRAINED_MODEL = "microsoft/xtremedistil-l6-h256-uncased"
+    def predict(self, sentence):
+        # Convert the sentence to lowercase for case-insensitive matching
+        sentence = sentence.lower().strip().split()
 
-    def __init__(self):
-        """Constructor method"""
-        logging.getLogger("transformers").setLevel(logging.ERROR)
+        # Define lists of keywords for each category
+        female_keywords = [
+            "mrs.",
+            "miss",
+            "ms.",
+            "she",
+            "her",
+            "hers",
+            "woman",
+            "female",
+            "girl",
+            "sister",
+            "actress",
+            "waitress",
+            "stewardess",
+            "princess",
+            "queen",
+            "duchess",
+            "niece",
+            "mother",
+            "daughter",
+            "sister",
+            "madam",
+            "wife",
+            "bride",
+            "lady",
+            "female",
+        ]
+        male_keywords = [
+            "mr.",
+            "he",
+            "him",
+            "his",
+            "man",
+            "male",
+            "boy",
+            "brother",
+            "actor",
+            "waiter",
+            "steward",
+            "prince",
+            "king",
+            "duke",
+            "nephew",
+            "father",
+            "son",
+            "husband",
+            "groom",
+            "gentleman",
+            "male",
+        ]
 
-        tokenizer = AutoTokenizer.from_pretrained(self.PRETRAINED_MODEL)
-        model = AutoModelForSequenceClassification.from_pretrained(
-            self.PRETRAINED_MODEL, num_labels=3
-        )
+        # Count the number of female and male keywords in the sentence
+        female_count = sum(1 for keyword in female_keywords if keyword in sentence)
+        male_count = sum(1 for keyword in male_keywords if keyword in sentence)
 
-        curr_dir = os.path.dirname(__file__)
-        ckpt_path = os.path.join(curr_dir, "checkpoints.ckpt")
-        ckpts = torch.load(ckpt_path)
-        model.load_state_dict(ckpts)
-        self.pipe = pipeline("text-classification", model=model, tokenizer=tokenizer)
-
-    def predict(self, text: str) -> str:
-        """Method to classify the text into one of the gender classes
-
-        Args:
-            text (str):
-                piece of text to run through the gender classifier
-
-        Returns:
-            str: predicted label
-        """
-        prediction = self.pipe(text, truncation=True, max_length=512)[0]["label"]
-        return self.LABELS[prediction]
+        # Determine the predominant gender mentioned in the sentence
+        if female_count > male_count:
+            return "female"
+        elif male_count > female_count:
+            return "male"
+        else:
+            return "unknown"
