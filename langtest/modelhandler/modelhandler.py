@@ -157,7 +157,7 @@ class ModelFactory:
 
         elif task == "wino-bias":
             self.model_class = model_handler.PretrainedModelForWinoBias(
-                hub, model, *args, **kwargs
+               model
             )
 
         else:
@@ -270,7 +270,7 @@ class ModelFactory:
             )
         elif task in ("wino-bias"):
             model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(
-                hub, path, *args, **kwargs
+               path
             )
 
         else:
