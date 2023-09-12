@@ -71,7 +71,6 @@ COLUMN_MAPPER = {
         "statements": ["statements", "headlines"],
     },
     "wino-bias": {
-        "anti_stereotype": ["anti_stereotype"],
         "text": ["text"],
     },
 }

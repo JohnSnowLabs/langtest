@@ -1275,11 +1275,9 @@ class WinoBiasSample(BaseModel):
     A class Representing a sample for wino-bias task.
 
     Attributes:
-        anti_stereotype (str): statement that is against gender-role stereotype
-        text (str): text we give to model for completion
+        masked_text (str): text we give to model for completion
         category (str): Category of the test
         test_type (str): Type of the test
-        test_case (str):
     """
 
     masked_text: str = None
