@@ -74,7 +74,6 @@ class ModelFactory:
     ] + list(LANGCHAIN_HUBS.keys())
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
-        print(model)
         """Initializes the ModelFactory object.
 
         Args:
