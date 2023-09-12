@@ -15,6 +15,7 @@ from langtest.utils.custom_types import (
     TranslationSample,
     ClinicalSample,
     SecuritySample,
+    DisinformationSample,
 )
 
 
@@ -86,6 +87,7 @@ class TaskManager:
 
     def create_sample(self, *args, **kwargs):
         """Add a task to the task manager."""
+
         return self.__task.create_sample(*args, **kwargs)
 
     def model(self, *args, **kwargs) -> "ModelAPI":
@@ -114,6 +116,23 @@ class NERTask(BaseTask):
     """Named Entity Recognition task."""
 
     _name = "ner"
+    _default_col = (
+        {
+            "text": ["text", "sentences", "sentence", "sample", "tokens"],
+            "ner": [
+                "label",
+                "labels ",
+                "class",
+                "classes",
+                "ner_tag",
+                "ner_tags",
+                "ner",
+                "entity",
+            ],
+            "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
+            "chunk": ["chunk_tags", "chunk_tag"],
+        },
+    )
 
     def create_sample(cls, original, expected_results: NEROutput) -> NERSample:
         """Create a sample."""
@@ -124,6 +143,10 @@ class TextClassificationTask(BaseTask):
     """Text Classification task."""
 
     _name = "textclassification"
+    _default_col = {
+        "text": ["text", "sentences", "sentence", "sample"],
+        "label": ["label", "labels ", "class", "classes"],
+    }
 
     def create_sample(
         cls, original, labels: SequenceLabel
@@ -139,17 +162,20 @@ class QuestionAnsweringTask(BaseTask):
     """Question Answering task."""
 
     _name = "qa"
+    _default_col = {
+        "text": ["question"],
+        "context": ["context", "passage"],
+        "answer": ["answer", "answer_and_def_correct_predictions"],
+    }
 
-    def create_sample(
-        cls, row_data: dict, column_matcher: dict, dataset_name: str = "qa"
-    ) -> QASample:
+    def create_sample(cls, row_data: dict, dataset_name: str = "qa") -> QASample:
         """Create a sample."""
-        expected_results = row_data.get(column_matcher["answer"])
+        expected_results = row_data.get(cls._default_col["answer"])
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
             expected_results = [str(expected_results)]
         return QASample(
-            original_question=row_data[column_matcher["text"]],
-            original_context=row_data.get(column_matcher["context"], "-"),
+            original_question=row_data[cls._default_col["text"]],
+            original_context=row_data.get(cls._default_col["context"], "-"),
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
@@ -159,16 +185,44 @@ class SummarizationTask(BaseTask):
     """Summarization task."""
 
     _name = "summarization"
+    _default_col = {"text": ["text", "document"], "summary": ["summary"]}
 
     def create_sample(
-        cls, row_data: dict, column_matcher: dict, dataset_name: str = "xsum"
+        cls,
+        row_data: dict,
+        feature_column="document",
+        target_column="summary",
+        dataset_name: str = "default_summarization_prompt",
     ) -> SummarizationSample:
         """Create a sample."""
-        expected_results = row_data.get(column_matcher["summary"])
+
+        # validate the feature_column and target_column with _default_col
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+
+        if (
+            target_column not in cls._default_col["summary"]
+            and target_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided target_column is not supported. \
+                    \nPlease choose one of the supported target_column: {cls._default_col['summary']}\
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+
+        expected_results = row_data.get(target_column)
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
             expected_results = [str(expected_results)]
+
         return SummarizationSample(
-            original=row_data[column_matcher["text"]],
+            original=row_data[feature_column],
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
@@ -178,13 +232,25 @@ class TranslationTask(BaseTask):
     """Translation task."""
 
     _name = "translation"
+    _default_col = {"text": ["text", "original", "sourcestring"]}
 
     def create_sample(
-        cls, row_data: dict, column_matcher: dict, dataset_name: str = "translation"
+        cls, row_data: dict, feature_column = "text", dataset_name: str = "translation"
     ) -> TranslationSample:
         """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+
+
         return TranslationSample(
-            original=row_data[column_matcher["text"]],
+            original=row_data[feature_column],
             dataset_name=dataset_name,
         )
 
@@ -193,13 +259,25 @@ class ToxicityTask(BaseTask):
     """Toxicity task."""
 
     _name = "toxicity"
+    _default_col = {"text": ["text"]}
 
     def create_sample(
-        cls, row_data: dict, column_matcher: dict, dataset_name: str = "toxicity"
+        cls, row_data: dict, feature_column: str = "text", dataset_name: str = "toxicity"
     ) -> ToxicitySample:
         """Create a sample."""
+
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+        
         return ToxicitySample(
-            prompt=row_data[column_matcher["text"]],
+            prompt=row_data[feature_column],
             dataset_name=dataset_name,
         )
 
@@ -208,13 +286,23 @@ class SecurityTask(BaseTask):
     """Security task."""
 
     _name = "security"
+    _default_col = {"text": ["text", "prompt"]}
 
     def create_sample(
-        cls, row_data: dict, column_matcher: dict, dataset_name: str = "security"
+        cls, row_data: dict, feature_column="text", dataset_name: str = "security"
     ) -> SecuritySample:
         """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
         return SecuritySample(
-            prompt=row_data["text"],
+            prompt=row_data[cls._default_col["text"]],
             dataset_name=dataset_name,
         )
 
@@ -223,14 +311,50 @@ class ClinicalTestsTask(BaseTask):
     """Clinical Tests task."""
 
     _name = "clinicaltests"
+    _default_col = {
+        "Patient info A": [
+            "Patient info A",
+            "patient info a",
+        ],
+        "Patient info B": [
+            "Patient info B",
+            "patient info b",
+        ],
+        "Diagnosis": [
+            "Diagnosis",
+            "diagnosis",
+        ],
+    }
 
     def create_sample(
-        cls, row_data: dict, column_matcher: dict, dataset_name: str = "clinicaltests"
+        cls, row_data: dict, dataset_name: str = "clinicaltests"
     ) -> ClinicalSample:
         """Create a sample."""
+        
         return ClinicalSample(
-            patient_info_A=row_data["Patient info A"],
-            patient_info_B=row_data["Patient info B"],
-            diagnosis=row_data["Diagnosis"],
+            patient_info_A=row_data[cls._default_col["Patient info A"]],
+            patient_info_B=row_data[cls._default_col["Patient info B"]],
+            diagnosis=row_data[cls._default_col["Diagnosis"]],
+            dataset_name=dataset_name,
+        )
+
+
+class DisinformationTestTask(BaseTask):
+    """Disinformation Test task."""
+
+    _name = "disinformationtest"
+
+    _default_col = {
+        "hypothesis": ["hypothesis", "thesis"],
+        "statements": ["statements", "headlines"],
+    }
+
+    def create_sample(
+        cls, row_data: dict, dataset_name: str = "disinformationtest"
+    ) -> DisinformationSample:
+        """Create a sample."""
+        return DisinformationSample(
+            hypothesis=row_data[cls._default_col["hypothesis"]],
+            label=row_data[cls._default_col["statements"]],
             dataset_name=dataset_name,
         )

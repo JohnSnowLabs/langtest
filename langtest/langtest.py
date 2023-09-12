@@ -139,6 +139,7 @@ class Harness:
 
         self.is_default = False
 
+        # loading model and hub
         if isinstance(model, list):
             for item in model:
                 if not isinstance(item, dict):
@@ -160,6 +161,8 @@ class Harness:
         else:
             hub = None
 
+        # loading task
+
         self.task = TaskManager(task)
 
         if isinstance(model, str) and hub is None:
@@ -173,7 +176,7 @@ class Harness:
                 f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}"
             )
 
-        # data loadinf
+        # data loading
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = {"data_source": resource_filename("langtest", data_path)}
@@ -192,7 +195,9 @@ class Harness:
                 task == "text-classification"
                 and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
             ):
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                self.data = HuggingFaceDataset(
+                    data["data_source"], task=self.task
+                ).load_data(
                     feature_column=data.get("feature_column", "text"),
                     target_column=data.get("target_column", "label"),
                     split=data.get("split", "test"),
@@ -207,7 +212,9 @@ class Harness:
                     model = resource_filename("langtest", "data/textcat_imdb")
 
             elif task == "ner" and hub in self.SUPPORTED_HUBS_HF_DATASET_NER:
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                self.data = HuggingFaceDataset(
+                    data["data_source"], task=self.task
+                ).load_data(
                     feature_column=data.get("feature_column", "tokens"),
                     target_column=data.get("target_column", "ner_tags"),
                     split=data.get("split", "test"),
@@ -218,7 +225,9 @@ class Harness:
                 task == "summarization"
                 and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
             ):
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                self.data = HuggingFaceDataset(
+                    data["data_source"], task=self.task
+                ).load_data(
                     feature_column=data.get("feature_column", "document"),
                     target_column=data.get("target_column", "summary"),
                     split=data.get("split", "test"),

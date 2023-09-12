@@ -1157,7 +1157,7 @@ class JSONLDataset(_IDataset):
             data = [obj for obj in reader]
         return data
 
-    def load_data(self) -> List[Sample]:
+    def load_data(self, *args, **kwargs) -> List[Sample]:
         """Loads data from a JSONL file and format it into a list of Sample.
 
         Returns:
@@ -1166,11 +1166,9 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                if self.column_matcher is None:
-                    self.column_matcher = self._match_column_names(item.keys())
-
+                
                 dataset_name = self._file_path.split("/")[-2]
-                sample = self.task.create_sample(item, self.column_matcher, dataset_name)
+                sample = self.task.create_sample(item, dataset_name=dataset_name, *args, **kwargs)
                 data.append(sample)
 
         return data
@@ -1428,18 +1426,19 @@ class HuggingFaceDataset(_IDataset):
             ValueError:
                 If an unsupported task is provided.
         """
-        if self.task == "text-classification":
-            return self.load_data_classification(
-                feature_column, target_column, split, subset
-            )
-        elif self.task == "summarization":
-            return self.load_data_summarization(
-                feature_column, target_column, split, subset
-            )
-        elif self.task == "ner":
-            return self.load_data_ner(feature_column, target_column, split, subset)
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
-            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
+            dataset = self.load_dataset(self.dataset_name, split=split)
+
+        data = []
+        for row_data in dataset:
+            sample = self.task.create_sample(
+                row_data, feature_names=feature_column, target_names=target_column
+            )
+            data.append(sample)
+
+        return data
 
     @staticmethod
     def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:
