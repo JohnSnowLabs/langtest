@@ -235,7 +235,7 @@ class TranslationTask(BaseTask):
     _default_col = {"text": ["text", "original", "sourcestring"]}
 
     def create_sample(
-        cls, row_data: dict, feature_column = "text", dataset_name: str = "translation"
+        cls, row_data: dict, feature_column="text", dataset_name: str = "translation"
     ) -> TranslationSample:
         """Create a sample."""
         if (
@@ -247,7 +247,6 @@ class TranslationTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
-
 
         return TranslationSample(
             original=row_data[feature_column],
@@ -275,7 +274,7 @@ class ToxicityTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
-        
+
         return ToxicitySample(
             prompt=row_data[feature_column],
             dataset_name=dataset_name,
@@ -330,7 +329,7 @@ class ClinicalTestsTask(BaseTask):
         cls, row_data: dict, dataset_name: str = "clinicaltests"
     ) -> ClinicalSample:
         """Create a sample."""
-        
+
         return ClinicalSample(
             patient_info_A=row_data[cls._default_col["Patient info A"]],
             patient_info_B=row_data[cls._default_col["Patient info B"]],

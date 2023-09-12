@@ -1166,9 +1166,10 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                
                 dataset_name = self._file_path.split("/")[-2]
-                sample = self.task.create_sample(item, dataset_name=dataset_name, *args, **kwargs)
+                sample = self.task.create_sample(
+                    item, dataset_name=dataset_name, *args, **kwargs
+                )
                 data.append(sample)
 
         return data
