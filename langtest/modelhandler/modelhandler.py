@@ -90,13 +90,10 @@ class ModelFactory:
         assert task in self.SUPPORTED_TASKS, ValueError(
             f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}"
         )
-
-        if isinstance(model, str):
-            module_name = model.__module__.split(".")[0]
-        elif isinstance(model, tuple):
+        if isinstance(model, tuple):
             module_name = model[0].__module__.split(".")[0]
         else:
-            raise ValueError("Invalid model format. Model should be a string or a tuple.")
+            module_name = model.__module__.split(".")[0]
 
         assert module_name in self.SUPPORTED_MODULES, ValueError(
             f"Module '{module_name}' is not supported. "
