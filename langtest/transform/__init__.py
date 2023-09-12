@@ -910,7 +910,6 @@ class FairnessTestFactory(ITests):
         """
 
         grouped_data = cls.get_gendered_data(raw_data)
-        print(grouped_data)
         for gender, data in grouped_data.items():
             if len(data) == 0:
                 grouped_data[gender] = [[], []]
