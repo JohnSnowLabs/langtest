@@ -336,6 +336,70 @@ class PretrainedModelForTranslation(_ModelHandler):
     def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
+    
+class PretrainedModelForWinoBias (_ModelHandler):
+    """A class representing a pretrained model for wino-bias detection.
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
+    """
+
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
+        self.model = model
+
+    @classmethod
+    def load_model(cls, path: str) -> "Pipeline":
+        """Load the Translation model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+
+        unmasker = pipeline('fill-mask', model=path)
+        
+        return unmasker
+     
+
+    def predict(self, text: str, **kwargs) -> Dict:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform mask filling on.
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            Dict: Output for wino-bias task
+        """
+
+        eval_scores = {} 
+        try:
+            prediction = self.model(text, **kwargs)
+        except:
+            self.masked_text = text.replace("[MASK]", "<mask>")
+            prediction = self.model(self.masked_text, **kwargs)
+
+        # Adjusting the list comprehension to strip spaces from the token strings
+        eval_scores = {i['token_str'].strip(): i['score'] for i in prediction if i['token_str'].strip() in ["he", "she", "his", "her"]}
+
+        return eval_scores
+
+
+    def __call__(self, text: str, *args, **kwargs) -> Dict:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)
 
 
 class PretrainedModelForQA(_ModelHandler):
