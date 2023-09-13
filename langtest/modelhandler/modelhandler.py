@@ -156,9 +156,7 @@ class ModelFactory:
             )
 
         elif task == "wino-bias":
-            self.model_class = model_handler.PretrainedModelForWinoBias(
-               model
-            )
+            self.model_class = model_handler.PretrainedModelForWinoBias(model)
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -269,9 +267,7 @@ class ModelFactory:
                 )
             )
         elif task in ("wino-bias"):
-            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(
-               path
-            )
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
 
         else:
             model_class = (

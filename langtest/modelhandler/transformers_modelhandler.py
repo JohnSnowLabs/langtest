@@ -336,8 +336,9 @@ class PretrainedModelForTranslation(_ModelHandler):
     def __call__(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
-    
-class PretrainedModelForWinoBias (_ModelHandler):
+
+
+class PretrainedModelForWinoBias(_ModelHandler):
     """A class representing a pretrained model for wino-bias detection.
 
     Args:
@@ -368,10 +369,9 @@ class PretrainedModelForWinoBias (_ModelHandler):
             'Pipeline':
         """
 
-        unmasker = pipeline('fill-mask', model=path)
-        
+        unmasker = pipeline("fill-mask", model=path)
+
         return unmasker
-     
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -384,7 +384,6 @@ class PretrainedModelForWinoBias (_ModelHandler):
             Dict: Output for wino-bias task
         """
 
-        eval_scores = {} 
         try:
             prediction = self.model(text, **kwargs)
         except:
@@ -392,10 +391,13 @@ class PretrainedModelForWinoBias (_ModelHandler):
             prediction = self.model(self.masked_text, **kwargs)
 
         # Adjusting the list comprehension to strip spaces from the token strings
-        eval_scores = {i['token_str'].strip(): i['score'] for i in prediction if i['token_str'].strip() in ["he", "she", "his", "her"]}
+        eval_scores = {
+            i["token_str"].strip(): i["score"]
+            for i in prediction
+            if i["token_str"].strip() in ["he", "she", "his", "her"]
+        }
 
         return eval_scores
-
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
         """Alias of the 'predict' method"""
