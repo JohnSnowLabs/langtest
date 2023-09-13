@@ -54,6 +54,7 @@ class ModelFactory:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "wino-bias",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -153,6 +154,9 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSecurity(
                 hub, model, *args, **kwargs
             )
+
+        elif task == "wino-bias":
+            self.model_class = model_handler.PretrainedModelForWinoBias(model)
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -262,6 +266,8 @@ class ModelFactory:
                     hub, path, *args, **kwargs
                 )
             )
+        elif task in ("wino-bias"):
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
 
         else:
             model_class = (

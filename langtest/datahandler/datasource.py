@@ -28,6 +28,7 @@ from langtest.utils.custom_types import (
     ClinicalSample,
     SecuritySample,
     DisinformationSample,
+    WinoBiasSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -68,6 +69,9 @@ COLUMN_MAPPER = {
     "disinformation-test": {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
+    },
+    "wino-bias": {
+        "text": ["text"],
     },
 }
 
@@ -298,6 +302,7 @@ class DataFactory:
             "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
             "Narrative-Wedging": script_dir[:-7]
             + "/NarrativeWedging/Narrative_Wedging.jsonl",
+            "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1113,6 +1118,7 @@ class JSONLDataset(_IDataset):
         "security",
         "clinical-tests",
         "disinformation-test",
+        "wino-bias",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1247,6 +1253,15 @@ class JSONLDataset(_IDataset):
                         DisinformationSample(
                             hypothesis=item["hypothesis"],
                             statements=item["statements"],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+
+                elif self.task == "wino-bias":
+                    data.append(
+                        WinoBiasSample(
+                            masked_text=item["text"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
