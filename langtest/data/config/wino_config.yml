@@ -1,6 +1,3 @@
-model_parameters:
-  temperature: 0
-  
 tests:
   defaults:
     min_pass_rate: 1.0
