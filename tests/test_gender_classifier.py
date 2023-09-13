@@ -1,5 +1,4 @@
 import unittest
-import pytest
 from langtest.utils.gender_classifier import GenderClassifier
 
 
