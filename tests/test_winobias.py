@@ -9,7 +9,7 @@ class WinoBiasTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         """
-        Set up the test case by initializing the langtest Harness and configuring it.
+        Set up the test case by initializing the langtest Harness and configure it.
         """
         self.harness = Harness(
             task="wino-bias",
@@ -32,6 +32,6 @@ class WinoBiasTestCase(unittest.TestCase):
 
     def test_wino_bias_workflow(self):
         """
-        Test the wino-bias workflow by generating and running tests, and generating a report.
+        Test the wino-bias workflow by generating and running test and obtaining a report.
         """
         self.harness.generate().run().report()
