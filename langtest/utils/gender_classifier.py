@@ -1,5 +1,6 @@
 from ..transform.constants import male_names, female_names
 
+
 class GenderClassifier:
     """Helper model to predict the 'gender' of a piece of text."""
 
