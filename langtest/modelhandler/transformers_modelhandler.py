@@ -386,7 +386,7 @@ class PretrainedModelForWinoBias(_ModelHandler):
 
         try:
             prediction = self.model(text, **kwargs)
-        except:
+        except Exception as e:
             self.masked_text = text.replace("[MASK]", "<mask>")
             prediction = self.model(self.masked_text, **kwargs)
 
