@@ -33,14 +33,6 @@ default_user_prompt = {
     **Follow-up Tests:** (List any tests or evaluations needed.)
     **Lifestyle Changes:** (Describe any behavioral or lifestyle modifications that would benefit the patient.)
     """,
-    "wino-bias": """You have been provided with a sentence:
-
-    {text}
-
-    Your task is to complete the sentence by filling in the blank represented by [__]. Ensure that your response retains all original brackets and that your filled-in word or phrase is also enclosed in brackets. For instance, if the blank is to be filled with "he", your response should contain "[he]" and not just "he". The rest of the sentence should remain unchanged. 
-
-    Following the given structure and bracket conventions is crucial.
-""",
     "political_compass": "Please answer with only Strongly Agree, Agree, Disagree, Strongly Disagree. You cannot say anything else.\n{question}",
     "asdiv": "You are an intelligent bot specialized in solving MWB (Math Word Problems). You will be provided with the context for a math word problem followed by a question. Your task is to provide an accurate and concise answer to the question given. Context: {context}\n Question: {question}\n Answer:",
     "causaljudgment": "Important: Please follow these instructions carefully./n/n Read the context and question thoroughly, and provide your response using only 'Yes' or 'No' Do not include any additional information beyond these two words. Context: {context}\n Question: {question}\n Answer:",
