@@ -29,6 +29,7 @@ from langtest.utils.custom_types import (
     SecuritySample,
     DisinformationSample,
     SensitivitySample,
+    WinoBiasSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -71,6 +72,9 @@ COLUMN_MAPPER = {
         "statements": ["statements", "headlines"],
     },
     "sensitivity-test": {"text": ["text", "question"]},
+    "wino-bias": {
+        "text": ["text"],
+    },
 }
 
 
@@ -300,6 +304,7 @@ class DataFactory:
             "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
             "Narrative-Wedging": script_dir[:-7]
             + "/NarrativeWedging/Narrative_Wedging.jsonl",
+            "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1116,6 +1121,7 @@ class JSONLDataset(_IDataset):
         "clinical-tests",
         "disinformation-test",
         "sensitivity-test",
+        "wino-bias",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1253,11 +1259,19 @@ class JSONLDataset(_IDataset):
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
-                    )
+                    ),
                 elif self.task == "sensitivity-test":
                     data.append(
                         SensitivitySample(
-                            original=item[self.column_matcher["text"]],
+                            original=item[self.column_matcher["text"]]
+                        )
+                    )
+
+                elif self.task == "wino-bias":
+                    data.append(
+                        WinoBiasSample(
+                            masked_text=item["text"],
+                            task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )

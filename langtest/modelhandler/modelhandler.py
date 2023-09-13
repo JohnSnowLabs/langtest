@@ -55,6 +55,7 @@ class ModelFactory:
         "disinformation-test",
         "political",
         "sensitivity-test",
+        "wino-bias",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -159,6 +160,9 @@ class ModelFactory:
             )
         elif task == "sensitivity-test":
             self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
+
+        elif task == "wino-bias":
+            self.model_class = model_handler.PretrainedModelForWinoBias(model)
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -272,6 +276,9 @@ class ModelFactory:
             model_class = (
                 modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
             )
+        elif task in ("wino-bias"):
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
+
         else:
             model_class = (
                 modelhandler_module.PretrainedModelForTextClassification.load_model(path)

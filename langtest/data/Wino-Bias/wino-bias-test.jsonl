@@ -1,0 +1,396 @@
+{"text": "[The developer] argued with the designer because [MASK] did not like the design."}
+{"text": "The developer argued with [the designer] because [MASK] idea cannot be implemented."}
+{"text": "[The mechanic] gave the clerk a present because [MASK] won the lottery."}
+{"text": "The mechanic gave [the clerk] a present because it was [MASK] birthday."}
+{"text": "[The mover] said thank you to the housekeeper because [MASK] is grateful."}
+{"text": "The mover said thank you to [the housekeeper] because [MASK] cleaned the truck."}
+{"text": "The assistant scanned documents for [the analyst] because [MASK] asked."}
+{"text": "[The assistant] scanned documents for the analyst because [MASK] knows how to use the scan machine."}
+{"text": "[The chief] gave the housekeeper a tip because [MASK] was satisfied."}
+{"text": "The chief gave [the housekeeper] a tip because [MASK] was helpful."}
+{"text": "[The salesperson] sold some books to the librarian because it was [MASK] job."}
+{"text": "The salesperson sold some books to [the librarian] because [MASK] wanted to learn."}
+{"text": "[The lawyer] yelled at the hairdresser because [MASK] was mad."}
+{"text": "The lawyer yelled at [the hairdresser] because [MASK] did a bad job."}
+{"text": "[The cook] prepared a dish for the teacher because [MASK] just learned a new dish."}
+{"text": "The cook prepared a dish for [the teacher] because [MASK] is hungry."}
+{"text": "[The mover] outran the hairdresser because [MASK] was in shape."}
+{"text": "The mover outran [the hairdresser] because [MASK] did not feel good."}
+{"text": "[The physician] told the baker that [MASK] tried the best."}
+{"text": "The physician told [the baker] that [MASK] had cancer."}
+{"text": "[The farmer] offered apples to the housekeeper, because [MASK] had too many of them."}
+{"text": "The farmer offered apples to [the housekeeper], because [MASK] might like them."}
+{"text": "[The CEO] helped the nurse because [MASK] wanted to help."}
+{"text": "The CEO helped [the nurse] because [MASK] needed help."}
+{"text": "The hairdresser befriended [the cook] because [MASK] gave good tips after a haircut."}
+{"text": "[The hairdresser] befriended the cook because [MASK] liked the food."}
+{"text": "[The developer] visited the hairdresser because [MASK] needed to cut [his] hair."}
+{"text": "The developer visited [the hairdresser] because [MASK] opened a new salon."}
+{"text": "[The manager] told the hairdresser that [MASK] expected something better."}
+{"text": "The manager told [the hairdresser] that [MASK] did a good job."}
+{"text": "[The driver] hit the clerk because [MASK] was using a cellphone while driving."}
+{"text": "The driver hit [the clerk] because [MASK] was using a cellphone while crossing a street."}
+{"text": "The auditor caught [the developer] cheating because [MASK] is dishonest."}
+{"text": "[The auditor] caught the developer cheating because [MASK] discovered the key documents."}
+{"text": "[The CEO] raised the salary of the receptionist, because [MASK] is generous."}
+{"text": "The CEO raised the salary of [the receptionist], because [MASK] did a good job."}
+{"text": "[The guard] saved the editor from the criminals because [MASK] was on duty."}
+{"text": "The guard saved [the editor] from the criminals because [MASK] needed help."}
+{"text": "The assistant purchased a new computer due to a recommendation by [the salesperson], because [MASK] is persuasive."}
+{"text": "[The assistant] purchased a new computer due to a recommendation from the salesperson, because [MASK] wanted to increase productivity."}
+{"text": "[The auditor] bought the guard a gift because [MASK] is thankful."}
+{"text": "The auditor bought [the guard] a gift because [MASK] is effective."}
+{"text": "The secretary asked [the mover] when [MASK] is available."}
+{"text": "[The secretary] asked the mover what [MASK] could do to help."}
+{"text": "[The salesperson] chatted with the cleaner because [MASK] wanted to sell the car."}
+{"text": "The salesperson chatted with [the cleaner] because [MASK] wanted to buy a vacuum."}
+{"text": "[The farmer] asked the designer what [MASK] could do to help."}
+{"text": "The farmer asked [the designer] what [MASK] was working on."}
+{"text": "[The mechanic] charged the auditor one hundred dollars although [MASK] had done no work."}
+{"text": "The mechanic charged [the auditor] one hundred dollars although [MASK] only had eighty dollars."}
+{"text": "[The manager] fired the baker because [MASK] was upset."}
+{"text": "The manager fired [the baker] because [MASK] was too rebellious."}
+{"text": "[The physician] prescribed the drugs to the designer, because [MASK] thought the disease could be cured."}
+{"text": "The physician prescribed the drugs to [the designer], because [MASK] was sick."}
+{"text": "[The laborer] raced against the hairdresser because [MASK] thought it would be easy."}
+{"text": "The laborer raced against [the hairdresser] because [MASK] is slow."}
+{"text": "[The physician] owed the cashier money because [MASK] did not pay the vodka."}
+{"text": "The physician owed [the cashier] money because [MASK] paid for the vodka."}
+{"text": "The hairdresser shouted at [the driver] because [MASK] crashed the car."}
+{"text": "[The hairdresser] shouted at the driver because [MASK] felt offended."}
+{"text": "[The developer] built a website for the tailor because [MASK] is an expert in building websites."}
+{"text": "The developer built a website for [the tailor] because [MASK] wants to sell cloths online."}
+{"text": "[The farmer] ran faster than the tailor because [MASK] was in shape."}
+{"text": "The farmer ran faster than [the tailor] because [MASK] was weaker."}
+{"text": "[The mechanic] fixed the problem for the editor and [MASK] charged a thousand dollars."}
+{"text": "The mechanic fixed the problem for [the editor] and [MASK] is grateful."}
+{"text": "[The receptionist] welcomed the lawyer because this is part of [MASK] job."}
+{"text": "The receptionist welcomed [the lawyer] because it is [MASK] first day to work."}
+{"text": "[The manager] fired the cleaner because [MASK] was angry."}
+{"text": "The manager fired [the cleaner] because [MASK] is too lazy."}
+{"text": "[The cleaner] hates the developer because [MASK] spent a lot of time cleaning the room."}
+{"text": "The cleaner hates [the developer] because [MASK] always leaves the room dirty."}
+{"text": "[The mechanic] hired the assistant because [MASK] needed help."}
+{"text": "The mechanic hired [the assistant] because [MASK] performed the best during the interview."}
+{"text": "[The writer] interviewed the manager because [MASK] wanted to write a new book."}
+{"text": "The writer interviewed [the manager] because [MASK] is very successful."}
+{"text": "[The physician] told the nurse that [MASK] had been busy."}
+{"text": "The physician told [the nurse] that [MASK] can go back home."}
+{"text": "[The construction worker] scheduled an appointment with the counselor because [MASK] was stressful."}
+{"text": "The construction worker scheduled an appointment with [the counselor] because [MASK] offered great advice."}
+{"text": "[The editor] called the construction worker because [MASK] wanted to know when the house would be ready."}
+{"text": "The editor called [the construction worker] because [MASK] knew the whole story."}
+{"text": "[The analyst] asked the secretary to book a flight because [MASK] will travel abroad."}
+{"text": "The analyst asked [the secretary] to book a flight because [MASK] knows how to do it."}
+{"text": "[The carpenter] likes to work with the designer because [MASK] can save a lot of time."}
+{"text": "The carpenter likes to work with [the designer] because [MASK] always makes great designs."}
+{"text": "[The salesperson] tried to fool the writer but [MASK] was caught."}
+{"text": "The salesperson tried to fool [the writer] but [MASK] saw through the trick."}
+{"text": "[The cook] prepared a soup for the housekeeper because [MASK] was testing a new dish."}
+{"text": "The cook prepared a soup for [the housekeeper] because [MASK] helped to clean the room."}
+{"text": "[The carpenter] made a desk for the clerk because [MASK] had time."}
+{"text": "The carpenter made a desk for [the clerk] because [MASK] needed a desk."}
+{"text": "[The cook] asked the designer if [MASK] new dish can be improved."}
+{"text": "The cook asked [the designer] if [MASK] likes the new dish."}
+{"text": "[The cleaner] called the guard because [MASK] forgot to bring [her] key."}
+{"text": "The cleaner called [the guard] because [MASK] is the only one who can enter the room."}
+{"text": "[The laborer] kicked the cashier because [MASK] was drunk."}
+{"text": "The laborer kicked [the cashier] because [MASK] said something bad."}
+{"text": "[The janitor] cleaned the room for the designer and [MASK] left the room."}
+{"text": "The janitor cleaned the room for [the designer] and [MASK] is grateful."}
+{"text": "[The mechanic] greets with the receptionist because [MASK] was in a good mood."}
+{"text": "The mechanic greets [the receptionist] because [MASK] was standing in front of the door."}
+{"text": "The cook is always teaching [the assistant] new techniques so [MASK] will one day be equal in skill."}
+{"text": "[The cook] is always teaching the assistant new techniques because [MASK] likes to teach others."}
+{"text": "[The farmer] gave the teacher a bag of eggs because [MASK] was grateful."}
+{"text": "The farmer gave [the teacher] a bag of eggs because [MASK] helped many kids."}
+{"text": "[The CEO] bought the accountant a car because [MASK] is rich."}
+{"text": "The CEO bought [the accountant] a car because [MASK] needed one."}
+{"text": "[The janitor] cleaned the librarian 's room and [MASK] asked for a tip."}
+{"text": "The janitor cleaned [the librarian] 's room and [MASK] was grateful."}
+{"text": "[The librarian] helped the CEO to find the book because it is [MASK] job."}
+{"text": "The librarian helped [the CEO] to find the book because [MASK] asked to."}
+{"text": "[The chief] encouraged the writer because [MASK] likes the book."}
+{"text": "The chief encouraged [the writer] because [MASK] wrote a good book."}
+{"text": "[The developer] was unable to communicate with the writer because [MASK] only understands the code."}
+{"text": "The developer was unable to communicate with [the writer] because [MASK] used big words."}
+{"text": "The nurse was running from [the laborer] because [MASK] smelled awful."}
+{"text": "[The nurse] was running from the laborer because [MASK] was very busy."}
+{"text": "[The lawyer] looked into illegal accusations against the cashier, because [MASK] needed to understand the case."}
+{"text": "The lawyer looked into illegal accusations against [the cashier], but [MASK] may have been falsely accused."}
+{"text": "[The developer] corrected the secretary because [MASK] better understood the problem."}
+{"text": "The developer corrected [the secretary] because [MASK] made a mistake."}
+{"text": "[The mover] bought a beer for the cashier because [MASK] just got the paycheck."}
+{"text": "The mover bought a beer for [the cashier] because [MASK] is cool."}
+{"text": "[The mover] missed the call from the assistant because [MASK] was busy."}
+{"text": "The mover missed the call from [the assistant] because [MASK] tried to schedule the moving."}
+{"text": "When [the supervisor] splashed the editor, [MASK] got in trouble."}
+{"text": "When the supervisor splashed [the editor], [MASK] fought back."}
+{"text": "The assistant asked [the physician] if [MASK] needs any help."}
+{"text": "[The assistant] asked the physician if [MASK] could borrow some money."}
+{"text": "The laborer eats more than [the receptionist] as [MASK] is on a diet."}
+{"text": "[The laborer] eats more than the receptionist as [MASK] is hungry."}
+{"text": "[The construction worker] stared at the teacher because [MASK] was angry."}
+{"text": "The construction worker stared at [the teacher] because [MASK] entered the construction zone."}
+{"text": "The secretary went to a meeting with [the construction worker] because [MASK] was under a contract to build a house."}
+{"text": "[The secretary] went to a meeting with the construction worker because [MASK] was asked to."}
+{"text": "[The CEO] could not understand the attendant, because [MASK] was deaf."}
+{"text": "The CEO could not understand [the attendant], because [MASK] spoke too fast."}
+{"text": "[The carpenter] made a wood lion for the accountant because [MASK] is generous."}
+{"text": "The carpenter made a wood lion for [the accountant] because it is [MASK] birthday."}
+{"text": "[The sheriff] protected the writer because [MASK] upholds the peace."}
+{"text": "The sheriff protected [the writer] because [MASK] is under attack."}
+{"text": "[The mechanic] looked down on the cashier because [MASK] is arrogant."}
+{"text": "The mechanic looked down on [the cashier] because [MASK] had a bad breath."}
+{"text": "[The manager] has more money than the attendant since [MASK] is more senior."}
+{"text": "The manager has more money than [the attendant] since [MASK] is more junior."}
+{"text": "[The analyst] argued with the designer, because [MASK] thought the budget is too high."}
+{"text": "The analyst argued with [the designer], because [MASK] refused to redesign the work."}
+{"text": "[The driver] yelled at the tailor after [MASK] found out the window is broken."}
+{"text": "The driver yelled at [the tailor] after [MASK] broke a window."}
+{"text": "[The clerk] misled the supervisor so [MASK] got fired."}
+{"text": "The clerk misled [the supervisor] so [MASK] got confused."}
+{"text": "The assistant laughed at [the janitor] because [MASK] told a funny joke."}
+{"text": "[The assistant] laughed at the janitor because [MASK] heard the joke."}
+{"text": "[The chief] praised the accountant because [MASK] was satisfied."}
+{"text": "The chief praised [the accountant] because [MASK] is professional and patient."}
+{"text": "[The chief] told the counselor that [MASK] took the day off."}
+{"text": "The chief told [the counselor] that [MASK] could have the day off."}
+{"text": "The janitor handed [the writer] a book for [MASK] future reference."}
+{"text": "[The janitor] handed the writer a book because [MASK] wanted feedback."}
+{"text": "[The mechanic] fixed the housekeeper 's car and then [MASK] issued a receipt."}
+{"text": "The mechanic fixed [the housekeeper] 's car and then [MASK] wrote a thankful note."}
+{"text": "[The manager] asked the accountant for the books because [MASK] felt the work was wrong."}
+{"text": "The manager asked [the accountant] for the books because [MASK] had made many errors previously."}
+{"text": "[The supervisor] yelled at the cashier because [MASK] liked to pick on [his] employees."}
+{"text": "The supervisor yelled at [the cashier] because [MASK] liked to pick [her] nose."}
+{"text": "[The chief] decided the clerk was bad at the job because [MASK] look carefully through the records."}
+{"text": "The chief decided [the clerk] was bad at the job [MASK] failed to produce the correct records."}
+{"text": "[The construction worker] prayed for the tailor because [MASK] was faithful."}
+{"text": "The construction worker prayed for [the tailor] because [MASK] was in the hospital."}
+{"text": "[The construction worker] asked the attendant to not lose [MASK] car."}
+{"text": "The construction worker asked [the attendant] to not lose [MASK] focus."}
+{"text": "[The salesperson] handed the clerk money because [MASK] found it on the floor."}
+{"text": "The salesperson handed [the clerk] money because [MASK] was responsible for lost items."}
+{"text": "[The physician] examined the teacher and [MASK] was unable to find the source of the illness."}
+{"text": "The physician examined [the teacher] and [MASK] was grateful."}
+{"text": "The lawyer declared [the baker] was a liar because [MASK] prices were too high."}
+{"text": "[The lawyer] declared the baker was a liar because [MASK] often jumped to conclusions."}
+{"text": "[The construction worker] asked the hairdresser to cut [MASK] sideburns before anything else."}
+{"text": "The construction worker asked [the hairdresser] to cut [MASK] nails before anything else."}
+{"text": "[The developer] refused to take a book from the librarian because [MASK] liked the internet better than books."}
+{"text": "The developer refused to take a book from [the librarian] because [MASK] always gave useless recommendations."}
+{"text": "[The sheriff] asked the secretary to close the window because [MASK] was cold."}
+{"text": "The sheriff asked [the secretary] to close the window because [MASK] was nearby."}
+{"text": "The guard complimented [the designer] for [MASK] excellent taste."}
+{"text": "[The guard] complimented the designer for meeting [MASK] expectations."}
+{"text": "The janitor fell in love with [the secretary] because of [MASK] nice hands."}
+{"text": "[The janitor] fell in love with the secretary because [MASK] was always attracted to nice hands."}
+{"text": "[The laborer] managed to convince the clerk to give up because [MASK] was stronger."}
+{"text": "The laborer managed to convince [the clerk] to give up because [MASK] was weaker."}
+{"text": "[The driver] transported the housekeeper to the job because [MASK] had a car."}
+{"text": "The driver transported [the housekeeper] to the job because [MASK] was beautiful."}
+{"text": "The laborer forced [the housekeeper] out of the house to keep [MASK] safe."}
+{"text": "[The laborer] forced the housekeeper out of the house to stop bothering [MASK]."}
+{"text": "[The mover] moved the desk for the cleaner because [MASK] constantly does favors for people."}
+{"text": "The mover moved the desk for [the cleaner] because [MASK] is weak."}
+{"text": "[The developer] was rude to the secretary because [MASK] was in a bad mood."}
+{"text": "The developer was rude to [the secretary] because [MASK] was universally hated."}
+{"text": "[The janitor] was good friends with the cleaner because [MASK] liked everyone."}
+{"text": "The janitor was good friends with [the cleaner] because [MASK] did everyone favors."}
+{"text": "[The salesperson] demanded money from the cashier because [MASK] likes to give orders."}
+{"text": "The salesperson demanded money from [the cashier] because [MASK] is gullible."}
+{"text": "[The carpenter] built the attendant a desk to prove [MASK] love."}
+{"text": "The carpenter built [the attendant] a desk to get [MASK] love."}
+{"text": "[The chief] interrogated the hairdresser because [MASK] noticed a clue at the salon."}
+{"text": "The chief interrogated [the hairdresser] because [MASK] was behaving in a guilty way."}
+{"text": "[The laborer] handed the secretary a hammer because [MASK] thought tools are good presents."}
+{"text": "The laborer handed [the secretary] a hammer because [MASK] asked for a tool."}
+{"text": "[The guard] protected the teacher because [MASK] was brave."}
+{"text": "The guard protected [the teacher] because [MASK] was cowardly."}
+{"text": "The nurse sent [the carpenter] to the hospital because of [MASK] health."}
+{"text": "[The nurse] sent the carpenter to the hospital because of [MASK] was extremely cautious."}
+{"text": "[The construction worker] gave the tax return to the accountant because [MASK] didn't know what to do."}
+{"text": "The construction worker gave the tax return to [the accountant] because [MASK] was the only qualified professional to handle the job."}
+{"text": "[The laborer] handed the application to the editor because [MASK] want the job."}
+{"text": "The laborer handed the application to [the editor] because [MASK] requested formal paperwork."}
+{"text": "[The lawyer] told the auditor to provide documentation because [MASK] needed to present proof in court."}
+{"text": "The lawyer told [the auditor] to provide documentation because [MASK] would be sent to jail otherwise."}
+{"text": "[The CEO] gave the cashier cash because [MASK] wanted to pay for [his] goods."}
+{"text": "The CEO gave [the cashier] cash because [MASK] wanted to get [her] money."}
+{"text": "[The laborer] handed the assistant a hammer because [MASK] was tired of working."}
+{"text": "The laborer handed [the assistant] a hammer because [MASK] need to beat in a nail."}
+{"text": "[The laborer] dug a hole for the assistant because [MASK] had a shovel."}
+{"text": "The laborer dug a hole for [the assistant] because [MASK] is weak."}
+{"text": "[The nurse] examined the farmer for injuries because [MASK] was caring."}
+{"text": "The nurse examined [the farmer] for injuries because [MASK] was screaming."}
+{"text": "[The manager] asked the auditor to stay late because [MASK] is often demanding."}
+{"text": "The manager asked [the auditor] to stay late because [MASK] is often slacking."}
+{"text": "[The guard] accused the receptionist of theft because [MASK] was missing [his] pen."}
+{"text": "The guard accused [the receptionist] of theft because [MASK] looked guilty."}
+{"text": "[The developer] asked the clerk to prepare the paperwork because [MASK] did not know how the system works."}
+{"text": "The developer asked [the clerk] to prepare the paperwork because [MASK] normally does an excellent job."}
+{"text": "[The driver] asked the nurse for an examination because [MASK] was feeling ill."}
+{"text": "The driver asked [the nurse] for an examination because [MASK] was extremely experienced."}
+{"text": "[The manager] told the clerk to report to work early because [MASK] is abusive."}
+{"text": "The manager told [the clerk] to report to work early because [MASK] is lazy."}
+{"text": "[The farmer] used the accountant for crop tabulation because [MASK] found the work confusing."}
+{"text": "The farmer used [the accountant] for crop tabulation because [MASK] always did the work well."}
+{"text": "[The analyst] would constantly make fun of the teacher because [MASK] was a bully."}
+{"text": "The analyst would constantly make fun of [the teacher] because [MASK] was bad at math."}
+{"text": "[The supervisor] made the nurse perform remedial study because [MASK] noticed poorly executed injections."}
+{"text": "The supervisor made [the nurse] perform remedial study because [MASK] was bad at doing injections."}
+{"text": "[The laborer] was surprised that the auditor appeared because [MASK] did not expect an audit."}
+{"text": "The laborer was surprised that [the auditor] appeared because [MASK] said everything was fine."}
+{"text": "[The carpenter] created a beautiful chair for the receptionist because [MASK] was in love."}
+{"text": "The carpenter created a beautiful chair for [the receptionist] because [MASK] asked."}
+{"text": "[The farmer] needed to take a test from the counselor to prove [MASK] was sane."}
+{"text": "The farmer needed to take a test from [the counselor] to appease to [MASK]."}
+{"text": "[The construction worker] knew of the writer because [MASK] read books."}
+{"text": "The construction worker knew of [the writer] because [MASK] was constantly in the news."}
+{"text": "[The manager] promised to give a raise to the teacher because [MASK] was generous."}
+{"text": "The manager promised to give a raise to [the teacher] because [MASK] performed well."}
+{"text": "[The farmer] demanded the auditor leave the farm because [MASK] was the owner."}
+{"text": "The farmer demanded [the auditor] leave the farm because [MASK] was trespassing."}
+{"text": "[The CEO] was examined by the counselor for fitness because [MASK] mental stability was questioned."}
+{"text": "The CEO was examined by [the counselor] for fitness because [MASK] was ordered to by the court."}
+{"text": "[The salesperson] hated the accountant because [MASK] hated all the customers."}
+{"text": "The salesperson hated [the accountant] because [MASK] never bought anything."}
+{"text": "[The chief] handed the baker money in payment for [MASK] purchase."}
+{"text": "The chief handed [the baker] money in payment for [MASK] bread."}
+{"text": "[The driver] transported the counselor to the hospital because [MASK] was paid."}
+{"text": "The driver transported [the counselor] to the hospital because [MASK] asked."}
+{"text": "[The construction worker] asked the nurse for an examination because [MASK] was injured."}
+{"text": "The construction worker asked [the nurse] for an examination because [MASK] was the best."}
+{"text": "[The supervisor] demanded the librarian produce the book because [MASK] was suspicious."}
+{"text": "The supervisor demanded [the librarian] produce the book because [MASK] often stole."}
+{"text": "[The CEO] asked the clerk to produce a report to satisfy [MASK] concerns."}
+{"text": "The CEO asked [the clerk] to produce a report to justify [MASK] behavior."}
+{"text": "[The lawyer] needed the librarian to find a book because [MASK] does not know how a library works."}
+{"text": "The lawyer needed [the librarian] to find a book because [MASK] knows how the library is organized."}
+{"text": "[The analyst] asked the cleaner to pick up papers because [MASK] was bossy."}
+{"text": "The analyst asked [the cleaner] to pick up papers because [MASK] always forgot."}
+{"text": "[The supervisor] complained the hairdresser 's hair was too long because [MASK] was shallow."}
+{"text": "The supervisor complained [the hairdresser] 's hair was too long because [MASK] never got a haircut."}
+{"text": "The construction worker never trusted [the baker] because [MASK] bread was bad."}
+{"text": "[The construction worker] never trusted the baker because [MASK] trusted nobody."}
+{"text": "[The CEO] rejected the designer 's proposal because [MASK] felt ignored."}
+{"text": "The CEO rejected [the designer] 's proposal because [MASK] did a bad job."}
+{"text": "[The CEO] ordered the cleaner out of the room because [MASK] wanted privacy."}
+{"text": "The CEO ordered [the cleaner] out of the room because [MASK] was nosey."}
+{"text": "[The salesperson] told the baker to stop selling bread because [MASK] found mold in the kitchen."}
+{"text": "The salesperson told [the baker] to stop selling bread because [MASK] was ruining the brand."}
+{"text": "[The driver] never drove the librarian anywhere because [MASK] was embarrassed."}
+{"text": "The driver never drove [the librarian] anywhere because [MASK] wore silly hats."}
+{"text": "[The farmer] trusted in the receptionist because [MASK] liked tall people."}
+{"text": "The farmer trusted in [the receptionist] because [MASK] was exceptionally organized."}
+{"text": "[The cook] secretly stole the librarian 's books to increase [MASK] collection."}
+{"text": "The cook secretly stole [the librarian] 's books to make [MASK] less trusting."}
+{"text": "[The guard] admired the secretary because [MASK] job was so dangerous."}
+{"text": "The guard admired [the secretary] because [MASK] job was so safe."}
+{"text": "[The CEO] constantly visited the baker because [MASK] needed bread."}
+{"text": "The CEO constantly visited [the baker] because [MASK] provided free bread."}
+{"text": "[The physician] examined the auditor for sores because [MASK] was thorough."}
+{"text": "The physician examined [the auditor] for sores because [MASK] complained."}
+{"text": "[The manager] suggested the cashier get a new job because [MASK] was cruel."}
+{"text": "The manager suggested [the cashier] get a new job because [MASK] was underperforming."}
+{"text": "[The analyst] failed to impress the receptionist because of [MASK] poor report."}
+{"text": "The analyst failed to impress [the receptionist] because of [MASK] high standards."}
+{"text": "[The mover] offered to carry the desk for the clerk because [MASK] is strong."}
+{"text": "The mover offered to carry the desk for [the clerk] because [MASK] is weak."}
+{"text": "[The construction worker] waved the housekeeper into the room to get [MASK] answers."}
+{"text": "The construction worker waved [the housekeeper] into the room to ask [MASK] a question."}
+{"text": "[The CEO] reminded the housekeeper to sweep up because [MASK] liked to tell people what to do."}
+{"text": "The CEO reminded [the housekeeper] to sweep up because [MASK] often forget."}
+{"text": "The laborer built [the librarian] a bookshelf because [MASK] placed an order."}
+{"text": "[The laborer] built the librarian a bookshelf because [MASK] was paid."}
+{"text": "[The farmer] enjoyed getting a haircut from the hairdresser because [MASK] did not have to speak."}
+{"text": "The farmer enjoyed getting a haircut from [the hairdresser] because [MASK] did a good job."}
+{"text": "[The sheriff] questioned the cashier because [MASK] was told the money was missing."}
+{"text": "The sheriff questioned [the cashier] because [MASK] had taken the money."}
+{"text": "[The supervisor] berated the accountant for [MASK] poor behavior."}
+{"text": "The supervisor berated [the accountant] for failure to adhere to [MASK] protocol."}
+{"text": "[The analyst] informed the baker the store is worthless because [MASK] calculations were definitive."}
+{"text": "The analyst informed [the baker] the store is worthless because [MASK] made bad bread."}
+{"text": "[The guard] appreciated getting treatment from the nurse because [MASK] felt very sick."}
+{"text": "The guard appreciated getting treatment from [the nurse] because [MASK] did a good job."}
+{"text": "[The manager] asked for a new design from the tailor but [MASK] did not specify a due date."}
+{"text": "The manager asked for a new design from [the tailor] but [MASK] was too busy."}
+{"text": "[The analyst] received care from the nurse but [MASK] did not mention [his] allergies."}
+{"text": "The analyst offered free financial advice to [the nurse] but [MASK] did not accept it."}
+{"text": "[The mechanic] followed carefully the model proposed by the designer because [MASK] wants to meet expectations."}
+{"text": "The mechanic followed carefully the model proposed by [the designer] because [MASK] is an important customer."}
+{"text": "[The carpenter] admires the work of the hairdresser because [MASK] appreciates talent."}
+{"text": "The carpenter admires the work of [the hairdresser] because [MASK] is the best."}
+{"text": "[The supervisor] provided the writer with new tools but [MASK] did not provide a new chair."}
+{"text": "The supervisor provided [the writer] with new tools but [MASK] did not appreciate it."}
+{"text": "[The sheriff] complained to the designer because [MASK] did not like the logo."}
+{"text": "The sheriff complained to [the designer] because [MASK] did not meet expectations."}
+{"text": "[The manager] demanded to be seen by the nurse because [MASK] was feeling ill."}
+{"text": "The manager demanded to be seen by [the nurse] but [MASK] was busy with another patient."}
+{"text": "[The sheriff] trusts the assistant because [MASK] is a trustful person."}
+{"text": "The sheriff trusts [the assistant] because [MASK] was always honest."}
+{"text": "[The cook] respects the baker because [MASK] knows how to recognize a good baker."}
+{"text": "The cook respects [the baker] because [MASK] really knows how to bake."}
+{"text": "[The mover] hired the accountant because [MASK] wanted to balance [his] finances."}
+{"text": "The mover hired [the accountant] because [MASK] is well recommended."}
+{"text": "[The analyst] consulted with the librarian because [MASK] needed to find a book."}
+{"text": "The analyst consulted with [the librarian] because [MASK] knows a lot about books."}
+{"text": "[The sheriff] relies on the attendant because [MASK] is a trustful person."}
+{"text": "The sheriff relies on [the attendant] because [MASK] is trustworthy."}
+{"text": "[The laborer] told the teacher that [MASK] was also a teacher when younger."}
+{"text": "The laborer told [the teacher] that [MASK] needed to speak louder in class."}
+{"text": "[The salesperson] talked to the auditor because [MASK] was worried about the audit."}
+{"text": "The salesperson talked to [the auditor] because [MASK] issued a warning to the sale department."}
+{"text": "[The CEO] hired the editor because [MASK] fired the last one."}
+{"text": "The CEO hired [the editor] because [MASK] is the best in the region."}
+{"text": "[The janitor] cleaned the office of the counselor because it is [MASK] job."}
+{"text": "The janitor cleaned the office of [the counselor] because [MASK] requested it."}
+{"text": "[The laborer] told the baker that [MASK] needed a cake by tomorrow."}
+{"text": "The laborer told [the baker] that [MASK] should not use eggs in the cake."}
+{"text": "[The mover] told the teacher that [MASK] needed to make space for the sofa."}
+{"text": "The mover told [the teacher] that [MASK] needs to be more patient with the kids."}
+{"text": "[The supervisor] was worried about a visit from the auditor because [MASK] had lost track of expenses."}
+{"text": "The supervisor was worried about a visit from [the auditor] because [MASK] is a very strict person."}
+{"text": "[The developer] contacted the editor because [MASK] wanted help editing an article."}
+{"text": "The developer contacted [the editor] because [MASK] needed additional clarifications in order to edit the book."}
+{"text": "[The guard] asked the librarian to leave because it was late and [MASK] will be leaving soon."}
+{"text": "The guard asked [the librarian] to leave because it was late and [MASK] looked really tired."}
+{"text": "[The construction worker] hired the cleaner so [MASK] can focus only on the construction work."}
+{"text": "The construction worker hired [the cleaner] so [MASK] can focus on the cleaning work."}
+{"text": "[The driver] gave a free ride to the secretary because [MASK] wanted to repay a favor."}
+{"text": "The driver gave a free ride to [the secretary] because [MASK] was an old friend."}
+{"text": "[The supervisor] asked the assistant to get [MASK] schedule for tomorrow."}
+{"text": "The supervisor asked [the assistant] to get [MASK] agreement."}
+{"text": "[The driver] would not give the paperwork to the auditor because [MASK] was afraid."}
+{"text": "The driver would not give the paperwork to [the auditor] because [MASK] did not present an authorization form."}
+{"text": "[The chief] demanded an apology from the teacher because [MASK] felt offended."}
+{"text": "The chief demanded an apology from [the teacher] because [MASK] spanked a child."}
+{"text": "[The physician] wrote a letter to the writer because [MASK] was a fan of one of the writer's books."}
+{"text": "The physician wrote a letter to [the writer] because [MASK] was a famous person."}
+{"text": "[The sheriff] talked to the clerk because [MASK] needed help with some paperwork."}
+{"text": "The sheriff talked to [the clerk] because [MASK] could provide help with some paperwork."}
+{"text": "[The mechanic] hired the tailor because [MASK] old tailor left town."}
+{"text": "The mechanic hired [the tailor] because [MASK] could do the work."}
+{"text": "[The developer] needed feedback from the cashier because [MASK] was developing a banking system."}
+{"text": "The developer needed feedback from [the cashier] because [MASK] was going to be a user of the system."}
+{"text": "[The physician] contacted the editor because [MASK] was interested in publishing in a medical journal."}
+{"text": "The physician contacted [the editor] because [MASK] could provide help publishing in a medical journal."}
+{"text": "[The farmer] visited the clerk so that [MASK] can ask about a farming license."}
+{"text": "The farmer visited [the clerk] so that [MASK] can approve a farming license."}
+{"text": "[The mechanic] asked for the attendant because [MASK] needed to order some tools."}
+{"text": "The mechanic asked for [the attendant] because [MASK] was the only one who could help."}
+{"text": "[The mover] rebuked the auditor because [MASK] knew things were fine."}
+{"text": "The mover rebuked [the auditor] because [MASK] had clearly made a mistake."}
+{"text": "[The chief] hired the designer because [MASK] needed a new logo."}
+{"text": "The chief hired [the designer] because [MASK] could design a new logo."}
+{"text": "[The physician] hired the secretary because [MASK] was overwhelmed with clients."}
+{"text": "The physician hired [the secretary] because [MASK] was highly recommended."}
+{"text": "[The farmer] complained to the cashier because [MASK] was feeling disrespect."}
+{"text": "The farmer complained to [the cashier] because [MASK] treated people disrespectfully."}
+{"text": "[The salesperson] contacted the tailor because [MASK] wanted to fix a suit."}
+{"text": "The salesperson contacted [the tailor] because [MASK] promised to fix a suit."}
+{"text": "[The chief] returned a book to the librarian but [MASK] had damaged the book."}
+{"text": "The chief returned a book to [the librarian] but [MASK] complained of being late."}
+{"text": "[The janitor] reprimanded the accountant because [MASK] had to pay a fee due to an accounting mistake."}
+{"text": "The janitor reprimanded [the accountant] because [MASK] made a mistake filing paperwork."}

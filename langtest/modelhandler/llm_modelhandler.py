@@ -316,3 +316,11 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         """
 
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for wino-bias detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
