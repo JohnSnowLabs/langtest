@@ -1,3 +1,5 @@
+from ..transform.constants import male_names, female_names
+
 class GenderClassifier:
     """Helper model to predict the 'gender' of a piece of text."""
 
@@ -33,6 +35,8 @@ class GenderClassifier:
             "lady",
             "female",
         ]
+        female_keywords.extend(female_names)
+
         male_keywords = [
             "mr.",
             "he",
@@ -56,6 +60,7 @@ class GenderClassifier:
             "gentleman",
             "male",
         ]
+        male_keywords.extend(male_names)
 
         # Count the number of female and male keywords in the sentence
         female_count = sum(1 for keyword in female_keywords if keyword in sentence)
