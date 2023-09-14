@@ -1331,7 +1331,8 @@ class WinoBiasSample(BaseModel):
         self.model_response = model(text=self.masked_text)
 
         return True
-    
+
+
 class LegalSample(BaseModel):
     """
     A class Representing a sample for legal-tests task.
@@ -1357,7 +1358,7 @@ class LegalSample(BaseModel):
     correct_conlusion: str = None
     model_conclusion: str = None
     state: str = None
-    dataset_name: str = None  
+    dataset_name: str = None
     task: str = "legal-tests"
     category: str = "legal"
     test_type: str = None
@@ -1380,7 +1381,7 @@ class LegalSample(BaseModel):
             "legal_claim": self.legal_claim,
             "legal_conclusion_A": self.legal_conclusion_A,
             "legal_conclusion_B": self.legal_conclusion_B,
-            "correct_conlusion":self.correct_conlusion,
+            "correct_conlusion": self.correct_conlusion,
         }
 
         if self.model_conclusion is not None:
@@ -1398,7 +1399,7 @@ class LegalSample(BaseModel):
         return self._is_eval()
 
     def _is_eval(self) -> bool:
-        """"""        
+        """"""
         return self.model_conclusion == self.correct_conlusion
 
     def run(self, model, **kwargs):
@@ -1406,17 +1407,30 @@ class LegalSample(BaseModel):
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
             "user_prompt",
-            default_user_prompt.get(dataset_name, "{case}\n{legal_claim}\n{legal_conclusion_A}\n{legal_conclusion_B}\n"),
+            default_user_prompt.get(
+                dataset_name,
+                "{case}\n{legal_claim}\n{legal_conclusion_A}\n{legal_conclusion_B}\n",
+            ),
         )
 
         self.model_conclusion = model(
-            text={"case": self.case, "legal_claim": self.legal_claim, "legal_conclusion_A": self.legal_conclusion_A, "legal_conclusion_B": self.legal_conclusion_B},
+            text={
+                "case": self.case,
+                "legal_claim": self.legal_claim,
+                "legal_conclusion_A": self.legal_conclusion_A,
+                "legal_conclusion_B": self.legal_conclusion_B,
+            },
             prompt={
                 "template": prompt_template,
-                "input_variables": ["case", "legal_claim", "legal_conclusion_A", "legal_conclusion_B"],
+                "input_variables": [
+                    "case",
+                    "legal_claim",
+                    "legal_conclusion_A",
+                    "legal_conclusion_B",
+                ],
             },
         )
-        
+
         self.model_conclusion = self.model_conclusion.replace(" ", "")
 
         return True

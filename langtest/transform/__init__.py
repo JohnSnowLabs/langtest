@@ -1684,7 +1684,7 @@ class WinoBiasTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["gender-occupational-stereotype"]
-    
+
 
 class LegalTestFactory(ITests):
     """Factory class for the legal tests"""

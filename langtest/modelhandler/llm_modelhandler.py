@@ -220,5 +220,3 @@ class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
-
-
