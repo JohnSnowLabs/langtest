@@ -1049,11 +1049,11 @@ class AbbreviationInsertion(BaseRobustness):
                 for expansion in expansions:
                     pattern = r"(?i)\b" + re.escape(expansion) + r"\b"
                     corrected_token = abbreviation
-                    matches = re.finditer(pattern, text)
+                    matches = re.finditer(pattern, perturbed_text)
                     for match in matches:
                         start = match.start()
                         end = match.end()
-                        token = text[start:end]
+                        token = perturbed_text[start:end]
                         if corrected_token != token and (random.random() < prob):
                             perturbed_text = (
                                 perturbed_text[:start]
