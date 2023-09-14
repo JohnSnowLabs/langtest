@@ -1359,7 +1359,7 @@ class LegalSample(BaseModel):
     state: str = None
     dataset_name: str = None  
     task: str = "legal-tests"
-    category: str = "legal-support"
+    category: str = "legal"
     test_type: str = None
 
     def __init__(self, **data):
@@ -1398,31 +1398,26 @@ class LegalSample(BaseModel):
         return self._is_eval()
 
     def _is_eval(self) -> bool:
-        """"""
+        """"""        
         return self.model_conclusion == self.correct_conlusion
 
     def run(self, model, **kwargs):
         """"""
-#         dataset_name = self.dataset_name.split("-")[0].lower()
-#         prompt_template = kwargs.get(
-#             "user_prompt",
-#             default_user_prompt.get(dataset_name, "{patient_info}\n{diagnosis}\n"),
-#         )
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get(dataset_name, "{case}\n{legal_claim}\n{legal_conclusion_A}\n{legal_conclusion_B}\n"),
+        )
 
-#         self.treatment_plan_A = model(
-#             text={"patient_info": self.patient_info_A, "diagnosis": self.diagnosis},
-#             prompt={
-#                 "template": prompt_template,
-#                 "input_variables": ["patient_info", "diagnosis"],
-#             },
-#         )
-#         self.treatment_plan_B = model(
-#             text={"patient_info": self.patient_info_B, "diagnosis": self.diagnosis},
-#             prompt={
-#                 "template": prompt_template,
-#                 "input_variables": ["patient_info", "diagnosis"],
-#             },
-#         )
+        self.model_conclusion = model(
+            text={"case": self.case, "legal_claim": self.legal_claim, "legal_conclusion_A": self.legal_conclusion_A, "legal_conclusion_B": self.legal_conclusion_B},
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["case", "legal_claim", "legal_conclusion_A", "legal_conclusion_B"],
+            },
+        )
+        
+        self.model_conclusion = self.model_conclusion.replace(" ", "")
 
         return True
 
