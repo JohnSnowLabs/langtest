@@ -210,3 +210,15 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for legal-tests.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
