@@ -74,7 +74,16 @@ COLUMN_MAPPER = {
     "wino-bias": {
         "text": ["text"],
     },
+     "legal-tests": {
+        "case": ["case"],
+        "legal-claim": ["legal-claim"],
+        "legal_conclusion_a": ["legal_conclusion_a"],
+        "legal_conclusion_b": ["legal_conclusion_b"],
+        "correct_choice": ["correct_choice"],
+    },
 }
+
+
 
 
 class _IDataset(ABC):
@@ -304,7 +313,7 @@ class DataFactory:
             "Narrative-Wedging": script_dir[:-7]
             + "/NarrativeWedging/Narrative_Wedging.jsonl",
             "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
-            "Legal-Support-test": script_dir[:-7] + "Legal-Support/legal-test.jsonl",
+            "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl"
         }
 
         return datasets_info[dataset_name]
@@ -1121,6 +1130,7 @@ class JSONLDataset(_IDataset):
         "clinical-tests",
         "disinformation-test",
         "wino-bias",
+        "legal-tests",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1272,17 +1282,16 @@ class JSONLDataset(_IDataset):
                 elif self.task == "legal-tests":
                     data.append(
                         LegalSample(
-                            case=item["case"],
-                            legal_claim=item["legal-claim"],
-                            legal_conclusion_A=item["legal_conclusion_a"],
-                            legal_conclusion_B=item["legal_conclusion_b"],
-                            correct_conlusion=item["correct_choice"],
+                            case = item["case"],
+                            legal_claim = item["legal-claim"],
+                            legal_conclusion_A = item["legal_conclusion_a"],
+                            legal_conclusion_B = item["legal_conclusion_b"],
+                            correct_conlusion = item["correct_choice"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-                    
-                    
+                          
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
