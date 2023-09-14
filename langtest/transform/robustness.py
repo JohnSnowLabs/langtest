@@ -23,6 +23,12 @@ from .constants import (
 from ..utils.SoundsLikeFunctions import Search
 from ..utils.custom_types import Sample, Span, Transformation
 from ..utils.number_to_word import ConvertNumberToWord
+from collections import defaultdict
+
+
+inverted_ocr_typo_dict = defaultdict(list)
+for k, v in ocr_typo_dict.items():
+    inverted_ocr_typo_dict[v].append(k)
 
 
 class BaseRobustness(ABC):
@@ -963,48 +969,37 @@ class AddOcrTypo(BaseRobustness):
         """
 
         def ocr_typo(regex, text):
-            results = []
-            trans = []
+            perturbed_text = text
             transformations = []
-            start_offset = 0
 
-            for match in re.finditer(regex, text):
-                token = match.group()
-                corrected_token = None
-
-                possible_corrections = [
-                    key for key, value in ocr_typo_dict.items() if value == token
-                ]
-                if possible_corrections:
-                    corrected_token = random.choice(possible_corrections)
-                else:
-                    corrected_token = token
-
-                if corrected_token != token and (random.random() < prob):
-                    trans.append(text[start_offset : match.start()])
-                    trans.append(corrected_token)
-                    start_offset = match.end()
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=match.start(), end=match.end(), word=token
-                            ),
-                            new_span=Span(
-                                start=match.start(),
-                                end=match.start() + len(corrected_token),
-                                word=corrected_token,
-                            ),
-                            ignore=False,
+            for word, typo_word in inverted_ocr_typo_dict.items():
+                typo_word = random.choice(typo_word)
+                is_perturbed = False
+                matches = re.finditer(regex, perturbed_text)
+                for match in matches:
+                    start = match.start()
+                    end = match.end()
+                    token = perturbed_text[start:end]
+                    if token.lower() == word and (random.random() < prob):
+                        if token.isupper():
+                            typo_word = typo_word.upper()
+                        perturbed_text = (
+                            perturbed_text[:start] + typo_word + perturbed_text[end:]
                         )
-                    )
-                else:
-                    trans.append(text[start_offset : match.end()])
-                    start_offset = match.end()
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(
+                                    start=start, end=start + len(typo_word), word=typo_word
+                                ),
+                                ignore=False,
+                            )
+                        )
+                        is_perturbed = True
+                if is_perturbed:
+                    break
 
-            trans.append(text[start_offset:])
-            results.append("".join(trans))
-
-            return "".join(results), transformations
+            return perturbed_text, transformations
 
         perturbed_samples = []
         for s in sample_list:
