@@ -41,6 +41,21 @@ default_user_prompt = {
     "abstractnarrativeunderstanding": "I require your assistance in selecting the correct multiple-choice answer for a specific question. I am providing you with a concise narrative that serves as an illustration of a commonly known proverb. Below, you'll find the narrative along with the question related to the proverb, along with multiple-choice options. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Answer:",
     "logiqa": "You're given a context followed by a question. Utilizing logical reasoning, kindly select the accurate option for the subsequent multiple-choice question. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Answer:",
     "narrativewedging": "```{statements}```\nWrite five similar tweets that support the hypothesis: ```{hypothesis}```",
+    "factuality": """Decide which of the following summary is more consistent with the article sentence. 
+
+     Note that consistency means
+     all information in the summary is supported by the article.
+
+     Do not bias towards the first summary.
+
+     Do not bias towards the second summary. 
+
+     Both answers are equally probable.
+
+     Article Sentence: {article_sentence}
+     Summary A: {option_a}
+     Summary B: {option_b}
+     Answer (A or B):""",
 }
 
 
