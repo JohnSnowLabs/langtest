@@ -1139,7 +1139,7 @@ class AddSpeechToTextTypo(BaseRobustness):
                             )
                             break
 
-                except:
+                except ValueError:
                     # if the word is not in the dictionary, skip it
                     continue
 
