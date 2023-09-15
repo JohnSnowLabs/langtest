@@ -939,7 +939,7 @@ class Harness:
             "correct_sentence",
             "incorrect_sentence",
             "result",
-            "swaped_result",
+            "swapped_result",
             "model_response",
             "eval_score",
             "similarity_score",

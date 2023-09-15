@@ -1349,7 +1349,7 @@ class FactualitySample(BaseModel):
     category: str = None
     test_type: str = None
     result: str = None
-    swaped_result: str = None
+    swapped_result: str = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1363,12 +1363,12 @@ class FactualitySample(BaseModel):
             "test_type": self.test_type,
         }
 
-        if self.result is not None and self.swaped_result is not None:
+        if self.result is not None and self.swapped_result is not None:
             bool_pass = self._is_eval()
             result.update(
                 {
                     "result": self.result,
-                    "swaped_result": self.swaped_result,
+                    "swapped_result": self.swapped_result,
                     "pass": bool_pass,
                 }
             )
@@ -1392,7 +1392,8 @@ class FactualitySample(BaseModel):
         R2 = False
         valid_results = ("A", "B", "a", "b", "ab", "ba")
         self.result = self.result.strip()
-        self.swaped_result = self.swaped_result.strip()
+        self.swapped_result = self.swapped_result.strip()
+
         pattern_a = re.compile(r"(Answer A|Summary A)", re.IGNORECASE)
         pattern_b = re.compile(r"(Answer B|Summary B)", re.IGNORECASE)
         pattern_ab = re.compile(
@@ -1406,15 +1407,15 @@ class FactualitySample(BaseModel):
 
         if (
             "".join(filter(str.isalnum, self.result)) in valid_results
-            and "".join(filter(str.isalnum, self.swaped_result)) in valid_results
+            and "".join(filter(str.isalnum, self.swapped_result)) in valid_results
         ):
             if (
                 "".join(filter(str.isalnum, self.result)).lower() == "a"
-                and "".join(filter(str.isalnum, self.swaped_result)).lower() == "b"
+                and "".join(filter(str.isalnum, self.swapped_result)).lower() == "b"
             ):
                 return True
             elif "".join(filter(str.isalnum, self.result)) in ["ab", "ba"] or "".join(
-                filter(str.isalnum, self.swaped_result)
+                filter(str.isalnum, self.swapped_result)
             ) in ["ab", "ba"]:
                 return False
             else:
@@ -1423,15 +1424,15 @@ class FactualitySample(BaseModel):
             if (
                 (
                     pattern_ab.search(self.remove_punctuation(self.result))
-                    or pattern_ab.search(self.remove_punctuation(self.swaped_result))
+                    or pattern_ab.search(self.remove_punctuation(self.swapped_result))
                 )
                 or (
                     pattern_a.search(self.remove_punctuation(self.result))
                     and pattern_b.search(self.remove_punctuation(self.result))
                 )
                 or (
-                    pattern_a.search(self.remove_punctuation(self.swaped_result))
-                    and pattern_b.search(self.remove_punctuation(self.swaped_result))
+                    pattern_a.search(self.remove_punctuation(self.swapped_result))
+                    and pattern_b.search(self.remove_punctuation(self.swapped_result))
                 )
             ):
                 return False
@@ -1442,9 +1443,9 @@ class FactualitySample(BaseModel):
             ):
                 R1 = True
             if (
-                "".join(filter(str.isalnum, self.swaped_result)).lower() == "b"
-                or pattern_b.search(self.remove_punctuation(self.swaped_result))
-                or extra_check_b.search(self.swaped_result)
+                "".join(filter(str.isalnum, self.swapped_result)).lower() == "b"
+                or pattern_b.search(self.remove_punctuation(self.swapped_result))
+                or extra_check_b.search(self.swapped_result)
             ):
                 R2 = True
             if (
@@ -1454,9 +1455,9 @@ class FactualitySample(BaseModel):
             ):
                 return False
             if (
-                "".join(filter(str.isalnum, self.swaped_result)).lower() == "a"
-                or pattern_a.search(self.remove_punctuation(self.swaped_result))
-                or extra_check_a.search(self.swaped_result)
+                "".join(filter(str.isalnum, self.swapped_result)).lower() == "a"
+                or pattern_a.search(self.remove_punctuation(self.swapped_result))
+                or extra_check_a.search(self.swapped_result)
             ):
                 return False
 
@@ -1477,7 +1478,7 @@ class FactualitySample(BaseModel):
                 threshold = config.get("threshold", 0.85)
 
                 if R1:
-                    embeddings2 = model.encode([self.swaped_result, self.correct_sent])
+                    embeddings2 = model.encode([self.swapped_result, self.correct_sent])
                     similarity2 = cosine_similarity([embeddings2[0]], [embeddings2[1]])[0]
                     return similarity2 > threshold
 
@@ -1489,7 +1490,7 @@ class FactualitySample(BaseModel):
                 else:
                     embeddings1 = model.encode([self.result, self.correct_sent])
                     similarity1 = cosine_similarity([embeddings1[0]], [embeddings1[1]])[0]
-                    embeddings2 = model.encode([self.swaped_result, self.correct_sent])
+                    embeddings2 = model.encode([self.swapped_result, self.correct_sent])
                     similarity2 = cosine_similarity([embeddings2[0]], [embeddings2[1]])[0]
 
                     return all(
@@ -1515,7 +1516,7 @@ class FactualitySample(BaseModel):
                 "input_variables": ["article_sentence", "option_a", "option_b"],
             },
         )
-        self.swaped_result = model(
+        self.swapped_result = model(
             text={
                 "article_sentence": self.article_sent,
                 "option_a": self.incorrect_sent,
