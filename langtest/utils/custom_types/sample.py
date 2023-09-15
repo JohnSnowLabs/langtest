@@ -1279,49 +1279,6 @@ class DisinformationSample(BaseModel):
         return True
 
 
-<<<<<<< HEAD
-class SensitivitySample(BaseModel):
-    """
-    A class representing a sample for sensitivity task.
-
-    Attributes:
-        original (str): The original text input.
-        test_case (str): The transformed text input for testing.
-        state (str): The state of the sample.
-        dataset_name (str): The name of the dataset the sample belongs to.
-        task (str): The type of task, default is "sensitivity-test".
-        category (str): The category or module name associated with the sample.
-        test_type (str): The type of test being performed.
-        expected_result (Result): The expected result of the sensitivity test.
-        actual_result (Result): The actual result obtained from the sensitivity test.
-        loss_diff (float): The difference in loss between expected and actual results.
-
-    Methods:
-        to_dict(self) -> Dict[str, Any]:
-            Convert the SensitivitySample instance to a dictionary.
-
-        is_pass(self) -> bool:
-            Check if the sensitivity test passes based on loss difference threshold.
-
-        run(self, model, **kwargs) -> bool:
-            Run the sensitivity test using the provided model.
-
-        transform(self, func: Callable, params: Dict, **kwargs):
-            Transform the original text using a specified function.
-
-    """
-
-    original: str = None
-    test_case: str = None
-    state: str = None
-    dataset_name: str = None
-    task: str = Field(default="sensitivity", constr=True)
-    category: str = None
-    test_type: str = None
-    expected_result: Result = None
-    actual_result: Result = None
-    loss_diff: float = None
-=======
 class WinoBiasSample(BaseModel):
     """
     A class Representing a sample for wino-bias task.
@@ -1338,35 +1295,12 @@ class WinoBiasSample(BaseModel):
     state: str = None
     dataset_name: str = None
     model_response: str = None
->>>>>>> 47b2309d45684bf023f061665f8d213048acddbe
 
     def __init__(self, **data):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
         """
-<<<<<<< HEAD
-        Convert the SensitivitySample instance to a dictionary.
-
-        Returns:
-            Dict[str, Any]: A dictionary representation of the sample.
-        """
-        result = {
-            "original": self.original,
-            "test_case": self.test_case,
-            "category": self.category,
-            "test_type": self.test_type,
-        }
-
-        if self.expected_result is not None and self.actual_result is not None:
-            bool_pass = self.is_pass()
-            result.update(
-                {
-                    "expected_result": self.expected_result,
-                    "actual_result": self.actual_result,
-                    "eval_score": self.loss_diff,
-                    "pass": bool_pass,
-=======
         Converts the WinoBiasSample object to a dictionary.
 
         Returns:
@@ -1383,62 +1317,12 @@ class WinoBiasSample(BaseModel):
                 {
                     "model_response": self.model_response,
                     "pass": self.is_pass(),
->>>>>>> 47b2309d45684bf023f061665f8d213048acddbe
                 }
             )
 
         return result
 
     def is_pass(self):
-<<<<<<< HEAD
-        """
-        Check if the sensitivity test passes based on loss difference threshold.
-
-        Returns:
-            bool: True if the test passes, False otherwise.
-        """
-        from ...langtest import HARNESS_CONFIG as harness_config
-
-        config = harness_config["tests"]["defaults"]
-        min_range, max_range = config.get("threshold", (-0.2, 0.2))
-
-        if min_range <= self.loss_diff <= max_range:
-            return False
-        else:
-            return True
-
-    def run(self, model, **kwargs):
-        """
-        Run the sensitivity test using the provided model.
-
-        Args:
-            model: The model used for sensitivity testing.
-            **kwargs: Additional keyword arguments for the model.
-
-        Returns:
-            bool: True if the test was successful, False otherwise.
-        """
-        op = model(text=self.original, text_transformed=self.test_case)
-        self.expected_result = op["expected_result"]
-        self.actual_result = op["actual_result"]
-        self.loss_diff = op["loss_diff"]
-        return True
-
-    def transform(self, func: Callable, params: Dict, **kwargs):
-        """
-        Transform the original text using a specified function.
-
-        Args:
-            func (Callable): The transformation function.
-            params (Dict): Parameters for the transformation function.
-            **kwargs: Additional keyword arguments for the transformation.
-
-        """
-        sens = [self.original]
-        self.test_case = func(sens, **params, **kwargs)[0]
-        self.category = func.__module__.split(".")[-1]
-
-=======
         """"""
         return self._is_eval()
 
@@ -1457,7 +1341,6 @@ class WinoBiasSample(BaseModel):
 
         return True
 
->>>>>>> 47b2309d45684bf023f061665f8d213048acddbe
 
 class LegalSample(BaseModel):
     """
@@ -1562,6 +1445,127 @@ class LegalSample(BaseModel):
         )
 
         return True
+
+
+class SensitivitySample(BaseModel):
+    """
+    A class representing a sample for sensitivity task.
+
+    Attributes:
+        original (str): The original text input.
+        test_case (str): The transformed text input for testing.
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset the sample belongs to.
+        task (str): The type of task, default is "sensitivity-test".
+        category (str): The category or module name associated with the sample.
+        test_type (str): The type of test being performed.
+        expected_result (Result): The expected result of the sensitivity test.
+        actual_result (Result): The actual result obtained from the sensitivity test.
+        loss_diff (float): The difference in loss between expected and actual results.
+
+    Methods:
+        to_dict(self) -> Dict[str, Any]:
+            Convert the SensitivitySample instance to a dictionary.
+
+        is_pass(self) -> bool:
+            Check if the sensitivity test passes based on loss difference threshold.
+
+        run(self, model, **kwargs) -> bool:
+            Run the sensitivity test using the provided model.
+
+        transform(self, func: Callable, params: Dict, **kwargs):
+            Transform the original text using a specified function.
+
+    """
+
+    original: str = None
+    test_case: str = None
+    state: str = None
+    dataset_name: str = None
+    task: str = Field(default="sensitivity", constr=True)
+    category: str = None
+    test_type: str = None
+    expected_result: Result = None
+    actual_result: Result = None
+    loss_diff: float = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the SensitivitySample instance to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the sample.
+        """
+        result = {
+            "original": self.original,
+            "test_case": self.test_case,
+            "category": self.category,
+            "test_type": self.test_type,
+        }
+
+        if self.expected_result is not None and self.actual_result is not None:
+            bool_pass = self.is_pass()
+            result.update(
+                {
+                    "expected_result": self.expected_result,
+                    "actual_result": self.actual_result,
+                    "eval_score": self.loss_diff,
+                    "pass": bool_pass,
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """
+        Check if the sensitivity test passes based on loss difference threshold.
+
+        Returns:
+            bool: True if the test passes, False otherwise.
+        """
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        config = harness_config["tests"]["defaults"]
+        min_range, max_range = config.get("threshold", (-0.2, 0.2))
+
+        if min_range <= self.loss_diff <= max_range:
+            return False
+        else:
+            return True
+
+    def run(self, model, **kwargs):
+        """
+        Run the sensitivity test using the provided model.
+
+        Args:
+            model: The model used for sensitivity testing.
+            **kwargs: Additional keyword arguments for the model.
+
+        Returns:
+            bool: True if the test was successful, False otherwise.
+        """
+        op = model(text=self.original, text_transformed=self.test_case)
+        self.expected_result = op["expected_result"]
+        self.actual_result = op["actual_result"]
+        self.loss_diff = op["loss_diff"]
+        return True
+
+    def transform(self, func: Callable, params: Dict, **kwargs):
+        """
+        Transform the original text using a specified function.
+
+        Args:
+            func (Callable): The transformation function.
+            params (Dict): Parameters for the transformation function.
+            **kwargs: Additional keyword arguments for the transformation.
+
+        """
+        sens = [self.original]
+        self.test_case = func(sens, **params, **kwargs)[0]
+        self.category = func.__module__.split(".")[-1]
 
 
 Sample = TypeVar(
