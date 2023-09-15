@@ -1272,9 +1272,7 @@ class JSONLDataset(_IDataset):
                     ),
                 elif self.task == "sensitivity-test":
                     data.append(
-                        SensitivitySample(
-                            original=item[self.column_matcher["text"]]
-                        )
+                        SensitivitySample(original=item[self.column_matcher["text"]])
                     )
 
                 elif self.task == "wino-bias":
