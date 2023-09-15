@@ -911,11 +911,15 @@ class NumberToWord(BaseRobustness):
                     token = perturbed_text[start:end]
                     word_num = NumberToWord.num.number_to_words(token)
                     if word_num and (random.random() < prob):
-                        perturbed_text = f"{perturbed_text[:start]}{word_num}{perturbed_text[end:]}"
+                        perturbed_text = (
+                            f"{perturbed_text[:start]}{word_num}{perturbed_text[end:]}"
+                        )
                         transformations.append(
                             Transformation(
                                 original_span=Span(start=start, end=end, word=token),
-                                new_span=Span(start=start, end=start + len(word_num), word=word_num),
+                                new_span=Span(
+                                    start=start, end=start + len(word_num), word=word_num
+                                ),
                                 ignore=False,
                             )
                         )
@@ -981,7 +985,9 @@ class AddOcrTypo(BaseRobustness):
                             Transformation(
                                 original_span=Span(start=start, end=end, word=token),
                                 new_span=Span(
-                                    start=start, end=start + len(typo_word), word=typo_word
+                                    start=start,
+                                    end=start + len(typo_word),
+                                    word=typo_word,
                                 ),
                                 ignore=False,
                             )
@@ -1111,11 +1117,11 @@ class AddSpeechToTextTypo(BaseRobustness):
                             # check if the word is the same as the original word
                             if word.lower() == new_word.lower():
                                 continue
-                            
+
                             # check if the word or first letter in sentence is capitalized or not
                             if word[0].isupper() or not start:
                                 new_word = new_word.capitalize()
-                            
+
                             perturbed_text = (
                                 perturbed_text[:start] + new_word + perturbed_text[end:]
                             )
@@ -1124,7 +1130,9 @@ class AddSpeechToTextTypo(BaseRobustness):
                                 Transformation(
                                     original_span=Span(start=start, end=end, word=word),
                                     new_span=Span(
-                                        start=start, end=start + len(new_word), word=new_word
+                                        start=start,
+                                        end=start + len(new_word),
+                                        word=new_word,
                                     ),
                                     ignore=False,
                                 )
