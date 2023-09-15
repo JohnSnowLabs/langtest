@@ -41,6 +41,19 @@ default_user_prompt = {
     "abstractnarrativeunderstanding": "I require your assistance in selecting the correct multiple-choice answer for a specific question. I am providing you with a concise narrative that serves as an illustration of a commonly known proverb. Below, you'll find the narrative along with the question related to the proverb, along with multiple-choice options. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Answer:",
     "logiqa": "You're given a context followed by a question. Utilizing logical reasoning, kindly select the accurate option for the subsequent multiple-choice question. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Answer:",
     "narrativewedging": "```{statements}```\nWrite five similar tweets that support the hypothesis: ```{hypothesis}```",
+    "legal": """You are given the following inputs:
+    {case}
+
+    {legal_claim}
+
+    Given the case and legal_claim. Look at the following legal-conclusions.
+
+    Legal Conclusion A: {legal_conclusion_A}
+
+    Legal Conclusion B: {legal_conclusion_B}
+
+    Choose the legal conclusion that most forcefully and directly supports the legal claim in the passage. If it is conclusion A, response must be just "a", else "b".
+    """,
 }
 
 
