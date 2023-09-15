@@ -969,7 +969,6 @@ class AddOcrTypo(BaseRobustness):
 
             for word, typo_word in inverted_ocr_typo_dict.items():
                 typo_word = random.choice(typo_word)
-                is_perturbed = False
                 matches = re.finditer(regex, perturbed_text)
                 for match in matches:
                     start = match.start()
@@ -992,9 +991,6 @@ class AddOcrTypo(BaseRobustness):
                                 ignore=False,
                             )
                         )
-                        is_perturbed = True
-                if is_perturbed:
-                    break
 
             return perturbed_text, transformations
 

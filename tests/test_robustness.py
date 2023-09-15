@@ -85,7 +85,7 @@ class RobustnessTestCase(unittest.TestCase):
         ]
         self.ocr_sentences = [
             SequenceClassificationSample(
-                original="This organization's art can win tough acts."
+                original="organization's art can win tough acts."
             ),
             SequenceClassificationSample(
                 original="Anyone can join our community garden."
@@ -348,8 +348,8 @@ class RobustnessTestCase(unittest.TestCase):
         Test the AddOcrTypo transformation.
         """
         expected_corrected_sentences = [
-            "Tbis organization's a^rt c^an w^in tougb acts.",
-            "Anyone c^an j0in o^ur communitv gardcn.",
+            "organization's a^rt c^an w^in tougb acts.",
+            "anvone c^an j0in o^ur communitv gardcn.",
         ]
         transformed_samples = AddOcrTypo.transform(self.ocr_sentences)
         self.assertIsInstance(transformed_samples, list)
