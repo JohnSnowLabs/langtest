@@ -1684,3 +1684,47 @@ class WinoBiasTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["gender-occupational-stereotype"]
+
+
+class FactualityTestFactory(ITests):
+    """Factory class for factuality test"""
+
+    alias_name = "factuality"
+    supported_tasks = [
+        "factuality-test",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        for sample in self.data_handler:
+            sample.test_type = "order_bias"
+            sample.category = "factuality"
+
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        return {"order_bias": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["order_bias"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["order_bias"]
