@@ -1,3 +1,5 @@
+import re
+import string
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator, Field
@@ -1333,6 +1335,200 @@ class WinoBiasSample(BaseModel):
         return True
 
 
+class FactualitySample(BaseModel):
+    """
+    A class representing a sample for Factuality task.
+    """
+
+    article_sent: str
+    incorrect_sent: str
+    correct_sent: str
+    state: str = None
+    dataset_name: str = None
+    task: str = None
+    category: str = None
+    test_type: str = None
+    result: str = None
+    swaped_result: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        result = {
+            "article_sentence": self.article_sent,
+            "correct_sentence": self.correct_sent,
+            "incorrect_sentence": self.incorrect_sent,
+            "category": self.category,
+            "test_type": self.test_type,
+        }
+
+        if self.result is not None and self.swaped_result is not None:
+            bool_pass = self._is_eval()
+            result.update(
+                {
+                    "result": self.result,
+                    "swaped_result": self.swaped_result,
+                    "pass": bool_pass,
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()
+
+    def remove_punctuation(self, input_string):
+        translator = str.maketrans("", "", string.punctuation)
+
+        cleaned_string = input_string.translate(translator)
+
+        return cleaned_string
+
+    def _is_eval(self) -> bool:
+        """"""
+        R1 = False
+        R2 = False
+        valid_results = ("A", "B", "a", "b", "ab", "ba")
+        self.result = self.result.strip()
+        self.swaped_result = self.swaped_result.strip()
+        pattern_a = re.compile(r"(Answer A|Summary A)", re.IGNORECASE)
+        pattern_b = re.compile(r"(Answer B|Summary B)", re.IGNORECASE)
+        pattern_ab = re.compile(
+            r"(Answer (A or B|B or A|A and B|B and A)|"
+            r"Summary (A or B|B or A|A and B|B and A)|"
+            r"Both (A and B|B and A|A or B|B or A|A B|B A)|Both)",
+            re.IGNORECASE,
+        )
+        extra_check_a = re.compile(r"^(A[.?!,:]|A\n)", re.IGNORECASE)
+        extra_check_b = re.compile(r"^(B[.?!,:]|B\n)", re.IGNORECASE)
+
+        if (
+            "".join(filter(str.isalnum, self.result)) in valid_results
+            and "".join(filter(str.isalnum, self.swaped_result)) in valid_results
+        ):
+            if (
+                "".join(filter(str.isalnum, self.result)).lower() == "a"
+                and "".join(filter(str.isalnum, self.swaped_result)).lower() == "b"
+            ):
+                return True
+            elif "".join(filter(str.isalnum, self.result)) in ["ab", "ba"] or "".join(
+                filter(str.isalnum, self.swaped_result)
+            ) in ["ab", "ba"]:
+                return False
+            else:
+                return False
+        else:
+            if (
+                (
+                    pattern_ab.search(self.remove_punctuation(self.result))
+                    or pattern_ab.search(self.remove_punctuation(self.swaped_result))
+                )
+                or (
+                    pattern_a.search(self.remove_punctuation(self.result))
+                    and pattern_b.search(self.remove_punctuation(self.result))
+                )
+                or (
+                    pattern_a.search(self.remove_punctuation(self.swaped_result))
+                    and pattern_b.search(self.remove_punctuation(self.swaped_result))
+                )
+            ):
+                return False
+            if (
+                "".join(filter(str.isalnum, self.result)).lower() == "a"
+                or pattern_a.search(self.remove_punctuation(self.result))
+                or extra_check_a.search(self.result)
+            ):
+                R1 = True
+            if (
+                "".join(filter(str.isalnum, self.swaped_result)).lower() == "b"
+                or pattern_b.search(self.remove_punctuation(self.swaped_result))
+                or extra_check_b.search(self.swaped_result)
+            ):
+                R2 = True
+            if (
+                "".join(filter(str.isalnum, self.result)).lower() == "b"
+                or pattern_b.search(self.remove_punctuation(self.result))
+                or extra_check_b.search(self.result)
+            ):
+                return False
+            if (
+                "".join(filter(str.isalnum, self.swaped_result)).lower() == "a"
+                or pattern_a.search(self.remove_punctuation(self.swaped_result))
+                or extra_check_a.search(self.swaped_result)
+            ):
+                return False
+
+            if R1 and R2:
+                return True
+
+            else:
+                from ...langtest import HARNESS_CONFIG as harness_config
+
+                config = harness_config["tests"]["defaults"]
+
+                from ..SentenceTransformer import SimpleSentenceTransformer
+
+                model = SimpleSentenceTransformer(
+                    model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"
+                )
+
+                threshold = config.get("threshold", 0.85)
+
+                if R1:
+                    embeddings2 = model.encode([self.swaped_result, self.correct_sent])
+                    similarity2 = cosine_similarity([embeddings2[0]], [embeddings2[1]])[0]
+                    return similarity2 > threshold
+
+                elif R2:
+                    embeddings1 = model.encode([self.result, self.correct_sent])
+                    similarity1 = cosine_similarity([embeddings1[0]], [embeddings1[1]])[0]
+                    return similarity1 > threshold
+
+                else:
+                    embeddings1 = model.encode([self.result, self.correct_sent])
+                    similarity1 = cosine_similarity([embeddings1[0]], [embeddings1[1]])[0]
+                    embeddings2 = model.encode([self.swaped_result, self.correct_sent])
+                    similarity2 = cosine_similarity([embeddings2[0]], [embeddings2[1]])[0]
+
+                    return all(
+                        similarity > threshold
+                        for similarity in [similarity1, similarity2]
+                    )
+
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get(dataset_name, ""),
+        )
+        self.result = model(
+            text={
+                "article_sentence": self.article_sent,
+                "option_a": self.correct_sent,
+                "option_b": self.incorrect_sent,
+            },
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["article_sentence", "option_a", "option_b"],
+            },
+        )
+        self.swaped_result = model(
+            text={
+                "article_sentence": self.article_sent,
+                "option_a": self.incorrect_sent,
+                "option_b": self.correct_sent,
+            },
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["article_sentence", "option_a", "option_b"],
+            },
+        )
+        return True
+
+
 Sample = TypeVar(
     "Sample",
     MaxScoreSample,
@@ -1341,4 +1537,5 @@ Sample = TypeVar(
     NERSample,
     SummarizationSample,
     LLMAnswerSample,
+    FactualitySample,
 )
