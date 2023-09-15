@@ -4,7 +4,7 @@ import re
 import string
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from langtest.modelhandler.modelhandler import ModelFactory
 from langtest.utils.custom_types import SequenceClassificationSample
@@ -898,39 +898,30 @@ class NumberToWord(BaseRobustness):
             List[Sample]: The transformed sample list.
         """
 
-        def convert_numbers(regex, text):
-            results = []
-            trans = []
+        def convert_numbers(regex: str, text: str) -> Tuple[str, List[Transformation]]:
+            perturbed_text = text
             transformations = []
-            start_offset = 0
 
-            for match in re.finditer(regex, text):
-                token = match.group()
-                words = NumberToWord.num.number_to_words(token, wantlist=True)
-                new_words_len = len(" ".join(words))
-                trans.append(text[start_offset : match.start()])
-                if random.random() < prob:
-                    trans.append(" ".join(words))
-                    transformations.append(
-                        Transformation(
-                            original_span=Span(
-                                start=match.start(), end=match.end(), word=token
-                            ),
-                            new_span=Span(
-                                start=match.start(),
-                                end=match.start() + new_words_len,
-                                word=" ".join(words),
-                            ),
-                            ignore=False,
+            digit_count = len(re.findall(regex, perturbed_text))
+
+            for _ in range(digit_count):
+                matches = re.finditer(regex, perturbed_text)
+                for match in matches:
+                    start, end = match.start(), match.end()
+                    token = perturbed_text[start:end]
+                    word_num = NumberToWord.num.number_to_words(token)
+                    if word_num and (random.random() < prob):
+                        perturbed_text = f"{perturbed_text[:start]}{word_num}{perturbed_text[end:]}"
+                        transformations.append(
+                            Transformation(
+                                original_span=Span(start=start, end=end, word=token),
+                                new_span=Span(start=start, end=start + len(word_num), word=word_num),
+                                ignore=False,
+                            )
                         )
-                    )
-                else:
-                    trans.append(token)
-                start_offset = match.end()
+                        break
 
-            trans.append(text[start_offset:])
-            results.append("".join(trans))
-            return "".join(results), transformations
+            return perturbed_text, transformations
 
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
@@ -1103,59 +1094,46 @@ class AddSpeechToTextTypo(BaseRobustness):
         """
 
         def convertToSimilarHarmony(sentence):
-            words = re.findall(r"\w+(?:'\w+)*|\W", sentence)
-            converted_sentence = []
+            perturbed_text = sentence
             transformations = []
-            index_offset = 0
 
-            for word in words:
-                if word.isspace() or all(ch in string.punctuation for ch in word):
-                    converted_sentence.append(
-                        word
-                    )  # Preserve space and punctuation in the reconstructed sentence
-                else:
-                    try:
+            for match in re.finditer(r"\w+(?:'\w+)*|\W", perturbed_text):
+                start, end = match.start(), match.end()
+                word = perturbed_text[start:end]
+                try:
+                    if word.isalpha() and (random.random() < prob):
+                        # get similar words from the dictionary
                         similar_words = Search.perfectHomophones(word)
+
                         if similar_words:
-                            original_case = word[0].isupper()
-                            similar_word = random.choice(similar_words)
-                            if original_case and similar_word[0].islower():
-                                similar_word = similar_word.capitalize()
-                            elif not original_case and similar_word[0].isupper():
-                                similar_word = similar_word.lower()
+                            new_word = random.choice(similar_words)
 
-                            if similar_word.lower() == word.lower():
-                                similar_word = word
+                            # check if the word is the same as the original word
+                            if word.lower() == new_word.lower():
+                                continue
+                            
+                            # check if the word or first letter in sentence is capitalized or not
+                            if word[0].isupper() or not start:
+                                new_word = new_word.capitalize()
+                            
+                            perturbed_text = (
+                                perturbed_text[:start] + new_word + perturbed_text[end:]
+                            )
 
-                            if similar_word != word and (random.random() < prob):
-                                start_index = sentence.index(word, index_offset)
-                                end_index = start_index + len(word)
-                                converted_sentence.append(similar_word)
-                                new_word_length = len(similar_word)
-                                transformations.append(
-                                    Transformation(
-                                        original_span=Span(
-                                            start=start_index, end=end_index, word=word
-                                        ),
-                                        new_span=Span(
-                                            start=start_index,
-                                            end=start_index + new_word_length,
-                                            word=similar_word,
-                                        ),
-                                        ignore=False,
-                                    )
+                            transformations.append(
+                                Transformation(
+                                    original_span=Span(start=start, end=end, word=word),
+                                    new_span=Span(
+                                        start=start, end=start + len(new_word), word=new_word
+                                    ),
+                                    ignore=False,
                                 )
-                                index_offset = end_index
-                            else:
-                                converted_sentence.append(word)
+                            )
+                            break
 
-                        else:
-                            converted_sentence.append(word)
-
-                    except ValueError:
-                        converted_sentence.append(word)
-
-            perturbed_text = "".join(converted_sentence)
+                except:
+                    # if the word is not in the dictionary, skip it
+                    continue
 
             return perturbed_text, transformations
 
