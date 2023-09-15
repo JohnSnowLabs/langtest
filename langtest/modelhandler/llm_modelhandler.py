@@ -210,3 +210,13 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for factuality detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
