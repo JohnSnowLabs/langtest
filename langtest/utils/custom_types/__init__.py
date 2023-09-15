@@ -15,6 +15,7 @@ from .sample import (
     LLMAnswerSample,
     DisinformationSample,
     WinoBiasSample,
+    LegalSample,
     FactualitySample,
 )
 from .helpers import Span, Transformation

@@ -1609,7 +1609,7 @@ class PoliticalTestFactory(ITests):
 
 
 class WinoBiasTestFactory(ITests):
-    """Factory class for the clinical tests"""
+    """Factory class for the wino-bias tests"""
 
     alias_name = "wino-bias"
     supported_tasks = [
@@ -1639,7 +1639,7 @@ class WinoBiasTestFactory(ITests):
     async def run(
         cls, sample_list: List[Sample], model: ModelFactory, **kwargs
     ) -> List[Sample]:
-        """Runs the clinical tests
+        """Runs the wino-bias tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -1671,7 +1671,7 @@ class WinoBiasTestFactory(ITests):
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
-            List[Sample]: The transformed data based on the implemented clinical tests@
+            List[Sample]: The transformed data based on the implemented wino-bias tests
 
         """
         progress = kwargs.get("progress_bar", False)
@@ -1684,6 +1684,84 @@ class WinoBiasTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["gender-occupational-stereotype"]
+
+
+class LegalTestFactory(ITests):
+    """Factory class for the legal tests"""
+
+    alias_name = "legal"
+    supported_tasks = [
+        "legal-tests",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the legal tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        for sample in self.data_handler:
+            sample.test_type = "legal-support"
+            sample.category = "legal"
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the legal tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the wino-bias tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented legal tests
+
+        """
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Returns the empty dict, no legal tests
+
+        Returns:
+            Dict[str, str]: Empty dict, no legal tests
+        """
+        return {"legal-support": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs the legal tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the legal tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented legal tests
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["legal-support"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["legal-support"]
 
 
 class FactualityTestFactory(ITests):
