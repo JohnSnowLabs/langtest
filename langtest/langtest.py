@@ -42,6 +42,7 @@ class Harness:
         "disinformation-test",
         "political",
         "wino-bias",
+        "factuality-test",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -103,6 +104,15 @@ class Harness:
             ),
             "disinformation-test-ai21": resource_filename(
                 "langtest", "data/config/disinformation_openai_config.yml"
+            ),
+            "factuality-test-huggingface-inference-api": resource_filename(
+                "langtest", "data/config/factuality_huggingface_config.yml"
+            ),
+            "factuality-test-openai": resource_filename(
+                "langtest", "data/config/factuality_openai_config.yml"
+            ),
+            "factuality-test-ai21": resource_filename(
+                "langtest", "data/config/factuality_openai_config.yml"
             ),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
@@ -251,7 +261,7 @@ class Harness:
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-            elif task == "disinformation-test":
+            elif task in ["disinformation-test", "factuality-test"]:
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG["task"][task + "-" + hub]
                 )
@@ -925,6 +935,11 @@ class Harness:
             "completion_toxicity",
             "hypothesis",
             "statements",
+            "article_sentence",
+            "correct_sentence",
+            "incorrect_sentence",
+            "result",
+            "swaped_result",
             "model_response",
             "eval_score",
             "similarity_score",
@@ -1073,6 +1088,9 @@ class Harness:
             "diagnosis",
             "hypothesis",
             "statements",
+            "article_sentence",
+            "correct_sentence",
+            "incorrect_sentence",
             "perturbed_context",
             "perturbed_question",
             "expected_result",
