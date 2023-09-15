@@ -1431,7 +1431,9 @@ class LegalSample(BaseModel):
             },
         )
 
-        self.model_conclusion = self.model_conclusion.replace(" ", "")
+        self.model_conclusion = (
+            self.model_conclusion.replace(" ", "").replace("\n", "").lower()
+        )
 
         return True
 
