@@ -189,7 +189,8 @@ setup(
             "data/Bigbench/DisflQA/*",
             "data/asdiv/*",
             "data/LogiQA/*",
-            "data/Wino-Bias/*"
+            "data/Wino-Bias/*",
+            "data/Legal-Support/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
