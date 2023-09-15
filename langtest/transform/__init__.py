@@ -1717,6 +1717,8 @@ class SensitivityTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+
 class WinoBiasTestFactory(ITests):
     """Factory class for the wino-bias tests"""
 
