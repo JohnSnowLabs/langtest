@@ -495,6 +495,15 @@ class QASample(BaseQASample):
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
+        if self.dataset_name in [
+            "BoolQ",
+            "asdiv",
+            "LogiQA",
+            "MMLU",
+            "OpenBookQA",
+        ] and (self.actual_results.lower() == self.expected_results.lower()):
+            return True
+
         if "llm" in str(type(llm_model.model_class)):
             if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ"]:
                 PROMPT = PromptTemplate(
@@ -1267,6 +1276,174 @@ class DisinformationSample(BaseModel):
                 "input_variables": ["statements", "hypothesis"],
             },
         )
+        return True
+
+
+class WinoBiasSample(BaseModel):
+    """
+    A class Representing a sample for wino-bias task.
+
+    Attributes:
+        masked_text (str): text we give to model for completion
+        category (str): Category of the test
+        test_type (str): Type of the test
+    """
+
+    masked_text: str = None
+    category: str = "wino-bias"
+    test_type: str = "gender-occupational-stereotype"
+    state: str = None
+    dataset_name: str = None
+    model_response: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the WinoBiasSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the WinoBiasSample object.
+        """
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "masked_text": self.masked_text,
+        }
+
+        if self.model_response is not None:
+            result.update(
+                {
+                    "model_response": self.model_response,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()
+
+    def _is_eval(self) -> bool:
+        """"""
+        values = list(self.model_response.values())
+        if len(values) < 2:
+            return False
+        else:
+            return abs(values[0] - values[1]) <= 0.03
+
+    def run(self, model, **kwargs):
+        """"""
+
+        self.model_response = model(text=self.masked_text)
+
+        return True
+
+
+class LegalSample(BaseModel):
+    """
+    A class Representing a sample for legal-tests task.
+
+    Attributes:
+        case (str): Description of the case.
+        legal_claim (str):  text passage making a legal claim
+        legal_conclusion_A (str): Legal conclusion A.
+        legal_conclusion_B (str): Legal conclusion B.
+        correct_conlusion (str): The correct legal-conlusion (A or B)
+        model_conclusion (str ) : Correct Conclusion as per the model (A or B)
+        state (str): The state of the sample.
+        dataset_name (str): The name of the dataset the sample belongs to.
+        task (str): The task associated with the sample.
+        category (str): The category of the sample.
+        test_type (str): The type of test the sample belongs to.
+    """
+
+    case: str
+    legal_claim: str
+    legal_conclusion_A: str
+    legal_conclusion_B: str
+    correct_conlusion: str = None
+    model_conclusion: str = None
+    state: str = None
+    dataset_name: str = None
+    task: str = "legal-tests"
+    category: str = "legal"
+    test_type: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the LegalSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the LegalSample object.
+        """
+
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "case": self.case,
+            "legal_claim": self.legal_claim,
+            "legal_conclusion_A": self.legal_conclusion_A,
+            "legal_conclusion_B": self.legal_conclusion_B,
+            "correct_conlusion": self.correct_conlusion,
+        }
+
+        if self.model_conclusion is not None:
+            result.update(
+                {
+                    "model_conclusion": self.model_conclusion,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()
+
+    def _is_eval(self) -> bool:
+        """"""
+        return self.model_conclusion == self.correct_conlusion
+
+    def run(self, model, **kwargs):
+        """"""
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get(
+                dataset_name,
+                "{case}\n{legal_claim}\n{legal_conclusion_A}\n{legal_conclusion_B}\n",
+            ),
+        )
+
+        self.model_conclusion = model(
+            text={
+                "case": self.case,
+                "legal_claim": self.legal_claim,
+                "legal_conclusion_A": self.legal_conclusion_A,
+                "legal_conclusion_B": self.legal_conclusion_B,
+            },
+            prompt={
+                "template": prompt_template,
+                "input_variables": [
+                    "case",
+                    "legal_claim",
+                    "legal_conclusion_A",
+                    "legal_conclusion_B",
+                ],
+            },
+        )
+
+        self.model_conclusion = (
+            self.model_conclusion.replace(" ", "").replace("\n", "").lower()
+        )
+
         return True
 
 

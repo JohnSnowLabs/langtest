@@ -41,6 +41,8 @@ class Harness:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "wino-bias",
+        "legal-tests",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -93,6 +95,8 @@ class Harness:
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
             ),
+            "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
+            "wino-bias": resource_filename("langtest", "data/config/wino_config.yml"),
             "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
@@ -909,6 +913,13 @@ class Harness:
             "perturbed_question",
             "patient_info_A",
             "patient_info_B",
+            "case",
+            "legal_claim",
+            "legal_conclusion_A",
+            "legal_conclusion_B",
+            "correct_conlusion",
+            "model_conclusion",
+            "masked_text",
             "diagnosis",
             "treatment_plan_A",
             "treatment_plan_B",
@@ -1062,6 +1073,12 @@ class Harness:
             "test_case",
             "patient_info_A",
             "patient_info_B",
+            "case",
+            "legal_claim",
+            "legal_conclusion_A",
+            "legal_conclusion_B",
+            "correct_conlusion",
+            "masked_text",
             "diagnosis",
             "hypothesis",
             "statements",
