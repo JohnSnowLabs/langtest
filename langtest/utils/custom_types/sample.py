@@ -1451,7 +1451,26 @@ class LegalSample(BaseModel):
 
 class FactualitySample(BaseModel):
     """
-    A class representing a sample for Factuality task.
+    A class representing a sample for the Factuality task.
+
+    Attributes:
+        article_sent (str): The original article sentence.
+        incorrect_sent (str): The incorrect version of the sentence.
+        correct_sent (str): The correct version of the sentence.
+        state (str, optional): The state of the sample (e.g., 'draft', 'final').
+        dataset_name (str, optional): The name of the dataset.
+        task (str, optional): The task related to the sample.
+        category (str, optional): The category of the sample.
+        test_type (str, optional): The type of test conducted on the sample.
+        result (str, optional): Stores the output when the correct summary is presented first.
+        swapped_result (str, optional): Stores the output when the incorrect summary is presented first.
+
+    Methods:
+        to_dict(): Convert the sample to a dictionary.
+        is_pass(): Check if the sample passes the evaluation.
+        remove_punctuation(input_string): Remove punctuation from the input string.
+        _is_eval(): Internal method to evaluate the sample.
+        run(model, **kwargs): Run the sample through a specified model.
     """
 
     article_sent: str
@@ -1469,6 +1488,12 @@ class FactualitySample(BaseModel):
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the sample to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the sample.
+        """
         result = {
             "article_sentence": self.article_sent,
             "correct_sentence": self.correct_sent,
@@ -1490,10 +1515,24 @@ class FactualitySample(BaseModel):
         return result
 
     def is_pass(self):
-        """"""
+        """
+        Check if the sample passes the evaluation.
+
+        Returns:
+            bool: True if the sample passes, False otherwise.
+        """
         return self._is_eval()
 
     def remove_punctuation(self, input_string):
+        """
+        Remove punctuation from the input string.
+
+        Args:
+            input_string (str): The input string with punctuation.
+
+        Returns:
+            str: The input string with punctuation removed.
+        """
         translator = str.maketrans("", "", string.punctuation)
 
         cleaned_string = input_string.translate(translator)
@@ -1501,7 +1540,12 @@ class FactualitySample(BaseModel):
         return cleaned_string
 
     def _is_eval(self) -> bool:
-        """"""
+        """
+        Internal method to evaluate the sample.
+
+        Returns:
+            bool: True if the sample passes, False otherwise.
+        """
         R1 = False
         R2 = False
         valid_results = ("A", "B", "a", "b", "ab", "ba")
@@ -1613,7 +1657,16 @@ class FactualitySample(BaseModel):
                     )
 
     def run(self, model, **kwargs):
-        """"""
+        """
+        Run the sample through a specified model.
+
+        Args:
+            model: The machine learning model to run the sample through.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            bool: True if the operation was successful.
+        """
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
             "user_prompt",
