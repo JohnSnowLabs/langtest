@@ -240,12 +240,12 @@ class DataFactory:
             List[Sample]: list of processed samples
         """
         data = []
-        warning_message = ""  # Initialize warning_message
+        warning_message = ""
         for item in bias_data:
             if item.test_type in tests_to_filter:
                 data.append(item)
 
-        warning_message += f"Filtering tests from {len(bias_data)} samples - {len(bias_data) - len(data)} samples removed "
+        warning_message += f"Filtering provided bias tests from {len(bias_data)} samples - {len(bias_data) - len(data)} samples removed "
         logging.warning(warning_message)
         return data
 
