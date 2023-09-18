@@ -69,6 +69,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 | Disinformation-Test-Notebook        | AI21                              | Disinformation-Test               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb)                                    |
 | Political Test                      | OpenAI                            | Political                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Political_Demo.ipynb)                               |
 | Factuality Test                      | OpenAI                             | Factuality                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) 
+| Sensitivity Test                      | OpenAI                             | Negation-Test                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) 
 
 <style>
   .heading {
