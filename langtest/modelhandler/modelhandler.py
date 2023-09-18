@@ -54,6 +54,7 @@ class ModelFactory:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "sensitivity-test",
         "wino-bias",
         "legal-tests",
         "factuality-test",
@@ -91,8 +92,11 @@ class ModelFactory:
         assert task in self.SUPPORTED_TASKS, ValueError(
             f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}"
         )
+        if isinstance(model, tuple):
+            module_name = model[0].__module__.split(".")[0]
+        else:
+            module_name = model.__module__.split(".")[0]
 
-        module_name = model.__module__.split(".")[0]
         assert module_name in self.SUPPORTED_MODULES, ValueError(
             f"Module '{module_name}' is not supported. "
             f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
@@ -162,6 +166,8 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSecurity(
                 hub, model, *args, **kwargs
             )
+        elif task == "sensitivity-test":
+            self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
 
         elif task == "wino-bias":
             self.model_class = model_handler.PretrainedModelForWinoBias(model)
@@ -285,6 +291,10 @@ class ModelFactory:
                 )
             )
 
+        elif task == "sensitivity-test":
+            model_class = (
+                modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
+            )
         elif task in ("wino-bias"):
             model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
 

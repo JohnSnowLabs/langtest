@@ -5,6 +5,11 @@ from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
+from ..utils.util_metrics import cosine_similarity
+from langchain import OpenAI
+from langchain.embeddings import OpenAIEmbeddings
+import os
+
 
 class PretrainedModelForQA(_ModelHandler):
     """A class representing a pretrained model for question answering.
@@ -200,6 +205,117 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForSensitivityTest(_ModelHandler):
+    """
+    A class for sensitivity testing using a pretrained model and embeddings.
+
+    Args:
+        model (tuple): A tuple containing the pretrained language model and embeddings model.
+
+    Raises:
+        ValueError: If the input 'model' is not a tuple.
+
+    Attributes:
+        model: The pretrained language model.
+        embeddings_model: The embeddings model.
+
+    Methods:
+        load_model(cls, path):
+            Load the pretrained language model and embeddings model from a given path.
+        predict(self, text, text_transformed, **kwargs):
+            Predict the sensitivity of the model to text transformations.
+    """
+
+    def __init__(self, model: str):
+        """
+        Initialize the PretrainedModelForSensitivityTest.
+
+        Args:
+            model (tuple): A tuple containing the pretrained language model and embeddings model.
+
+        Raises:
+            ValueError: If the input 'model' is not a tuple.
+        """
+
+        self.model, self.embeddings_model = model
+
+    @classmethod
+    def load_model(cls, path: str) -> tuple:
+        """
+        Load the pretrained language model and embeddings model from a given path.
+
+        Args:
+            path (str): The path to the model files.
+
+        Returns:
+            tuple: A tuple containing the pretrained language model and embeddings model.
+
+        Raises:
+            ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
+        """
+        try:
+            llm = OpenAI(
+                model_name=path,
+                temperature=0,
+                openai_api_key=os.environ["OPENAI_API_KEY"],
+            )
+            embeddings_model = OpenAIEmbeddings(
+                model="text-embedding-ada-002",
+                openai_api_key=os.environ["OPENAI_API_KEY"],
+            )
+            return llm, embeddings_model
+        except KeyError:
+            raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
+
+    def predict(self, text: str, text_transformed: str, **kwargs):
+        """
+        Predict the sensitivity of the model to text transformations.
+
+        Args:
+            text (str): The original text.
+            text_transformed (str): The transformed text.
+
+        Returns:
+            dict: A dictionary containing the loss difference, expected result, and actual result.
+                - 'loss_diff' (float): The cosine similarity-based loss difference.
+                - 'expected_result' (str): The model's output for the original text.
+                - 'actual_result' (str): The model's output for the transformed text.
+        """
+
+        expected_result = self.model(text)
+        actual_result = self.model(text_transformed)
+
+        expected_result_embeddings = self.embeddings_model.embed_documents(
+            [expected_result]
+        )
+        actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
+
+        loss = 1 - cosine_similarity(expected_result_embeddings, actual_result_embeddings)
+
+        return {
+            "loss_diff": loss[0],
+            "expected_result": expected_result,
+            "actual_result": actual_result,
+        }
+
+    def __call__(self, text: str, text_transformed: str, **kwargs):
+        """
+        Alias of the 'predict' method.
+
+        Args:
+            text (str): The original text.
+            text_transformed (str): The transformed text.
+
+        Returns:
+            dict: A dictionary containing the loss difference, expected result, and actual result.
+                - 'loss_diff' (float): The cosine similarity-based loss difference.
+                - 'expected_result' (str): The model's output for the original text.
+                - 'actual_result' (str): The model's output for the transformed text.
+        """
+
+        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):

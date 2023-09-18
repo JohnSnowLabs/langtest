@@ -28,6 +28,7 @@ from langtest.utils.custom_types import (
     ClinicalSample,
     SecuritySample,
     DisinformationSample,
+    SensitivitySample,
     WinoBiasSample,
     LegalSample,
     FactualitySample,
@@ -72,6 +73,7 @@ COLUMN_MAPPER = {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
+    "sensitivity-test": {"text": ["text", "question"]},
     "wino-bias": {
         "text": ["text"],
     },
@@ -1151,6 +1153,7 @@ class JSONLDataset(_IDataset):
         "security",
         "clinical-tests",
         "disinformation-test",
+        "sensitivity-test",
         "wino-bias",
         "legal-tests",
         "factuality-test",
@@ -1291,6 +1294,10 @@ class JSONLDataset(_IDataset):
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
+                    ),
+                elif self.task == "sensitivity-test":
+                    data.append(
+                        SensitivitySample(original=item[self.column_matcher["text"]])
                     )
 
                 elif self.task == "wino-bias":

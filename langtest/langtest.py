@@ -41,6 +41,7 @@ class Harness:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "sensitivity-test",
         "wino-bias",
         "legal-tests",
         "factuality-test",
@@ -123,6 +124,9 @@ class Harness:
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
             "security": resource_filename("langtest", "data/config/security_config.yml"),
+            "sensitivity-test": resource_filename(
+                "langtest", "data/config/sensitivity_config.yml"
+            ),
         },
     }
 
@@ -279,7 +283,8 @@ class Harness:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
-
+        elif task == "sensitivity-test":
+            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         else:
             logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(

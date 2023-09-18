@@ -14,6 +14,7 @@ from .sample import (
     ClinicalSample,
     LLMAnswerSample,
     DisinformationSample,
+    SensitivitySample,
     WinoBiasSample,
     LegalSample,
     FactualitySample,
