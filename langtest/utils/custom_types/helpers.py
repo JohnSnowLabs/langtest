@@ -69,6 +69,7 @@ default_user_prompt = {
      Summary A: {option_a}
      Summary B: {option_b}
      Answer (A or B):""",
+    "multilexsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
 }
 
 
