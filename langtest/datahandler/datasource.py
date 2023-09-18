@@ -28,6 +28,7 @@ from langtest.utils.custom_types import (
     ClinicalSample,
     SecuritySample,
     DisinformationSample,
+    SensitivitySample,
     WinoBiasSample,
     LegalSample,
     FactualitySample,
@@ -72,6 +73,7 @@ COLUMN_MAPPER = {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
+    "sensitivity-test": {"text": ["text", "question"]},
     "wino-bias": {
         "text": ["text"],
     },
@@ -336,6 +338,9 @@ class DataFactory:
             "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl",
             "Factual-Summary-Pairs": script_dir[:-7]
             + "/Factuality/Factual-Summary-Pairs.jsonl",
+            "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "MultiLexSum-test-tiny": script_dir[:-7]
+            + "/MultiLexSum/MultiLexSum-test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1151,6 +1156,7 @@ class JSONLDataset(_IDataset):
         "security",
         "clinical-tests",
         "disinformation-test",
+        "sensitivity-test",
         "wino-bias",
         "legal-tests",
         "factuality-test",
@@ -1291,6 +1297,10 @@ class JSONLDataset(_IDataset):
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
+                    ),
+                elif self.task == "sensitivity-test":
+                    data.append(
+                        SensitivitySample(original=item[self.column_matcher["text"]])
                     )
 
                 elif self.task == "wino-bias":

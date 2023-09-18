@@ -41,6 +41,7 @@ class Harness:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "sensitivity-test",
         "wino-bias",
         "legal-tests",
         "factuality-test",
@@ -123,6 +124,9 @@ class Harness:
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
             "security": resource_filename("langtest", "data/config/security_config.yml"),
+            "sensitivity-test": resource_filename(
+                "langtest", "data/config/sensitivity_config.yml"
+            ),
         },
     }
 
@@ -279,7 +283,8 @@ class Harness:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
-
+        elif task == "sensitivity-test":
+            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         else:
             logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(
@@ -426,22 +431,28 @@ class Harness:
                 return self
 
         elif self.task in ("question-answering", "summarization"):
-            if "bias" in tests.keys() and self.data_source in ("BoolQ-bias", "XSum-bias"):
-                tests_to_filter = tests["bias"].keys()
-                self._testcases = DataFactory.filter_curated_bias(
-                    tests_to_filter, self.data
-                )
-                if len(tests.keys()) > 2:
-                    tests = {k: v for k, v in tests.items() if k != "bias"}
-                    (other_testcases) = TestFactory.transform(
-                        self.task, self.data, tests, m_data=m_data
+            if "bias" in tests.keys():
+                if self.data_source in ("BoolQ-bias", "XSum-bias"):
+                    tests_to_filter = tests["bias"].keys()
+                    self._testcases = DataFactory.filter_curated_bias(
+                        tests_to_filter, self.data
                     )
-                    self._testcases.extend(other_testcases)
-                return self
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != "bias"}
+                        (other_testcases) = TestFactory.transform(
+                            self.task, self.data, tests, m_data=m_data
+                        )
+                        self._testcases.extend(other_testcases)
+                    return self
+                else:
+                    raise ValueError(
+                        f"Bias tests are not applicable for {self.data_source} dataset."
+                    )
             else:
-                raise ValueError(
-                    f"Bias tests are not applicable for {self.data_source} dataset."
+                self._testcases = TestFactory.transform(
+                    self.task, self.data, tests, m_data=m_data
                 )
+                return self
 
         self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
