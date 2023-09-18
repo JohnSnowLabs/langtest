@@ -510,6 +510,25 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
     pass
 
 
+class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for disinformation test.
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for factuality detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
 class PretrainedModelForSensitivityTest(_ModelHandler):
     """A class for handling a pretrained model for sensitivity testing.
 

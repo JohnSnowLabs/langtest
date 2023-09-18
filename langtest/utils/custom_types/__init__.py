@@ -17,6 +17,7 @@ from .sample import (
     SensitivitySample,
     WinoBiasSample,
     LegalSample,
+    FactualitySample,
 )
 from .helpers import Span, Transformation
 from .output import (

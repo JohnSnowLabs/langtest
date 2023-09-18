@@ -31,6 +31,7 @@ from langtest.utils.custom_types import (
     SensitivitySample,
     WinoBiasSample,
     LegalSample,
+    FactualitySample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -82,6 +83,11 @@ COLUMN_MAPPER = {
         "legal_conclusion_a": ["legal_conclusion_a"],
         "legal_conclusion_b": ["legal_conclusion_b"],
         "correct_choice": ["correct_choice"],
+    },
+    "factuality-test": {
+        "article_sent": ["article_sent"],
+        "correct_sent": ["correct_sent"],
+        "incorrect_sent": ["incorrect_sent"],
     },
 }
 
@@ -314,6 +320,8 @@ class DataFactory:
             + "/NarrativeWedging/Narrative_Wedging.jsonl",
             "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
             "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl",
+            "Factual-Summary-Pairs": script_dir[:-7]
+            + "/Factuality/Factual-Summary-Pairs.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1132,6 +1140,7 @@ class JSONLDataset(_IDataset):
         "sensitivity-test",
         "wino-bias",
         "legal-tests",
+        "factuality-test",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1297,6 +1306,15 @@ class JSONLDataset(_IDataset):
                         )
                     )
 
+                elif self.task == "factuality-test":
+                    data.append(
+                        FactualitySample(
+                            article_sent=item["article_sent"],
+                            incorrect_sent=item["incorrect_sent"],
+                            correct_sent=item["correct_sent"],
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
