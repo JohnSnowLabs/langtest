@@ -200,3 +200,23 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for wino-bias detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for legal-tests.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass

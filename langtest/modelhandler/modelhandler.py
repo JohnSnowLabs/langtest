@@ -54,6 +54,8 @@ class ModelFactory:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "wino-bias",
+        "legal-tests",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -134,6 +136,12 @@ class ModelFactory:
                 hub, model, *args, **kwargs
             )
 
+        elif task in ("legal-tests"):
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            self.model_class = model_handler.PretrainedModelForLegal(
+                hub, model, *args, **kwargs
+            )
+
         elif task in ("disinformation-test"):
             _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForDisinformationTest(
@@ -153,6 +161,9 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSecurity(
                 hub, model, *args, **kwargs
             )
+
+        elif task == "wino-bias":
+            self.model_class = model_handler.PretrainedModelForWinoBias(model)
 
         else:
             self.model_class = model_handler.PretrainedModelForTextClassification(model)
@@ -251,6 +262,11 @@ class ModelFactory:
             model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
                 hub, path, *args, **kwargs
             )
+        elif task == "legal-tests":
+            model_class = modelhandler_module.PretrainedModelForLegal.load_model(
+                hub, path, *args, **kwargs
+            )
+
         elif task == "political":
             model_class = modelhandler_module.PretrainedModelForPolitical.load_model(
                 hub, path, *args, **kwargs
@@ -262,6 +278,8 @@ class ModelFactory:
                     hub, path, *args, **kwargs
                 )
             )
+        elif task in ("wino-bias"):
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
 
         else:
             model_class = (
