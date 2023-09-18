@@ -98,3 +98,5 @@ tests:
     url: /docs/pages/tests/security
   - title: Disinformation
     url: /docs/pages/tests/disinformation
+  - title: Factuality
+    url: /docs/pages/tests/factuality
