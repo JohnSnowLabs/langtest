@@ -54,6 +54,21 @@ default_user_prompt = {
 
     Choose the legal conclusion that most forcefully and directly supports the legal claim in the passage. If it is conclusion A, response must be just "a", else "b".
     """,
+    "factuality": """Decide which of the following summary is more consistent with the article sentence.
+
+     Note that consistency means
+     all information in the summary is supported by the article.
+
+     Do not bias towards the first summary.
+
+     Do not bias towards the second summary.
+
+     Both answers are equally probable.
+
+     Article Sentence: {article_sentence}
+     Summary A: {option_a}
+     Summary B: {option_b}
+     Answer (A or B):""",
 }
 
 
