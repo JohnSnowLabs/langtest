@@ -277,7 +277,7 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 | **XSum**           | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples |
 | **XSum-test**      | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples                                             |
 | **XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples                       |
-| **XSum-bias** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Manually annotated version of the Xsum dataset, containing 382 labeled examples 
+| **XSum-bias** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Manually annotated bias version of the Xsum dataset, containing 382 labeled examples 
 
 </div><div class="h3-box" markdown="1">
 #### Summarization Benchmarks: Use Cases and Evaluations
