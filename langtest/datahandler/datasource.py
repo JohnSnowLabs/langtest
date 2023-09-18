@@ -191,13 +191,10 @@ class DataFactory:
         self.init_cls.export_data(data, output_path)
 
     @classmethod
-    def load_curated_bias(
-        cls, tests_to_filter: List[str], file_path: str
-    ) -> List[Sample]:
+    def load_curated_bias(cls, file_path: str) -> List[Sample]:
         """Loads curated bias into a list of samples
 
         Args:
-            tests_to_filter (List[str]): name of the tests to use
             file_path(str): path to the file to load
 
         Returns:
@@ -205,40 +202,57 @@ class DataFactory:
         """
         data = []
         path = os.path.abspath(__file__)
-        if file_path == "BoolQ":
+        if file_path == "BoolQ-bias":
             bias_jsonl = os.path.dirname(path)[:-7] + "/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item["test_type"] in tests_to_filter:
-                        data.append(
-                            QASample(
-                                original_question=item["original_question"],
-                                original_context=item.get("original_context", "-"),
-                                perturbed_question=item["perturbed_question"],
-                                perturbed_context=item.get("perturbed_context", "-"),
-                                test_type=item["test_type"],
-                                category=item["category"],
-                                dataset_name="BoolQ",
-                            )
+                    data.append(
+                        QASample(
+                            original_question=item["original_question"],
+                            original_context=item.get("original_context", "-"),
+                            perturbed_question=item["perturbed_question"],
+                            perturbed_context=item.get("perturbed_context", "-"),
+                            test_type=item["test_type"],
+                            category=item["category"],
+                            dataset_name="BoolQ",
                         )
-        elif file_path == "XSum":
+                    )
+        elif file_path == "XSum-bias":
             bias_jsonl = os.path.dirname(path)[:-7] + "/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item["test_type"] in tests_to_filter:
-                        data.append(
-                            SummarizationSample(
-                                original=item["original"],
-                                test_case=item["test_case"],
-                                test_type=item["test_type"],
-                                category=item["category"],
-                                dataset_name="XSum",
-                            )
+                    data.append(
+                        SummarizationSample(
+                            original=item["original"],
+                            test_case=item["test_case"],
+                            test_type=item["test_type"],
+                            category=item["category"],
+                            dataset_name="XSum",
                         )
-        else:
-            logging.warning(
-                f"File {file_path} not supported for `load_curated_bias`, the biases will be empty."
-            )
+                    )
+        return data
+
+    @classmethod
+    def filter_curated_bias(
+        cls, tests_to_filter: List[str], bias_data: List[Sample]
+    ) -> List[Sample]:
+        """filter curated bias data into a list of samples
+
+        Args:
+            tests_to_filter (List[str]): name of the tests to use
+            bias_data:
+
+        Returns:
+            List[Sample]: list of processed samples
+        """
+        data = []
+        warning_message = ""
+        for item in bias_data:
+            if item.test_type in tests_to_filter:
+                data.append(item)
+
+        warning_message += f"Filtering provided bias tests from {len(bias_data)} samples - {len(bias_data) - len(data)} samples removed "
+        logging.warning(warning_message)
         return data
 
     @classmethod
@@ -258,12 +272,14 @@ class DataFactory:
             "BoolQ-dev": script_dir[:-7] + "/BoolQ/dev.jsonl",
             "BoolQ-test-tiny": script_dir[:-7] + "/BoolQ/test-tiny.jsonl",
             "BoolQ-test": script_dir[:-7] + "/BoolQ/test.jsonl",
+            "BoolQ-bias": script_dir[:-7] + "/BoolQ/bias.jsonl",
             "BoolQ": script_dir[:-7] + "/BoolQ/combined.jsonl",
             "NQ-open-test": script_dir[:-7] + "/NQ-open/test.jsonl",
             "NQ-open": script_dir[:-7] + "/NQ-open/combined.jsonl",
             "NQ-open-test-tiny": script_dir[:-7] + "/NQ-open/test-tiny.jsonl",
             "XSum-test-tiny": script_dir[:-7] + "/Xsum/XSum-test-tiny.jsonl",
             "XSum-test": script_dir[:-7] + "/Xsum/XSum-test.jsonl",
+            "XSum-bias": script_dir[:-7] + "/Xsum/bias.jsonl",
             "TruthfulQA-combined": script_dir[:-7]
             + "/TruthfulQA/TruthfulQA-combined.jsonl",
             "TruthfulQA-test": script_dir[:-7] + "/TruthfulQA/TruthfulQA-test.jsonl",
