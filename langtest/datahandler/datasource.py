@@ -1299,9 +1299,13 @@ class JSONLDataset(_IDataset):
                         )
                     ),
                 elif self.task == "sensitivity-test":
-                    data.append(
-                        SensitivitySample(original=item[self.column_matcher["text"]])
-                    )
+                    supported_data = ["NQ-open","OpenBookQA"]
+                    if self._file_path.split("/")[-2] in supported_data:
+                        data.append(
+                            SensitivitySample(original=item[self.column_matcher["text"]])
+                        )
+                    else:
+                        raise ValueError(f"Unsupported dataset for sensitivity-test. Please use one of: {', '.join(supported_data)} with their 'test' or 'test-tiny' version.")
 
                 elif self.task == "wino-bias":
                     data.append(
