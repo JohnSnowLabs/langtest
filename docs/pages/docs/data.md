@@ -458,5 +458,35 @@ harness = Harness(task='factuality-test',
                   model={"model": "text-davinci-003", "hub":"openai"},
                   data={"data_source": "Factual-Summary-Pairs"})
 ```
+</div><div class="h3-box" markdown="1">
 
+### Sensitivity Test
+
+The Evaluating Model’s Sensitivity to Negation Test focuses on assessing a model’s responsiveness to negations introduced into its input text. The primary objective is to determine whether the model can effectively detect and respond to negations. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset               | Source                                                                                                                                            | Description                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **NQ-open**                                             | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples                                                                                                                   |
+| **NQ-open-test**                                        | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                                                                                                                              |
+| **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples   
+| **OpenBookQA-test**                                     | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions                                                                                                        |
+| **OpenBookQA-test-tiny**                                | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples. 
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Sensitivity Test Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task='sensitivity-test',
+                  model={"model": "text-davinci-003", "hub":"openai"},
+                  data = {"data_source": "NQ-open-test-tiny"})
+```
 </div></div>
