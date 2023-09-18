@@ -848,26 +848,8 @@ class FairnessTestFactory(ITests):
             )
 
         for test_name, params in self.tests.items():
-            data_handler_copy = [x.copy() for x in self._data_handler]
-
-            if isinstance(data_handler_copy[0], NERSample):
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions]
-                )
-            elif isinstance(data_handler_copy[0], SequenceClassificationSample):
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.label for y in x.expected_results.predictions]
-                )
-            elif data_handler_copy[0].task in ["question-answering", "summarization"]:
-                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
-
-            y_true = y_true.explode().apply(
-                lambda x: x.split("-")[-1] if isinstance(x, str) else x
-            )
-            y_true = y_true.dropna()
-
             transformed_samples = self.supported_tests[test_name].transform(
-                test_name, y_true, params
+                test_name, None, params
             )
 
             for sample in transformed_samples:
@@ -910,7 +892,6 @@ class FairnessTestFactory(ITests):
         """
 
         grouped_data = cls.get_gendered_data(raw_data)
-
         for gender, data in grouped_data.items():
             if len(data) == 0:
                 grouped_data[gender] = [[], []]
