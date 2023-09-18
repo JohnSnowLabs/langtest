@@ -430,7 +430,7 @@ class Harness:
                 return self
             else:
                 raise ValueError(
-                    f"Bias tests are not applicable for {self.file_path} dataset."
+                    f"Bias tests are not applicable for {self.data_source} dataset."
                 )
 
         self._testcases = TestFactory.transform(
