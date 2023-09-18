@@ -47,6 +47,8 @@ Supported `data_source` formats are task-dependent. The following table provides
 | **clinical-tests**      | Select list of curated datasets                          |
 | **disinformation-test** | Select list of curated datasets                          |
 | **political**           | Select list of curated datasets                          |
+| **factuality test**     | Select list of curated datasets                          |
+| **sensitivity test**    | Select list of curated datasets                          |
 
 </div><div class="h3-box" markdown="1">
 
@@ -393,7 +395,7 @@ harness = Harness(task='disinformation-test',
                   model={"model": "j2-jumbo-instruct", "hub":"ai21"},
                   data={"data_source": "Narrative-Wedging"})
 ```
-
+</div><div class="h3-box" markdown="1">
 
 ### Political Test
 
@@ -420,5 +422,41 @@ harness = Harness(task='political',
                   model={"model": "j2-jumbo-instruct", "hub":"ai21"})
 ```
 
+</div><div class="h3-box" markdown="1">
+
+### Factuality Test
+
+The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset               | Source                                                                                                                                            | Description                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Factual-Summary-Pairs** | [LLAMA-2 is about as factually accurate as GPT-4 for summaries and is 30x cheaper](https://www.anyscale.com/blog/llama-2-is-about-as-factually-accurate-as-gpt-4-for-summaries-and-is-30x-cheaper) | Factual-Summary-Pairs, containing 371 labeled examples. |
+
+</div><div class="h3-box" markdown="1">
+
+#### Factuality Test Dataset: Use Cases and Evaluations
+
+{:.table2}
+| Dataset               | Use Case                                                                                                                                                  | Notebook                                                                                                                                                                                                      |
+| --------------------- |
+| **Factual-Summary-Pairs** | The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Factuality Test Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task='factuality-test',
+                  model={"model": "text-davinci-003", "hub":"openai"},
+                  data={"data_source": "Factual-Summary-Pairs"})
+```
 
 </div></div>

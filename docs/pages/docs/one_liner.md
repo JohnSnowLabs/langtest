@@ -398,3 +398,61 @@ h.generate().run().report()
     </div>
   </div>
 </div>
+
+### One Liner - Factuality Test
+
+Try out the LangTest library on the following default model-dataset combinations for Factuality Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[openai,langchain,transformers]" 
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h  =  Harness(task="factuality-test",
+              model = {"model": "text-davinci-003", "hub":"openai"},
+              data = {"data_source": "Factual-Summary-Pairs"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Sensitivity Test
+
+Try out the LangTest library on the following default model-dataset combinations for Sensitivity Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[openai,langchain,transformers]" 
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h  =  Harness(task="sensitivity-test",
+              model = {"model": "text-davinci-003", "hub":"openai"},
+              data = {"data_source": "NQ-open-test-tiny"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>

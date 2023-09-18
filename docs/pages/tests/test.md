@@ -110,5 +110,7 @@ The following tables give an overview of the different categories and tests.
 |[Clinical](clinical)		            |[demographic-bias](clinical#demographic-bias)                                                                         |`clinical-tests`
 |[Security](security)		            |[prompt_injection_attack](security#prompt_injection_attack)                                                                         |`security`
 |[Disinformation](disinformation)		            |[Narrative Wedging](disinformation#narrative_wedging)                                                                         |`disinformation-test`
+|[Factuality](factuality)		            |[Order Bias](factuality#order_bias)                                                                         |`factuality-test`
+|[Sensitivity](Sensitivity)		            |[Sensitivity Negation](Sensitivity#negation)                                                                         |`Sensitivity-test`
 
 </div></div>
