@@ -25,7 +25,9 @@ The `Harness` `task` parameter accepts different tasks.
 | **`clinical-tests`**      | Clinical Tests           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
 | **`security`**            | Security Tests           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
 | **`disinformation-test`** | Disinformation Test      | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
-| **`political`**           | Political Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`political`**           | Political Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)   
+| **`sensitivity`**           | Negation Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)    
+| **`factuality`**           | Factuality Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
 
 </div><div class="h3-box" markdown="1">
 
