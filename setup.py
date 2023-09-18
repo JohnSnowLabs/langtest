@@ -193,6 +193,7 @@ setup(
             "data/Legal-Support/*",
             "data/Factuality/*",
             "data/NarrativeWedging/*",
+            "data/MultiLexSum/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

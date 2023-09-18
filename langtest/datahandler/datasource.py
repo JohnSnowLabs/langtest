@@ -338,6 +338,9 @@ class DataFactory:
             "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl",
             "Factual-Summary-Pairs": script_dir[:-7]
             + "/Factuality/Factual-Summary-Pairs.jsonl",
+            "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "MultiLexSum-test-tiny": script_dir[:-7]
+            + "/MultiLexSum/MultiLexSum-test.jsonl",
         }
 
         return datasets_info[dataset_name]
