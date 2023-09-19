@@ -456,3 +456,58 @@ h.generate().run().report()
     </div>
   </div>
 </div>
+
+### One Liner - Wino Bias
+
+Try out the LangTest library on the following default model-dataset combinations for wino-bias test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[transformers]
+!wget https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/langtest/data/config/wino_config.yml
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="wino-bias", model={"model" : "bert-base-uncased", 
+  "hub":"huggingface" } , data = {"data_source":"Wino-test"}, config="wino_config.yml")
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+### One Liner - Legal Test
+
+Try out the LangTest library on the following default model-dataset combinations for legal tests.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[openai,langchain]" 
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="legal-tests", model={"model" : "text-davinci-002",
+           "hub":"openai"}, data = {"data_source":"Legal-Support-test"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
