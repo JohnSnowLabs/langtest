@@ -140,7 +140,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[langchain,openai,transformers]"
+!pip install "langtest[langchain,openai]"
 
 from langtest import Harness
 
@@ -237,7 +237,7 @@ To compare different models (either from same or different hubs) on the same tas
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[spacy,johnsnowlabs,transformers]" 
+!pip install "langtest[spacy,johnsnowlabs]" 
 from langtest import Harness
 
 # Define the list
