@@ -117,7 +117,7 @@ h.generate().run().report()
 Using any large language model from the [OpenAI API](https://platform.openai.com/docs/models/overview):
 
 ```bash
-!pip install "langtest[langchain,openai]"
+!pip install "langtest[openai]"
 ```
 
 ```python
@@ -215,7 +215,7 @@ h.generate().run().report()
 #### Pretrained Models
 
 ```bash
-!pip install "langtest[langchain,openai]"
+!pip install "langtest[openai]"
 ```
 
 ```python
