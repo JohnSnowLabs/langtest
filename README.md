@@ -34,7 +34,7 @@ Take a look at our official page for user documentation and examples: [langtest.
 - Test all aspects of model quality: robustness, bias, representation, fairness and accuracy.​
 - Automatically augment training data based on test results (for select models)​
 - Support for popular NLP frameworks for NER, Translation and Text-Classifcation: Spark NLP, Hugging Face & Transformers.
-- Support for testing LLMS ( OpenAI, Cohere, AI21, Hugging Face Inference API and Azure-OpenAI LLMs) for question answering, toxicity and summarization task. 
+- Support for testing LLMS ( OpenAI, Cohere, AI21, Hugging Face Inference API and Azure-OpenAI LLMs) for question answering, toxicity, clinical-tests, legal-support, factuality and summarization task. 
 
 ## How To Use
 

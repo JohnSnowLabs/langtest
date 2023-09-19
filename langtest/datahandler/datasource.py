@@ -28,6 +28,10 @@ from langtest.utils.custom_types import (
     ClinicalSample,
     SecuritySample,
     DisinformationSample,
+    SensitivitySample,
+    WinoBiasSample,
+    LegalSample,
+    FactualitySample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -68,6 +72,22 @@ COLUMN_MAPPER = {
     "disinformation-test": {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
+    },
+    "sensitivity-test": {"text": ["text", "question"]},
+    "wino-bias": {
+        "text": ["text"],
+    },
+    "legal-tests": {
+        "case": ["case"],
+        "legal-claim": ["legal-claim"],
+        "legal_conclusion_a": ["legal_conclusion_a"],
+        "legal_conclusion_b": ["legal_conclusion_b"],
+        "correct_choice": ["correct_choice"],
+    },
+    "factuality-test": {
+        "article_sent": ["article_sent"],
+        "correct_sent": ["correct_sent"],
+        "incorrect_sent": ["incorrect_sent"],
     },
 }
 
@@ -173,13 +193,10 @@ class DataFactory:
         self.init_cls.export_data(data, output_path)
 
     @classmethod
-    def load_curated_bias(
-        cls, tests_to_filter: List[str], file_path: str
-    ) -> List[Sample]:
+    def load_curated_bias(cls, file_path: str) -> List[Sample]:
         """Loads curated bias into a list of samples
 
         Args:
-            tests_to_filter (List[str]): name of the tests to use
             file_path(str): path to the file to load
 
         Returns:
@@ -187,40 +204,57 @@ class DataFactory:
         """
         data = []
         path = os.path.abspath(__file__)
-        if file_path == "BoolQ":
+        if file_path == "BoolQ-bias":
             bias_jsonl = os.path.dirname(path)[:-7] + "/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item["test_type"] in tests_to_filter:
-                        data.append(
-                            QASample(
-                                original_question=item["original_question"],
-                                original_context=item.get("original_context", "-"),
-                                perturbed_question=item["perturbed_question"],
-                                perturbed_context=item.get("perturbed_context", "-"),
-                                test_type=item["test_type"],
-                                category=item["category"],
-                                dataset_name="BoolQ",
-                            )
+                    data.append(
+                        QASample(
+                            original_question=item["original_question"],
+                            original_context=item.get("original_context", "-"),
+                            perturbed_question=item["perturbed_question"],
+                            perturbed_context=item.get("perturbed_context", "-"),
+                            test_type=item["test_type"],
+                            category=item["category"],
+                            dataset_name="BoolQ",
                         )
-        elif file_path == "XSum":
+                    )
+        elif file_path == "XSum-bias":
             bias_jsonl = os.path.dirname(path)[:-7] + "/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
-                    if item["test_type"] in tests_to_filter:
-                        data.append(
-                            SummarizationSample(
-                                original=item["original"],
-                                test_case=item["test_case"],
-                                test_type=item["test_type"],
-                                category=item["category"],
-                                dataset_name="XSum",
-                            )
+                    data.append(
+                        SummarizationSample(
+                            original=item["original"],
+                            test_case=item["test_case"],
+                            test_type=item["test_type"],
+                            category=item["category"],
+                            dataset_name="XSum",
                         )
-        else:
-            logging.warning(
-                f"File {file_path} not supported for `load_curated_bias`, the biases will be empty."
-            )
+                    )
+        return data
+
+    @classmethod
+    def filter_curated_bias(
+        cls, tests_to_filter: List[str], bias_data: List[Sample]
+    ) -> List[Sample]:
+        """filter curated bias data into a list of samples
+
+        Args:
+            tests_to_filter (List[str]): name of the tests to use
+            bias_data:
+
+        Returns:
+            List[Sample]: list of processed samples
+        """
+        data = []
+        warning_message = ""
+        for item in bias_data:
+            if item.test_type in tests_to_filter:
+                data.append(item)
+
+        warning_message += f"Filtering provided bias tests from {len(bias_data)} samples - {len(bias_data) - len(data)} samples removed "
+        logging.warning(warning_message)
         return data
 
     @classmethod
@@ -240,12 +274,14 @@ class DataFactory:
             "BoolQ-dev": script_dir[:-7] + "/BoolQ/dev.jsonl",
             "BoolQ-test-tiny": script_dir[:-7] + "/BoolQ/test-tiny.jsonl",
             "BoolQ-test": script_dir[:-7] + "/BoolQ/test.jsonl",
+            "BoolQ-bias": script_dir[:-7] + "/BoolQ/bias.jsonl",
             "BoolQ": script_dir[:-7] + "/BoolQ/combined.jsonl",
             "NQ-open-test": script_dir[:-7] + "/NQ-open/test.jsonl",
             "NQ-open": script_dir[:-7] + "/NQ-open/combined.jsonl",
             "NQ-open-test-tiny": script_dir[:-7] + "/NQ-open/test-tiny.jsonl",
             "XSum-test-tiny": script_dir[:-7] + "/Xsum/XSum-test-tiny.jsonl",
             "XSum-test": script_dir[:-7] + "/Xsum/XSum-test.jsonl",
+            "XSum-bias": script_dir[:-7] + "/Xsum/bias.jsonl",
             "TruthfulQA-combined": script_dir[:-7]
             + "/TruthfulQA/TruthfulQA-combined.jsonl",
             "TruthfulQA-test": script_dir[:-7] + "/TruthfulQA/TruthfulQA-test.jsonl",
@@ -298,6 +334,13 @@ class DataFactory:
             "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
             "Narrative-Wedging": script_dir[:-7]
             + "/NarrativeWedging/Narrative_Wedging.jsonl",
+            "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
+            "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl",
+            "Factual-Summary-Pairs": script_dir[:-7]
+            + "/Factuality/Factual-Summary-Pairs.jsonl",
+            "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "MultiLexSum-test-tiny": script_dir[:-7]
+            + "/MultiLexSum/MultiLexSum-test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1113,6 +1156,10 @@ class JSONLDataset(_IDataset):
         "security",
         "clinical-tests",
         "disinformation-test",
+        "sensitivity-test",
+        "wino-bias",
+        "legal-tests",
+        "factuality-test",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1248,6 +1295,48 @@ class JSONLDataset(_IDataset):
                             hypothesis=item["hypothesis"],
                             statements=item["statements"],
                             task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    ),
+                elif self.task == "sensitivity-test":
+                    supported_data = ["NQ-open", "OpenBookQA"]
+                    if self._file_path.split("/")[-2] in supported_data:
+                        data.append(
+                            SensitivitySample(original=item[self.column_matcher["text"]])
+                        )
+                    else:
+                        raise ValueError(
+                            f"Unsupported dataset for sensitivity-test. Please use one of: {', '.join(supported_data)} with their 'test' or 'test-tiny' version."
+                        )
+
+                elif self.task == "wino-bias":
+                    data.append(
+                        WinoBiasSample(
+                            masked_text=item["text"],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+
+                elif self.task == "legal-tests":
+                    data.append(
+                        LegalSample(
+                            case=item["case"],
+                            legal_claim=item["legal-claim"],
+                            legal_conclusion_A=item["legal_conclusion_a"],
+                            legal_conclusion_B=item["legal_conclusion_b"],
+                            correct_conlusion=item["correct_choice"],
+                            task=self.task,
+                            dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+
+                elif self.task == "factuality-test":
+                    data.append(
+                        FactualitySample(
+                            article_sent=item["article_sent"],
+                            incorrect_sent=item["incorrect_sent"],
+                            correct_sent=item["correct_sent"],
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )

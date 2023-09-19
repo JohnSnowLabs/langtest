@@ -98,3 +98,11 @@ tests:
     url: /docs/pages/tests/security
   - title: Disinformation
     url: /docs/pages/tests/disinformation
+  - title: Sensitivity
+    url: /docs/pages/tests/sensitivity
+  - title: Factuality
+    url: /docs/pages/tests/factuality
+  - title: Wino Bias
+    url: /docs/pages/tests/wino-bias
+  - title: Legal 
+    url: /docs/pages/tests/legal

@@ -8,7 +8,7 @@ This test evaluates the model for each gender seperately. The rougeL score for e
 **alias_name:** `max_gender_rougeL_score`
 
 <i class="fa fa-info-circle"></i>
-*The underlying gender classifier was trained on 3 categories: male, female and neutral. To apply these tests appropriately in other contexts, please implement an adapted classifier.*
+*The underlying gender classifier is a rule based classifier which outputs one of 3 categories: male, female and neutral. *
 
 </div><div class="h3-box" markdown="1">
 
