@@ -112,5 +112,7 @@ The following tables give an overview of the different categories and tests.
 |[Disinformation](disinformation)		            |[Narrative Wedging](disinformation#narrative_wedging)                                                                         |`disinformation-test`
 |[Factuality](factuality)		            |[Order Bias](factuality#order_bias)                                                                         |`factuality-test`
 |[Sensitivity](Sensitivity)		            |[Sensitivity Negation](Sensitivity#negation)                                                                         |`Sensitivity-test`
+|[Legal](Legal)		            |[legal-support](legal#legal-support)                                                                         |`legal-tests`
+|[Wino Bias](wino-bias)		            |[gender-occupational-stereotype](wino-bias#gender-occupational-stereotype)                                                                         |`wino-bias`
 
 </div></div>
