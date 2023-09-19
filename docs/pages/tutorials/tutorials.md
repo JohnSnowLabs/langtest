@@ -71,6 +71,9 @@ The following table gives an overview of the different tutorial notebooks. We ha
 | Political Test                      | OpenAI                            | Political                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Political_Demo.ipynb)                               |
 | Factuality Test                      | OpenAI                             | Factuality                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) 
 | Sensitivity Test                      | OpenAI                             | Negation-Test                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) 
+| Legal Support                      | OpenAI                             | Legal-Tests                        | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Legal_Support.ipynb)
+| Wino Bias                  | OpenAI                             | Wino-Bias                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Wino_Bias.ipynb)
+
 
 <style>
   .heading {
