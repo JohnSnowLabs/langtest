@@ -102,3 +102,5 @@ tests:
     url: /docs/pages/tests/sensitivity
   - title: Factuality
     url: /docs/pages/tests/factuality
+  - title: Wino Bias
+    url: /docs/pages/tests/wino-bias
