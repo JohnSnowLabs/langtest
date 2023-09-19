@@ -26,7 +26,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[johnsnowlabs,transformers]"
+!pip install langtest[johnsnowlabs]
 
 from langtest import Harness
 # Make sure to specify data='path_to_data' when using custom models
@@ -55,7 +55,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[spacy,transformers]" 
+!pip install langtest[spacy]
 
 from langtest import Harness
 
@@ -84,7 +84,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[johnsnowlabs,transformers]"
+!pip install langtest[johnsnowlabs]
 
 from langtest import Harness
 
@@ -112,7 +112,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[spacy,transformers]"
+!pip install langtest[spacy]
 
 from langtest import Harness
 
