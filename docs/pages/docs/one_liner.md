@@ -140,7 +140,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[langchain,openai]"
+!pip install "langtest[openai]"
 
 from langtest import Harness
 
@@ -173,7 +173,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[evaluate,langchain,openai,transformers]"
+!pip install "langtest[evaluate,openai,transformers]"
 
 from langtest import Harness
 
@@ -205,7 +205,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[evaluate,langchain,openai,transformers]"
+!pip install "langtest[evaluate,openai,transformers]"
 
 from langtest import Harness
 
@@ -290,7 +290,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[langchain,openai,transformers]"
+!pip install "langtest[openai,transformers]"
 
 import os
 os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
@@ -408,7 +408,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[openai,langchain,transformers]" 
+!pip install "langtest[openai,transformers]" 
 
 import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
@@ -437,7 +437,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[openai,langchain,transformers]" 
+!pip install "langtest[openai,transformers]" 
 
 import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
@@ -493,7 +493,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[openai,langchain]" 
+!pip install "langtest[openai]" 
 
 import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
