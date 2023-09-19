@@ -189,6 +189,8 @@ class PretrainedModelForNER(_ModelHandler):
         if len(prediction) == 0:
             return []
 
+        prediction = self._aggregate_words(prediction)
+
         if prediction[0].get("entity") is not None:
             return [x["entity"] for x in prediction]
         return [x["entity_group"] for x in prediction]
