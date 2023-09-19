@@ -10,6 +10,7 @@ from langtest.utils.custom_types import (
     Sample,
 )
 from langtest.utils.custom_types.output import NEROutput, SequenceClassificationOutput
+from langtest.utils.gender_classifier import GenderClassifier
 from .utils import RepresentationOperation
 from .constants import (
     default_ehtnicity_representation,
@@ -204,7 +205,6 @@ class GenderRepresentation(BaseRepresentation):
             List[Sample]: The list of samples with actual results.
 
         """
-        from langtest.utils.gender_classifier import GenderClassifier
 
         progress = kwargs.get("progress_bar", False)
         classifier = GenderClassifier()

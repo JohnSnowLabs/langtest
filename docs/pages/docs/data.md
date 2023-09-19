@@ -47,6 +47,8 @@ Supported `data_source` formats are task-dependent. The following table provides
 | **clinical-tests**      | Select list of curated datasets                          |
 | **disinformation-test** | Select list of curated datasets                          |
 | **political**           | Select list of curated datasets                          |
+| **factuality test**     | Select list of curated datasets                          |
+| **sensitivity test**    | Select list of curated datasets                          |
 
 </div><div class="h3-box" markdown="1">
 
@@ -188,6 +190,7 @@ To test Question Answering models, the user is meant to select a benchmark datas
 | **BoolQ-dev-tiny**                                      | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the dev set from the BoolQ dataset, containing 50 labeled examples                                                                                                                           |
 | **BoolQ-test**                                          | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Test set from the BoolQ dataset, containing 3,245 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                     |
 | **BoolQ-test-tiny**                                     | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                               |
+| **BoolQ-bias**                                               | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Manually annotated bias version of BoolQ dataset, containing 136 labeled examples   
 | **NQ-open**                                             | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples                                                                                                                   |
 | **NQ-open-test**                                        | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                                                                                                                              |
 | **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples                                                                                                                |
@@ -276,6 +279,7 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 | **XSum**           | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples |
 | **XSum-test**      | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples                                             |
 | **XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples                       |
+| **XSum-bias** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Manually annotated bias version of the Xsum dataset, containing 382 labeled examples 
 
 </div><div class="h3-box" markdown="1">
 #### Summarization Benchmarks: Use Cases and Evaluations
@@ -391,7 +395,7 @@ harness = Harness(task='disinformation-test',
                   model={"model": "j2-jumbo-instruct", "hub":"ai21"},
                   data={"data_source": "Narrative-Wedging"})
 ```
-
+</div><div class="h3-box" markdown="1">
 
 ### Political Test
 
@@ -418,5 +422,71 @@ harness = Harness(task='political',
                   model={"model": "j2-jumbo-instruct", "hub":"ai21"})
 ```
 
+</div><div class="h3-box" markdown="1">
 
+### Factuality Test
+
+The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset               | Source                                                                                                                                            | Description                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Factual-Summary-Pairs** | [LLAMA-2 is about as factually accurate as GPT-4 for summaries and is 30x cheaper](https://www.anyscale.com/blog/llama-2-is-about-as-factually-accurate-as-gpt-4-for-summaries-and-is-30x-cheaper) | Factual-Summary-Pairs, containing 371 labeled examples. |
+
+</div><div class="h3-box" markdown="1">
+
+#### Factuality Test Dataset: Use Cases and Evaluations
+
+{:.table2}
+| Dataset               | Use Case                                                                                                                                                  | Notebook                                                                                                                                                                                                      |
+| --------------------- |
+| **Factual-Summary-Pairs** | The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Factuality Test Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task='factuality-test',
+                  model={"model": "text-davinci-003", "hub":"openai"},
+                  data={"data_source": "Factual-Summary-Pairs"})
+```
+</div><div class="h3-box" markdown="1">
+
+### Sensitivity Test
+
+The Evaluating Model’s Sensitivity to Negation Test focuses on assessing a model’s responsiveness to negations introduced into its input text. The primary objective is to determine whether the model can effectively detect and respond to negations. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset               | Source                                                                                                                                            | Description                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **NQ-open**                                             | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples                                                                                                                   |
+| **NQ-open-test**                                        | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                                                                                                                              |
+| **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples   
+| **OpenBookQA-test**                                     | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions                                                                                                        |
+| **OpenBookQA-test-tiny**                                | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples. 
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Sensitivity Test Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task='sensitivity-test',
+                  model={"model": "text-davinci-003", "hub":"openai"},
+                  data = {"data_source": "NQ-open-test-tiny"})
+```
 </div></div>

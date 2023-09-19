@@ -41,6 +41,10 @@ class Harness:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "sensitivity-test",
+        "wino-bias",
+        "legal-tests",
+        "factuality-test",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -93,6 +97,8 @@ class Harness:
             "clinical-tests": resource_filename(
                 "langtest", "data/config/clinical_config.yml"
             ),
+            "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
+            "wino-bias": resource_filename("langtest", "data/config/wino_config.yml"),
             "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
@@ -102,6 +108,15 @@ class Harness:
             "disinformation-test-ai21": resource_filename(
                 "langtest", "data/config/disinformation_openai_config.yml"
             ),
+            "factuality-test-huggingface-inference-api": resource_filename(
+                "langtest", "data/config/factuality_huggingface_config.yml"
+            ),
+            "factuality-test-openai": resource_filename(
+                "langtest", "data/config/factuality_openai_config.yml"
+            ),
+            "factuality-test-ai21": resource_filename(
+                "langtest", "data/config/factuality_openai_config.yml"
+            ),
             "translation-huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
             ),
@@ -109,6 +124,9 @@ class Harness:
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
             "security": resource_filename("langtest", "data/config/security_config.yml"),
+            "sensitivity-test": resource_filename(
+                "langtest", "data/config/sensitivity_config.yml"
+            ),
         },
     }
 
@@ -232,6 +250,13 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
+        elif (
+            isinstance(data, dict)
+            and data["data_source"] in ("BoolQ-bias", "XSum-bias")
+            and task in ("question-answering", "summarization")
+        ):
+            self.data = DataFactory.load_curated_bias(data["data_source"])
+
         elif isinstance(data["data_source"], list):
             self.data = data["data_source"]
         else:
@@ -243,13 +268,14 @@ class Harness:
             self.data = (
                 DataFactory(data, task=self.task).load() if data is not None else None
             )
+        self.data_source = data.get("data_source") if data else None
 
         if config is not None:
             self._config = self.configure(config)
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-            elif task == "disinformation-test":
+            elif task in ["disinformation-test", "factuality-test"]:
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG["task"][task + "-" + hub]
                 )
@@ -257,6 +283,8 @@ class Harness:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
+        elif task == "sensitivity-test":
+            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         else:
             logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(
@@ -330,6 +358,7 @@ class Harness:
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
         model = GLOBAL_MODEL
+
         if self.task == "translation" and model:
             hub = self.hub
             model = self._actual_model
@@ -403,10 +432,10 @@ class Harness:
 
         elif self.task in ("question-answering", "summarization"):
             if "bias" in tests.keys():
-                if self.file_path.split("-")[0] in ("BoolQ", "XSum"):
+                if self.data_source in ("BoolQ-bias", "XSum-bias"):
                     tests_to_filter = tests["bias"].keys()
-                    self._testcases = DataFactory.load_curated_bias(
-                        tests_to_filter, self.file_path.split("-")[0]
+                    self._testcases = DataFactory.filter_curated_bias(
+                        tests_to_filter, self.data
                     )
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != "bias"}
@@ -417,14 +446,12 @@ class Harness:
                     return self
                 else:
                     raise ValueError(
-                        f"Bias tests are not applicable for {self.file_path} dataset."
+                        f"Bias tests are not applicable for {self.data_source} dataset."
                     )
-
             else:
                 self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
-
                 return self
 
         self._testcases = TestFactory.transform(
@@ -913,6 +940,13 @@ class Harness:
             "perturbed_question",
             "patient_info_A",
             "patient_info_B",
+            "case",
+            "legal_claim",
+            "legal_conclusion_A",
+            "legal_conclusion_B",
+            "correct_conlusion",
+            "model_conclusion",
+            "masked_text",
             "diagnosis",
             "treatment_plan_A",
             "treatment_plan_B",
@@ -922,6 +956,11 @@ class Harness:
             "completion_toxicity",
             "hypothesis",
             "statements",
+            "article_sentence",
+            "correct_sentence",
+            "incorrect_sentence",
+            "result",
+            "swapped_result",
             "model_response",
             "eval_score",
             "similarity_score",
@@ -1066,9 +1105,18 @@ class Harness:
             "test_case",
             "patient_info_A",
             "patient_info_B",
+            "case",
+            "legal_claim",
+            "legal_conclusion_A",
+            "legal_conclusion_B",
+            "correct_conlusion",
+            "masked_text",
             "diagnosis",
             "hypothesis",
             "statements",
+            "article_sentence",
+            "correct_sentence",
+            "incorrect_sentence",
             "perturbed_context",
             "perturbed_question",
             "expected_result",

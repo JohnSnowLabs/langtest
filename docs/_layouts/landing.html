@@ -94,7 +94,7 @@ conda install -c johnsnowlabs langtest
                   <div class="tabs-item">
                     <div class="highlight-box">
                       {% highlight python %}
-!pip install "langtest[johnsnowlabs,transformers]"
+!pip install langtest[johnsnowlabs]
 
 from langtest import Harness
 
@@ -125,7 +125,7 @@ h.generate().run().report()
                     <div class="highlight-box">
                       {% highlight python %}
 
-!pip install "langtest[langchain,openai,transformers]"
+!pip install "langtest[openai]"
                  
 from langtest import Harness
 
@@ -146,7 +146,7 @@ h.generate().run().report()
                     <div class="highlight-box">
                       {% highlight python %}
 
-!pip install "langtest[spacy,transformers]"
+!pip install langtest[spacy]
 from langtest import Harness                    
 
 # Create a Harness object

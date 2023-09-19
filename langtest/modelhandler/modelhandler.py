@@ -54,6 +54,10 @@ class ModelFactory:
         "clinical-tests",
         "disinformation-test",
         "political",
+        "sensitivity-test",
+        "wino-bias",
+        "legal-tests",
+        "factuality-test",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -88,8 +92,11 @@ class ModelFactory:
         assert task in self.SUPPORTED_TASKS, ValueError(
             f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}"
         )
+        if isinstance(model, tuple):
+            module_name = model[0].__module__.split(".")[0]
+        else:
+            module_name = model.__module__.split(".")[0]
 
-        module_name = model.__module__.split(".")[0]
         assert module_name in self.SUPPORTED_MODULES, ValueError(
             f"Module '{module_name}' is not supported. "
             f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
@@ -134,6 +141,12 @@ class ModelFactory:
                 hub, model, *args, **kwargs
             )
 
+        elif task in ("legal-tests"):
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            self.model_class = model_handler.PretrainedModelForLegal(
+                hub, model, *args, **kwargs
+            )
+
         elif task in ("disinformation-test"):
             _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
             self.model_class = model_handler.PretrainedModelForDisinformationTest(
@@ -151,6 +164,16 @@ class ModelFactory:
 
         elif task == "security":
             self.model_class = model_handler.PretrainedModelForSecurity(
+                hub, model, *args, **kwargs
+            )
+        elif task == "sensitivity-test":
+            self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
+
+        elif task == "wino-bias":
+            self.model_class = model_handler.PretrainedModelForWinoBias(model)
+
+        elif task == "factuality-test":
+            self.model_class = model_handler.PretrainedModelForFactualityTest(
                 hub, model, *args, **kwargs
             )
 
@@ -251,6 +274,11 @@ class ModelFactory:
             model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
                 hub, path, *args, **kwargs
             )
+        elif task == "legal-tests":
+            model_class = modelhandler_module.PretrainedModelForLegal.load_model(
+                hub, path, *args, **kwargs
+            )
+
         elif task == "political":
             model_class = modelhandler_module.PretrainedModelForPolitical.load_model(
                 hub, path, *args, **kwargs
@@ -261,6 +289,18 @@ class ModelFactory:
                 modelhandler_module.PretrainedModelForDisinformationTest.load_model(
                     hub, path, *args, **kwargs
                 )
+            )
+
+        elif task == "sensitivity-test":
+            model_class = (
+                modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
+            )
+        elif task in ("wino-bias"):
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
+
+        elif task in ("factuality-test"):
+            model_class = modelhandler_module.PretrainedModelForFactualityTest.load_model(
+                hub, path, *args, **kwargs
             )
 
         else:
