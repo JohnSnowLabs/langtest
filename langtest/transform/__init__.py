@@ -1155,7 +1155,11 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.explode()
 
         elif raw_data[0].task == "question-answering":
-            dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+            if raw_data[0].dataset_name == None :
+                dataset_name = "default_question_answering_prompt"
+            else:
+                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
@@ -1177,7 +1181,11 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.apply(lambda x: x.strip())
 
         elif raw_data[0].task == "summarization":
-            dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+            
+            if raw_data[0].dataset_name == None :
+                dataset_name = "default_summarization_prompt"
+            else:
+                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()  
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
