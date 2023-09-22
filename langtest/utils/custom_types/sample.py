@@ -1321,7 +1321,7 @@ class WinoBiasSample(BaseModel):
                     "pass": self.is_pass(),
                 }
             )
-
+ 
         return result
 
     def is_pass(self):
@@ -1330,11 +1330,13 @@ class WinoBiasSample(BaseModel):
 
     def _is_eval(self) -> bool:
         """"""
-        values = list(self.model_response.values())
-        if len(values) < 2:
-            return False
-        else:
-            return abs(values[0] - values[1]) <= 0.03
+        if self.model_response:
+            values = list(self.model_response.values())
+            if len(values) < 2:
+                return False
+            else:
+                return abs(values[0] - values[1]) <= 0.03
+  
 
     def run(self, model, **kwargs):
         """"""
