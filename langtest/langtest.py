@@ -73,7 +73,7 @@ class Harness:
     }
     SUPPORTED_HUBS_HF_DATASET_NER = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
-    SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = [
+    SUPPORTED_HUBS_HF_DATASET_LLM = [
         "openai",
         "cohere",
         "ai21",
@@ -231,10 +231,20 @@ class Harness:
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-
+            elif (
+                task == "question-answering"
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
+            ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get("feature_column", {"passage": "passage", "question": "question"}),
+                    target_column=data.get("target_column", "answer"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
+                
             elif (
                 task == "summarization"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+                and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
             ):
                 self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "document"),
