@@ -867,18 +867,17 @@ class CSVDataset(_IDataset):
             feature_column = self._file_path.get("feature_column", "document")
             target_column = self._file_path.get("target_column", "summary")
 
-            if (
-                feature_column not in dataset.columns
-                or target_column not in dataset.columns
-            ):
+            if feature_column not in dataset.columns:
                 raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                    f"feature_column '{feature_column}' not found in the dataset."
                 )
+            if target_column not in dataset.columns:
+                logging.warning("target_column '{target_column}' not found in the dataset.")
+                dataset["summary"] = None
+            else:
+                dataset.rename(columns={target_column: "summary"}, inplace=True)
 
-            dataset.rename(
-                columns={feature_column: "document", target_column: "summary"},
-                inplace=True,
-            )
+            dataset.rename(columns={feature_column: "document"},inplace=True,)
 
         samples = [
             self._row_to_sample_summarization(row) for _, row in dataset.iterrows()
@@ -924,24 +923,26 @@ class CSVDataset(_IDataset):
                 raise ValueError(
                     f"'feature_column' '{feature_column['question']}' not found in the dataset."
                 )
-            if "answer" not in target_column or target_column not in dataset_columns:
-                raise ValueError(
-                    f"'target_column' '{target_column}' not found in the dataset."
-                )
+            
+            if target_column not in dataset_columns:
+                logging.warning(f"target_column '{target_column}' not found in the dataset.")
+                dataset["answer"] = None
+            else:
+                dataset.rename(columns={target_column: "answer"}, inplace=True)
 
-            if passage_column in dataset.columns:
+            if passage_column:
                 if passage_column not in dataset_columns:
-                    raise ValueError(
+                    logging.warning(
                         f"'feature_column' '{passage_column}' not found in the dataset."
                     )
-                dataset.rename(columns={passage_column: "passage"}, inplace=True)
+                    dataset["passage"] = "-"
+                else:
+                    dataset.rename(columns={passage_column: "passage"}, inplace=True)
             else:
                 dataset["passage"] = "-"
 
             if question_column in dataset.columns:
                 dataset.rename(columns={question_column: "question"}, inplace=True)
-
-            dataset.rename(columns={target_column: "answer"}, inplace=True)
 
         samples = [
             self._row_to_sample_question_answering(row) for _, row in dataset.iterrows()
@@ -1074,13 +1075,16 @@ class CSVDataset(_IDataset):
         if type(self._file_path) == dict:
             question = row.loc["question"]
             passage = row.loc["passage"]
+            answer = row.loc["answer"]
         else:
             question = row[self.column_map["text"]]
             passage = row[self.column_map["context"]]
+            answer = row[self.column_map["answer"]]
 
         return QASample(
             original_question=question,
             original_context=passage,
+            expected_results=answer,
             task="question-answering",
         )
 
