@@ -873,7 +873,7 @@ class CSVDataset(_IDataset):
                 )
             if target_column not in dataset.columns:
                 logging.warning(
-                    "target_column '{target_column}' not found in the dataset."
+                    f"target_column '{target_column}' not found in the dataset."
                 )
                 dataset["summary"] = None
             else:
