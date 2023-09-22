@@ -232,20 +232,18 @@ class Harness:
                     subset=data.get("subset", None),
                 )
             elif (
-                task == "question-answering"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
+                task == "question-answering" and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
             ):
                 self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                    feature_column=data.get("feature_column", {"passage": "passage", "question": "question"}),
+                    feature_column=data.get(
+                        "feature_column", {"passage": "passage", "question": "question"}
+                    ),
                     target_column=data.get("target_column", "answer"),
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-                
-            elif (
-                task == "summarization"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
-            ):
+
+            elif task == "summarization" and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM:
                 self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "document"),
                     target_column=data.get("target_column", "summary"),
