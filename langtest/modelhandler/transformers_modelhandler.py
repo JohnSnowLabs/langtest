@@ -386,19 +386,18 @@ class PretrainedModelForWinoBias(_ModelHandler):
         Returns:
             Dict: Output for wino-bias task
         """
-        
 
         try:
             prediction = self.model(text, **kwargs)
         except Exception:
             self.masked_text = text.replace("[MASK]", "<mask>")
             prediction = self.model(self.masked_text, **kwargs)
-        
-        sorted_predictions = sorted(prediction, key=lambda x: x['score'], reverse=True)
+
+        sorted_predictions = sorted(prediction, key=lambda x: x["score"], reverse=True)
 
         # Extract top five (or less if not available) predictions
         top_five = sorted_predictions[:5]
-       
+
         top_five_tokens = [i["token_str"].strip() for i in top_five]
 
         if any(token in top_five_tokens for token in ["he", "she", "his", "her"]):
@@ -410,10 +409,10 @@ class PretrainedModelForWinoBias(_ModelHandler):
             }
             return eval_scores
         else:
-            print("Skipping an irrelevant sample, as the gender pronoun replacement was not amongst top five predictions")
+            print(
+                "Skipping an irrelevant sample, as the gender pronoun replacement was not amongst top five predictions"
+            )
             return None
-
-   
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
         """Alias of the 'predict' method"""

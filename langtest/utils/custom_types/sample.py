@@ -1321,7 +1321,7 @@ class WinoBiasSample(BaseModel):
                     "pass": self.is_pass(),
                 }
             )
- 
+
         return result
 
     def is_pass(self):
@@ -1336,7 +1336,6 @@ class WinoBiasSample(BaseModel):
                 return False
             else:
                 return abs(values[0] - values[1]) <= 0.03
-  
 
     def run(self, model, **kwargs):
         """"""
