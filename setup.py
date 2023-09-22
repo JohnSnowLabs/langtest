@@ -194,6 +194,9 @@ setup(
             "data/Factuality/*",
             "data/NarrativeWedging/*",
             "data/MultiLexSum/*",
+            "data/CommonsenseQA/*",
+            "data/SIQA/*",
+            "data/PIQA/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
