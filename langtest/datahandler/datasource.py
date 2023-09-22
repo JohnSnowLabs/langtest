@@ -1658,7 +1658,7 @@ class HuggingFaceDataset(_IDataset):
             rows.append(row)
 
         df = pd.DataFrame(
-            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
+            rows, columns=list(self.COLUMN_NAMES[self.task].keys())
         )
         df.to_csv(output_path, index=False, encoding="utf-8")
 
