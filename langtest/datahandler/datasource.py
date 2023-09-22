@@ -1357,7 +1357,7 @@ class JSONLDataset(_IDataset):
 class HuggingFaceDataset(_IDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
-    supported_tasks = ["text-classification", "summarization", "ner"]
+    supported_tasks = ["text-classification", "summarization", "ner","question-answering"]
 
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
@@ -1500,21 +1500,26 @@ class HuggingFaceDataset(_IDataset):
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
-        if feature_column and target_column:
-            dataset = dataset.map(
-                lambda example: {
-                    "document": example[feature_column],
-                    "summary": example[target_column],
-                }
-            )
+        dataset = pd.DataFrame(dataset)
 
-        samples = [self._row_to_sample_summarization(example) for example in dataset]
+        if feature_column not in dataset.columns:
+            raise ValueError(
+                f"feature_column '{feature_column}' not found in the dataset."
+            )
+        if target_column not in dataset.columns:
+            logging.warning(f"target_column '{target_column}' not found in the dataset.")
+            dataset["summary"] = None
+        else:
+            dataset.rename(columns={target_column: "summary"}, inplace=True)
+
+        dataset.rename(columns={feature_column: "document"},inplace=True,)
+
+        samples = [self._row_to_sample_summarization(row) for _, row in dataset.iterrows()]
         return samples
 
     def load_data_qa(
         self,
-        question_column: str,
-        context_column: str,
+        feature_column: dict,
         target_column: str,
         split: str,
         subset: str = None,
@@ -1523,9 +1528,9 @@ class HuggingFaceDataset(_IDataset):
 
         Args:
             feature_column (str):
-                Name of the column containing the input text or document.
+                Name of the column containing the input question or passage.
             target_column (str):
-                Name of the column containing the target summary.
+                Name of the column containing the target answer.
             split (str):
                 Name of the split to load (e.g., train, validation, test).
             subset (str):
@@ -1535,24 +1540,52 @@ class HuggingFaceDataset(_IDataset):
             List[Sample]:
                 Loaded split as a list of Sample objects for QA task.
         """
-        question_column = "question" if question_column is None else question_column
-        target_column = "answer" if target_column is None else target_column
-        split = "test" if split is None else split
 
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+            
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
+        
+        dataset = pd.DataFrame(dataset)
 
-        dataset = dataset.map(
-            lambda example: {
-                "question": example[question_column],
-                "context": example[context_column],
-                "answer": example[target_column],
-            }
-        )
 
-        samples = [self._row_to_sample_qa(example) for example in dataset]
+        passage_column = feature_column.get("passage")
+        question_column = feature_column.get("question")
+
+        dataset_columns = set(dataset.columns)
+        if (
+            "question" not in feature_column
+            or feature_column["question"] not in dataset_columns
+        ):
+            raise ValueError(
+                f"'feature_column' '{feature_column['question']}' not found in the dataset."
+            )
+        
+        if target_column not in dataset_columns:
+            logging.warning(f"target_column '{target_column}' not found in the dataset.")
+            dataset["answer"] = None
+        else:
+            dataset.rename(columns={target_column: "answer"}, inplace=True)
+
+        
+        if passage_column:
+            if passage_column not in dataset_columns:
+                logging.warning(
+                    f"'feature_column' '{passage_column}' not found in the dataset."
+                )
+                dataset["passage"] = "-"
+            else:
+                dataset.rename(columns={passage_column: "passage"}, inplace=True)
+        else:
+            dataset["passage"] = "-"
+
+        if question_column in dataset.columns:
+            dataset.rename(columns={question_column: "question"}, inplace=True)
+
+        samples = [
+            self._row_to_sample_qa(row) for _, row in dataset.iterrows()
+        ]
         return samples
 
     def load_raw_data(
@@ -1605,11 +1638,15 @@ class HuggingFaceDataset(_IDataset):
             )
         elif self.task == "ner":
             return self.load_data_ner(feature_column, target_column, split, subset)
+        
+        elif self.task == "question-answering":
+            return self.load_data_qa(feature_column, target_column, split, subset)
+        
         else:
             raise ValueError(f"Unsupported task for HF datasets: {self.task}")
 
     @staticmethod
-    def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:
+    def _row_to_sample_summarization(row: pd.Series) -> Sample:
         """Convert a row from the dataset into a Sample for summarization.
 
         Args:
@@ -1620,13 +1657,13 @@ class HuggingFaceDataset(_IDataset):
             Sample:
                 Row formatted into a Sample object for summarization.
         """
-        original = data_row.get("document", "")
-        summary = data_row.get("summary", "")
-
+        original = row.loc["document"]
+        summary = row.loc["summary"]
+        
         return SummarizationSample(original=original, expected_results=summary)
 
     @staticmethod
-    def _row_to_sample_qa(data_row: Dict[str, str]) -> Sample:
+    def _row_to_sample_qa(row: pd.Series) -> QASample:
         """Convert a row from the dataset into a Sample for summarization.
 
         Args:
@@ -1637,17 +1674,14 @@ class HuggingFaceDataset(_IDataset):
             Sample:
                 Row formatted into a Sample object for summarization.
         """
-        context = data_row.get("context", "")
-        question = data_row.get("question", "")
-        answer = data_row.get("answer", "")
-        if isinstance(answer, str):
-            answer = [answer]
-
-        return QASample(
-            original_question=question,
-            original_context=context,
-            actual_results=answer,
-        )
+        question = row.loc["question"]
+        passage = row.loc["passage"]
+        answer = row.loc["answer"]
+        return  QASample(
+                        original_question=question,
+                        original_context=passage,
+                        expected_results=answer,
+                            )
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
