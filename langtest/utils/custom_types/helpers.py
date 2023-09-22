@@ -70,6 +70,16 @@ default_user_prompt = {
      Summary B: {option_b}
      Answer (A or B):""",
     "multilexsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
+    "commonsenseqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "siqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "piqa": """
+    You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and two options, A and B. Your task is to choose the correct option.
+
+    If it is option A, your response must be exactly "a"; otherwise, it should be "b."
+
+    Context: {context}
+    Question: {question}
+    Answer:""",
 }
 
 
