@@ -341,6 +341,18 @@ class DataFactory:
             "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
             "MultiLexSum-test-tiny": script_dir[:-7]
             + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "CommonsenseQA-test": script_dir[:-7]
+            + "/CommonsenseQA/commonsenseQA-test.jsonl",
+            "CommonsenseQA-test-tiny": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-test-tiny.jsonl",
+            "CommonsenseQA-validation": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
+            "CommonsenseQA-validation-tiny": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-validation-tiny.jsonl",
+            "SIQA-test": script_dir[:-7] + "/SIQA/SIQA-test.jsonl",
+            "SIQA-test-tiny": script_dir[:-7] + "/SIQA/SIQA-test-tiny.jsonl",
+            "PIQA-test": script_dir[:-7] + "/PIQA/PIQA-test.jsonl",
+            "PIQA-test-tiny": script_dir[:-7] + "/PIQA/PIQA-test-tiny.jsonl",
         }
 
         return datasets_info[dataset_name]
