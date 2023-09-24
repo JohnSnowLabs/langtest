@@ -211,7 +211,7 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(_ModelHandler):
+class PretrainedModelForSensitivityTest(ModelAPI):
     """
     A class for sensitivity testing using a pretrained model and embeddings.
 
@@ -322,7 +322,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
 
 
-class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for wino-bias detection.
 
     Inherits:
@@ -332,7 +332,7 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for legal-tests.
 
     Inherits:
@@ -342,7 +342,7 @@ class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:

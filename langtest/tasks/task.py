@@ -288,7 +288,7 @@ class SecurityTask(BaseTask):
     _default_col = {"text": ["text", "prompt"]}
 
     def create_sample(
-        cls, row_data: dict, feature_column= "text", dataset_name: str = "security"
+        cls, row_data: dict, feature_column="text", dataset_name: str = "security"
     ) -> SecuritySample:
         """Create a sample."""
         if (
