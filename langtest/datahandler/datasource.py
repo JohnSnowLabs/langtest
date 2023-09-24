@@ -1435,7 +1435,7 @@ class HuggingFaceDataset(_IDataset):
         data = []
         for row_data in dataset:
             sample = self.task.create_sample(
-                row_data, feature_names=feature_column, target_names=target_column
+                row_data, feature_column=feature_column, target_column=target_column
             )
             data.append(sample)
 

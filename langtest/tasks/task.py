@@ -288,7 +288,7 @@ class SecurityTask(BaseTask):
     _default_col = {"text": ["text", "prompt"]}
 
     def create_sample(
-        cls, row_data: dict, feature_column="text", dataset_name: str = "security"
+        cls, row_data: dict, feature_column= "text", dataset_name: str = "security"
     ) -> SecuritySample:
         """Create a sample."""
         if (
@@ -349,11 +349,15 @@ class DisinformationTestTask(BaseTask):
     }
 
     def create_sample(
-        cls, row_data: dict, dataset_name: str = "disinformationtest"
+        cls,
+        row_data: dict,
+        feature_column=["hypothesis", "statements"],
+        dataset_name: str = "disinformationtest",
     ) -> DisinformationSample:
         """Create a sample."""
+
         return DisinformationSample(
             hypothesis=row_data[cls._default_col["hypothesis"]],
-            label=row_data[cls._default_col["statements"]],
+            statements=row_data[cls._default_col["statements"]],
             dataset_name=dataset_name,
         )
