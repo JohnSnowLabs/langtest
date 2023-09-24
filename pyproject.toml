@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "langtest"
-version = "1.2.0"
+version = "1.5.0"
 description = "John Snow Labs provides a library for delivering safe & effective NLP models."
 authors = ["John Snow Labs <support@johnsnowlabs.com>"]
 readme = "README.md"
@@ -49,13 +49,13 @@ pydantic = "1.10.6"
 johnsnowlabs = { version = "4.3.5", optional = true }
 rouge-score = { version = "^0.1.2", optional = true }
 evaluate = { version = "^0.4.0", optional = true }
-transformers = "4.28.0"
+transformers = "^4.33.2"
 huggingface_hub = { version = ">0.16.0", optional = true}
 spacy = { version = ">=3.0.0", optional = true }
 nest-asyncio = "^1.5.0"
 openai = { version = ">0.27.0", optional = true }
 jsonlines = "^3.1.0"
-torch = { version = "^2.0.1", optional = true }
+torch = { version = "^2.0.0", optional = true }
 typing-extensions = "<4.6.0"
 pandas = "^2.0.3"
 pyyaml = "^6.0"
@@ -100,7 +100,7 @@ lint = "pflake8 langtest/"
 format = "black langtest/ tests/"
 check-docstrings = "pydocstyle langtest/ --add-select=D417 --add-ignore=D100,D104,D105,D400,D415 --convention=google"
 is-formatted = "black --check langtest/ tests/"
-force-cpu-torch = "python -m pip install torch --index-url https://download.pytorch.org/whl/cpu"
+force-cpu-torch = "python -m pip install torch==2.0.0 --index-url https://download.pytorch.org/whl/cpu"
 
 
 [build-system]

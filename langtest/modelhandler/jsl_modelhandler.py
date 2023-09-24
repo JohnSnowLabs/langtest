@@ -326,8 +326,12 @@ class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
                 entity_group_disagg.append(entity)
                 continue
 
-            bi, tag = self._get_tag(entity["entity"])
-            last_bi, last_tag = self._get_tag(entity_group_disagg[-1]["entity"])
+            entities = self._get_tag(entity["entity"])
+            bi = entities[0]
+            tag = "-".join(entities[1:])
+
+            last_entities = self._get_tag(entity_group_disagg[-1]["entity"])
+            last_tag = "-".join(last_entities[1:])
 
             if tag == "O":
                 entity_groups.append(self._group_sub_entities(entity_group_disagg))

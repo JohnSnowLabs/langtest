@@ -26,7 +26,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[johnsnowlabs,transformers]"
+!pip install langtest[johnsnowlabs]
 
 from langtest import Harness
 # Make sure to specify data='path_to_data' when using custom models
@@ -55,7 +55,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[spacy,transformers]" 
+!pip install langtest[spacy]
 
 from langtest import Harness
 
@@ -84,7 +84,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[johnsnowlabs,transformers]"
+!pip install langtest[johnsnowlabs]
 
 from langtest import Harness
 
@@ -112,7 +112,7 @@ h.generate().run().report()
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[spacy,transformers]"
+!pip install langtest[spacy]
 
 from langtest import Harness
 
@@ -140,7 +140,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[langchain,openai,transformers]"
+!pip install "langtest[openai]"
 
 from langtest import Harness
 
@@ -149,8 +149,8 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="question-answering", 
-              model={"model": "text-davinci-003","hub":"openai"}, 
-              data={"data_source" :"BoolQ-test"})
+            model={"model": "text-davinci-003","hub":"openai"}, 
+            data={"data_source" :"BoolQ-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -173,7 +173,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[evaluate,langchain,openai,transformers]"
+!pip install "langtest[evaluate,openai,transformers]"
 
 from langtest import Harness
 
@@ -182,8 +182,8 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="summarization",
-             model={"model": "text-davinci-002","hub":"openai"}, 
-             data={"data_source" :"XSum-test-tiny"})
+            model={"model": "text-davinci-002","hub":"openai"}, 
+            data={"data_source" :"XSum-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -205,7 +205,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[evaluate,langchain,openai,transformers]"
+!pip install "langtest[evaluate,openai,transformers]"
 
 from langtest import Harness
 
@@ -214,8 +214,8 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="toxicity", 
-              model={"model": "text-davinci-002","hub":"openai"}, 
-              data={"data_source" :"toxicity-test-tiny"})
+            model={"model": "text-davinci-002","hub":"openai"}, 
+            data={"data_source" :"toxicity-test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -237,7 +237,7 @@ To compare different models (either from same or different hubs) on the same tas
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[spacy,johnsnowlabs,transformers]" 
+!pip install "langtest[spacy,johnsnowlabs]" 
 from langtest import Harness
 
 # Define the list
@@ -290,7 +290,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[langchain,openai,transformers]"
+!pip install "langtest[openai,transformers]"
 
 import os
 os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
@@ -298,9 +298,9 @@ os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
 from langtest import Harness
 
 # Create a Harness object
-harness = Harness(task="clinical-tests",
-                    model={"model": "text-davinci-003", "hub": "openai"},
-                    data = {"data_source": "Gastroenterology-files"})
+h = Harness(task="clinical-tests",
+            model={"model": "text-davinci-003", "hub": "openai"},
+            data = {"data_source": "Gastroenterology-files"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -329,9 +329,180 @@ os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
 from langtest import Harness
 
 # Create a Harness object
-harness = Harness(task="security",
-                   model={'model': "text-davinci-003", "hub": "openai"},
-                   data={'data_source':'Prompt-Injection-Attack'})
+h = Harness(task="security",
+            model={'model': "text-davinci-003", "hub": "openai"},
+            data={'data_source':'Prompt-Injection-Attack'})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+### One Liner - Disinformation-Test
+
+Try out the LangTest library on the following default model-dataset combinations for Disinformation-Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[ai21,langchain,transformers]" 
+
+import os
+os.environ["AI21_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h  =  Harness(task="disinformation-test",
+              model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+              data = {"data_source": "Narrative-Wedging"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Political-Test
+
+Try out the LangTest library on the following default model for Political Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[openai]
+
+import os
+os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="political", model={'model': "text-davinci-003", "hub": "openai"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Factuality Test
+
+Try out the LangTest library on the following default model-dataset combinations for Factuality Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[openai,transformers]" 
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h  =  Harness(task="factuality-test",
+              model = {"model": "text-davinci-003", "hub":"openai"},
+              data = {"data_source": "Factual-Summary-Pairs"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Sensitivity Test
+
+Try out the LangTest library on the following default model-dataset combinations for Sensitivity Test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+! pip install "langtest[openai,transformers]" tiktoken
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h  =  Harness(task="sensitivity-test",
+              model = {"model": "text-davinci-003", "hub":"openai"},
+              data = {"data_source": "NQ-open-test-tiny"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Wino Bias
+
+Try out the LangTest library on the following default model-dataset combinations for wino-bias test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[transformers]
+!wget https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/langtest/data/config/wino_config.yml
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="wino-bias", model={"model" : "bert-base-uncased", 
+  "hub":"huggingface" } , data = {"data_source":"Wino-test"}, config="wino_config.yml")
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+
+### One Liner - Legal Test
+
+Try out the LangTest library on the following default model-dataset combinations for legal tests.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install "langtest[openai]" 
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="legal-tests", model={"model" : "text-davinci-002",
+           "hub":"openai"}, data = {"data_source":"Legal-Support-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()

@@ -21,6 +21,7 @@ from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
 from .political import BasePolitical
+from .sensitivity import BaseSensitivity
 from .constants import (
     A2B_DICT,
     asian_names,
@@ -371,7 +372,7 @@ class RobustnessTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the robustness test.
         """
         all_samples = []
-        no_transformation_applied_tests = set()
+        no_transformation_applied_tests = {}
         tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
@@ -505,14 +506,18 @@ class RobustnessTestFactory(ITests):
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
                 TestFactory.task, transformed_samples, test_name
             )
-            no_transformation_applied_tests.update(removed_samples_tests)
             all_samples.extend(new_transformed_samples)
 
+            no_transformation_applied_tests.update(removed_samples_tests)
+
         if no_transformation_applied_tests:
-            logging.warning(
-                "Removing samples where no transformation has been applied in the following tests: "
-                + ", ".join(no_transformation_applied_tests)
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
             )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
 
         return all_samples
 
@@ -689,7 +694,7 @@ class BiasTestFactory(ITests):
                 A list of `Sample` objects representing the resulting dataset after running the bias test.
         """
         all_samples = []
-        no_transformation_applied_tests = set()
+        no_transformation_applied_tests = {}
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
 
@@ -700,14 +705,18 @@ class BiasTestFactory(ITests):
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
                 TestFactory.task, transformed_samples, test_name
             )
-            no_transformation_applied_tests.update(removed_samples_tests)
             all_samples.extend(new_transformed_samples)
 
+            no_transformation_applied_tests.update(removed_samples_tests)
+
         if no_transformation_applied_tests:
-            logging.warning(
-                "Removing samples where no transformation has been applied in the following tests: "
-                + ", ".join(no_transformation_applied_tests)
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
             )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
 
         return all_samples
 
@@ -840,26 +849,8 @@ class FairnessTestFactory(ITests):
             )
 
         for test_name, params in self.tests.items():
-            data_handler_copy = [x.copy() for x in self._data_handler]
-
-            if isinstance(data_handler_copy[0], NERSample):
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions]
-                )
-            elif isinstance(data_handler_copy[0], SequenceClassificationSample):
-                y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.label for y in x.expected_results.predictions]
-                )
-            elif data_handler_copy[0].task in ["question-answering", "summarization"]:
-                y_true = pd.Series(data_handler_copy).apply(lambda x: x.expected_results)
-
-            y_true = y_true.explode().apply(
-                lambda x: x.split("-")[-1] if isinstance(x, str) else x
-            )
-            y_true = y_true.dropna()
-
             transformed_samples = self.supported_tests[test_name].transform(
-                test_name, y_true, params
+                test_name, None, params
             )
 
             for sample in transformed_samples:
@@ -902,7 +893,6 @@ class FairnessTestFactory(ITests):
         """
 
         grouped_data = cls.get_gendered_data(raw_data)
-
         for gender, data in grouped_data.items():
             if len(data) == 0:
                 grouped_data[gender] = [[], []]
@@ -1598,3 +1588,349 @@ class PoliticalTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
+
+class SensitivityTestFactory(ITests):
+    """A class for performing Sensitivity tests on a given dataset.
+
+    This class provides functionality to perform sensitivity tests on a given dataset
+    using various test configurations.
+
+    Attributes:
+        alias_name (str): A string representing the alias name for this test factory.
+
+    """
+
+    alias_name = "sensitivity"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initialize a new SensitivityTestFactory instance.
+
+        Args:
+            data_handler (List[Sample]): A list of `Sample` objects representing the input dataset.
+            tests (Optional[Dict]): A dictionary of test names and corresponding parameters (default is None).
+            **kwargs: Additional keyword arguments.
+
+        Raises:
+            ValueError: If the `tests` argument is not a dictionary.
+
+        """
+
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(
+                "Invalid test configuration! Tests can be "
+                "[1] dictionary of test name and corresponding parameters."
+            )
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+            )
+
+    def transform(self) -> List[Sample]:
+        """Run the sensitivity test and return the resulting `Sample` objects.
+
+        Returns:
+            List[Sample]: A list of `Sample` objects representing the resulting dataset after running the sensitivity test.
+
+        """
+        all_samples = []
+        no_transformation_applied_tests = {}
+        tests_copy = self.tests.copy()
+        for test_name, params in tests_copy.items():
+            if TestFactory.is_augment:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+            else:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+
+            test_func = self.supported_tests[test_name].transform
+
+            if TestFactory.task in ("sensitivity-test"):
+                _ = [
+                    sample.transform(
+                        test_func,
+                        params.get("parameters", {}),
+                    )
+                    if hasattr(sample, "transform")
+                    else sample
+                    for sample in data_handler_copy
+                ]
+                transformed_samples = data_handler_copy
+
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            all_samples.extend(new_transformed_samples)
+
+            no_transformation_applied_tests.update(removed_samples_tests)
+
+        if no_transformation_applied_tests:
+            warning_message = (
+                "Removing samples where no transformation has been applied:\n"
+            )
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+
+            logging.warning(warning_message)
+
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+        tests = {
+            j: i
+            for i in BaseSensitivity.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
+
+
+class WinoBiasTestFactory(ITests):
+    """Factory class for the wino-bias tests"""
+
+    alias_name = "wino-bias"
+    supported_tasks = [
+        "wino-bias",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the wion-bias tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        for sample in self.data_handler:
+            sample.test_type = "gender-occupational-stereotype"
+            sample.category = "wino-bias"
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the wino-bias tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the wino-bias tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented wino-bias tests
+
+        """
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Returns the empty dict, no wino-bias tests
+
+        Returns:
+            Dict[str, str]: Empty dict, no wino-bias tests
+        """
+        return {"gender-occupational-stereotype": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs the clinical tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the wino-bias tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented wino-bias tests
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["gender-occupational-stereotype"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["gender-occupational-stereotype"]
+
+
+class LegalTestFactory(ITests):
+    """Factory class for the legal tests"""
+
+    alias_name = "legal"
+    supported_tasks = [
+        "legal-tests",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the legal tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        for sample in self.data_handler:
+            sample.test_type = "legal-support"
+            sample.category = "legal"
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the legal tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the wino-bias tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented legal tests
+
+        """
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Returns the empty dict, no legal tests
+
+        Returns:
+            Dict[str, str]: Empty dict, no legal tests
+        """
+        return {"legal-support": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs the legal tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the legal tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented legal tests
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["legal-support"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["legal-support"]
+
+
+class FactualityTestFactory(ITests):
+    """Factory class for factuality test"""
+
+    alias_name = "factuality"
+    supported_tasks = [
+        "factuality-test",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the factuality-test"""
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        for sample in self.data_handler:
+            sample.test_type = "order_bias"
+            sample.category = "factuality"
+
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs factuality tests
+
+        Args:
+            sample_list (list[Sample]): A list of Sample objects to be tested.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            list[Sample]: A list of Sample objects with test results.
+
+        """
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Retrieves available factuality test types.
+
+        Returns:
+            dict: A dictionary mapping test names to their corresponding classes.
+
+        """
+        return {"order_bias": cls}
+
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs factuality tests
+
+        Args:
+            sample_list (list[Sample]): A list of Sample objects to be tested.
+            model (ModelFactory): The model to be used for testing.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            list[Sample]: A list of Sample objects with test results.
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["order_bias"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list["order_bias"]
