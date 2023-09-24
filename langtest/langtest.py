@@ -158,19 +158,19 @@ class Harness:
         self.is_default = False
 
         # loading model and hub
-        if isinstance(model, list):
-            for item in model:
-                if not isinstance(item, dict):
-                    raise ValueError("Each item in the list must be a dictionary")
-                if "model" not in item or "hub" not in item:
-                    raise ValueError(
-                        "Each dictionary in the list must have 'model' and 'hub' keys"
-                    )
-        elif isinstance(model, dict):
-            if "model" not in model or "hub" not in model:
-                raise ValueError("The dictionary must have 'model' and 'hub' keys")
-        else:
-            raise ValueError("Invalid 'model' parameter type")
+        # if isinstance(model, list):
+        #     for item in model:
+        #         if not isinstance(item, dict):
+        #             raise ValueError("Each item in the list must be a dictionary")
+        #         if "model" not in item or "hub" not in item:
+        #             raise ValueError(
+        #                 "Each dictionary in the list must have 'model' and 'hub' keys"
+        #             )
+        # elif isinstance(model, dict):
+        #     if "model" not in model or "hub" not in model:
+        #         raise ValueError("The dictionary must have 'model' and 'hub' keys")
+        # else:
+        #     raise ValueError("Invalid 'model' parameter type")
 
         if isinstance(model, dict):
             hub, model = model["hub"], model["model"]
@@ -183,17 +183,6 @@ class Harness:
 
         self.task = TaskManager(task)
 
-        if isinstance(model, str) and hub is None:
-            raise ValueError(
-                "When passing a string argument to the 'model' parameter, you must provide an argument "
-                "for the 'hub' parameter as well."
-            )
-
-        if hub is not None and hub not in self.SUPPORTED_HUBS:
-            raise ValueError(
-                f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}"
-            )
-
         # data loading
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
@@ -204,81 +193,16 @@ class Harness:
             self.is_default = True
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif (
-            isinstance(data, dict)
-            and "source" in data
-            and data["source"] == "huggingface"
-        ):
-            if (
-                task == "text-classification"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            ):
-                self.data = HuggingFaceDataset(
-                    data["data_source"], task=self.task
-                ).load_data(
-                    feature_column=data.get("feature_column", "text"),
-                    target_column=data.get("target_column", "label"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-
-                if hub == "spacy" and (model == "textcat_imdb" or model is None):
-                    if model is None:
-                        logging.warning(
-                            "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
-                        )
-                    model = resource_filename("langtest", "data/textcat_imdb")
-
-            elif task == "ner" and hub in self.SUPPORTED_HUBS_HF_DATASET_NER:
-                self.data = HuggingFaceDataset(
-                    data["data_source"], task=self.task
-                ).load_data(
-                    feature_column=data.get("feature_column", "tokens"),
-                    target_column=data.get("target_column", "ner_tags"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-
-            elif (
-                task == "summarization"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
-            ):
-                self.data = HuggingFaceDataset(
-                    data["data_source"], task=self.task
-                ).load_data(
-                    feature_column=data.get("feature_column", "document"),
-                    target_column=data.get("target_column", "summary"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-        elif data is None and task == "political":
-            self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
                 "You haven't specified any value for the parameter 'data' and the configuration you "
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
-        elif (
-            isinstance(data, dict)
-            and data["data_source"] in ("BoolQ-bias", "XSum-bias")
-            and task in ("question-answering", "summarization")
-        ):
-            self.data = DataFactory.load_curated_bias(data["data_source"])
+        self.data = DataFactory(data, task=self.task).load()
+        
 
-        elif isinstance(data["data_source"], list):
-            self.data = data["data_source"]
-        else:
-            if "data_source" not in data:
-                raise ValueError(
-                    "The 'data_source' key must be provided in the 'data' parameter."
-                )
-            self.file_path = data["data_source"]
-            self.data = (
-                DataFactory(data, task=self.task).load() if data is not None else None
-            )
-        self.data_source = data.get("data_source") if data else None
-
+        # config loading
         if config is not None:
             self._config = self.configure(config)
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
@@ -299,15 +223,9 @@ class Harness:
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
+       
         # model section
-        if isinstance(model, str):
-            self.model = self.task.model(
-                model_path=model,
-                model_hub=hub,
-                **self._config.get("model_parameters", {}),
-            )
-
-        elif isinstance(model, list):
+        if isinstance(model, list):
             model_dict = {}
             for i in model:
                 model = i["model"]
@@ -363,39 +281,7 @@ class Harness:
 
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
-        model = GLOBAL_MODEL
-
-        if self.task == "translation" and model:
-            hub = self.hub
-            model = self._actual_model
-
-            if isinstance(model, str):
-                self.model = self.task.model(
-                    model,
-                    hub,
-                    **self._config.get("model_parameters", {}),
-                )
-
-            elif isinstance(model, list):
-                model_dict = {}
-
-                for i in model:
-                    model = i["model"]
-                    hub = i["hub"]
-
-                    model_dict[model] = self.task.model(
-                        model,
-                        hub,
-                        **self._config.get("model_parameters", {}),
-                    )
-                self.model = model_dict
-            else:
-                self.model = self.task.model(
-                    model,
-                    hub,
-                    **self._config.get("model_parameters", {}),
-                )
-
+        
         return self._config
 
     def generate(self) -> "Harness":

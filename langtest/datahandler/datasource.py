@@ -84,11 +84,13 @@ COLUMN_MAPPER = {
 }
 
 
-class _IDataset(ABC):
+class BaseDataset(ABC):
     """Abstract base class for Dataset.
 
     Defines the load_data method that all subclasses must implement.
     """
+
+    data_sources = defaultdict()
 
     @abstractmethod
     def load_raw_data(self):
@@ -111,6 +113,12 @@ class _IDataset(ABC):
                 path to save the data to
         """
         return NotImplementedError()
+    
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        dataset_cls = cls.__name__.replace("Dataset", "").lower()
+        cls.data_sources[dataset_cls] = cls
 
 
 class DataFactory:
@@ -119,6 +127,7 @@ class DataFactory:
     The DataFactory class is responsible for creating instances of the
     correct Dataset type based on the file extension.
     """
+    data_sources = BaseDataset.data_sources
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
@@ -136,13 +145,13 @@ class DataFactory:
             )
         self._custom_label = file_path
         self._file_path = file_path.get("data_source")
-        self._class_map = {
-            cls.__name__.replace("Dataset", "").lower(): cls
-            for cls in _IDataset.__subclasses__()
-        }
+        
         _, self.file_ext = os.path.splitext(self._file_path)
         if len(self.file_ext) > 0:
             self.file_ext = self.file_ext.replace(".", "")
+        elif "source" in file_path:
+            self.file_ext = file_path["source"]
+            self._file_path = file_path
         else:
             self._file_path = self._load_dataset(self._file_path)
             _, self.file_ext = os.path.splitext(self._file_path)
@@ -152,7 +161,7 @@ class DataFactory:
 
     def load_raw(self):
         """Loads the data into a raw format"""
-        self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+        self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
             self._file_path, task=self.task, **self.kwargs
         )
         return self.init_cls.load_raw_data()
@@ -164,11 +173,11 @@ class DataFactory:
             list[Sample]: Loaded text data.
         """
         if len(self._custom_label) > 1 and self.file_ext == "csv":
-            self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
         else:
-            self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._file_path, task=self.task, **self.kwargs
             )
         return self.init_cls.load_data()
@@ -336,10 +345,10 @@ class DataFactory:
         }
 
         return datasets_info[dataset_name]
+   
 
-
-class ConllDataset(_IDataset):
-    """Class to handle Conll files. Subclass of _IDataset."""
+class ConllDataset(BaseDataset):
+    """Class to handle Conll files. Subclass of BaseDataset."""
 
     supported_tasks = ["ner"]
 
@@ -474,8 +483,8 @@ class ConllDataset(_IDataset):
             fwriter.write(bytes(otext, encoding="utf-8"))
 
 
-class JSONDataset(_IDataset):
-    """Class to handle JSON dataset files. Subclass of _IDataset."""
+class JSONDataset(BaseDataset):
+    """Class to handle JSON dataset files. Subclass of BaseDataset."""
 
     def __init__(self, file_path: str):
         """Initializes JSONDataset object.
@@ -510,7 +519,7 @@ class JSONDataset(_IDataset):
         raise NotImplementedError()
 
 
-class CSVDataset(_IDataset):
+class CSVDataset(BaseDataset):
     supported_tasks = [
         "ner",
         "text-classification",
@@ -520,7 +529,7 @@ class CSVDataset(_IDataset):
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
     """
-    A class to handle CSV files datasets. Subclass of _IDataset.
+    A class to handle CSV files datasets. Subclass of BaseDataset.
 
     Attributes:
         _file_path (Union[str, Dict]):
@@ -1131,8 +1140,8 @@ class CSVDataset(_IDataset):
         return samples
 
 
-class JSONLDataset(_IDataset):
-    """Class to handle JSONL datasets. Subclass of _IDataset."""
+class JSONLDataset(BaseDataset):
+    """Class to handle JSONL datasets. Subclass of BaseDataset."""
 
     supported_tasks = [
         "ner",
@@ -1229,7 +1238,7 @@ class JSONLDataset(_IDataset):
         raise NotImplementedError()
 
 
-class HuggingFaceDataset(_IDataset):
+class HuggingFaceDataset(BaseDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
     supported_tasks = ["text-classification", "summarization", "ner"]
@@ -1237,17 +1246,19 @@ class HuggingFaceDataset(_IDataset):
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, dataset_name: str, task: TaskManager):
+    def __init__(self, source_info: dict, task: TaskManager, **kwargs):
         """Initialize the HuggingFaceDataset class.
 
         Args:
-            dataset_name (str):
+            source_info (dict):
                 Name of the dataset to load.
             task (str):
                 Task to be evaluated on.
         """
-        self.dataset_name = dataset_name
+        self.source_info = source_info
+        self.dataset_name = source_info['data_source']
         self.task = task
+        self.kwargs = kwargs
         self._check_datasets_package()
 
     def _check_datasets_package(self):
@@ -1262,173 +1273,6 @@ class HuggingFaceDataset(_IDataset):
             raise ModuleNotFoundError(
                 f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'."
             )
-
-    def load_data_ner(
-        self,
-        feature_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the given ner dataset."""
-        feature_column = "text" if feature_column is None else feature_column
-        target_column = "label" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        if "label" in str(type(dataset.features[target_column].feature)):
-            label_names = dataset.features[target_column].feature.names
-            dataset = map(
-                lambda example: {
-                    "tokens": example[feature_column],
-                    "ner_tags": [label_names[x] for x in example[target_column]],
-                },
-                dataset,
-            )
-        else:
-            dataset = map(
-                lambda example: {
-                    "tokens": example[feature_column],
-                    "ner_tags": example[target_column],
-                },
-                dataset,
-            )
-
-        samples = [self._row_to_ner_sample(example) for example in dataset]
-        return samples
-
-    def load_data_classification(
-        self,
-        feature_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the dataset library.
-
-        Args:
-            feature_column (str):
-                Name of the feature_column column.
-            target_column (str):
-                Name of the target_column column.
-            split (str):
-                Name of the split to load (e.g., train, validation, test).
-            subset (str):
-                Name of the configuration.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects.
-        """
-        feature_column = "text" if feature_column is None else feature_column
-        target_column = "label" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        dataset = dataset.map(
-            lambda example: {
-                "text": example[feature_column],
-                "label": example[target_column],
-            }
-        )
-
-        samples = [self._row_to_sample_classification(example) for example in dataset]
-        return samples
-
-    def load_data_summarization(
-        self,
-        feature_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the dataset for summarization task.
-
-        Args:
-            feature_column (str):
-                Name of the column containing the input text or document.
-            target_column (str):
-                Name of the column containing the target summary.
-            split (str):
-                Name of the split to load (e.g., train, validation, test).
-            subset (str):
-                Name of the configuration or subset to load.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects for summarization task.
-        """
-        feature_column = "document" if feature_column is None else feature_column
-        target_column = "summary" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        if feature_column and target_column:
-            dataset = dataset.map(
-                lambda example: {
-                    "document": example[feature_column],
-                    "summary": example[target_column],
-                }
-            )
-
-        samples = [self._row_to_sample_summarization(example) for example in dataset]
-        return samples
-
-    def load_data_qa(
-        self,
-        question_column: str,
-        context_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the dataset for QA task.
-
-        Args:
-            feature_column (str):
-                Name of the column containing the input text or document.
-            target_column (str):
-                Name of the column containing the target summary.
-            split (str):
-                Name of the split to load (e.g., train, validation, test).
-            subset (str):
-                Name of the configuration or subset to load.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects for QA task.
-        """
-        question_column = "question" if question_column is None else question_column
-        target_column = "answer" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        dataset = dataset.map(
-            lambda example: {
-                "question": example[question_column],
-                "context": example[context_column],
-                "answer": example[target_column],
-            }
-        )
-
-        samples = [self._row_to_sample_qa(example) for example in dataset]
-        return samples
 
     def load_raw_data(
         self,
@@ -1449,6 +1293,7 @@ class HuggingFaceDataset(_IDataset):
         target_column: Optional[str] = None,
         split: Optional[str] = None,
         subset: Optional[str] = None,
+        **kwargs,
     ) -> List[Sample]:
         """Load the specified data based on the task.
 
@@ -1470,6 +1315,10 @@ class HuggingFaceDataset(_IDataset):
             ValueError:
                 If an unsupported task is provided.
         """
+        feature_column = feature_column or self.source_info.get("feature_column", None)
+        target_column = target_column or self.source_info.get("target_column", None)
+        split = split or self.kwargs.get("split", "test")
+
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
@@ -1483,47 +1332,6 @@ class HuggingFaceDataset(_IDataset):
             data.append(sample)
 
         return data
-
-    @staticmethod
-    def _row_to_sample_summarization(data_row: Dict[str, str]) -> Sample:
-        """Convert a row from the dataset into a Sample for summarization.
-
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object for summarization.
-        """
-        original = data_row.get("document", "")
-        summary = data_row.get("summary", "")
-
-        return SummarizationSample(original=original, expected_results=summary)
-
-    @staticmethod
-    def _row_to_sample_qa(data_row: Dict[str, str]) -> Sample:
-        """Convert a row from the dataset into a Sample for summarization.
-
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object for summarization.
-        """
-        context = data_row.get("context", "")
-        question = data_row.get("question", "")
-        answer = data_row.get("answer", "")
-        if isinstance(answer, str):
-            answer = [answer]
-
-        return QASample(
-            original_question=question,
-            original_context=context,
-            actual_results=answer,
-        )
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
@@ -1543,86 +1351,3 @@ class HuggingFaceDataset(_IDataset):
             rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
         )
         df.to_csv(output_path, index=False, encoding="utf-8")
-
-    def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
-        """Convert a row from the dataset into a Sample for text classification.
-
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object.
-        """
-        input_column = next(
-            (
-                col
-                for col in self.COLUMN_NAMES["text-classification"]["text"]
-                if col in data_row
-            ),
-            None,
-        )
-        output_column = next(
-            (
-                col
-                for col in self.COLUMN_NAMES["text-classification"]["label"]
-                if col in data_row
-            ),
-            None,
-        )
-
-        original = data_row.get(input_column, "")
-        label = SequenceLabel(label=data_row.get(output_column, ""), score=1)
-
-        return SequenceClassificationSample(
-            original=original,
-            expected_results=SequenceClassificationOutput(predictions=[label]),
-        )
-
-    def _row_to_ner_sample(self, data_row: dict) -> Sample:
-        """Convert a row from the dataset into a Sample for NER.
-
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object.
-        """
-        input_column = next(
-            (col for col in self.COLUMN_NAMES["ner"]["text"] if col in data_row),
-            None,
-        )
-        output_column = next(
-            (col for col in self.COLUMN_NAMES["ner"]["ner"] if col in data_row),
-            None,
-        )
-
-        tokens = data_row.get(input_column, [])
-        labels = data_row.get(output_column, [])
-
-        #  get token and labels from the split
-        ner_labels = []
-        cursor = 0
-        for token, label in zip(tokens, labels):
-            ner_labels.append(
-                NERPrediction.from_span(
-                    entity=label,
-                    word=token,
-                    start=cursor,
-                    end=cursor + len(token),
-                    doc_id=0,
-                    doc_name="",
-                    pos_tag="XX",
-                    chunk_tag="XX",
-                )
-            )
-            # +1 to account for the white space
-            cursor += len(token) + 1
-
-        original = " ".join(tokens)
-        return NERSample(
-            original=original, expected_results=NEROutput(predictions=ner_labels)
-        )
