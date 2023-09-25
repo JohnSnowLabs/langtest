@@ -503,11 +503,23 @@ class QASample(BaseQASample):
             "LogiQA",
             "MMLU",
             "OpenBookQA",
-        ] and (self.actual_results.lower() == self.expected_results.lower()):
+            "PIQA",
+            "CommonsenseQA",
+            "SIQA",
+        ] and (
+            self.actual_results.lower().strip() == self.expected_results.lower().strip()
+        ):
             return True
 
         if "llm" in str(type(llm_model.model_class)):
-            if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ", "PIQA"]:
+            if self.dataset_name not in [
+                "BoolQ",
+                "TruthfulQA",
+                "Quac",
+                "BBQ",
+                "PIQA",
+                "SIQA",
+            ]:
                 PROMPT = PromptTemplate(
                     input_variables=["query", "answer", "result"],
                     template=qa_prompt_template,
