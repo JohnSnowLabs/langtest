@@ -70,6 +70,7 @@ default_user_prompt = {
      Summary B: {option_b}
      Answer (A or B):""",
     "multilexsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
+    "consumer": """Context: {context}\nQuestion: {question}\n Based on the provided context and question regarding clauses in terms of service agreements, respond only with 'True' or 'False' without any additional punctuation or wording.""",
 }
 
 
