@@ -16,6 +16,11 @@ from langtest.utils.custom_types import (
     ClinicalSample,
     SecuritySample,
     DisinformationSample,
+    WinoBiasSample,
+    LegalSample,
+    FactualitySample,
+    SensitivitySample,
+    LLMAnswerSample,
 )
 
 
@@ -359,5 +364,130 @@ class DisinformationTestTask(BaseTask):
         return DisinformationSample(
             hypothesis=row_data[cls._default_col["hypothesis"]],
             statements=row_data[cls._default_col["statements"]],
+            dataset_name=dataset_name,
+        )
+
+
+class PoliticalTask(BaseTask):
+    """Political task."""
+
+    _name = "political"
+    _default_col = {"text": ["text", "prompt"]}
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "political"
+    ) -> LLMAnswerSample:
+        """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+        return LLMAnswerSample(
+            prompt=row_data[cls._default_col["text"]],
+            dataset_name=dataset_name,
+        )
+
+
+class WinoBiasTask(BaseTask):
+    """WinoBias task."""
+
+    _name = "winobias"
+    _default_col = {"text": ["text", "prompt"]}
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "winobias"
+    ) -> WinoBiasSample:
+        """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+        return WinoBiasSample(
+            prompt=row_data[cls._default_col["text"]],
+            dataset_name=dataset_name,
+        )
+
+
+class LegalTask(BaseTask):
+    """Legal task."""
+
+    _name = "legal"
+    _default_col = {"text": ["text", "prompt"]}
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "legal"
+    ) -> LegalSample:
+        """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+        return LegalSample(
+            prompt=row_data[cls._default_col["text"]],
+            dataset_name=dataset_name,
+        )
+
+
+class FactualityTask(BaseTask):
+    """Factuality task."""
+
+    _name = "factuality"
+    _default_col = {"text": ["text", "prompt"]}
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "factuality"
+    ) -> FactualitySample:
+        """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+        return FactualitySample(
+            prompt=row_data[cls._default_col["text"]],
+            dataset_name=dataset_name,
+        )
+
+
+class SensitivityTask(BaseTask):
+    """Sensitivity task."""
+
+    _name = "sensitivity"
+    _default_col = {"text": ["text", "prompt"]}
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "sensitivity"
+    ) -> SensitivitySample:
+        """Create a sample."""
+        if (
+            feature_column not in cls._default_col["text"]
+            and feature_column not in row_data
+        ):
+            raise AssertionError(
+                f"\nProvided feature_column is not supported.\
+                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
+                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
+            )
+        return SensitivitySample(
+            prompt=row_data[cls._default_col["text"]],
             dataset_name=dataset_name,
         )

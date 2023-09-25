@@ -200,7 +200,6 @@ class Harness:
                 "or use a default configuration."
             )
         self.data = DataFactory(data, task=self.task).load()
-        
 
         # config loading
         if config is not None:
@@ -223,7 +222,7 @@ class Harness:
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
-       
+
         # model section
         if isinstance(model, list):
             model_dict = {}
@@ -281,7 +280,7 @@ class Harness:
 
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
-        
+
         return self._config
 
     def generate(self) -> "Harness":

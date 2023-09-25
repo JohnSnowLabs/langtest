@@ -113,7 +113,7 @@ class BaseDataset(ABC):
                 path to save the data to
         """
         return NotImplementedError()
-    
+
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -127,6 +127,7 @@ class DataFactory:
     The DataFactory class is responsible for creating instances of the
     correct Dataset type based on the file extension.
     """
+
     data_sources = BaseDataset.data_sources
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
@@ -145,7 +146,7 @@ class DataFactory:
             )
         self._custom_label = file_path
         self._file_path = file_path.get("data_source")
-        
+
         _, self.file_ext = os.path.splitext(self._file_path)
         if len(self.file_ext) > 0:
             self.file_ext = self.file_ext.replace(".", "")
@@ -345,7 +346,7 @@ class DataFactory:
         }
 
         return datasets_info[dataset_name]
-   
+
 
 class ConllDataset(BaseDataset):
     """Class to handle Conll files. Subclass of BaseDataset."""
@@ -1256,7 +1257,7 @@ class HuggingFaceDataset(BaseDataset):
                 Task to be evaluated on.
         """
         self.source_info = source_info
-        self.dataset_name = source_info['data_source']
+        self.dataset_name = source_info["data_source"]
         self.task = task
         self.kwargs = kwargs
         self._check_datasets_package()

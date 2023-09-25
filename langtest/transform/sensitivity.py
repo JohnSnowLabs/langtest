@@ -35,9 +35,7 @@ class BaseSensitivity(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(
-        sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the sensitivity measure.
 
         Args:
