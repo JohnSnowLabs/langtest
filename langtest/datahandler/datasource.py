@@ -343,6 +343,9 @@ class DataFactory:
             + "/MultiLexSum/MultiLexSum-test.jsonl",
             "Consumer-Contracts":script_dir[:-7]
             + "/Consumer-Contracts/test.jsonl",
+            "Contracts":script_dir[:-7]
+            + "/Contracts/test_contracts.jsonl",
+            
         }
 
         return datasets_info[dataset_name]
