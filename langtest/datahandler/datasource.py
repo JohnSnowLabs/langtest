@@ -345,6 +345,8 @@ class DataFactory:
             + "/Consumer-Contracts/test.jsonl",
             "Contracts":script_dir[:-7]
             + "/Contracts/test_contracts.jsonl",
+            "Privacy-Policy":script_dir[:-7]
+            + "/Privacy-Policy/test_privacy_qa.jsonl",
             
         }
 
