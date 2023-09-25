@@ -78,6 +78,17 @@ class BaseTask(ABC):
             return self.__class__.__name__.replace("Task", "").lower() == __value.lower()
         return super().__eq__(__value)
 
+    def column_mapping(self, item_keys, *args, **kwargs):
+        """Return the column mapping."""
+
+        coulumn_mapper = {}
+
+        for key in self._default_col:
+            for item in item_keys:
+                if item.lower() in self._default_col[key]:
+                    coulumn_mapper[key] = item
+
+        return coulumn_mapper
 
 class TaskManager:
     """Task manager."""
@@ -175,12 +186,13 @@ class QuestionAnsweringTask(BaseTask):
 
     def create_sample(cls, row_data: dict, dataset_name: str = "qa") -> QASample:
         """Create a sample."""
-        expected_results = row_data.get(cls._default_col["answer"])
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+        expected_results = row_data.get(column_mapper["answer"], "-") if "answer" in column_mapper else None
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
             expected_results = [str(expected_results)]
         return QASample(
-            original_question=row_data[cls._default_col["text"]],
-            original_context=row_data.get(cls._default_col["context"], "-"),
+            original_question=row_data[column_mapper["text"]],
+            original_context=row_data.get(column_mapper["context"], "-"),
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
@@ -305,8 +317,10 @@ class SecurityTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return SecuritySample(
-            prompt=row_data[cls._default_col["text"]],
+            prompt=row_data[column_mapper["text"]],
             dataset_name=dataset_name,
         )
 
@@ -335,10 +349,12 @@ class ClinicalTestsTask(BaseTask):
     ) -> ClinicalSample:
         """Create a sample."""
 
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return ClinicalSample(
-            patient_info_A=row_data[cls._default_col["Patient info A"]],
-            patient_info_B=row_data[cls._default_col["Patient info B"]],
-            diagnosis=row_data[cls._default_col["Diagnosis"]],
+            patient_info_A=row_data[column_mapper["Patient info A"]],
+            patient_info_B=row_data[column_mapper["Patient info B"]],
+            diagnosis=row_data[column_mapper["Diagnosis"]],
             dataset_name=dataset_name,
         )
 
@@ -361,9 +377,11 @@ class DisinformationTestTask(BaseTask):
     ) -> DisinformationSample:
         """Create a sample."""
 
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return DisinformationSample(
-            hypothesis=row_data[cls._default_col["hypothesis"]],
-            statements=row_data[cls._default_col["statements"]],
+            hypothesis=row_data[column_mapper["hypothesis"]],
+            statements=row_data[column_mapper["statements"]],
             dataset_name=dataset_name,
         )
 
@@ -387,8 +405,11 @@ class PoliticalTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
+        
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return LLMAnswerSample(
-            prompt=row_data[cls._default_col["text"]],
+            prompt=row_data[column_mapper["text"]],
             dataset_name=dataset_name,
         )
 
@@ -412,8 +433,11 @@ class WinoBiasTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
+        
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return WinoBiasSample(
-            prompt=row_data[cls._default_col["text"]],
+            prompt=row_data[column_mapper["text"]],
             dataset_name=dataset_name,
         )
 
@@ -437,8 +461,10 @@ class LegalTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return LegalSample(
-            prompt=row_data[cls._default_col["text"]],
+            prompt=row_data[column_mapper["text"]],
             dataset_name=dataset_name,
         )
 
@@ -462,8 +488,10 @@ class FactualityTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return FactualitySample(
-            prompt=row_data[cls._default_col["text"]],
+            prompt=row_data[column_mapper["text"]],
             dataset_name=dataset_name,
         )
 
@@ -487,7 +515,9 @@ class SensitivityTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
+        column_mapper = cls.column_mapping(list(row_data.keys()))
+
         return SensitivitySample(
-            prompt=row_data[cls._default_col["text"]],
+            prompt=row_data[column_mapper["text"]],
             dataset_name=dataset_name,
         )

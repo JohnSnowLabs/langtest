@@ -1318,9 +1318,10 @@ class HuggingFaceDataset(BaseDataset):
             ValueError:
                 If an unsupported task is provided.
         """
-        feature_column = feature_column or self.source_info.get("feature_column", None)
-        target_column = target_column or self.source_info.get("target_column", None)
-        split = split or self.kwargs.get("split", "test")
+        feature_column = feature_column or self.source_info.get("feature_column", "text")
+        target_column = target_column or self.source_info.get("target_column", "label")
+        split = split or self.source_info.get("split", "test")
+        subset = subset or self.source_info.get("subset", None)
 
         if subset:
             dataset = self.load_dataset(self.dataset_name, name=subset, split=split)

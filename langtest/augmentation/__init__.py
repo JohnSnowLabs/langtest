@@ -115,17 +115,17 @@ class AugmentRobustness(BaseAugmentaion):
             List[Dict[str, Any]]: A list of augmented data samples.
         """
 
-        if "source" in training_data and training_data["source"] == "huggingface":
-            self.df = HuggingFaceDataset(training_data["data_source"], self.task)
-            data = self.df.load_data(
-                feature_column=training_data.get("feature_column", "text"),
-                target_column=training_data.get("target_column", "label"),
-                split=training_data.get("split", "test"),
-                subset=training_data.get("subset", None),
-            )
-        else:
-            self.df = DataFactory(training_data, self.task)
-            data = self.df.load()
+        # if "source" in training_data and training_data["source"] == "huggingface":
+        #     self.df = HuggingFaceDataset(training_data, self.task)
+        #     data = self.df.load_data(
+        #         feature_column=training_data.get("feature_column", "text"),
+        #         target_column=training_data.get("target_column", "label"),
+        #         split=training_data.get("split", "test"),
+        #         subset=training_data.get("subset", None),
+        #     )
+        # else:
+        self.df = DataFactory(training_data, self.task)
+        data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest: pd.DataFrame = self.suggestions(self.h_report)
