@@ -683,7 +683,9 @@ class CSVDataset(BaseDataset):
             return self._import_data(self._file_path, **kwargs)
 
         if type(self._file_path) == dict:
-            dataset = pd.read_csv(self._file_path["data_source"], encoding_errors="ignore")
+            dataset = pd.read_csv(
+                self._file_path["data_source"], encoding_errors="ignore"
+            )
         else:
             dataset = pd.read_csv(self._file_path)
             if not self.column_map:
