@@ -16,7 +16,7 @@ from langtest.modelhandler import ModelAPI
 
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
-from .datahandler.datasource import DataFactory, HuggingFaceDataset
+from .datahandler.datasource import DataFactory
 from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
