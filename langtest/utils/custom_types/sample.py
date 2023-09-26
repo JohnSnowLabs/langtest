@@ -507,7 +507,7 @@ class QASample(BaseQASample):
             return True
 
         if "llm" in str(type(llm_model.model_class)):
-            if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ"]:
+            if self.dataset_name not in ["BoolQ", "TruthfulQA", "Quac", "BBQ", "Consumer"]:
                 PROMPT = PromptTemplate(
                     input_variables=["query", "answer", "result"],
                     template=qa_prompt_template,
