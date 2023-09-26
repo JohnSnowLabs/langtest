@@ -499,12 +499,16 @@ class QASample(BaseQASample):
 
         if self.dataset_name in [
             "BoolQ",
-            "Consumer",
             "asdiv",
             "LogiQA",
             "MMLU",
             "OpenBookQA",
-        ] and (self.actual_results.lower() == self.expected_results.lower()):
+            "Privacy",
+            "Consumer",
+            "Contracts",
+        ] and (
+            self.actual_results.lower().strip() == self.expected_results.lower().strip()
+        ):
             return True
 
         if "llm" in str(type(llm_model.model_class)):
@@ -514,6 +518,8 @@ class QASample(BaseQASample):
                 "Quac",
                 "BBQ",
                 "Consumer",
+                "Contracts",
+                "Privacy",
             ]:
                 PROMPT = PromptTemplate(
                     input_variables=["query", "answer", "result"],
