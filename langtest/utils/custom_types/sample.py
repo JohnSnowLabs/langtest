@@ -1054,6 +1054,7 @@ class ClinicalSample(BaseModel):
     patient_info_A: str
     patient_info_B: str
     diagnosis: str
+    clinical_domain: str
     treatment_plan_A: str = None
     treatment_plan_B: str = None
 
@@ -1062,6 +1063,7 @@ class ClinicalSample(BaseModel):
     task: str = None  # toxicity
     category: str = None  # clinical-tests
     test_type: str = None  # gastro
+       
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1113,9 +1115,19 @@ class ClinicalSample(BaseModel):
         embeddings = model.encode(sentences)
 
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
-
-        return (similarity > 0.80, similarity)
-
+        
+        if self.clinical_domain == "internal_medicine":
+           
+            return (similarity > 0.8658298254013062, similarity)
+       
+        elif self.clinical_domain == "gastro":
+           
+            return (similarity > 0.9871000647544861, similarity)
+        
+        else:
+            return (similarity > 0.9742239713668823, similarity)
+        
+ 
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split("-")[0].lower()
