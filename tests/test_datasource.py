@@ -207,7 +207,7 @@ class TestNERDataset:
         ),
         (
             HuggingFaceDataset(
-                dataset_name="dbrd", task=TaskManager("text-classification")
+               source_info={"data_source":"dbrd"}, task=TaskManager("text-classification")
             ),
             "text",
             "label",
@@ -244,7 +244,7 @@ class TestTextClassificationDataset:
     [
         (
             HuggingFaceDataset(
-                dataset_name="JulesBelveze/tldr_news", task=TaskManager("summarization")
+                source_info={"data_source":"JulesBelveze/tldr_news"}, task=TaskManager("summarization")
             ),
             "content",
             "headline",
