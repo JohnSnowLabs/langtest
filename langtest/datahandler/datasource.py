@@ -1287,6 +1287,7 @@ class JSONLDataset(_IDataset):
                             diagnosis=item["Diagnosis"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
+                            clinical_domain=item["clinical_domain"],
                         )
                     )
                 elif self.task == "disinformation-test":
@@ -1340,6 +1341,7 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
+
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
