@@ -78,7 +78,9 @@ class TestNERDataset:
         "dataset,params",
         [
             (
-                HuggingFaceDataset(dataset_name="wikiann", task=TaskManager("ner")),
+                HuggingFaceDataset(
+                    source_info={"data_source": "wikiann"}, task=TaskManager("ner")
+                ),
                 {
                     "subset": "fo",
                     "feature_column": "tokens",
@@ -88,7 +90,8 @@ class TestNERDataset:
             ),
             (
                 HuggingFaceDataset(
-                    dataset_name="Prikshit7766/12", task=TaskManager("ner")
+                    source_info={"data_source": "Prikshit7766/12"},
+                    task=TaskManager("ner"),
                 ),
                 {
                     "feature_column": "tokens",
