@@ -1350,7 +1350,5 @@ class HuggingFaceDataset(BaseDataset):
             row = Formatter.process(s, output_format="csv")
             rows.append(row)
 
-        df = pd.DataFrame(
-            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
-        )
+        df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
         df.to_csv(output_path, index=False, encoding="utf-8")
