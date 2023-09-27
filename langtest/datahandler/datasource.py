@@ -687,22 +687,21 @@ class CSVDataset(BaseDataset):
                 self._file_path["data_source"], encoding_errors="ignore"
             )
         else:
-            dataset = pd.read_csv(self._file_path)
+            dataset = pd.read_csv(self._file_path, encoding_errors="ignore")
             if not self.column_map:
                 self.column_map = self._match_column_names(list(dataset.columns))
 
-        task_functions = {
-            "text-classification": self.load_data_classification,
-            "ner": self.load_data_ner,
-            "summarization": self.load_data_summarization,
-            "question-answering": self.load_data_question_answering,
-        }
+        data = []
+        column_names = self._file_path
+        column_names.pop("data_source")
+        for row_data in dataset.to_dict(orient="records"):
+            sample = self.task.create_sample(
+                row_data,
+                **self._file_path,
+            )
+            data.append(sample)
 
-        if self.task in task_functions:
-            task_function = task_functions[self.task]
-            return task_function(dataset)
-        else:
-            raise ValueError(f"Unsupported task: {self.task}")
+        return data
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.

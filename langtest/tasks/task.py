@@ -2,6 +2,9 @@ import re
 from abc import ABC, abstractmethod
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
+# langtest exceptions
+from langtest.exceptions.columns import ColumnNameError
+
 from langtest.utils.custom_types import (
     NEROutput,
     NERSample,
@@ -87,8 +90,11 @@ class BaseTask(ABC):
             for item in item_keys:
                 if item.lower() in self._default_col[key]:
                     coulumn_mapper[key] = item
+                else:
+                    raise ColumnNameError(self._default_col[key], item_keys)
 
         return coulumn_mapper
+
 
 class TaskManager:
     """Task manager."""
@@ -103,6 +109,12 @@ class TaskManager:
 
     def create_sample(self, *args, **kwargs):
         """Add a task to the task manager."""
+        # filter out the key with contains column name
+        if "feature_column" in kwargs:
+            column_names = kwargs["feature_column"]
+            if isinstance(column_names, dict):
+                kwargs.pop("feature_column")
+                kwargs.update(column_names)
 
         return self.__task.create_sample(*args, **kwargs)
 
@@ -184,15 +196,38 @@ class QuestionAnsweringTask(BaseTask):
         "answer": ["answer", "answer_and_def_correct_predictions"],
     }
 
-    def create_sample(cls, row_data: dict, dataset_name: str = "qa") -> QASample:
+    def create_sample(
+        cls,
+        row_data: dict,
+        dataset_name: str = "qa",
+        question: str = "text",
+        context: str = "context",
+        target_column: str = "answer",
+    ) -> QASample:
         """Create a sample."""
-        column_mapper = cls.column_mapping(list(row_data.keys()))
-        expected_results = row_data.get(column_mapper["answer"], "-") if "answer" in column_mapper else None
+        keys = list(row_data.keys())
+        if set([question, context, target_column]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {
+                question: question,
+                context: context,
+                target_column: target_column,
+            }
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
+
+        expected_results = (
+            row_data.get(column_mapper[target_column], "-")
+            if target_column in column_mapper
+            else None
+        )
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
             expected_results = [str(expected_results)]
+
         return QASample(
-            original_question=row_data[column_mapper["text"]],
-            original_context=row_data.get(column_mapper["context"], "-"),
+            original_question=row_data[column_mapper[question]],
+            original_context=row_data.get(column_mapper[context], "-"),
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
@@ -212,34 +247,21 @@ class SummarizationTask(BaseTask):
         dataset_name: str = "default_summarization_prompt",
     ) -> SummarizationSample:
         """Create a sample."""
+        keys = list(row_data.keys())
 
-        # validate the feature_column and target_column with _default_col
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
+        if set([feature_column, target_column]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column, target_column: target_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
 
-        if (
-            target_column not in cls._default_col["summary"]
-            and target_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided target_column is not supported. \
-                    \nPlease choose one of the supported target_column: {cls._default_col['summary']}\
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-
-        expected_results = row_data.get(target_column)
+        expected_results = row_data.get(column_mapper[target_column])
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
             expected_results = [str(expected_results)]
 
         return SummarizationSample(
-            original=row_data[feature_column],
+            original=row_data[column_mapper[feature_column]],
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
@@ -255,18 +277,17 @@ class TranslationTask(BaseTask):
         cls, row_data: dict, feature_column="text", dataset_name: str = "translation"
     ) -> TranslationSample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
+        keys = list(row_data.keys())
+
+        if set([feature_column]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
 
         return TranslationSample(
-            original=row_data[feature_column],
+            original=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
 
@@ -282,18 +303,17 @@ class ToxicityTask(BaseTask):
     ) -> ToxicitySample:
         """Create a sample."""
 
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
+        keys = list(row_data.keys())
+
+        if set([feature_column]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
 
         return ToxicitySample(
-            prompt=row_data[feature_column],
+            prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
 
@@ -308,19 +328,18 @@ class SecurityTask(BaseTask):
         cls, row_data: dict, feature_column="text", dataset_name: str = "security"
     ) -> SecuritySample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+
+        keys = list(row_data.keys())
+
+        if set([feature_column]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return SecuritySample(
-            prompt=row_data[column_mapper["text"]],
+            prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
 
@@ -345,16 +364,32 @@ class ClinicalTestsTask(BaseTask):
     }
 
     def create_sample(
-        cls, row_data: dict, dataset_name: str = "clinicaltests"
+        cls,
+        row_data: dict,
+        dataset_name: str = "clinicaltests",
+        patient_info_A: str = "Patient info A",
+        patient_info_B: str = "Patient info B",
+        diagnosis: str = "Diagnosis",
     ) -> ClinicalSample:
         """Create a sample."""
 
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+
+        if set([patient_info_A, patient_info_B, diagnosis]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {
+                patient_info_A: patient_info_A,
+                patient_info_B: patient_info_B,
+                diagnosis: diagnosis,
+            }
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return ClinicalSample(
-            patient_info_A=row_data[column_mapper["Patient info A"]],
-            patient_info_B=row_data[column_mapper["Patient info B"]],
-            diagnosis=row_data[column_mapper["Diagnosis"]],
+            patient_info_A=row_data[column_mapper[patient_info_A]],
+            patient_info_B=row_data[column_mapper[patient_info_B]],
+            diagnosis=row_data[column_mapper[diagnosis]],
             dataset_name=dataset_name,
         )
 
@@ -372,12 +407,20 @@ class DisinformationTestTask(BaseTask):
     def create_sample(
         cls,
         row_data: dict,
-        feature_column=["hypothesis", "statements"],
+        hypothesis: str = "hypothesis",
+        statements: str = "statements",
         dataset_name: str = "disinformationtest",
     ) -> DisinformationSample:
         """Create a sample."""
 
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+
+        if set([hypothesis, statements]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {hypothesis: hypothesis, statements: statements}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return DisinformationSample(
             hypothesis=row_data[column_mapper["hypothesis"]],
@@ -396,17 +439,14 @@ class PoliticalTask(BaseTask):
         cls, row_data: dict, feature_column="text", dataset_name: str = "political"
     ) -> LLMAnswerSample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-        
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+
+        if set([feature_column]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return LLMAnswerSample(
             prompt=row_data[column_mapper["text"]],
@@ -433,7 +473,7 @@ class WinoBiasTask(BaseTask):
                     \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
                     \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
             )
-        
+
         column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return WinoBiasSample(
