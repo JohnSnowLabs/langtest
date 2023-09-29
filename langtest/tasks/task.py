@@ -165,8 +165,8 @@ class NERTask(BaseTask):
     def create_sample(
         cls,
         row_data: dict,
-        text="text",
-        ner_tag: str = "ner",
+        feature_column="text",
+        target_column: str = "ner",
         pos_tag: str = "pos",
         chunk_tag: str = "chunk_tag",
         *args,
@@ -175,14 +175,16 @@ class NERTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
         if len(row_data) == 2:
-            original = row_data.get(text)
-            expected_results = row_data.get(ner_tag)
+            original = row_data.get(feature_column)
+            expected_results = row_data.get(target_column)
         else:
-            if set([text, ner_tag, pos_tag, chunk_tag]).issubset(set(keys)):
+            if set([feature_column, target_column, pos_tag, chunk_tag]).issubset(
+                set(keys)
+            ):
                 # if the column names are provided, use them directly
                 column_mapper = {
-                    text: text,
-                    ner_tag: ner_tag,
+                    feature_column: feature_column,
+                    target_column: target_column,
                     pos_tag: pos_tag,
                     chunk_tag: chunk_tag,
                 }
@@ -192,18 +194,18 @@ class NERTask(BaseTask):
 
             for key, value in row_data.items():
                 if isinstance(value, str):
-                    row_data[key] = value[2:-2].split("', '")
+                    row_data[key] = value[2:-2].split(", ")
                 else:
                     row_data[key] = value
 
-            original = " ".join(row_data[column_mapper[text]])
+            original = " ".join(row_data[column_mapper[feature_column]])
             ner_labels = list()
             cursor = 0
-            for token_indx in range(len(row_data[column_mapper[text]])):
-                token = row_data[column_mapper[text]][token_indx]
+            for token_indx in range(len(row_data[column_mapper[feature_column]])):
+                token = row_data[column_mapper[feature_column]][token_indx]
                 ner_labels.append(
                     NERPrediction.from_span(
-                        entity=row_data[column_mapper[ner_tag]][token_indx],
+                        entity=row_data[column_mapper[target_column]][token_indx],
                         word=token,
                         start=cursor,
                         end=cursor + len(token),
@@ -232,19 +234,22 @@ class TextClassificationTask(BaseTask):
     }
 
     def create_sample(
-        cls, row_data: dict, text="text", label: Union[SequenceLabel, str] = "label"
+        cls,
+        row_data: dict,
+        feature_column="text",
+        target_column: Union[SequenceLabel, str] = "label",
     ) -> SequenceClassificationSample:
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([text, label]).issubset(set(keys)):
+        if set([feature_column, feature_column]).issubset(set(keys)):
             # if the column names are provided, use them directly
-            column_mapper = {text: text, label: label}
+            column_mapper = {feature_column: feature_column, target_column: target_column}
         else:
             # auto-detect the default column names from the row_data
             column_mapper = cls.column_mapping(list(row_data.keys()))
 
-        labels = row_data.get(column_mapper[label])
+        labels = row_data.get(column_mapper[target_column])
 
         if isinstance(labels, SequenceLabel):
             labels = [labels]
@@ -257,7 +262,7 @@ class TextClassificationTask(BaseTask):
             labels = [SequenceLabel(label=labels, score=1.0)]
 
         return SequenceClassificationSample(
-            original=row_data[column_mapper[text]],
+            original=row_data[column_mapper[feature_column]],
             expected_results=SequenceClassificationOutput(predictions=labels),
         )
 

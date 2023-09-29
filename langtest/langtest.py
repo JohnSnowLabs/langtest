@@ -183,7 +183,7 @@ class Harness:
 
         self.task = TaskManager(task)
 
-        # data loading
+        # Loading default datasets
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = {"data_source": resource_filename("langtest", data_path)}
@@ -199,6 +199,7 @@ class Harness:
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
+
         self.data = DataFactory(data, task=self.task).load()
 
         # config loading

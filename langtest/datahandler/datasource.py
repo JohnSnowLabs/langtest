@@ -148,15 +148,18 @@ class DataFactory:
         self._custom_label = file_path
         self._file_path = file_path.get("data_source")
 
-        _, self.file_ext = os.path.splitext(self._file_path)
-        if len(self.file_ext) > 0:
-            self.file_ext = self.file_ext.replace(".", "")
-        elif "source" in file_path:
-            self.file_ext = file_path["source"]
-            self._file_path = file_path
-        else:
-            self._file_path = self._load_dataset(self._file_path)
+        if isinstance(self._file_path, str):
             _, self.file_ext = os.path.splitext(self._file_path)
+
+            if len(self.file_ext) > 0:
+                self.file_ext = self.file_ext.replace(".", "")
+            elif "source" in file_path:
+                self.file_ext = file_path["source"]
+                self._file_path = file_path
+            else:
+                self._file_path = self._load_dataset(self._file_path)
+                _, self.file_ext = os.path.splitext(self._file_path)
+
         self.task = task
         self.init_cls = None
         self.kwargs = kwargs
@@ -174,6 +177,12 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
+        if "data_source" in self._file_path:
+            if isinstance(self._file_path["data_source"], list):
+                return self._file_path
+        elif isinstance(self._file_path, list):
+            return self._file_path
+
         if len(self._custom_label) > 1 and self.file_ext == "csv":
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
