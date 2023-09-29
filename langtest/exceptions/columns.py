@@ -6,8 +6,8 @@ class ColumnNameError(Exception):
         self,
         supported_columns,
         given_columns,
-        message="\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {supported_columns} \
+        message="\nProvided columns is not supported to create sample.\
+                    \nPlease choose one of the supported column: {supported_columns} \
                     \nOr classifiy the features and target columns from {given_columns}",
     ):
         self.message = message.format(

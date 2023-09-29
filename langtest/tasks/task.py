@@ -1,5 +1,6 @@
 import re
 from abc import ABC, abstractmethod
+from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
 # langtest exceptions
@@ -162,8 +163,11 @@ class NERTask(BaseTask):
         },
     )
 
-    def create_sample(cls, original, expected_results: NEROutput) -> NERSample:
+    def create_sample(cls, row_data: dict, feature_column="text", ) -> NERSample:
         """Create a sample."""
+        if isinstance(original, str):
+            original = {"text": original}
+
         return NERSample(original=original, expected_results=expected_results)
 
 
@@ -177,12 +181,33 @@ class TextClassificationTask(BaseTask):
     }
 
     def create_sample(
-        cls, original, labels: SequenceLabel
+        cls, row_data: dict, feature_column="text", label: Union[SequenceLabel, str] = 'label'
     ) -> SequenceClassificationSample:
         """Create a sample."""
+        keys = list(row_data.keys())
+
+        if set([feature_column, label]).issubset(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column, label: label}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
+        
+        labels = row_data.get(column_mapper[label])
+        
+        if isinstance(labels, SequenceLabel):
+            labels = [labels]
+        elif isinstance(labels, list):
+            labels = [
+                SequenceLabel(label=label, score=1.0) if isinstance(label, str) else label
+                for label in labels
+            ]
+        else:
+            labels = [SequenceLabel(label=labels, score=1.0)]
+
         return SequenceClassificationSample(
-            original=original,
-            expected_results=SequenceClassificationOutput(predictions=[labels]),
+            original=row_data[column_mapper[feature_column]],
+            expected_results=SequenceClassificationOutput(predictions=labels),
         )
 
 
@@ -449,7 +474,7 @@ class PoliticalTask(BaseTask):
             column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return LLMAnswerSample(
-            prompt=row_data[column_mapper["text"]],
+            prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
 

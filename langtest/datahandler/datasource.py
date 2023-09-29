@@ -693,11 +693,17 @@ class CSVDataset(BaseDataset):
 
         data = []
         column_names = self._file_path
-        column_names.pop("data_source")
+
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
+        else:
+            column_names = dict()
+
         for row_data in dataset.to_dict(orient="records"):
             sample = self.task.create_sample(
                 row_data,
-                **self._file_path,
+                **column_names,
             )
             data.append(sample)
 
