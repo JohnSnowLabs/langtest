@@ -129,6 +129,7 @@ class SensitivityNegation(BaseSensitivity):
 
         return sample_list
 
+
 class SensitivityToxicity(BaseSensitivity):
     """A class for handling sensitivity-related phrases in the input text, specifically related to toxicity."""
 

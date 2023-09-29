@@ -453,11 +453,17 @@ class Harness:
                     self.task, self.data, tests, m_data=m_data
                 )
                 return self
-            
+
         elif self.task == "sensitivity-test":
             test_data_sources = {
-                "sensitivity_toxicity": ("wikiDataset-test","wikiDataset-test-tiny"),
-                "sensitivity_negation": ("NQ-open-test","NQ-open", "NQ-open-test-tiny", "OpenBookQA-test","OpenBookQA-test-tiny")
+                "sensitivity_toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
+                "sensitivity_negation": (
+                    "NQ-open-test",
+                    "NQ-open",
+                    "NQ-open-test-tiny",
+                    "OpenBookQA-test",
+                    "OpenBookQA-test-tiny",
+                ),
             }
             sensitivity_tests = tests.get("sensitivity", {})
             test_name = next(iter(sensitivity_tests), None)
