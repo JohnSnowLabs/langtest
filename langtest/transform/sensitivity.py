@@ -1,8 +1,9 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 from langtest.modelhandler.modelhandler import ModelFactory
 from ..utils.custom_types import Sample
+import random
 
 
 class BaseSensitivity(ABC):
@@ -125,5 +126,67 @@ class SensitivityNegation(BaseSensitivity):
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
                 sample_list[idx] = apply_transformation(sample)
+
+        return sample_list
+
+class SensitivityToxicity(BaseSensitivity):
+    """A class for handling sensitivity-related phrases in the input text, specifically related to toxicity."""
+
+    alias_name = "sensitivity_toxicity"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        starting_context: Optional[List[str]] = None,
+        ending_context: Optional[List[str]] = None,
+        strategy: str = None,
+    ) -> List[Sample]:
+        """
+        Transform the input list of samples to add toxicity-related text.
+
+        Args:
+            sample_list (List[Sample]): A list of samples to transform.
+            starting_context (Optional[List[str]]): A list of starting context tokens.
+            ending_context (Optional[List[str]]): A list of ending context tokens.
+            strategy (str): The strategy for adding context. Can be 'start', 'end', or 'combined'.
+
+        Returns:
+            List[Sample]: The transformed list of samples.
+
+        Raises:
+            ValueError: If an invalid context strategy is provided.
+        """
+
+        def context(text, strategy):
+            possible_methods = ["start", "end", "combined"]
+            if strategy is None:
+                strategy = random.choice(possible_methods)
+            elif strategy not in possible_methods:
+                raise ValueError(
+                    f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}."
+                )
+
+            if strategy == "start" or strategy == "combined":
+                add_tokens = random.choice(starting_context)
+                add_string = (
+                    " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                )
+                if text != "-":
+                    text = add_string + " " + text
+
+            if strategy == "end" or strategy == "combined":
+                add_tokens = random.choice(ending_context)
+                add_string = (
+                    " ".join(add_tokens) if isinstance(add_tokens, list) else add_tokens
+                )
+
+                if text != "-":
+                    text = text + " " + add_string
+
+            return text
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+                sample_list[idx] = context(sample, strategy)
 
         return sample_list
