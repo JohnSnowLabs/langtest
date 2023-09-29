@@ -57,7 +57,7 @@ COLUMN_MAPPER = {
     },
     "question-answering": {
         "text": ["question"],
-        "context": ["context", "passage"],
+        "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
@@ -341,6 +341,9 @@ class DataFactory:
             "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
             "MultiLexSum-test-tiny": script_dir[:-7]
             + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
+            "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
+            "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
         }
 
         return datasets_info[dataset_name]
