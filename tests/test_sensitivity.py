@@ -57,7 +57,7 @@ class SensitivityTestCase(unittest.TestCase):
                 sample = self.samples[task][-1]
                 test_func = self.supported_tests[test].transform
 
-                if test != "sensitivity-toxicity":
+                if test != "sensitivity_toxicity":
                     sample.transform(test_func, {})
 
                 else:
