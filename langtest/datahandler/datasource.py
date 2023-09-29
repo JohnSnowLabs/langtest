@@ -57,7 +57,7 @@ COLUMN_MAPPER = {
     },
     "question-answering": {
         "text": ["question"],
-        "context": ["context", "passage"],
+        "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
@@ -344,6 +344,21 @@ class DataFactory:
             "wikiDataset-test": script_dir[:-7] + "/wikiDataset/wikiDataset-test.jsonl",
             "wikiDataset-test-tiny": script_dir[:-7]
             + "/wikiDataset/wikiDataset-test-tiny.jsonl",
+            "CommonsenseQA-test": script_dir[:-7]
+            + "/CommonsenseQA/commonsenseQA-test.jsonl",
+            "CommonsenseQA-test-tiny": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-test-tiny.jsonl",
+            "CommonsenseQA-validation": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
+            "CommonsenseQA-validation-tiny": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-validation-tiny.jsonl",
+            "SIQA-test": script_dir[:-7] + "/SIQA/SIQA-test.jsonl",
+            "SIQA-test-tiny": script_dir[:-7] + "/SIQA/SIQA-test-tiny.jsonl",
+            "PIQA-test": script_dir[:-7] + "/PIQA/PIQA-test.jsonl",
+            "PIQA-test-tiny": script_dir[:-7] + "/PIQA/PIQA-test-tiny.jsonl",
+            "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
+            "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
+            "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1290,6 +1305,7 @@ class JSONLDataset(_IDataset):
                             diagnosis=item["Diagnosis"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
+                            clinical_domain=item["clinical_domain"],
                         )
                     )
                 elif self.task == "disinformation-test":
@@ -1343,6 +1359,7 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
+
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -1666,9 +1683,7 @@ class HuggingFaceDataset(_IDataset):
             row = Formatter.process(s, output_format="csv")
             rows.append(row)
 
-        df = pd.DataFrame(
-            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
-        )
+        df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
         df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
