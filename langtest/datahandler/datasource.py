@@ -410,7 +410,13 @@ class ConllDataset(_IDataset):
                     tokens = sent.strip().split("\n")
 
                     # get annotations from token level split
-                    token_list = [t.split() for t in tokens]
+                    valid_tokens, token_list = self.__token_validation(tokens)
+
+                    if not valid_tokens:
+                        logging.warning(
+                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
+                        )
+                        continue
 
                     #  get token and labels from the split
                     raw_data.append(
@@ -448,8 +454,14 @@ class ConllDataset(_IDataset):
                     tokens = sent.strip().split("\n")
 
                     # get annotations from token level split
-                    token_list = [t.split() for t in tokens]
+                    valid_tokens, token_list = self.__token_validation(tokens)
 
+                    if not valid_tokens:
+                        logging.warning(
+                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
+                        )
+                        continue
+                    
                     #  get token and labels from the split
                     ner_labels = []
                     cursor = 0
@@ -500,6 +512,42 @@ class ConllDataset(_IDataset):
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
 
+    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):
+        """Validates the tokens in a sentence.
+
+        Args:
+            tokens (str): List of tokens in a sentence.
+
+        Returns:
+            bool: True if all tokens are valid, False otherwise.
+            List[List[str]]: List of tokens.
+
+        """
+        prev_label = None  # Initialize the previous label as None
+        valid_labels = []  # Valid labels
+        token_list = []  # List of tokens
+
+        for t in tokens:
+            tsplit = t.split()
+            if len(tsplit) == 4:
+                token_list.append(tsplit)
+                valid_labels.append(tsplit[-1])
+            else:
+                logging.warning(
+                    # invalid label entries in the sentence
+                    f" Invalid or Missing label entries in the sentence: {t}"
+                )
+                return False, token_list
+
+        if valid_labels[0].startswith("I-"):
+            return False, token_list  # Invalid condition: "I" at the beginning
+
+        for label in valid_labels:
+            if prev_label and prev_label.startswith("O") and label.startswith("I-"):
+                return False, token_list # Invalid condition: "I" followed by "O"
+            prev_label = label  # Update the previous label
+
+        return True, token_list  # All labels are valid
 
 class JSONDataset(_IDataset):
     """Class to handle JSON dataset files. Subclass of _IDataset."""
