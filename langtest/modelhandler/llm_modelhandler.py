@@ -9,6 +9,8 @@ from ..utils.util_metrics import cosine_similarity
 from langchain import OpenAI
 from langchain.embeddings import OpenAIEmbeddings
 import os
+import re
+from langtest.transform.constants import bad_word_list
 
 
 class PretrainedModelForQA(_ModelHandler):
@@ -269,7 +271,21 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
 
-    def predict(self, text: str, text_transformed: str, **kwargs):
+    def compare_generations_overlap(self, phrase):
+        global bad_word_list
+
+        count = 0
+
+        bad_word_list = list(set(bad_word_list))
+
+        for bad_word in bad_word_list:
+
+            # Replace punctuation with spaces using regex
+            phrase_re = " " + re.sub(r"[^\w\s]", " ", phrase).replace(" ", "  ") + " "
+            count += phrase_re.count(" " + bad_word.lower() + " ")
+        return count
+
+    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """
         Predict the sensitivity of the model to text transformations.
 
@@ -292,7 +308,20 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         )
         actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
 
-        loss = 1 - cosine_similarity(expected_result_embeddings, actual_result_embeddings)
+        if test_name == "sensitivity_negation":
+            loss = 1 - cosine_similarity(
+                expected_result_embeddings, actual_result_embeddings
+            )
+
+        elif test_name == "sensitivity_toxicity":
+            count1 = self.compare_generations_overlap(expected_result)
+            count2 = self.compare_generations_overlap(actual_result)
+            loss_diff = count2 - count1
+        return {
+            "loss_diff": loss_diff,
+            "expected_result": expected_result,
+            "actual_result": actual_result,
+        }
 
         return {
             "loss_diff": loss[0],
@@ -300,7 +329,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             "actual_result": actual_result,
         }
 
-    def __call__(self, text: str, text_transformed: str, **kwargs):
+    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """
         Alias of the 'predict' method.
 
@@ -315,7 +344,9 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
                 - 'actual_result' (str): The model's output for the transformed text.
         """
 
-        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+        return self.predict(
+            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
+        )
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
