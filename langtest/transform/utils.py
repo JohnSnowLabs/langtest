@@ -19,7 +19,7 @@ from .constants import (
     native_american_names,
     religion_wise_names,
     white_names,
-    bad_word_list
+    bad_word_list,
 )
 from .custom_data import add_custom_data
 
