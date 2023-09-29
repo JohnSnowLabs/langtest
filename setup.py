@@ -197,6 +197,9 @@ setup(
             "data/CommonsenseQA/*",
             "data/SIQA/*",
             "data/PIQA/*",
+            "data/Privacy-Policy/*",
+            "data/Contracts/*",
+            "data/Consumer-Contracts/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

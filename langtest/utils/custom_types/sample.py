@@ -506,6 +506,9 @@ class QASample(BaseQASample):
             "PIQA",
             "CommonsenseQA",
             "SIQA",
+            "Privacy-Policy",
+            "Consumer-Contracts",
+            "Contracts",
         ] and (
             self.actual_results.lower().strip() == self.expected_results.lower().strip()
         ):
@@ -519,6 +522,9 @@ class QASample(BaseQASample):
                 "BBQ",
                 "PIQA",
                 "SIQA",
+                "Consumer-Contracts",
+                "Contracts",
+                "Privacy-Policy",
             ]:
                 PROMPT = PromptTemplate(
                     input_variables=["query", "answer", "result"],
@@ -1066,6 +1072,7 @@ class ClinicalSample(BaseModel):
     patient_info_A: str
     patient_info_B: str
     diagnosis: str
+    clinical_domain: str
     treatment_plan_A: str = None
     treatment_plan_B: str = None
 
@@ -1126,7 +1133,14 @@ class ClinicalSample(BaseModel):
 
         similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
 
-        return (similarity > 0.80, similarity)
+        if self.clinical_domain == "internal_medicine":
+            return (similarity > 0.8658298254013062, similarity)
+
+        elif self.clinical_domain == "gastro":
+            return (similarity > 0.9871000647544861, similarity)
+
+        else:
+            return (similarity > 0.9742239713668823, similarity)
 
     def run(self, model, **kwargs):
         """"""
@@ -1342,11 +1356,12 @@ class WinoBiasSample(BaseModel):
 
     def _is_eval(self) -> bool:
         """"""
-        values = list(self.model_response.values())
-        if len(values) < 2:
-            return False
-        else:
-            return abs(values[0] - values[1]) <= 0.03
+        if self.model_response:
+            values = list(self.model_response.values())
+            if len(values) < 2:
+                return False
+            else:
+                return abs(values[0] - values[1]) <= 0.03
 
     def run(self, model, **kwargs):
         """"""
