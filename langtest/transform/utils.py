@@ -414,23 +414,22 @@ def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
     return new_transformed_samples, no_transformation_applied_tests
 
 
-def compare_generations_overlap(phrase):
+def compare_generations_overlap(phrase) -> int:
     """
-    Compare the overlap of a given phrase with a list of bad words.
+    Compare a given phrase against a list of offensive words and count the number of offensive words present in the phrase.
 
-    Args:
-        phrase (str): The input phrase to be checked for bad words.
+    Parameters:
+        phrase (str): The input phrase to be checked for offensive words or the middle finger emoji.
 
     Returns:
-        int: The count of bad words found in the phrase.
+        int: The count of offensive words or the middle finger emoji found in the phrase.
     """
-    global bad_word_list
 
-    count = 0
+    sorted_bad_word_list = sorted(bad_word_list, key=len, reverse=True)
+    pattern = (
+        r"\b(?:" + "|".join(re.escape(word) for word in sorted_bad_word_list) + r")\b|🖕"
+    )
+    matches = re.findall(pattern, phrase, flags=re.UNICODE | re.IGNORECASE)
+    count = len(matches)
 
-    bad_word_list = list(set(bad_word_list))
-
-    for bad_word in bad_word_list:
-        phrase_re = " " + re.sub(r"[^\w\s]", " ", phrase).replace(" ", "  ") + " "
-        count += phrase_re.count(" " + bad_word.lower() + " ")
     return count
