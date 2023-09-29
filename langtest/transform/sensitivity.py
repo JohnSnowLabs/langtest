@@ -82,7 +82,7 @@ class BaseSensitivity(ABC):
         return created_task
 
 
-class SensitivityNegation(BaseSensitivity):
+class Negation(BaseSensitivity):
     """A class for negating sensitivity-related phrases in the input text.
 
     This class identifies common sensitivity-related phrases such as 'is', 'was', 'are', and 'were' in the input text
@@ -130,7 +130,7 @@ class SensitivityNegation(BaseSensitivity):
         return sample_list
 
 
-class SensitivityToxicity(BaseSensitivity):
+class Toxicity(BaseSensitivity):
     """A class for handling sensitivity-related phrases in the input text, specifically related to toxicity."""
 
     alias_name = "toxicity"
