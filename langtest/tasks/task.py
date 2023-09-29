@@ -4,7 +4,7 @@ from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
 # langtest exceptions
-from langtest.exceptions.columns import ColumnNameError
+from langtest.exceptions.datasets import ColumnNameError
 
 from langtest.utils.custom_types import (
     NEROutput,
@@ -26,6 +26,7 @@ from langtest.utils.custom_types import (
     SensitivitySample,
     LLMAnswerSample,
 )
+from langtest.utils.custom_types.predictions import NERPrediction
 
 
 class BaseTask(ABC):
@@ -145,28 +146,78 @@ class NERTask(BaseTask):
     """Named Entity Recognition task."""
 
     _name = "ner"
-    _default_col = (
-        {
-            "text": ["text", "sentences", "sentence", "sample", "tokens"],
-            "ner": [
-                "label",
-                "labels ",
-                "class",
-                "classes",
-                "ner_tag",
-                "ner_tags",
-                "ner",
-                "entity",
-            ],
-            "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
-            "chunk": ["chunk_tags", "chunk_tag"],
-        },
-    )
+    _default_col = {
+        "text": ["text", "sentences", "sentence", "sample", "tokens"],
+        "ner": [
+            "label",
+            "labels ",
+            "class",
+            "classes",
+            "ner_tag",
+            "ner_tags",
+            "ner",
+            "entity",
+        ],
+        "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
+        "chunk": ["chunk_tags", "chunk_tag"],
+    }
 
-    def create_sample(cls, row_data: dict, feature_column="text", ) -> NERSample:
+    def create_sample(
+        cls,
+        row_data: dict,
+        text="text",
+        ner_tag: str = "ner",
+        pos_tag: str = "pos",
+        chunk_tag: str = "chunk_tag",
+        *args,
+        **kwargs,
+    ) -> NERSample:
         """Create a sample."""
-        if isinstance(original, str):
-            original = {"text": original}
+        keys = list(row_data.keys())
+        if len(row_data) == 2:
+            original = row_data.get(text)
+            expected_results = row_data.get(ner_tag)
+        else:
+            if set([text, ner_tag, pos_tag, chunk_tag]).issubset(set(keys)):
+                # if the column names are provided, use them directly
+                column_mapper = {
+                    text: text,
+                    ner_tag: ner_tag,
+                    pos_tag: pos_tag,
+                    chunk_tag: chunk_tag,
+                }
+            else:
+                # auto-detect the default column names from the row_data
+                column_mapper = cls.column_mapping(list(row_data.keys()))
+
+            for key, value in row_data.items():
+                if isinstance(value, str):
+                    row_data[key] = value[2:-2].split("', '")
+                else:
+                    row_data[key] = value
+
+            original = " ".join(row_data[column_mapper[text]])
+            ner_labels = list()
+            cursor = 0
+            for token_indx in range(len(row_data[column_mapper[text]])):
+                token = row_data[column_mapper[text]][token_indx]
+                ner_labels.append(
+                    NERPrediction.from_span(
+                        entity=row_data[column_mapper[ner_tag]][token_indx],
+                        word=token,
+                        start=cursor,
+                        end=cursor + len(token),
+                        pos_tag=row_data[column_mapper[pos_tag]][token_indx]
+                        if row_data.get(column_mapper[pos_tag], None)
+                        else None,
+                        chunk_tag=row_data[column_mapper[chunk_tag]][token_indx]
+                        if row_data.get(column_mapper[chunk_tag], None)
+                        else None,
+                    )
+                )
+                cursor += len(token) + 1  # +1 to account for the white space
+
+            expected_results = NEROutput(predictions=ner_labels)
 
         return NERSample(original=original, expected_results=expected_results)
 
@@ -181,20 +232,20 @@ class TextClassificationTask(BaseTask):
     }
 
     def create_sample(
-        cls, row_data: dict, feature_column="text", label: Union[SequenceLabel, str] = 'label'
+        cls, row_data: dict, text="text", label: Union[SequenceLabel, str] = "label"
     ) -> SequenceClassificationSample:
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column, label]).issubset(set(keys)):
+        if set([text, label]).issubset(set(keys)):
             # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column, label: label}
+            column_mapper = {text: text, label: label}
         else:
             # auto-detect the default column names from the row_data
             column_mapper = cls.column_mapping(list(row_data.keys()))
-        
+
         labels = row_data.get(column_mapper[label])
-        
+
         if isinstance(labels, SequenceLabel):
             labels = [labels]
         elif isinstance(labels, list):
@@ -206,7 +257,7 @@ class TextClassificationTask(BaseTask):
             labels = [SequenceLabel(label=labels, score=1.0)]
 
         return SequenceClassificationSample(
-            original=row_data[column_mapper[feature_column]],
+            original=row_data[column_mapper[text]],
             expected_results=SequenceClassificationOutput(predictions=labels),
         )
 

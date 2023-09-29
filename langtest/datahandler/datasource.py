@@ -10,6 +10,7 @@ from typing import Optional
 
 import jsonlines
 import pandas as pd
+from langtest.exceptions.datasets import InvaildDataError
 from langtest.tasks.task import TaskManager
 
 from langtest.utils.custom_types import sample
@@ -458,8 +459,10 @@ class ConllDataset(BaseDataset):
 
                     data.append(
                         self.task.create_sample(
-                            original=original,
-                            expected_results=NEROutput(predictions=ner_labels),
+                            row_data={
+                                "text": original,
+                                "ner": NEROutput(predictions=ner_labels),
+                            },
                         )
                     )
 
@@ -700,12 +703,18 @@ class CSVDataset(BaseDataset):
         else:
             column_names = dict()
 
-        for row_data in dataset.to_dict(orient="records"):
-            sample = self.task.create_sample(
-                row_data,
-                **column_names,
-            )
-            data.append(sample)
+        for idx, row_data in enumerate(dataset.to_dict(orient="records")):
+            try:
+                sample = self.task.create_sample(
+                    row_data,
+                    **column_names,
+                )
+                data.append(sample)
+
+            except InvaildDataError as e:
+                logging.warning(f"Skipping row {idx} due to invalid data: {e}")
+                sent_index += 1
+                continue
 
         return data
 

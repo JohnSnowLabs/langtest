@@ -14,3 +14,18 @@ class ColumnNameError(Exception):
             supported_columns=supported_columns, given_columns=given_columns
         )
         super().__init__(self.message)
+
+
+class InvaildDataError(Exception):
+    """InvaildDataError class is used to raise an exception
+    when the data is not in the correct format."""
+
+    def __init__(
+        self,
+        index,
+        row_data,
+        message="\nProvided data is not in the correct format.\
+                \n{index} row data is not in the correct format: {row_data}}",
+    ):
+        self.message = message
+        super().__init__(self.message)
