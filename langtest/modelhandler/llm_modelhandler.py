@@ -272,6 +272,15 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
 
     def compare_generations_overlap(self, phrase):
+        """
+        Compare the overlap of a given phrase with a list of bad words.
+
+        Args:
+            phrase (str): The input phrase to be checked for bad words.
+
+        Returns:
+            int: The count of bad words found in the phrase.
+        """
         global bad_word_list
 
         count = 0
