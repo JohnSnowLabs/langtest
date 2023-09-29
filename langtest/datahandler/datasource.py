@@ -713,7 +713,6 @@ class CSVDataset(BaseDataset):
 
             except InvaildDataError as e:
                 logging.warning(f"Skipping row {idx} due to invalid data: {e}")
-                sent_index += 1
                 continue
 
         return data
