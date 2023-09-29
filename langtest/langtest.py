@@ -456,8 +456,8 @@ class Harness:
 
         elif self.task == "sensitivity-test":
             test_data_sources = {
-                "sensitivity_toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
-                "sensitivity_negation": (
+                "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
+                "negation": (
                     "NQ-open-test",
                     "NQ-open",
                     "NQ-open-test-tiny",

@@ -2,7 +2,6 @@ from collections import defaultdict
 from typing import Dict, List
 from typing import Union
 import re
-from .constants import bad_word_list
 import pandas as pd
 
 from langtest.utils.custom_types import (
@@ -20,6 +19,7 @@ from .constants import (
     native_american_names,
     religion_wise_names,
     white_names,
+    bad_word_list
 )
 from .custom_data import add_custom_data
 

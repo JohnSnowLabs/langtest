@@ -293,13 +293,13 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         )
         actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
 
-        if test_name == "sensitivity_negation":
+        if test_name == "negation":
             loss = 1 - cosine_similarity(
                 expected_result_embeddings, actual_result_embeddings
             )
             loss_diff = loss[0]
 
-        elif test_name == "sensitivity_toxicity":
+        elif test_name == "toxicity":
             count1 = compare_generations_overlap(expected_result)
             count2 = compare_generations_overlap(actual_result)
             loss_diff = count2 - count1

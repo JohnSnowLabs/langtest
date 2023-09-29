@@ -625,10 +625,10 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         actual_result = self.tokenizer.decode(
             outputs_transformed.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
-        if test_name == "sensitivity_negation":
+        if test_name == "negation":
             loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
 
-        elif test_name == "sensitivity_toxicity":
+        elif test_name == "toxicity":
             count1 = compare_generations_overlap(expected_result)
             count2 = compare_generations_overlap(actual_result)
             loss_diff = count2 - count1

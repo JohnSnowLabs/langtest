@@ -1807,7 +1807,7 @@ class SensitivitySample(BaseModel):
 
         config = harness_config["tests"]["defaults"]
 
-        if self.test_type == "sensitivity_negation":
+        if self.test_type == "negation":
             min_range, max_range = config.get("threshold", (-0.2, 0.2))
 
             if min_range <= self.loss_diff <= max_range:
@@ -1815,7 +1815,7 @@ class SensitivitySample(BaseModel):
             else:
                 return True
 
-        elif self.test_type == "sensitivity_toxicity":
+        elif self.test_type == "toxicity":
             threshold = config.get("threshold", (0))
 
             if self.loss_diff > threshold:

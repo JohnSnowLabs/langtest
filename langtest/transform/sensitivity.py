@@ -96,7 +96,7 @@ class SensitivityNegation(BaseSensitivity):
             of samples.
     """
 
-    alias_name = "sensitivity_negation"
+    alias_name = "negation"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -133,7 +133,7 @@ class SensitivityNegation(BaseSensitivity):
 class SensitivityToxicity(BaseSensitivity):
     """A class for handling sensitivity-related phrases in the input text, specifically related to toxicity."""
 
-    alias_name = "sensitivity_toxicity"
+    alias_name = "toxicity"
 
     @staticmethod
     def transform(
