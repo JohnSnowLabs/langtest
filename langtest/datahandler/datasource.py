@@ -461,7 +461,7 @@ class ConllDataset(_IDataset):
                             f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
                         )
                         continue
-                    
+
                     #  get token and labels from the split
                     ner_labels = []
                     cursor = 0
@@ -544,10 +544,11 @@ class ConllDataset(_IDataset):
 
         for label in valid_labels:
             if prev_label and prev_label.startswith("O") and label.startswith("I-"):
-                return False, token_list # Invalid condition: "I" followed by "O"
+                return False, token_list  # Invalid condition: "I" followed by "O"
             prev_label = label  # Update the previous label
 
         return True, token_list  # All labels are valid
+
 
 class JSONDataset(_IDataset):
     """Class to handle JSON dataset files. Subclass of _IDataset."""
