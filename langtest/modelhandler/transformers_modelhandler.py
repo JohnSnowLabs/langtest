@@ -12,8 +12,7 @@ from ..utils.custom_types import (
 )
 from langtest.utils.lib_manager import try_import_lib
 import importlib
-import re
-from langtest.transform.constants import bad_word_list
+from langtest.transform.utils import compare_generations_overlap
 
 
 class PretrainedModelForNER(_ModelHandler):
@@ -581,27 +580,6 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         model, tokenizer = get_model_n_tokenizer(model_name=path)
         return model, tokenizer
 
-    def compare_generations_overlap(self, phrase):
-        """
-        Compare the overlap of a given phrase with a list of bad words.
-
-        Args:
-            phrase (str): The input phrase to be checked for bad words.
-
-        Returns:
-            int: The count of bad words found in the phrase.
-        """
-        global bad_word_list
-
-        count = 0
-
-        bad_word_list = list(set(bad_word_list))
-
-        for bad_word in bad_word_list:
-            phrase_re = " " + re.sub(r"[^\w\s]", " ", phrase).replace(" ", "  ") + " "
-            count += phrase_re.count(" " + bad_word.lower() + " ")
-        return count
-
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
@@ -639,8 +617,8 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
 
         elif test_name == "sensitivity_toxicity":
-            count1 = self.compare_generations_overlap(expected_result)
-            count2 = self.compare_generations_overlap(actual_result)
+            count1 = compare_generations_overlap(expected_result)
+            count2 = compare_generations_overlap(actual_result)
             loss_diff = count2 - count1
 
         return {

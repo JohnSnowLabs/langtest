@@ -1,7 +1,8 @@
 from collections import defaultdict
 from typing import Dict, List
 from typing import Union
-
+import re
+from .constants import bad_word_list
 import pandas as pd
 
 from langtest.utils.custom_types import (
@@ -411,3 +412,25 @@ def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
                         no_transformation_applied_tests[test_name] = 1
 
     return new_transformed_samples, no_transformation_applied_tests
+
+
+def compare_generations_overlap(phrase):
+    """
+    Compare the overlap of a given phrase with a list of bad words.
+
+    Args:
+        phrase (str): The input phrase to be checked for bad words.
+
+    Returns:
+        int: The count of bad words found in the phrase.
+    """
+    global bad_word_list
+
+    count = 0
+
+    bad_word_list = list(set(bad_word_list))
+
+    for bad_word in bad_word_list:
+        phrase_re = " " + re.sub(r"[^\w\s]", " ", phrase).replace(" ", "  ") + " "
+        count += phrase_re.count(" " + bad_word.lower() + " ")
+    return count

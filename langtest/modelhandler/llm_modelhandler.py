@@ -9,8 +9,7 @@ from ..utils.util_metrics import cosine_similarity
 from langchain import OpenAI
 from langchain.embeddings import OpenAIEmbeddings
 import os
-import re
-from langtest.transform.constants import bad_word_list
+from langtest.transform.utils import compare_generations_overlap
 
 
 class PretrainedModelForQA(_ModelHandler):
@@ -271,29 +270,6 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
 
-    def compare_generations_overlap(self, phrase):
-        """
-        Compare the overlap of a given phrase with a list of bad words.
-
-        Args:
-            phrase (str): The input phrase to be checked for bad words.
-
-        Returns:
-            int: The count of bad words found in the phrase.
-        """
-        global bad_word_list
-
-        count = 0
-
-        bad_word_list = list(set(bad_word_list))
-
-        for bad_word in bad_word_list:
-
-            # Replace punctuation with spaces using regex
-            phrase_re = " " + re.sub(r"[^\w\s]", " ", phrase).replace(" ", "  ") + " "
-            count += phrase_re.count(" " + bad_word.lower() + " ")
-        return count
-
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """
         Predict the sensitivity of the model to text transformations.
@@ -324,8 +300,8 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             loss_diff = loss[0]
 
         elif test_name == "sensitivity_toxicity":
-            count1 = self.compare_generations_overlap(expected_result)
-            count2 = self.compare_generations_overlap(actual_result)
+            count1 = compare_generations_overlap(expected_result)
+            count2 = compare_generations_overlap(actual_result)
             loss_diff = count2 - count1
         return {
             "loss_diff": loss_diff,
