@@ -312,6 +312,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             loss = 1 - cosine_similarity(
                 expected_result_embeddings, actual_result_embeddings
             )
+            loss_diff = loss[0]
 
         elif test_name == "sensitivity_toxicity":
             count1 = self.compare_generations_overlap(expected_result)
@@ -319,12 +320,6 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             loss_diff = count2 - count1
         return {
             "loss_diff": loss_diff,
-            "expected_result": expected_result,
-            "actual_result": actual_result,
-        }
-
-        return {
-            "loss_diff": loss[0],
             "expected_result": expected_result,
             "actual_result": actual_result,
         }
