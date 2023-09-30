@@ -1806,12 +1806,22 @@ class SensitivitySample(BaseModel):
         from ...langtest import HARNESS_CONFIG as harness_config
 
         config = harness_config["tests"]["defaults"]
-        min_range, max_range = config.get("threshold", (-0.2, 0.2))
 
-        if min_range <= self.loss_diff <= max_range:
-            return False
-        else:
-            return True
+        if self.test_type == "negation":
+            min_range, max_range = config.get("threshold", (-0.2, 0.2))
+
+            if min_range <= self.loss_diff <= max_range:
+                return False
+            else:
+                return True
+
+        elif self.test_type == "toxicity":
+            threshold = config.get("threshold", (0))
+
+            if self.loss_diff > threshold:
+                return False
+            else:
+                return True
 
     def run(self, model, **kwargs):
         """
@@ -1824,7 +1834,9 @@ class SensitivitySample(BaseModel):
         Returns:
             bool: True if the test was successful, False otherwise.
         """
-        op = model(text=self.original, text_transformed=self.test_case)
+        op = model(
+            text=self.original, text_transformed=self.test_case, test_name=self.test_type
+        )
         self.expected_result = op["expected_result"]
         self.actual_result = op["actual_result"]
         self.loss_diff = op["loss_diff"]

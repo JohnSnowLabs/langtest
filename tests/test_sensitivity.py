@@ -56,5 +56,20 @@ class SensitivityTestCase(unittest.TestCase):
             for task in self.samples:
                 sample = self.samples[task][-1]
                 test_func = self.supported_tests[test].transform
-            sample.transform(test_func, {})
+
+                if test != "toxicity":
+                    sample.transform(test_func, {})
+
+                else:
+                    sample.transform(
+                        test_func,
+                        {
+                            "ending_context": ["fuck u ", "u fuck"],
+                            "starting_context": [
+                                "Hi fuck",
+                                "Good morning fuck",
+                                "hello fuck",
+                            ],
+                        },
+                    )
             assert sample.test_case is not None

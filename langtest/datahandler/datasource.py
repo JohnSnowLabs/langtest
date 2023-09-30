@@ -341,6 +341,9 @@ class DataFactory:
             "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
             "MultiLexSum-test-tiny": script_dir[:-7]
             + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "wikiDataset-test": script_dir[:-7] + "/wikiDataset/wikiDataset-test.jsonl",
+            "wikiDataset-test-tiny": script_dir[:-7]
+            + "/wikiDataset/wikiDataset-test-tiny.jsonl",
             "CommonsenseQA-test": script_dir[:-7]
             + "/CommonsenseQA/commonsenseQA-test.jsonl",
             "CommonsenseQA-test-tiny": script_dir[:-7]
@@ -1364,7 +1367,7 @@ class JSONLDataset(_IDataset):
                         )
                     ),
                 elif self.task == "sensitivity-test":
-                    supported_data = ["NQ-open", "OpenBookQA"]
+                    supported_data = ("NQ-open", "OpenBookQA", "wikiDataset")
                     if self._file_path.split("/")[-2] in supported_data:
                         data.append(
                             SensitivitySample(original=item[self.column_matcher["text"]])

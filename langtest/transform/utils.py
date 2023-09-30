@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List
 from typing import Union
-
+import re
 import pandas as pd
 
 from langtest.utils.custom_types import (
@@ -19,6 +19,7 @@ from .constants import (
     native_american_names,
     religion_wise_names,
     white_names,
+    bad_word_list,
 )
 from .custom_data import add_custom_data
 
@@ -411,3 +412,24 @@ def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
                         no_transformation_applied_tests[test_name] = 1
 
     return new_transformed_samples, no_transformation_applied_tests
+
+
+def compare_generations_overlap(phrase) -> int:
+    """
+    Compare a given phrase against a list of offensive words and count the number of offensive words present in the phrase.
+
+    Parameters:
+        phrase (str): The input phrase to be checked for offensive words or the middle finger emoji.
+
+    Returns:
+        int: The count of offensive words or the middle finger emoji found in the phrase.
+    """
+
+    sorted_bad_word_list = sorted(bad_word_list, key=len, reverse=True)
+    pattern = (
+        r"\b(?:" + "|".join(re.escape(word) for word in sorted_bad_word_list) + r")\b|🖕"
+    )
+    matches = re.findall(pattern, phrase, flags=re.UNICODE | re.IGNORECASE)
+    count = len(matches)
+
+    return count

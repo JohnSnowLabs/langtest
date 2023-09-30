@@ -454,6 +454,34 @@ class Harness:
                 )
                 return self
 
+        elif self.task == "sensitivity-test":
+            test_data_sources = {
+                "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
+                "negation": (
+                    "NQ-open-test",
+                    "NQ-open",
+                    "NQ-open-test-tiny",
+                    "OpenBookQA-test",
+                    "OpenBookQA-test-tiny",
+                ),
+            }
+            sensitivity_tests = tests.get("sensitivity", {})
+            test_name = next(iter(sensitivity_tests), None)
+            if test_name in test_data_sources:
+                selected_data_sources = test_data_sources[test_name]
+
+                if self.data_source in selected_data_sources:
+                    self._testcases = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data
+                    )
+                    return self
+                else:
+                    raise ValueError(
+                        f"{test_name} tests are not applicable for {self.data_source} dataset. Please use one of the following datasets: {selected_data_sources}"
+                    )
+            else:
+                raise ValueError(f"Invalid test: {test_name}")
+
         self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
         )
