@@ -70,9 +70,14 @@ default_user_prompt = {
      Summary B: {option_b}
      Answer (A or B):""",
     "multilexsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
+    "synteticdatamath": """
+    You will be presented with a math addition question.Your response should strictly be limited to either 'Agree' if the given sum is correct or 'Disagree' if it is incorrect. 
+    \nNote: Do not provide any other responses, explanations, or comments, only 'Agree' or 'Disagree' is allowed.
+    Context: {context}\n Question: {question}\n Answer:
+    """,
 }
 
-
+##ANSWER FORMAT: Agree or Disagree
 class Span(BaseModel):
     """Representation of a text's slice"""
 
