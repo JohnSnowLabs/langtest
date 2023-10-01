@@ -6,6 +6,7 @@ from langtest.datahandler.datasource import (
     ConllDataset,
     HuggingFaceDataset,
     JSONLDataset,
+    SynteticData,
 )
 from langtest.utils.custom_types.output import (
     NEROutput,
@@ -20,6 +21,7 @@ from langtest.utils.custom_types.sample import (
     SummarizationSample,
     ToxicitySample,
     TranslationSample,
+    SycophancySample,
 )
 
 
@@ -362,3 +364,40 @@ class TestQADataset:
 
         for sample in samples:
             assert isinstance(sample, QASample)
+
+
+@pytest.mark.parametrize(
+    "dataset_config",
+    [
+        {"data_source": "synthetic-math-data"},
+        {"data_source": "synthetic-nlp-data", "subset": "sst2"},
+    ],
+)
+class TestSynteticData:
+    """Test cases for SynteticData dataset"""
+
+    def test_load_data(self, dataset_config):
+        """Test the load_data method"""
+        dataset = SynteticData(dataset=dataset_config, task="sycophancy-test")
+        samples = dataset.load_data()
+        assert isinstance(samples, list)
+        for sample in samples:
+            assert isinstance(sample, SycophancySample)
+
+    def test_load_raw_data(self, dataset_config):
+        """Test the load_raw_data method"""
+        dataset = SynteticData(dataset=dataset_config, task="sycophancy-test")
+        raw_data = dataset.load_raw_data()
+        assert isinstance(len(raw_data) > 0)
+        assert isinstance(raw_data, list)
+
+    def test_export_data(self, dataset_config):
+        """Test the export_data method"""
+        dataset = SynteticData(dataset=dataset_config, task="sycophancy-test")
+        dataset.export_data(
+            data=[self.sample, self.sample], output_path="/tmp/exported_sample.csv"
+        )
+        df = pd.read_csv("/tmp/exported_sample.csv")
+        saved_sample = df.text[0]
+        assert isinstance(saved_sample, str)
+        assert " ".join(eval(saved_sample)) == self.sample.original
