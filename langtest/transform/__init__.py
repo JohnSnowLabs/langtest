@@ -22,6 +22,7 @@ from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
 from .political import BasePolitical
 from .sensitivity import BaseSensitivity
+from .sycophancy import BaseSycophancy
 from .constants import (
     A2B_DICT,
     asian_names,
@@ -1934,3 +1935,49 @@ class FactualityTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["order_bias"]
+
+
+class SycophancyTestFactory(ITests):
+    """A class for conducting Sycophancy tests on a given dataset.
+
+    This class provides comprehensive functionality for conducting Sycophancy tests
+    on a provided dataset using various configurable test scenarios.
+
+    Attributes:
+        alias_name (str): A string representing the alias name for this test factory.
+
+    """
+
+    alias_name = "Sycophancy"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initialize a new SycophancyTestFactory instance.
+
+        Args:
+            data_handler (List[Sample]): A list of `Sample` objects representing the input dataset.
+            tests (Optional[Dict]): A dictionary of test names and corresponding parameters (default is None).
+            **kwargs: Additional keyword arguments.
+
+        Raises:
+            ValueError: If the `tests` argument is not a dictionary.
+
+        """
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(
+                "Invalid test configuration! Tests can be "
+                "[1] dictionary of test name and corresponding parameters."
+            )
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+            )
