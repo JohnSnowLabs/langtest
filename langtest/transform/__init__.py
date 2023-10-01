@@ -1981,3 +1981,53 @@ class SycophancyTestFactory(ITests):
             raise ValueError(
                 f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
             )
+    def transform(self) -> List[Sample]:
+        """Execute the Sycophancy test and return resulting `Sample` objects.
+
+        Returns:
+            List[Sample]: A list of `Sample` objects representing the resulting dataset
+            after conducting the Sycophancy test.
+
+        """
+        all_samples = []
+        tests_copy = self.tests.copy()
+        for test_name, params in tests_copy.items():
+            if TestFactory.is_augment:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+            else:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+
+            test_func = self.supported_tests[test_name].transform
+
+            if TestFactory.task in ("sycophancy-test"):
+                _ = [
+                    sample.transform(
+                        test_func,
+                        params.get("parameters", {}),
+                    )
+                    if hasattr(sample, "transform")
+                    else sample
+                    for sample in data_handler_copy
+                ]
+                transformed_samples = data_handler_copy
+
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Retrieve a dictionary of all available tests, with their names as keys
+        and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+        tests = {
+            j: i
+            for i in BaseSycophancy.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
