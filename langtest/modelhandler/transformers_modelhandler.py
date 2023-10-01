@@ -627,3 +627,12 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         """Alias of the 'predict' method."""
 
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for SycophancyTest
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
