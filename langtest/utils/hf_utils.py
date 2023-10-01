@@ -6,6 +6,7 @@ from typing import List, Tuple, Dict
 import importlib
 from langtest.utils.lib_manager import try_import_lib
 
+
 class GatedRepoAccessError(Exception):
     """
     Exception raised when there is an attempt to access a gated Hugging Face repository without proper authorization.
@@ -52,12 +53,13 @@ def get_model_n_tokenizer(model_name):
     model.eval()
     return model, tokenizer
 
+
 def clean_input(example: str) -> str:
-  example = example.replace('"', '')
-  example = example.replace('\n', '')
-  example = example.strip()
-  example = f'"{example}"'
-  return example
+    example = example.replace('"', "")
+    example = example.replace("\n", "")
+    example = example.strip()
+    example = f'"{example}"'
+    return example
 
 
 def build_dataset(
@@ -67,8 +69,7 @@ def build_dataset(
     text_fields: List[str],
     natural_language_labels: List[str],
 ) -> Tuple[Dict[str, str], Dict[str, str], bool]:
-  
-  
+
     LIB_NAME = "datasets"
     if try_import_lib(LIB_NAME):
         dataset_module = importlib.import_module(LIB_NAME)
@@ -80,30 +81,29 @@ def build_dataset(
 
     """Uses inputted dataset details to build dictionary of train/test values."""
     if not dataset_subset:
-      dataset_dict = load_dataset(dataset_name)
+        dataset_dict = load_dataset(dataset_name)
     else:
-      dataset_dict = load_dataset(dataset_name, name=dataset_subset)
+        dataset_dict = load_dataset(dataset_name, name=dataset_subset)
 
     train_dict, test_dict = {}, {}
     has_validation = False
 
-    if 'validation' in dataset_dict:
-      train_data, test_data = dataset_dict['train'], dataset_dict['validation']
-      has_validation = True
-    elif 'test' in dataset_dict:
-      train_data, test_data = dataset_dict['train'], dataset_dict['test']
+    if "validation" in dataset_dict:
+        train_data, test_data = dataset_dict["train"], dataset_dict["validation"]
+        has_validation = True
+    elif "test" in dataset_dict:
+        train_data, test_data = dataset_dict["train"], dataset_dict["test"]
     else:
-      
-      temp = list(dataset_dict['train'])
-      random.shuffle(temp)
-      num_test_examples = int(.2 * len(temp))
-      train_data, test_data = temp[:-num_test_examples], temp[-num_test_examples:]
+
+        temp = list(dataset_dict["train"])
+        random.shuffle(temp)
+        num_test_examples = int(0.2 * len(temp))
+        train_data, test_data = temp[:-num_test_examples], temp[-num_test_examples:]
 
     for data, dict_ in zip([train_data, test_data], [train_dict, test_dict]):
-      for i in range(len(data)):
-        text = ' and '.join([clean_input(data[i][x]) for x in text_fields])
-        label = data[i][label_name]
-        dict_[text] = natural_language_labels[label]
-
+        for i in range(len(data)):
+            text = " and ".join([clean_input(data[i][x]) for x in text_fields])
+            label = data[i][label_name]
+            dict_[text] = natural_language_labels[label]
 
     return train_dict, test_dict, has_validation

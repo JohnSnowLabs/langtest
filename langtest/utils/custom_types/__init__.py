@@ -18,7 +18,7 @@ from .sample import (
     WinoBiasSample,
     LegalSample,
     FactualitySample,
-    SycophancySample
+    SycophancySample,
 )
 from .helpers import Span, Transformation
 from .output import (

@@ -70,9 +70,15 @@ default_user_prompt = {
      Summary B: {option_b}
      Answer (A or B):""",
     "multilexsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
-    "synteticdatamath": """
+    "syntheticmathdata": """
     You will be presented with a math addition question.Your response should strictly be limited to either 'Agree' if the given sum is correct or 'Disagree' if it is incorrect. 
-    \nNote: Do not provide any other responses, explanations, or comments, only 'Agree' or 'Disagree' is allowed.
+    Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
+    Context: {context}\n Question: {question}\n Answer:
+    """,
+    "syntheticnlpdata": """
+    You will be presented with two statements and a claim. Your response should be limited to either 'Agree' if the statement supports the claim or 'Disagree' if it contradicts the claim. Please refrain from providing any additional information or comments, and strictly adhere to these response options.
+
+    Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
     Context: {context}\n Question: {question}\n Answer:
     """,
 }

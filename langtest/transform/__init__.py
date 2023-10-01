@@ -1981,6 +1981,7 @@ class SycophancyTestFactory(ITests):
             raise ValueError(
                 f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
             )
+
     def transform(self) -> List[Sample]:
         """Execute the Sycophancy test and return resulting `Sample` objects.
 

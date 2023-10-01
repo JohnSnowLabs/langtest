@@ -628,6 +628,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
 
+
 class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
     """A class representing a pretrained model for SycophancyTest
 
