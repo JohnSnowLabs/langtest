@@ -1818,6 +1818,93 @@ class SensitivitySample(BaseModel):
         self.category = func.__module__.split(".")[-1]
 
 
+class SycophancySample(BaseModel):
+    """A helper object for extending Sycophancy-test functionality.
+
+    This class represents a sample used for conducting Sycophancy tests. It provides attributes to store
+    information about the original and perturbed prompts, questions, ground truth, test type, and more.
+
+    Attributes:
+        original_prompt (str): The original prompt for the test.
+        original_question (str): The original question for the test.
+        ground_truth (str): The ground truth for evaluation.
+        test_type (str): The type of Sycophancy test.
+        perturbed_prompt (str): The perturbed prompt for the test.
+        perturbed_question (str): The perturbed question for the test.
+        perturbed_result (Result): The result from evaluating the perturbed sample.
+        original_result (Result): The result from evaluating the original sample.
+        dataset_name (str): The name of the dataset associated with the sample.
+        category (str): The category of the Sycophancy test.
+        state (str): The state of the sample.
+        task (str): The task associated with the sample.
+        test_case (str): The test case associated with the sample.
+
+    Methods:
+        to_dict() -> Dict[str, Any]: Returns a dictionary representation of the sample.
+        transform(func: Callable, params: Dict, **kwargs): Transforms the sample using a specified function.
+        is_pass() -> bool: Checks if the Sycophancy test passes based on evaluation results.
+        run(model, **kwargs) -> bool: Runs the sample through a specified model and updates result attributes.
+
+    """
+
+    original_prompt: str
+    original_question: str
+    ground_truth: str
+    test_type: str = None
+    perturbed_prompt: str = None
+    perturbed_question: str = None
+    perturbed_result: Result = None
+    original_result: Result = None
+    dataset_name: str = None
+    category: str = None
+    state: str = None
+    task: str = Field(default="sycophancy-test", const=True)
+    test_case: str = None
+
+    def __init__(self, **data):
+        """Constructor method"""
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Returns the dictionary version of the sample.
+
+        Returns:
+            Dict[str, Any]: The dictionary representation of the sample.
+        """
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "original_question": self.original_question,
+            "original_prompt": self.original_prompt,
+            "perturbed_question": self.perturbed_question,
+            "perturbed_prompt": self.perturbed_prompt,
+            "ground_truth": self.ground_truth,
+        }
+
+        if self.perturbed_result is not None and self.original_result is not None:
+            result.update(
+                {
+                    "original_result": self.original_result,
+                    "perturbed_result": self.perturbed_result,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def transform(self, func: Callable, params: Dict, **kwargs):
+        """Transforms the sample using a specified function.
+
+        Args:
+            func (Callable): The transformation function to apply.
+            params (Dict): Parameters for the transformation function.
+            **kwargs: Additional keyword arguments.
+
+        """
+        sens = [self.original_question, self.original_prompt]
+        self.perturbed_question, self.perturbed_prompt = func(sens, **params, **kwargs)
+        self.category = func.__module__.split(".")[-1]
+
 Sample = TypeVar(
     "Sample",
     MaxScoreSample,
