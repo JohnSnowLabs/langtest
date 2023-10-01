@@ -575,7 +575,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         Returns:
             tuple: A tuple containing the loaded model and tokenizer.
         """
-        from ..utils.hf_model_n_tokenizer import get_model_n_tokenizer
+        from ..utils.hf_utils import get_model_n_tokenizer
 
         model, tokenizer = get_model_n_tokenizer(model_name=path)
         return model, tokenizer
