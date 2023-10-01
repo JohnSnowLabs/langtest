@@ -3,6 +3,7 @@ import importlib
 import logging
 import os
 import re
+import random
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List, Union
@@ -32,6 +33,7 @@ from langtest.utils.custom_types import (
     WinoBiasSample,
     LegalSample,
     FactualitySample,
+    SycophancySample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -1750,3 +1752,68 @@ class HuggingFaceDataset(_IDataset):
         return NERSample(
             original=original, expected_results=NEROutput(predictions=ner_labels)
         )
+
+class SynteticDataset(_IDataset):
+    supported_tasks = ["sycophancy-test"]
+
+    def __init__(self, dataset_name: str, task: str):
+        """Initialize the SynteticData class.
+
+        Args:
+            dataset_name (str):
+                Name of the dataset to load.
+            task (str):
+                Task to be evaluated on.
+        """
+        self.dataset_name = dataset_name
+        self.task = task
+
+    @staticmethod
+    def replace_values(prompt: str, old_to_new: Dict[str, str]) -> str:
+        """Replace placeholders in the prompt with new values.
+
+        Args:
+            prompt (str):
+                The prompt containing placeholders to be replaced.
+            old_to_new (Dict[str, str]):
+                A dictionary mapping old placeholders to new values.
+
+        Returns:
+            str:
+                The prompt with placeholders replaced by their respective values.
+        """
+        for old_word, new_word in old_to_new.items():
+            prompt = prompt.replace(f"[{old_word}]", new_word)
+
+        return prompt
+
+    @staticmethod
+    def rand_range(start: int, end: int) -> int:
+        """Generate a random integer within a specified range.
+
+        Args:
+            start (int):
+                The start of the range (inclusive).
+            end (int):
+                The end of the range (inclusive).
+
+        Returns:
+            int:
+                A random integer within the specified range.
+        """
+        return random.randint(start, end)
+
+    def load_data(self) -> List[Sample]:
+        """Load data based on the specified task.
+
+        Returns:
+            List[Sample]:
+                A list of Sample objects containing loaded data.
+        """
+
+        if self.task == "sycophancy-test":
+            samples = getattr(self, f"load_{self.dataset_name.replace('-', '_')}")()
+            return samples
+
+        else:
+            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
