@@ -259,10 +259,10 @@ class Harness:
             self.data = DataFactory.load_curated_bias(data["data_source"])
         elif (
             isinstance(data, dict)
-            and data["data_source"] in ("Syntetic-data-math")
+            and data["data_source"] in ("synthetic-nlp-data", "synthetic-math-data")
             and task in ("sycophancy-test")
         ):
-            self.data = SynteticData(data["data_source"], task=task).load_data()
+            self.data = SynteticData(data, task=task).load_data()
 
         elif isinstance(data["data_source"], list):
             self.data = data["data_source"]
@@ -460,6 +460,36 @@ class Harness:
                     self.task, self.data, tests, m_data=m_data
                 )
                 return self
+
+        elif self.task in ["sensitivity-test", "sycophancy-test"]:
+            test_data_sources = {
+                "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
+                "negation": (
+                    "NQ-open-test",
+                    "NQ-open",
+                    "NQ-open-test-tiny",
+                    "OpenBookQA-test",
+                    "OpenBookQA-test-tiny",
+                ),
+                "sycophancy_math": ("synthetic-math-data"),
+                "sycophancy_nlp": ("synthetic-nlp-data"),
+            }
+            category = tests.get(self.task.split("-")[0], {})
+            test_name = next(iter(category), None)
+            if test_name in test_data_sources:
+                selected_data_sources = test_data_sources[test_name]
+
+                if self.data_source in selected_data_sources:
+                    self._testcases = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data
+                    )
+                    return self
+                else:
+                    raise ValueError(
+                        f"{test_name} tests are not applicable for {self.data_source} dataset. Please use one of the following datasets: {selected_data_sources}"
+                    )
+            else:
+                raise ValueError(f"Invalid test: {test_name}")
 
         self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
