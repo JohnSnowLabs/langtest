@@ -45,6 +45,7 @@ class Harness:
         "wino-bias",
         "legal-tests",
         "factuality-test",
+        "crows-pairs"
     ]
     SUPPORTED_HUBS = [
         "spacy",

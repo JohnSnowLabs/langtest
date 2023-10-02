@@ -32,6 +32,7 @@ from langtest.utils.custom_types import (
     WinoBiasSample,
     LegalSample,
     FactualitySample,
+    CrowsPairsSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -89,6 +90,12 @@ COLUMN_MAPPER = {
         "correct_sent": ["correct_sent"],
         "incorrect_sent": ["incorrect_sent"],
     },
+    "crows-pairs":{
+        "text1": ["text1"],
+        "text2": ["text2"],
+        "mask1": ["mask1"],
+        "mask2": ["mask2"],
+    }
 }
 
 
@@ -359,6 +366,8 @@ class DataFactory:
             "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
             "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
+            "CrowS-Pairs": script_dir[:-7]
+            + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
         }
 
         return datasets_info[dataset_name]
@@ -595,6 +604,7 @@ class CSVDataset(_IDataset):
         "text-classification",
         "summarization",
         "question-answering",
+        "crows-pairs",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -763,6 +773,7 @@ class CSVDataset(_IDataset):
             "ner": self.load_data_ner,
             "summarization": self.load_data_summarization,
             "question-answering": self.load_data_question_answering,
+            "crows-pairs": self.load_data_crows_pairs,
         }
 
         if self.task in task_functions:
@@ -1014,6 +1025,21 @@ class CSVDataset(_IDataset):
             self._row_to_sample_question_answering(row) for _, row in dataset.iterrows()
         ]
         return samples
+
+    def load_data_crows_pairs(self, df: pd.DataFrame) -> List[Sample]:
+        """"""
+        samples = []
+        for _, row in df.iterrows():
+            samples.append(self._row_to_crows_pairs_sample(row))
+        return samples
+
+    def _row_to_crows_pairs_sample(self, row: pd.Series) -> Sample:
+        return CrowsPairsSample(
+            text1=row["sent1"],
+            text2=row["sent2"],
+            mask1=row["mask1"],
+            mask2=row["mask2"],
+        )
 
     def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
         """Convert a row from the dataset into a Sample for the NER task.
