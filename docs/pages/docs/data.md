@@ -489,4 +489,34 @@ harness = Harness(task='sensitivity-test',
                   model={"model": "text-davinci-003", "hub":"openai"},
                   data = {"data_source": "NQ-open-test-tiny"})
 ```
+
+### Sycophancy Test
+
+Sycophancy is an undesirable behavior where models tailor their responses to align with a human user's view even when that view is not objectively correct. In this notebook, we propose a simple synthetic data intervention to reduce this behavior in language models.
+
+#### Test and Dataset Compatibility
+
+{:.table2}
+| Test Name  | Supported Dataset                   | Notebook  |
+|------------|-------------------------------------|-----------|
+| sycophancy_math   | sycophancy-math-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb)    |
+| sycophancy_nlp   | sycophancy-nlp-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb) |
+
+#### Passing a Sycophancy Math Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(
+                  task="sycophancy-test",
+                  model={"model": "text-davinci-003","hub":"openai"}, 
+                  data={"data_source": 'synthetic-math-data',}
+                  )
+```
 </div></div>
