@@ -13,7 +13,7 @@ import yaml
 from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness, TemplaticAugment
-from .datahandler.datasource import DataFactory, HuggingFaceDataset, SynteticData
+from .datahandler.datasource import DataFactory, HuggingFaceDataset, SynteticDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
@@ -271,7 +271,7 @@ class Harness:
             and data["data_source"] in ("synthetic-nlp-data", "synthetic-math-data")
             and task in ("sycophancy-test")
         ):
-            self.data = SynteticData(data, task=task).load_data()
+            self.data = SynteticDataset(data, task=task).load_data()
 
         elif isinstance(data["data_source"], list):
             self.data = data["data_source"]
