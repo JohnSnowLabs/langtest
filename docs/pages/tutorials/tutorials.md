@@ -73,6 +73,8 @@ The following table gives an overview of the different tutorial notebooks. We ha
 | Legal Support                      | OpenAI                             | Legal-Tests                        | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Legal_Support.ipynb)
 | Wino Bias                  | OpenAI                             | Wino-Bias                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Wino_Bias.ipynb)
 | MultiLexSum                                | OpenAI                            | Summarization                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb)                         |
+| Sycophncy Test                                | OpenAI                            | Sycophancy                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb) |
+
 
 <style>
   .heading {
