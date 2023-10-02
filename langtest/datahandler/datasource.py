@@ -2097,7 +2097,7 @@ class SynteticDataset(_IDataset):
         """
 
         rows = []
-        for data_sample in data:  # Rename the loop variable to avoid the name conflict
+        for data_sample in data:
             row = [
                 data_sample.original_question,
                 data_sample.original_prompt,
