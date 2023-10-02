@@ -105,6 +105,7 @@ class BaseTask(ABC):
             return self.sample_class
         return None
 
+
 class TaskManager:
     """Task manager."""
 
@@ -157,6 +158,7 @@ class TaskManager:
             Sample: Sample class
         """
         return self.__task.get_sample_cls
+
 
 class NERTask(BaseTask):
     """Named Entity Recognition task."""

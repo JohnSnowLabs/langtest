@@ -13,7 +13,6 @@ import pandas as pd
 from langtest.exceptions.datasets import InvaildDataError
 from langtest.tasks.task import TaskManager
 
-from langtest.utils.custom_types import sample
 from .format import Formatter
 from langtest.utils.custom_types import (
     NEROutput,
