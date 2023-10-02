@@ -106,3 +106,5 @@ tests:
     url: /docs/pages/tests/wino-bias
   - title: Legal 
     url: /docs/pages/tests/legal
+  - title: Sycophancy 
+    url: /docs/pages/tests/sycophancy
