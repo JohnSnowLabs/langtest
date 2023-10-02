@@ -194,6 +194,13 @@ setup(
             "data/Factuality/*",
             "data/NarrativeWedging/*",
             "data/MultiLexSum/*",
+            "data/CommonsenseQA/*",
+            "data/SIQA/*",
+            "data/PIQA/*",
+            "data/Privacy-Policy/*",
+            "data/Contracts/*",
+            "data/Consumer-Contracts/*",
+            "data/wikiDataset/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

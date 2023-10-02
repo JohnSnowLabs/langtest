@@ -9,6 +9,7 @@ from ..utils.util_metrics import cosine_similarity
 from langchain import OpenAI
 from langchain.embeddings import OpenAIEmbeddings
 import os
+from langtest.transform.utils import compare_generations_overlap
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -273,7 +274,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
 
-    def predict(self, text: str, text_transformed: str, **kwargs):
+    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """
         Predict the sensitivity of the model to text transformations.
 
@@ -296,15 +297,23 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         )
         actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
 
-        loss = 1 - cosine_similarity(expected_result_embeddings, actual_result_embeddings)
+        if test_name == "negation":
+            loss = 1 - cosine_similarity(
+                expected_result_embeddings, actual_result_embeddings
+            )
+            loss_diff = loss[0]
 
+        elif test_name == "toxicity":
+            count1 = compare_generations_overlap(expected_result)
+            count2 = compare_generations_overlap(actual_result)
+            loss_diff = count2 - count1
         return {
-            "loss_diff": loss[0],
+            "loss_diff": loss_diff,
             "expected_result": expected_result,
             "actual_result": actual_result,
         }
 
-    def __call__(self, text: str, text_transformed: str, **kwargs):
+    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """
         Alias of the 'predict' method.
 
@@ -319,7 +328,9 @@ class PretrainedModelForSensitivityTest(ModelAPI):
                 - 'actual_result' (str): The model's output for the transformed text.
         """
 
-        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+        return self.predict(
+            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
+        )
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
