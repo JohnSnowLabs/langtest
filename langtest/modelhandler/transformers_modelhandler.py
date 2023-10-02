@@ -462,7 +462,7 @@ class PretrainedModelForCrowsPairs(_ModelHandler):
         Returns:
             Dict: Output for wino-bias task
         """
-
+        text = text.replace("[MASK]", self.model.tokenizer.mask_token)
         return self.model(text, **kwargs)
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
