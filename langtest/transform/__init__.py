@@ -1854,6 +1854,11 @@ class CrowsPairsTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
+        sample_list["crows-pairs"] = [
+            x
+            for x in sample_list["crows-pairs"]
+            if (x.mask1_score != 0 or x.mask2_score != 0)
+        ]
         return sample_list["crows-pairs"]
 
 

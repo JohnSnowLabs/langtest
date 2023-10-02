@@ -90,12 +90,11 @@ COLUMN_MAPPER = {
         "correct_sent": ["correct_sent"],
         "incorrect_sent": ["incorrect_sent"],
     },
-    "crows-pairs":{
-        "text1": ["text1"],
-        "text2": ["text2"],
+    "crows-pairs": {
+        "sentence": ["sentence"],
         "mask1": ["mask1"],
         "mask2": ["mask2"],
-    }
+    },
 }
 
 
@@ -1035,8 +1034,7 @@ class CSVDataset(_IDataset):
 
     def _row_to_crows_pairs_sample(self, row: pd.Series) -> Sample:
         return CrowsPairsSample(
-            text1=row["sent1"],
-            text2=row["sent2"],
+            sentence=row["sentence"],
             mask1=row["mask1"],
             mask2=row["mask2"],
         )
