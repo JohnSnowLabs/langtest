@@ -190,7 +190,7 @@ setup(
             "data/asdiv/*",
             "data/LogiQA/*",
             "data/Wino-Bias/*",
-            "data/Crows-Pairs/*",
+            "data/CrowS-Pairs/*",
             "data/Legal-Support/*",
             "data/Factuality/*",
             "data/NarrativeWedging/*",

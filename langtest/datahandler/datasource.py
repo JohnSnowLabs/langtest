@@ -369,7 +369,7 @@ class DataFactory:
             "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
             "Crows-Pairs": script_dir[:-7]
-            + "/Crows-Pairs/crows_pairs_anonymized_masked.csv",
+            + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
         }
 
         return datasets_info[dataset_name]
