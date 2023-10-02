@@ -129,7 +129,7 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    data_sources = BaseDataset.data_sources
+    data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
@@ -161,7 +161,7 @@ class DataFactory:
                 _, self.file_ext = os.path.splitext(self._file_path)
 
         self.task = task
-        self.init_cls = None
+        self.init_cls: BaseDataset = None
         self.kwargs = kwargs
 
     def load_raw(self):
@@ -177,11 +177,11 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
-        if "data_source" in self._file_path:
-            if isinstance(self._file_path["data_source"], list):
-                return self._file_path
-        elif isinstance(self._file_path, list):
-            return self._file_path
+        # if "data_source" in self._file_path:
+        #     if isinstance(self._file_path["data_source"], list):
+        #         return self._file_path
+        # elif isinstance(self._file_path, list):
+        #     return self._file_path
 
         if len(self._custom_label) > 1 and self.file_ext == "csv":
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](

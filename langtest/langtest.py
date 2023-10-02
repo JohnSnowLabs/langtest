@@ -200,7 +200,10 @@ class Harness:
                 "or use a default configuration."
             )
 
-        self.data = DataFactory(data, task=self.task).load()
+        if isinstance(data.get("data_source"), list):
+            self.data = data.get("data_source")
+        else:
+            self.data = DataFactory(data, task=self.task).load()
 
         # config loading
         if config is not None:

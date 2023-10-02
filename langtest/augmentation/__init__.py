@@ -186,12 +186,12 @@ class AugmentRobustness(BaseAugmentaion):
         if "." not in training_data["data_source"]:
             if export_mode == "inplace":
                 final_aug_data = list(hash_map.values())
-                self.df.export_data(final_aug_data, output_path)
+                self.df.export(final_aug_data, output_path)
             elif export_mode == "transformed":
-                self.df.export_data(transformed_data, output_path)
+                self.df.export(transformed_data, output_path)
             else:
                 data.extend(final_aug_data)
-                self.df.export_data(data, output_path)
+                self.df.export(data, output_path)
 
             TestFactory.is_augment = False
             return final_aug_data
