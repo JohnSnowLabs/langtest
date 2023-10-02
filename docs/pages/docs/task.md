@@ -31,6 +31,7 @@ The `Harness` `task` parameter accepts different tasks.
 | **`factuality`**           | Factuality Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
 | **`wino-bias`**           | Wino Bias           | Fill mask models available in the hub [hubs](https://huggingface.co/models?pipeline_tag=fill-mask)           |
 | **`legal-tests`**           | Legal Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
+| **`sycophancy-test`**           | Sycophancy Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
 
 
 </div><div class="h3-box" markdown="1">
