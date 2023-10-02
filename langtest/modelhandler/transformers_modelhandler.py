@@ -420,7 +420,7 @@ class PretrainedModelForWinoBias(_ModelHandler):
 
 
 class PretrainedModelForCrowsPairs(_ModelHandler):
-    """A class representing a pretrained model for CrowS-Pairs detection.
+    """A class representing a pretrained model for Crows-Pairs detection.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
