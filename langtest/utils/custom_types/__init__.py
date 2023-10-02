@@ -19,6 +19,7 @@ from .sample import (
     LegalSample,
     FactualitySample,
     SycophancySample,
+    CrowsPairsSample,
 )
 from .helpers import Span, Transformation
 from .output import (

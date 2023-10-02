@@ -59,6 +59,7 @@ class ModelFactory:
         "legal-tests",
         "factuality-test",
         "sycophancy-test",
+        "crows-pairs",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -172,6 +173,9 @@ class ModelFactory:
 
         elif task == "wino-bias":
             self.model_class = model_handler.PretrainedModelForWinoBias(model)
+
+        elif task == "crows-pairs":
+            self.model_class = model_handler.PretrainedModelForCrowsPairs(model)
 
         elif task == "factuality-test":
             self.model_class = model_handler.PretrainedModelForFactualityTest(
@@ -303,6 +307,11 @@ class ModelFactory:
             )
         elif task in ("wino-bias"):
             model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
+
+        elif task in ("crows-pairs"):
+            model_class = modelhandler_module.PretrainedModelForCrowsPairs.load_model(
+                path
+            )
 
         elif task in ("factuality-test"):
             model_class = modelhandler_module.PretrainedModelForFactualityTest.load_model(

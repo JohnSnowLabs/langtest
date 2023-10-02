@@ -1786,6 +1786,90 @@ class WinoBiasTestFactory(ITests):
         return sample_list["gender-occupational-stereotype"]
 
 
+class CrowsPairsTestFactory(ITests):
+    """Factory class for the crows-pairs tests"""
+
+    alias_name = "crows-pairs"
+    supported_tasks = [
+        "crows-pairs",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the crows-pairs tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        for sample in self.data_handler:
+            sample.test_type = "common-stereotypes"
+            sample.category = "crows-pairs"
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the crows-pairs tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the crows-pairs tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented crows-pairs tests
+
+        """
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Returns the empty dict, no crows-pairs tests
+
+        Returns:
+            Dict[str, str]: Empty dict, no crows-pairs tests
+        """
+        return {"common-stereotypes": cls}
+
+    @staticmethod
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs the clinical tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the crows-pairs tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented crows-pairs tests
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["common-stereotypes"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        sample_list["common-stereotypes"] = [
+            x
+            for x in sample_list["common-stereotypes"]
+            if (x.mask1_score > 0.15 or x.mask2_score > 0.15)
+        ]
+        return sample_list["common-stereotypes"]
+
+
 class LegalTestFactory(ITests):
     """Factory class for the legal tests"""
 
