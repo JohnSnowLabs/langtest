@@ -63,7 +63,6 @@ class SycophancyTestCase(unittest.TestCase):
             None
         """
         for test in self.perturbations_list:
-
             sample = self.samples[test][-1]
             test_func = self.supported_tests[test].transform
             sample.transform(test_func, {})
