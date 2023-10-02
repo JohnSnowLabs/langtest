@@ -638,7 +638,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         Returns:
             tuple: A tuple containing the loaded model and tokenizer.
         """
-        from ..utils.hf_model_n_tokenizer import get_model_n_tokenizer
+        from ..utils.hf_utils import get_model_n_tokenizer
 
         model, tokenizer = get_model_n_tokenizer(model_name=path)
         return model, tokenizer
@@ -693,6 +693,14 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
     def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Alias of the 'predict' method."""
 
-        return self.predict(
-            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
-        )
+        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+
+
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for SycophancyTest
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
