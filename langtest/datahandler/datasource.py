@@ -60,7 +60,7 @@ COLUMN_MAPPER = {
     },
     "question-answering": {
         "text": ["question"],
-        "context": ["context", "passage"],
+        "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
@@ -344,6 +344,24 @@ class DataFactory:
             "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
             "MultiLexSum-test-tiny": script_dir[:-7]
             + "/MultiLexSum/MultiLexSum-test.jsonl",
+            "wikiDataset-test": script_dir[:-7] + "/wikiDataset/wikiDataset-test.jsonl",
+            "wikiDataset-test-tiny": script_dir[:-7]
+            + "/wikiDataset/wikiDataset-test-tiny.jsonl",
+            "CommonsenseQA-test": script_dir[:-7]
+            + "/CommonsenseQA/commonsenseQA-test.jsonl",
+            "CommonsenseQA-test-tiny": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-test-tiny.jsonl",
+            "CommonsenseQA-validation": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
+            "CommonsenseQA-validation-tiny": script_dir[:-7]
+            + "/CommonsenseQA/CommonsenseQA-validation-tiny.jsonl",
+            "SIQA-test": script_dir[:-7] + "/SIQA/SIQA-test.jsonl",
+            "SIQA-test-tiny": script_dir[:-7] + "/SIQA/SIQA-test-tiny.jsonl",
+            "PIQA-test": script_dir[:-7] + "/PIQA/PIQA-test.jsonl",
+            "PIQA-test-tiny": script_dir[:-7] + "/PIQA/PIQA-test-tiny.jsonl",
+            "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
+            "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
+            "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -398,7 +416,13 @@ class ConllDataset(_IDataset):
                     tokens = sent.strip().split("\n")
 
                     # get annotations from token level split
-                    token_list = [t.split() for t in tokens]
+                    valid_tokens, token_list = self.__token_validation(tokens)
+
+                    if not valid_tokens:
+                        logging.warning(
+                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
+                        )
+                        continue
 
                     #  get token and labels from the split
                     raw_data.append(
@@ -436,7 +460,13 @@ class ConllDataset(_IDataset):
                     tokens = sent.strip().split("\n")
 
                     # get annotations from token level split
-                    token_list = [t.split() for t in tokens]
+                    valid_tokens, token_list = self.__token_validation(tokens)
+
+                    if not valid_tokens:
+                        logging.warning(
+                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
+                        )
+                        continue
 
                     #  get token and labels from the split
                     ner_labels = []
@@ -487,6 +517,43 @@ class ConllDataset(_IDataset):
 
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
+
+    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):
+        """Validates the tokens in a sentence.
+
+        Args:
+            tokens (str): List of tokens in a sentence.
+
+        Returns:
+            bool: True if all tokens are valid, False otherwise.
+            List[List[str]]: List of tokens.
+
+        """
+        prev_label = None  # Initialize the previous label as None
+        valid_labels = []  # Valid labels
+        token_list = []  # List of tokens
+
+        for t in tokens:
+            tsplit = t.split()
+            if len(tsplit) == 4:
+                token_list.append(tsplit)
+                valid_labels.append(tsplit[-1])
+            else:
+                logging.warning(
+                    # invalid label entries in the sentence
+                    f" Invalid or Missing label entries in the sentence: {t}"
+                )
+                return False, token_list
+
+        if valid_labels[0].startswith("I-"):
+            return False, token_list  # Invalid condition: "I" at the beginning
+
+        for label in valid_labels:
+            if prev_label and prev_label.startswith("O") and label.startswith("I-"):
+                return False, token_list  # Invalid condition: "I" followed by "O"
+            prev_label = label  # Update the previous label
+
+        return True, token_list  # All labels are valid
 
 
 class JSONDataset(_IDataset):
@@ -1290,6 +1357,7 @@ class JSONLDataset(_IDataset):
                             diagnosis=item["Diagnosis"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
+                            clinical_domain=item["clinical_domain"],
                         )
                     )
                 elif self.task == "disinformation-test":
@@ -1302,7 +1370,7 @@ class JSONLDataset(_IDataset):
                         )
                     ),
                 elif self.task == "sensitivity-test":
-                    supported_data = ["NQ-open", "OpenBookQA"]
+                    supported_data = ("NQ-open", "OpenBookQA", "wikiDataset")
                     if self._file_path.split("/")[-2] in supported_data:
                         data.append(
                             SensitivitySample(original=item[self.column_matcher["text"]])
@@ -1343,6 +1411,7 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
+
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -1666,9 +1735,7 @@ class HuggingFaceDataset(_IDataset):
             row = Formatter.process(s, output_format="csv")
             rows.append(row)
 
-        df = pd.DataFrame(
-            rows, columns=list(self.COLUMN_NAMES["text-classification"].keys())
-        )
+        df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
         df.to_csv(output_path, index=False, encoding="utf-8")
 
     def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:

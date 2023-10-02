@@ -10,9 +10,9 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-
 from langtest.utils.lib_manager import try_import_lib
 import importlib
+from langtest.transform.utils import compare_generations_overlap
 
 
 class PretrainedModelForNER(_ModelHandler):
@@ -393,14 +393,26 @@ class PretrainedModelForWinoBias(_ModelHandler):
             self.masked_text = text.replace("[MASK]", "<mask>")
             prediction = self.model(self.masked_text, **kwargs)
 
-        # Adjusting the list comprehension to strip spaces from the token strings
-        eval_scores = {
-            i["token_str"].strip(): i["score"]
-            for i in prediction
-            if i["token_str"].strip() in ["he", "she", "his", "her"]
-        }
+        sorted_predictions = sorted(prediction, key=lambda x: x["score"], reverse=True)
 
-        return eval_scores
+        # Extract top five (or less if not available) predictions
+        top_five = sorted_predictions[:5]
+
+        top_five_tokens = [i["token_str"].strip() for i in top_five]
+
+        if any(token in top_five_tokens for token in ["he", "she", "his", "her"]):
+            # Adjusting the list comprehension to strip spaces from the token strings and get eval_scores
+            eval_scores = {
+                i["token_str"].strip(): i["score"]
+                for i in top_five
+                if i["token_str"].strip() in ["he", "she", "his", "her"]
+            }
+            return eval_scores
+        else:
+            print(
+                "Skipping an irrelevant sample, as the gender pronoun replacement was not amongst top five predictions"
+            )
+            return None
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
         """Alias of the 'predict' method"""
@@ -580,7 +592,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         model, tokenizer = get_model_n_tokenizer(model_name=path)
         return model, tokenizer
 
-    def predict(self, text: str, text_transformed: str, **kwargs):
+    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
         Args:
@@ -596,7 +608,6 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
         """
         self.model.eval()
-
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
         ).to(self.model.device)
@@ -608,14 +619,19 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         outputs_transformed = self.model(
             **input_encoded_transformed, labels=input_encoded_transformed["input_ids"]
         )
-        loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
-
         expected_result = self.tokenizer.decode(
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
         actual_result = self.tokenizer.decode(
             outputs_transformed.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
+        if test_name == "negation":
+            loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
+
+        elif test_name == "toxicity":
+            count1 = compare_generations_overlap(expected_result)
+            count2 = compare_generations_overlap(actual_result)
+            loss_diff = count2 - count1
 
         return {
             "loss_diff": loss_diff,
@@ -623,7 +639,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             "actual_result": actual_result,
         }
 
-    def __call__(self, text: str, text_transformed: str, **kwargs):
+    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Alias of the 'predict' method."""
 
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
