@@ -1801,7 +1801,7 @@ class CrowsPairsTestFactory(ITests):
 
         """
         for sample in self.data_handler:
-            sample.test_type = "crows-pairs"
+            sample.test_type = "common-stereotypes"
             sample.category = "crows-pairs"
         return self.data_handler
 
@@ -1830,7 +1830,7 @@ class CrowsPairsTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no crows-pairs tests
         """
-        return {"crows-pairs": cls}
+        return {"common-stereotypes": cls}
 
     @staticmethod
     async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
@@ -1846,7 +1846,7 @@ class CrowsPairsTestFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["crows-pairs"]:
+        for sample in sample_list["common-stereotypes"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1854,12 +1854,12 @@ class CrowsPairsTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
-        sample_list["crows-pairs"] = [
+        sample_list["common-stereotypes"] = [
             x
-            for x in sample_list["crows-pairs"]
-            if (x.mask1_score != 0 or x.mask2_score != 0)
+            for x in sample_list["common-stereotypes"]
+            if (x.mask1_score > 0.15 or x.mask2_score > 0.15)
         ]
-        return sample_list["crows-pairs"]
+        return sample_list["common-stereotypes"]
 
 
 class LegalTestFactory(ITests):
