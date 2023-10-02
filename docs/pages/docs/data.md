@@ -462,7 +462,7 @@ harness = Harness(task='factuality-test',
 
 ### Sensitivity Test
 
-The Evaluating Model’s Sensitivity to Negation Test focuses on assessing a model’s responsiveness to negations introduced into its input text. The primary objective is to determine whether the model can effectively detect and respond to negations. Users should choose a benchmark dataset from the provided list.
+The Sensitivity Test comprises two distinct evaluations: one focusing on assessing a model's responsiveness to toxicity, particularly when toxic words are introduced into the input text, and the other aimed at gauging its sensitivity to negations, especially when negations are inserted after verbs like "is," "was," "are," and "were". Users should choose a benchmark dataset from the provided list.
 
 #### Datasets
 
@@ -474,8 +474,20 @@ The Evaluating Model’s Sensitivity to Negation Test focuses on assessing a mod
 | **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples   
 | **OpenBookQA-test**                                     | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions                                                                                                        |
 | **OpenBookQA-test-tiny**                                | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples. 
+| **wikiDataset-test**                                     | [wikiDataset](https://huggingface.co/datasets/wikitext)                                                  | Testing set from the wikiDataset, containing 1000 sentences                                                                                                       |
+| **wikiDataset-test-tiny**                                | [wikiDataset](https://huggingface.co/datasets/wikitext)                                                  | Truncated version of the test set from the wikiDataset, containing 50 sentences. 
 
 </div><div class="h3-box" markdown="1">
+
+#### Test and Dataset Compatibility
+
+{:.table2}
+
+| Test Name  | Supported Dataset                   | Notebook  |
+|------------|-------------------------------------|-----------|
+| toxicity   | wikiDataset-test, wikiDataset-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb)    |
+| negation   | NQ-open-test, NQ-open, NQ-open-test-tiny, OpenBookQA-test, OpenBookQA-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
+
 
 #### Passing a Sensitivity Test Dataset to the Harness
 
