@@ -158,19 +158,19 @@ class Harness:
         self.is_default = False
 
         # loading model and hub
-        # if isinstance(model, list):
-        #     for item in model:
-        #         if not isinstance(item, dict):
-        #             raise ValueError("Each item in the list must be a dictionary")
-        #         if "model" not in item or "hub" not in item:
-        #             raise ValueError(
-        #                 "Each dictionary in the list must have 'model' and 'hub' keys"
-        #             )
-        # elif isinstance(model, dict):
-        #     if "model" not in model or "hub" not in model:
-        #         raise ValueError("The dictionary must have 'model' and 'hub' keys")
-        # else:
-        #     raise ValueError("Invalid 'model' parameter type")
+        if isinstance(model, list):
+            for item in model:
+                if not isinstance(item, dict):
+                    raise ValueError("Each item in the list must be a dictionary")
+                if "model" not in item or "hub" not in item:
+                    raise ValueError(
+                        "Each dictionary in the list must have 'model' and 'hub' keys"
+                    )
+        elif isinstance(model, dict):
+            if "model" not in model or "hub" not in model:
+                raise ValueError("The dictionary must have 'model' and 'hub' keys")
+        else:
+            raise ValueError("Invalid 'model' parameter type")
 
         if isinstance(model, dict):
             hub, model = model["hub"], model["model"]

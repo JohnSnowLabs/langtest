@@ -1214,21 +1214,16 @@ class CSVDataset(BaseDataset):
             List[Sample]:       list of samples
         """
         data = pd.read_csv(file_name, **kwargs)
-        custom_names = {
-            "question-answering": "qa",
-            "text-classification": "sequenceclassification",
-        }
-        sample_models = {
-            k.lower(): v for k, v in sample.__dict__.items() if k.endswith("Sample")
-        }
         samples = []
 
         for i in data.to_dict(orient="records"):
-            if self.task in custom_names:
-                sample_name = custom_names[self.task] + "sample"
-            else:
-                sample_name = self.task.lower() + "sample"
-            samples.append(sample_models[sample_name](**i))
+            # if self.task in custom_names:
+            #     sample_name = custom_names[self.task] + "sample"
+            # else:
+            #     sample_name = self.task.lower() + "sample"
+            # samples.append(sample_models[sample_name](**i))
+            sample = self.task.get_sample_class(**i)
+            samples.append(sample)
         return samples
 
 

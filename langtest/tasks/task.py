@@ -34,6 +34,7 @@ class BaseTask(ABC):
 
     task_registry = {}
     _name = None
+    sample_class = None
 
     @classmethod
     @abstractmethod
@@ -97,6 +98,12 @@ class BaseTask(ABC):
 
         return coulumn_mapper
 
+    @property
+    def get_sample_cls(self):
+        """Return the sample class."""
+        if self.sample_class:
+            return self.sample_class
+        return None
 
 class TaskManager:
     """Task manager."""
@@ -141,6 +148,15 @@ class TaskManager:
         """Return the task name."""
         return self.__task_name
 
+    @property
+    def get_sample_class(self):
+        """
+        Return the sample class.
+
+        Returns:
+            Sample: Sample class
+        """
+        return self.__task.get_sample_cls
 
 class NERTask(BaseTask):
     """Named Entity Recognition task."""
@@ -161,6 +177,7 @@ class NERTask(BaseTask):
         "pos": ["pos_tags", "pos_tag", "pos", "part_of_speech"],
         "chunk": ["chunk_tags", "chunk_tag"],
     }
+    sample_class = NERSample
 
     def create_sample(
         cls,
@@ -232,6 +249,7 @@ class TextClassificationTask(BaseTask):
         "text": ["text", "sentences", "sentence", "sample"],
         "label": ["label", "labels ", "class", "classes"],
     }
+    sample_class = SequenceClassificationSample
 
     def create_sample(
         cls,
@@ -276,6 +294,7 @@ class QuestionAnsweringTask(BaseTask):
         "context": ["context", "passage"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
     }
+    sample_class = QASample
 
     def create_sample(
         cls,
@@ -319,6 +338,7 @@ class SummarizationTask(BaseTask):
 
     _name = "summarization"
     _default_col = {"text": ["text", "document"], "summary": ["summary"]}
+    sample_class = SummarizationSample
 
     def create_sample(
         cls,
@@ -353,6 +373,7 @@ class TranslationTask(BaseTask):
 
     _name = "translation"
     _default_col = {"text": ["text", "original", "sourcestring"]}
+    sample_class = TranslationSample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "translation"
@@ -378,6 +399,7 @@ class ToxicityTask(BaseTask):
 
     _name = "toxicity"
     _default_col = {"text": ["text"]}
+    sample_class = ToxicitySample
 
     def create_sample(
         cls, row_data: dict, feature_column: str = "text", dataset_name: str = "toxicity"
@@ -404,6 +426,7 @@ class SecurityTask(BaseTask):
 
     _name = "security"
     _default_col = {"text": ["text", "prompt"]}
+    sample_class = SecuritySample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "security"
@@ -443,6 +466,7 @@ class ClinicalTestsTask(BaseTask):
             "diagnosis",
         ],
     }
+    sample_class = ClinicalSample
 
     def create_sample(
         cls,
@@ -484,6 +508,7 @@ class DisinformationTestTask(BaseTask):
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     }
+    sample_class = DisinformationSample
 
     def create_sample(
         cls,
@@ -515,6 +540,7 @@ class PoliticalTask(BaseTask):
 
     _name = "political"
     _default_col = {"text": ["text", "prompt"]}
+    sample_class = LLMAnswerSample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "political"
@@ -540,6 +566,7 @@ class WinoBiasTask(BaseTask):
 
     _name = "winobias"
     _default_col = {"text": ["text", "prompt"]}
+    sample_class = WinoBiasSample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "winobias"
@@ -568,6 +595,7 @@ class LegalTask(BaseTask):
 
     _name = "legal"
     _default_col = {"text": ["text", "prompt"]}
+    sample_class = LegalSample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "legal"
@@ -595,6 +623,7 @@ class FactualityTask(BaseTask):
 
     _name = "factuality"
     _default_col = {"text": ["text", "prompt"]}
+    sample_class = FactualitySample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "factuality"
@@ -622,6 +651,7 @@ class SensitivityTask(BaseTask):
 
     _name = "sensitivity"
     _default_col = {"text": ["text", "prompt"]}
+    sample_class = SensitivitySample
 
     def create_sample(
         cls, row_data: dict, feature_column="text", dataset_name: str = "sensitivity"
