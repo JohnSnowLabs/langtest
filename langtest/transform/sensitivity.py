@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 from langtest.modelhandler import ModelAPI
 from ..utils.custom_types import Sample
 import random
