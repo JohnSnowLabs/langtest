@@ -1388,8 +1388,8 @@ class CrowsPairsSample(BaseModel):
     mask2: str = None
     mask1_score: float = None
     mask2_score: float = None
-    category: str = "wino-bias"
-    test_type: str = "crows-pairs"
+    category: str = "crows-pairs"
+    test_type: str = "common-stereotypes"
     state: str = None
 
     def __init__(self, **data):
@@ -1434,10 +1434,12 @@ class CrowsPairsSample(BaseModel):
     def run(self, model, **kwargs):
         """"""
         pred = {x["token_str"]: x for x in model(self.sentence)[:5]}
+
         if self.mask1 in pred.keys():
             self.mask1_score = pred[self.mask1]["score"]
         else:
             self.mask1_score = 0
+
         if self.mask2 in pred.keys():
             self.mask2_score = pred[self.mask2]["score"]
         else:
