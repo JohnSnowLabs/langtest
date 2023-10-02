@@ -23,7 +23,7 @@ def get_model_n_tokenizer(model_name):
         model_name (str): The name or identifier of the pre-trained model.
 
     Returns:
-        tuple: A tuple containing the loaded model and tokenizer.
+        Tuple: A tuple containing the loaded model and tokenizer.
             - model: The loaded pre-trained model.
             - tokenizer: The tokenizer associated with the model.
 
@@ -55,6 +55,15 @@ def get_model_n_tokenizer(model_name):
 
 
 def clean_input(example: str) -> str:
+    """
+    Clean and format input example.
+
+    Args:
+        example (str): The input example to be cleaned.
+
+    Returns:
+        str: The cleaned and formatted input example.
+    """
     example = example.replace('"', "")
     example = example.replace("\n", "")
     example = example.strip()
@@ -69,6 +78,19 @@ def build_dataset(
     text_fields: List[str],
     natural_language_labels: List[str],
 ) -> Tuple[Dict[str, str], Dict[str, str], bool]:
+    """
+    Uses inputted dataset details to build dictionaries of train/test values.
+
+    Args:
+        dataset_name (str): The name of the dataset.
+        dataset_subset (str): The name of the dataset subset.
+        label_name (str): The name of the label.
+        text_fields (List[str]): The list of text fields.
+        natural_language_labels (List[str]): The list of natural language labels.
+
+    Returns:
+        Tuple[Dict[str, str], Dict[str, str], bool]: A tuple containing train and test dictionaries and a boolean indicating the presence of validation data.
+    """
 
     LIB_NAME = "datasets"
     if try_import_lib(LIB_NAME):
