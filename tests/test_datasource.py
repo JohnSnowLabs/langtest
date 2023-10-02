@@ -6,7 +6,7 @@ from langtest.datahandler.datasource import (
     ConllDataset,
     HuggingFaceDataset,
     JSONLDataset,
-    SynteticData,
+    SynteticDataset,
 )
 from langtest.utils.custom_types.output import (
     NEROutput,
@@ -378,7 +378,7 @@ class TestSynteticData:
 
     def test_load_data(self, dataset_config):
         """Test the load_data method"""
-        dataset = SynteticData(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
         samples = dataset.load_data()
         assert isinstance(samples, list)
         for sample in samples:
@@ -386,14 +386,14 @@ class TestSynteticData:
 
     def test_load_raw_data(self, dataset_config):
         """Test the load_raw_data method"""
-        dataset = SynteticData(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
         raw_data = dataset.load_raw_data()
         assert isinstance(len(raw_data) > 0)
         assert isinstance(raw_data, list)
 
     def test_export_data(self, dataset_config):
         """Test the export_data method"""
-        dataset = SynteticData(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
         dataset.export_data(
             data=[self.sample, self.sample], output_path="/tmp/exported_sample.csv"
         )
