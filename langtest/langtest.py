@@ -128,6 +128,15 @@ class Harness:
             "sensitivity-test": resource_filename(
                 "langtest", "data/config/sensitivity_config.yml"
             ),
+            "sycophancy-test-huggingface-inference-api": resource_filename(
+                "langtest", "data/config/sycophancy_huggingface_config.yml"
+            ),
+            "sycophancy-test-openai": resource_filename(
+                "langtest", "data/config/sycophancy_openai_config.yml"
+            ),
+            "sycophancy-test-ai21": resource_filename(
+                "langtest", "data/config/sycophancy_openai_config.yml"
+            ),
         },
     }
 
@@ -282,7 +291,7 @@ class Harness:
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-            elif task in ["disinformation-test", "factuality-test"]:
+            elif task in ("disinformation-test", "factuality-test", "sycophancy-test"):
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG["task"][task + "-" + hub]
                 )

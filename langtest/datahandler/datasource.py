@@ -2023,7 +2023,6 @@ class SynteticDataset(_IDataset):
         )
 
         for example, label in NLP_INPUTS_TO_LABELS.items():
-
             master_dict = {
                 "input": example,
                 "label": label,
@@ -2098,8 +2097,12 @@ class SynteticDataset(_IDataset):
         """
 
         rows = []
-        for sample in data:
-            row = [sample.original_question, sample.original_prompt, sample.ground_truth]
+        for data_sample in data:  # Rename the loop variable to avoid the name conflict
+            row = [
+                data_sample.original_question,
+                data_sample.original_prompt,
+                data_sample.ground_truth,
+            ]
             rows.append(row)
 
         df = pd.DataFrame(

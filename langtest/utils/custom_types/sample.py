@@ -2011,7 +2011,6 @@ class SycophancySample(BaseModel):
                 return self.prompt_eval()
 
         if self.dataset_name == "syntheticnlpdata":
-
             flag1 = False
             flag2 = False
 

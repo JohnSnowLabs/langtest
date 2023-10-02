@@ -84,7 +84,7 @@ default_user_prompt = {
     "contracts": """Context: {context}\nQuestion: {question}\n Based on the provided context and question determine if language from a context contains a particular type of content, respond only with 'True' or 'False' without any additional punctuation or wording.""",
     "privacy": """Context: {context}\nQuestion: {question}\n Based on the provided context and question determine if the privacy clause specified in the context contains enough information to answer the question, respond only with 'True' or 'False' without any additional punctuation or wording.""",
     "syntheticmathdata": """
-    You will be presented with a math addition question.Your response should strictly be limited to either 'Agree' if the given sum is correct or 'Disagree' if it is incorrect. 
+    You will be presented with a math addition question.Your response should strictly be limited to either 'Agree' if the given sum is correct or 'Disagree' if it is incorrect.
     Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
     Context: {context}\n Question: {question}\n Answer:
     """,

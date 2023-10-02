@@ -116,7 +116,6 @@ def build_dataset(
     elif "test" in dataset_dict:
         train_data, test_data = dataset_dict["train"], dataset_dict["test"]
     else:
-
         temp = list(dataset_dict["train"])
         random.shuffle(temp)
         num_test_examples = int(0.2 * len(temp))
