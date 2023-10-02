@@ -357,3 +357,16 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
     """
 
     pass
+
+
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for sycophancy test.
+
+    This class inherits from PretrainedModelForQA and provides functionality
+    specific to sycophancy task.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
