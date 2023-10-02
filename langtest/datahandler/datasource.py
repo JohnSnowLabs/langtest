@@ -1756,18 +1756,19 @@ class HuggingFaceDataset(_IDataset):
 
 
 class SynteticDataset(_IDataset):
-    """Example dataset class that loads data using the Hugging Face dataset library."""
+    """Example dataset class that loads data using the Hugging Face dataset library and also generates synthetic math data."""
 
     supported_tasks = ["sycophancy-test"]
 
     def __init__(self, dataset: dict, task: str):
-        """Initialize the SynteticData class.
+        """
+        Initialize the SynteticData class.
 
         Args:
-            dataset_name (str):
-                Name of the dataset to load.
-            task (str):
-                Task to be evaluated on.
+            dataset (dict): A dictionary containing dataset information.
+                - data_source (str): Name of the dataset to load.
+                - subset (str, optional): Sub-dataset name (default is 'sst2').
+            task (str): Task to be evaluated on.
         """
         self.dataset_name = dataset["data_source"]
         self.sub_name = dataset.get("subset", "sst2")
@@ -1775,17 +1776,15 @@ class SynteticDataset(_IDataset):
 
     @staticmethod
     def replace_values(prompt: str, old_to_new: Dict[str, str]) -> str:
-        """Replace placeholders in the prompt with new values.
+        """
+        Replace placeholders in the prompt with new values.
 
         Args:
-            prompt (str):
-                The prompt containing placeholders to be replaced.
-            old_to_new (Dict[str, str]):
-                A dictionary mapping old placeholders to new values.
+            prompt (str): The prompt containing placeholders to be replaced.
+            old_to_new (Dict[str, str]): A dictionary mapping old placeholders to new values.
 
         Returns:
-            str:
-                The prompt with placeholders replaced by their respective values.
+            str: The prompt with placeholders replaced by their respective values.
         """
         for old_word, new_word in old_to_new.items():
             prompt = prompt.replace(f"[{old_word}]", new_word)
@@ -1794,17 +1793,15 @@ class SynteticDataset(_IDataset):
 
     @staticmethod
     def rand_range(start: int, end: int) -> int:
-        """Generate a random integer within a specified range.
+        """
+        Generate a random integer within a specified range.
 
         Args:
-            start (int):
-                The start of the range (inclusive).
-            end (int):
-                The end of the range (inclusive).
+            start (int): The start of the range (inclusive).
+            end (int): The end of the range (inclusive).
 
         Returns:
-            int:
-                A random integer within the specified range.
+            int: A random integer within the specified range.
         """
         return random.randint(start, end)
 
@@ -1825,6 +1822,16 @@ class SynteticDataset(_IDataset):
 
     @staticmethod
     def extract_data_with_equal_proportion(data_dict, total_samples):
+        """
+        Extract data with equal proportions from a dictionary.
+
+        Args:
+            data_dict (dict): A dictionary containing data with labels.
+            total_samples (int): The total number of samples to extract.
+
+        Returns:
+            dict: Extracted data with equal label proportions.
+        """
 
         shuffled_keys = list(data_dict.keys())
         random.shuffle(shuffled_keys)
@@ -1862,9 +1869,14 @@ class SynteticDataset(_IDataset):
 
         return final_extracted_data_dict
 
-    def load_synthetic_math_data(
-        self,
-    ) -> List[Sample]:
+    def load_synthetic_math_data(self) -> List[Sample]:
+        """
+        Load synthetic mathematical data for evaluation.
+
+        Returns:
+            List[Sample]: A list of Sample objects containing loaded data.
+        """
+
         TAIL = "\n\nChoices:\n (A) Agree\n (B) Disagree\n\nAnswer:\n"
 
         TAIL_INVERTED = TAIL.replace(
@@ -1902,6 +1914,12 @@ class SynteticDataset(_IDataset):
         return samples
 
     def load_synthetic_nlp_data(self) -> List[Sample]:
+        """
+        Load synthetic NLP data for evaluation from HuggingFace library.
+
+        Returns:
+            List[Sample]: A list of Sample objects containing loaded data.
+        """
 
         from ..utils.hf_utils import build_dataset
 
@@ -1993,6 +2011,10 @@ class SynteticDataset(_IDataset):
         )
 
     def load_raw_data(self):
+        """
+        Load raw data without any processing.
+        """
+
         getattr(self, f"load_{self.dataset_name.replace('-', '_')}")()
         data_list = [
             (sentence, label) for sentence, label in self.prompt_to_answer.items()
@@ -2000,6 +2022,14 @@ class SynteticDataset(_IDataset):
         return data_list
 
     def export_data(self, data: List[Sample], output_path: str):
+        """
+        Export data to a CSV file.
+
+        Args:
+            data (List[Sample]): A list of Sample objects to export.
+            output_path (str): The path to save the CSV file.
+        """
+
         rows = []
         for sample in data:
             row = [sample.original_question, sample.original_prompt, sample.ground_truth]
