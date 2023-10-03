@@ -294,6 +294,8 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 | **XSum-test**      | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples                                             |
 | **XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples                       |
 | **XSum-bias** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Manually annotated bias version of the Xsum dataset, containing 382 labeled examples 
+| **MultiLexSum-test** | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883) | Testing set from the MultiLexSum dataset, containing 868 document and summary examples.                       |
+| **MultiLexSum-test-tiny** | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883) |  Truncated version of XSum dataset which contains 50 document and summary examples. 
 
 </div><div class="h3-box" markdown="1">
 #### Summarization Benchmarks: Use Cases and Evaluations
@@ -302,6 +304,7 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 | Dataset  | Use Case                                                                                                                                                                                                                                            | Notebook                                                                                                                                                                                                                 |
 | -------- |
 | **XSum** | Evaluate your model's ability to generate concise and informative summaries for long articles with the XSum dataset. It consists of articles and corresponding one-sentence summaries, offering a valuable benchmark for text summarization models. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/XSum_dataset.ipynb) |
+| **MultiLexSum** | Evaluate your model's ability to generate concise and informative summaries for legal case contexts from the Multi-LexSum dataset, with a focus on comprehensively capturing essential themes and key details within the legal narratives. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb) |
 
 </div><div class="h3-box" markdown="1">
 
