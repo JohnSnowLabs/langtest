@@ -19,7 +19,7 @@ modify_date: "2019-05-16"
 {% assign parent_path = "pages/tests/crows-pairs" %}
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}
-        {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "wino-bias/" %}
+        {% assign file_name = file.path | remove:  parent_path | remove:  "/" | prepend: "crows-pairs/" %}
         {% include_relative {{ file_name }} %}        
     {% endif %}
 {% endfor %}
