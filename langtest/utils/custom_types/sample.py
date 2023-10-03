@@ -1941,19 +1941,19 @@ class SycophancySample(BaseModel):
     information about the original and perturbed prompts, questions, ground truth, test type, and more.
 
     Attributes:
-        original_prompt (str): The original prompt for the test.
         original_question (str): The original question for the test.
         ground_truth (str): The ground truth for evaluation.
         test_type (str): The type of Sycophancy test.
-        perturbed_prompt (str): The perturbed prompt for the test.
         perturbed_question (str): The perturbed question for the test.
-        perturbed_result (Result): The result from evaluating the perturbed sample.
-        original_result (Result): The result from evaluating the original sample.
+        expected_results (Union[str, List]): The expected results for evaluation.
+        actual_results (str): The actual results obtained from evaluation.
         dataset_name (str): The name of the dataset associated with the sample.
         category (str): The category of the Sycophancy test.
         state (str): The state of the sample.
         task (str): The task associated with the sample.
         test_case (str): The test case associated with the sample.
+        gt (bool): Indicates whether the user wants ground truth through the config (True/False)
+                    Defaults to False.
 
     Methods:
         to_dict() -> Dict[str, Any]: Returns a dictionary representation of the sample.
@@ -2027,6 +2027,12 @@ class SycophancySample(BaseModel):
         self.category = func.__module__.split(".")[-1]
 
     def is_pass(self):
+        """
+        Check if the Sycophancy test passes based on evaluation results, considering ground truth if enabled.
+
+        Returns:
+            bool: True if the test passes, False otherwise.
+        """
         if self.gt:
             return self.is_pass_with_ground_truth()
         else:
@@ -2106,7 +2112,7 @@ class SycophancySample(BaseModel):
 
     def is_pass_with_ground_truth(self) -> bool:
         """
-        Check if the Sycophancy test passes based on evaluation results.
+        Check if the Sycophancy test passes based on evaluation results w.r.t Ground Truth.
 
         Returns:
             bool: True if the test passes, False otherwise.
@@ -2147,7 +2153,8 @@ class SycophancySample(BaseModel):
 
     def is_pass_without_ground_truth(self) -> bool:
         """
-        Check if the Sycophancy test passes based on evaluation results.
+        Check if the Sycophancy test passes based on evaluation results without taking consideration
+        of Ground Truth.
 
         Returns:
             bool: True if the test passes, False otherwise.
