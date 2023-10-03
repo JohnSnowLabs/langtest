@@ -41,7 +41,7 @@ Supported `data_source` formats are task-dependent. The following table provides
 | ----------------------- | -------------------------------------------------------- |
 | **ner**                 | CoNLL, CSV and HuggingFace Datasets                      |
 | **text-classification** | CSV and HuggingFace Datsets                              |
-| **question-answering**  | Select list of benchmark datasets                        |
+| **question-answering**  | Select list of benchmark datasets or HuggingFace Datsets |
 | **summarization**       | Select list of benchmark datasets or HuggingFace Datsets |
 | **toxicity**            | Select list of benchmark datasets                        |
 | **clinical-tests**      | Select list of curated datasets                          |
@@ -221,7 +221,17 @@ To test Question Answering models, the user is meant to select a benchmark datas
 | **Bigbench-DisflQA-test**                               | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Truncated version of the test set from the Bigbench/DisflQA dataset, containing 50 question and answers examples.                                                                                                 |
 | **Bigbench-Causal-judgment-test**                       | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Testing set from the Bigbench/Causal Judgment dataset, containing 190 question and answers examples.                                                                                                              |
 | **Bigbench-Causal-judgment-test-tiny**                  | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Truncated version of the test set from the Bigbench/Causal Judgment dataset, containing 50 question and answers examples.                                                                                         |
-
+| **Consumer Contracts**                  | [LegalBench](https://arxiv.org/abs/2308.11462)                                                         | It consists of yes/no questions on the rights and obligations created by clauses in terms of services agreements.                                               |                                        |
+| **Privacy-Policy**                  | [LegalBench](https://arxiv.org/abs/2308.11462)                                                         | Given a question and a clause from a privacy policy, determine if the clause contains enough information to answer the question.                                 |
+| **Contracts-QA**                  | [LegalBench](https://arxiv.org/abs/2308.11462)                                                         | Answer True/False questions about whether contractual clauses discuss particular issues.                             |
+| **CommonsenseQA-test**                                        | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Testing set from the CommonsenseQA dataset, containing 1140 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                              |
+| **CommonsenseQA-test-tiny**                                   | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Truncated version of CommonsenseQA-test dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                |
+| **CommonsenseQA-validation**                                        | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Validation set from the CommonsenseQA dataset, containing 1221 question and answer examples.                                                                                                                              |
+| **CommonsenseQA-validation-tiny**                                   | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Truncated version of CommonsenseQA-validation dataset which contains 50 question and answer examples.                                                                                                                |                                                                   |
+| **SIQA-test**                                     | [SocialIQA: Commonsense Reasoning about Social Interactions](https://arxiv.org/abs/1904.09728)       | Testing set from the SIQA dataset, containing 1954 question and answer examples.                                                                                                                             |
+| **SIQA-test-tiny**                                | [SocialIQA: Commonsense Reasoning about Social Interactions](https://arxiv.org/abs/1904.09728)       | Truncated version of SIQA-test dataset which contains 50 question and answer examples.                                                                                                                                |
+| **PIQA-test**                                     | [PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/abs/1911.11641)       | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                             |
+| **PIQA-test-tiny**                                | [PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/abs/1911.11641)       | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                                |
 
 </div><div class="h3-box" markdown="1">
 
@@ -248,6 +258,10 @@ Langtest comes with different datasets to test your models, covering a wide rang
 | **BigBench Causal Judgment**                  | Evaluate your model's performance in measuring the ability to reason about cause and effect.                                                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
 | **BigBench DisambiguationQA**                 | Evaluate your model's performance on determining the interpretation of sentences containing ambiguous pronoun references.                                                                                                                                                                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
 | **BigBench DisflQA**                          | Evaluate your model's performance in picking the correct answer span from the context given the disfluent question.                                                                                                                                                                                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
+| **Legal-QA**                 | Evaluate your model's performance on legal-qa datasets                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)      |
+| **CommonsenseQA**                  | Evaluate your model's performance on the CommonsenseQA dataset, which demands a diverse range of commonsense knowledge to accurately predict the correct answers in a multiple-choice question answering format.                                                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/CommonsenseQA_dataset.ipynb)               |
+| **SIQA**                 | Evaluate your model's performance by assessing its accuracy in understanding social situations, inferring the implications of actions, and comparing human-curated and machine-generated answers.                                                                                                                                                                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/SIQA_dataset.ipynb)               |
+| **PIQA**                          | Evaluate your model's performance on the PIQA dataset, which tests its ability to reason about everyday physical situations through multiple-choice questions, contributing to AI's understanding of real-world interactions.                                                                                                                                                                                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/PIQA_dataset.ipynb)               |
 
 </div><div class="h3-box" markdown="1">
 
@@ -280,6 +294,8 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 | **XSum-test**      | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples                                             |
 | **XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples                       |
 | **XSum-bias** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Manually annotated bias version of the Xsum dataset, containing 382 labeled examples 
+| **MultiLexSum-test** | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883) | Testing set from the MultiLexSum dataset, containing 868 document and summary examples.                       |
+| **MultiLexSum-test-tiny** | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883) |  Truncated version of XSum dataset which contains 50 document and summary examples. 
 
 </div><div class="h3-box" markdown="1">
 #### Summarization Benchmarks: Use Cases and Evaluations
@@ -288,6 +304,7 @@ To test Summarization models, the user is meant to select a benchmark dataset fr
 | Dataset  | Use Case                                                                                                                                                                                                                                            | Notebook                                                                                                                                                                                                                 |
 | -------- |
 | **XSum** | Evaluate your model's ability to generate concise and informative summaries for long articles with the XSum dataset. It consists of articles and corresponding one-sentence summaries, offering a valuable benchmark for text summarization models. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/XSum_dataset.ipynb) |
+| **MultiLexSum** | Evaluate your model's ability to generate concise and informative summaries for legal case contexts from the Multi-LexSum dataset, with a focus on comprehensively capturing essential themes and key details within the legal narratives. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb) |
 
 </div><div class="h3-box" markdown="1">
 
@@ -462,7 +479,7 @@ harness = Harness(task='factuality-test',
 
 ### Sensitivity Test
 
-The Evaluating Model’s Sensitivity to Negation Test focuses on assessing a model’s responsiveness to negations introduced into its input text. The primary objective is to determine whether the model can effectively detect and respond to negations. Users should choose a benchmark dataset from the provided list.
+The Sensitivity Test comprises two distinct evaluations: one focusing on assessing a model's responsiveness to toxicity, particularly when toxic words are introduced into the input text, and the other aimed at gauging its sensitivity to negations, especially when negations are inserted after verbs like "is," "was," "are," and "were". Users should choose a benchmark dataset from the provided list.
 
 #### Datasets
 
@@ -474,8 +491,20 @@ The Evaluating Model’s Sensitivity to Negation Test focuses on assessing a mod
 | **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples   
 | **OpenBookQA-test**                                     | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions                                                                                                        |
 | **OpenBookQA-test-tiny**                                | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples. 
+| **wikiDataset-test**                                     | [wikiDataset](https://huggingface.co/datasets/wikitext)                                                  | Testing set from the wikiDataset, containing 1000 sentences                                                                                                       |
+| **wikiDataset-test-tiny**                                | [wikiDataset](https://huggingface.co/datasets/wikitext)                                                  | Truncated version of the test set from the wikiDataset, containing 50 sentences. 
 
 </div><div class="h3-box" markdown="1">
+
+#### Test and Dataset Compatibility
+
+{:.table2}
+
+| Test Name  | Supported Dataset                   | Notebook  |
+|------------|-------------------------------------|-----------|
+| toxicity   | wikiDataset-test, wikiDataset-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb)    |
+| negation   | NQ-open-test, NQ-open, NQ-open-test-tiny, OpenBookQA-test, OpenBookQA-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
+
 
 #### Passing a Sensitivity Test Dataset to the Harness
 
@@ -488,5 +517,35 @@ from langtest import Harness
 harness = Harness(task='sensitivity-test',
                   model={"model": "text-davinci-003", "hub":"openai"},
                   data = {"data_source": "NQ-open-test-tiny"})
+```
+
+### Sycophancy Test
+
+Sycophancy is an undesirable behavior where models tailor their responses to align with a human user's view even when that view is not objectively correct. In this notebook, we propose a simple synthetic data intervention to reduce this behavior in language models.
+
+#### Test and Dataset Compatibility
+
+{:.table2}
+| Test Name  | Supported Dataset                   | Notebook  |
+|------------|-------------------------------------|-----------|
+| sycophancy_math   | sycophancy-math-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb)    |
+| sycophancy_nlp   | sycophancy-nlp-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb) |
+
+#### Passing a Sycophancy Math Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(
+                  task="sycophancy-test",
+                  model={"model": "text-davinci-003","hub":"openai"}, 
+                  data={"data_source": 'synthetic-math-data',}
+                  )
 ```
 </div></div>
