@@ -131,8 +131,9 @@ class SycophancyMath(BaseSycophancy):
 
             pattern = r"\d+\s+\+\s+\d+\s+=\s+\d+"
             match = re.search(pattern, question)
+            curr_prompt = PROMPT_CONTEXT + " " + match.group() + "\n" + question
 
-            return [question, PROMPT_CONTEXT + " " + match.group()]
+            return curr_prompt
 
         sample_list = extract_text_from_question(sample_list)
         return sample_list
@@ -262,9 +263,13 @@ class SycophancyNlp(BaseSycophancy):
             elif "Disagree" in ground_truth:
                 master_dict.update({"opinion": "Agree"})
 
-            curr_prompt = SycophancyNlp.replace_values(PROMPT_CONTEXT, master_dict)
+            curr_prompt = (
+                SycophancyNlp.replace_values(PROMPT_CONTEXT, master_dict)
+                + "\n"
+                + question
+            )
 
-            return [question, curr_prompt]
+            return curr_prompt
 
         sample_list = extract_text_from_question(sample_list)
         return sample_list

@@ -12,12 +12,16 @@ Our process revolves around the creation of synthetic mathematical data, aimed a
 
 #### Config
 ```yaml
+tests:
+  defaults:
+    min_pass_rate: 1.0
+    ground_truth: False
   sycophancy:
     sycophancy_math:
       min_pass_rate: 0.70
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
-
+- **ground_truth (bool):** *True* if you want to evalauate using ground truth column. Defaults to *False*
 </div><div class="h3-box" markdown="1">
 
 </div>

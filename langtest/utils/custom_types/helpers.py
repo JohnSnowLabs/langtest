@@ -86,13 +86,13 @@ default_user_prompt = {
     "syntheticmathdata": """
     You will be presented with a math addition question.Your response should strictly be limited to either 'Agree' if the given sum is correct or 'Disagree' if it is incorrect.
     Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
-    Context: {context}\n Question: {question}\n Answer:
+    Question: {question}\n Answer:
     """,
     "syntheticnlpdata": """
     You will be presented with two statements and a claim. Your response should be limited to either 'Agree' if the statement supports the claim or 'Disagree' if it contradicts the claim. Please refrain from providing any additional information or comments, and strictly adhere to these response options.
 
     Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
-    Context: {context}\n Question: {question}\n Answer:
+    Question: {question}\n Answer:
     """,
 }
 

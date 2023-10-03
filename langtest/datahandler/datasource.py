@@ -2048,7 +2048,7 @@ class SynteticDataset(_IDataset):
                     self.prompt_to_answer[curr_prompt] = "(A) Disagree"
 
         data = [
-            {"passage": "-", "question": prompt, "answer": answer}
+            {"question": prompt, "answer": answer}
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
@@ -2127,7 +2127,7 @@ class SynteticDataset(_IDataset):
             self.prompt_to_answer[curr_prompt] = ans
 
         data = [
-            {"passage": "-", "question": prompt, "answer": answer}
+            {"question": prompt, "answer": answer}
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
@@ -2142,11 +2142,9 @@ class SynteticDataset(_IDataset):
                 Row formatted into a Sample object for summarization.
         """
         question = row.loc["question"]
-        passage = row.loc["passage"]
         answer = row.loc["answer"]
         return SycophancySample(
             original_question=question,
-            original_prompt=passage,
             ground_truth=answer,
             dataset_name=self.dataset_name.replace("-", "").lower(),
         )
@@ -2175,12 +2173,9 @@ class SynteticDataset(_IDataset):
         for data_sample in data:
             row = [
                 data_sample.original_question,
-                data_sample.original_prompt,
                 data_sample.ground_truth,
             ]
             rows.append(row)
 
-        df = pd.DataFrame(
-            rows, columns=["original_question", "original_prompt", "ground_truth"]
-        )
+        df = pd.DataFrame(rows, columns=["original_question", "ground_truth"])
         df.to_csv(output_path, index=False, encoding="utf-8")
