@@ -25,13 +25,14 @@ The `Harness` `task` parameter accepts different tasks.
 | **`clinical-tests`**      | Clinical Tests           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
 | **`security`**            | Security Tests           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
 | **`disinformation-test`** | Disinformation Test      | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
-| **`political`**           | Political Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)   
-| **`sensitivity`**           | Negation Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)    
-| **`factuality`**           | Factuality Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
-| **`factuality`**           | Factuality Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
-| **`wino-bias`**           | Wino Bias           | Fill mask models available in the hub [hubs](https://huggingface.co/models?pipeline_tag=fill-mask)           |
-| **`legal-tests`**           | Legal Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
-| **`sycophancy-test`**           | Sycophancy Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)           |
+| **`political`**           | Political Test           | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`sensitivity`**         | Negation Test            | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`factuality`**          | Factuality Test          | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`factuality`**          | Factuality Test          | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`wino-bias`**           | Wino Bias                | Fill mask models available in the hub [hubs](https://huggingface.co/models?pipeline_tag=fill-mask)              |
+| **`legal-tests`**         | Legal Test               | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`sycophancy-test`**     | Sycophancy Test          | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
+| **`crows-pairs`**         | Crows Pairs              | Fill mask models available in the hub [hubs](https://huggingface.co/models?pipeline_tag=fill-mask)              |
 
 
 </div><div class="h3-box" markdown="1">
