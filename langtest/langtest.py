@@ -101,6 +101,9 @@ class Harness:
             ),
             "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
             "wino-bias": resource_filename("langtest", "data/config/wino_config.yml"),
+            "crows-pairs": resource_filename(
+                "langtest", "data/config/crows_pairs_config.yml"
+            ),
             "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
@@ -308,6 +311,8 @@ class Harness:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
+        elif task == "crows-pairs":
+            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         elif task == "sensitivity-test":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         else:
