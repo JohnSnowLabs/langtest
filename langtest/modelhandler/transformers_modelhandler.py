@@ -10,9 +10,9 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-
 from langtest.utils.lib_manager import try_import_lib
 import importlib
+from langtest.transform.utils import compare_generations_overlap
 
 
 class PretrainedModelForNER(_ModelHandler):
@@ -393,14 +393,77 @@ class PretrainedModelForWinoBias(_ModelHandler):
             self.masked_text = text.replace("[MASK]", "<mask>")
             prediction = self.model(self.masked_text, **kwargs)
 
-        # Adjusting the list comprehension to strip spaces from the token strings
-        eval_scores = {
-            i["token_str"].strip(): i["score"]
-            for i in prediction
-            if i["token_str"].strip() in ["he", "she", "his", "her"]
-        }
+        sorted_predictions = sorted(prediction, key=lambda x: x["score"], reverse=True)
 
-        return eval_scores
+        # Extract top five (or less if not available) predictions
+        top_five = sorted_predictions[:5]
+
+        top_five_tokens = [i["token_str"].strip() for i in top_five]
+
+        if any(token in top_five_tokens for token in ["he", "she", "his", "her"]):
+            # Adjusting the list comprehension to strip spaces from the token strings and get eval_scores
+            eval_scores = {
+                i["token_str"].strip(): i["score"]
+                for i in top_five
+                if i["token_str"].strip() in ["he", "she", "his", "her"]
+            }
+            return eval_scores
+        else:
+            print(
+                "Skipping an irrelevant sample, as the gender pronoun replacement was not amongst top five predictions"
+            )
+            return None
+
+    def __call__(self, text: str, *args, **kwargs) -> Dict:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)
+
+
+class PretrainedModelForCrowsPairs(_ModelHandler):
+    """A class representing a pretrained model for Crows-Pairs detection.
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
+    """
+
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
+        self.model = model
+
+    @classmethod
+    def load_model(cls, path: str) -> "Pipeline":
+        """Load the Translation model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+
+        return pipeline("fill-mask", model=path)
+
+    def predict(self, text: str, **kwargs) -> Dict:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform mask filling on.
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            Dict: Output for wino-bias task
+        """
+        text = text.replace("[MASK]", self.model.tokenizer.mask_token)
+        return self.model(text, **kwargs)
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
         """Alias of the 'predict' method"""
@@ -575,12 +638,12 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         Returns:
             tuple: A tuple containing the loaded model and tokenizer.
         """
-        from ..utils.hf_model_n_tokenizer import get_model_n_tokenizer
+        from ..utils.hf_utils import get_model_n_tokenizer
 
         model, tokenizer = get_model_n_tokenizer(model_name=path)
         return model, tokenizer
 
-    def predict(self, text: str, text_transformed: str, **kwargs):
+    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
         Args:
@@ -596,7 +659,6 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
         """
         self.model.eval()
-
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
         ).to(self.model.device)
@@ -608,14 +670,19 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         outputs_transformed = self.model(
             **input_encoded_transformed, labels=input_encoded_transformed["input_ids"]
         )
-        loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
-
         expected_result = self.tokenizer.decode(
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
         actual_result = self.tokenizer.decode(
             outputs_transformed.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
+        if test_name == "negation":
+            loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
+
+        elif test_name == "toxicity":
+            count1 = compare_generations_overlap(expected_result)
+            count2 = compare_generations_overlap(actual_result)
+            loss_diff = count2 - count1
 
         return {
             "loss_diff": loss_diff,
@@ -623,7 +690,17 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             "actual_result": actual_result,
         }
 
-    def __call__(self, text: str, text_transformed: str, **kwargs):
+    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Alias of the 'predict' method."""
 
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+
+
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for SycophancyTest
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
