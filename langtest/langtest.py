@@ -13,7 +13,7 @@ import yaml
 from pkg_resources import resource_filename
 
 from .augmentation import AugmentRobustness, TemplaticAugment
-from .datahandler.datasource import DataFactory, HuggingFaceDataset
+from .datahandler.datasource import DataFactory, HuggingFaceDataset, SynteticDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
@@ -45,6 +45,8 @@ class Harness:
         "wino-bias",
         "legal-tests",
         "factuality-test",
+        "sycophancy-test",
+        "crows-pairs",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -73,7 +75,7 @@ class Harness:
     }
     SUPPORTED_HUBS_HF_DATASET_NER = ["johnsnowlabs", "huggingface", "spacy"]
     SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION = ["johnsnowlabs", "huggingface", "spacy"]
-    SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION = [
+    SUPPORTED_HUBS_HF_DATASET_LLM = [
         "openai",
         "cohere",
         "ai21",
@@ -99,6 +101,9 @@ class Harness:
             ),
             "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
             "wino-bias": resource_filename("langtest", "data/config/wino_config.yml"),
+            "crows-pairs": resource_filename(
+                "langtest", "data/config/crows_pairs_config.yml"
+            ),
             "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
@@ -126,6 +131,15 @@ class Harness:
             "security": resource_filename("langtest", "data/config/security_config.yml"),
             "sensitivity-test": resource_filename(
                 "langtest", "data/config/sensitivity_config.yml"
+            ),
+            "sycophancy-test-huggingface-inference-api": resource_filename(
+                "langtest", "data/config/sycophancy_huggingface_config.yml"
+            ),
+            "sycophancy-test-openai": resource_filename(
+                "langtest", "data/config/sycophancy_openai_config.yml"
+            ),
+            "sycophancy-test-ai21": resource_filename(
+                "langtest", "data/config/sycophancy_openai_config.yml"
             ),
         },
     }
@@ -231,11 +245,19 @@ class Harness:
                     split=data.get("split", "test"),
                     subset=data.get("subset", None),
                 )
-
             elif (
-                task == "summarization"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_SUMMARIZATION
+                task == "question-answering" and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
             ):
+                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
+                    feature_column=data.get(
+                        "feature_column", {"passage": "passage", "question": "question"}
+                    ),
+                    target_column=data.get("target_column", "answer"),
+                    split=data.get("split", "test"),
+                    subset=data.get("subset", None),
+                )
+
+            elif task == "summarization" and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM:
                 self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
                     feature_column=data.get("feature_column", "document"),
                     target_column=data.get("target_column", "summary"),
@@ -256,6 +278,12 @@ class Harness:
             and task in ("question-answering", "summarization")
         ):
             self.data = DataFactory.load_curated_bias(data["data_source"])
+        elif (
+            isinstance(data, dict)
+            and data["data_source"] in ("synthetic-nlp-data", "synthetic-math-data")
+            and task in ("sycophancy-test")
+        ):
+            self.data = SynteticDataset(data, task=task).load_data()
 
         elif isinstance(data["data_source"], list):
             self.data = data["data_source"]
@@ -275,7 +303,7 @@ class Harness:
         elif hub in self.DEFAULTS_CONFIG["hubs"]:
             if task in self.DEFAULTS_CONFIG["task"]:
                 self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-            elif task in ["disinformation-test", "factuality-test"]:
+            elif task in ("disinformation-test", "factuality-test", "sycophancy-test"):
                 self._config = self.configure(
                     self.DEFAULTS_CONFIG["task"][task + "-" + hub]
                 )
@@ -283,6 +311,8 @@ class Harness:
                 self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
         elif task == "translation":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
+        elif task == "crows-pairs":
+            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         elif task == "sensitivity-test":
             self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
         else:
@@ -453,6 +483,36 @@ class Harness:
                     self.task, self.data, tests, m_data=m_data
                 )
                 return self
+
+        elif self.task in ["sensitivity-test", "sycophancy-test"]:
+            test_data_sources = {
+                "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
+                "negation": (
+                    "NQ-open-test",
+                    "NQ-open",
+                    "NQ-open-test-tiny",
+                    "OpenBookQA-test",
+                    "OpenBookQA-test-tiny",
+                ),
+                "sycophancy_math": ("synthetic-math-data"),
+                "sycophancy_nlp": ("synthetic-nlp-data"),
+            }
+            category = tests.get(self.task.split("-")[0], {})
+            test_name = next(iter(category), None)
+            if test_name in test_data_sources:
+                selected_data_sources = test_data_sources[test_name]
+
+                if self.data_source in selected_data_sources:
+                    self._testcases = TestFactory.transform(
+                        self.task, self.data, tests, m_data=m_data
+                    )
+                    return self
+                else:
+                    raise ValueError(
+                        f"{test_name} tests are not applicable for {self.data_source} dataset. Please use one of the following datasets: {selected_data_sources}"
+                    )
+            else:
+                raise ValueError(f"Invalid test: {test_name}")
 
         self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
@@ -938,6 +998,7 @@ class Harness:
             "test_case",
             "perturbed_context",
             "perturbed_question",
+            "sentence",
             "patient_info_A",
             "patient_info_B",
             "case",
@@ -950,6 +1011,10 @@ class Harness:
             "diagnosis",
             "treatment_plan_A",
             "treatment_plan_B",
+            "mask1",
+            "mask2",
+            "mask1_score",
+            "mask2_score",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
@@ -959,11 +1024,14 @@ class Harness:
             "article_sentence",
             "correct_sentence",
             "incorrect_sentence",
+            "ground_truth",
             "result",
             "swapped_result",
             "model_response",
             "eval_score",
             "similarity_score",
+            "original_result",
+            "perturbed_result",
             "pass",
         ]
         columns = [c for c in column_order if c in generated_results_df.columns]
@@ -1103,8 +1171,11 @@ class Harness:
             "original_context",
             "original_question",
             "test_case",
+            "sentence",
             "patient_info_A",
             "patient_info_B",
+            "mask1",
+            "mask2",
             "case",
             "legal_claim",
             "legal_conclusion_A",
@@ -1119,6 +1190,7 @@ class Harness:
             "incorrect_sentence",
             "perturbed_context",
             "perturbed_question",
+            "ground_truth",
             "expected_result",
         ]
         columns = [c for c in column_order if c in testcases_df.columns]
