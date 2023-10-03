@@ -111,7 +111,8 @@ The following tables give an overview of the different categories and tests.
 |[Security](security)		            |[prompt_injection_attack](security#prompt_injection_attack)                                                                         |`security`
 |[Disinformation](disinformation)		            |[Narrative Wedging](disinformation#narrative_wedging)                                                                         |`disinformation-test`
 |[Factuality](factuality)		            |[Order Bias](factuality#order_bias)                                                                         |`factuality-test`
-|[Sensitivity](Sensitivity)		            |[Sensitivity Negation](Sensitivity#negation)                                                                         |`Sensitivity-test`
+|[Sensitivity](Sensitivity)		            |[Negation](Sensitivity#negation)                                                                         |`Sensitivity-test`
+|[Sensitivity](Sensitivity)		            |[Toxicity](Sensitivity#toxicity)                                                                         |`Sensitivity-test`
 |[Legal](Legal)		            |[legal-support](legal#legal-support)                                                                         |`legal-tests`
 |[Wino Bias](wino-bias)		            |[gender-occupational-stereotype](wino-bias#gender-occupational-stereotype)                                                                         |`wino-bias`
 
