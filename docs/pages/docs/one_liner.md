@@ -542,3 +542,29 @@ h.generate().run().report()
     </div>
   </div>
 </div>
+
+
+### One Liner - Crows Pairs
+
+Try out the LangTest library on the following default model-dataset combinations for crows-pairs test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[transformers]
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="crows-pairs", model={"model" : "bert-base-uncased", 
+  "hub":"huggingface" } , data = {"data_source":"Wino-test"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
