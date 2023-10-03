@@ -350,7 +350,7 @@ class DataFactory:
             "CommonsenseQA-test": script_dir[:-7]
             + "/CommonsenseQA/commonsenseQA-test.jsonl",
             "CommonsenseQA-test-tiny": script_dir[:-7]
-            + "/CommonsenseQA/CommonsenseQA-test-tiny.jsonl",
+            + "/CommonsenseQA/commonsenseQA-test-tiny.jsonl",
             "CommonsenseQA-validation": script_dir[:-7]
             + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
             "CommonsenseQA-validation-tiny": script_dir[:-7]
