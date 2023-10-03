@@ -1,0 +1,8 @@
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  crows-pairs:
+    common-stereotypes:
+      min_pass_rate: 0.70
+

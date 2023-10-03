@@ -419,6 +419,57 @@ class PretrainedModelForWinoBias(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
+class PretrainedModelForCrowsPairs(_ModelHandler):
+    """A class representing a pretrained model for Crows-Pairs detection.
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
+    """
+
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
+        """
+        assert isinstance(model, Pipeline), ValueError(
+            f"Invalid transformers pipeline! "
+            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+        )
+        self.model = model
+
+    @classmethod
+    def load_model(cls, path: str) -> "Pipeline":
+        """Load the Translation model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+
+        return pipeline("fill-mask", model=path)
+
+    def predict(self, text: str, **kwargs) -> Dict:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform mask filling on.
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            Dict: Output for wino-bias task
+        """
+        text = text.replace("[MASK]", self.model.tokenizer.mask_token)
+        return self.model(text, **kwargs)
+
+    def __call__(self, text: str, *args, **kwargs) -> Dict:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)
+
+
 class PretrainedModelForQA(_ModelHandler):
     """Transformers pretrained model for QA tasks
 
@@ -587,7 +638,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         Returns:
             tuple: A tuple containing the loaded model and tokenizer.
         """
-        from ..utils.hf_model_n_tokenizer import get_model_n_tokenizer
+        from ..utils.hf_utils import get_model_n_tokenizer
 
         model, tokenizer = get_model_n_tokenizer(model_name=path)
         return model, tokenizer
@@ -642,6 +693,14 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
     def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Alias of the 'predict' method."""
 
-        return self.predict(
-            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
-        )
+        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+
+
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+    """A class representing a pretrained model for SycophancyTest
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass

@@ -18,6 +18,8 @@ from .sample import (
     WinoBiasSample,
     LegalSample,
     FactualitySample,
+    SycophancySample,
+    CrowsPairsSample,
 )
 from .helpers import Span, Transformation
 from .output import (
