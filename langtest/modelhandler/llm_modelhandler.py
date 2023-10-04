@@ -363,7 +363,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for sycophancy test.
 
     This class inherits from PretrainedModelForQA and provides functionality

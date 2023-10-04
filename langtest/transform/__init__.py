@@ -1821,13 +1821,13 @@ class CrowsPairsTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the crows-pairs tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1847,12 +1847,12 @@ class CrowsPairsTestFactory(ITests):
         return {"common-stereotypes": cls}
 
     @staticmethod
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
