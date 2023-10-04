@@ -306,7 +306,7 @@ class PretrainedModelForTranslation(ModelAPI):
         self.model = model
 
     @classmethod
-    def load_model(cls, path: str) -> "Pipeline":
+    def load_model(cls, path: str, *args, **kwargs) -> "Pipeline":
         """Load the Translation model into the `model` attribute.
 
         Args:
@@ -319,7 +319,7 @@ class PretrainedModelForTranslation(ModelAPI):
         from ..langtest import HARNESS_CONFIG as harness_config
 
         config = harness_config["model_parameters"]
-        tgt_lang = config.get("target_language")
+        tgt_lang = config.get("target_language") or kwargs.get("target_language")
 
         if "t5" in path:
             return cls(pipeline(f"translation_en_to_{tgt_lang}", model=path))
