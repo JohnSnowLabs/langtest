@@ -5,6 +5,7 @@ from spacy.tokens import Doc
 
 from .modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
+from pkg_resources import resource_filename
 
 
 class PretrainedModelForNER(ModelAPI):
@@ -41,7 +42,7 @@ class PretrainedModelForNER(ModelAPI):
             raise ValueError(
                 f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
             )
-
+    
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
@@ -124,6 +125,8 @@ class PretrainedModelForTextClassification(ModelAPI):
             path (str): name of path to model to load
         """
         try:
+            if path == "textcat_imdb":
+                path = resource_filename("langtest", "data/textcat_imdb")
             return cls(spacy.load(path))
         except OSError:
             raise ValueError(
