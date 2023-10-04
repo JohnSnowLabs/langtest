@@ -42,7 +42,7 @@ class PretrainedModelForNER(ModelAPI):
             raise ValueError(
                 f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
             )
-    
+
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
