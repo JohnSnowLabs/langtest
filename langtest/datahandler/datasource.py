@@ -24,6 +24,7 @@ from langtest.utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
+    CrowsPairsSample,
 )
 from ..utils.lib_manager import try_import_lib
 
@@ -80,6 +81,11 @@ COLUMN_MAPPER = {
         "article_sent": ["article_sent"],
         "correct_sent": ["correct_sent"],
         "incorrect_sent": ["incorrect_sent"],
+    },
+    "crows-pairs": {
+        "sentence": ["sentence"],
+        "mask1": ["mask1"],
+        "mask2": ["mask2"],
     },
 }
 
@@ -358,7 +364,7 @@ class DataFactory:
             "CommonsenseQA-test": script_dir[:-7]
             + "/CommonsenseQA/commonsenseQA-test.jsonl",
             "CommonsenseQA-test-tiny": script_dir[:-7]
-            + "/CommonsenseQA/CommonsenseQA-test-tiny.jsonl",
+            + "/CommonsenseQA/commonsenseQA-test-tiny.jsonl",
             "CommonsenseQA-validation": script_dir[:-7]
             + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
             "CommonsenseQA-validation-tiny": script_dir[:-7]
@@ -370,6 +376,8 @@ class DataFactory:
             "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
             "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
+            "Crows-Pairs": script_dir[:-7]
+            + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
         }
 
         return datasets_info[dataset_name]
@@ -604,6 +612,7 @@ class CSVDataset(BaseDataset):
         "text-classification",
         "summarization",
         "question-answering",
+        "crows-pairs",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -955,16 +964,20 @@ class CSVDataset(BaseDataset):
             feature_column = self._file_path.get("feature_column", "document")
             target_column = self._file_path.get("target_column", "summary")
 
-            if (
-                feature_column not in dataset.columns
-                or target_column not in dataset.columns
-            ):
+            if feature_column not in dataset.columns:
                 raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                    f"feature_column '{feature_column}' not found in the dataset."
                 )
+            if target_column not in dataset.columns:
+                logging.warning(
+                    f"target_column '{target_column}' not found in the dataset."
+                )
+                dataset["summary"] = None
+            else:
+                dataset.rename(columns={target_column: "summary"}, inplace=True)
 
             dataset.rename(
-                columns={feature_column: "document", target_column: "summary"},
+                columns={feature_column: "document"},
                 inplace=True,
             )
 
@@ -1012,29 +1025,47 @@ class CSVDataset(BaseDataset):
                 raise ValueError(
                     f"'feature_column' '{feature_column['question']}' not found in the dataset."
                 )
-            if "answer" not in target_column or target_column not in dataset_columns:
-                raise ValueError(
-                    f"'target_column' '{target_column}' not found in the dataset."
-                )
 
-            if passage_column in dataset.columns:
+            if target_column not in dataset_columns:
+                logging.warning(
+                    f"target_column '{target_column}' not found in the dataset."
+                )
+                dataset["answer"] = None
+            else:
+                dataset.rename(columns={target_column: "answer"}, inplace=True)
+
+            if passage_column:
                 if passage_column not in dataset_columns:
-                    raise ValueError(
+                    logging.warning(
                         f"'feature_column' '{passage_column}' not found in the dataset."
                     )
-                dataset.rename(columns={passage_column: "passage"}, inplace=True)
+                    dataset["passage"] = "-"
+                else:
+                    dataset.rename(columns={passage_column: "passage"}, inplace=True)
             else:
                 dataset["passage"] = "-"
 
             if question_column in dataset.columns:
                 dataset.rename(columns={question_column: "question"}, inplace=True)
 
-            dataset.rename(columns={target_column: "answer"}, inplace=True)
-
         samples = [
             self._row_to_sample_question_answering(row) for _, row in dataset.iterrows()
         ]
         return samples
+
+    def load_data_crows_pairs(self, df: pd.DataFrame) -> List[Sample]:
+        """"""
+        samples = []
+        for _, row in df.iterrows():
+            samples.append(self._row_to_crows_pairs_sample(row))
+        return samples
+
+    def _row_to_crows_pairs_sample(self, row: pd.Series) -> Sample:
+        return CrowsPairsSample(
+            sentence=row["sentence"],
+            mask1=row["mask1"],
+            mask2=row["mask2"],
+        )
 
     def _row_to_ner_sample(self, row: Dict[str, List[str]], sent_index: int) -> Sample:
         """Convert a row from the dataset into a Sample for the NER task.
@@ -1162,13 +1193,16 @@ class CSVDataset(BaseDataset):
         if type(self._file_path) == dict:
             question = row.loc["question"]
             passage = row.loc["passage"]
+            answer = row.loc["answer"]
         else:
             question = row[self.column_map["text"]]
             passage = row[self.column_map["context"]]
+            answer = row[self.column_map["answer"]]
 
         return QASample(
             original_question=question,
             original_context=passage,
+            expected_results=answer,
             task="question-answering",
         )
 
@@ -1327,7 +1361,12 @@ class JSONLDataset(BaseDataset):
 class HuggingFaceDataset(BaseDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
-    supported_tasks = ["text-classification", "summarization", "ner"]
+    supported_tasks = [
+        "text-classification",
+        "summarization",
+        "ner",
+        "question-answering",
+    ]
 
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}

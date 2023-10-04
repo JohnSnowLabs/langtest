@@ -22,6 +22,7 @@ from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
 from .political import BasePolitical
 from .sensitivity import BaseSensitivity
+from .sycophancy import BaseSycophancy
 from .constants import (
     A2B_DICT,
     asian_names,
@@ -926,7 +927,10 @@ class FairnessTestFactory(ITests):
                     y_pred = y_pred.explode()
 
                 elif data[0].task == "question-answering":
-                    dataset_name = data[0].dataset_name.split("-")[0].lower()
+                    if data[0].dataset_name is None:
+                        dataset_name = "default_question_answering_prompt"
+                    else:
+                        dataset_name = data[0].dataset_name.split("-")[0].lower()
                     prompt_template = kwargs.get(
                         "user_prompt", default_user_prompt.get(dataset_name, "")
                     )
@@ -952,7 +956,10 @@ class FairnessTestFactory(ITests):
                     y_pred = y_pred.apply(lambda x: x.strip())
 
                 elif data[0].task == "summarization":
-                    dataset_name = data[0].dataset_name.split("-")[0].lower()
+                    if data[0].dataset_name is None:
+                        dataset_name = "default_summarization_prompt"
+                    else:
+                        dataset_name = data[0].dataset_name.split("-")[0].lower()
                     prompt_template = kwargs.get(
                         "user_prompt", default_user_prompt.get(dataset_name, "")
                     )
@@ -1155,7 +1162,11 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.explode()
 
         elif raw_data[0].task == "question-answering":
-            dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+            if raw_data[0].dataset_name is None:
+                dataset_name = "default_question_answering_prompt"
+            else:
+                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
@@ -1177,7 +1188,10 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.apply(lambda x: x.strip())
 
         elif raw_data[0].task == "summarization":
-            dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+            if raw_data[0].dataset_name is None:
+                dataset_name = "default_summarization_prompt"
+            else:
+                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
@@ -1778,6 +1792,90 @@ class WinoBiasTestFactory(ITests):
         return sample_list["gender-occupational-stereotype"]
 
 
+class CrowsPairsTestFactory(ITests):
+    """Factory class for the crows-pairs tests"""
+
+    alias_name = "crows-pairs"
+    supported_tasks = [
+        "crows-pairs",
+    ]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the crows-pairs tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        """Nothing to use transform for no longer to generating testcases.
+
+        Returns:
+            Empty list
+
+        """
+        for sample in self.data_handler:
+            sample.test_type = "common-stereotypes"
+            sample.category = "crows-pairs"
+        return self.data_handler
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+    ) -> List[Sample]:
+        """Runs the crows-pairs tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the crows-pairs tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented crows-pairs tests
+
+        """
+        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
+        return task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """Returns the empty dict, no crows-pairs tests
+
+        Returns:
+            Dict[str, str]: Empty dict, no crows-pairs tests
+        """
+        return {"common-stereotypes": cls}
+
+    @staticmethod
+    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+        """Runs the clinical tests
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelFactory): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the crows-pairs tests
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented crows-pairs tests
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list["common-stereotypes"]:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        sample_list["common-stereotypes"] = [
+            x
+            for x in sample_list["common-stereotypes"]
+            if (x.mask1_score > 0.15 or x.mask2_score > 0.15)
+        ]
+        return sample_list["common-stereotypes"]
+
+
 class LegalTestFactory(ITests):
     """Factory class for the legal tests"""
 
@@ -1934,3 +2032,100 @@ class FactualityTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["order_bias"]
+
+
+class SycophancyTestFactory(ITests):
+    """A class for conducting Sycophancy tests on a given dataset.
+
+    This class provides comprehensive functionality for conducting Sycophancy tests
+    on a provided dataset using various configurable test scenarios.
+
+    Attributes:
+        alias_name (str): A string representing the alias name for this test factory.
+
+    """
+
+    alias_name = "Sycophancy"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initialize a new SycophancyTestFactory instance.
+
+        Args:
+            data_handler (List[Sample]): A list of `Sample` objects representing the input dataset.
+            tests (Optional[Dict]): A dictionary of test names and corresponding parameters (default is None).
+            **kwargs: Additional keyword arguments.
+
+        Raises:
+            ValueError: If the `tests` argument is not a dictionary.
+
+        """
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(
+                "Invalid test configuration! Tests can be "
+                "[1] dictionary of test name and corresponding parameters."
+            )
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+            )
+
+    def transform(self) -> List[Sample]:
+        """Execute the Sycophancy test and return resulting `Sample` objects.
+
+        Returns:
+            List[Sample]: A list of `Sample` objects representing the resulting dataset
+            after conducting the Sycophancy test.
+
+        """
+        all_samples = []
+        tests_copy = self.tests.copy()
+        for test_name, params in tests_copy.items():
+            if TestFactory.is_augment:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+            else:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+
+            test_func = self.supported_tests[test_name].transform
+
+            if TestFactory.task in ("sycophancy-test"):
+                _ = [
+                    sample.transform(
+                        test_func,
+                        params.get("parameters", {}),
+                    )
+                    if hasattr(sample, "transform")
+                    else sample
+                    for sample in data_handler_copy
+                ]
+                transformed_samples = data_handler_copy
+
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Retrieve a dictionary of all available tests, with their names as keys
+        and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+        tests = {
+            j: i
+            for i in BaseSycophancy.__subclasses__()
+            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        }
+        return tests
