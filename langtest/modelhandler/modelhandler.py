@@ -76,6 +76,7 @@ class ModelFactory:
         "openai",
         "cohere",
         "ai21",
+        "custom",
     ] + list(LANGCHAIN_HUBS.keys())
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
@@ -114,6 +115,10 @@ class ModelFactory:
                 "langtest.modelhandler.llm_modelhandler"
             )
 
+        elif hub == "custom":
+            model_handler = importlib.import_module(
+                "langtest.modelhandler.custom_modelhandler"
+            )
         else:
             model_handler = importlib.import_module(
                 f"langtest.modelhandler.{module_name}_modelhandler"
@@ -247,6 +252,10 @@ class ModelFactory:
                     """Please install the spacy library by calling `pip install spacy`.
                 For in-depth instructions, head-over to https://spacy.io/usage"""
                 )
+        elif hub == "custom":
+            modelhandler_module = importlib.import_module(
+                "langtest.modelhandler.custom_modelhandler"
+            )
 
         elif hub.lower() in LANGCHAIN_HUBS:
             modelhandler_module = importlib.import_module(
