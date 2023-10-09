@@ -1,4 +1,5 @@
 from typing import Any
+from langtest.utils.custom_types.output import SequenceClassificationOutput
 
 from langtest.utils.custom_types.predictions import SequenceLabel
 from .modelhandler import _ModelHandler
@@ -26,15 +27,17 @@ class PretrainedCustomModel(ABC):
         return self.predict(text=text)
 
 
-class PretrainedModelForNER(PretrainedCustomModel, _ModelHandler):
-    pass
-
-
 class PretrainedModelForTextClassification(PretrainedCustomModel, _ModelHandler):
-    def predict(self, text: str, *args, **kwargs) -> SequenceLabel:
+    def predict(self, text: str, *args, **kwargs) -> SequenceClassificationOutput:
         try:
             out = self.model.predict(text, *args, **kwargs)
-            return SequenceLabel(label=out)
+            if not isinstance(out, list):
+                out = [out]
+            return SequenceClassificationOutput(
+                predictions=[
+                    SequenceLabel(label=elt) for elt in out
+                ]
+            )
         except Exception as e:
             raise e
 
@@ -46,3 +49,47 @@ class PretrainedModelForQA(PretrainedCustomModel, _ModelHandler):
             return out
         except Exception as e:
             raise e
+
+
+class PretrainedModelForCrowsPairs(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForWinoBias(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForTranslation(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForSummarization(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForToxicity(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForSecurity(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForPolitical(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForDisinformationTest(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForFactualityTest(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForSensitivityTest(PretrainedCustomModel, _ModelHandler):
+    pass
+
+
+class PretrainedModelForSycophancyTest(PretrainedCustomModel, _ModelHandler):
+    pass
