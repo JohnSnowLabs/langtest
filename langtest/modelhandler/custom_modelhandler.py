@@ -35,7 +35,7 @@ class PretrainedModelForTextClassification(PretrainedCustomModel, _ModelHandler)
                 out = [out]
             return SequenceClassificationOutput(
                 predictions=[
-                    SequenceLabel(label=elt) for elt in out
+                    SequenceLabel(label=elt, score=1) for elt in out
                 ]
             )
         except Exception as e:

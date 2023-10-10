@@ -100,10 +100,11 @@ class ModelFactory:
         else:
             module_name = model.__module__.split(".")[0]
 
-        assert module_name in self.SUPPORTED_MODULES, ValueError(
-            f"Module '{module_name}' is not supported. "
-            f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
-        )
+        if hub != "custom":
+            assert module_name in self.SUPPORTED_MODULES, ValueError(
+                f"Module '{module_name}' is not supported. "
+                f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
+            )
 
         if module_name in ["pyspark", "sparknlp", "nlu"]:
             model_handler = importlib.import_module(
@@ -216,7 +217,7 @@ class ModelFactory:
             f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"
         )
 
-        assert hub in cls.SUPPORTED_HUBS, ValueError(
+        assert hub != "custom" and hub in cls.SUPPORTED_HUBS, ValueError(
             f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}"
         )
 
