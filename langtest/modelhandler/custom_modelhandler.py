@@ -34,9 +34,7 @@ class PretrainedModelForTextClassification(PretrainedCustomModel, _ModelHandler)
             if not isinstance(out, list):
                 out = [out]
             return SequenceClassificationOutput(
-                predictions=[
-                    SequenceLabel(label=elt, score=1) for elt in out
-                ]
+                predictions=[SequenceLabel(label=elt, score=1) for elt in out]
             )
         except Exception as e:
             raise e
