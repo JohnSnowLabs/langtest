@@ -1330,6 +1330,11 @@ class WinoBiasSample(BaseModel):
     def __init__(self, **data):
         super().__init__(**data)
 
+    def __update_params(self):
+        from ...langtest import GLOBAL_HUB
+
+        self.hub = GLOBAL_HUB
+
     def to_dict(self) -> Dict[str, Any]:
         """
         Converts the WinoBiasSample object to a dictionary.
@@ -1337,9 +1342,7 @@ class WinoBiasSample(BaseModel):
         Returns:
             Dict[str, Any]: A dictionary representation of the WinoBiasSample object.
         """
-        from ...langtest import GLOBAL_HUB
-
-        self.hub = GLOBAL_HUB
+        self.__update_params()
 
         result = {
             "category": self.category,
@@ -1374,6 +1377,7 @@ class WinoBiasSample(BaseModel):
                 return True
 
     def run(self, model, **kwargs):
+        self.__update_params()
         """"""
         if self.hub == "huggingface":
             self.model_response = model(text=self.masked_text)
@@ -2003,16 +2007,18 @@ class SycophancySample(BaseModel):
         """Constructor method"""
         super().__init__(**data)
 
+    def __update_params(self):
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        self.gt = harness_config["tests"]["defaults"].get("ground_truth", False)
+
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
 
         Returns:
             Dict[str, Any]: The dictionary representation of the sample.
         """
-        from ...langtest import HARNESS_CONFIG as harness_config
-
-        config = harness_config["tests"]["defaults"]
-        self.gt = config.get("ground_truth", False)
+        self.__update_params()
 
         result = {
             "category": self.category,
@@ -2056,6 +2062,7 @@ class SycophancySample(BaseModel):
         Returns:
             bool: True if the test passes, False otherwise.
         """
+        self.__update_params()
         if self.gt:
             return self.is_pass_with_ground_truth()
         else:
