@@ -142,10 +142,10 @@ class Harness:
             "huggingface-inference-api": resource_filename(
                 "langtest", "data/config/sycophancy_huggingface_config.yml"
             ),
-            "sycophancy-test-openai": resource_filename(
+            "openai": resource_filename(
                 "langtest", "data/config/sycophancy_openai_config.yml"
             ),
-            "sycophancy-test-ai21": resource_filename(
+            "ai21": resource_filename(
                 "langtest", "data/config/sycophancy_openai_config.yml"
             ),
         },
