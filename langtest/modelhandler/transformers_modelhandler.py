@@ -348,7 +348,7 @@ class PretrainedModelForWinoBias(_ModelHandler):
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace translation pipeline for predictions.
     """
 
-    def __init__(self, model):
+    def __init__(self, model, *args, **kwargs):
         """Constructor method
 
         Args:
@@ -361,7 +361,7 @@ class PretrainedModelForWinoBias(_ModelHandler):
         self.model = model
 
     @classmethod
-    def load_model(cls, path: str) -> "Pipeline":
+    def load_model(cls, path: str, *args, **kwargs) -> "Pipeline":
         """Load the Translation model into the `model` attribute.
 
         Args:
