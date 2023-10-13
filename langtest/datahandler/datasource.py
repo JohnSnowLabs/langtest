@@ -78,9 +78,7 @@ COLUMN_MAPPER = {
         "statements": ["statements", "headlines"],
     },
     "sensitivity-test": {"text": ["text", "question"]},
-    "wino-bias": {
-        "text": ["text"],
-    },
+    "wino-bias": {"text": ["text"], "options": ["options"]},
     "legal-tests": {
         "case": ["case"],
         "legal-claim": ["legal-claim"],
@@ -1419,6 +1417,7 @@ class JSONLDataset(_IDataset):
                     data.append(
                         WinoBiasSample(
                             masked_text=item["text"],
+                            options=item["options"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
