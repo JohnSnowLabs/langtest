@@ -457,12 +457,20 @@ class QASample(BaseQASample):
         """Constructor method"""
         super().__init__(**data)
 
+    def __update_params(self):
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        self.config = harness_config
+
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
 
         Returns:
             Dict[str, Any]: The dictionary representation of the sample.
         """
+
+        self.__update_params()
+
         expected_result = self.expected_results
         actual_result = self.actual_results
 
@@ -483,8 +491,67 @@ class QASample(BaseQASample):
                     "pass": self.is_pass(),
                 }
             )
+            if "evaluation" in self.config and "metric" in self.config["evaluation"]:
+                result.update({"eval_score": self.distance_result})
 
         return result
+
+    def is_pass_embedding_distance(self):
+
+        from ...metrics.embedding_distance import EmbeddingDistance
+        from ...embeddings.huggingface import HuggingfaceEmbeddings
+        from ...embeddings.openai import OpenAIEmbeddings
+
+        embeddings = self.config.get(
+            "embeddings", {"model": "text-embedding-ada-002", "hub": "openai"}
+        )
+        hub_name = embeddings["hub"]
+        evaluations = self.config["evaluation"]
+        selected_metric = evaluations.get("distance", "cosine")
+        embedding_classes = {
+            "openai": OpenAIEmbeddings,
+            "huggingface": HuggingfaceEmbeddings,
+        }
+        default_threshold = {
+            "cosine": {"threshold": 0.70, "comparison": lambda a, b: a >= b},
+            "euclidean": {"threshold": 0.30, "comparison": lambda a, b: a <= b},
+            "manhattan": {"threshold": 0.30, "comparison": lambda a, b: a <= b},
+            "chebyshev": {"threshold": 0.30, "comparison": lambda a, b: a <= b},
+            "hamming": {"threshold": 0.30, "comparison": lambda a, b: a <= b},
+        }
+        # Check if hub_name is valid
+        if hub_name not in embedding_classes:
+            raise ValueError(f"Unsupported hub: {hub_name}")
+
+        # Check if selected_metric is valid
+        if selected_metric not in EmbeddingDistance.available_embedding_distance:
+            raise ValueError(f"Unsupported distance metric: {selected_metric}")
+
+        model = embedding_classes[hub_name](model=embeddings["model"])
+        if "openai" in embeddings["hub"]:
+            embedding1 = np.array(
+                model.get_embedding(self.expected_results.lower().strip())
+            ).reshape(1, -1)
+            embedding2 = np.array(
+                model.get_embedding(self.actual_results.lower().strip())
+            ).reshape(1, -1)
+
+        elif "huggingface" in embeddings["hub"]:
+            embedding1 = model.encode(self.expected_results.lower().strip())
+            embedding2 = model.encode(self.actual_results.lower().strip())
+
+        distance_function = EmbeddingDistance()[selected_metric]
+        self.distance_result = distance_function(embedding1, embedding2)
+
+        if evaluations.get("threshold") is not None:
+            threshold = evaluations.get("threshold")
+        else:
+            threshold_info = default_threshold.get(selected_metric)
+            threshold = threshold_info["threshold"]
+
+        comparison_function = default_threshold[selected_metric]["comparison"]
+
+        return comparison_function(self.distance_result, threshold)
 
     def is_pass_string_distance(self):
         default_threshold = {
