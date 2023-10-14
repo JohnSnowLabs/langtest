@@ -95,9 +95,9 @@ default_user_prompt = {
     Question: {question}\n Answer:
     """,
 
-    "Finance":"""
+    "finance":"""
     You are a financial expert. You are here to provide concise and well-informed answers to the  financial question given below. 
-    
+    Context: {context}
     Question: {question}
     Answer:
     """
