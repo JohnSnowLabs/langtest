@@ -94,16 +94,12 @@ default_user_prompt = {
     Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
     Question: {question}\n Answer:
     """,
-
-    "finance":"""
-    You are a financial expert. You are here to provide concise and well-informed answers to the  financial question given below. 
+    "finance": """
+    You are a financial expert. You are here to provide concise and well-informed answers to the  financial question given below.
     Context: {context}
     Question: {question}
     Answer:
-    """
-
-
-    
+    """,
 }
 
 

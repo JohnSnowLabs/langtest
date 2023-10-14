@@ -370,8 +370,7 @@ class DataFactory:
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
             "Crows-Pairs": script_dir[:-7]
             + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
-            "Fiqa": script_dir[:-7]
-            + "/Finance/test.jsonl",
+            "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1448,7 +1447,6 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
-        # print(data)
 
         return data
 
