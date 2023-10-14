@@ -102,3 +102,50 @@ class EmbeddingDistance:
         path.
         """
         return np.sum(np.abs(a - b))
+
+    @staticmethod
+    @validate_input
+    def _chebyshev_distance(a: np.ndarray, b: np.ndarray) -> float:
+        """
+        Calculate the Chebyshev distance between two vectors.
+
+        Parameters:
+            a (np.ndarray): The first vector.
+            b (np.ndarray): The second vector.
+
+        Returns:
+            float: The Chebyshev distance.
+
+        Explanation:
+        Chebyshev distance measures the maximum absolute difference between
+        coordinates of two points. It provides a measure of similarity based on the
+        greatest difference between any dimension.
+        """
+        return np.max(np.abs(a - b))
+
+    @staticmethod
+    @validate_input
+    def _hamming_distance(a: np.ndarray, b: np.ndarray) -> float:
+        """
+        Calculate the Hamming distance between two binary vectors.
+
+        Parameters:
+            a (np.ndarray): The first boolean vector.
+            b (np.ndarray): The second boolean vector.
+
+        Returns:
+            float: The Hamming distance as a fraction of differing elements.
+
+        Explanation:
+        Hamming distance measures the fraction of differing elements in two binary vectors.
+        It provides a measure of similarity based on the proportion of differing bits.
+        """
+        return float(np.mean(a != b))
+
+    available_embedding_distance = {
+        "cosine": _cosine_distance,
+        "euclidean": _euclidean_distance,
+        "manhattan": _manhattan_distance,
+        "chebyshev": _chebyshev_distance,
+        "hamming": _hamming_distance,
+    }
