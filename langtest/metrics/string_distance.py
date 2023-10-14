@@ -122,12 +122,10 @@ class StringDistance:
 
         # If the jaro Similarity is above a threshold
         if jaro_dist > 0.7:
-
             # Find the length of common prefix
             prefix = 0
 
             for i in range(min(len(str1), len(str2))):
-
                 # If the characters match
                 if str1[i] == str2[i]:
                     prefix += 1
@@ -156,3 +154,144 @@ class StringDistance:
         normalized_distance = hamming_distance / max(len1, len2)
 
         return normalized_distance
+
+    @staticmethod
+    @validate_input
+    def _normalized_levenshtein_distance(str1: str, str2: str) -> float:
+        """
+        Calculate the normalized Levenshtein distance between two strings.
+
+        The Levenshtein distance measures the minimum number of single-character edits required to
+        change one string into the other. The normalized Levenshtein distance is the ratio of the
+        edit distance to the length of the longer string.
+
+        :param str1: The first input string.
+        :param str2: The second input string.
+
+        :return: The normalized Levenshtein distance between the two strings. This is a value between 0.0 (identical)
+                 and 1.0 (completely different), normalized by the length of the longer string.
+        """
+        len1 = len(str1)
+        len2 = len(str2)
+
+        dp = [[0] * (len2 + 1) for _ in range(len1 + 1)]
+
+        for i in range(len1 + 1):
+            dp[i][0] = i
+        for j in range(len2 + 1):
+            dp[0][j] = j
+
+        for i in range(1, len1 + 1):
+            for j in range(1, len2 + 1):
+                cost = 0 if str1[i - 1] == str2[j - 1] else 1
+                dp[i][j] = min(
+                    dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost
+                )
+
+        normalized_distance = dp[len1][len2] / max(len1, len2)
+
+        return normalized_distance
+
+    @staticmethod
+    @validate_input
+    def _normalized_damerau_levenshtein_distance(str1: str, str2: str) -> float:
+        """
+        Calculate the normalized Damerau-Levenshtein distance between two strings.
+
+        The Damerau-Levenshtein distance is an extension of the Levenshtein distance that also allows
+        for transpositions of adjacent characters. The normalized Damerau-Levenshtein distance is the
+        ratio of the edit distance to the length of the longer string.
+
+        :param str1: The first input string.
+        :param str2: The second input string.
+
+        :return: The normalized Damerau-Levenshtein distance between the two strings. This is a value between 0.0 (identical)
+                 and 1.0 (completely different), normalized by the length of the longer string.
+        """
+        len1 = len(str1)
+        len2 = len(str2)
+
+        # Create a matrix to store the edit distances
+        dp = [[0] * (len2 + 1) for _ in range(len1 + 1)]
+
+        # Initialize the first row and column of the matrix
+        for i in range(len1 + 1):
+            dp[i][0] = i
+        for j in range(len2 + 1):
+            dp[0][j] = j
+
+        # Fill in the matrix with edit distances
+        for i in range(1, len1 + 1):
+            for j in range(1, len2 + 1):
+                cost = 0 if str1[i - 1] == str2[j - 1] else 1
+                dp[i][j] = min(
+                    dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost
+                )
+
+                # Check for transpositions (if possible)
+                if (
+                    i > 1
+                    and j > 1
+                    and str1[i - 1] == str2[j - 2]
+                    and str1[i - 2] == str2[j - 1]
+                ):
+                    dp[i][j] = min(dp[i][j], dp[i - 2][j - 2] + cost)
+
+        # Calculate the normalized Damerau-Levenshtein distance
+        normalized_distance = dp[len1][len2] / max(len1, len2)
+
+        return normalized_distance
+
+    @staticmethod
+    @validate_input
+    def _normalized_indel_distance(str1: str, str2: str) -> float:
+        """
+        Calculate the normalized Indel distance between two strings.
+
+        The Indel distance measures the number of insertions and deletions required to make two strings
+        identical. The normalized Indel distance is the ratio of the total edit operations to the maximum
+        length of the input strings.
+
+        :param str1: The first input string.
+        :param str2: The second input string.
+
+        :return: The normalized Indel distance between the two strings. This is a value between 0.0 (identical)
+                 and 1.0 (completely different), normalized by the maximum length of the input strings.
+        """
+        # Initialize a matrix with dimensions (len(str1) + 1) x (len(str2) + 1)
+        matrix = [[0 for _ in range(len(str2) + 1)] for _ in range(len(str1) + 1)]
+
+        # Initialize the first row and first column of the matrix
+        for i in range(len(str1) + 1):
+            matrix[i][0] = i
+        for j in range(len(str2) + 1):
+            matrix[0][j] = j
+
+        # Fill in the matrix using dynamic programming
+        for i in range(1, len(str1) + 1):
+            for j in range(1, len(str2) + 1):
+                cost = 0 if str1[i - 1] == str2[j - 1] else 2
+                matrix[i][j] = min(
+                    matrix[i - 1][j] + 1,  # Deletion
+                    matrix[i][j - 1] + 1,  # Insertion
+                    matrix[i - 1][j - 1] + cost,  # Substitution
+                )
+
+        # The minimum number of insertions and deletions is in the bottom-right cell of the matrix
+        indel_distance = matrix[len(str1)][len(str2)]
+
+        len1, len2 = len(str1), len(str2)
+        indel_similarity = (len1 + len2) - indel_distance
+        max_similarity = len(str1) + len(str2)
+        normalized_similarity = 1 - (indel_similarity / max_similarity)
+
+        return normalized_similarity
+
+    available_string_distance = {
+        "jaro": _normalized_jaro_distance,
+        "jaro_winkler": _normalized_jaro_winkler_distance,
+        "hamming": _normalized_hamming_distance,
+        "levenshtein": _normalized_levenshtein_distance,
+        "damerau_levenshtein": _normalized_damerau_levenshtein_distance,
+        "indel": _normalized_indel_distance,
+    }
