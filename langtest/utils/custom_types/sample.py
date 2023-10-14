@@ -562,7 +562,9 @@ class QASample(BaseQASample):
                     prediction_key="text",
                 )
 
-            return graded_outputs[0]["text"].strip() == "CORRECT"
+            return (
+                list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
+            )
         else:
             prediction = llm_model(
                 text={
