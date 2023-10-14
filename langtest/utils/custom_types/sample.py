@@ -486,96 +486,144 @@ class QASample(BaseQASample):
 
         return result
 
+    def is_pass_string_distance(self):
+        default_threshold = {
+            "jaro": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+            "jaro_winkler": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+            "hamming": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+            "levenshtein": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+            "damerau_levenshtein": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+            "indel": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+        }
+
+        from ...metrics.string_distance import StringDistance
+
+        evaluations = self.config["evaluation"]
+        selected_metric = evaluations.get("distance", "jaro")
+
+        if selected_metric not in StringDistance.available_string_distance:
+            raise ValueError(f"Invalid selected_metric: {selected_metric}")
+
+        distance_function = StringDistance()[selected_metric]
+        self.distance_result = distance_function(
+            self.expected_results.lower().strip(), self.actual_results.lower().strip()
+        )
+
+        if evaluations.get("threshold") is not None:
+            threshold = evaluations.get("threshold")
+        else:
+            threshold_info = default_threshold.get(selected_metric)
+            threshold = threshold_info["threshold"]
+
+        comparison_function = default_threshold[selected_metric]["comparison"]
+
+        return comparison_function(self.distance_result, threshold)
+
     def is_pass(self) -> bool:
         """Checks if the sample has passed the evaluation.
 
         Returns:
             bool: True if the sample passed the evaluation, False otherwise.
         """
-        from ...langtest import GLOBAL_MODEL as llm_model
-        from langchain.evaluation.qa import QAEvalChain
-        from ...transform.constants import qa_prompt_template
-        from langchain.prompts import PromptTemplate
+        self.__update_params()
+        if "evaluation" in self.config and "metric" in self.config["evaluation"]:
+            result = getattr(self, f'is_pass_{self.config.get("evaluation")["metric"]}')()
+            return result
 
-        if self.dataset_name in [
-            "BoolQ",
-            "asdiv",
-            "LogiQA",
-            "MMLU",
-            "OpenBookQA",
-            "PIQA",
-            "CommonsenseQA",
-            "SIQA",
-            "Privacy-Policy",
-            "Consumer-Contracts",
-            "Contracts",
-        ] and (
-            self.actual_results.lower().strip() == self.expected_results.lower().strip()
-        ):
-            return True
+        else:
+            from ...langtest import GLOBAL_MODEL as llm_model
+            from langchain.evaluation.qa import QAEvalChain
+            from ...transform.constants import qa_prompt_template
+            from langchain.prompts import PromptTemplate
 
-        if "llm" in str(type(llm_model.model_class)):
-            if self.dataset_name not in [
+            if self.dataset_name in [
                 "BoolQ",
-                "TruthfulQA",
-                "Quac",
-                "BBQ",
+                "asdiv",
+                "LogiQA",
+                "MMLU",
+                "OpenBookQA",
                 "PIQA",
+                "CommonsenseQA",
                 "SIQA",
+                "Privacy-Policy",
                 "Consumer-Contracts",
                 "Contracts",
-                "Privacy-Policy",
-            ]:
-                PROMPT = PromptTemplate(
-                    input_variables=["query", "answer", "result"],
-                    template=qa_prompt_template,
-                )
-                eval_chain = QAEvalChain.from_llm(
-                    llm=llm_model.model_class.model, prompt=PROMPT
-                )
-                inputs = [
-                    {"question": self.original_question, "answer": self.expected_results}
-                ]
+            ] and (
+                self.actual_results.lower().strip()
+                == self.expected_results.lower().strip()
+            ):
+                return True
 
-                predictions = [
-                    {"question": self.perturbed_question, "text": self.actual_results}
-                ]
-
-                graded_outputs = eval_chain.evaluate(
-                    inputs,
-                    predictions,
-                    question_key="question",
-                    answer_key="answer",
-                    prediction_key="text",
-                )
-            else:
-                eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
-                graded_outputs = eval_chain.evaluate(
-                    [
+            if "llm" in str(type(llm_model.model_class)):
+                if self.dataset_name not in [
+                    "BoolQ",
+                    "TruthfulQA",
+                    "Quac",
+                    "BBQ",
+                    "PIQA",
+                    "SIQA",
+                    "Consumer-Contracts",
+                    "Contracts",
+                    "Privacy-Policy",
+                ]:
+                    PROMPT = PromptTemplate(
+                        input_variables=["query", "answer", "result"],
+                        template=qa_prompt_template,
+                    )
+                    eval_chain = QAEvalChain.from_llm(
+                        llm=llm_model.model_class.model, prompt=PROMPT
+                    )
+                    inputs = [
                         {
                             "question": self.original_question,
                             "answer": self.expected_results,
                         }
-                    ],
-                    [{"question": self.perturbed_question, "text": self.actual_results}],
-                    question_key="question",
-                    prediction_key="text",
-                )
+                    ]
 
-            return graded_outputs[0]["text"].strip() == "CORRECT"
-        else:
-            prediction = llm_model(
-                text={
-                    "query": self.perturbed_question,
-                    "answer": self.expected_results,
-                    "result": self.actual_results,
-                },
-                prompt={
-                    "input_variables": ["query", "answer", "result"],
-                    "template": qa_prompt_template,
-                },
-            )
-            return prediction == "CORRECT"
+                    predictions = [
+                        {"question": self.perturbed_question, "text": self.actual_results}
+                    ]
+
+                    graded_outputs = eval_chain.evaluate(
+                        inputs,
+                        predictions,
+                        question_key="question",
+                        answer_key="answer",
+                        prediction_key="text",
+                    )
+                else:
+                    eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
+                    graded_outputs = eval_chain.evaluate(
+                        [
+                            {
+                                "question": self.original_question,
+                                "answer": self.expected_results,
+                            }
+                        ],
+                        [
+                            {
+                                "question": self.perturbed_question,
+                                "text": self.actual_results,
+                            }
+                        ],
+                        question_key="question",
+                        prediction_key="text",
+                    )
+
+                return graded_outputs[0]["text"].strip() == "CORRECT"
+            else:
+                prediction = llm_model(
+                    text={
+                        "query": self.perturbed_question,
+                        "answer": self.expected_results,
+                        "result": self.actual_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                return prediction == "CORRECT"
 
 
 class MinScoreQASample(QASample):
