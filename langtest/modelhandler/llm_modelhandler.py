@@ -5,7 +5,7 @@ from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
-from ..utils.util_metrics import cosine_similarity
+from ..metrics.embedding_distance import EmbeddingDistance
 from langchain import OpenAI
 from langchain.embeddings import OpenAIEmbeddings
 import os
@@ -294,10 +294,10 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
 
         if test_name == "negation":
-            loss = 1 - cosine_similarity(
+            loss = 1 - EmbeddingDistance()._cosine_distance(
                 expected_result_embeddings, actual_result_embeddings
             )
-            loss_diff = loss[0]
+            loss_diff = loss
 
         elif test_name == "toxicity":
             count1 = compare_generations_overlap(expected_result)
