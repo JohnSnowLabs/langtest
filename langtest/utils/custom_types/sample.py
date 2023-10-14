@@ -1,11 +1,12 @@
 import re
 import string
+import numpy as np
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
-from ..util_metrics import cosine_similarity
+from ...metrics.embedding_distance import EmbeddingDistance
 from .output import NEROutput, Result
 from .predictions import NERPrediction
 
@@ -781,20 +782,22 @@ class SummarizationSample(BaseModel):
         from ...langtest import HARNESS_CONFIG as harness_config
         from evaluate import load
 
-        config = harness_config["tests"]["defaults"]
-        metric_name = config.get("evaluation_metric", "rouge")
+        evaluation = harness_config.get(
+            "evaluation", {"metric": "rouge", "threshold": 0.50}
+        )
+        metric_name = evaluation["metric"]
         metric = load(metric_name)
 
         predictions = [self.expected_results]
         references = [self.actual_results]
         if metric_name == "rouge":
             results = metric.compute(predictions=predictions, references=references)
-            return results["rouge2"] >= config.get("threshold", 0.50), results["rouge2"]
+            return results["rouge2"] >= evaluation["threshold"], results["rouge2"]
         elif metric_name == "bertscore":
             results = metric.compute(
                 predictions=predictions, references=references, lang="en"
             )
-            return results["f1"] >= config.get("threshold", 0.50), results["f1"]
+            return results["f1"] >= evaluation["threshold"], results["f1"]
 
     def transform(self, func, params, prob, perturbations=None, **kwargs):
         """Transforms the original data using the specified function.
@@ -1050,9 +1053,9 @@ class TranslationSample(BaseModel):
         if self.test_case == self.actual_results.translation_text:
             return False, 1
         else:
-            from ..SentenceTransformer import SimpleSentenceTransformer
+            from ...embeddings.huggingface import HuggingfaceEmbeddings
 
-            model = SimpleSentenceTransformer(
+            model = HuggingfaceEmbeddings(
                 model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
             )
 
@@ -1066,16 +1069,16 @@ class TranslationSample(BaseModel):
                 [self.actual_results.translation_text], convert_to_tensor=True
             )
 
-            original_similarities = cosine_similarity(
+            original_similarities = EmbeddingDistance()._cosine_distance(
                 vectors1.cpu().numpy(), vectors2.cpu().numpy()
             )
-            translation_similarities = cosine_similarity(
+            translation_similarities = EmbeddingDistance()._cosine_distance(
                 vectors3.cpu().numpy(), vectors4.cpu().numpy()
             )
 
             return (
-                abs(original_similarities - translation_similarities)[0] < 0.1,
-                abs(original_similarities - translation_similarities)[0],
+                abs(original_similarities - translation_similarities) < 0.1,
+                abs(original_similarities - translation_similarities),
             )
 
     def run(self, model, **kwargs):
@@ -1236,9 +1239,9 @@ class ClinicalSample(BaseModel):
     def _is_eval(self) -> bool:
         """"""
 
-        from ..SentenceTransformer import SimpleSentenceTransformer
+        from ...embeddings.huggingface import HuggingfaceEmbeddings
 
-        model = SimpleSentenceTransformer(
+        model = HuggingfaceEmbeddings(
             model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
         )
 
@@ -1246,7 +1249,9 @@ class ClinicalSample(BaseModel):
 
         embeddings = model.encode(sentences)
 
-        similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0]
+        similarity = EmbeddingDistance()._cosine_distance(
+            [embeddings[0]], [embeddings[1]]
+        )
 
         if self.clinical_domain == "internal_medicine":
             return (similarity > 0.8658298254013062, similarity)
