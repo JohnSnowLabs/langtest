@@ -48,7 +48,7 @@ class HuggingfaceEmbeddings:
             input_mask_expanded.sum(1), min=1e-9
         )
 
-    def encode(
+    def get_embedding(
         self,
         sentences: Union[str, List[str]],
         convert_to_tensor: bool = False,

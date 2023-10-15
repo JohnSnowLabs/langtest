@@ -1,5 +1,6 @@
 import os
 import openai
+import numpy as np
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 
 
@@ -27,5 +28,5 @@ class OpenAIEmbeddings:
             list[float]: A list of floating-point values representing the text's embedding.
         """
         response = openai.Embedding.create(input=[text], model=self.model)
-        embedding = response["data"][0]["embedding"]
+        embedding = np.array(response["data"][0]["embedding"]).reshape(1, -1)
         return embedding

@@ -1,13 +1,11 @@
 import re
 import string
-import numpy as np
-import logging
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
-from ...metrics.embedding_distance import EmbeddingDistance
+from ...metrics import EmbeddingDistance
 from .output import NEROutput, Result
 from .predictions import NERPrediction
 
@@ -512,30 +510,23 @@ class QASample(BaseQASample):
             "hamming": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
         }
 
-        embeddings = self.config.get("embeddings",{})
-        hub_name = embeddings.get("hub","openai")
+        embeddings = self.config.get("embeddings", {})
+        hub_name = embeddings.get("hub", "openai")
         evaluations = self.config["evaluation"]
         selected_metric = evaluations.get("distance", "cosine")
 
         if hub_name not in embedding_info:
             raise ValueError(f"Unsupported hub: {hub_name}")
-        
+
         if selected_metric not in EmbeddingDistance.available_embedding_distance:
             raise ValueError(f"Unsupported distance metric: {selected_metric}")
-        
-        model = embedding_info[hub_name]["class"](model=embeddings.get("model", embedding_info[hub_name]["default_model"]))
 
-        if "openai" in hub_name:
-            embedding1 = np.array(
-                model.get_embedding(self.expected_results.lower().strip())
-            ).reshape(1, -1)
-            embedding2 = np.array(
-                model.get_embedding(self.actual_results.lower().strip())
-            ).reshape(1, -1)
+        model = embedding_info[hub_name]["class"](
+            model=embeddings.get("model", embedding_info[hub_name]["default_model"])
+        )
 
-        elif "huggingface" in hub_name:
-            embedding1 = model.encode(self.expected_results.lower().strip())
-            embedding2 = model.encode(self.actual_results.lower().strip())
+        embedding1 = model.get_embedding(self.expected_results.lower().strip())
+        embedding2 = model.get_embedding(self.actual_results.lower().strip())
 
         distance_function = EmbeddingDistance()[selected_metric]
         self.distance_result = distance_function(embedding1, embedding2)
@@ -1057,12 +1048,12 @@ class TranslationSample(BaseModel):
             )
 
             # Get the sentence vectors
-            vectors1 = model.encode([self.original], convert_to_tensor=True)
-            vectors2 = model.encode([self.test_case], convert_to_tensor=True)
-            vectors3 = model.encode(
+            vectors1 = model.get_embedding([self.original], convert_to_tensor=True)
+            vectors2 = model.get_embedding([self.test_case], convert_to_tensor=True)
+            vectors3 = model.get_embedding(
                 [self.expected_results.translation_text], convert_to_tensor=True
             )
-            vectors4 = model.encode(
+            vectors4 = model.get_embedding(
                 [self.actual_results.translation_text], convert_to_tensor=True
             )
 
@@ -1244,7 +1235,7 @@ class ClinicalSample(BaseModel):
 
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
 
-        embeddings = model.encode(sentences)
+        embeddings = model.get_embedding(sentences)
 
         similarity = EmbeddingDistance()._cosine_distance(
             [embeddings[0]], [embeddings[1]]
@@ -1400,7 +1391,7 @@ class DisinformationSample(BaseModel):
 
         sentences = [self.statements, self.model_response]
 
-        embeddings = model.encode(sentences)
+        embeddings = model.get_embedding(sentences)
 
         similarity = EmbeddingDistance._cosine_distance([embeddings[0]], [embeddings[1]])
 
@@ -1857,25 +1848,29 @@ class FactualitySample(BaseModel):
                 threshold = evaluation["threshold"]
 
                 if R1:
-                    embeddings2 = model.encode([self.swapped_result, self.correct_sent])
+                    embeddings2 = model.get_embeddingget_embedding(
+                        [self.swapped_result, self.correct_sent]
+                    )
                     similarity2 = EmbeddingDistance()._cosine_distance(
                         [embeddings2[0]], [embeddings2[1]]
                     )
                     return similarity2 > threshold
 
                 elif R2:
-                    embeddings1 = model.encode([self.result, self.correct_sent])
+                    embeddings1 = model.get_embedding([self.result, self.correct_sent])
                     similarity1 = EmbeddingDistance()._cosine_distance(
                         [embeddings1[0]], [embeddings1[1]]
                     )
                     return similarity1 > threshold
 
                 else:
-                    embeddings1 = model.encode([self.result, self.correct_sent])
+                    embeddings1 = model.get_embedding([self.result, self.correct_sent])
                     similarity1 = EmbeddingDistance()._cosine_distance(
                         [embeddings1[0]], [embeddings1[1]]
                     )
-                    embeddings2 = model.encode([self.swapped_result, self.correct_sent])
+                    embeddings2 = model.get_embedding(
+                        [self.swapped_result, self.correct_sent]
+                    )
                     similarity2 = EmbeddingDistance()._cosine_distance(
                         [embeddings2[0]], [embeddings2[1]]
                     )

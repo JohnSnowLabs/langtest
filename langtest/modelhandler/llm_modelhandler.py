@@ -5,9 +5,9 @@ from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
-from ..metrics.embedding_distance import EmbeddingDistance
+from ..metrics import EmbeddingDistance
 from langchain import OpenAI
-from langchain.embeddings import OpenAIEmbeddings
+from ..embeddings import OpenAIEmbeddings
 import os
 from langtest.transform.utils import compare_generations_overlap
 
@@ -262,10 +262,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
                 temperature=0,
                 openai_api_key=os.environ["OPENAI_API_KEY"],
             )
-            embeddings_model = OpenAIEmbeddings(
-                model="text-embedding-ada-002",
-                openai_api_key=os.environ["OPENAI_API_KEY"],
-            )
+            embeddings_model = OpenAIEmbeddings(model="text-embedding-ada-002")
             return llm, embeddings_model
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
@@ -287,17 +284,12 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
 
         expected_result = self.model(text)
         actual_result = self.model(text_transformed)
-
-        expected_result_embeddings = self.embeddings_model.embed_documents(
-            [expected_result]
-        )
-        actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
-
+        expected_result_embeddings = self.embeddings_model.get_embedding(expected_result)
+        actual_result_embeddings = self.embeddings_model.get_embedding(actual_result)
         if test_name == "negation":
-            loss = 1 - EmbeddingDistance()._cosine_distance(
+            loss_diff = 1 - EmbeddingDistance()._cosine_distance(
                 expected_result_embeddings, actual_result_embeddings
             )
-            loss_diff = loss
 
         elif test_name == "toxicity":
             count1 = compare_generations_overlap(expected_result)
