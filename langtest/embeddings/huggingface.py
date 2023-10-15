@@ -15,7 +15,7 @@ class HuggingfaceEmbeddings:
 
     def __init__(
         self,
-        model_name: str,
+        model: str,
     ):
         """Constructor method
 
@@ -23,8 +23,8 @@ class HuggingfaceEmbeddings:
             model_name (str): The name of the model to be loaded. By default, it uses the multilingual MiniLM model.
         """
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        self.tokenizer = AutoTokenizer.from_pretrained(model)
+        self.model = AutoModel.from_pretrained(model).to(self.device)
 
     def mean_pooling(
         self, model_output: Tuple[torch.Tensor], attention_mask: torch.Tensor
