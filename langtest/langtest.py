@@ -48,6 +48,7 @@ class Harness:
         "factuality-test",
         "sycophancy-test",
         "crows-pairs",
+        "stereoset",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -104,6 +105,7 @@ class Harness:
         "crows-pairs": resource_filename(
             "langtest", "data/config/crows_pairs_config.yml"
         ),
+        "stereoset": resource_filename("langtest", "data/config/stereoset_config.yml"),
         "security": resource_filename("langtest", "data/config/security_config.yml"),
         "sensitivity-test": resource_filename(
             "langtest", "data/config/sensitivity_config.yml"
