@@ -20,6 +20,7 @@ from .sample import (
     FactualitySample,
     SycophancySample,
     CrowsPairsSample,
+    StereoSetSample,
 )
 from .helpers import Span, Transformation
 from .output import (
