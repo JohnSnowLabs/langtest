@@ -1,0 +1,10 @@
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  stereoset:
+    intra:
+      min_pass_rate: 0.70
+    inter:
+      min_pass_rate: 0.70
+
