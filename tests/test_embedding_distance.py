@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from langtest.metrics.embedding_distance import EmbeddingDistance
+from langtest.metrics import EmbeddingDistance
 
 
 class TestEmbeddingDistance(unittest.TestCase):
