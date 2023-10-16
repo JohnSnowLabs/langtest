@@ -499,6 +499,8 @@ class QASample(BaseQASample):
         return result
 
     def is_pass_embedding_distance(self):
+        """Check if the sample passes based on embedding distance."""
+
         from ...metrics import EmbeddingDistance
         from ...embeddings import embedding_info
 
@@ -542,6 +544,8 @@ class QASample(BaseQASample):
         return comparison_function(self.distance_result, threshold)
 
     def is_pass_string_distance(self):
+        """Check if the sample passes based on string distance."""
+
         from ...metrics import StringDistance
 
         default_threshold = {
