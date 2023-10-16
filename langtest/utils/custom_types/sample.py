@@ -777,19 +777,22 @@ class SummarizationSample(BaseModel):
             "evaluation", {"metric": "rouge", "threshold": 0.50}
         )
 
-        metric_name = evaluation["metric"]
+        metric_name = evaluation.get("metric", "rouge")
         metric = load(metric_name)
 
         predictions = [self.expected_results]
         references = [self.actual_results]
         if metric_name == "rouge":
             results = metric.compute(predictions=predictions, references=references)
-            return results["rouge2"] >= evaluation["threshold"], results["rouge2"]
+            return (
+                results["rouge2"] >= evaluation.get("threshold", 0.50),
+                results["rouge2"],
+            )
         elif metric_name == "bertscore":
             results = metric.compute(
                 predictions=predictions, references=references, lang="en"
             )
-            return results["f1"] >= evaluation["threshold"], results["f1"]
+            return results["f1"] >= evaluation.get("threshold", 0.50), results["f1"]
 
     def transform(self, func, params, prob, perturbations=None, **kwargs):
         """Transforms the original data using the specified function.
