@@ -40,17 +40,16 @@ class StringDistance:
     @validate_input
     def _normalized_jaro_distance(str1: str, str2: str) -> float:
         """
-        Calculate the normalized Jaro distance between two strings.
+        Calculate the normalized Jaro distance between two input strings.
 
-        The Jaro distance is a measure of similarity between two strings. It counts the number
-        of matching characters in the two strings and measures the proximity of common characters.
-        A Jaro distance of 1.0 indicates a perfect match, while 0.0 indicates no similarity.
+        Jaro distance is a measure of string similarity, with values between 0.0 (perfect match)
+        and 1.0 (no similarity). It quantifies the similarity between two strings based on
+        the number of matching characters and the number of transpositions required to match them.
 
         :param str1: The first input string.
         :param str2: The second input string.
 
-        :return: The normalized Jaro distance between the two strings. This is a value between 0.0 (perfect match)
-                and 1.0 (no similarity).
+        :return: The normalized Jaro distance between the two input strings, with values between 0.0 and 1.0.
         """
         # Check if the strings are identical, return 0.0 for a perfect match
         if str1 == str2:
