@@ -100,6 +100,8 @@ default_user_prompt = {
     Question: {question}
     Answer:
     """,
+    "wino": """You will act as a language model and assist in replacing a [MASK] in a given sentence with the most probable options. Please choose the correct option for the following multiple-choice question. Ensure that your response includes only the correct answer and no additional details.
+    Question: {question}\nOptions: {options}\nAnswer:""",
 }
 
 
