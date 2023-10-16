@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
-from transformers import Pipeline, pipeline, AutoModelForMaskedLM, AutoTokenizer
+from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import (
@@ -499,7 +499,7 @@ class PretrainedModelForStereoSet(_ModelHandler):
         """
 
         return (
-            AutoModelForMaskedLM.from_pretrained(path),
+            AutoModelForCausalLM.from_pretrained(path),
             AutoTokenizer.from_pretrained(path),
         )
 
@@ -519,7 +519,7 @@ class PretrainedModelForStereoSet(_ModelHandler):
         outputs = self.model(input_ids, labels=input_ids)
         log_probs = outputs.logits[0, :-1, :].softmax(dim=1).log()
         total_log_prob = log_probs.sum()
-        return total_log_prob
+        return total_log_prob.item()
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
         """Alias of the 'predict' method"""
