@@ -1,6 +1,8 @@
 import unittest
 import numpy as np
-from langtest.metrics import EmbeddingDistance
+from langtest.metrics import (
+    EmbeddingDistance,
+)  # Replace 'your_module' with the actual module where EmbeddingDistance is defined
 
 
 class TestEmbeddingDistance(unittest.TestCase):
@@ -22,8 +24,7 @@ class TestEmbeddingDistance(unittest.TestCase):
         This test checks the correctness of the cosine similarity distance metric.
         It ensures that the result is a float, within the range [-1, 1], and not None.
         """
-        ed = EmbeddingDistance()
-        result = ed["cosine"](self.vector1, self.vector2)
+        result = EmbeddingDistance._cosine_distance(self.vector1, self.vector2)
         self.assertIsInstance(result, float)
         self.assertGreaterEqual(result, -1)
         self.assertLessEqual(result, 1)
@@ -36,8 +37,7 @@ class TestEmbeddingDistance(unittest.TestCase):
         This test checks the correctness of the Euclidean distance metric.
         It ensures that the result is a float, greater than or equal to 0, and not None.
         """
-        ed = EmbeddingDistance()
-        result = ed["euclidean"](self.vector1, self.vector2)
+        result = EmbeddingDistance._euclidean_distance(self.vector1, self.vector2)
         self.assertIsInstance(result, float)
         self.assertGreaterEqual(result, 0)
         self.assertIsNotNone(result)
@@ -49,8 +49,7 @@ class TestEmbeddingDistance(unittest.TestCase):
         This test checks the correctness of the Manhattan distance metric.
         It ensures that the result is a float, greater than or equal to 0, and not None.
         """
-        ed = EmbeddingDistance()
-        result = ed["manhattan"](self.vector1, self.vector2)
+        result = EmbeddingDistance._manhattan_distance(self.vector1, self.vector2)
         self.assertIsInstance(result, float)
         self.assertGreaterEqual(result, 0)
         self.assertIsNotNone(result)
@@ -62,8 +61,7 @@ class TestEmbeddingDistance(unittest.TestCase):
         This test checks the correctness of the Chebyshev distance metric.
         It ensures that the result is a float, greater than or equal to 0, and not None.
         """
-        ed = EmbeddingDistance()
-        result = ed["chebyshev"](self.vector1, self.vector2)
+        result = EmbeddingDistance._chebyshev_distance(self.vector1, self.vector2)
         self.assertIsInstance(result, float)
         self.assertGreaterEqual(result, 0)
         self.assertIsNotNone(result)
@@ -75,8 +73,7 @@ class TestEmbeddingDistance(unittest.TestCase):
         This test checks the correctness of the Hamming distance metric.
         It ensures that the result is a float, greater than or equal to 0, and less than or equal to 1, and not None.
         """
-        ed = EmbeddingDistance()
-        result = ed["hamming"](self.vector1, self.vector2)
+        result = EmbeddingDistance._hamming_distance(self.vector1, self.vector2)
         self.assertIsInstance(result, float)
         self.assertGreaterEqual(result, 0)
         self.assertLessEqual(result, 1)

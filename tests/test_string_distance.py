@@ -3,9 +3,10 @@ from langtest.metrics import StringDistance
 
 
 class TestStringDistance(unittest.TestCase):
-    def setUp(self):
-        self.text1 = "hello"
-        self.text2 = "hola"
+    @classmethod
+    def setUpClass(cls):
+        cls.text1 = "hello"
+        cls.text2 = "hola"
 
     def assert_normalized_distance(self, distance_name, result):
         """
@@ -25,8 +26,7 @@ class TestStringDistance(unittest.TestCase):
 
         Ensure that the result is a float, not None, and falls within the range [0, 1].
         """
-        sd = StringDistance()
-        result = sd["jaro"](self.text1, self.text2)
+        result = StringDistance._normalized_jaro_distance(self.text1, self.text2)
         self.assert_normalized_distance("jaro", result)
 
     def test_normalized_jaro_winkler_distance(self):
@@ -35,8 +35,7 @@ class TestStringDistance(unittest.TestCase):
 
         Ensure that the result is a float, not None, and falls within the range [0, 1].
         """
-        sd = StringDistance()
-        result = sd["jaro_winkler"](self.text1, self.text2)
+        result = StringDistance._normalized_jaro_winkler_distance(self.text1, self.text2)
         self.assert_normalized_distance("jaro_winkler", result)
 
     def test_normalized_hamming_distance(self):
@@ -45,8 +44,7 @@ class TestStringDistance(unittest.TestCase):
 
         Ensure that the result is a float, not None, and falls within the range [0, 1].
         """
-        sd = StringDistance()
-        result = sd["hamming"](self.text1, self.text2)
+        result = StringDistance._normalized_hamming_distance(self.text1, self.text2)
         self.assert_normalized_distance("hamming", result)
 
     def test_normalized_levenshtein_distance(self):
@@ -55,8 +53,7 @@ class TestStringDistance(unittest.TestCase):
 
         Ensure that the result is a float, not None, and falls within the range [0, 1].
         """
-        sd = StringDistance()
-        result = sd["levenshtein"](self.text1, self.text2)
+        result = StringDistance._normalized_levenshtein_distance(self.text1, self.text2)
         self.assert_normalized_distance("levenshtein", result)
 
     def test_normalized_damerau_levenshtein_distance(self):
@@ -65,8 +62,9 @@ class TestStringDistance(unittest.TestCase):
 
         Ensure that the result is a float, not None, and falls within the range [0, 1].
         """
-        sd = StringDistance()
-        result = sd["damerau_levenshtein"](self.text1, self.text2)
+        result = StringDistance._normalized_damerau_levenshtein_distance(
+            self.text1, self.text2
+        )
         self.assert_normalized_distance("damerau_levenshtein", result)
 
     def test_normalized_indel_distance(self):
@@ -75,6 +73,5 @@ class TestStringDistance(unittest.TestCase):
 
         Ensure that the result is a float, not None, and falls within the range [0, 1].
         """
-        sd = StringDistance()
-        result = sd["indel"](self.text1, self.text2)
+        result = StringDistance._normalized_indel_distance(self.text1, self.text2)
         self.assert_normalized_distance("indel", result)
