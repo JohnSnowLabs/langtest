@@ -1,6 +1,7 @@
 import unittest
 from langtest.metrics import StringDistance
 
+
 class TestStringDistance(unittest.TestCase):
     def setUp(self):
         self.text1 = "hello"

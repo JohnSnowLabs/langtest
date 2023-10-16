@@ -1048,7 +1048,7 @@ class TranslationSample(BaseModel):
             from ...embeddings import HuggingfaceEmbeddings
 
             model = HuggingfaceEmbeddings(
-                model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+                model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
             )
 
             # Get the sentence vectors
@@ -1234,7 +1234,7 @@ class ClinicalSample(BaseModel):
         from ...embeddings import HuggingfaceEmbeddings
 
         model = HuggingfaceEmbeddings(
-            model_name="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
+            model="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
         )
 
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
@@ -1390,7 +1390,7 @@ class DisinformationSample(BaseModel):
         from ...embeddings import HuggingfaceEmbeddings
 
         model = HuggingfaceEmbeddings(
-            model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"
+            model="sentence-transformers/distiluse-base-multilingual-cased-v2"
         )
 
         sentences = [self.statements, self.model_response]
@@ -1846,7 +1846,7 @@ class FactualitySample(BaseModel):
                 from ...embeddings import HuggingfaceEmbeddings
 
                 model = HuggingfaceEmbeddings(
-                    model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"
+                    model="sentence-transformers/distiluse-base-multilingual-cased-v2"
                 )
 
                 threshold = evaluation["threshold"]
