@@ -1898,6 +1898,12 @@ class StereoSetTestFactory(ITests):
             List of testcase
 
         """
+        for s in self.data_handler:
+            s.diff_treshold = (
+                self.tests[s.test_type]["diff_treshold"]
+                if "diff_treshold" in self.tests[s.test_type]
+                else s.diff_treshold
+            )
         return self.data_handler
 
     @classmethod
@@ -1925,7 +1931,7 @@ class StereoSetTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no stereoset tests
         """
-        return {"intra": cls, "inter": cls}
+        return {"intrasentence": cls, "intersentence": cls}
 
     @staticmethod
     async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
@@ -1941,8 +1947,7 @@ class StereoSetTestFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-
-        for sample in sample_list["inter"]:
+        for sample in sample_list["intersentence"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1951,7 +1956,7 @@ class StereoSetTestFactory(ITests):
             if progress:
                 progress.update(1)
 
-        for sample in sample_list["intra"]:
+        for sample in sample_list["intrasentence"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1960,7 +1965,7 @@ class StereoSetTestFactory(ITests):
             if progress:
                 progress.update(1)
 
-        return sample_list["inter"] + sample_list["intra"]
+        return sample_list["intersentence"] + sample_list["intrasentence"]
 
 
 class LegalTestFactory(ITests):
