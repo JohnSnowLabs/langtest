@@ -506,10 +506,10 @@ class QASample(BaseQASample):
 
         default_threshold = {
             "cosine": {"threshold": 0.80, "comparison": lambda a, b: a >= b},
-            "euclidean": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
-            "manhattan": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
-            "chebyshev": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
-            "hamming": {"threshold": 0.20, "comparison": lambda a, b: a <= b},
+            "euclidean": {"threshold": 0.45, "comparison": lambda a, b: a <= b},
+            "manhattan": {"threshold": 4.5, "comparison": lambda a, b: a <= b},
+            "chebyshev": {"threshold": 0.10, "comparison": lambda a, b: a <= b},
+            "hamming": {"threshold": 0.50, "comparison": lambda a, b: a <= b},
         }
 
         embeddings = self.config.get("embeddings", {})
