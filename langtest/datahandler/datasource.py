@@ -1457,6 +1457,19 @@ class JSONLDataset(_IDataset):
                             dataset_name=self._file_path.split("/")[-2],
                         )
                     )
+                
+                elif self.task == "stereoset":
+                    data.append(
+                        StereoSetSample(
+                            test_type=item["type"],
+                            target=item["target"],
+                            bias_type=item["bias_type"],
+                            context=item["context"],
+                            sent_stereo=item["stereotype"],
+                            sent_antistereo=item["anti-stereotype"],
+                            sent_unrelated=item["unrelated"],
+                        )
+                    )
 
         return data
 

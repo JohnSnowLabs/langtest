@@ -1475,6 +1475,80 @@ class CrowsPairsSample(BaseModel):
         return True
 
 
+class StereoSetSample(BaseModel):
+    """
+    A class Representing a sample for crows-pairs task.
+
+    Attributes:
+        sentence (str): text we give to model for completion
+        mask1 (str): first masked word
+        mask2 (str): second masked word
+        category (str): Category of the test
+        test_type (str): Type of the test
+    """
+
+    target: str = None
+    bias_type: str = None
+    context: str = None
+    sent_stereo: str = None
+    sent_antistereo: str = None
+    sent_unrelated: str = None
+    score_stereo: float = None
+    score_anti: float = None
+    category: str = "stereoset"
+    test_type: str = None
+    state: str = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the CrowsPairsSample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the CrowsPairsSample object.
+        """
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "target": self.target,
+            "bias_type": self.bias_type,
+            "context": self.context,
+            "sent_stereo": self.sent_stereo,
+            "sent_antistereo": self.sent_antistereo,
+        }
+
+        if self.state == "done":
+            result.update(
+                {
+                    "score_stereo": self.score_stereo,
+                    "score_anti": self.score_anti,
+                    "pass": self.is_pass(),
+                }
+            )
+
+        return result
+
+    def is_pass(self):
+        """"""
+        return self._is_eval()
+
+    def _is_eval(self) -> bool:
+        """"""
+        return RuntimeError("Sample is not run yet!")
+
+    def run(self, model, **kwargs):
+        """"""
+        if self.test_type == "inter":
+            self.score_stereo = model(self.context + self.sent_stereo)
+            self.score_anti = model(self.context + self.sent_antistereo)
+        elif self.test_type == "intra":
+            self.score_stereo = model(self.coself.sent_stereo)
+            self.score_anti = model(self.sent_antistereo)
+        return True
+
+
 class LegalSample(BaseModel):
     """
     A class Representing a sample for legal-tests task.
