@@ -77,6 +77,7 @@ class ModelFactory:
         "openai",
         "cohere",
         "ai21",
+        "custom",
     ] + list(LANGCHAIN_HUBS.keys())
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
@@ -100,10 +101,11 @@ class ModelFactory:
         else:
             module_name = model.__module__.split(".")[0]
 
-        assert module_name in self.SUPPORTED_MODULES, ValueError(
-            f"Module '{module_name}' is not supported. "
-            f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
-        )
+        if hub != "custom":
+            assert module_name in self.SUPPORTED_MODULES, ValueError(
+                f"Module '{module_name}' is not supported. "
+                f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
+            )
 
         if module_name in ["pyspark", "sparknlp", "nlu"]:
             model_handler = importlib.import_module(
@@ -115,6 +117,10 @@ class ModelFactory:
                 "langtest.modelhandler.llm_modelhandler"
             )
 
+        elif hub == "custom":
+            model_handler = importlib.import_module(
+                "langtest.modelhandler.custom_modelhandler"
+            )
         else:
             model_handler = importlib.import_module(
                 f"langtest.modelhandler.{module_name}_modelhandler"
@@ -217,7 +223,7 @@ class ModelFactory:
             f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"
         )
 
-        assert hub in cls.SUPPORTED_HUBS, ValueError(
+        assert hub != "custom" and hub in cls.SUPPORTED_HUBS, ValueError(
             f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}"
         )
 
@@ -253,6 +259,10 @@ class ModelFactory:
                     """Please install the spacy library by calling `pip install spacy`.
                 For in-depth instructions, head-over to https://spacy.io/usage"""
                 )
+        elif hub == "custom":
+            modelhandler_module = importlib.import_module(
+                "langtest.modelhandler.custom_modelhandler"
+            )
 
         elif hub.lower() in LANGCHAIN_HUBS:
             modelhandler_module = importlib.import_module(

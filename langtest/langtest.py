@@ -56,6 +56,7 @@ class Harness:
         "johnsnowlabs",
         "openai",
         "cohere",
+        "custom",
         "ai21",
     ] + list(LANGCHAIN_HUBS.keys())
     DEFAULTS_DATASET = {
