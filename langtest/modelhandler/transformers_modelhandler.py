@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
-from transformers import Pipeline, pipeline
+from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 
 from .modelhandler import _ModelHandler
 from ..utils.custom_types import (
@@ -464,6 +464,62 @@ class PretrainedModelForCrowsPairs(_ModelHandler):
         """
         text = text.replace("[MASK]", self.model.tokenizer.mask_token)
         return self.model(text, **kwargs)
+
+    def __call__(self, text: str, *args, **kwargs) -> Dict:
+        """Alias of the 'predict' method"""
+        return self.predict(text=text, **kwargs)
+
+
+class PretrainedModelForStereoSet(_ModelHandler):
+    """A class representing a pretrained model for StereoSet detection.
+
+    Args:
+        model (transformers.pipeline.Pipeline): Pretrained HuggingFace pipeline for predictions.
+    """
+
+    def __init__(self, model):
+        """Constructor method
+
+        Args:
+            model (transformers.pipeline.Pipeline): Pretrained HuggingFace model for predictions.
+        """
+        self.model = model[0]
+        self.tokenizer = model[1]
+
+    @classmethod
+    def load_model(cls, path: str) -> "Pipeline":
+        """Load the Translation model into the `model` attribute.
+
+        Args:
+            path (str):
+                path to model or model name
+
+        Returns:
+            'Pipeline':
+        """
+
+        return (
+            AutoModelForCausalLM.from_pretrained(path),
+            AutoTokenizer.from_pretrained(path),
+        )
+
+    def predict(self, text: str, **kwargs) -> Dict:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform mask filling on.
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            Dict: Output for wino-bias task
+        """
+
+        # Encode a sentence and get log probabilities
+        input_ids = self.tokenizer.encode(text, return_tensors="pt")
+        outputs = self.model(input_ids, labels=input_ids)
+        log_probs = outputs.logits[0, :-1, :].softmax(dim=1).log()
+        total_log_prob = log_probs.sum()
+        return total_log_prob.item()
 
     def __call__(self, text: str, *args, **kwargs) -> Dict:
         """Alias of the 'predict' method"""

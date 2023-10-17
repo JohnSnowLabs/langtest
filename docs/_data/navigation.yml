@@ -106,6 +106,8 @@ tests:
     url: /docs/pages/tests/wino-bias
   - title: Crows Pairs
     url: /docs/pages/tests/crows-pairs
+  - title: StereoSet
+    url: /docs/pages/tests/stereoset
   - title: Legal 
     url: /docs/pages/tests/legal
   - title: Sycophancy 

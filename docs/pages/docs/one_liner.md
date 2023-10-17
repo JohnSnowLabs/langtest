@@ -568,3 +568,28 @@ h.generate().run().report()
     </div>
   </div>
 </div>
+
+### One Liner - StereoSet
+
+Try out the LangTest library on the following default model-dataset combinations for StereoSet test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[transformers]
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="stereoset", model={"model" : "bert-base-uncased", 
+  "hub":"huggingface" } , data = {"data_source":"StereoSet"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>

@@ -60,6 +60,7 @@ class ModelFactory:
         "factuality-test",
         "sycophancy-test",
         "crows-pairs",
+        "stereoset",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -179,6 +180,8 @@ class ModelFactory:
 
         elif task == "crows-pairs":
             self.model_class = model_handler.PretrainedModelForCrowsPairs(model)
+        elif task == "stereoset":
+            self.model_class = model_handler.PretrainedModelForStereoSet(model)
 
         elif task == "factuality-test":
             self.model_class = model_handler.PretrainedModelForFactualityTest(
@@ -318,6 +321,9 @@ class ModelFactory:
             model_class = modelhandler_module.PretrainedModelForCrowsPairs.load_model(
                 path
             )
+
+        elif task in ("stereoset"):
+            model_class = modelhandler_module.PretrainedModelForStereoSet.load_model(path)
 
         elif task in ("factuality-test"):
             model_class = modelhandler_module.PretrainedModelForFactualityTest.load_model(

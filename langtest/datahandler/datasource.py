@@ -35,6 +35,7 @@ from langtest.utils.custom_types import (
     FactualitySample,
     SycophancySample,
     CrowsPairsSample,
+    StereoSetSample,
 )
 from ..utils.lib_manager import try_import_lib
 from ..transform.constants import DATASETS
@@ -95,6 +96,15 @@ COLUMN_MAPPER = {
         "sentence": ["sentence"],
         "mask1": ["mask1"],
         "mask2": ["mask2"],
+    },
+    "stereoset": {
+        "type": ["type"],
+        "target": ["target"],
+        "bias_type": ["bias_type"],
+        "context": ["context"],
+        "stereotype": ["stereotype"],
+        "anti-stereotype": ["anti-stereotype"],
+        "unrelated": ["unrelated"],
     },
 }
 
@@ -368,6 +378,7 @@ class DataFactory:
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
             "Crows-Pairs": script_dir[:-7]
             + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
+            "StereoSet": script_dir[:-7] + "/StereoSet/stereoset.jsonl",
             "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
         }
 
@@ -1264,6 +1275,7 @@ class JSONLDataset(_IDataset):
         "wino-bias",
         "legal-tests",
         "factuality-test",
+        "stereoset",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1444,6 +1456,19 @@ class JSONLDataset(_IDataset):
                             incorrect_sent=item["incorrect_sent"],
                             correct_sent=item["correct_sent"],
                             dataset_name=self._file_path.split("/")[-2],
+                        )
+                    )
+
+                elif self.task == "stereoset":
+                    data.append(
+                        StereoSetSample(
+                            test_type=item["type"],
+                            target=item["target"],
+                            bias_type=item["bias_type"],
+                            context=item["context"],
+                            sent_stereo=item["stereotype"],
+                            sent_antistereo=item["anti-stereotype"],
+                            sent_unrelated=item["unrelated"],
                         )
                     )
 

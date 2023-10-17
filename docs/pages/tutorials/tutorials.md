@@ -79,6 +79,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 | SIQA                                | OpenAI                            | Question-Answering                | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/SIQA_dataset.ipynb)                         |
 | PIQA                                | OpenAI                            | Question-Answering                | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/PIQA_dataset.ipynb)                         |
 | Crows Pairs                         | Hugging Face                      | Crows-Pairs                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Crows_Pairs_Notebook.ipynb)                         |
+| StereoSet                           | Hugging Face                      | StereoSet                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/StereoSet_Notebook.ipynb)                           |
 
 <style>
   .heading {

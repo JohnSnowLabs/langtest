@@ -48,6 +48,7 @@ class Harness:
         "factuality-test",
         "sycophancy-test",
         "crows-pairs",
+        "stereoset",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -104,6 +105,7 @@ class Harness:
         "crows-pairs": resource_filename(
             "langtest", "data/config/crows_pairs_config.yml"
         ),
+        "stereoset": resource_filename("langtest", "data/config/stereoset_config.yml"),
         "security": resource_filename("langtest", "data/config/security_config.yml"),
         "sensitivity-test": resource_filename(
             "langtest", "data/config/sensitivity_config.yml"
@@ -996,6 +998,7 @@ class Harness:
             "category",
             "test_type",
             "original",
+            "context",
             "prompt",
             "original_context",
             "original_question",
@@ -1020,6 +1023,11 @@ class Harness:
             "mask2",
             "mask1_score",
             "mask2_score",
+            "sent_stereo",
+            "sent_antistereo",
+            "log_prob_stereo",
+            "log_prob_antistereo",
+            "diff_treshold",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
@@ -1174,6 +1182,7 @@ class Harness:
             "category",
             "test_type",
             "original",
+            "context",
             "original_context",
             "original_question",
             "test_case",
@@ -1182,6 +1191,8 @@ class Harness:
             "patient_info_B",
             "mask1",
             "mask2",
+            "sent_stereo",
+            "sent_antistereo",
             "case",
             "legal_claim",
             "legal_conclusion_A",
