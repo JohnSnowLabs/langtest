@@ -1644,8 +1644,8 @@ class StereoSetSample(BaseModel):
         if self.state == "done":
             result.update(
                 {
-                    "score_stereo": self.score_stereo,
-                    "score_antistereo": self.score_anti,
+                    "log_prob_stereo": self.score_stereo,
+                    "log_prob_antistereo": self.score_anti,
                     "pass": self.is_pass(),
                 }
             )
