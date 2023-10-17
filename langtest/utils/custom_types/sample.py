@@ -669,22 +669,23 @@ class QASample(BaseQASample):
                         prediction_key="text",
                     )
 
-            return (
-                list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
-            )
-        else:
-            prediction = llm_model(
-                text={
-                    "query": self.perturbed_question,
-                    "answer": self.expected_results,
-                    "result": self.actual_results,
-                },
-                prompt={
-                    "input_variables": ["query", "answer", "result"],
-                    "template": qa_prompt_template,
-                },
-            )
-            return prediction == "CORRECT"
+                return (
+                    list(graded_outputs[0].values())[0].replace("\n", "").strip()
+                    == "CORRECT"
+                )
+            else:
+                prediction = llm_model(
+                    text={
+                        "query": self.perturbed_question,
+                        "answer": self.expected_results,
+                        "result": self.actual_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                return prediction == "CORRECT"
 
 
 class MinScoreQASample(QASample):

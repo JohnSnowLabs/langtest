@@ -32,7 +32,7 @@ class TestHuggingfaceEmbeddings(unittest.TestCase):
 
     def test_max_length_truncation(self):
         """Test truncation of sentences longer than max_length."""
-        max_length = 2  # Replace with the desired max_length
+        max_length = 2
         embedding = self.embeddings.get_embedding(
             self.long_sentence, convert_to_tensor=True, max_length=max_length
         )

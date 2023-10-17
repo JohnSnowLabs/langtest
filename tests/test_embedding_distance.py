@@ -1,8 +1,6 @@
 import unittest
 import numpy as np
-from langtest.metrics import (
-    EmbeddingDistance,
-)  # Replace 'your_module' with the actual module where EmbeddingDistance is defined
+from langtest.metrics import EmbeddingDistance
 
 
 class TestEmbeddingDistance(unittest.TestCase):

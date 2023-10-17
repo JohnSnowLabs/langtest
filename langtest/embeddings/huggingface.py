@@ -35,7 +35,7 @@ class HuggingfaceEmbeddings:
             model_output (torch.Tensor): The model's output.
             attention_mask (torch.Tensor): The attention mask tensor.
 
-        Returnas:
+        Return:
             torch.Tensor: The mean pooled output tensor.
         """
         token_embeddings = model_output[
