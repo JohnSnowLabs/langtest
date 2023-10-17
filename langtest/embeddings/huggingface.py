@@ -4,7 +4,7 @@ import numpy as np
 from transformers import AutoModel, AutoTokenizer
 
 
-class SimpleSentenceTransformer:
+class HuggingfaceEmbeddings:
     """A simple class to handle the sentence transformation using the specified model.
 
     Attributes:
@@ -15,7 +15,7 @@ class SimpleSentenceTransformer:
 
     def __init__(
         self,
-        model_name: str,
+        model: str,
     ):
         """Constructor method
 
@@ -23,8 +23,8 @@ class SimpleSentenceTransformer:
             model_name (str): The name of the model to be loaded. By default, it uses the multilingual MiniLM model.
         """
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        self.tokenizer = AutoTokenizer.from_pretrained(model)
+        self.model = AutoModel.from_pretrained(model).to(self.device)
 
     def mean_pooling(
         self, model_output: Tuple[torch.Tensor], attention_mask: torch.Tensor
@@ -35,7 +35,7 @@ class SimpleSentenceTransformer:
             model_output (torch.Tensor): The model's output.
             attention_mask (torch.Tensor): The attention mask tensor.
 
-        Returns:
+        Return:
             torch.Tensor: The mean pooled output tensor.
         """
         token_embeddings = model_output[
@@ -48,7 +48,7 @@ class SimpleSentenceTransformer:
             input_mask_expanded.sum(1), min=1e-9
         )
 
-    def encode(
+    def get_embedding(
         self,
         sentences: Union[str, List[str]],
         convert_to_tensor: bool = False,

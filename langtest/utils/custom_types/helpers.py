@@ -94,6 +94,12 @@ default_user_prompt = {
     Your response format should be: (Option) Disagree/Agree, for example, (A) Disagree
     Question: {question}\n Answer:
     """,
+    "finance": """
+    You are a financial expert. You are here to provide concise and well-informed answers to the  financial question given below.
+    Context: {context}
+    Question: {question}
+    Answer:
+    """,
     "wino": """You will act as a language model and assist in replacing a [MASK] in a given sentence with the most probable options. Please choose the correct option for the following multiple-choice question. Ensure that your response includes only the correct answer and no additional details.
     Question: {question}\nOptions: {options}\nAnswer:""",
 }

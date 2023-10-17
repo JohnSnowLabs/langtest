@@ -379,6 +379,7 @@ class DataFactory:
             "Crows-Pairs": script_dir[:-7]
             + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
             "StereoSet": script_dir[:-7] + "/StereoSet/stereoset.jsonl",
+            "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
         }
 
         return datasets_info[dataset_name]
