@@ -20,6 +20,7 @@ from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 
 GLOBAL_MODEL = None
+GLOBAL_HUB = None
 HARNESS_CONFIG = None
 
 
@@ -81,66 +82,79 @@ class Harness:
         "ai21",
         "huggingface-inference-api",
     ]
+    LLM_DEFAULTS_CONFIG = {
+        "azure-openai": resource_filename("langtest", "data/config/azure_config.yml"),
+        "openai": resource_filename("langtest", "data/config/openai_config.yml"),
+        "cohere": resource_filename("langtest", "data/config/cohere_config.yml"),
+        "ai21": resource_filename("langtest", "data/config/ai21_config.yml"),
+        "huggingface-inference-api": resource_filename(
+            "langtest", "data/config/huggingface_config.yml"
+        ),
+    }
+
     DEFAULTS_CONFIG = {
-        "hubs": {
-            "azure-openai": resource_filename("langtest", "data/config/azure_config.yml"),
-            "openai": resource_filename("langtest", "data/config/openai_config.yml"),
-            "cohere": resource_filename("langtest", "data/config/cohere_config.yml"),
-            "ai21": resource_filename("langtest", "data/config/ai21_config.yml"),
+        "question-answering": LLM_DEFAULTS_CONFIG,
+        "summarization": LLM_DEFAULTS_CONFIG,
+        "political": resource_filename("langtest", "data/config/political_config.yml"),
+        "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
+        "clinical-tests": resource_filename(
+            "langtest", "data/config/clinical_config.yml"
+        ),
+        "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
+        "crows-pairs": resource_filename(
+            "langtest", "data/config/crows_pairs_config.yml"
+        ),
+        "security": resource_filename("langtest", "data/config/security_config.yml"),
+        "sensitivity-test": resource_filename(
+            "langtest", "data/config/sensitivity_config.yml"
+        ),
+        "disinformation-test": {
             "huggingface-inference-api": resource_filename(
-                "langtest", "data/config/huggingface_config.yml"
-            ),
-        },
-        "task": {
-            "political": resource_filename(
-                "langtest", "data/config/political_config.yml"
-            ),
-            "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
-            "clinical-tests": resource_filename(
-                "langtest", "data/config/clinical_config.yml"
-            ),
-            "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
-            "wino-bias": resource_filename("langtest", "data/config/wino_config.yml"),
-            "crows-pairs": resource_filename(
-                "langtest", "data/config/crows_pairs_config.yml"
-            ),
-            "disinformation-test-huggingface-inference-api": resource_filename(
                 "langtest", "data/config/disinformation_huggingface_config.yml"
             ),
-            "disinformation-test-openai": resource_filename(
+            "openai": resource_filename(
                 "langtest", "data/config/disinformation_openai_config.yml"
             ),
-            "disinformation-test-ai21": resource_filename(
+            "ai21": resource_filename(
                 "langtest", "data/config/disinformation_openai_config.yml"
             ),
-            "factuality-test-huggingface-inference-api": resource_filename(
+        },
+        "factuality-test": {
+            "huggingface-inference-api": resource_filename(
                 "langtest", "data/config/factuality_huggingface_config.yml"
             ),
-            "factuality-test-openai": resource_filename(
+            "openai": resource_filename(
                 "langtest", "data/config/factuality_openai_config.yml"
             ),
-            "factuality-test-ai21": resource_filename(
+            "ai21": resource_filename(
                 "langtest", "data/config/factuality_openai_config.yml"
             ),
-            "translation-huggingface": resource_filename(
+        },
+        "translation": {
+            "huggingface": resource_filename(
                 "langtest", "data/config/translation_transformers_config.yml"
             ),
-            "translation-johnsnowlabs": resource_filename(
+            "johnsnowlabs": resource_filename(
                 "langtest", "data/config/translation_johnsnowlabs_config.yml"
             ),
-            "security": resource_filename("langtest", "data/config/security_config.yml"),
-            "sensitivity-test": resource_filename(
-                "langtest", "data/config/sensitivity_config.yml"
-            ),
-            "sycophancy-test-huggingface-inference-api": resource_filename(
+        },
+        "sycophancy-test": {
+            "huggingface-inference-api": resource_filename(
                 "langtest", "data/config/sycophancy_huggingface_config.yml"
             ),
-            "sycophancy-test-openai": resource_filename(
+            "openai": resource_filename(
                 "langtest", "data/config/sycophancy_openai_config.yml"
             ),
-            "sycophancy-test-ai21": resource_filename(
+            "ai21": resource_filename(
                 "langtest", "data/config/sycophancy_openai_config.yml"
             ),
+        },
+        "wino-bias": {
+            "huggingface": resource_filename(
+                "langtest", "data/config/wino_huggingface_config.yml"
+            ),
+            "openai": resource_filename("langtest", "data/config/wino_openai_config.yml"),
+            "ai21": resource_filename("langtest", "data/config/wino_ai21_config.yml"),
         },
     }
 
@@ -300,21 +314,11 @@ class Harness:
 
         if config is not None:
             self._config = self.configure(config)
-        elif hub in self.DEFAULTS_CONFIG["hubs"]:
-            if task in self.DEFAULTS_CONFIG["task"]:
-                self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-            elif task in ("disinformation-test", "factuality-test", "sycophancy-test"):
-                self._config = self.configure(
-                    self.DEFAULTS_CONFIG["task"][task + "-" + hub]
-                )
-            else:
-                self._config = self.configure(self.DEFAULTS_CONFIG["hubs"][hub])
-        elif task == "translation":
-            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task + "-" + hub])
-        elif task == "crows-pairs":
-            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
-        elif task == "sensitivity-test":
-            self._config = self.configure(self.DEFAULTS_CONFIG["task"][task])
+        elif task in self.DEFAULTS_CONFIG:
+            if isinstance(self.DEFAULTS_CONFIG[task], dict):
+                self._config = self.configure(self.DEFAULTS_CONFIG[task][hub])
+            elif isinstance(self.DEFAULTS_CONFIG[task], str):
+                self._config = self.configure(self.DEFAULTS_CONFIG[task])
         else:
             logging.info("No configuration file was provided, loading default config.")
             self._config = self.configure(
@@ -351,9 +355,10 @@ class Harness:
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)
 
-        global GLOBAL_MODEL
+        global GLOBAL_MODEL, GLOBAL_HUB
         if not isinstance(model, list):
             GLOBAL_MODEL = self.model
+            GLOBAL_HUB = self.hub
 
         self._testcases = None
         self._generated_results = None
@@ -1025,6 +1030,7 @@ class Harness:
             "correct_sentence",
             "incorrect_sentence",
             "ground_truth",
+            "options",
             "result",
             "swapped_result",
             "model_response",
@@ -1191,6 +1197,7 @@ class Harness:
             "perturbed_context",
             "perturbed_question",
             "ground_truth",
+            "options",
             "expected_result",
         ]
         columns = [c for c in column_order if c in testcases_df.columns]

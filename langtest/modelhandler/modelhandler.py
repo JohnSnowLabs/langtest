@@ -172,7 +172,10 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
 
         elif task == "wino-bias":
-            self.model_class = model_handler.PretrainedModelForWinoBias(model)
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            self.model_class = model_handler.PretrainedModelForWinoBias(
+                hub=hub, model=model, *args, **kwargs
+            )
 
         elif task == "crows-pairs":
             self.model_class = model_handler.PretrainedModelForCrowsPairs(model)
@@ -306,7 +309,10 @@ class ModelFactory:
                 modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
             )
         elif task in ("wino-bias"):
-            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(
+                hub=hub, path=path, *args, **kwargs
+            )
 
         elif task in ("crows-pairs"):
             model_class = modelhandler_module.PretrainedModelForCrowsPairs.load_model(

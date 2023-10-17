@@ -78,9 +78,7 @@ COLUMN_MAPPER = {
         "statements": ["statements", "headlines"],
     },
     "sensitivity-test": {"text": ["text", "question"]},
-    "wino-bias": {
-        "text": ["text"],
-    },
+    "wino-bias": {"text": ["text"], "options": ["options"]},
     "legal-tests": {
         "case": ["case"],
         "legal-claim": ["legal-claim"],
@@ -370,6 +368,7 @@ class DataFactory:
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
             "Crows-Pairs": script_dir[:-7]
             + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
+            "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1419,6 +1418,7 @@ class JSONLDataset(_IDataset):
                     data.append(
                         WinoBiasSample(
                             masked_text=item["text"],
+                            options=item["options"],
                             task=self.task,
                             dataset_name=self._file_path.split("/")[-2],
                         )
