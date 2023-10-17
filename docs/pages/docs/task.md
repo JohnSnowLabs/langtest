@@ -33,6 +33,7 @@ The `Harness` `task` parameter accepts different tasks.
 | **`legal-tests`**         | Legal Test               | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
 | **`sycophancy-test`**     | Sycophancy Test          | Large Language Models available through the different [hubs](https://langtest.org/docs/pages/docs/hub)          |
 | **`crows-pairs`**         | Crows Pairs              | Fill mask models available in the hub [hubs](https://huggingface.co/models?pipeline_tag=fill-mask)              |
+| **`stereoset`**           | StereoSet                | HuggingFace LLM's [hubs](https://huggingface.co/models)                                                         |
 
 
 </div><div class="h3-box" markdown="1">
