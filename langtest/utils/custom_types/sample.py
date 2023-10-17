@@ -1258,7 +1258,7 @@ class ClinicalSample(BaseModel):
             return (similarity > 0.9871000647544861, similarity)
 
         else:
-            return (similarity > 0.9742239713668823, similarity)
+            return (similarity > 0.961436092853546, similarity)
 
     def run(self, model, **kwargs):
         """"""
