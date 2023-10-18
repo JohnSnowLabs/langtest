@@ -437,7 +437,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-! pip install "langtest[openai,transformers]" tiktoken
+! pip install "langtest[openai,transformers]"
 
 import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
