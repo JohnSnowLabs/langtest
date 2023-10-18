@@ -116,5 +116,7 @@ The following tables give an overview of the different categories and tests.
 | [Legal](Legal)                   | [legal-support](legal#legal-support)                                                                            | `legal-tests`                                                                       |
 | [Wino Bias](wino-bias)           | [gender-occupational-stereotype](wino-bias#gender-occupational-stereotype)                                      | `wino-bias`                                                                         |
 | [Crows Pairs](crows-pairs)       | [common-stereotypes](crows-pairs#common-stereotypes)                                                            | `crows-pairs`                                                                       |
+| [StereoSet](stereoset)           | [intersentence](stereoset#intersentence)                                                                        | `stereoset`                                                                         |
+| [StereoSet](stereoset)           | [intrasentence](stereoset#intrasentence)                                                                        | `stereoset`                                                                         |
 
 </div></div>

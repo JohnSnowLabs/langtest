@@ -191,6 +191,7 @@ setup(
             "data/LogiQA/*",
             "data/Wino-Bias/*",
             "data/CrowS-Pairs/*",
+            "data/StereoSet/*",
             "data/Legal-Support/*",
             "data/Factuality/*",
             "data/NarrativeWedging/*",
