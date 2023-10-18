@@ -1,8 +1,7 @@
 import unittest
 import torch
 import numpy as np
-from langtest.embeddings import HuggingfaceEmbeddings
-
+from langtest.embeddings.huggingface import HuggingfaceEmbeddings
 
 class TestHuggingfaceEmbeddings(unittest.TestCase):
     def setUp(self):

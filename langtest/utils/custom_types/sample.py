@@ -1,5 +1,6 @@
 import re
 import string
+import importlib
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
 from pydantic import BaseModel, PrivateAttr, validator, Field
@@ -502,7 +503,11 @@ class QASample(BaseQASample):
         """Check if the sample passes based on embedding distance."""
 
         from ...metrics import EmbeddingDistance
-        from ...embeddings import embedding_info
+
+        embedding_info = {
+            "openai": {"default_model": "text-embedding-ada-002"},
+            "huggingface": {"default_model": "sentence-transformers/all-mpnet-base-v2"},
+        }
 
         default_threshold = {
             "cosine": {"threshold": 0.80, "comparison": lambda a, b: a >= b},
@@ -516,14 +521,20 @@ class QASample(BaseQASample):
         hub_name = embeddings.get("hub", "openai")
         evaluations = self.config["evaluation"]
         selected_metric = evaluations.get("distance", "cosine")
+        module_name = f"langtest.embeddings.{hub_name}"
+        class_name = f"{hub_name.capitalize()}Embeddings"
 
-        if hub_name not in embedding_info:
-            raise ValueError(f"Unsupported hub: {hub_name}")
+        try:
+            module = importlib.import_module(module_name)
+            embeddings_class = getattr(module, class_name)
+
+        except (ModuleNotFoundError, AttributeError):
+            raise ValueError(f"No {hub_name} embeddings class found")
 
         if selected_metric not in EmbeddingDistance.available_embedding_distance:
             raise ValueError(f"Unsupported distance metric: {selected_metric}")
 
-        model = embedding_info[hub_name]["class"](
+        model = embeddings_class(
             model=embeddings.get("model", embedding_info[hub_name]["default_model"])
         )
 
@@ -1051,7 +1062,7 @@ class TranslationSample(BaseModel):
         if self.test_case == self.actual_results.translation_text:
             return False, 1
         else:
-            from ...embeddings import HuggingfaceEmbeddings
+            from ...embeddings.huggingface import HuggingfaceEmbeddings
 
             model = HuggingfaceEmbeddings(
                 model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -1237,7 +1248,7 @@ class ClinicalSample(BaseModel):
     def _is_eval(self) -> bool:
         """"""
 
-        from ...embeddings import HuggingfaceEmbeddings
+        from ...embeddings.huggingface import HuggingfaceEmbeddings
 
         model = HuggingfaceEmbeddings(
             model="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
@@ -1394,7 +1405,7 @@ class DisinformationSample(BaseModel):
         evaluation = harness_config.get("evaluation", {"threshold": 0.85})
         threshold = evaluation["threshold"]
 
-        from ...embeddings import HuggingfaceEmbeddings
+        from ...embeddings.huggingface import HuggingfaceEmbeddings
 
         model = HuggingfaceEmbeddings(
             model="sentence-transformers/distiluse-base-multilingual-cased-v2"
@@ -1959,7 +1970,7 @@ class FactualitySample(BaseModel):
 
                 evaluation = harness_config.get("evaluation", {"threshold": 0.85})
 
-                from ...embeddings import HuggingfaceEmbeddings
+                from ...embeddings.huggingface import HuggingfaceEmbeddings
 
                 model = HuggingfaceEmbeddings(
                     model="sentence-transformers/distiluse-base-multilingual-cased-v2"
