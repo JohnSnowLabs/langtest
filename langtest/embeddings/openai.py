@@ -5,12 +5,13 @@ from ..utils.lib_manager import try_import_lib
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 
 
-class OpenAIEmbeddings:
+class OpenaiEmbeddings:
     LIB_NAME = "openai"
 
     def __init__(self, model="text-embedding-ada-002"):
         self.model = model
         self.api_key = os.environ.get("OPENAI_API_KEY")
+        self.openai = None
         self._check_openai_package()
         if not self.api_key:
             raise ValueError(
