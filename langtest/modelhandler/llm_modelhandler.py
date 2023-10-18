@@ -7,7 +7,6 @@ from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
 from ..metrics import EmbeddingDistance
 from langchain import OpenAI
-from ..embeddings import OpenAIEmbeddings
 import os
 from langtest.transform.utils import compare_generations_overlap
 
@@ -243,7 +242,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         self.model, self.embeddings_model = model
 
     @classmethod
-    def load_model(cls, path: str) -> tuple:
+    def load_model(cls, path: str, *args, **kwargs) -> tuple:
         """
         Load the pretrained language model and embeddings model from a given path.
 
@@ -257,12 +256,16 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
         """
         try:
+            from ..embeddings.openai import OpenaiEmbeddings
+
             llm = OpenAI(
                 model_name=path,
                 temperature=0,
                 openai_api_key=os.environ["OPENAI_API_KEY"],
+                *args,
+                **kwargs,
             )
-            embeddings_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+            embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
             return llm, embeddings_model
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")

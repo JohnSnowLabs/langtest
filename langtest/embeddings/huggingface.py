@@ -15,7 +15,7 @@ class HuggingfaceEmbeddings:
 
     def __init__(
         self,
-        model: str,
+        model: str = "sentence-transformers/all-mpnet-base-v2",
     ):
         """Constructor method
 
