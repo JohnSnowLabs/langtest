@@ -7,7 +7,6 @@ from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
 
 from ..metrics import EmbeddingDistance
 from langchain import OpenAI
-from ..embeddings import OpenAIEmbeddings
 import os
 from langtest.transform.utils import compare_generations_overlap
 
@@ -257,6 +256,8 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
         """
         try:
+            from ..embeddings.openai import OpenAIEmbeddings
+
             llm = OpenAI(
                 model_name=path,
                 temperature=0,
