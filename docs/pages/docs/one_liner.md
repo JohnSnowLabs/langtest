@@ -497,7 +497,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install langtest[ai21, openai]
+!pip install langtest[openai]
 from langtest import Harness
 
 import os
