@@ -1,7 +1,6 @@
 from typing import Tuple, List, Union
 import torch
 import numpy as np
-from transformers import AutoModel, AutoTokenizer
 
 
 class HuggingfaceEmbeddings:
@@ -12,6 +11,8 @@ class HuggingfaceEmbeddings:
         tokenizer (transformers.AutoTokenizer): The tokenizer associated with the model.
         model (transformers.AutoModel): The transformer model used for sentence embeddings.
     """
+
+    from transformers import AutoModel, AutoTokenizer
 
     def __init__(
         self,
