@@ -242,7 +242,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         self.model, self.embeddings_model = model
 
     @classmethod
-    def load_model(cls, path: str) -> tuple:
+    def load_model(cls, path: str, *args, **kwargs) -> tuple:
         """
         Load the pretrained language model and embeddings model from a given path.
 
@@ -262,6 +262,8 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
                 model_name=path,
                 temperature=0,
                 openai_api_key=os.environ["OPENAI_API_KEY"],
+                *args,
+                **kwargs,
             )
             embeddings_model = OpenAIEmbeddings(model="text-embedding-ada-002")
             return llm, embeddings_model
