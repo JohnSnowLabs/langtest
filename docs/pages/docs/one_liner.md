@@ -101,6 +101,8 @@ h.generate().run().report()
         {% highlight python %}
 !pip install langtest[transformers]
 
+from langtest import Harness
+
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model={'model': 'lvwerra/distilbert-imdb', 'hub':'huggingface'})
 
@@ -145,7 +147,8 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = ''
+import os
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>
 
 # Create a Harness object
 h = Harness(task="question-answering", 
@@ -178,7 +181,8 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = ''
+import os
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>
 
 # Create a Harness object
 h = Harness(task="summarization",
@@ -210,7 +214,8 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = ''
+import os
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
 h = Harness(task="toxicity", 
@@ -293,7 +298,7 @@ Try out the LangTest library on the following default model-dataset combinations
 !pip install "langtest[openai,transformers]"
 
 import os
-os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 
 from langtest import Harness
 
@@ -324,7 +329,7 @@ Try out the LangTest library on the following default model-dataset combinations
 !pip install langtest[openai]
 
 import os
-os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 
 from langtest import Harness
 
@@ -384,7 +389,7 @@ Try out the LangTest library on the following default model for Political Test.
 !pip install langtest[openai]
 
 import os
-os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 
 from langtest import Harness
 
@@ -559,7 +564,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task="crows-pairs", model={"model" : "bert-base-uncased", 
-  "hub":"huggingface" } , data = {"data_source":"Wino-test"})
+  "hub":"huggingface" } , data = {"data_source":"Crows-Pairs"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
