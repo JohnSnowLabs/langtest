@@ -1,6 +1,5 @@
 from collections import Counter
 from typing import List, Union, Dict
-import numpy as np
 
 
 def classification_report(
@@ -172,21 +171,3 @@ def calculate_f1_score(
             "Invalid averaging method. Must be one of 'macro', 'micro', or 'weighted'."
         )
     return f1_score
-
-
-def cosine_similarity(array1: np.ndarray, array2: np.ndarray) -> np.ndarray:
-    """Compute the cosine similarity between two arrays.
-
-    Args:
-        array1 (numpy.ndarray): The first input array. This is a two-dimensional array, where each row is a vector.
-        array2 (numpy.ndarray): The second input array. This should have the same shape as array1.
-
-    Returns:
-        numpy.ndarray: An array of cosine similarity values. Each value corresponds to the cosine similarity between a pair of vectors from array1 and array2.
-    """
-    dot_products = np.einsum("ij,ij->i", array1, array2)
-    magnitudes1 = np.linalg.norm(array1, axis=1)
-    magnitudes2 = np.linalg.norm(array2, axis=1)
-    cosine_similarities = dot_products / (magnitudes1 * magnitudes2)
-
-    return cosine_similarities
