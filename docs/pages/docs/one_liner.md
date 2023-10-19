@@ -243,13 +243,15 @@ To compare different models (either from same or different hubs) on the same tas
       <div class="highlight-box">
         {% highlight python %}
 !pip install "langtest[spacy,johnsnowlabs]" 
+!wget https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/langtest/data/conll/sample.conll
+
 from langtest import Harness
 
 # Define the list
 models = [{"model": "ner.dl" , "hub":"johnsnowlabs"} , {"model":"en_core_web_sm", "hub": "spacy"}]
 
 # Create a Harness object
-h = Harness(task="ner", model=models, data={"data_source":'/path-to-test-conll'})
+h = Harness(task="ner", model=models, data={"data_source":'sample.conll'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
