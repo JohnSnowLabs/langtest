@@ -361,7 +361,7 @@ class Harness:
         global GLOBAL_MODEL, GLOBAL_HUB
         if not isinstance(model, list):
             GLOBAL_MODEL = self.model
-            GLOBAL_HUB = self.hub
+            GLOBAL_HUB = hub
 
         self._testcases = None
         self._generated_results = None
