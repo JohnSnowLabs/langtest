@@ -82,6 +82,9 @@ The following table gives an overview of the different tutorial notebooks. We ha
 | StereoSet                           | Hugging Face                      | StereoSet                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/StereoSet_Notebook.ipynb)                           |
 | Wino Bias LLM                         | OpenAI                      | Wino-Bias                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Wino_Bias_LLM.ipynb)                         |
 | Evaluation Metrics                         | OpenAI                      | Question-Answering                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb)     |
+| Fiqa                         | OpenAI                     | Question-Answering                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Fiqa_dataset.ipynb)  |
+| Customized Model                         | Custom                     | Text-Classification                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Custom_Hub_Notebook.ipynb)  |
+
 
 <style>
   .heading {

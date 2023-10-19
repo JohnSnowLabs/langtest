@@ -24,6 +24,7 @@ The `Harness` `hub` parameter accepts different hubs depending on the selected t
 |**cohere** | [Cohere](https://cohere.com/) | `question-answering`, `summarization` ,  `toxicity`
 |**ai21** | [AI21 Labs](https://www.ai21.com/) | `question-answering`, `summarization` ,  `toxicity`
 |**azure-openai** | [Azure OpenAI](https://azure.microsoft.com/en-us/products/cognitive-services/openai-service) | `question-answering`, `summarization` ,  `toxicity`
+|**custom** | [Keras](https://keras.io/), [PyTorch](https://pytorch.org/), [TensorFlow](https://www.tensorflow.org/), [scikit-learn](https://scikit-learn.org/) `etc` | `text-classification`
 
 </div><div class="h3-box" markdown="1">
 
