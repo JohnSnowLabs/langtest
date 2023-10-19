@@ -27,7 +27,7 @@ We provides a collection of string distance metrics designed to quantify the sim
 
 ### Configuration Structure
 
-To configure your embedding models and evaluation metrics, you can use a YAML configuration file. The configuration structure includes:
+To configure string distance metrics, you can use a YAML configuration file. The configuration structure includes:
 
 - `model_parameters` specifying model-related parameters.
 - `evaluation` setting the evaluation `metric`, `distance`, and `threshold`.
