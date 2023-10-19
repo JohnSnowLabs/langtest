@@ -17,7 +17,7 @@ class StereoSetTestCase(unittest.TestCase):
             data={"data_source": "StereoSet"},
         )
 
-        self.harness.data = self.harness.data[::500]
+        self.harness.data = self.harness.data[:50]
 
     def test_stereoset_workflow(self):
         """
