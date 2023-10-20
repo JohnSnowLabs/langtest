@@ -101,6 +101,8 @@ h.generate().run().report()
         {% highlight python %}
 !pip install langtest[transformers]
 
+from langtest import Harness
+
 # Make sure to specify data='path_to_data' when using custom models
 h = Harness(task='text-classification', model={'model': 'lvwerra/distilbert-imdb', 'hub':'huggingface'})
 
@@ -145,7 +147,8 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = ''
+import os
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>
 
 # Create a Harness object
 h = Harness(task="question-answering", 
@@ -178,7 +181,8 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = ''
+import os
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>
 
 # Create a Harness object
 h = Harness(task="summarization",
@@ -210,7 +214,8 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Set API keys
-os.environ['OPENAI_API_KEY'] = ''
+import os
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
 h = Harness(task="toxicity", 
@@ -238,13 +243,15 @@ To compare different models (either from same or different hubs) on the same tas
       <div class="highlight-box">
         {% highlight python %}
 !pip install "langtest[spacy,johnsnowlabs]" 
+!wget https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/langtest/data/conll/sample.conll
+
 from langtest import Harness
 
 # Define the list
 models = [{"model": "ner.dl" , "hub":"johnsnowlabs"} , {"model":"en_core_web_sm", "hub": "spacy"}]
 
 # Create a Harness object
-h = Harness(task="ner", model=models, data={"data_source":'/path-to-test-conll'})
+h = Harness(task="ner", model=models, data={"data_source":'sample.conll'})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -293,7 +300,7 @@ Try out the LangTest library on the following default model-dataset combinations
 !pip install "langtest[openai,transformers]"
 
 import os
-os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 
 from langtest import Harness
 
@@ -324,7 +331,7 @@ Try out the LangTest library on the following default model-dataset combinations
 !pip install langtest[openai]
 
 import os
-os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 
 from langtest import Harness
 
@@ -384,7 +391,7 @@ Try out the LangTest library on the following default model for Political Test.
 !pip install langtest[openai]
 
 import os
-os.environ["OPENAI_API_KEY"] = <ADD OPEN-AI-KEY>
+os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 
 from langtest import Harness
 
@@ -437,7 +444,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-! pip install "langtest[openai,transformers]" tiktoken
+! pip install "langtest[openai,transformers]"
 
 import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
@@ -474,6 +481,34 @@ from langtest import Harness
 # Create a Harness object
 h = Harness(task="wino-bias", model={"model" : "bert-base-uncased", 
   "hub":"huggingface" } , data = {"data_source":"Wino-test"}, config="wino_config.yml")
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - Wino Bias LLMs
+
+Try out the LangTest library on the following default model-dataset combinations for wino-bias test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[openai]
+from langtest import Harness
+
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+# Create a Harness object
+harness = Harness(task="wino-bias",
+                  model={"model": "text-davinci-003","hub":"openai"},
+                  data ={"data_source":"Wino-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -559,7 +594,32 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task="crows-pairs", model={"model" : "bert-base-uncased", 
-  "hub":"huggingface" } , data = {"data_source":"Wino-test"})
+  "hub":"huggingface" } , data = {"data_source":"Crows-Pairs"})
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
+
+### One Liner - StereoSet
+
+Try out the LangTest library on the following default model-dataset combinations for StereoSet test.
+
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+!pip install langtest[transformers]
+
+from langtest import Harness
+
+# Create a Harness object
+h = Harness(task="stereoset", model={"model" : "bert-base-uncased", 
+  "hub":"huggingface" } , data = {"data_source":"StereoSet"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()

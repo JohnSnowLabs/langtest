@@ -5,9 +5,8 @@ from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
-from ..utils.util_metrics import cosine_similarity
+from ..metrics import EmbeddingDistance
 from langchain import OpenAI
-from langchain.embeddings import OpenAIEmbeddings
 import os
 from langtest.transform.utils import compare_generations_overlap
 
@@ -247,7 +246,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         self.model, self.embeddings_model = model
 
     @classmethod
-    def load_model(cls, path: str) -> tuple:
+    def load_model(cls, path: str, *args, **kwargs) -> tuple:
         """
         Load the pretrained language model and embeddings model from a given path.
 
@@ -261,15 +260,16 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
         """
         try:
+            from ..embeddings.openai import OpenaiEmbeddings
+
             llm = OpenAI(
                 model_name=path,
                 temperature=0,
                 openai_api_key=os.environ["OPENAI_API_KEY"],
+                *args,
+                **kwargs,
             )
-            embeddings_model = OpenAIEmbeddings(
-                model="text-embedding-ada-002",
-                openai_api_key=os.environ["OPENAI_API_KEY"],
-            )
+            embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
             return llm, embeddings_model
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
@@ -291,17 +291,12 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
         expected_result = self.model(text)
         actual_result = self.model(text_transformed)
-
-        expected_result_embeddings = self.embeddings_model.embed_documents(
-            [expected_result]
-        )
-        actual_result_embeddings = self.embeddings_model.embed_documents([actual_result])
-
+        expected_result_embeddings = self.embeddings_model.get_embedding(expected_result)
+        actual_result_embeddings = self.embeddings_model.get_embedding(actual_result)
         if test_name == "negation":
-            loss = 1 - cosine_similarity(
+            loss_diff = 1 - EmbeddingDistance()._cosine_distance(
                 expected_result_embeddings, actual_result_embeddings
             )
-            loss_diff = loss[0]
 
         elif test_name == "toxicity":
             count1 = compare_generations_overlap(expected_result)

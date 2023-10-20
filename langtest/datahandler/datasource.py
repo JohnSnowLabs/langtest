@@ -70,9 +70,7 @@ COLUMN_MAPPER = {
         "statements": ["statements", "headlines"],
     },
     "sensitivity-test": {"text": ["text", "question"]},
-    "wino-bias": {
-        "text": ["text"],
-    },
+    "wino-bias": {"text": ["text"], "options": ["options"]},
     "legal-tests": {
         "case": ["case"],
         "legal-claim": ["legal-claim"],
@@ -89,6 +87,15 @@ COLUMN_MAPPER = {
         "sentence": ["sentence"],
         "mask1": ["mask1"],
         "mask2": ["mask2"],
+    },
+    "stereoset": {
+        "type": ["type"],
+        "target": ["target"],
+        "bias_type": ["bias_type"],
+        "context": ["context"],
+        "stereotype": ["stereotype"],
+        "anti-stereotype": ["anti-stereotype"],
+        "unrelated": ["unrelated"],
     },
 }
 
@@ -381,6 +388,8 @@ class DataFactory:
             "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
             "Crows-Pairs": script_dir[:-7]
             + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
+            "StereoSet": script_dir[:-7] + "/StereoSet/stereoset.jsonl",
+            "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
         }
 
         return datasets_info[dataset_name]
@@ -1280,6 +1289,7 @@ class JSONLDataset(BaseDataset):
         "wino-bias",
         "legal-tests",
         "factuality-test",
+        "stereoset",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1346,6 +1356,19 @@ class JSONLDataset(BaseDataset):
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
+
+                # elif self.task == "stereoset":
+                #     data.append(
+                #         StereoSetSample(
+                #             test_type=item["type"],
+                #             target=item["target"],
+                #             bias_type=item["bias_type"],
+                #             context=item["context"],
+                #             sent_stereo=item["stereotype"],
+                #             sent_antistereo=item["anti-stereotype"],
+                #             sent_unrelated=item["unrelated"],
+                #         )
+                #     )
 
         return data
 

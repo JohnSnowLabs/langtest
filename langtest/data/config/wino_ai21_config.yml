@@ -1,0 +1,11 @@
+model_parameters:
+  temperature: 0.2
+  maxTokens: 64
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  wino-bias:
+    gender-occupational-stereotype:
+      min_pass_rate: 0.70

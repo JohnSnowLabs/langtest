@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "langtest"
-version = "1.6.0"
+version = "1.7.0"
 description = "John Snow Labs provides a library for delivering safe & effective NLP models."
 authors = ["John Snow Labs <support@johnsnowlabs.com>"]
 readme = "README.md"
@@ -68,6 +68,7 @@ seqeval = {version = ">1.2.0", optional = true}
 mlflow = {version = "^2.5.0", optional = true}
 datasets = {version = ">=2.14.0", optional = true}
 matplotlib = {version = "^3.7.2", optional = true}
+tenacity = {version = "^8.2.2", optional = true}
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]
