@@ -191,6 +191,7 @@ setup(
             "data/LogiQA/*",
             "data/Wino-Bias/*",
             "data/CrowS-Pairs/*",
+            "data/StereoSet/*",
             "data/Legal-Support/*",
             "data/Factuality/*",
             "data/NarrativeWedging/*",
@@ -202,6 +203,7 @@ setup(
             "data/Contracts/*",
             "data/Consumer-Contracts/*",
             "data/wikiDataset/*",
+            "data/Finance/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

@@ -60,6 +60,7 @@ class ModelFactory:
         "factuality-test",
         "sycophancy-test",
         "crows-pairs",
+        "stereoset",
     ]
     SUPPORTED_MODULES = [
         "pyspark",
@@ -76,6 +77,7 @@ class ModelFactory:
         "openai",
         "cohere",
         "ai21",
+        "custom",
     ] + list(LANGCHAIN_HUBS.keys())
 
     def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
@@ -99,10 +101,11 @@ class ModelFactory:
         else:
             module_name = model.__module__.split(".")[0]
 
-        assert module_name in self.SUPPORTED_MODULES, ValueError(
-            f"Module '{module_name}' is not supported. "
-            f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
-        )
+        if hub != "custom":
+            assert module_name in self.SUPPORTED_MODULES, ValueError(
+                f"Module '{module_name}' is not supported. "
+                f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
+            )
 
         if module_name in ["pyspark", "sparknlp", "nlu"]:
             model_handler = importlib.import_module(
@@ -114,6 +117,10 @@ class ModelFactory:
                 "langtest.modelhandler.llm_modelhandler"
             )
 
+        elif hub == "custom":
+            model_handler = importlib.import_module(
+                "langtest.modelhandler.custom_modelhandler"
+            )
         else:
             model_handler = importlib.import_module(
                 f"langtest.modelhandler.{module_name}_modelhandler"
@@ -172,10 +179,15 @@ class ModelFactory:
             self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
 
         elif task == "wino-bias":
-            self.model_class = model_handler.PretrainedModelForWinoBias(model)
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            self.model_class = model_handler.PretrainedModelForWinoBias(
+                hub=hub, model=model, *args, **kwargs
+            )
 
         elif task == "crows-pairs":
             self.model_class = model_handler.PretrainedModelForCrowsPairs(model)
+        elif task == "stereoset":
+            self.model_class = model_handler.PretrainedModelForStereoSet(model)
 
         elif task == "factuality-test":
             self.model_class = model_handler.PretrainedModelForFactualityTest(
@@ -211,7 +223,7 @@ class ModelFactory:
             f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"
         )
 
-        assert hub in cls.SUPPORTED_HUBS, ValueError(
+        assert hub != "custom" and hub in cls.SUPPORTED_HUBS, ValueError(
             f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}"
         )
 
@@ -247,6 +259,10 @@ class ModelFactory:
                     """Please install the spacy library by calling `pip install spacy`.
                 For in-depth instructions, head-over to https://spacy.io/usage"""
                 )
+        elif hub == "custom":
+            modelhandler_module = importlib.import_module(
+                "langtest.modelhandler.custom_modelhandler"
+            )
 
         elif hub.lower() in LANGCHAIN_HUBS:
             modelhandler_module = importlib.import_module(
@@ -306,12 +322,18 @@ class ModelFactory:
                 modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
             )
         elif task in ("wino-bias"):
-            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(path)
+            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
+            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(
+                hub=hub, path=path, *args, **kwargs
+            )
 
         elif task in ("crows-pairs"):
             model_class = modelhandler_module.PretrainedModelForCrowsPairs.load_model(
                 path
             )
+
+        elif task in ("stereoset"):
+            model_class = modelhandler_module.PretrainedModelForStereoSet.load_model(path)
 
         elif task in ("factuality-test"):
             model_class = modelhandler_module.PretrainedModelForFactualityTest.load_model(
