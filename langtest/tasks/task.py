@@ -88,14 +88,13 @@ class BaseTask(ABC):
         """Return the column mapping."""
 
         coulumn_mapper = {}
-
-        for key in self._default_col:
-            for item in item_keys:
+        for item in item_keys:
+            for key in self._default_col:
                 if item.lower() in self._default_col[key]:
                     coulumn_mapper[key] = item
-                else:
-                    raise ColumnNameError(self._default_col[key], item_keys)
-
+                    break
+            
+                
         return coulumn_mapper
 
     @property
@@ -193,52 +192,48 @@ class NERTask(BaseTask):
     ) -> NERSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if len(row_data) == 2:
-            original = row_data.get(feature_column)
-            expected_results = row_data.get(target_column)
+        if set(keys).issubset(
+            set([feature_column, target_column, pos_tag, chunk_tag])
+        ):
+            # if the column names are provided, use them directly
+            column_mapper = {
+                feature_column: feature_column,
+                target_column: target_column,
+                pos_tag: pos_tag,
+                chunk_tag: chunk_tag,
+            }
         else:
-            if set([feature_column, target_column, pos_tag, chunk_tag]).issubset(
-                set(keys)
-            ):
-                # if the column names are provided, use them directly
-                column_mapper = {
-                    feature_column: feature_column,
-                    target_column: target_column,
-                    pos_tag: pos_tag,
-                    chunk_tag: chunk_tag,
-                }
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(list(row_data.keys()))
+
+        for key, value in row_data.items():
+            if isinstance(value, str):
+                row_data[key] = eval(value)
             else:
-                # auto-detect the default column names from the row_data
-                column_mapper = cls.column_mapping(list(row_data.keys()))
+                row_data[key] = value
 
-            for key, value in row_data.items():
-                if isinstance(value, str):
-                    row_data[key] = value[2:-2].split(", ")
-                else:
-                    row_data[key] = value
-
-            original = " ".join(row_data[column_mapper[feature_column]])
-            ner_labels = list()
-            cursor = 0
-            for token_indx in range(len(row_data[column_mapper[feature_column]])):
-                token = row_data[column_mapper[feature_column]][token_indx]
-                ner_labels.append(
-                    NERPrediction.from_span(
-                        entity=row_data[column_mapper[target_column]][token_indx],
-                        word=token,
-                        start=cursor,
-                        end=cursor + len(token),
-                        pos_tag=row_data[column_mapper[pos_tag]][token_indx]
-                        if row_data.get(column_mapper[pos_tag], None)
-                        else None,
-                        chunk_tag=row_data[column_mapper[chunk_tag]][token_indx]
-                        if row_data.get(column_mapper[chunk_tag], None)
-                        else None,
-                    )
+        original = " ".join(row_data[column_mapper[feature_column]])
+        ner_labels = list()
+        cursor = 0
+        for token_indx in range(len(row_data[column_mapper[feature_column]])):
+            token = row_data[column_mapper[feature_column]][token_indx]
+            ner_labels.append(
+                NERPrediction.from_span(
+                    entity=row_data[column_mapper[target_column]][token_indx],
+                    word=token,
+                    start=cursor,
+                    end=cursor + len(token),
+                    pos_tag=row_data[column_mapper[pos_tag]][token_indx]
+                    if pos_tag in column_mapper and column_mapper[pos_tag] in row_data
+                    else None,
+                    chunk_tag=row_data[column_mapper[chunk_tag]][token_indx]
+                    if chunk_tag in column_mapper and column_mapper[chunk_tag] in row_data
+                    else None,
                 )
-                cursor += len(token) + 1  # +1 to account for the white space
+            )
+            cursor += len(token) + 1  # +1 to account for the white space
 
-            expected_results = NEROutput(predictions=ner_labels)
+        expected_results = NEROutput(predictions=ner_labels)
 
         return NERSample(original=original, expected_results=expected_results)
 
