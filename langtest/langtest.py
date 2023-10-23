@@ -1075,6 +1075,7 @@ class Harness:
                                     - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                     Defaults to 'add'.
             templates (Optional[Union[str, List[str]]]):
+            append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
 
         Returns:
             Harness: The instance of the class calling this method.

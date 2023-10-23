@@ -343,6 +343,7 @@ class TemplaticAugment(BaseAugmentaion):
             training_data (dict): A dictionary containing the input data for augmentation.
             output_path (str): The path where the augmented data will be saved.
             max_num (int): Maximum number of new samples to generate
+            append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
