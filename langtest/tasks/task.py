@@ -4,7 +4,7 @@ from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
 # langtest exceptions
-from langtest.exceptions.datasets import ColumnNameError
+# from langtest.exceptions.datasets import ColumnNameError
 
 from langtest.utils.custom_types import (
     NEROutput,
@@ -93,8 +93,7 @@ class BaseTask(ABC):
                 if item.lower() in self._default_col[key]:
                     coulumn_mapper[key] = item
                     break
-            
-                
+
         return coulumn_mapper
 
     @property
@@ -192,7 +191,7 @@ class NERTask(BaseTask):
     ) -> NERSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set(keys).issubset(
+        if set(keys).intersection(
             set([feature_column, target_column, pos_tag, chunk_tag])
         ):
             # if the column names are provided, use them directly
@@ -257,7 +256,7 @@ class TextClassificationTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column, feature_column]).issubset(set(keys)):
+        if set([feature_column, feature_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {feature_column: feature_column, target_column: target_column}
         else:
@@ -303,7 +302,7 @@ class QuestionAnsweringTask(BaseTask):
     ) -> QASample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set([question, context, target_column]).issubset(set(keys)):
+        if set([question, context, target_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {
                 question: question,
@@ -347,7 +346,7 @@ class SummarizationTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column, target_column]).issubset(set(keys)):
+        if set([feature_column, target_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {feature_column: feature_column, target_column: target_column}
         else:
@@ -378,7 +377,7 @@ class TranslationTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column]).issubset(set(keys)):
+        if set([feature_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {feature_column: feature_column}
         else:
@@ -405,7 +404,7 @@ class ToxicityTask(BaseTask):
 
         keys = list(row_data.keys())
 
-        if set([feature_column]).issubset(set(keys)):
+        if set([feature_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {feature_column: feature_column}
         else:
@@ -432,7 +431,7 @@ class SecurityTask(BaseTask):
 
         keys = list(row_data.keys())
 
-        if set([feature_column]).issubset(set(keys)):
+        if set([feature_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {feature_column: feature_column}
         else:
@@ -477,7 +476,7 @@ class ClinicalTestsTask(BaseTask):
 
         keys = list(row_data.keys())
 
-        if set([patient_info_A, patient_info_B, diagnosis]).issubset(set(keys)):
+        if set([patient_info_A, patient_info_B, diagnosis]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {
                 patient_info_A: patient_info_A,
@@ -518,7 +517,7 @@ class DisinformationTestTask(BaseTask):
 
         keys = list(row_data.keys())
 
-        if set([hypothesis, statements]).issubset(set(keys)):
+        if set([hypothesis, statements]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {hypothesis: hypothesis, statements: statements}
         else:
@@ -545,7 +544,7 @@ class PoliticalTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column]).issubset(set(keys)):
+        if set([feature_column]).intersection(set(keys)):
             # if the column names are provided, use them directly
             column_mapper = {feature_column: feature_column}
         else:
