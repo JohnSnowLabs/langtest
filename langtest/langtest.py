@@ -1061,6 +1061,7 @@ class Harness:
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
+        append_original: bool = False,
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -1123,7 +1124,7 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(training_data=training_data, output_path=save_data_path)
+            ).fix(training_data=training_data, output_path=save_data_path, append_original=append_original)
 
         else:
             _ = AugmentRobustness(
