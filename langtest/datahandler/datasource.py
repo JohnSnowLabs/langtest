@@ -516,11 +516,9 @@ class ConllDataset(BaseDataset):
                     original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                        self.task.create_sample(
-                            row_data={
-                                "text": original,
-                                "ner": NEROutput(predictions=ner_labels),
-                            },
+                        self.task.get_sample_class(
+                            original=original,
+                            expected_results=NEROutput(predictions=ner_labels),
                         )
                     )
 

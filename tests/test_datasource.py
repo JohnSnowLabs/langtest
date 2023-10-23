@@ -291,7 +291,9 @@ class TestSummarizationDataset:
                 feature_column=feature_col, target_column=target_col, split="test[:30]"
             )
         else:
-            samples = dataset.load_data()
+            samples = dataset.load_data(
+                feature_column=feature_col, target_column=target_col
+            )
 
         assert isinstance(samples, list)
 
@@ -360,29 +362,36 @@ class TestToxicityDataset:
 
 
 @pytest.mark.parametrize(
-    "dataset",
+    "dataset,feature_col,target_col",
     [
-        JSONLDataset(
-            file_path="tests/fixtures/TruthfulQA-test-tiny.jsonl",
-            task=TaskManager("question-answering"),
-        )
+        (
+            JSONLDataset(
+                file_path="tests/fixtures/TruthfulQA-test-tiny.jsonl",
+                task=TaskManager("question-answering"),
+            ),
+            "question",
+            "answer",
+        ),
     ],
 )
 class TestQADataset:
     """Test cases for QA datasets"""
 
-    def test_load_raw_data(self, dataset):
+    def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
         raw_data = dataset.load_raw_data()
         assert isinstance(raw_data, list)
 
         for sample in raw_data:
-            assert isinstance(sample["question"], str)
-            assert isinstance(sample["answer"], list)
+            assert isinstance(sample[feature_col], str)
+            assert isinstance(sample[target_col], list)
 
-    def test_load_data(self, dataset):
+    def test_load_data(self, dataset, feature_col, target_col):
         """"""
-        samples = dataset.load_data()
+        samples = dataset.load_data(
+            question=feature_col,
+            target_column=target_col,
+        )
 
         assert isinstance(samples, list)
 

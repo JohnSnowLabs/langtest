@@ -323,7 +323,7 @@ class QuestionAnsweringTask(BaseTask):
 
         return QASample(
             original_question=row_data[column_mapper[question]],
-            original_context=row_data.get(column_mapper[context], "-"),
+            original_context=row_data.get(column_mapper.get(context, "-"), "-"),
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
