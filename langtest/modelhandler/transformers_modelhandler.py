@@ -378,7 +378,7 @@ class PretrainedModelForWinoBias(ModelAPI):
 
         unmasker = pipeline("fill-mask", model=path)
 
-        return unmasker
+        return cls(unmasker)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.

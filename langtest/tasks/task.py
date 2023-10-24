@@ -25,6 +25,7 @@ from langtest.utils.custom_types import (
     FactualitySample,
     SensitivitySample,
     LLMAnswerSample,
+    CrowsPairsSample,
 )
 from langtest.utils.custom_types.predictions import NERPrediction
 
@@ -525,8 +526,8 @@ class DisinformationTestTask(BaseTask):
             column_mapper = cls.column_mapping(list(row_data.keys()))
 
         return DisinformationSample(
-            hypothesis=row_data[column_mapper["hypothesis"]],
-            statements=row_data[column_mapper["statements"]],
+            hypothesis=row_data[column_mapper[hypothesis]],
+            statements=row_data[column_mapper[statements]],
             dataset_name=dataset_name,
         )
 
@@ -561,27 +562,34 @@ class WinoBiasTask(BaseTask):
     """WinoBias task."""
 
     _name = "winobias"
-    _default_col = {"text": ["text", "prompt"]}
+    _default_col = {
+        "text": ["text", "prompt"],
+        "options": ["options", "choices"],
+    }
     sample_class = WinoBiasSample
 
     def create_sample(
-        cls, row_data: dict, feature_column="text", dataset_name: str = "winobias"
+        cls,
+        row_data: dict,
+        feature_column="text",
+        options: str = "options",
+        dataset_name: str = "winobias",
     ) -> WinoBiasSample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+        if set([feature_column, options]).intersection(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {
+                feature_column: feature_column,
+                options: options,
+            }
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
 
         return WinoBiasSample(
-            prompt=row_data[column_mapper["text"]],
+            masked_text=row_data[column_mapper[feature_column]],
+            options=row_data[column_mapper[options]],
             dataset_name=dataset_name,
         )
 
@@ -597,19 +605,16 @@ class LegalTask(BaseTask):
         cls, row_data: dict, feature_column="text", dataset_name: str = "legal"
     ) -> LegalSample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+        if set([feature_column]).intersection(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
 
         return LegalSample(
-            prompt=row_data[column_mapper["text"]],
+            prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
 
@@ -625,19 +630,16 @@ class FactualityTask(BaseTask):
         cls, row_data: dict, feature_column="text", dataset_name: str = "factuality"
     ) -> FactualitySample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+        if set([feature_column]).intersection(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
 
         return FactualitySample(
-            prompt=row_data[column_mapper["text"]],
+            prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
 
@@ -653,18 +655,55 @@ class SensitivityTask(BaseTask):
         cls, row_data: dict, feature_column="text", dataset_name: str = "sensitivity"
     ) -> SensitivitySample:
         """Create a sample."""
-        if (
-            feature_column not in cls._default_col["text"]
-            and feature_column not in row_data
-        ):
-            raise AssertionError(
-                f"\nProvided feature_column is not supported.\
-                    \nPlease choose one of the supported feature_column: {cls._default_col['text']} \
-                    \n\nOr classifiy the features and target columns from {list(row_data.keys())}"
-            )
-        column_mapper = cls.column_mapping(list(row_data.keys()))
+        keys = list(row_data.keys())
+        if set([feature_column]).intersection(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {feature_column: feature_column}
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
 
         return SensitivitySample(
-            prompt=row_data[column_mapper["text"]],
+            prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
+        )
+
+
+class CrowsPairsTask(BaseTask):
+    """Crows Pairs task."""
+
+    _name = "crows-pairs"
+    _default_col = {
+        "text": ["text", "sentence"],
+        "mask1": ["mask1"],
+        "mask2": ["mask2"],
+    }
+    sample_class = CrowsPairsSample
+
+    def create_sample(
+        cls,
+        row_data: dict,
+        feature_column="sentence",
+        mask1: str = "mask1",
+        mask2: str = "mask2",
+        *args,
+        **kwargs,
+    ) -> CrowsPairsSample:
+        """Create a sample."""
+        keys = list(row_data.keys())
+        if set([feature_column, mask1, mask2]).intersection(set(keys)):
+            # if the column names are provided, use them directly
+            column_mapper = {
+                feature_column: feature_column,
+                mask1: mask1,
+                mask2: mask2,
+            }
+        else:
+            # auto-detect the default column names from the row_data
+            column_mapper = cls.column_mapping(keys)
+
+        return CrowsPairsSample(
+            sentence=row_data[column_mapper[feature_column]],
+            mask1=row_data[column_mapper[mask1]],
+            mask2=row_data[column_mapper[mask2]],
         )
