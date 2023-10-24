@@ -375,10 +375,11 @@ class PretrainedModelForWinoBias(ModelAPI):
         Returns:
             'Pipeline':
         """
+        if isinstance(path, str):
+            unmasker = pipeline("fill-mask", model=path)
+            return cls(unmasker)
 
-        unmasker = pipeline("fill-mask", model=path)
-
-        return cls(unmasker)
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -454,7 +455,10 @@ class PretrainedModelForCrowsPairs(ModelAPI):
             'Pipeline':
         """
 
-        return pipeline("fill-mask", model=path)
+        if isinstance(path, str):
+            return cls(pipeline("fill-mask", model=path))
+
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -501,11 +505,13 @@ class PretrainedModelForStereoSet(ModelAPI):
         Returns:
             'Pipeline':
         """
-
-        return (
-            AutoModelForCausalLM.from_pretrained(path),
-            AutoTokenizer.from_pretrained(path),
-        )
+        if isinstance(path, str):
+            models = (
+                AutoModelForCausalLM.from_pretrained(path),
+                AutoTokenizer.from_pretrained(path),
+            )
+            return cls(models)
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -698,10 +704,13 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         Returns:
             tuple: A tuple containing the loaded model and tokenizer.
         """
-        from ..utils.hf_utils import get_model_n_tokenizer
 
-        model, tokenizer = get_model_n_tokenizer(model_name=path)
-        return model, tokenizer
+        if isinstance(path, str):
+            from ..utils.hf_utils import get_model_n_tokenizer
+
+            model = get_model_n_tokenizer(model_name=path)
+            return model
+        return cls(path)
 
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Perform predictions on the input text.

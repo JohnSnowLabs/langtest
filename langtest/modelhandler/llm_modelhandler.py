@@ -260,17 +260,19 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
         """
         try:
-            from ..embeddings.openai import OpenaiEmbeddings
+            if isinstance(path, str):
+                from ..embeddings.openai import OpenaiEmbeddings
 
-            llm = OpenAI(
-                model_name=path,
-                temperature=0,
-                openai_api_key=os.environ["OPENAI_API_KEY"],
-                *args,
-                **kwargs,
-            )
-            embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
-            return llm, embeddings_model
+                llm = OpenAI(
+                    model_name=path,
+                    temperature=0,
+                    openai_api_key=os.environ["OPENAI_API_KEY"],
+                    *args,
+                    **kwargs,
+                )
+                embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
+                return cls((llm, embeddings_model))
+            return cls(path)
         except KeyError:
             raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
 
