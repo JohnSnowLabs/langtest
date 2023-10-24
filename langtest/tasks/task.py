@@ -672,7 +672,7 @@ class SensitivityTask(BaseTask):
 class CrowsPairsTask(BaseTask):
     """Crows Pairs task."""
 
-    _name = "crows-pairs"
+    _name = "crowspairs"
     _default_col = {
         "text": ["text", "sentence"],
         "mask1": ["mask1"],
