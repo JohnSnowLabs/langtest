@@ -18,6 +18,7 @@ from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
 from .utils.report.political_compass import political_report
 from .utils.report.mlflow_tracking import mlflow_report
+from .utils.report.format_saver import save_format
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 
@@ -649,105 +650,19 @@ class Harness:
             self.df_report = df_report.fillna("-")
 
             if mlflow_tracking:
-                
-
                 experiment_name = (
                     self._actual_model
                     if isinstance(self._actual_model, str)
                     else self._actual_model.__class__.__module__
                 )
-                
-                mlflow_report(experiment_name, self.task)
-                
-                
-                
 
-                # Get the experiment
-#                 experiment = mlflow.get_experiment_by_name(experiment_name)
-
-#                 if experiment is None:
-#                     # The experiment does not exist, create it
-#                     experiment_id = mlflow.create_experiment(experiment_name)
-#                 else:
-#                     # The experiment exists, get its ID
-#                     experiment_id = experiment.experiment_id
-
-#                 current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-#                 mlflow.start_run(
-#                     run_name=self.task + "_testing_" + current_datetime,
-#                     experiment_id=experiment_id,
-#                 )
-
-#                 df_report.apply(
-#                     lambda row: mlflow.log_metric(
-#                         row["test_type"] + "_pass_rate",
-#                         float(row["pass_rate"].rstrip("%")) / 100,
-#                     ),
-#                     axis=1,
-#                 )
-#                 df_report.apply(
-#                     lambda row: mlflow.log_metric(
-#                         row["test_type"] + "_min_pass_rate",
-#                         float(row["minimum_pass_rate"].rstrip("%")) / 100,
-#                     ),
-#                     axis=1,
-#                 )
-#                 df_report.apply(
-#                     lambda row: mlflow.log_metric(
-#                         row["test_type"] + "_pass_status", 1 if row["pass"] else 0
-#                     ),
-#                     axis=1,
-#                 )
-#                 df_report.apply(
-#                     lambda row: mlflow.log_metric(
-#                         row["test_type"] + "_pass_count", row["pass_count"]
-#                     ),
-#                     axis=1,
-#                 )
-#                 df_report.apply(
-#                     lambda row: mlflow.log_metric(
-#                         row["test_type"] + "_fail_count", row["fail_count"]
-#                     ),
-#                     axis=1,
-#                 )
-#                 mlflow.end_run()
+                mlflow_report(experiment_name, self.task, self.df_report)
 
             if format == "dataframe":
                 return self.df_report
-            elif format == "dict":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_json(save_dir)
-            elif format == "excel":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_excel(save_dir)
-            elif format == "html":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_html(save_dir)
-            elif format == "markdown":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_markdown(save_dir)
-            elif format == "text" or format == "csv":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_csv(save_dir)
+
             else:
-                raise ValueError(
-                    f'Report in format "{format}" is not supported. Please use "dataframe", "excel", "html", "markdown", "text", "dict".'
-                )
+                save_format(format, save_dir, self.df_report)
 
         else:
             df_final_report = pd.DataFrame()
@@ -787,54 +702,8 @@ class Harness:
                 df_report = df_report.reset_index(drop=True)
                 df_report = df_report.fillna("-")
                 if mlflow_tracking:
-                    try:
-                        import mlflow
-                    except ModuleNotFoundError:
-                        print("mlflow package not found. Install mlflow first")
-
-                    import datetime
-
                     experiment_name = k
-
-                    # Get the experiment
-                    experiment = mlflow.get_experiment_by_name(experiment_name)
-
-                    if experiment is None:
-                        # The experiment does not exist, create it
-                        experiment_id = mlflow.create_experiment(experiment_name)
-                    else:
-                        # The experiment exists, get its ID
-                        experiment_id = experiment.experiment_id
-
-                    current_datetime = datetime.datetime.now().strftime(
-                        "%Y-%m-%d_%H-%M-%S"
-                    )
-                    mlflow.start_run(
-                        run_name=self.task + "_testing_" + current_datetime,
-                        experiment_id=experiment_id,
-                    )
-
-                    df_report.apply(
-                        lambda row: mlflow.log_metric(
-                            row["test_type"] + "_pass_rate",
-                            float(row["pass_rate"].rstrip("%")) / 100,
-                        ),
-                        axis=1,
-                    )
-                    df_report.apply(
-                        lambda row: mlflow.log_metric(
-                            row["test_type"] + "_min_pass_rate",
-                            float(row["minimum_pass_rate"].rstrip("%")) / 100,
-                        ),
-                        axis=1,
-                    )
-                    df_report.apply(
-                        lambda row: mlflow.log_metric(
-                            row["test_type"] + "_pass_status", 1 if row["pass"] else 0
-                        ),
-                        axis=1,
-                    )
-                    mlflow.end_run()
+                    mlflow_report(experiment_name, self.task, self.df_report)
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
@@ -872,36 +741,9 @@ class Harness:
 
             if format == "dataframe":
                 return styled_df
-            elif format == "dict":
-                return styled_df.to_dict("records")
-            elif format == "excel":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_excel(save_dir)
-            elif format == "html":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_html(save_dir)
-            elif format == "markdown":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_markdown(save_dir)
-            elif format == "text" or format == "csv":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_csv(save_dir)
+
             else:
-                raise ValueError(
-                    f'Report in format "{format}" is not supported. Please use "dataframe", "excel", "html", "markdown", "text", "dict".'
-                )
+                save_format(format, save_dir, styled_df)
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """Generates an overall report with every textcase and labelwise metrics.
