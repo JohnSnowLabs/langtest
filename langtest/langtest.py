@@ -1125,7 +1125,11 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(training_data=training_data, output_path=save_data_path, append_original=append_original)
+            ).fix(
+                training_data=training_data,
+                output_path=save_data_path,
+                append_original=append_original,
+            )
 
         else:
             _ = AugmentRobustness(
