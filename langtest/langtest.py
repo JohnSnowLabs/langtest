@@ -19,6 +19,7 @@ from .transform import TestFactory
 from .utils.report.political_compass import political_report
 from .utils.report.mlflow_tracking import mlflow_report
 from .utils.report.format_saver import save_format
+from .utils.report.model_reports import model_report, multi_model_report, color_cells
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 
@@ -602,52 +603,12 @@ class Harness:
             return self.df_report
 
         elif not isinstance(self._generated_results, dict):
-            for sample in self._generated_results:
-                summary[sample.test_type]["category"] = sample.category
-                summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-            report = {}
-            for test_type, value in summary.items():
-                pass_rate = summary[test_type]["true"] / (
-                    summary[test_type]["true"] + summary[test_type]["false"]
-                )
-                min_pass_rate = self.min_pass_dict.get(
-                    test_type, self.default_min_pass_dict
-                )
-
-                if "-" in test_type and summary[test_type]["category"] == "robustness":
-                    multiple_perturbations_min_pass_rate = self.min_pass_dict.get(
-                        "multiple_perturbations", self.default_min_pass_dict
-                    )
-                    min_pass_rate = self.min_pass_dict.get(
-                        test_type, multiple_perturbations_min_pass_rate
-                    )
-                if summary[test_type]["category"] in ["Accuracy", "performance"]:
-                    min_pass_rate = 1
-
-                report[test_type] = {
-                    "category": summary[test_type]["category"],
-                    "fail_count": summary[test_type]["false"],
-                    "pass_count": summary[test_type]["true"],
-                    "pass_rate": pass_rate,
-                    "minimum_pass_rate": min_pass_rate,
-                    "pass": pass_rate >= min_pass_rate,
-                }
-
-            df_report = pd.DataFrame.from_dict(report, orient="index")
-            df_report = df_report.reset_index().rename(columns={"index": "test_type"})
-
-            df_report["pass_rate"] = df_report["pass_rate"].apply(
-                lambda x: "{:.0f}%".format(x * 100)
+            self.df_report = model_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
             )
-            df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-                lambda x: "{:.0f}%".format(x * 100)
-            )
-            col_to_move = "category"
-            first_column = df_report.pop("category")
-            df_report.insert(0, col_to_move, first_column)
-            df_report = df_report.reset_index(drop=True)
-
-            self.df_report = df_report.fillna("-")
 
             if mlflow_tracking:
                 experiment_name = (
@@ -666,44 +627,19 @@ class Harness:
 
         else:
             df_final_report = pd.DataFrame()
-            for k, v in self.model.items():
-                for sample in self._generated_results[k]:
-                    summary[sample.test_type]["category"] = sample.category
-                    summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-                report = {}
-                for test_type, value in summary.items():
-                    pass_rate = summary[test_type]["true"] / (
-                        summary[test_type]["true"] + summary[test_type]["false"]
-                    )
-                    min_pass_rate = self.min_pass_dict.get(
-                        test_type, self.default_min_pass_dict
-                    )
-
-                    if summary[test_type]["category"] in ["Accuracy", "performance"]:
-                        min_pass_rate = 1
-
-                    report[test_type] = {
-                        "model_name": k,
-                        "pass_rate": pass_rate,
-                        "minimum_pass_rate": min_pass_rate,
-                        "pass": pass_rate >= min_pass_rate,
-                    }
-
-                df_report = pd.DataFrame.from_dict(report, orient="index")
-                df_report = df_report.reset_index().rename(columns={"index": "test_type"})
-
-                df_report["pass_rate"] = df_report["pass_rate"].apply(
-                    lambda x: "{:.0f}%".format(x * 100)
+            for k in self.model.keys():
+                df_report = multi_model_report(
+                    summary,
+                    self.min_pass_dict,
+                    self.default_min_pass_dict,
+                    self._generated_results,
+                    k,
                 )
-                df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-                    lambda x: "{:.0f}%".format(x * 100)
-                )
-
-                df_report = df_report.reset_index(drop=True)
-                df_report = df_report.fillna("-")
                 if mlflow_tracking:
                     experiment_name = k
-                    mlflow_report(experiment_name, self.task, self.df_report)
+                    mlflow_report(
+                        experiment_name, self.task, df_report, multi_model_comparison=True
+                    )
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
@@ -723,21 +659,7 @@ class Harness:
                 aggfunc="mean",
             )
 
-            def color_cells(series):
-                res = []
-                for x in series.index:
-                    res.append(
-                        df_final_report[
-                            (df_final_report["test_type"] == series.name)
-                            & (df_final_report["model_name"] == x)
-                        ]["pass"].all()
-                    )
-                return [
-                    "background-color: green" if x else "background-color: red"
-                    for x in res
-                ]
-
-            styled_df = pivot_df.style.apply(color_cells)
+            styled_df = pivot_df.style.apply(color_cells, df_final_report=df_final_report)
 
             if format == "dataframe":
                 return styled_df

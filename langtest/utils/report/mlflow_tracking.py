@@ -1,7 +1,7 @@
 import datetime
 
 
-def mlflow_report(experiment_name, task, df_report):
+def mlflow_report(experiment_name, task, df_report, multi_model_comparison=False):
     try:
         import mlflow
     except ModuleNotFoundError:
@@ -27,9 +27,11 @@ def mlflow_report(experiment_name, task, df_report):
         "_pass_rate": lambda row: float(row["pass_rate"].rstrip("%")) / 100,
         "_min_pass_rate": lambda row: float(row["minimum_pass_rate"].rstrip("%")) / 100,
         "_pass_status": lambda row: 1 if row["pass"] else 0,
-        "_pass_count": lambda row: row["pass_count"],
-        "_fail_count": lambda row: row["fail_count"],
     }
+
+    if not multi_model_comparison:
+        metrics_to_log["_pass_count"] = lambda row: row["pass_count"]
+        metrics_to_log["_fail_count"] = lambda row: row["fail_count"]
 
     for suffix, func in metrics_to_log.items():
         df_report.apply(
