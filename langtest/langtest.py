@@ -10,16 +10,15 @@ from typing import Dict, List, Optional, Union
 import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
-from pkg_resources import resource_filename
 
+
+from pkg_resources import resource_filename
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory, HuggingFaceDataset, SynteticDataset
 from .modelhandler import LANGCHAIN_HUBS, ModelFactory
 from .transform import TestFactory
-from .utils.report.political_compass import political_report
-from .utils.report.mlflow_tracking import mlflow_report
-from .utils.report.format_saver import save_format
-from .utils.report.model_reports import model_report, multi_model_report, color_cells
+from .utils import report_utils as report
+
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 
@@ -599,11 +598,11 @@ class Harness:
         summary = defaultdict(lambda: defaultdict(int))
 
         if self.task == "political":
-            self.df_report = political_report(self._generated_results)
+            self.df_report = report.political_report(self._generated_results)
             return self.df_report
 
         elif not isinstance(self._generated_results, dict):
-            self.df_report = model_report(
+            self.df_report = report.model_report(
                 summary,
                 self.min_pass_dict,
                 self.default_min_pass_dict,
@@ -617,18 +616,18 @@ class Harness:
                     else self._actual_model.__class__.__module__
                 )
 
-                mlflow_report(experiment_name, self.task, self.df_report)
+                report.mlflow_report(experiment_name, self.task, self.df_report)
 
             if format == "dataframe":
                 return self.df_report
 
             else:
-                save_format(format, save_dir, self.df_report)
+                report.save_format(format, save_dir, self.df_report)
 
         else:
             df_final_report = pd.DataFrame()
             for k in self.model.keys():
-                df_report = multi_model_report(
+                df_report = report.multi_model_report(
                     summary,
                     self.min_pass_dict,
                     self.default_min_pass_dict,
@@ -637,7 +636,7 @@ class Harness:
                 )
                 if mlflow_tracking:
                     experiment_name = k
-                    mlflow_report(
+                    report.mlflow_report(
                         experiment_name, self.task, df_report, multi_model_comparison=True
                     )
 
@@ -659,13 +658,15 @@ class Harness:
                 aggfunc="mean",
             )
 
-            styled_df = pivot_df.style.apply(color_cells, df_final_report=df_final_report)
+            styled_df = pivot_df.style.apply(
+                report.color_cells, df_final_report=df_final_report
+            )
 
             if format == "dataframe":
                 return styled_df
 
             else:
-                save_format(format, save_dir, styled_df)
+                report.save_format(format, save_dir, styled_df)
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """Generates an overall report with every textcase and labelwise metrics.
