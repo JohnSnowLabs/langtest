@@ -1,9 +1,25 @@
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
+from typing import Dict, List
 
 
-def political_report(generated_results):
+def political_report(generated_results: List) -> pd.DataFrame:
+    """
+    Generate a political report based on the given results.
+
+    This function calculates the political economic and social scores from the input results
+    based on whether the test cases are 'right', 'left', 'auth', or 'lib'. The results are
+    then presented in a DataFrame format and visualized using a scatter plot to show the
+    political coordinates. The X-axis represents the economic score (right-positive, left-negative),
+    and the Y-axis represents the social score (auth-positive, lib-negative).
+
+    Parameters:
+    - generated_results (List): A list of samples, where each sample has properties
+                                'test_case' and 'is_pass' to indicate the type of test case
+                                and whether the test passed, respectively.
+
+    """
     econ_score = 0.0
     econ_count = 0.0
     social_score = 0.0
@@ -67,7 +83,32 @@ def political_report(generated_results):
     return df_report
 
 
-def model_report(summary, min_pass_dict, default_min_pass_dict, generated_results):
+def model_report(
+    summary: Dict,
+    min_pass_dict: Dict,
+    default_min_pass_dict: float,
+    generated_results: List,
+) -> pd.DataFrame:
+    """
+    Generate a report summarizing the performance of a model based on provided results.
+
+    This function computes the pass rate of each test type, compares it against a specified minimum pass rate,
+    and creates a detailed report with pass counts, fail counts, pass rates, and whether the pass rate meets the minimum threshold.
+
+    Parameters:
+    - summary (Dict): A dictionary to store and accumulate results by test type.
+    - min_pass_dict (Dict): A dictionary specifying the minimum pass rate for each test type.
+    - default_min_pass_dict (float): Default minimum pass rate if not specified in `min_pass_dict`.
+    - generated_results (List): A list of objects where each object should have a `test_type` attribute indicating the type,
+                                a `category` attribute indicating the category (e.g., "robustness", "Accuracy"),
+                                and an `is_pass` attribute indicating whether the test passed or not (1 for pass, 0 for fail).
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing detailed reporting for each test type. The columns include "test_type",
+                    "category", "fail_count", "pass_count", "pass_rate", "minimum_pass_rate", and "pass".
+
+    """
+
     for sample in generated_results:
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
@@ -117,8 +158,32 @@ def model_report(summary, min_pass_dict, default_min_pass_dict, generated_result
 
 
 def multi_model_report(
-    summary, min_pass_dict, default_min_pass_dict, generated_results, model_name
-):
+    summary: Dict,
+    min_pass_dict: Dict,
+    default_min_pass_dict: float,
+    generated_results: Dict,
+    model_name: str,
+) -> pd.DataFrame:
+    """
+    Generate a report summarizing the performance of a specific model from multiple models based on provided results.
+
+    This function computes the pass rate of each test type for the specified model, compares it against a specified minimum
+    pass rate, and creates a detailed report with pass rates and whether the pass rate meets the minimum threshold.
+
+    Parameters:
+    - summary (Dict): A dictionary to store and accumulate results by test type.
+    - min_pass_dict (Dict): A dictionary specifying the minimum pass rate for each test type.
+    - default_min_pass_dict (float): Default minimum pass rate if not specified in `min_pass_dict`.
+    - generated_results (Dict): A dictionary with model names as keys and a list of test results as values.
+                               Each test result should have a `test_type` attribute indicating the type,
+                               a `category` attribute, and an `is_pass` attribute.
+    - model_name (str): The name of the model for which the report should be generated.
+
+    Returns:
+    - pd.DataFrame: A DataFrame containing a detailed report for the specified model. The columns include "test_type",
+                    "model_name", "pass_rate", "minimum_pass_rate", and "pass".
+    """
+
     for sample in generated_results[model_name]:
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
@@ -154,7 +219,20 @@ def multi_model_report(
     return df_report
 
 
-def color_cells(series, df_final_report):
+def color_cells(series: pd.Series, df_final_report: pd.DataFrame):
+    """
+    Apply background coloring to cells based on the "pass" value for a given model and test type.
+
+    This function determines if the test passed or failed for each model based on the `pass` column in the final report.
+    Cells are colored green if the test passed and red if the test failed.
+
+    Parameters:
+    - series (pd.Series): A Series object containing model names as its index.
+    - df_final_report (pd.DataFrame): The final report DataFrame with columns "test_type", "model_name", and "pass"
+                                      where "pass" indicates if the test passed (True) or failed (False).
+
+    """
+
     res = []
     for x in series.index:
         res.append(
@@ -166,7 +244,28 @@ def color_cells(series, df_final_report):
     return ["background-color: green" if x else "background-color: red" for x in res]
 
 
-def mlflow_report(experiment_name, task, df_report, multi_model_comparison=False):
+def mlflow_report(
+    experiment_name: str,
+    task: str,
+    df_report: pd.DataFrame,
+    multi_model_comparison: bool = False,
+):
+    """
+    Logs metrics and details from a given report to an MLflow experiment.
+
+    This function uses MLflow to record various metrics (e.g., pass rate, pass status) from a given report into a specified experiment.
+    If the experiment does not already exist, it's created. If it does exist, metrics are logged under a new run.
+
+    Parameters:
+    - experiment_name (str): Name of the MLflow experiment where metrics will be logged.
+    - task (str): A descriptor or identifier for the current testing task, used to name the run.
+    - df_report (pd.DataFrame): DataFrame containing the report details. It should have columns like "pass_rate", "minimum_pass_rate", "pass",
+                                and optionally "pass_count" and "fail_count".
+    - multi_model_comparison (bool, optional): Indicates whether the report pertains to a comparison between multiple models.
+                                               If `True`, certain metrics like "pass_count" and "fail_count" are not logged.
+                                               Default is `False`.
+    """
+
     try:
         import mlflow
     except ModuleNotFoundError:
@@ -206,7 +305,19 @@ def mlflow_report(experiment_name, task, df_report, multi_model_comparison=False
     mlflow.end_run()
 
 
-def save_format(format, save_dir, df_report):
+def save_format(format: str, save_dir: str, df_report: pd.DataFrame):
+    """
+    Save the provided report DataFrame into a specified format at a given directory.
+
+    This function supports saving the report in multiple formats such as JSON (dict), Excel, HTML, Markdown, Text, and CSV. The user
+    needs to specify the desired format and the directory to which the report should be saved. If a format that isn't supported is
+    provided, an error will be raised.
+
+    Parameters:
+    - format (str): The desired format to save the report in. Supported values are "dict", "excel", "html", "markdown", "text", and "csv".
+    - save_dir (str): The directory path where the report should be saved. This must be provided for all formats.
+    - df_report (pd.DataFrame): The report DataFrame containing the data to be saved.
+    """
     if format == "dict":
         if save_dir is None:
             raise ValueError('You need to set "save_dir" parameter for this format.')
