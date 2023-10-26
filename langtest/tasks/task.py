@@ -68,6 +68,14 @@ class BaseTask(ABC):
     def column_mapping(self, item_keys, columns_names, *args, **kwargs):
         """Return the column mapping."""
 
+        # columns that are not features or targets
+        idx_columns = [
+            "index",
+            "idx",
+            "id",
+            "ids",
+        ]
+
         coulumn_mapper = {}
         for item in item_keys:
             if columns_names and item in columns_names:
@@ -77,7 +85,11 @@ class BaseTask(ABC):
                 if item.lower() in self._default_col[key]:
                     coulumn_mapper[key] = item
                     break
-            if coulumn_mapper and item not in coulumn_mapper.values():
+            if (
+                coulumn_mapper
+                and item not in coulumn_mapper.values()
+                and item not in idx_columns
+            ):
                 raise ColumnNameError(list(self._default_col), item_keys)
 
         return coulumn_mapper
