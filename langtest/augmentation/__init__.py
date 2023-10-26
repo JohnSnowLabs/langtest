@@ -352,7 +352,13 @@ class TemplaticAugment(BaseAugmentaion):
         """
         df = DataFactory(training_data, self.__task)
         data = df.load()
-        new_data = data.copy() if append_original else []
+        new_data = (
+            data.copy()
+            if isinstance(data, (pd.DataFrame, pd.Series))
+            else copy.deepcopy(data)
+            if append_original
+            else []
+        )
         self.__search_results = self.search_sample_results(data)
         if not max_num:
             max_num = max(len(i) for i in self.__search_results.values())
