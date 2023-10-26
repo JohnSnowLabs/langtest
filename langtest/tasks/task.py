@@ -4,7 +4,7 @@ from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
 
 # langtest exceptions
-# from langtest.exceptions.datasets import ColumnNameError
+from langtest.exceptions.datasets import ColumnNameError
 
 from langtest.utils import custom_types as samples
 from langtest.utils.custom_types.predictions import NERPrediction
@@ -65,15 +65,20 @@ class BaseTask(ABC):
             return self.__class__.__name__.replace("Task", "").lower() == __value.lower()
         return super().__eq__(__value)
 
-    def column_mapping(self, item_keys, *args, **kwargs):
+    def column_mapping(self, item_keys, columns_names, *args, **kwargs):
         """Return the column mapping."""
 
         coulumn_mapper = {}
         for item in item_keys:
+            if columns_names and item in columns_names:
+                coulumn_mapper[item] = item
+                continue
             for key in self._default_col:
                 if item.lower() in self._default_col[key]:
                     coulumn_mapper[key] = item
                     break
+            if coulumn_mapper and item not in coulumn_mapper.values():
+                raise ColumnNameError(list(self._default_col), item_keys)
 
         return coulumn_mapper
 
@@ -172,19 +177,11 @@ class NERTask(BaseTask):
     ) -> samples.NERSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set(keys).intersection(
-            set([feature_column, target_column, pos_tag, chunk_tag])
-        ):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                feature_column: feature_column,
-                target_column: target_column,
-                pos_tag: pos_tag,
-                chunk_tag: chunk_tag,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(
+            keys, [feature_column, target_column, pos_tag, chunk_tag]
+        )
 
         for key, value in row_data.items():
             if isinstance(value, str):
@@ -236,13 +233,8 @@ class TextClassificationTask(BaseTask):
     ) -> samples.SequenceClassificationSample:
         """Create a sample."""
         keys = list(row_data.keys())
-
-        if set([feature_column, feature_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column, target_column: target_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column, target_column])
 
         labels = row_data.get(column_mapper[target_column])
 
@@ -285,19 +277,11 @@ class QuestionAnsweringTask(BaseTask):
     ) -> samples.QASample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set([question, context, target_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                question: question,
-                context: context,
-                target_column: target_column,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [question, context, target_column])
 
         expected_results = (
-            row_data.get(column_mapper[target_column], "-")
+            row_data.get(column_mapper[target_column], None)
             if target_column in column_mapper
             else None
         )
@@ -329,12 +313,8 @@ class SummarizationTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column, target_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column, target_column: target_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column, target_column])
 
         expected_results = row_data.get(column_mapper[target_column])
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
@@ -359,13 +339,8 @@ class TranslationTask(BaseTask):
     ) -> samples.TranslationSample:
         """Create a sample."""
         keys = list(row_data.keys())
-
-        if set([feature_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
 
         return samples.TranslationSample(
             original=row_data[column_mapper[feature_column]],
@@ -386,13 +361,8 @@ class ToxicityTask(BaseTask):
         """Create a sample."""
 
         keys = list(row_data.keys())
-
-        if set([feature_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
 
         return samples.ToxicitySample(
             prompt=row_data[column_mapper[feature_column]],
@@ -414,12 +384,8 @@ class SecurityTask(BaseTask):
 
         keys = list(row_data.keys())
 
-        if set([feature_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
 
         return samples.SecuritySample(
             prompt=row_data[column_mapper[feature_column]],
@@ -450,25 +416,18 @@ class ClinicalTestsTask(BaseTask):
     def create_sample(
         cls,
         row_data: dict,
-        dataset_name: str = "clinicaltests",
         patient_info_A: str = "Patient info A",
         patient_info_B: str = "Patient info B",
         diagnosis: str = "Diagnosis",
+        dataset_name: str = "clinicaltests",
     ) -> samples.ClinicalSample:
         """Create a sample."""
 
         keys = list(row_data.keys())
-
-        if set([patient_info_A, patient_info_B, diagnosis]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                patient_info_A: patient_info_A,
-                patient_info_B: patient_info_B,
-                diagnosis: diagnosis,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(
+            keys, [patient_info_A, patient_info_B, diagnosis]
+        )
 
         return samples.ClinicalSample(
             patient_info_A=row_data[column_mapper[patient_info_A]],
@@ -500,12 +459,8 @@ class DisinformationTestTask(BaseTask):
 
         keys = list(row_data.keys())
 
-        if set([hypothesis, statements]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {hypothesis: hypothesis, statements: statements}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [hypothesis, statements])
 
         return samples.DisinformationSample(
             hypothesis=row_data[column_mapper[hypothesis]],
@@ -527,12 +482,8 @@ class PoliticalTask(BaseTask):
         """Create a sample."""
         keys = list(row_data.keys())
 
-        if set([feature_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(list(row_data.keys()))
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
 
         return samples.LLMAnswerSample(
             question=row_data[column_mapper[feature_column]],
@@ -559,15 +510,9 @@ class WinoBiasTask(BaseTask):
     ) -> samples.WinoBiasSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set([feature_column, options]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                feature_column: feature_column,
-                options: options,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column, options])
 
         return samples.WinoBiasSample(
             masked_text=row_data[column_mapper[feature_column]],
@@ -603,26 +548,18 @@ class LegalTask(BaseTask):
     ) -> samples.LegalSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set(
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(
+            keys,
             [
                 feature_column,
                 legal_claim,
                 legal_conclusion_A,
                 legal_conclusion_B,
                 correct_choice,
-            ]
-        ).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                feature_column: feature_column,
-                legal_claim: legal_claim,
-                legal_conclusion_A: legal_conclusion_A,
-                legal_conclusion_B: legal_conclusion_B,
-                correct_choice: correct_choice,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+            ],
+        )
 
         return samples.LegalSample(
             case=row_data[column_mapper[feature_column]],
@@ -655,16 +592,11 @@ class FactualityTask(BaseTask):
     ) -> samples.FactualitySample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set([feature_column, correct_sent, incorrect_sent]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                feature_column: feature_column,
-                correct_sent: correct_sent,
-                incorrect_sent: incorrect_sent,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(
+            keys, [feature_column, correct_sent, incorrect_sent]
+        )
 
         return samples.FactualitySample(
             article_sent=row_data[column_mapper[feature_column]],
@@ -686,12 +618,9 @@ class SensitivityTask(BaseTask):
     ) -> samples.SensitivitySample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set([feature_column]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {feature_column: feature_column}
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
 
         return samples.SensitivitySample(
             original=row_data[column_mapper[feature_column]],
@@ -722,16 +651,9 @@ class CrowsPairsTask(BaseTask):
     ) -> samples.CrowsPairsSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set([feature_column, mask1, mask2]).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                feature_column: feature_column,
-                mask1: mask1,
-                mask2: mask2,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column, mask1, mask2])
 
         return samples.CrowsPairsSample(
             sentence=row_data[column_mapper[feature_column]],
@@ -766,7 +688,10 @@ class StereosetTask(BaseTask):
     ) -> samples.StereoSetSample:
         """Create a sample."""
         keys = list(row_data.keys())
-        if set(
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(
+            keys,
             [
                 bias_type,
                 test_type,
@@ -775,21 +700,8 @@ class StereosetTask(BaseTask):
                 sent_stereo,
                 sent_antistereo,
                 sent_unrelated,
-            ]
-        ).intersection(set(keys)):
-            # if the column names are provided, use them directly
-            column_mapper = {
-                bias_type: bias_type,
-                test_type: test_type,
-                target_column: target_column,
-                context: context,
-                sent_stereo: sent_stereo,
-                sent_antistereo: sent_antistereo,
-                sent_unrelated: sent_unrelated,
-            }
-        else:
-            # auto-detect the default column names from the row_data
-            column_mapper = cls.column_mapping(keys)
+            ],
+        )
 
         return samples.StereoSetSample(
             test_type=row_data[column_mapper[test_type]],
