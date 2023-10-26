@@ -618,11 +618,8 @@ class Harness:
 
                 report.mlflow_report(experiment_name, self.task, self.df_report)
 
-            if format == "dataframe":
-                return self.df_report
-
-            else:
-                report.save_format(format, save_dir, self.df_report)
+            report.save_format(format, save_dir, self.df_report)
+            return self.df_report
 
         else:
             df_final_report = pd.DataFrame()

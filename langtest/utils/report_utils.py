@@ -318,7 +318,11 @@ def save_format(format: str, save_dir: str, df_report: pd.DataFrame):
     - save_dir (str): The directory path where the report should be saved. This must be provided for all formats.
     - df_report (pd.DataFrame): The report DataFrame containing the data to be saved.
     """
-    if format == "dict":
+
+    if format == "dataframe":
+        return
+
+    elif format == "dict":
         if save_dir is None:
             raise ValueError('You need to set "save_dir" parameter for this format.')
 
