@@ -12,10 +12,8 @@
     <a href="https://star-history.com/#JohnSnowLabs/langtest">
         <img alt="GitHub star chart" src="https://img.shields.io/github/stars/JohnSnowLabs/langtest?style=social">
     </a>
-    <a href="https://pypi.org/project/langtest/" alt="PyPi downloads">
-        <img src="https://static.pepy.tech/personalized-badge/langtest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
-    <a href="https://github.com/JohnSnowLabs/langtest/issues">
-        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/JohnSnowLabs/langtest">
+    <a href="https://pepy.tech/project/langtest">
+        <img alt="Downloads" src="https://static.pepy.tech/badge/langtest/month">
     </a>
     <a href="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml">
         <img alt="CI" src="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml/badge.svg">
@@ -28,6 +26,21 @@
     </a>
     <a href="CODE_OF_CONDUCT.md">
         <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/JohnSnowLabs/langtest">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/graphs/contributors">
+        <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/JohnSnowLabs/langtest">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/graphs/commit-activity">
+        <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/JohnSnowLabs/langtest">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/issues?q=is%3Aissue+is%3Aclosed">
+        <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/JohnSnowLabs/langtest">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/pulls">
+        <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr-raw/JohnSnowLabs/langtest">
     </a>
 </p>
 
