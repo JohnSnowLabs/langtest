@@ -3,7 +3,7 @@ name: "\U0001F4A1| Improvements"
 about: A clear and concise description of the suggested improvement. Explain what
   aspect of the project you'd like to enhance or what changes you propose.
 title: ''
-labels: fixes
+labels: 💡Enhancements
 assignees: ''
 
 ---
