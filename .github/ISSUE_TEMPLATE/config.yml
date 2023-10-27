@@ -5,3 +5,7 @@ contact_links:
   - name: ❔ Ask a question
     url: https://github.com/JohnSnowLabs/langtest/discussions/new/choose
     about: Ask questions and discuss with other `LangTest` users or maintainers.
+
+  - name: 🙏 Request help
+    url: https://github.com/JohnSnowLabs/langtest/discussions/new/choose
+    about: Ask the `LangTest` community for help.
