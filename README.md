@@ -1,16 +1,39 @@
-# LangTest: Deliver Safe & Effective Language Models
+<div align="center">
+  <h1 style="text-align: center; vertical-align: middle;">LangTest: Deliver Safe & Effective Language Models</h1>
+</div>
 
 <p align="center">
-    <a href="https://github.com/JohnSnowLabs/langtest/actions" alt="build">
-        <img src="https://github.com/JohnSnowLabs/langtest/workflows/build/badge.svg" /></a>
-    <a href="https://github.com/JohnSnowLabs/langtest/releases" alt="Current Release Version">
-        <img src="https://img.shields.io/github/v/release/JohnSnowLabs/langtest.svg?style=flat-square&logo=github" /></a>
-    <a href="https://github.com/JohnSnowLabs/langtest/blob/master/LICENSE" alt="License">
-        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" /></a>
+    <a href="https://github.com/JohnSnowLabs/langtest/releases">
+        <img alt="Release Notes" src="https://img.shields.io/github/v/release/johnsnowlabs/langtest.svg">
+    </a>
+    <a href="https://langtest.org/docs/pages/docs/install">
+        <img alt="Documentation" src="https://img.shields.io/website?up_message=online&url=https%3A%2F%2Flangtest.org%2F">
+    </a>
+    <a href="https://star-history.com/#JohnSnowLabs/langtest">
+        <img alt="GitHub star chart" src="https://img.shields.io/github/stars/JohnSnowLabs/langtest?style=social">
+    </a>
     <a href="https://pypi.org/project/langtest/" alt="PyPi downloads">
         <img src="https://static.pepy.tech/personalized-badge/langtest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
+    <a href="https://github.com/JohnSnowLabs/langtest/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/JohnSnowLabs/langtest">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml">
+        <img alt="CI" src="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml/badge.svg">
+    </a>
+    <a href="https://badge.fury.io/py/langtest">
+        <img alt="PyPI - License" src="https://img.shields.io/pypi/l/langtest">
+    </a>
+    <a href="https://badge.fury.io/py/langtest">
+        <img alt="Python" src="https://img.shields.io/pypi/pyversions/langtest.svg">
+    </a>
+    <a href="CODE_OF_CONDUCT.md">
+        <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg">
+    </a>
 </p>
 
+![---------------------------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 <p align="center">
   <a href="#project's-website">Project's Website</a> •
@@ -21,8 +44,6 @@
   <a href="#mission">Mission</a> •
   <a href="#license">License</a>
 </p>
-
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 ## Project's Website
 
