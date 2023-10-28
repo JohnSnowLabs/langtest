@@ -7,11 +7,11 @@ import subprocess
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
-from pkg_resources import resource_filename
 
+
+from pkg_resources import resource_filename
 from langtest.modelhandler import ModelAPI
 
 from .tasks import TaskManager
@@ -19,6 +19,8 @@ from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
 from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
+from .utils import report_utils as report
+
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 
@@ -472,303 +474,44 @@ class Harness:
         summary = defaultdict(lambda: defaultdict(int))
 
         if self.task == "political":
-            econ_score = 0.0
-            econ_count = 0.0
-            social_score = 0.0
-            social_count = 0.0
-            for sample in self._generated_results:
-                if sample.test_case == "right":
-                    econ_score += sample.is_pass
-                    econ_count += 1
-                elif sample.test_case == "left":
-                    econ_score -= sample.is_pass
-                    econ_count += 1
-                elif sample.test_case == "auth":
-                    social_score += sample.is_pass
-                    social_count += 1
-                elif sample.test_case == "lib":
-                    social_score -= sample.is_pass
-                    social_count += 1
-
-            econ_score /= econ_count
-            social_score /= social_count
-
-            report = {}
-
-            report["political_economic"] = {
-                "category": "political",
-                "score": econ_score,
-            }
-            report["political_social"] = {
-                "category": "political",
-                "score": social_score,
-            }
-            df_report = pd.DataFrame.from_dict(report, orient="index")
-            df_report = df_report.reset_index().rename(columns={"index": "test_type"})
-
-            col_to_move = "category"
-            first_column = df_report.pop("category")
-            df_report.insert(0, col_to_move, first_column)
-            df_report = df_report.reset_index(drop=True)
-
-            self.df_report = df_report.fillna("-")
-
-            plt.scatter(econ_score, social_score, color="red")
-            plt.xlim(-1, 1)
-            plt.ylim(-1, 1)
-            plt.title("Political coordinates")
-            plt.xlabel("Economic Left/Right")
-            plt.ylabel("Social Libertarian/Authoritarian")
-
-            plt.axhline(y=0, color="k")
-            plt.axvline(x=0, color="k")
-
-            plt.axvspan(0, 1, 0.5, 1, color="blue", alpha=0.4)
-            plt.axvspan(-1, 0, 0.5, 1, color="red", alpha=0.4)
-            plt.axvspan(0, 1, -1, 0.5, color="yellow", alpha=0.4)
-            plt.axvspan(-1, 0, -1, 0.5, color="green", alpha=0.4)
-
-            plt.grid()
-
-            plt.show()
-
+            self.df_report = report.political_report(self._generated_results)
             return self.df_report
 
         elif not isinstance(self._generated_results, dict):
-            for sample in self._generated_results:
-                summary[sample.test_type]["category"] = sample.category
-                summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-            report = {}
-            for test_type, value in summary.items():
-                pass_rate = summary[test_type]["true"] / (
-                    summary[test_type]["true"] + summary[test_type]["false"]
-                )
-                min_pass_rate = self.min_pass_dict.get(
-                    test_type, self.default_min_pass_dict
-                )
-
-                if "-" in test_type and summary[test_type]["category"] == "robustness":
-                    multiple_perturbations_min_pass_rate = self.min_pass_dict.get(
-                        "multiple_perturbations", self.default_min_pass_dict
-                    )
-                    min_pass_rate = self.min_pass_dict.get(
-                        test_type, multiple_perturbations_min_pass_rate
-                    )
-                if summary[test_type]["category"] in ["Accuracy", "performance"]:
-                    min_pass_rate = 1
-
-                report[test_type] = {
-                    "category": summary[test_type]["category"],
-                    "fail_count": summary[test_type]["false"],
-                    "pass_count": summary[test_type]["true"],
-                    "pass_rate": pass_rate,
-                    "minimum_pass_rate": min_pass_rate,
-                    "pass": pass_rate >= min_pass_rate,
-                }
-
-            df_report = pd.DataFrame.from_dict(report, orient="index")
-            df_report = df_report.reset_index().rename(columns={"index": "test_type"})
-
-            df_report["pass_rate"] = df_report["pass_rate"].apply(
-                lambda x: "{:.0f}%".format(x * 100)
+            self.df_report = report.model_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
             )
-            df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-                lambda x: "{:.0f}%".format(x * 100)
-            )
-            col_to_move = "category"
-            first_column = df_report.pop("category")
-            df_report.insert(0, col_to_move, first_column)
-            df_report = df_report.reset_index(drop=True)
-
-            self.df_report = df_report.fillna("-")
 
             if mlflow_tracking:
-                try:
-                    import mlflow
-                except ModuleNotFoundError:
-                    print("mlflow package not found. Install mlflow first")
-
-                import datetime
-
                 experiment_name = (
                     self._actual_model
                     if isinstance(self._actual_model, str)
                     else self._actual_model.__class__.__module__
                 )
 
-                # Get the experiment
-                experiment = mlflow.get_experiment_by_name(experiment_name)
+                report.mlflow_report(experiment_name, self.task, self.df_report)
 
-                if experiment is None:
-                    # The experiment does not exist, create it
-                    experiment_id = mlflow.create_experiment(experiment_name)
-                else:
-                    # The experiment exists, get its ID
-                    experiment_id = experiment.experiment_id
-
-                current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                mlflow.start_run(
-                    run_name=self.task.task_name + "_testing_" + current_datetime,
-                    experiment_id=experiment_id,
-                )
-
-                df_report.apply(
-                    lambda row: mlflow.log_metric(
-                        row["test_type"] + "_pass_rate",
-                        float(row["pass_rate"].rstrip("%")) / 100,
-                    ),
-                    axis=1,
-                )
-                df_report.apply(
-                    lambda row: mlflow.log_metric(
-                        row["test_type"] + "_min_pass_rate",
-                        float(row["minimum_pass_rate"].rstrip("%")) / 100,
-                    ),
-                    axis=1,
-                )
-                df_report.apply(
-                    lambda row: mlflow.log_metric(
-                        row["test_type"] + "_pass_status", 1 if row["pass"] else 0
-                    ),
-                    axis=1,
-                )
-                df_report.apply(
-                    lambda row: mlflow.log_metric(
-                        row["test_type"] + "_pass_count", row["pass_count"]
-                    ),
-                    axis=1,
-                )
-                df_report.apply(
-                    lambda row: mlflow.log_metric(
-                        row["test_type"] + "_fail_count", row["fail_count"]
-                    ),
-                    axis=1,
-                )
-                mlflow.end_run()
-
-            if format == "dataframe":
-                return self.df_report
-            elif format == "dict":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_json(save_dir)
-            elif format == "excel":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_excel(save_dir)
-            elif format == "html":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_html(save_dir)
-            elif format == "markdown":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_markdown(save_dir)
-            elif format == "text" or format == "csv":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                self.df_report.to_csv(save_dir)
-            else:
-                raise ValueError(
-                    f'Report in format "{format}" is not supported. Please use "dataframe", "excel", "html", "markdown", "text", "dict".'
-                )
+            report.save_format(format, save_dir, self.df_report)
+            return self.df_report
 
         else:
             df_final_report = pd.DataFrame()
-            for k, v in self.model.items():
-                for sample in self._generated_results[k]:
-                    summary[sample.test_type]["category"] = sample.category
-                    summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-                report = {}
-                for test_type, value in summary.items():
-                    pass_rate = summary[test_type]["true"] / (
-                        summary[test_type]["true"] + summary[test_type]["false"]
-                    )
-                    min_pass_rate = self.min_pass_dict.get(
-                        test_type, self.default_min_pass_dict
-                    )
-
-                    if summary[test_type]["category"] in ["Accuracy", "performance"]:
-                        min_pass_rate = 1
-
-                    report[test_type] = {
-                        "model_name": k,
-                        "pass_rate": pass_rate,
-                        "minimum_pass_rate": min_pass_rate,
-                        "pass": pass_rate >= min_pass_rate,
-                    }
-
-                df_report = pd.DataFrame.from_dict(report, orient="index")
-                df_report = df_report.reset_index().rename(columns={"index": "test_type"})
-
-                df_report["pass_rate"] = df_report["pass_rate"].apply(
-                    lambda x: "{:.0f}%".format(x * 100)
+            for k in self.model.keys():
+                df_report = report.multi_model_report(
+                    summary,
+                    self.min_pass_dict,
+                    self.default_min_pass_dict,
+                    self._generated_results,
+                    k,
                 )
-                df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-                    lambda x: "{:.0f}%".format(x * 100)
-                )
-
-                df_report = df_report.reset_index(drop=True)
-                df_report = df_report.fillna("-")
                 if mlflow_tracking:
-                    try:
-                        import mlflow
-                    except ModuleNotFoundError:
-                        print("mlflow package not found. Install mlflow first")
-
-                    import datetime
-
                     experiment_name = k
-
-                    # Get the experiment
-                    experiment = mlflow.get_experiment_by_name(experiment_name)
-
-                    if experiment is None:
-                        # The experiment does not exist, create it
-                        experiment_id = mlflow.create_experiment(experiment_name)
-                    else:
-                        # The experiment exists, get its ID
-                        experiment_id = experiment.experiment_id
-
-                    current_datetime = datetime.datetime.now().strftime(
-                        "%Y-%m-%d_%H-%M-%S"
+                    report.mlflow_report(
+                        experiment_name, self.task, df_report, multi_model_comparison=True
                     )
-                    mlflow.start_run(
-                        run_name=self.task + "_testing_" + current_datetime,
-                        experiment_id=experiment_id,
-                    )
-
-                    df_report.apply(
-                        lambda row: mlflow.log_metric(
-                            row["test_type"] + "_pass_rate",
-                            float(row["pass_rate"].rstrip("%")) / 100,
-                        ),
-                        axis=1,
-                    )
-                    df_report.apply(
-                        lambda row: mlflow.log_metric(
-                            row["test_type"] + "_min_pass_rate",
-                            float(row["minimum_pass_rate"].rstrip("%")) / 100,
-                        ),
-                        axis=1,
-                    )
-                    df_report.apply(
-                        lambda row: mlflow.log_metric(
-                            row["test_type"] + "_pass_status", 1 if row["pass"] else 0
-                        ),
-                        axis=1,
-                    )
-                    mlflow.end_run()
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
@@ -788,54 +531,15 @@ class Harness:
                 aggfunc="mean",
             )
 
-            def color_cells(series):
-                res = []
-                for x in series.index:
-                    res.append(
-                        df_final_report[
-                            (df_final_report["test_type"] == series.name)
-                            & (df_final_report["model_name"] == x)
-                        ]["pass"].all()
-                    )
-                return [
-                    "background-color: green" if x else "background-color: red"
-                    for x in res
-                ]
-
-            styled_df = pivot_df.style.apply(color_cells)
+            styled_df = pivot_df.style.apply(
+                report.color_cells, df_final_report=df_final_report
+            )
 
             if format == "dataframe":
                 return styled_df
-            elif format == "dict":
-                return styled_df.to_dict("records")
-            elif format == "excel":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_excel(save_dir)
-            elif format == "html":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_html(save_dir)
-            elif format == "markdown":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_markdown(save_dir)
-            elif format == "text" or format == "csv":
-                if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
-                styled_df.to_csv(save_dir)
+
             else:
-                raise ValueError(
-                    f'Report in format "{format}" is not supported. Please use "dataframe", "excel", "html", "markdown", "text", "dict".'
-                )
+                report.save_format(format, save_dir, styled_df)
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """Generates an overall report with every textcase and labelwise metrics.
@@ -938,6 +642,7 @@ class Harness:
         custom_proportions: Union[Dict, List] = None,
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
+        append_original: bool = False,
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -951,6 +656,7 @@ class Harness:
                                     - 'transformed': Exports only the transformed data, excluding untransformed samples.
                                     Defaults to 'add'.
             templates (Optional[Union[str, List[str]]]):
+            append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -1000,7 +706,11 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-            ).fix(training_data=training_data, output_path=save_data_path)
+            ).fix(
+                training_data=training_data,
+                output_path=save_data_path,
+                append_original=append_original,
+            )
 
         else:
             _ = AugmentRobustness(

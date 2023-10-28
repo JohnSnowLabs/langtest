@@ -332,6 +332,7 @@ class TemplaticAugment(BaseAugmentaion):
         training_data: Dict[str, Any],
         output_path: str,
         max_num: int = None,
+        append_original: bool = False,
         *args,
         **kwargs,
     ) -> bool:
@@ -343,6 +344,7 @@ class TemplaticAugment(BaseAugmentaion):
             training_data (dict): A dictionary containing the input data for augmentation.
             output_path (str): The path where the augmented data will be saved.
             max_num (int): Maximum number of new samples to generate
+            append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
@@ -351,7 +353,13 @@ class TemplaticAugment(BaseAugmentaion):
         """
         df = DataFactory(training_data, self.__task)
         data = df.load()
-        new_data = []
+        new_data = (
+            data.copy()
+            if isinstance(data, (pd.DataFrame, pd.Series))
+            else copy.deepcopy(data)
+            if append_original
+            else []
+        )
         self.__search_results = self.search_sample_results(data)
         if not max_num:
             max_num = max(len(i) for i in self.__search_results.values())
