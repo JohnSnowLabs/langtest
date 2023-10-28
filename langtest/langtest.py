@@ -7,7 +7,6 @@ import subprocess
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
 
-import matplotlib.pyplot as plt
 import pandas as pd
 import yaml
 
