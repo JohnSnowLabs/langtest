@@ -80,8 +80,9 @@ class BaseTask(ABC):
         # column_mapper  values set should be in item_keys
         if not all(
             [
-                value.lower() in item_keys or value in columns_names
-                for value in column_mapper.values()
+                value.lower() in map(lambda x: x.lower(), item_keys)
+                and key in columns_names
+                for key, value in column_mapper.items()
             ]
         ):
             raise ColumnNameError(list(self._default_col), item_keys)
