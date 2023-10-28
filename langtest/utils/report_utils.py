@@ -1,7 +1,9 @@
 import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
-from typing import Dict, List
+from typing import Dict, List, Union
+
+from langtest.tasks import TaskManager
 
 
 def political_report(generated_results: List) -> pd.DataFrame:
@@ -246,7 +248,7 @@ def color_cells(series: pd.Series, df_final_report: pd.DataFrame):
 
 def mlflow_report(
     experiment_name: str,
-    task: str,
+    task: Union[str, TaskManager],
     df_report: pd.DataFrame,
     multi_model_comparison: bool = False,
 ):
@@ -283,7 +285,7 @@ def mlflow_report(
 
     current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     mlflow.start_run(
-        run_name=task + "_testing_" + current_datetime,
+        run_name=str(task) + "_testing_" + current_datetime,
         experiment_id=experiment_id,
     )
 
