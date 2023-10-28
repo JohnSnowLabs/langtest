@@ -1119,7 +1119,7 @@ class SecuritySample(BaseModel):
     actual_results: str = None
     state: str = None
     dataset_name: str = None
-    task: str = None
+    task: str = Field(default="security", const=True)
     category: str = None  # security
     test_type: str = None  # prompt_injection_attack
 

@@ -13,9 +13,12 @@ import yaml
 
 
 from pkg_resources import resource_filename
+from langtest.modelhandler import ModelAPI
+
+from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
-from .datahandler.datasource import DataFactory, HuggingFaceDataset, SynteticDataset
-from .modelhandler import LANGCHAIN_HUBS, ModelFactory
+from .datahandler.datasource import DataFactory
+from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .utils import report_utils as report
 
@@ -188,6 +191,7 @@ class Harness:
 
         self.is_default = False
 
+        # loading model and hub
         if isinstance(model, list):
             for item in model:
                 if not isinstance(item, dict):
@@ -209,23 +213,11 @@ class Harness:
         else:
             hub = None
 
-        if task not in self.SUPPORTED_TASKS:
-            raise ValueError(
-                f"Provided task is not supported. Please choose one of the supported tasks: {self.SUPPORTED_TASKS}"
-            )
-        self.task = task
+        # loading task
 
-        if isinstance(model, str) and hub is None:
-            raise ValueError(
-                "When passing a string argument to the 'model' parameter, you must provide an argument "
-                "for the 'hub' parameter as well."
-            )
+        self.task = TaskManager(task)
 
-        if hub is not None and hub not in self.SUPPORTED_HUBS:
-            raise ValueError(
-                f"Provided hub is not supported. Please choose one of the supported hubs: {self.SUPPORTED_HUBS}"
-            )
-
+        # Loading default datasets
         if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
             data = {"data_source": resource_filename("langtest", data_path)}
@@ -235,89 +227,19 @@ class Harness:
             self.is_default = True
             logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
 
-        elif (
-            isinstance(data, dict)
-            and "source" in data
-            and data["source"] == "huggingface"
-        ):
-            if (
-                task == "text-classification"
-                and hub in self.SUPPORTED_HUBS_HF_DATASET_CLASSIFICATION
-            ):
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                    feature_column=data.get("feature_column", "text"),
-                    target_column=data.get("target_column", "label"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-
-                if hub == "spacy" and (model == "textcat_imdb" or model is None):
-                    if model is None:
-                        logging.warning(
-                            "Using the default 'textcat_imdb' model for Spacy hub. Please provide a custom model path if desired."
-                        )
-                    model = resource_filename("langtest", "data/textcat_imdb")
-
-            elif task == "ner" and hub in self.SUPPORTED_HUBS_HF_DATASET_NER:
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                    feature_column=data.get("feature_column", "tokens"),
-                    target_column=data.get("target_column", "ner_tags"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-            elif (
-                task == "question-answering" and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM
-            ):
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                    feature_column=data.get(
-                        "feature_column", {"passage": "passage", "question": "question"}
-                    ),
-                    target_column=data.get("target_column", "answer"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-
-            elif task == "summarization" and hub in self.SUPPORTED_HUBS_HF_DATASET_LLM:
-                self.data = HuggingFaceDataset(data["data_source"], task=task).load_data(
-                    feature_column=data.get("feature_column", "document"),
-                    target_column=data.get("target_column", "summary"),
-                    split=data.get("split", "test"),
-                    subset=data.get("subset", None),
-                )
-        elif data is None and task == "political":
-            self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(
                 "You haven't specified any value for the parameter 'data' and the configuration you "
                 "passed is not among the default ones. You need to either specify the parameter 'data' "
                 "or use a default configuration."
             )
-        elif (
-            isinstance(data, dict)
-            and data["data_source"] in ("BoolQ-bias", "XSum-bias")
-            and task in ("question-answering", "summarization")
-        ):
-            self.data = DataFactory.load_curated_bias(data["data_source"])
-        elif (
-            isinstance(data, dict)
-            and data["data_source"] in ("synthetic-nlp-data", "synthetic-math-data")
-            and task in ("sycophancy-test")
-        ):
-            self.data = SynteticDataset(data, task=task).load_data()
 
-        elif isinstance(data["data_source"], list):
-            self.data = data["data_source"]
+        if isinstance(data.get("data_source"), list):
+            self.data = data.get("data_source")
         else:
-            if "data_source" not in data:
-                raise ValueError(
-                    "The 'data_source' key must be provided in the 'data' parameter."
-                )
-            self.file_path = data["data_source"]
-            self.data = (
-                DataFactory(data, task=self.task).load() if data is not None else None
-            )
-        self.data_source = data.get("data_source") if data else None
+            self.data = DataFactory(data, task=self.task).load()
 
+        # config loading
         if config is not None:
             self._config = self.configure(config)
         elif task in self.DEFAULTS_CONFIG:
@@ -331,33 +253,24 @@ class Harness:
                 resource_filename("langtest", "data/config.yml")
             )
 
-        if isinstance(model, str):
-            self.model = ModelFactory.load_model(
-                path=model, task=task, hub=hub, **self._config.get("model_parameters", {})
-            )
-
-        elif isinstance(model, list):
+        # model section
+        if isinstance(model, list):
             model_dict = {}
             for i in model:
                 model = i["model"]
                 hub = i["hub"]
 
-                model_dict[model] = ModelFactory.load_model(
-                    path=model,
-                    task=task,
-                    hub=hub,
-                    **self._config.get("model_parameters", {}),
+                model_dict[model] = self.task.model(
+                    model, hub, **self._config.get("model_parameters", {})
                 )
+
                 self.model = model_dict
 
         else:
-            self.model = ModelFactory(
-                task=task,
-                model=model,
-                hub=hub,
-                **self._config.get("model_parameters", {}),
+            self.model = self.task.model(
+                model, hub, **self._config.get("model_parameters", {})
             )
-
+        # end model selection
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)
 
@@ -398,42 +311,6 @@ class Harness:
 
         global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
-        model = GLOBAL_MODEL
-
-        if self.task == "translation" and model:
-            hub = self.hub
-            model = self._actual_model
-            task = self.task
-
-            if isinstance(model, str):
-                self.model = ModelFactory.load_model(
-                    path=model,
-                    task=task,
-                    hub=hub,
-                    **self._config.get("model_parameters", {}),
-                )
-
-            elif isinstance(model, list):
-                model_dict = {}
-
-                for i in model:
-                    model = i["model"]
-                    hub = i["hub"]
-
-                    model_dict[model] = ModelFactory.load_model(
-                        path=model,
-                        task=task,
-                        hub=hub,
-                        **self._config.get("model_parameters", {}),
-                    )
-                self.model = model_dict
-            else:
-                self.model = ModelFactory(
-                    task=task,
-                    model=model,
-                    hub=hub,
-                    **self._config.get("model_parameters", {}),
-                )
 
         return self._config
 
@@ -964,7 +841,7 @@ class Harness:
     def load(
         cls,
         save_dir: str,
-        model: Union[str, "ModelFactory"],
+        model: Union[str, "ModelAPI"],
         task: str,
         hub: Optional[str] = None,
     ) -> "Harness":
@@ -975,8 +852,8 @@ class Harness:
                 path to folder containing all the needed files to load an saved `Harness`
             task (str):
                 task for which the model is to be evaluated.
-            model (str | ModelFactory):
-                ModelFactory object or path to the model to be evaluated.
+            model (str | ModelAPI):
+                ModelAPI object or path to the model to be evaluated.
             hub (str, optional):
                 model hub to load from the path. Required if path is passed as 'model'.
 

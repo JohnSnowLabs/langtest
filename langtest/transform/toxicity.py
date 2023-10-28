@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import List
 
-from langtest.modelhandler import ModelFactory
+from langtest.modelhandler import ModelAPI
 from ..utils.custom_types import Sample
 
 toxicity_metric = None
@@ -30,25 +30,23 @@ class BaseToxicity(ABC):
     @staticmethod
     @abstractmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, *args, **kwargs
+        sample_list: List[Sample], model: ModelAPI, *args, **kwargs
     ) -> List[Sample]:
         """Computes the toxicity completion on the samples
 
         Args:
             sample_list (List[Sample]): list of samples to compute toxicity on
-            model (ModelFactory): model to use for toxicity completion
+            model (ModelAPI): model to use for toxicity completion
         """
         raise NotImplementedError()
 
     @classmethod
-    async def async_run(
-        cls, sample_list: List[Sample], model: ModelFactory, *args, **kwargs
-    ):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Computes the toxicity completion on the samples in async mode.
 
         Args:
             sample_list (List[Sample]): list of samples to compute toxicity on
-            model (ModelFactory): model to use for toxicity completion
+            model (ModelAPI): model to use for toxicity completion
         """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
@@ -61,13 +59,13 @@ class PromptToxicity(BaseToxicity):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, *args, **kwargs
+        sample_list: List[Sample], model: ModelAPI, *args, **kwargs
     ) -> List[Sample]:
         """Computes the toxicity completion on the samples
 
         Args:
             sample_list (List[Sample]): list of samples to compute toxicity on
-            model (ModelFactory): model to use for toxicity completion
+            model (ModelAPI): model to use for toxicity completion
         """
         progress = kwargs.get("progress_bar", False)
         global toxicity_metric
@@ -145,13 +143,13 @@ class ToxicityTypes(BaseToxicity):
 
     @staticmethod
     async def run(
-        sample_list: List[Sample], model: ModelFactory, *args, **kwargs
+        sample_list: List[Sample], model: ModelAPI, *args, **kwargs
     ) -> List[Sample]:
         """Computes the toxicity completion on the samples
 
         Args:
             sample_list (List[Sample]): list of samples to compute toxicity on
-            model (ModelFactory): model to use for toxicity completion
+            model (ModelAPI): model to use for toxicity completion
         """
         from transformers import pipeline
 

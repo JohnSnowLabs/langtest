@@ -4,7 +4,7 @@ from typing import Any, List, Union, Dict, Tuple
 
 from langtest.utils.custom_types.output import TranslationOutput
 
-from .modelhandler import _ModelHandler
+from ..modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
 
@@ -133,6 +133,8 @@ class PretrainedJSLModel(ABC):
             Loaded SparkNLP LightPipeline for inference.
     """
 
+    hub = "johnsnowlabs"
+
     @abstractmethod
     def __init__(
         self,
@@ -189,7 +191,7 @@ class PretrainedJSLModel(ABC):
                     "In order to use NLP Models Hub, johnsnowlabs should be installed!"
                 )
 
-        return loaded_model
+        return cls(loaded_model)
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs) -> Any:
@@ -207,8 +209,10 @@ class PretrainedJSLModel(ABC):
         return self.predict(text=text)
 
 
-class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
+class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
     """Pretrained model for NER tasks."""
+
+    task = "ner"
 
     def __init__(
         self,
@@ -387,8 +391,10 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         return False
 
 
-class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
+class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
     """Pretrained model for text classification tasks"""
+
+    task = "text-classification"
 
     def __init__(
         self,
@@ -466,8 +472,10 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
         return [x["label"] for x in prediction]
 
 
-class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
+class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
     """Pretrained model for translations tasks"""
+
+    task = "translation"
 
     def __init__(
         self,

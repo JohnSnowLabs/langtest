@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types import SequenceClassificationSample
 from .constants import (
     CONTRACTION_MAP,
@@ -65,14 +65,12 @@ class BaseRobustness(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the robustness measure.
 
         Returns:
@@ -95,12 +93,12 @@ class BaseRobustness(ABC):
         return sample_list
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Creates a task to run the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the robustness measure.
 
         Returns:

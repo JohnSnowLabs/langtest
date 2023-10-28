@@ -38,7 +38,7 @@ from .constants import (
     white_names,
 )
 from .utils import get_substitution_names, create_terminology, filter_unique_samples
-from ..modelhandler import ModelFactory
+from ..modelhandler import ModelAPI
 from ..utils.custom_types.sample import (
     NERSample,
     QASample,
@@ -89,7 +89,7 @@ class TestFactory:
                 The data to be tested.
             test_types : dict
                 A dictionary mapping test category names to lists of test scenario names.
-            model: ModelFactory
+            model: ModelAPI
                 Model to be tested.
 
         Returns:
@@ -169,13 +169,13 @@ class TestFactory:
         }
 
     @staticmethod
-    def run(samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
+    def run(samples_list: List[Sample], model_handler: ModelAPI, **kwargs):
         """
         Runs the specified tests on the given data and returns a list of results.
 
         Args:
             samples_list : List[Sample]
-            model_handler : ModelFactory
+            model_handler : ModelAPI
 
         """
         async_tests = TestFactory.async_run(samples_list, model_handler, **kwargs)
@@ -195,14 +195,14 @@ class TestFactory:
 
     @classmethod
     async def async_run(
-        cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs
+        cls, samples_list: List[Sample], model_handler: ModelAPI, **kwargs
     ):
         """
         Runs the specified tests on the given data and returns a list of results.
 
         Args:
             samples_list : List[Sample]
-            model_handler : ModelFactory
+            model_handler : ModelAPI
 
         """
         hash_samples = {}
@@ -268,7 +268,7 @@ class ITests(ABC):
 
     @classmethod
     def run(
-        cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, **kwargs
+        cls, sample_list: Dict[str, List[Sample]], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """
         Runs the specified tests on the given data and returns a list of results.
@@ -276,8 +276,8 @@ class ITests(ABC):
         Args:
             sample_list (Dict[str, List[Sample]]):
                 A dictionary mapping test scenario names to a list of `Sample` objects.
-            model (ModelFactory):
-                A `ModelFactory` object representing the model to be tested.
+            model (ModelAPI):
+                A `ModelAPI` object representing the model to be tested.
 
         Returns:
             List[Sample]: A list of `Sample` objects with the test results.
@@ -879,7 +879,7 @@ class FairnessTestFactory(ITests):
     def run(
         cls,
         sample_list: Dict[str, List[Sample]],
-        model: ModelFactory,
+        model: ModelAPI,
         raw_data: List[Sample],
         **kwargs,
     ):
@@ -888,7 +888,7 @@ class FairnessTestFactory(ITests):
 
         Args:
             sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
-            model (ModelFactory): The model to be tested.
+            model (ModelAPI): The model to be tested.
             raw_data (List[Sample]): The raw dataset.
 
         """
@@ -1123,7 +1123,7 @@ class AccuracyTestFactory(ITests):
     def run(
         cls,
         sample_list: Dict[str, List[Sample]],
-        model: ModelFactory,
+        model: ModelAPI,
         raw_data: List[Sample],
         **kwargs,
     ):
@@ -1132,7 +1132,7 @@ class AccuracyTestFactory(ITests):
 
         Args:
             sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
-            model (ModelFactory): The model to be tested.
+            model (ModelAPI): The model to be tested.
             raw_data (List[Sample]): The raw dataset.
 
         """
@@ -1330,13 +1330,13 @@ class PerformanceTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the model performance
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the model performance
 
         Returns:
@@ -1393,7 +1393,7 @@ class SecurityTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         supported_tests = cls.available_tests()
         tasks = []
@@ -1445,13 +1445,13 @@ class ClinicalTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the clinical tests
 
         Returns:
@@ -1470,12 +1470,12 @@ class ClinicalTestFactory(ITests):
         """
         return {"demographic-bias": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the clinical tests
 
         Returns:
@@ -1516,7 +1516,7 @@ class DisinformationTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
         return task
@@ -1525,7 +1525,7 @@ class DisinformationTestFactory(ITests):
     def available_tests(cls) -> Dict[str, str]:
         return {"narrative_wedging": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list["narrative_wedging"]:
             if sample.state != "done":
@@ -1563,13 +1563,13 @@ class PoliticalTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the model performance
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the model performance
 
         Returns:
@@ -1743,13 +1743,13 @@ class WinoBiasTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the wino-bias tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
@@ -1768,12 +1768,12 @@ class WinoBiasTestFactory(ITests):
         """
         return {"gender-occupational-stereotype": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
@@ -1821,13 +1821,13 @@ class CrowsPairsTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the crows-pairs tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1847,12 +1847,12 @@ class CrowsPairsTestFactory(ITests):
         return {"common-stereotypes": cls}
 
     @staticmethod
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1908,13 +1908,13 @@ class StereoSetTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the stereoset tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the stereoset tests
 
         Returns:
@@ -1934,12 +1934,12 @@ class StereoSetTestFactory(ITests):
         return {"intrasentence": cls, "intersentence": cls}
 
     @staticmethod
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1997,13 +1997,13 @@ class LegalTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the legal tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
@@ -2022,12 +2022,12 @@ class LegalTestFactory(ITests):
         """
         return {"legal-support": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the legal tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the legal tests
 
         Returns:
@@ -2075,13 +2075,13 @@ class FactualityTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs factuality tests
 
         Args:
             sample_list (list[Sample]): A list of Sample objects to be tested.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional keyword arguments.
 
         Returns:
@@ -2101,12 +2101,12 @@ class FactualityTestFactory(ITests):
         """
         return {"order_bias": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs factuality tests
 
         Args:
             sample_list (list[Sample]): A list of Sample objects to be tested.
-            model (ModelFactory): The model to be used for testing.
+            model (ModelAPI): The model to be used for testing.
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
 

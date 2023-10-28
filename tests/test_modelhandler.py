@@ -1,11 +1,12 @@
 import unittest
 import langtest
-from langtest.modelhandler import ModelFactory
+from langtest.modelhandler import ModelAPI
 from langtest.modelhandler.spacy_modelhandler import PretrainedModelForNER as SpacyNER
 from langtest.modelhandler.llm_modelhandler import ConfigError
+from langtest.tasks import TaskManager
 
 
-class ModelHandlerTestCase(unittest.TestCase):
+class ModelAPITestCase(unittest.TestCase):
     """
     Test case for the ModelHandler class.
 
@@ -20,25 +21,25 @@ class ModelHandlerTestCase(unittest.TestCase):
         Test loading an unsupported task.
         """
         with self.assertRaises(AssertionError) as _:
-            ModelFactory.load_model(
-                task="unsupported_task", hub="spacy", path="en_core_web_sm"
-            )
+            TaskManager("unsupported_task")
 
     def test_unsupported_hub(self) -> None:
         """
         Test loading an unsupported hub.
         """
         with self.assertRaises(AssertionError) as _:
-            ModelFactory.load_model(task="ner", hub="invalid_hub", path="en_core_web_sm")
+            task = TaskManager("ner")
+            task.model(model_path="en_core_web_sm", model_hub="unsupported_hub")
 
     def test_ner_transformers_model(self) -> None:
         """
         Test loading an NER model from Hugging Face Transformers.
         """
-        model = ModelFactory.load_model("ner", "huggingface", "dslim/bert-base-NER")
-        self.assertIsInstance(model, ModelFactory)
+        task = TaskManager("ner")
+        model = task.model(model_path="dslim/bert-base-NER", model_hub="huggingface")
+        self.assertIsInstance(model, ModelAPI)
         self.assertIsInstance(
-            model.model_class,
+            model,
             langtest.modelhandler.transformers_modelhandler.PretrainedModelForNER,
         )
 
@@ -46,10 +47,12 @@ class ModelHandlerTestCase(unittest.TestCase):
         """
         Test loading an NER model from spaCy.
         """
-        model = ModelFactory.load_model("ner", "spacy", "en_core_web_sm")
-        self.assertIsInstance(model, ModelFactory)
+        task = TaskManager("ner")
+
+        model = task.model(model_path="en_core_web_sm", model_hub="spacy")
+        self.assertIsInstance(model, ModelAPI)
         self.assertIsInstance(
-            model.model_class,
+            model,
             SpacyNER,
         )
 
@@ -58,24 +61,21 @@ class ModelHandlerTestCase(unittest.TestCase):
         Test loading a model from the Ai21 hub
         """
         with self.assertRaises(ConfigError) as _:
-            ModelFactory.load_model(
-                task="question-answering", hub="ai21", path="j2-jumbo-instruct"
-            )
+            task = TaskManager("question-answering")
+            task.model(model_path="j2-jumbo-instruct", model_hub="ai21")
 
     def test_openai_model(self) -> None:
         """
         Test loading a model from the OpenAI hub
         """
         with self.assertRaises(ConfigError) as _:
-            ModelFactory.load_model(
-                task="question-answering", hub="openai", path="gpt-3.5-turbo"
-            )
+            task = TaskManager("question-answering")
+            task.model(model_path="gpt-3.5-turbo", model_hub="openai")
 
     def test_cohere_model(self) -> None:
         """
         Test loading a model from Cohere
         """
         with self.assertRaises(ConfigError) as _:
-            ModelFactory.load_model(
-                task="question-answering", hub="cohere", path="command-xlarge-nightly"
-            )
+            task = TaskManager("question-answering")
+            task.model(model_path="command-xlarge-nightly", model_hub="cohere")
