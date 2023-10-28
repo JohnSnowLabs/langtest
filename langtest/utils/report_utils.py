@@ -109,10 +109,10 @@ def model_report(
 
     """
 
+    report = {}
     for sample in generated_results:
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-        report = {}
         for test_type, value in summary.items():
             pass_rate = summary[test_type]["true"] / (
                 summary[test_type]["true"] + summary[test_type]["false"]
@@ -138,23 +138,23 @@ def model_report(
                 "pass": pass_rate >= min_pass_rate,
             }
 
-        df_report = pd.DataFrame.from_dict(report, orient="index")
-        df_report = df_report.reset_index().rename(columns={"index": "test_type"})
+    df_report = pd.DataFrame.from_dict(report, orient="index")
+    df_report = df_report.reset_index().rename(columns={"index": "test_type"})
 
-        df_report["pass_rate"] = df_report["pass_rate"].apply(
-            lambda x: "{:.0f}%".format(x * 100)
-        )
-        df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-            lambda x: "{:.0f}%".format(x * 100)
-        )
-        col_to_move = "category"
-        first_column = df_report.pop("category")
-        df_report.insert(0, col_to_move, first_column)
-        df_report = df_report.reset_index(drop=True)
+    df_report["pass_rate"] = df_report["pass_rate"].apply(
+        lambda x: "{:.0f}%".format(x * 100)
+    )
+    df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
+        lambda x: "{:.0f}%".format(x * 100)
+    )
+    col_to_move = "category"
+    first_column = df_report.pop("category")
+    df_report.insert(0, col_to_move, first_column)
+    df_report = df_report.reset_index(drop=True)
 
-        df_report = df_report.fillna("-")
+    df_report = df_report.fillna("-")
 
-        return df_report
+    return df_report
 
 
 def multi_model_report(
