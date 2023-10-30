@@ -2,7 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
-
+from  ..errors import Errors
 # langtest exceptions
 # from langtest.exceptions.datasets import ColumnNameError
 
@@ -34,9 +34,7 @@ class BaseTask(ABC):
         supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
 
         if model_hub not in supported_hubs:
-            raise AssertionError(
-                f"Provided model hub is not supported. Please choose one of the supported model hubs: {supported_hubs}"
-            )
+            raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
 
         if model_hub in LANGCHAIN_HUBS:
             # LLM models
@@ -91,7 +89,7 @@ class TaskManager:
     def __init__(self, task_name: str):
         if task_name not in BaseTask.task_registry:
             raise AssertionError(
-                f"Provided task is not supported. Please choose one of the supported tasks: {list(BaseTask.task_registry.keys())}"
+                Errors.E043.format(l=list(BaseTask.task_registry.keys()))
             )
         self.__task_name = task_name
         self.__task: BaseTask = BaseTask.task_registry[task_name]()
