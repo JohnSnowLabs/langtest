@@ -2,7 +2,8 @@ import re
 from abc import ABC, abstractmethod
 from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
-from  ..errors import Errors
+from ..errors import Errors
+
 # langtest exceptions
 # from langtest.exceptions.datasets import ColumnNameError
 
