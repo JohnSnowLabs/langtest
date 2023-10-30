@@ -11,7 +11,6 @@ from typing import Optional
 
 import jsonlines
 import pandas as pd
-from langtest.exceptions.datasets import InvaildDataError
 from langtest.tasks.task import TaskManager
 from langtest.transform.constants import DATASETS
 
@@ -798,8 +797,8 @@ class CSVDataset(BaseDataset):
                 )
                 data.append(sample)
 
-            except InvaildDataError as e:
-                logging.warning(Warnings.W005.format(idx=idx, e=e))
+            except Exception as e:
+                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
                 continue
 
         return data

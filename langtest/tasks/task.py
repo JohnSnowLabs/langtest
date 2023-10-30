@@ -2,10 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
-from ..errors import Errors
-
-# langtest exceptions
-from langtest.exceptions.datasets import ColumnNameError
+from langtest.errors import Errors, ColumnNameError
 
 from langtest.utils import custom_types as samples
 from langtest.utils.custom_types.predictions import NERPrediction

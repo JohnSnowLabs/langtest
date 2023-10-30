@@ -62,7 +62,7 @@ class Warnings(metaclass=ErrorsWithCodes):
         + "=" * 100
         + "\n"
     )
-    W005 = "Skipping row {idx} due to invalid data: {e}"
+    W005 = "Skipping row {idx} due to invalid data: {row_data} - Exception: {e}"
     W006 = "target_column '{target_column}' not found in the dataset."
     W007 = "'feature_column' '{passage_column}' not found in the dataset."
     W008 = "Invalid or Missing label entries in the sentence: {sent}"
@@ -214,3 +214,21 @@ class Errors(metaclass=ErrorsWithCodes):
     E074 = "Invalid averaging method. Must be one of 'macro', 'micro', or 'weighted'."
     E075 = "No {hub_name} embeddings class found"
     E076 = "Unsupported {metric} distance metric: {selected_metric}"
+    E077 = "\nThe provided columns are not supported for creating a sample.\
+            \nPlease choose one of the supported columns: {supported_columns}\
+            \nOr classify the features and target columns from the {given_columns}"
+
+
+class ColumnNameError(Exception):
+    """ColumnNameError class is used to raise an exception
+    when the column name is not found in the dataset."""
+
+    def __init__(
+        self,
+        supported_columns,
+        given_columns,
+    ):
+        self.message = Errors.E077.format(
+            supported_columns=supported_columns, given_columns=given_columns
+        )
+        super().__init__(self.message)
