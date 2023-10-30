@@ -5,6 +5,7 @@ from langtest.utils.custom_types.predictions import SequenceLabel
 from .modelhandler import ModelAPI
 from abc import ABC, abstractmethod
 import logging
+from ..errors import Errors
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class PretrainedCustomModel(ABC):
     def __init__(self, model: Any) -> None:
         self.model = model
         if not hasattr(self.model, "predict"):
-            raise ValueError("Model must have a predict method")
+            raise ValueError(Errors.E037)
 
     @classmethod
     def load_model(cls, model: Any) -> "Any":
