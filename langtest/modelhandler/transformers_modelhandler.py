@@ -13,6 +13,7 @@ from ..utils.custom_types import (
 from langtest.utils.lib_manager import try_import_lib
 import importlib
 from langtest.transform.utils import compare_generations_overlap
+from ..errors import Errors
 
 
 class PretrainedModelForNER(ModelAPI):
@@ -561,9 +562,7 @@ class PretrainedModelForQA(ModelAPI):
             langchain = importlib.import_module(LIB_NAME)
             self.PromptTemplate = getattr(langchain, "PromptTemplate")
         else:
-            raise ModuleNotFoundError(
-                f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-            )
+            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
     @classmethod
     def load_model(cls, path: str, **kwargs) -> "Pipeline":
