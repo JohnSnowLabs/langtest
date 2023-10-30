@@ -1,4 +1,5 @@
 import asyncio
+from ..errors import Errors
 from abc import ABC, abstractmethod
 from typing import List, Dict, Union
 
@@ -162,8 +163,7 @@ class GenderRepresentation(BaseRepresentation):
                 min_proportions = params["min_proportion"]
                 if sum(min_proportions.values()) > 1:
                     raise ValueError(
-                        "Sum of proportions cannot be greater than 1. "
-                        "So min_gender_representation_proportion test cannot run."
+                        Errors.E064.format(var="min_gender_representation_proportion")
                     )
 
             for key, value in min_proportions.items():
@@ -346,11 +346,11 @@ class EthnicityRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                            So min_ethnicity_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_ethnicity_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
@@ -358,12 +358,11 @@ class EthnicityRepresentation(BaseRepresentation):
                         for key in default_ehtnicity_representation
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_ethnicity_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_ethnicity_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
-
             for key, value in expected_representation.items():
                 if hasattr(data[0], "task") and data[0].task == "question-answering":
                     sample = MinScoreQASample(
@@ -511,22 +510,18 @@ class LabelRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_label_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(var="min_label_representation_proportion")
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
                         key: params["min_proportion"] for key in labels
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_label_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(var="min_label_representation_proportion")
                         )
-                        raise ValueError()
 
             for key, value in expected_representation.items():
                 sample = MinScoreSample(
@@ -685,11 +680,11 @@ class ReligionRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_religion_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_religion_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
@@ -697,11 +692,11 @@ class ReligionRepresentation(BaseRepresentation):
                         for key in default_religion_representation
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_religion_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_religion_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
             entity_representation = (
                 RepresentationOperation.get_religion_name_representation_dict(data)
@@ -886,11 +881,11 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_country_economic_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_country_economic_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
@@ -898,11 +893,11 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         for key in default_economic_country_representation
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            "Sum of proportions cannot be greater than 1. So "
-                            "min_country_economic_representation_proportion test cannot run"
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_country_economic_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
             for key, value in expected_representation.items():
                 if hasattr(data[0], "task") and data[0].task == "question-answering":

@@ -4,6 +4,7 @@ import langchain.llms as lc
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
+from ..errors import Errors
 
 from ..metrics import EmbeddingDistance
 from langchain import OpenAI
@@ -71,14 +72,13 @@ class PretrainedModelForQA(ModelAPI):
             return cls(hub, cls.model, *args, **kwargs)
 
         except ImportError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local.
-                Please install langchain by pip install langchain"""
-            )
+            raise ValueError(Errors.E044.format(path=path))
         except ValidationError as e:
             error_msg = [err["loc"][0] for err in e.errors()]
             raise ConfigError(
-                f"\nPlease update model_parameters section in config.yml file for {path} model in {hub}.\nmodel_parameters:\n\t{error_msg[0]}: value \n\n{error_msg} is required field(s), please provide them in config.yml "
+                Errors.E045.format(
+                    path=path, hub=hub, field=error_msg[0], required_fields=error_msg
+                )
             )
 
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
@@ -274,7 +274,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
                 return cls((llm, embeddings_model))
             return cls(path)
         except KeyError:
-            raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
+            raise ValueError(Errors.E032)
 
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """

@@ -1,5 +1,6 @@
 from typing import Callable
 import functools
+from ..errors import Errors
 
 
 class StringDistance:
@@ -23,9 +24,7 @@ class StringDistance:
         @functools.wraps(func)
         def wrapper(str1: str, str2: str) -> float:
             if not isinstance(str1, str) or not isinstance(str2, str):
-                raise ValueError(
-                    f"Input strings must be of type 'str', but received types: {type(str1)} and {type(str2)}"
-                )
+                raise ValueError(Errors.E035.format(type_a=type(str1), type_b=str))
             return func(str1, str2)
 
         return wrapper
@@ -34,7 +33,7 @@ class StringDistance:
         if name in self.available_string_distance:
             return self.available_string_distance[name]
         else:
-            raise KeyError(f"String distance function '{name}' not found")
+            raise KeyError(Errors.E036.format(name=name))
 
     @staticmethod
     @validate_input

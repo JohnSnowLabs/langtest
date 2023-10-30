@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM
 import os
+from ..errors import Errors
 from huggingface_hub import login
 import random
 from typing import List, Tuple, Dict
@@ -42,11 +43,7 @@ def get_model_n_tokenizer(model_name):
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
     except OSError:
-        raise GatedRepoAccessError(
-            "You are trying to access a gated repo. "
-            "Make sure to request access at "
-            f"{model_name} and pass a token having permission to this repo either by logging in with `huggingface-cli login` or by setting the `HUGGINGFACEHUB_API_TOKEN` environment variable with your API token."
-        )
+        raise GatedRepoAccessError(Errors.E071.format(model_name=model_name))
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
@@ -97,9 +94,7 @@ def build_dataset(
         dataset_module = importlib.import_module(LIB_NAME)
         load_dataset = getattr(dataset_module, "load_dataset")
     else:
-        raise ModuleNotFoundError(
-            f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-        )
+        raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
     """Uses inputted dataset details to build dictionary of train/test values."""
     if not dataset_subset:

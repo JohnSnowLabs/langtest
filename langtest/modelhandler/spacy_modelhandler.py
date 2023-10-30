@@ -6,6 +6,7 @@ from spacy.tokens import Doc
 from .modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from pkg_resources import resource_filename
+from ..errors import Errors
 
 
 class PretrainedModelForNER(ModelAPI):
@@ -39,9 +40,7 @@ class PretrainedModelForNER(ModelAPI):
         try:
             return cls(spacy.load(path))
         except OSError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
-            )
+            raise ValueError(Errors.E041.format(path=path))
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -129,9 +128,7 @@ class PretrainedModelForTextClassification(ModelAPI):
                 path = resource_filename("langtest", "data/textcat_imdb")
             return cls(spacy.load(path))
         except OSError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
-            )
+            raise ValueError(Errors.E041.format(path=path))
 
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
@@ -204,9 +201,7 @@ class PretrainedModelForTranslation(ModelAPI):
         try:
             return cls(spacy.load(path))
         except OSError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
-            )
+            raise ValueError(Errors.E041.format(path=path))
 
     def predict(self, text: str, *args, **kwargs) -> str:
         """Perform translation predictions on the input text.

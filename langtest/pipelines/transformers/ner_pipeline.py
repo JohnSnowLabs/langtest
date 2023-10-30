@@ -14,6 +14,7 @@ from langtest.datahandler.datasource import DataFactory
 from langtest.pipelines.utils.data_helpers.ner_dataset import NERDataset
 from langtest.pipelines.utils.metrics import compute_ner_metrics
 from langtest.tasks import TaskManager
+from ...errors import Warnings
 
 
 class NEREnd2EndPipeline(FlowSpec):
@@ -253,7 +254,7 @@ class NEREnd2EndPipeline(FlowSpec):
     @step
     def end(self):
         """Ending step of the flow (required by Metaflow)"""
-        logging.info(f"{self.__class__} successfully ran!")
+        logging.info(Warnings.W011.format(class_name=self.__class__))
 
 
 if __name__ == "__main__":
