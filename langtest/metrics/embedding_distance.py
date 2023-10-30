@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Callable
 import functools
+from ..errors import Errors
 
 
 class EmbeddingDistance:
@@ -25,9 +26,7 @@ class EmbeddingDistance:
         @functools.wraps(func)
         def wrapper(a: np.ndarray, b: np.ndarray) -> np.ndarray:
             if not isinstance(a, np.ndarray) or not isinstance(b, np.ndarray):
-                raise ValueError(
-                    f"Input arrays must be of type 'np.ndarray', but received types: {type(a)} and {type(b)}"
-                )
+                raise ValueError(Errors.E033.format(type_a=type(a), type_b=type(b)))
             return func(a, b)
 
         return wrapper
@@ -36,7 +35,7 @@ class EmbeddingDistance:
         if name in self.available_embedding_distance:
             return self.available_embedding_distance[name]
         else:
-            raise KeyError(f"Distance function '{name}' not found")
+            raise KeyError(Errors.E34.format(name=name))
 
     @staticmethod
     @validate_input
