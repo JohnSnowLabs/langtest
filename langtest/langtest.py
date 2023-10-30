@@ -21,6 +21,7 @@ from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
+from .errors import Warnings, Errors
 
 GLOBAL_MODEL = None
 GLOBAL_HUB = None
@@ -192,16 +193,14 @@ class Harness:
         if isinstance(model, list):
             for item in model:
                 if not isinstance(item, dict):
-                    raise ValueError("Each item in the list must be a dictionary")
+                    raise ValueError(Errors.E000)
                 if "model" not in item or "hub" not in item:
-                    raise ValueError(
-                        "Each dictionary in the list must have 'model' and 'hub' keys"
-                    )
+                    raise ValueError(Errors.E001)
         elif isinstance(model, dict):
             if "model" not in model or "hub" not in model:
-                raise ValueError("The dictionary must have 'model' and 'hub' keys")
+                raise ValueError(Errors.E002)
         else:
-            raise ValueError("Invalid 'model' parameter type")
+            raise ValueError(Errors.E003)
 
         if isinstance(model, dict):
             hub, model = model["hub"], model["model"]
@@ -222,14 +221,10 @@ class Harness:
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
             self.is_default = True
-            logging.info("Default dataset '%s' successfully loaded.", (task, model, hub))
+            logging.info(Warnings.W002.format(info=(task, model, hub)))
 
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(
-                "You haven't specified any value for the parameter 'data' and the configuration you "
-                "passed is not among the default ones. You need to either specify the parameter 'data' "
-                "or use a default configuration."
-            )
+            raise ValueError(Errors.E004)
 
         if isinstance(data.get("data_source"), list):
             self.data = data.get("data_source")
@@ -245,7 +240,7 @@ class Harness:
             elif isinstance(self.DEFAULTS_CONFIG[task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[task])
         else:
-            logging.info("No configuration file was provided, loading default config.")
+            logging.info(Warnings.W001)
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
@@ -317,11 +312,9 @@ class Harness:
         The generated testcases are stored in `_testcases` attribute.
         """
         if self._config is None:
-            raise RuntimeError("Please call .configure() first.")
+            raise RuntimeError(Errors.E005)
         if self._testcases is not None:
-            raise RuntimeError(
-                "Testcases are already generated, please call .run() and .report() next."
-            )
+            raise RuntimeError(Errors.E006)
 
         tests = self._config["tests"]
         m_data = [sample.copy() for sample in self.data]
@@ -360,9 +353,7 @@ class Harness:
                         self._testcases.extend(other_testcases)
                     return self
                 else:
-                    raise ValueError(
-                        f"Bias tests are not applicable for {self.data_source} dataset."
-                    )
+                    raise ValueError(Errors.E007.format(data_source=self.data_source))
             else:
                 self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
@@ -394,10 +385,14 @@ class Harness:
                     return self
                 else:
                     raise ValueError(
-                        f"{test_name} tests are not applicable for {self.data_source} dataset. Please use one of the following datasets: {selected_data_sources}"
+                        Errors.E008.format(
+                            test_name=test_name,
+                            data_source=self.data_source,
+                            selected_data_sources=selected_data_sources,
+                        )
                     )
             else:
-                raise ValueError(f"Invalid test: {test_name}")
+                raise ValueError(Errors.E009.format(test_name=test_name))
 
         self._testcases = TestFactory.transform(
             self.task, self.data, tests, m_data=m_data
@@ -411,10 +406,7 @@ class Harness:
             None: The evaluations are stored in `generated_results` attribute.
         """
         if self._testcases is None:
-            raise RuntimeError(
-                "The test casess have not been generated yet. Please use the `.generate()` method before"
-                "calling the `.run()` method."
-            )
+            raise RuntimeError(Errors.E010)
         if not isinstance(self._testcases, dict):
             self._generated_results = TestFactory.run(
                 self._testcases,
@@ -453,10 +445,7 @@ class Harness:
                 DataFrame containing the results of the tests.
         """
         if self._generated_results is None:
-            raise RuntimeError(
-                "The tests have not been run yet. Please use the `.run()` method before"
-                "calling the `.report()` method."
-            )
+            raise RuntimeError(Errors.E011)
 
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config["tests"]["defaults"].get(
@@ -650,38 +639,26 @@ class Harness:
                 return self.df_report
             elif format == "dict":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 self.df_report.to_json(save_dir)
             elif format == "excel":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 self.df_report.to_excel(save_dir)
             elif format == "html":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 self.df_report.to_html(save_dir)
             elif format == "markdown":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 self.df_report.to_markdown(save_dir)
             elif format == "text" or format == "csv":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 self.df_report.to_csv(save_dir)
             else:
-                raise ValueError(
-                    f'Report in format "{format}" is not supported. Please use "dataframe", "excel", "html", "markdown", "text", "dict".'
-                )
+                raise ValueError(Errors.E013)
 
         else:
             df_final_report = pd.DataFrame()
@@ -810,32 +787,22 @@ class Harness:
                 return styled_df.to_dict("records")
             elif format == "excel":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 styled_df.to_excel(save_dir)
             elif format == "html":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 styled_df.to_html(save_dir)
             elif format == "markdown":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 styled_df.to_markdown(save_dir)
             elif format == "text" or format == "csv":
                 if save_dir is None:
-                    raise ValueError(
-                        'You need to set "save_dir" parameter for this format.'
-                    )
+                    raise ValueError(Errors.E012)
                 styled_df.to_csv(save_dir)
             else:
-                raise ValueError(
-                    f'Report in format "{format}" is not supported. Please use "dataframe", "excel", "html", "markdown", "text", "dict".'
-                )
+                raise ValueError(Errors.E013)
 
     def generated_results(self) -> Optional[pd.DataFrame]:
         """Generates an overall report with every textcase and labelwise metrics.
@@ -844,9 +811,7 @@ class Harness:
             pd.DataFrame: Generated dataframe.
         """
         if self._generated_results is None:
-            logging.warning(
-                "Please run `Harness.run()` before calling `.generated_results()`."
-            )
+            logging.warning(Warnings.W000)
             return
 
         if isinstance(self._generated_results, dict):
@@ -993,7 +958,7 @@ class Harness:
 
             if not (vaild_test_types.issubset(report_test_types)):
                 raise ValueError(
-                    f"Custom proportions for {vaild_test_types - report_test_types} not found in the test types."
+                    Errors.E014.format(test_name=(vaild_test_types - report_test_types))
                 )
 
         if templates:
@@ -1103,16 +1068,10 @@ class Harness:
 
         """
         if self._config is None:
-            raise RuntimeError(
-                "The current Harness has not been configured yet. Please use the `.configure` method "
-                "before calling the `.save` method."
-            )
+            raise RuntimeError(Errors.E015)
 
         if self._testcases is None:
-            raise RuntimeError(
-                "The test cases have not been generated yet. Please use the `.generate` method before"
-                "calling the `.save` method."
-            )
+            raise RuntimeError(Errors.E016)
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
@@ -1152,9 +1111,7 @@ class Harness:
         """
         for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(
-                    f"File '{filename}' is missing to load a previously saved `Harness`."
-                )
+                raise OSError(Errors.E017)
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
@@ -1221,7 +1178,9 @@ class Harness:
         if test_type:
             if test_type not in available_tests.keys():
                 raise ValueError(
-                    f"Unsupported test type '{test_type}'. The available test types are: {available_tests.keys()}"
+                    Errors.E018.format(
+                        test_type=test_type, available_tests=available_tests.keys()
+                    )
                 )
             return {test_type: available_tests[test_type]}
 
@@ -1252,9 +1211,7 @@ class Harness:
                 "Ethnicity-Name-Bias",
                 "Gender-Pronoun-Bias",
             ):
-                raise ValueError(
-                    f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Bias, Religion-Bias, Ethnicity-Name-Bias, Gender-Pronoun-Bias."
-                )
+                raise ValueError(Errors.E019.format(test_name=test_name))
 
             TestFactory.call_add_custom_bias(data, test_name, append)
         elif task == "representation":
@@ -1264,18 +1221,14 @@ class Harness:
                 "Ethnicity-Representation",
                 "Label-Representation",
             ):
-                raise ValueError(
-                    f"Invalid 'test_name' value '{test_name}'. It should be one of: Country-Economic-Representation, Religion-Representation, Ethnicity-Representation, Label-Representation."
-                )
+                raise ValueError(Errors.E020.format(test_name=test_name))
 
             RepresentationOperation.add_custom_representation(
                 data, test_name, append, check=self.task
             )
 
         else:
-            raise ValueError(
-                f"Invalid task type: {task}. Expected 'bias' or 'representation'."
-            )
+            raise ValueError(Errors.E021.format(category=task))
 
     def upload_folder_to_hub(
         repo_name: str,
@@ -1306,9 +1259,7 @@ class Harness:
                                 model_type ("huggingface" or "spacy").
         """
         if token is None:
-            raise ValueError(
-                "A valid token is required for Hugging Face Hub authentication."
-            )
+            raise ValueError(Errors.E022)
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         if (
@@ -1320,10 +1271,7 @@ class Harness:
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
             else:
-                raise ModuleNotFoundError(
-                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-                )
-
+                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
             api = HfApi()
 
             repo_id = repo_name.split("/")[1]
@@ -1341,9 +1289,8 @@ class Harness:
                 dataset_module = importlib.import_module(LIB_NAME)
                 push = getattr(dataset_module, "push")
             else:
-                raise ModuleNotFoundError(
-                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-                )
+                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+
             meta_path = os.path.join(folder_path, "meta.json")
             with open(meta_path, "r") as meta_file:
                 meta_data = json.load(meta_file)
@@ -1394,9 +1341,7 @@ class Harness:
             None
         """
         if token is None:
-            raise ValueError(
-                "A valid token is required for Hugging Face Hub authentication."
-            )
+            raise ValueError(Errors.E022)
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         file_extension = file_path.split(".")[-1]
@@ -1407,9 +1352,7 @@ class Harness:
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
             else:
-                raise ModuleNotFoundError(
-                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-                )
+                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
             api = HfApi()
             repo_id = repo_name.split("/")[1]
@@ -1430,9 +1373,7 @@ class Harness:
                 Dataset = getattr(dataset_module, "Dataset")
 
             else:
-                raise ModuleNotFoundError(
-                    f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-                )
+                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
