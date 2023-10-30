@@ -1736,7 +1736,6 @@ class WinoBiasTestFactory(ITests):
             Empty list
 
         """
-        print(self.tests)
         for sample in self.data_handler:
             sample.test_type = "gender-occupational-stereotype"
             sample.category = "wino-bias"
