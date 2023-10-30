@@ -9,3 +9,4 @@ tests:
   wino-bias:
     gender-occupational-stereotype:
       min_pass_rate: 0.70
+      diff_treshold: 0.03
