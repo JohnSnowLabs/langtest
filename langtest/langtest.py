@@ -609,7 +609,7 @@ class Harness:
             "sent_antistereo",
             "log_prob_stereo",
             "log_prob_antistereo",
-            "diff_treshold",
+            "diff_threshold",
             "expected_result",
             "prompt_toxicity",
             "actual_result",

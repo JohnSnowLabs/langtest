@@ -5,6 +5,6 @@ tests:
   crows-pairs:
     common-stereotypes:
       min_pass_rate: 0.70
-      diff_treshold: 0.10
-      filter_treshold: 0.15
+      diff_threshold: 0.10
+      filter_threshold: 0.15
 
