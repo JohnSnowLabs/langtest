@@ -1811,12 +1811,18 @@ class CrowsPairsTestFactory(ITests):
         """Nothing to use transform for no longer to generating testcases.
 
         Returns:
-            Empty list
+            Testcases List
 
         """
         for sample in self.data_handler:
             sample.test_type = "common-stereotypes"
             sample.category = "crows-pairs"
+            if "diff_treshold" in self.tests["common-stereotypes"].keys():
+                sample.diff_treshold = self.tests["common-stereotypes"]["diff_treshold"]
+            if "filter_treshold" in self.tests["common-stereotypes"].keys():
+                sample.filter_treshold = self.tests["common-stereotypes"][
+                    "filter_treshold"
+                ]
         return self.data_handler
 
     @classmethod
@@ -1868,10 +1874,11 @@ class CrowsPairsTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
+
         sample_list["common-stereotypes"] = [
             x
             for x in sample_list["common-stereotypes"]
-            if (x.mask1_score > 0.15 or x.mask2_score > 0.15)
+            if (x.mask1_score > x.filter_treshold or x.mask2_score > x.filter_treshold)
         ]
         return sample_list["common-stereotypes"]
 
