@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import asyncio
 from typing import List
+from ..errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
-
 from langtest.utils.custom_types.sample import Sample
 
 
@@ -19,7 +19,7 @@ class BaseSecurity(ABC):
     @abstractmethod
     def transform():
         """Abstract method that transforms the sample data based on the implemented model security."""
-        raise NotImplementedError("Please Implement this method")
+        raise NotImplementedError(Errors.E063)
 
     @staticmethod
     @abstractmethod

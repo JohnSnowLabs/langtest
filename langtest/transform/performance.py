@@ -1,6 +1,7 @@
 import asyncio
 import time
 from typing import List
+from ..errors import Errors
 from abc import ABC, abstractmethod
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types.sample import Sample, SpeedTestSample
@@ -33,7 +34,7 @@ class BasePerformance(ABC):
         Raises:
             NotImplementedError: This method must be implemented in the derived class.
         """
-        raise NotImplementedError("Please Implement this method")
+        raise NotImplementedError(Errors.E063)
 
     @staticmethod
     @abstractmethod
