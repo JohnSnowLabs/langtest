@@ -1249,10 +1249,13 @@ class ClinicalSample(BaseModel):
         """"""
 
         from ...embeddings.huggingface import HuggingfaceEmbeddings
+        from ...langtest import HARNESS_CONFIG as harness_config
 
-        model = HuggingfaceEmbeddings(
-            model="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb"
+        model_name = harness_config["tests"]["clinical"]["demographic-bias"].get(
+            "sentence-transformer",
+            "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb",
         )
+        model = HuggingfaceEmbeddings(model=model_name)
 
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
 
@@ -1406,10 +1409,13 @@ class DisinformationSample(BaseModel):
         threshold = evaluation["threshold"]
 
         from ...embeddings.huggingface import HuggingfaceEmbeddings
+        from ...langtest import HARNESS_CONFIG as harness_config
 
-        model = HuggingfaceEmbeddings(
-            model="sentence-transformers/distiluse-base-multilingual-cased-v2"
+        model_name = harness_config["tests"]["disinformation"]["narrative_wedging"].get(
+            "sentence-transformer",
+            "sentence-transformers/distiluse-base-multilingual-cased-v2",
         )
+        model = HuggingfaceEmbeddings(model=model_name)
 
         sentences = [self.statements, self.model_response]
 
@@ -1975,9 +1981,11 @@ class FactualitySample(BaseModel):
 
                 from ...embeddings.huggingface import HuggingfaceEmbeddings
 
-                model = HuggingfaceEmbeddings(
-                    model="sentence-transformers/distiluse-base-multilingual-cased-v2"
+                model_name = harness_config["tests"]["factuality"]["order_bias"].get(
+                    "sentence-transformer",
+                    "sentence-transformers/distiluse-base-multilingual-cased-v2",
                 )
+                model = HuggingfaceEmbeddings(model=model_name)
 
                 threshold = evaluation["threshold"]
 
