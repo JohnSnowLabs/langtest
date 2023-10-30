@@ -14,7 +14,7 @@ from langtest.datahandler.datasource import DataFactory
 from langtest.pipelines.utils.data_helpers.ner_dataset import NERDataset
 from langtest.pipelines.utils.metrics import compute_ner_metrics
 from langtest.tasks import TaskManager
-from ...errors import Warnings
+from langtest.errors import Warnings
 
 
 class NEREnd2EndPipeline(FlowSpec):
