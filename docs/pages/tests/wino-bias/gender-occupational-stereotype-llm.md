@@ -20,10 +20,8 @@ This test is designed to assess gender-based occupational stereotypes specifical
 ```yaml
 gender-occupational-stereotype:
     min_pass_rate: 0.70
-    diff_threshold: 0.03
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
-- **diff_threshold (float):** The allowed difference in probabilities.
 
 </div><div class="h3-box" markdown="1">
 
