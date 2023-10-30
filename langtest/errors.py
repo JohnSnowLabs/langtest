@@ -174,7 +174,6 @@ class Errors(metaclass=ErrorsWithCodes):
     E051 = "multiple_perturbations test is not supported for NER task"
     E052 = "This dataset does not contain labels, and {var} tests cannot be run with it."
     E053 = "The dataset {dataset_name} does not contain labels, and fairness tests cannot be run with it. Skipping the fairness tests."
-
     E054 = "Invalid schema. It should be one of: {var}."
     E055 = "Invalid JSON format. 'name' key is missing."
     E056 = "Invalid 'name' value '{var1}'. It should be one of: {var2}."
