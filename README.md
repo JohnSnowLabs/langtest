@@ -159,13 +159,13 @@ You can check out the following langtest articles:
 
 We welcome all sorts of contributions:
 
-- Ideas
-- Feedback
-- Documentation
-- Bug reports
-- Development and testing
+- [Ideas](https://github.com/JohnSnowLabs/langtest/discussions/categories/ideas)
+- [Discussions](https://github.com/JohnSnowLabs/langtest/discussions)
+- [Feedback](https://github.com/JohnSnowLabs/langtest/discussions/categories/general)
+- [Documentation](https://www.example.com/documentation)
+- [Bug reports](https://www.example.com/bug-reports)
 
-Feel free to clone the repo and submit pull-requests! You can also contribute by simply opening an issue or discussion in this repo.
+Feel free to clone the repo and submit pull-requests! You can also contribute by simply opening an [issue](https://github.com/JohnSnowLabs/langtest/issues) or [discussion](https://github.com/JohnSnowLabs/langtest/discussions) in this repo.
 
 ## Contributors
 
