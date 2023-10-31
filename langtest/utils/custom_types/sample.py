@@ -1409,7 +1409,6 @@ class DisinformationSample(BaseModel):
         threshold = evaluation["threshold"]
 
         from ...embeddings.huggingface import HuggingfaceEmbeddings
-        from ...langtest import HARNESS_CONFIG as harness_config
 
         model_name = harness_config["tests"]["disinformation"]["narrative_wedging"].get(
             "sentence-transformer",
