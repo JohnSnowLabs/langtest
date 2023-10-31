@@ -1,5 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
+from ..errors import Errors
 from typing import List, Optional
 from langtest.modelhandler import ModelAPI
 from ..utils.custom_types import Sample
@@ -161,9 +162,7 @@ class Toxicity(BaseSensitivity):
             if strategy is None:
                 strategy = random.choice(possible_methods)
             elif strategy not in possible_methods:
-                raise ValueError(
-                    f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}."
-                )
+                raise ValueError(Errors.E066.format(strategy=strategy))
 
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)

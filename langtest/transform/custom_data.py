@@ -12,6 +12,7 @@ from .constants import (
     female_pronouns,
 )
 from typing import Union
+from ..errors import Errors
 
 
 def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
@@ -38,9 +39,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
 
         # Validate the schema
         if not set(data.keys()).issubset(valid_names):
-            raise ValueError(
-                f"Invalid schema. It should be one of: {', '.join(valid_names)}."
-            )
+            raise ValueError(Errors.E054.format(var=", ".join(valid_names)))
 
         if append:
             # Append unique values to existing keys
@@ -59,9 +58,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
 
         # Validate the schema
         if not set(data.keys()).issubset(valid_names):
-            raise ValueError(
-                f"Invalid schema. It should be one of: {', '.join(valid_names)}."
-            )
+            raise ValueError(Errors.E054.format(var=", ".join(valid_names)))
 
         if append:
             # Append unique values to existing keys
@@ -89,33 +86,28 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
 
         for data_dict in data:
             if "name" not in data_dict:
-                raise ValueError("Invalid JSON format. 'name' key is missing.")
+                raise ValueError(Errors.E055)
 
             name = data_dict["name"]
             first_names = data_dict.get("first_names", [])
             last_names = data_dict.get("last_names", [])
 
             if not isinstance(name, str):
-                raise ValueError("Invalid 'name' format in the JSON file.")
+                raise ValueError(Errors.E057)
 
             if name not in valid_names:
                 raise ValueError(
-                    f"Invalid 'name' value '{name}'. It should be one of: {', '.join(valid_names)}."
+                    Errors.E056.format(var1=name, var2=", ".join(valid_names))
                 )
 
             if not first_names and not last_names:
                 if name not in ("native_american_names", "inter_racial_names"):
-                    raise ValueError(
-                        f"At least one of 'first_names' or 'last_names' must be specified for '{name}'."
-                    )
+                    raise ValueError(Errors.E058.format(name=name))
                 else:
-                    raise ValueError(f"'last_names' must be specified for '{name}'.")
+                    raise ValueError(Errors.E059.format(name=name))
 
             if set(data_dict.keys()) - {"name", "first_names", "last_names"}:
-                raise ValueError(
-                    f"Invalid keys in the JSON for '{name}'. "
-                    f"Only the following keys are allowed: 'name', 'first_names', 'last_names'."
-                )
+                raise ValueError(Errors.E060.format(name=name))
 
             if name in (
                 "white_names",
@@ -141,13 +133,13 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
         # Validate the schema
         for data_dict in data:
             if "name" not in data_dict:
-                raise ValueError("Invalid JSON format. 'name' key is missing.")
+                raise ValueError(Errors.E055)
 
             name = data_dict["name"]
 
             if name not in valid_names:
                 raise ValueError(
-                    f"Invalid 'name' value '{name}'. It should be one of: {', '.join(valid_names)}."
+                    Errors.E056.format(var1=name, var2=", ".join(valid_names))
                 )
 
             pronouns = {
@@ -166,10 +158,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
                     "possessive_pronouns",
                 ]
             ):
-                raise ValueError(
-                    f"Missing pronoun keys in the JSON for '{name}'. Please include at least one of: "
-                    "'subjective_pronouns', 'objective_pronouns', 'reflexive_pronouns', 'possessive_pronouns'."
-                )
+                raise ValueError(Errors.E061.format(name=name))
 
             invalid_keys = set(data_dict.keys()) - {
                 "name",
@@ -180,9 +169,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
             }
             if invalid_keys:
                 raise ValueError(
-                    f"Invalid keys in the JSON for '{name}': {', '.join(invalid_keys)}. "
-                    f"Only the following keys are allowed: "
-                    "'name', 'subjective_pronouns', 'objective_pronouns', 'reflexive_pronouns', 'possessive_pronouns'."
+                    Errors.E062.format(var1=name, var2=", ".join(invalid_keys))
                 )
 
             bias_dict = {

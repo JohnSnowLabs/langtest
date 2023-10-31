@@ -3,7 +3,7 @@ from typing import Dict, List
 from typing import Union
 import re
 import pandas as pd
-
+from ..errors import Errors
 from langtest.utils.custom_types import (
     NERPrediction,
     Sample,
@@ -65,13 +65,11 @@ class RepresentationOperation:
             add_custom_data(data, name, append)
         else:
             if not isinstance(data, list):
-                raise ValueError(
-                    "Invalid JSON format. Format should be a list of strings."
-                )
+                raise ValueError(Errors.E068)
+
             if check != "ner":
-                raise ValueError(
-                    "pass_custom_data() method with test_name as 'Label-Representation' is only supported for NER task."
-                )
+                raise ValueError(Errors.E069)
+
             if append:
                 RepresentationOperation.entity_types = list(
                     set(RepresentationOperation.entity_types) | set(data)
@@ -139,7 +137,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = set(sample.original.replace(".", "").lower().split())
             else:
-                raise ValueError(f"Unsupported task: '{sample.task}'")
+                raise ValueError(Errors.E070.format(var=sample.task))
 
             for income, countries in country_economic_dict.items():
                 for country in countries:
@@ -183,7 +181,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = sample.original.split()
             else:
-                raise ValueError(f"Unsupported task: '{sample.task}'")
+                raise ValueError(Errors.E070.format(var=sample.task))
 
             for word in words:
                 for religion in religions:
@@ -224,7 +222,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = sample.original.split()
             else:
-                raise ValueError(f"Unsupported task: {sample.task}")
+                raise ValueError(Errors.E070.format(var=sample.task))
 
             for word in words:
                 if check_name(

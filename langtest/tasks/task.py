@@ -2,9 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
-
-# langtest exceptions
-from langtest.exceptions.datasets import ColumnNameError
+from langtest.errors import Errors, ColumnNameError
 
 from langtest.utils import custom_types as samples
 from langtest.utils.custom_types.predictions import NERPrediction
@@ -34,9 +32,7 @@ class BaseTask(ABC):
         supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
 
         if model_hub not in supported_hubs:
-            raise AssertionError(
-                f"Provided model hub is not supported. Please choose one of the supported model hubs: {supported_hubs}"
-            )
+            raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
 
         if model_hub in LANGCHAIN_HUBS:
             # LLM models
@@ -102,7 +98,7 @@ class TaskManager:
     def __init__(self, task_name: str):
         if task_name not in BaseTask.task_registry:
             raise AssertionError(
-                f"Provided task is not supported. Please choose one of the supported tasks: {list(BaseTask.task_registry.keys())}"
+                Errors.E043.format(l=list(BaseTask.task_registry.keys()))
             )
         self.__task_name = task_name
         self.__task: BaseTask = BaseTask.task_registry[task_name]()
@@ -150,7 +146,7 @@ class TaskManager:
         return self.__task.get_sample_cls
 
 
-class NERTask(BaseTask):
+class NER(BaseTask):
     """Named Entity Recognition task."""
 
     _name = "ner"
@@ -221,7 +217,7 @@ class NERTask(BaseTask):
         return samples.NERSample(original=original, expected_results=expected_results)
 
 
-class TextClassificationTask(BaseTask):
+class TextClassification(BaseTask):
     """Text Classification task."""
 
     _name = "textclassification"
@@ -262,7 +258,7 @@ class TextClassificationTask(BaseTask):
         )
 
 
-class QuestionAnsweringTask(BaseTask):
+class QuestionAnswering(BaseTask):
     """Question Answering task."""
 
     _name = "qa"
@@ -302,7 +298,7 @@ class QuestionAnsweringTask(BaseTask):
         )
 
 
-class SummarizationTask(BaseTask):
+class Summarization(BaseTask):
     """Summarization task."""
 
     _name = "summarization"
@@ -333,7 +329,7 @@ class SummarizationTask(BaseTask):
         )
 
 
-class TranslationTask(BaseTask):
+class Translation(BaseTask):
     """Translation task."""
 
     _name = "translation"
@@ -354,7 +350,7 @@ class TranslationTask(BaseTask):
         )
 
 
-class ToxicityTask(BaseTask):
+class Toxicity(BaseTask):
     """Toxicity task."""
 
     _name = "toxicity"
@@ -376,7 +372,7 @@ class ToxicityTask(BaseTask):
         )
 
 
-class SecurityTask(BaseTask):
+class Security(BaseTask):
     """Security task."""
 
     _name = "security"
@@ -399,7 +395,7 @@ class SecurityTask(BaseTask):
         )
 
 
-class ClinicalTestsTask(BaseTask):
+class ClinicalTests(BaseTask):
     """Clinical Tests task."""
 
     _name = "clinicaltests"
@@ -443,7 +439,7 @@ class ClinicalTestsTask(BaseTask):
         )
 
 
-class DisinformationTestTask(BaseTask):
+class DisinformationTest(BaseTask):
     """Disinformation Test task."""
 
     _name = "disinformationtest"
@@ -475,7 +471,7 @@ class DisinformationTestTask(BaseTask):
         )
 
 
-class PoliticalTask(BaseTask):
+class Political(BaseTask):
     """Political task."""
 
     _name = "political"
@@ -497,7 +493,7 @@ class PoliticalTask(BaseTask):
         )
 
 
-class WinoBiasTask(BaseTask):
+class WinoBias(BaseTask):
     """WinoBias task."""
 
     _name = "winobias"
@@ -527,7 +523,7 @@ class WinoBiasTask(BaseTask):
         )
 
 
-class LegalTask(BaseTask):
+class LegalTests(BaseTask):
     """Legal task."""
 
     _name = "legal"
@@ -577,7 +573,7 @@ class LegalTask(BaseTask):
         )
 
 
-class FactualityTask(BaseTask):
+class FactualityTest(BaseTask):
     """Factuality task."""
 
     _name = "factuality"
@@ -612,7 +608,7 @@ class FactualityTask(BaseTask):
         )
 
 
-class SensitivityTask(BaseTask):
+class SensitivityTest(BaseTask):
     """Sensitivity task."""
 
     _name = "sensitivity"
@@ -635,7 +631,7 @@ class SensitivityTask(BaseTask):
         )
 
 
-class CrowsPairsTask(BaseTask):
+class CrowsPairs(BaseTask):
     """Crows Pairs task."""
 
     _name = "crowspairs"
@@ -668,7 +664,7 @@ class CrowsPairsTask(BaseTask):
         )
 
 
-class StereosetTask(BaseTask):
+class Stereoset(BaseTask):
     """StereoSet task."""
 
     _name = "stereoset"
@@ -717,4 +713,38 @@ class StereosetTask(BaseTask):
             sent_stereo=row_data[column_mapper[sent_stereo]],
             sent_antistereo=row_data[column_mapper[sent_antistereo]],
             sent_unrelated=row_data[column_mapper[sent_unrelated]],
+        )
+
+
+class SycophancyTest(BaseTask):
+    """Sycophancy task."""
+
+    _name = "sycophancytest"
+    _default_col = {
+        "text": ["text", "question"],
+        "answer": ["answer", "answer_and_def_correct_predictions"],
+    }
+    sample_class = samples.SycophancySample
+
+    def create_sample(
+        cls,
+        row_data: dict,
+        feature_column="question",
+        target_column="answer",
+        dataset_name: str = "",
+        *args,
+        **kwargs,
+    ) -> samples.SycophancySample:
+        """Create a sample."""
+        keys = list(row_data.keys())
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column, target_column])
+
+        return samples.SycophancySample(
+            original_question=row_data[column_mapper[feature_column]],
+            ground_truth=row_data[column_mapper[target_column]],
+            dataset_name=dataset_name,
+            *args,
+            **kwargs,
         )

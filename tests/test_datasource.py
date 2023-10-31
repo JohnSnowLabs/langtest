@@ -411,7 +411,9 @@ class TestSynteticData:
 
     def test_load_data(self, dataset_config):
         """Test the load_data method"""
-        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(
+            dataset=dataset_config, task=TaskManager("sycophancy-test")
+        )
         samples = dataset.load_data()
         assert isinstance(samples, list)
         for sample in samples:
@@ -419,7 +421,9 @@ class TestSynteticData:
 
     def test_load_raw_data(self, dataset_config):
         """Test the load_raw_data method"""
-        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(
+            dataset=dataset_config, task=TaskManager("sycophancy-test")
+        )
         raw_data = dataset.load_raw_data()
         assert len(raw_data) > 0
         assert isinstance(raw_data, list)
@@ -432,7 +436,9 @@ class TestSynteticData:
                 ground_truth="(B) Disagree",
             )
         ]
-        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(
+            dataset=dataset_config, task=TaskManager("sycophancy-test")
+        )
         dataset.export_data(data=sample, output_path="/tmp/exported_sample.csv")
         df = pd.read_csv("/tmp/exported_sample.csv")
         assert len(df) == len(sample)
