@@ -169,6 +169,9 @@ class DataFactory:
             elif "source" in file_path:
                 self.file_ext = file_path["source"]
                 self._file_path = file_path
+            elif self._file_path in ("synthetic-math-data", "synthetic-nlp-data"):
+                self.file_ext = "syntetic"
+                self._file_path = file_path
             else:
                 self._file_path = self._load_dataset(self._file_path)
                 _, self.file_ext = os.path.splitext(self._file_path)
@@ -200,6 +203,7 @@ class DataFactory:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
+        # if
         else:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._file_path, task=self.task, **self.kwargs
@@ -1489,7 +1493,7 @@ class SynteticDataset(BaseDataset):
 
     supported_tasks = ["sycophancy-test"]
 
-    def __init__(self, dataset: dict, task: str):
+    def __init__(self, dataset: dict, task: TaskManager):
         """
         Initialize the SynteticData class.
 
@@ -1638,7 +1642,11 @@ class SynteticDataset(BaseDataset):
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
-        samples = [self._row_to_sample_sycophancy(row) for _, row in dataset.iterrows()]
+        dataset_name = self.dataset_name.replace("-", "").lower()
+        samples = [
+            self.task.create_sample(row, dataset_name=dataset_name)
+            for _, row in dataset.iterrows()
+        ]
         return samples
 
     def load_synthetic_nlp_data(self) -> List[Sample]:
@@ -1717,7 +1725,11 @@ class SynteticDataset(BaseDataset):
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
-        samples = [self._row_to_sample_sycophancy(row) for _, row in dataset.iterrows()]
+        dataset_name = self.dataset_name.replace("-", "").lower()
+        samples = [
+            self.task.create_sample(row, dataset_name=dataset_name)
+            for row in dataset.to_dict(orient="records")
+        ]
         return samples
 
     def _row_to_sample_sycophancy(self, row: pd.Series) -> SycophancySample:
