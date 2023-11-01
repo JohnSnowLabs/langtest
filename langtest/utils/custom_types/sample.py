@@ -1257,7 +1257,7 @@ class ClinicalSample(BaseModel):
         from ...langtest import HARNESS_CONFIG as harness_config
 
         model_name = harness_config["tests"]["clinical"]["demographic-bias"].get(
-            "sentence-transformer",
+            "sentence_transformer",
             "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb",
         )
         model = HuggingfaceEmbeddings(model=model_name)
@@ -1416,7 +1416,7 @@ class DisinformationSample(BaseModel):
         from ...embeddings.huggingface import HuggingfaceEmbeddings
 
         model_name = harness_config["tests"]["disinformation"]["narrative_wedging"].get(
-            "sentence-transformer",
+            "sentence_transformer",
             "sentence-transformers/distiluse-base-multilingual-cased-v2",
         )
         model = HuggingfaceEmbeddings(model=model_name)
@@ -1986,9 +1986,10 @@ class FactualitySample(BaseModel):
                 from ...embeddings.huggingface import HuggingfaceEmbeddings
 
                 model_name = harness_config["tests"]["factuality"]["order_bias"].get(
-                    "sentence-transformer",
+                    "sentence_transformer",
                     "sentence-transformers/distiluse-base-multilingual-cased-v2",
                 )
+                print(f"Using model {model_name}")
                 model = HuggingfaceEmbeddings(model=model_name)
 
                 threshold = evaluation["threshold"]
