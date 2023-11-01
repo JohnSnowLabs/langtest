@@ -12,7 +12,7 @@ RENAME_HUBS = {
 }
 
 if try_import_lib("langchain"):
-    import langchain
+    import langchain, langchain.llms
 
     LANGCHAIN_HUBS = {
         RENAME_HUBS.get(hub.lower(), hub.lower())
