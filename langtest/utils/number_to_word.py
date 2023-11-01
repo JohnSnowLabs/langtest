@@ -1,6 +1,7 @@
 from numbers import Number
 from pydantic import Field
 from pydantic.typing import Annotated
+from ..errors import Errors
 from langtest.transform.constants import (
     ordinal,
     unit,
@@ -82,8 +83,7 @@ class ConvertNumberToWord:
             NumOutOfRangeError: If the index is out of range.
         """
         if ind >= len(mill):
-            print3("Number out of range")
-            raise NumOutOfRangeError
+            raise NumOutOfRangeError(Errors.E072)
         return mill[ind]
 
     def tenfn(self, tens: int, units: int, mindex: int = 0) -> str:

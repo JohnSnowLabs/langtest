@@ -38,7 +38,7 @@ from .constants import (
     white_names,
 )
 from .utils import get_substitution_names, create_terminology, filter_unique_samples
-from ..modelhandler import ModelFactory
+from ..modelhandler import ModelAPI
 from ..utils.custom_types.sample import (
     NERSample,
     QASample,
@@ -48,6 +48,7 @@ from ..utils.custom_types.sample import (
 )
 from ..utils.custom_types.helpers import default_user_prompt
 from ..utils.util_metrics import calculate_f1_score
+from ..errors import Errors, Warnings
 
 nest_asyncio.apply()
 
@@ -89,7 +90,7 @@ class TestFactory:
                 The data to be tested.
             test_types : dict
                 A dictionary mapping test category names to lists of test scenario names.
-            model: ModelFactory
+            model: ModelAPI
                 Model to be tested.
 
         Returns:
@@ -120,11 +121,16 @@ class TestFactory:
                     )
                     if task not in supported:
                         raise ValueError(
-                            f'The test type "{sub_test}" is not supported for the task "{task}". "{sub_test}" only supports {supported}.'
+                            Errors.E046.format(
+                                sub_test=sub_test, task=task, supported=supported
+                            )
                         )
             elif test_category != "defaults":
                 raise ValueError(
-                    f"The test category {test_category} does not exist. Available categories are: {all_categories.keys()}."
+                    Errors.E047.format(
+                        test_category=test_category,
+                        available_categories=list(all_categories.keys()),
+                    )
                 )
 
         # Generate testcases
@@ -169,13 +175,13 @@ class TestFactory:
         }
 
     @staticmethod
-    def run(samples_list: List[Sample], model_handler: ModelFactory, **kwargs):
+    def run(samples_list: List[Sample], model_handler: ModelAPI, **kwargs):
         """
         Runs the specified tests on the given data and returns a list of results.
 
         Args:
             samples_list : List[Sample]
-            model_handler : ModelFactory
+            model_handler : ModelAPI
 
         """
         async_tests = TestFactory.async_run(samples_list, model_handler, **kwargs)
@@ -195,14 +201,14 @@ class TestFactory:
 
     @classmethod
     async def async_run(
-        cls, samples_list: List[Sample], model_handler: ModelFactory, **kwargs
+        cls, samples_list: List[Sample], model_handler: ModelAPI, **kwargs
     ):
         """
         Runs the specified tests on the given data and returns a list of results.
 
         Args:
             samples_list : List[Sample]
-            model_handler : ModelFactory
+            model_handler : ModelAPI
 
         """
         hash_samples = {}
@@ -268,7 +274,7 @@ class ITests(ABC):
 
     @classmethod
     def run(
-        cls, sample_list: Dict[str, List[Sample]], model: ModelFactory, **kwargs
+        cls, sample_list: Dict[str, List[Sample]], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """
         Runs the specified tests on the given data and returns a list of results.
@@ -276,8 +282,8 @@ class ITests(ABC):
         Args:
             sample_list (Dict[str, List[Sample]]):
                 A dictionary mapping test scenario names to a list of `Sample` objects.
-            model (ModelFactory):
-                A `ModelFactory` object representing the model to be tested.
+            model (ModelAPI):
+                A `ModelAPI` object representing the model to be tested.
 
         Returns:
             List[Sample]: A list of `Sample` objects with the test results.
@@ -320,10 +326,7 @@ class RobustnessTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -331,7 +334,10 @@ class RobustnessTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
         if "swap_entities" in self.tests:
@@ -446,9 +452,7 @@ class RobustnessTestFactory(ITests):
 
                         transformed_samples.extend(transformed_samples_perturbation)
                     elif key != "min_pass_rate":
-                        raise ValueError(
-                            f"Invalid perturbation {key} in multiple_perturbations.Please use perturbations1, perturbations2, ..."
-                        )
+                        raise ValueError(Errors.E050.format(key=key))
 
             elif (
                 test_name == "multiple_perturbations"
@@ -489,14 +493,10 @@ class RobustnessTestFactory(ITests):
                         transformed_samples.extend(transformed_samples_perturbation)
 
                     elif key not in ("min_pass_rate", "prob"):
-                        raise ValueError(
-                            f"Invalid perturbation {key} in multiple_perturbations. Please use perturbations1, perturbations2, perturbations3 ..."
-                        )
+                        raise ValueError(Errors.E050.format(key=key))
 
             elif test_name == "multiple_perturbations" and TestFactory.task == "ner":
-                raise ValueError(
-                    "multiple_perturbations test is not supported for NER task"
-                )
+                raise ValueError(Errors.E051)
 
             else:
                 transformed_samples = test_func(
@@ -512,11 +512,11 @@ class RobustnessTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = (
-                "Removing samples where no transformation has been applied:\n"
-            )
+            warning_message = Warnings.W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+                warning_message += Warnings.W010.format(
+                    test=test, count=count, total_sample=len(self._data_handler)
+                )
 
             logging.warning(warning_message)
 
@@ -552,10 +552,7 @@ class BiasTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -563,7 +560,10 @@ class BiasTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
         if "replace_to_male_pronouns" in self.tests:
@@ -711,11 +711,11 @@ class BiasTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = (
-                "Removing samples where no transformation has been applied:\n"
-            )
+            warning_message = Warnings.W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+                warning_message += Warnings.W010.format(
+                    test=test, count=count, total_sample=len(self._data_handler)
+                )
 
             logging.warning(warning_message)
 
@@ -753,10 +753,7 @@ class RepresentationTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -764,7 +761,10 @@ class RepresentationTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
     def transform(self) -> List[Sample]:
@@ -820,10 +820,7 @@ class FairnessTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -831,7 +828,10 @@ class FairnessTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
     def transform(self) -> List[Sample]:
@@ -845,9 +845,7 @@ class FairnessTestFactory(ITests):
         all_samples = []
 
         if self._data_handler[0].expected_results is None:
-            raise RuntimeError(
-                "This dataset does not contain labels and fairness tests cannot be run with it."
-            )
+            raise RuntimeError(Errors.E052.format(var="fairness"))
 
         for test_name, params in self.tests.items():
             transformed_samples = self.supported_tests[test_name].transform(
@@ -879,7 +877,7 @@ class FairnessTestFactory(ITests):
     def run(
         cls,
         sample_list: Dict[str, List[Sample]],
-        model: ModelFactory,
+        model: ModelAPI,
         raw_data: List[Sample],
         **kwargs,
     ):
@@ -888,7 +886,7 @@ class FairnessTestFactory(ITests):
 
         Args:
             sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
-            model (ModelFactory): The model to be tested.
+            model (ModelAPI): The model to be tested.
             raw_data (List[Sample]): The raw dataset.
 
         """
@@ -936,9 +934,7 @@ class FairnessTestFactory(ITests):
                     )
 
                     if data[0].expected_results is None:
-                        raise RuntimeError(
-                            f"The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests."
-                        )
+                        raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
                     y_pred = X_test.apply(
@@ -964,9 +960,7 @@ class FairnessTestFactory(ITests):
                         "user_prompt", default_user_prompt.get(dataset_name, "")
                     )
                     if data[0].expected_results is None:
-                        raise RuntimeError(
-                            f"The dataset {dataset_name} does not contain labels and fairness tests cannot be run with it. Skipping the fairness tests."
-                        )
+                        raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
 
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
@@ -1038,10 +1032,7 @@ class AccuracyTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -1049,7 +1040,10 @@ class AccuracyTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
     def transform(self) -> List[Sample]:
@@ -1063,9 +1057,7 @@ class AccuracyTestFactory(ITests):
         all_samples = []
 
         if self._data_handler[0].expected_results is None:
-            raise RuntimeError(
-                "This dataset does not contain labels and accuracy tests cannot be run with it."
-            )
+            raise RuntimeError(Errors.E052.format(var="accuracy"))
 
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
@@ -1123,7 +1115,7 @@ class AccuracyTestFactory(ITests):
     def run(
         cls,
         sample_list: Dict[str, List[Sample]],
-        model: ModelFactory,
+        model: ModelAPI,
         raw_data: List[Sample],
         **kwargs,
     ):
@@ -1132,7 +1124,7 @@ class AccuracyTestFactory(ITests):
 
         Args:
             sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
-            model (ModelFactory): The model to be tested.
+            model (ModelAPI): The model to be tested.
             raw_data (List[Sample]): The raw dataset.
 
         """
@@ -1237,10 +1229,7 @@ class ToxicityTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -1248,7 +1237,10 @@ class ToxicityTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
     def transform(self) -> List[Sample]:
@@ -1330,13 +1322,13 @@ class PerformanceTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the model performance
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the model performance
 
         Returns:
@@ -1393,7 +1385,7 @@ class SecurityTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         supported_tests = cls.available_tests()
         tasks = []
@@ -1445,13 +1437,13 @@ class ClinicalTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the clinical tests
 
         Returns:
@@ -1470,12 +1462,12 @@ class ClinicalTestFactory(ITests):
         """
         return {"demographic-bias": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the clinical tests
 
         Returns:
@@ -1516,7 +1508,7 @@ class DisinformationTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
         return task
@@ -1525,7 +1517,7 @@ class DisinformationTestFactory(ITests):
     def available_tests(cls) -> Dict[str, str]:
         return {"narrative_wedging": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list["narrative_wedging"]:
             if sample.state != "done":
@@ -1563,13 +1555,13 @@ class PoliticalTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the model performance
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the model performance
 
         Returns:
@@ -1636,10 +1628,7 @@ class SensitivityTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -1647,7 +1636,10 @@ class SensitivityTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
     def transform(self) -> List[Sample]:
@@ -1688,11 +1680,11 @@ class SensitivityTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = (
-                "Removing samples where no transformation has been applied:\n"
-            )
+            warning_message = Warnings.W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += f"- Test '{test}': {count} samples removed out of {len(self._data_handler)}\n"
+                warning_message += Warnings.W010.format(
+                    test=test, count=count, total_sample=len(self._data_handler)
+                )
 
             logging.warning(warning_message)
 
@@ -1743,13 +1735,13 @@ class WinoBiasTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the wino-bias tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
@@ -1768,12 +1760,12 @@ class WinoBiasTestFactory(ITests):
         """
         return {"gender-occupational-stereotype": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
@@ -1821,13 +1813,13 @@ class CrowsPairsTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the crows-pairs tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1847,12 +1839,12 @@ class CrowsPairsTestFactory(ITests):
         return {"common-stereotypes": cls}
 
     @staticmethod
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1908,13 +1900,13 @@ class StereoSetTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the stereoset tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the stereoset tests
 
         Returns:
@@ -1934,12 +1926,12 @@ class StereoSetTestFactory(ITests):
         return {"intrasentence": cls, "intersentence": cls}
 
     @staticmethod
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the crows-pairs tests
 
         Returns:
@@ -1997,13 +1989,13 @@ class LegalTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs the legal tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the wino-bias tests
 
         Returns:
@@ -2022,12 +2014,12 @@ class LegalTestFactory(ITests):
         """
         return {"legal-support": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the legal tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the legal tests
 
         Returns:
@@ -2075,13 +2067,13 @@ class FactualityTestFactory(ITests):
 
     @classmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Runs factuality tests
 
         Args:
             sample_list (list[Sample]): A list of Sample objects to be tested.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional keyword arguments.
 
         Returns:
@@ -2101,12 +2093,12 @@ class FactualityTestFactory(ITests):
         """
         return {"order_bias": cls}
 
-    async def async_run(sample_list: List[Sample], model: ModelFactory, *args, **kwargs):
+    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs factuality tests
 
         Args:
             sample_list (list[Sample]): A list of Sample objects to be tested.
-            model (ModelFactory): The model to be used for testing.
+            model (ModelAPI): The model to be used for testing.
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
 
@@ -2157,10 +2149,7 @@ class SycophancyTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(
-                "Invalid test configuration! Tests can be "
-                "[1] dictionary of test name and corresponding parameters."
-            )
+            raise ValueError(Errors.E048)
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -2168,7 +2157,10 @@ class SycophancyTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                f"Invalid test specification: {not_supported_tests}. Available tests are: {list(self.supported_tests.keys())}"
+                Errors.E049.format(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
             )
 
     def transform(self) -> List[Sample]:

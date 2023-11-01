@@ -3,11 +3,13 @@ from typing import List
 import spacy
 from spacy.tokens import Doc
 
-from .modelhandler import _ModelHandler
+from .modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
+from pkg_resources import resource_filename
+from ..errors import Errors
 
 
-class PretrainedModelForNER(_ModelHandler):
+class PretrainedModelForNER(ModelAPI):
     """SpaCy pretrained model for NER tasks
 
     Args:
@@ -36,11 +38,9 @@ class PretrainedModelForNER(_ModelHandler):
             path (str): name of path to model to load
         """
         try:
-            return spacy.load(path)
+            return cls(spacy.load(path))
         except OSError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
-            )
+            raise ValueError(Errors.E041.format(path=path))
 
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -90,7 +90,7 @@ class PretrainedModelForNER(_ModelHandler):
         ]
 
 
-class PretrainedModelForTextClassification(_ModelHandler):
+class PretrainedModelForTextClassification(ModelAPI):
     """SpaCy pretrained model for text classification tasks
 
     Args:
@@ -124,11 +124,11 @@ class PretrainedModelForTextClassification(_ModelHandler):
             path (str): name of path to model to load
         """
         try:
-            return spacy.load(path)
+            if path == "textcat_imdb":
+                path = resource_filename("langtest", "data/textcat_imdb")
+            return cls(spacy.load(path))
         except OSError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
-            )
+            raise ValueError(Errors.E041.format(path=path))
 
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
@@ -170,7 +170,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
 
-class PretrainedModelForTranslation(_ModelHandler):
+class PretrainedModelForTranslation(ModelAPI):
     """SpaCy pretrained model for translation tasks
 
     Args:
@@ -199,11 +199,9 @@ class PretrainedModelForTranslation(_ModelHandler):
             path (str): name of path to model to load
         """
         try:
-            return spacy.load(path)
+            return cls(spacy.load(path))
         except OSError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local. Please install it by python -m spacy download {path} or check the path."""
-            )
+            raise ValueError(Errors.E041.format(path=path))
 
     def predict(self, text: str, *args, **kwargs) -> str:
         """Perform translation predictions on the input text.

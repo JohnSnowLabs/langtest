@@ -1,5 +1,6 @@
 from collections import Counter
 from typing import List, Union, Dict
+from ..errors import Errors
 
 
 def classification_report(
@@ -167,7 +168,5 @@ def calculate_f1_score(
                 f1_score += class_weight * class_f1_score
 
     else:
-        raise ValueError(
-            "Invalid averaging method. Must be one of 'macro', 'micro', or 'weighted'."
-        )
+        raise ValueError(Errors.E074)
     return f1_score

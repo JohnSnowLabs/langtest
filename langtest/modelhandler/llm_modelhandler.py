@@ -1,9 +1,10 @@
 import inspect
-from typing import Union
+from typing import Any, Union
 import langchain.llms as lc
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
-from ..modelhandler.modelhandler import _ModelHandler, LANGCHAIN_HUBS
+from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
+from ..errors import Errors
 
 from ..metrics import EmbeddingDistance
 from langchain import OpenAI
@@ -11,7 +12,7 @@ import os
 from langtest.transform.utils import compare_generations_overlap
 
 
-class PretrainedModelForQA(_ModelHandler):
+class PretrainedModelForQA(ModelAPI):
     """A class representing a pretrained model for question answering.
 
     Attributes:
@@ -24,7 +25,7 @@ class PretrainedModelForQA(_ModelHandler):
         ConfigError: If there is an error in the model configuration.
     """
 
-    def __init__(self, hub: str, model: str, *args, **kwargs):
+    def __init__(self, hub: str, model: Any, *args, **kwargs):
         """Constructor class
 
         Args:
@@ -36,6 +37,8 @@ class PretrainedModelForQA(_ModelHandler):
         self.model = model
         self.hub = LANGCHAIN_HUBS[hub]
         self.kwargs = kwargs
+        if isinstance(model, str):
+            self.model = self.load_model(hub, model, *args, **kwargs).model
 
     @classmethod
     def load_model(cls, hub: str, path: str, *args, **kwargs) -> "PretrainedModelForQA":
@@ -65,16 +68,17 @@ class PretrainedModelForQA(_ModelHandler):
                 cls.model = model(model_id=path, *args, **kwargs)
             elif "repo_id" in default_args:
                 cls.model = model(repo_id=path, model_kwargs=kwargs)
-            return cls.model
+
+            return cls(hub, cls.model, *args, **kwargs)
+
         except ImportError:
-            raise ValueError(
-                f"""Model "{path}" is not found online or local.
-                Please install langchain by pip install langchain"""
-            )
+            raise ValueError(Errors.E044.format(path=path))
         except ValidationError as e:
             error_msg = [err["loc"][0] for err in e.errors()]
             raise ConfigError(
-                f"\nPlease update model_parameters section in config.yml file for {path} model in {hub}.\nmodel_parameters:\n\t{error_msg[0]}: value \n\n{error_msg} is required field(s), please provide them in config.yml "
+                Errors.E045.format(
+                    path=path, hub=hub, field=error_msg[0], required_fields=error_msg
+                )
             )
 
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
@@ -148,7 +152,7 @@ class ConfigError(BaseException):
         return self.message
 
 
-class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for summarization.
 
     Inherits:
@@ -158,7 +162,7 @@ class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for toxicity detection.
 
     Inherits:
@@ -168,7 +172,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for security detection.
 
     Inherits:
@@ -178,7 +182,7 @@ class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for security detection.
 
     Inherits:
@@ -188,7 +192,7 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for disinformation test.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -197,7 +201,7 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for security detection.
 
     Inherits:
@@ -207,7 +211,7 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForSensitivityTest(_ModelHandler):
+class PretrainedModelForSensitivityTest(ModelAPI):
     """
     A class for sensitivity testing using a pretrained model and embeddings.
 
@@ -256,19 +260,21 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
             ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
         """
         try:
-            from ..embeddings.openai import OpenaiEmbeddings
+            if isinstance(path, str):
+                from ..embeddings.openai import OpenaiEmbeddings
 
-            llm = OpenAI(
-                model_name=path,
-                temperature=0,
-                openai_api_key=os.environ["OPENAI_API_KEY"],
-                *args,
-                **kwargs,
-            )
-            embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
-            return llm, embeddings_model
+                llm = OpenAI(
+                    model_name=path,
+                    temperature=0,
+                    openai_api_key=os.environ["OPENAI_API_KEY"],
+                    *args,
+                    **kwargs,
+                )
+                embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
+                return cls((llm, embeddings_model))
+            return cls(path)
         except KeyError:
-            raise ValueError("The 'OPENAI_API_KEY' environment variable is not set.")
+            raise ValueError(Errors.E032)
 
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """
@@ -324,7 +330,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         )
 
 
-class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for wino-bias detection.
 
     Inherits:
@@ -334,7 +340,7 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for legal-tests.
 
     Inherits:
@@ -344,7 +350,7 @@ class PretrainedModelForLegal(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -354,7 +360,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for sycophancy test.
 
     This class inherits from PretrainedModelForQA and provides functionality

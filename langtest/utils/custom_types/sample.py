@@ -3,6 +3,7 @@ import string
 import importlib
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
+from ...errors import Errors
 from pydantic import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
@@ -529,10 +530,12 @@ class QASample(BaseQASample):
             embeddings_class = getattr(module, class_name)
 
         except (ModuleNotFoundError, AttributeError):
-            raise ValueError(f"No {hub_name} embeddings class found")
+            raise ValueError(Errors.E075.format(hub_name=hub_name))
 
         if selected_metric not in EmbeddingDistance.available_embedding_distance:
-            raise ValueError(f"Unsupported distance metric: {selected_metric}")
+            raise ValueError(
+                Errors.E076.format(metric="embedding", elected_metric=selected_metric)
+            )
 
         model = embeddings_class(
             model=embeddings.get("model", embedding_info[hub_name]["default_model"])
@@ -572,7 +575,9 @@ class QASample(BaseQASample):
         selected_metric = evaluations.get("distance", "jaro")
 
         if selected_metric not in StringDistance.available_string_distance:
-            raise ValueError(f"Invalid selected_metric: {selected_metric}")
+            raise ValueError(
+                Errors.E076.format(metric="string", elected_metric=selected_metric)
+            )
 
         distance_function = StringDistance()[selected_metric]
         self.distance_result = distance_function(
@@ -1119,7 +1124,7 @@ class SecuritySample(BaseModel):
     actual_results: str = None
     state: str = None
     dataset_name: str = None
-    task: str = None
+    task: str = Field(default="security", const=True)
     category: str = None  # security
     test_type: str = None  # prompt_injection_attack
 

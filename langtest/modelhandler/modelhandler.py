@@ -1,17 +1,19 @@
-import importlib
 from abc import ABC, abstractmethod
-from typing import List, Union
+from collections import defaultdict
+from typing import Union
 
 from langtest.utils.lib_manager import try_import_lib
-from ..utils.custom_types import NEROutput, SequenceClassificationOutput
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
     "huggingfacehub": "huggingface-inference-api",
+    "transformers": "huggingface",
+    "jsl": "johnsnowlabs",
 }
 
 if try_import_lib("langchain"):
     import langchain
+    import langchain.llms
 
     LANGCHAIN_HUBS = {
         RENAME_HUBS.get(hub.lower(), hub.lower())
@@ -23,11 +25,13 @@ else:
     LANGCHAIN_HUBS = {}
 
 
-class _ModelHandler(ABC):
+class ModelAPI(ABC):
     """Abstract base class for handling different models.
 
     Implementations should inherit from this class and override load_model() and predict() methods.
     """
+
+    model_registry = defaultdict(lambda: defaultdict(lambda: ModelAPI))
 
     @abstractmethod
     def load_model(cls, *args, **kwargs):
@@ -39,353 +43,10 @@ class _ModelHandler(ABC):
         """Perform predictions on input text."""
         raise NotImplementedError()
 
-
-class ModelFactory:
-    """A factory class for instantiating models."""
-
-    SUPPORTED_TASKS = [
-        "ner",
-        "text-classification",
-        "question-answering",
-        "summarization",
-        "toxicity",
-        "translation",
-        "security",
-        "clinical-tests",
-        "disinformation-test",
-        "political",
-        "sensitivity-test",
-        "wino-bias",
-        "legal-tests",
-        "factuality-test",
-        "sycophancy-test",
-        "crows-pairs",
-        "stereoset",
-    ]
-    SUPPORTED_MODULES = [
-        "pyspark",
-        "sparknlp",
-        "nlu",
-        "transformers",
-        "spacy",
-        "langchain",
-    ]
-    SUPPORTED_HUBS = [
-        "spacy",
-        "huggingface",
-        "johnsnowlabs",
-        "openai",
-        "cohere",
-        "ai21",
-        "custom",
-    ] + list(LANGCHAIN_HUBS.keys())
-
-    def __init__(self, model: str, task: str, hub: str, *args, **kwargs):
-        """Initializes the ModelFactory object.
-
-        Args:
-            model (str):
-                path to the model to evaluate
-            task (str):
-                task to perform
-
-        Raises:
-            ValueError: If the task specified is not supported.
-            ValueError: If the given model is not supported.
-        """
-        assert task in self.SUPPORTED_TASKS, ValueError(
-            f"Task '{task}' not supported. Please choose one of: {', '.join(self.SUPPORTED_TASKS)}"
-        )
-        if isinstance(model, tuple):
-            module_name = model[0].__module__.split(".")[0]
-        else:
-            module_name = model.__module__.split(".")[0]
-
-        if hub != "custom":
-            assert module_name in self.SUPPORTED_MODULES, ValueError(
-                f"Module '{module_name}' is not supported. "
-                f"Please choose one of: {', '.join(self.SUPPORTED_MODULES)}"
-            )
-
-        if module_name in ["pyspark", "sparknlp", "nlu"]:
-            model_handler = importlib.import_module(
-                "langtest.modelhandler.jsl_modelhandler"
-            )
-
-        elif module_name == "langchain":
-            model_handler = importlib.import_module(
-                "langtest.modelhandler.llm_modelhandler"
-            )
-
-        elif hub == "custom":
-            model_handler = importlib.import_module(
-                "langtest.modelhandler.custom_modelhandler"
-            )
-        else:
-            model_handler = importlib.import_module(
-                f"langtest.modelhandler.{module_name}_modelhandler"
-            )
-
-        if task == "ner":
-            self.model_class = model_handler.PretrainedModelForNER(model)
-        elif task in ("question-answering"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForQA(
-                hub, model, *args, **kwargs
-            )
-        elif task in ("summarization"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForSummarization(
-                hub, model, *args, **kwargs
-            )
-        elif task in ("toxicity"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForToxicity(
-                hub, model, *args, **kwargs
-            )
-
-        elif task in ("clinical-tests"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForClinicalTests(
-                hub, model, *args, **kwargs
-            )
-
-        elif task in ("legal-tests"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForLegal(
-                hub, model, *args, **kwargs
-            )
-
-        elif task in ("disinformation-test"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForDisinformationTest(
-                hub, model, *args, **kwargs
-            )
-
-        elif task == "political":
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForPolitical(
-                hub, model, *args, **kwargs
-            )
-
-        elif task == "translation":
-            self.model_class = model_handler.PretrainedModelForTranslation(model)
-
-        elif task == "security":
-            self.model_class = model_handler.PretrainedModelForSecurity(
-                hub, model, *args, **kwargs
-            )
-        elif task == "sensitivity-test":
-            self.model_class = model_handler.PretrainedModelForSensitivityTest(model)
-
-        elif task == "wino-bias":
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForWinoBias(
-                hub=hub, model=model, *args, **kwargs
-            )
-
-        elif task == "crows-pairs":
-            self.model_class = model_handler.PretrainedModelForCrowsPairs(model)
-        elif task == "stereoset":
-            self.model_class = model_handler.PretrainedModelForStereoSet(model)
-
-        elif task == "factuality-test":
-            self.model_class = model_handler.PretrainedModelForFactualityTest(
-                hub, model, *args, **kwargs
-            )
-
-        elif task in ("sycophancy-test"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            self.model_class = model_handler.PretrainedModelForSycophancyTest(
-                hub, model, *args, **kwargs
-            )
-        else:
-            self.model_class = model_handler.PretrainedModelForTextClassification(model)
-
-    @classmethod
-    def load_model(
-        cls, task: str, hub: str, path: str, *args, **kwargs
-    ) -> "ModelFactory":
-        """Loads the model.
-
-        Args:
-            path (str):
-                path to model to use
-            task (str):
-                task to perform
-            hub (str):
-                model hub to load custom model from the path, either to hub or local disk.
-
-        Returns:
-            ModelHandler:
-        """
-        assert task in cls.SUPPORTED_TASKS, ValueError(
-            f"Task '{task}' not supported. Please choose one of: {', '.join(cls.SUPPORTED_TASKS)}"
-        )
-
-        assert hub != "custom" and hub in cls.SUPPORTED_HUBS, ValueError(
-            f"Invalid 'hub' parameter. Supported hubs are: {', '.join(cls.SUPPORTED_HUBS)}"
-        )
-
-        if hub == "johnsnowlabs":
-            if importlib.util.find_spec("johnsnowlabs"):
-                modelhandler_module = importlib.import_module(
-                    "langtest.modelhandler.jsl_modelhandler"
-                )
-            else:
-                raise ModuleNotFoundError(
-                    """Please install the johnsnowlabs library by calling `pip install johnsnowlabs`.
-                For in-depth instructions, head-over to https://nlu.johnsnowlabs.com/docs/en/install"""
-                )
-
-        elif hub == "huggingface":
-            if importlib.util.find_spec("transformers"):
-                modelhandler_module = importlib.import_module(
-                    "langtest.modelhandler.transformers_modelhandler"
-                )
-            else:
-                raise ModuleNotFoundError(
-                    """Please install the transformers library by calling `pip install transformers`.
-                For in-depth instructions, head-over to https://huggingface.co/docs/transformers/installation"""
-                )
-
-        elif hub == "spacy":
-            if importlib.util.find_spec("spacy"):
-                modelhandler_module = importlib.import_module(
-                    f"langtest.modelhandler.{hub}_modelhandler"
-                )
-            else:
-                raise ModuleNotFoundError(
-                    """Please install the spacy library by calling `pip install spacy`.
-                For in-depth instructions, head-over to https://spacy.io/usage"""
-                )
-        elif hub == "custom":
-            modelhandler_module = importlib.import_module(
-                "langtest.modelhandler.custom_modelhandler"
-            )
-
-        elif hub.lower() in LANGCHAIN_HUBS:
-            modelhandler_module = importlib.import_module(
-                "langtest.modelhandler.llm_modelhandler"
-            )
-
-        if task == "ner":
-            model_class = modelhandler_module.PretrainedModelForNER.load_model(path)
-        elif task in ("question-answering"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            model_class = modelhandler_module.PretrainedModelForQA.load_model(
-                hub, path, *args, **kwargs
-            )
-        elif task in ("summarization"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            model_class = modelhandler_module.PretrainedModelForSummarization.load_model(
-                hub, path, *args, **kwargs
-            )
-        elif task in ("toxicity"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            model_class = modelhandler_module.PretrainedModelForToxicity.load_model(
-                hub, path, *args, **kwargs
-            )
-        elif task == "translation":
-            model_class = modelhandler_module.PretrainedModelForTranslation.load_model(
-                path
-            )
-
-        elif task == "security":
-            model_class = modelhandler_module.PretrainedModelForSecurity.load_model(
-                hub, path, *args, **kwargs
-            )
-
-        elif task == "clinical-tests":
-            model_class = modelhandler_module.PretrainedModelForClinicalTests.load_model(
-                hub, path, *args, **kwargs
-            )
-        elif task == "legal-tests":
-            model_class = modelhandler_module.PretrainedModelForLegal.load_model(
-                hub, path, *args, **kwargs
-            )
-
-        elif task == "political":
-            model_class = modelhandler_module.PretrainedModelForPolitical.load_model(
-                hub, path, *args, **kwargs
-            )
-
-        elif task in ("disinformation-test"):
-            model_class = (
-                modelhandler_module.PretrainedModelForDisinformationTest.load_model(
-                    hub, path, *args, **kwargs
-                )
-            )
-
-        elif task == "sensitivity-test":
-            model_class = (
-                modelhandler_module.PretrainedModelForSensitivityTest.load_model(path)
-            )
-        elif task in ("wino-bias"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            model_class = modelhandler_module.PretrainedModelForWinoBias.load_model(
-                hub=hub, path=path, *args, **kwargs
-            )
-
-        elif task in ("crows-pairs"):
-            model_class = modelhandler_module.PretrainedModelForCrowsPairs.load_model(
-                path
-            )
-
-        elif task in ("stereoset"):
-            model_class = modelhandler_module.PretrainedModelForStereoSet.load_model(path)
-
-        elif task in ("factuality-test"):
-            model_class = modelhandler_module.PretrainedModelForFactualityTest.load_model(
-                hub, path, *args, **kwargs
-            )
-        elif task in ("sycophancy-test"):
-            _ = kwargs.pop("user_prompt") if "user_prompt" in kwargs else kwargs
-            model_class = modelhandler_module.PretrainedModelForSycophancyTest.load_model(
-                hub, path, *args, **kwargs
-            )
-        else:
-            model_class = (
-                modelhandler_module.PretrainedModelForTextClassification.load_model(path)
-            )
-
-        return cls(model_class, task, hub, *args, **kwargs)
-
-    def predict(
-        self, text: Union[str, dict], **kwargs
-    ) -> Union[NEROutput, SequenceClassificationOutput]:
-        """Perform predictions on input text.
-
-        Args:
-            text (str): Input text to perform predictions on.
-
-        Returns:
-            Union[NEROutput, SequenceClassificationOutput]:
-                predicted output
-        """
-        return self.model_class(text=text, **kwargs)
-
-    def predict_raw(self, text: str) -> List[str]:
-        """Perform predictions on input text.
-
-        Args:
-            text (str): Input text to perform predictions on.
-
-        Returns:
-            List[str]: Predictions.
-        """
-        return self.model_class.predict_raw(text)
-
-    def __call__(
-        self, text: Union[str, dict], *args, **kwargs
-    ) -> Union[NEROutput, SequenceClassificationOutput]:
-        """Alias of the 'predict' method
-
-        Args:
-            text (str): Input text to perform predictions on.
-
-        Returns:
-            Union[NEROutput, SequenceClassificationOutput]:
-                predicted output
-        """
-        return self.model_class(text=text, **kwargs)
+    def __init_subclass__(cls, *args, **kwargs) -> None:
+        hub = cls.__module__.split(".")[-1].split("_")[0]
+        if hub in RENAME_HUBS:
+            hub = RENAME_HUBS[hub]
+        task = cls.__name__.replace("PretrainedModelFor", "").lower()
+        ModelAPI.model_registry[hub][task] = cls
+        return super().__init_subclass__(*args, **kwargs)

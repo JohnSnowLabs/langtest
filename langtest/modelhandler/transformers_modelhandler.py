@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple, Union
 import numpy as np
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 
-from .modelhandler import _ModelHandler
+from .modelhandler import ModelAPI
 from ..utils.custom_types import (
     NEROutput,
     NERPrediction,
@@ -13,9 +13,10 @@ from ..utils.custom_types import (
 from langtest.utils.lib_manager import try_import_lib
 import importlib
 from langtest.transform.utils import compare_generations_overlap
+from ..errors import Errors
 
 
-class PretrainedModelForNER(_ModelHandler):
+class PretrainedModelForNER(ModelAPI):
     """Transformers pretrained model for NER tasks
 
     Args:
@@ -145,7 +146,9 @@ class PretrainedModelForNER(_ModelHandler):
         Returns:
             'Pipeline':
         """
-        return pipeline(model=path, task="ner", ignore_labels=[])
+        if isinstance(path, str):
+            return cls(pipeline(model=path, task="ner", ignore_labels=[]))
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
@@ -200,7 +203,7 @@ class PretrainedModelForNER(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForTextClassification(_ModelHandler):
+class PretrainedModelForTextClassification(ModelAPI):
     """Transformers pretrained model for text classification tasks
 
     Attributes:
@@ -231,7 +234,9 @@ class PretrainedModelForTextClassification(_ModelHandler):
     @classmethod
     def load_model(cls, path: str) -> "Pipeline":
         """Load and return text classification transformers pipeline"""
-        return pipeline(model=path, task="text-classification")
+        if isinstance(path, str):
+            return cls(pipeline(model=path, task="text-classification"))
+        return cls(path)
 
     def predict(
         self,
@@ -282,7 +287,7 @@ class PretrainedModelForTextClassification(_ModelHandler):
         return self.predict(text=text, return_all_scores=return_all_scores, **kwargs)
 
 
-class PretrainedModelForTranslation(_ModelHandler):
+class PretrainedModelForTranslation(ModelAPI):
     """Transformers pretrained model for translation tasks
 
     Args:
@@ -302,7 +307,7 @@ class PretrainedModelForTranslation(_ModelHandler):
         self.model = model
 
     @classmethod
-    def load_model(cls, path: str) -> "Pipeline":
+    def load_model(cls, path: str, *args, **kwargs) -> "Pipeline":
         """Load the Translation model into the `model` attribute.
 
         Args:
@@ -315,12 +320,12 @@ class PretrainedModelForTranslation(_ModelHandler):
         from ..langtest import HARNESS_CONFIG as harness_config
 
         config = harness_config["model_parameters"]
-        tgt_lang = config.get("target_language")
+        tgt_lang = config.get("target_language") or kwargs.get("target_language")
 
         if "t5" in path:
-            return pipeline(f"translation_en_to_{tgt_lang}", model=path)
+            return cls(pipeline(f"translation_en_to_{tgt_lang}", model=path))
         else:
-            return pipeline(model=path, src_lang="en", tgt_lang=tgt_lang)
+            return cls(pipeline(model=path, src_lang="en", tgt_lang=tgt_lang))
 
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
@@ -341,7 +346,7 @@ class PretrainedModelForTranslation(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForWinoBias(_ModelHandler):
+class PretrainedModelForWinoBias(ModelAPI):
     """A class representing a pretrained model for wino-bias detection.
 
     Args:
@@ -371,10 +376,11 @@ class PretrainedModelForWinoBias(_ModelHandler):
         Returns:
             'Pipeline':
         """
+        if isinstance(path, str):
+            unmasker = pipeline("fill-mask", model=path)
+            return cls(unmasker)
 
-        unmasker = pipeline("fill-mask", model=path)
-
-        return unmasker
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -419,7 +425,7 @@ class PretrainedModelForWinoBias(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForCrowsPairs(_ModelHandler):
+class PretrainedModelForCrowsPairs(ModelAPI):
     """A class representing a pretrained model for Crows-Pairs detection.
 
     Args:
@@ -450,7 +456,10 @@ class PretrainedModelForCrowsPairs(_ModelHandler):
             'Pipeline':
         """
 
-        return pipeline("fill-mask", model=path)
+        if isinstance(path, str):
+            return cls(pipeline("fill-mask", model=path))
+
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -470,7 +479,7 @@ class PretrainedModelForCrowsPairs(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForStereoSet(_ModelHandler):
+class PretrainedModelForStereoSet(ModelAPI):
     """A class representing a pretrained model for StereoSet detection.
 
     Args:
@@ -497,11 +506,13 @@ class PretrainedModelForStereoSet(_ModelHandler):
         Returns:
             'Pipeline':
         """
-
-        return (
-            AutoModelForCausalLM.from_pretrained(path),
-            AutoTokenizer.from_pretrained(path),
-        )
+        if isinstance(path, str):
+            models = (
+                AutoModelForCausalLM.from_pretrained(path),
+                AutoTokenizer.from_pretrained(path),
+            )
+            return cls(models)
+        return cls(path)
 
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
@@ -526,14 +537,14 @@ class PretrainedModelForStereoSet(_ModelHandler):
         return self.predict(text=text, **kwargs)
 
 
-class PretrainedModelForQA(_ModelHandler):
+class PretrainedModelForQA(ModelAPI):
     """Transformers pretrained model for QA tasks
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
     """
 
-    def __init__(self, hub, model, **kwargs):
+    def __init__(self, model, **kwargs):
         """Constructor method
 
         Args:
@@ -551,12 +562,10 @@ class PretrainedModelForQA(_ModelHandler):
             langchain = importlib.import_module(LIB_NAME)
             self.PromptTemplate = getattr(langchain, "PromptTemplate")
         else:
-            raise ModuleNotFoundError(
-                f"The '{LIB_NAME}' package is not installed. Please install it using 'pip install {LIB_NAME}'."
-            )
+            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
-    @staticmethod
-    def load_model(hub: str, path: str, **kwargs) -> "Pipeline":
+    @classmethod
+    def load_model(cls, path: str, **kwargs) -> "Pipeline":
         """Load the QA model into the `model` attribute.
 
         Args:
@@ -568,7 +577,7 @@ class PretrainedModelForQA(_ModelHandler):
         """
         if "task" in kwargs.keys():
             kwargs.pop("task")
-        return pipeline(model=path, **kwargs)
+        return cls(pipeline(model=path, **kwargs))
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Perform predictions on the input text.
@@ -591,7 +600,7 @@ class PretrainedModelForQA(_ModelHandler):
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
-class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -601,7 +610,7 @@ class PretrainedModelForSummarization(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -611,7 +620,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -621,7 +630,7 @@ class PretrainedModelForSecurity(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     """Transformers pretrained model for summarization tasks
 
     Args:
@@ -631,7 +640,7 @@ class PretrainedModelForPolitical(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for disinformation test.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -640,7 +649,7 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -650,7 +659,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, _ModelHandler):
     pass
 
 
-class PretrainedModelForSensitivityTest(_ModelHandler):
+class PretrainedModelForSensitivityTest(ModelAPI):
     """A class for handling a pretrained model for sensitivity testing.
 
     This class wraps a pretrained transformer model for performing sensitivity testing
@@ -694,10 +703,13 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         Returns:
             tuple: A tuple containing the loaded model and tokenizer.
         """
-        from ..utils.hf_utils import get_model_n_tokenizer
 
-        model, tokenizer = get_model_n_tokenizer(model_name=path)
-        return model, tokenizer
+        if isinstance(path, str):
+            from ..utils.hf_utils import get_model_n_tokenizer
+
+            model = get_model_n_tokenizer(model_name=path)
+            return model
+        return cls(path)
 
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
@@ -752,7 +764,7 @@ class PretrainedModelForSensitivityTest(_ModelHandler):
         return self.predict(text=text, text_transformed=text_transformed, **kwargs)
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, _ModelHandler):
+class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for SycophancyTest
 
     Inherits:
