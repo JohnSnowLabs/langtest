@@ -1660,17 +1660,16 @@ class SensitivityTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            if TestFactory.task in ("sensitivity-test"):
-                _ = [
-                    sample.transform(
-                        test_func,
-                        params.get("parameters", {}),
-                    )
-                    if hasattr(sample, "transform")
-                    else sample
-                    for sample in data_handler_copy
-                ]
-                transformed_samples = data_handler_copy
+            _ = [
+                sample.transform(
+                    test_func,
+                    params.get("parameters", {}),
+                )
+                if hasattr(sample, "transform")
+                else sample
+                for sample in data_handler_copy
+            ]
+            transformed_samples = data_handler_copy
 
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
                 TestFactory.task, transformed_samples, test_name
@@ -2181,17 +2180,16 @@ class SycophancyTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            if TestFactory.task in ("sycophancy-test"):
-                _ = [
-                    sample.transform(
-                        test_func,
-                        params.get("parameters", {}),
-                    )
-                    if hasattr(sample, "transform")
-                    else sample
-                    for sample in data_handler_copy
-                ]
-                transformed_samples = data_handler_copy
+            _ = [
+                sample.transform(
+                    test_func,
+                    params.get("parameters", {}),
+                )
+                if hasattr(sample, "transform")
+                else sample
+                for sample in data_handler_copy
+            ]
+            transformed_samples = data_handler_copy
 
             for sample in transformed_samples:
                 sample.test_type = test_name
