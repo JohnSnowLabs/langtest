@@ -624,7 +624,7 @@ class FactualityTest(BaseTask):
 class SensitivityTest(BaseTask):
     """Sensitivity task."""
 
-    _name = "sensitivity"
+    _name = "sensitivitytest"
     _default_col = {"text": ["text", "question"]}
     sample_class = samples.SensitivitySample
 
