@@ -13,7 +13,7 @@ libraries = [
     ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
     ("transformers", "langtest.modelhandler.transformers_modelhandler"),
     ("spacy", "langtest.modelhandler.spacy_modelhandler"),
-    ("langchain", ("langchain", "langtest.modelhandler.llm_modelhandler")),
+    ("langchain", "langtest.modelhandler.llm_modelhandler"),
 ]
 
 for library_name, import_statement in libraries:
