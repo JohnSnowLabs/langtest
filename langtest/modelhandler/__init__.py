@@ -1,6 +1,6 @@
 import importlib
-import langtest.modelhandler.custom_modelhandler
 from .modelhandler import ModelAPI
+import langtest.modelhandler.custom_modelhandler
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
