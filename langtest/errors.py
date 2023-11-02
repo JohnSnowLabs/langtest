@@ -216,7 +216,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E077 = ("\nThe provided columns are not supported for creating a sample.\
             \nPlease choose one of the supported columns: {supported_columns}\
             \nOr classify the features and target columns from the {given_columns}")
-    E078 = ("Model '{hub}' is not found online or local. Please install {lib} by pip install {lib}")
+    E078 = ("The '{hub}' library is not found. Please install it using 'pip install {lib}'")
 
 
 class ColumnNameError(Exception):
