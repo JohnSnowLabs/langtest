@@ -425,6 +425,10 @@ class ClinicalTests(BaseTask):
             "Diagnosis",
             "diagnosis",
         ],
+        "clinical_domain": [
+            "clinical_domain",
+            "domain",
+        ],
     }
     sample_class = samples.ClinicalSample
 
@@ -434,6 +438,7 @@ class ClinicalTests(BaseTask):
         patient_info_A: str = "Patient info A",
         patient_info_B: str = "Patient info B",
         diagnosis: str = "Diagnosis",
+        clinical_domain: str = "clinical_domain",
         dataset_name: str = "clinicaltests",
     ) -> samples.ClinicalSample:
         """Create a sample."""
@@ -441,13 +446,14 @@ class ClinicalTests(BaseTask):
         keys = list(row_data.keys())
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(
-            keys, [patient_info_A, patient_info_B, diagnosis]
+            keys, [patient_info_A, patient_info_B, diagnosis, clinical_domain]
         )
 
         return samples.ClinicalSample(
             patient_info_A=row_data[column_mapper[patient_info_A]],
             patient_info_B=row_data[column_mapper[patient_info_B]],
             diagnosis=row_data[column_mapper[diagnosis]],
+            clinical_domain=row_data[column_mapper[clinical_domain]],
             dataset_name=dataset_name,
         )
 
