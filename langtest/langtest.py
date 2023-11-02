@@ -225,14 +225,16 @@ class Harness:
                 model = resource_filename("langtest", "data/textcat_imdb")
             self.is_default = True
             logging.info(Warnings.W002.format(info=(task, model, hub)))
-
+        elif data is None and task == "political":
+            self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(Errors.E004)
 
-        if isinstance(data.get("data_source"), list):
-            self.data = data.get("data_source")
-        else:
-            self.data = DataFactory(data, task=self.task).load()
+        if not self.data and isinstance(data, dict):
+            if isinstance(data.get("data_source"), list):
+                self.data = data.get("data_source")
+            else:
+                self.data = DataFactory(data, task=self.task).load()
 
         # config loading
         if config is not None:
