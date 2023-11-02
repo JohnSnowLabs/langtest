@@ -553,6 +553,7 @@ class PretrainedModelForQA(ModelAPI):
         )
 
         self.model = model
+        self._check_langchain_package()
 
     def _check_langchain_package(self):
         LIB_NAME = "langchain"

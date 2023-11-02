@@ -230,7 +230,7 @@ class Harness:
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(Errors.E004)
 
-        if not self.data and isinstance(data, dict):
+        if isinstance(data, dict):
             if isinstance(data.get("data_source"), list):
                 self.data = data.get("data_source")
             else:
