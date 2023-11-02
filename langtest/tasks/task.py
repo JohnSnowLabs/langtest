@@ -28,7 +28,10 @@ class BaseTask(ABC):
         models = ModelAPI.model_registry
 
         base_hubs = list(models.keys())
-        base_hubs.remove("llm")
+
+        if "llm" in base_hubs:
+            base_hubs.remove("llm")
+
         supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
 
         if model_hub not in supported_hubs:
