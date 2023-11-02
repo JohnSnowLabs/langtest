@@ -676,7 +676,9 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
     """
 
-    def __init__(self, model):
+    tokenizer = None
+
+    def __init__(self, model, *args, **kwargs):
         """Initialize a PretrainedModelForSensitivityTest instance.
 
         Args:
@@ -686,12 +688,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             ValueError: If the input model is not a tuple.
 
         """
-        assert isinstance(model, tuple), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
-        )
-
-        self.model, self.tokenizer = model
+        self.model = model
 
     @classmethod
     def load_model(cls, path: str):
@@ -707,8 +704,8 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         if isinstance(path, str):
             from ..utils.hf_utils import get_model_n_tokenizer
 
-            model = get_model_n_tokenizer(model_name=path)
-            return model
+            model, cls.tokenizer = get_model_n_tokenizer(model_name=path)
+            return cls(model)
         return cls(path)
 
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
@@ -761,7 +758,9 @@ class PretrainedModelForSensitivityTest(ModelAPI):
     def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
         """Alias of the 'predict' method."""
 
-        return self.predict(text=text, text_transformed=text_transformed, **kwargs)
+        return self.predict(
+            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
+        )
 
 
 class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
