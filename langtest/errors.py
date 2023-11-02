@@ -217,6 +217,10 @@ class Errors(metaclass=ErrorsWithCodes):
             \nPlease choose one of the supported columns: {supported_columns}\
             \nOr classify the features and target columns from the {given_columns}")
     E078 = ("The '{hub}' library is not found. Please install it using 'pip install {lib}'")
+    E079 = (f"Invalid transformers pipeline! "
+            "Pipeline should be '{Pipeline}', passed model is: '{type_model}'")
+    E080 = (f"Invalid SpaCy Pipeline. Expected return type is {expected_type} "
+            "but pipeline returns: {returned_type}")
 
 
 class ColumnNameError(Exception):
