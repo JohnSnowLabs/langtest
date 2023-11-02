@@ -190,6 +190,7 @@ class Harness:
         super().__init__()
 
         self.is_default = False
+        self.__data_dict = data
 
         # loading model and hub
         if isinstance(model, list):
@@ -224,14 +225,16 @@ class Harness:
                 model = resource_filename("langtest", "data/textcat_imdb")
             self.is_default = True
             logging.info(Warnings.W002.format(info=(task, model, hub)))
-
+        elif data is None and task == "political":
+            self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(Errors.E004)
 
-        if isinstance(data.get("data_source"), list):
-            self.data = data.get("data_source")
-        else:
-            self.data = DataFactory(data, task=self.task).load()
+        if isinstance(data, dict):
+            if isinstance(data.get("data_source"), list):
+                self.data = data.get("data_source")
+            else:
+                self.data = DataFactory(data, task=self.task).load()
 
         # config loading
         if config is not None:
@@ -340,9 +343,9 @@ class Harness:
 
                 return self
 
-        elif self.task in ("question-answering", "summarization"):
+        elif str(self.task) in ("question-answering", "summarization"):
             if "bias" in tests.keys():
-                if self.data_source in ("BoolQ-bias", "XSum-bias"):
+                if self.__data_dict["data_source"] in ("BoolQ-bias", "XSum-bias"):
                     tests_to_filter = tests["bias"].keys()
                     self._testcases = DataFactory.filter_curated_bias(
                         tests_to_filter, self.data
@@ -355,14 +358,16 @@ class Harness:
                         self._testcases.extend(other_testcases)
                     return self
                 else:
-                    raise ValueError(Errors.E007.format(data_source=self.data_source))
+                    raise ValueError(
+                        Errors.E007.format(data_source=self.__data_dict["data_source"])
+                    )
             else:
                 self._testcases = TestFactory.transform(
                     self.task, self.data, tests, m_data=m_data
                 )
                 return self
 
-        elif self.task in ["sensitivity-test", "sycophancy-test"]:
+        elif str(self.task) in ["sensitivity-test", "sycophancy-test"]:
             test_data_sources = {
                 "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
                 "negation": (
@@ -375,12 +380,13 @@ class Harness:
                 "sycophancy_math": ("synthetic-math-data"),
                 "sycophancy_nlp": ("synthetic-nlp-data"),
             }
-            category = tests.get(self.task.split("-")[0], {})
+
+            category = tests.get(str(self.task).split("-")[0], {})
             test_name = next(iter(category), None)
             if test_name in test_data_sources:
                 selected_data_sources = test_data_sources[test_name]
 
-                if self.data_source in selected_data_sources:
+                if self.__data_dict["data_source"] in selected_data_sources:
                     self._testcases = TestFactory.transform(
                         self.task, self.data, tests, m_data=m_data
                     )
@@ -389,10 +395,11 @@ class Harness:
                     raise ValueError(
                         Errors.E008.format(
                             test_name=test_name,
-                            data_source=self.data_source,
+                            data_source=self.__data_dict["data_source"],
                             selected_data_sources=selected_data_sources,
                         )
                     )
+
             else:
                 raise ValueError(Errors.E009.format(test_name=test_name))
 

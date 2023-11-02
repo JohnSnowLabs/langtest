@@ -24,8 +24,9 @@ class PretrainedModelForNER(ModelAPI):
         """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
-            f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
-            f"but pipeline returns: {annotation.get('return', None)}"
+            Errors.E080.format(
+                expected_type=Doc, returned_type=annotation.get("return", None)
+            )
         )
 
         self.model = model
@@ -105,8 +106,9 @@ class PretrainedModelForTextClassification(ModelAPI):
         """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
-            f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
-            f"but pipeline returns: {annotation.get('return', None)}"
+            Errors.E080.format(
+                expected_type=Doc, returned_type=annotation.get("return", None)
+            )
         )
 
         self.model = model
@@ -185,8 +187,9 @@ class PretrainedModelForTranslation(ModelAPI):
         """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
-            f"Invalid SpaCy Pipeline. Expected return type is {Doc} "
-            f"but pipeline returns: {annotation.get('return', None)}"
+            Errors.E080.format(
+                expected_type=Doc, returned_type=annotation.get("return", None)
+            )
         )
 
         self.model = model

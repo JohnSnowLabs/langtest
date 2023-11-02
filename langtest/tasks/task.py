@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from typing import Union
-from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
+from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS, INSTALLED_HUBS
 from langtest.errors import Errors, ColumnNameError
 
 from langtest.utils import custom_types as samples
@@ -28,8 +28,21 @@ class BaseTask(ABC):
         models = ModelAPI.model_registry
 
         base_hubs = list(models.keys())
-        base_hubs.remove("llm")
+
+        if "llm" in base_hubs:
+            base_hubs.remove("llm")
+
         supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
+
+        if model_hub not in INSTALLED_HUBS:
+            if model_hub in ("huggingface"):
+                model_hub = "transformers"
+            raise AssertionError(
+                Errors.E078.format(
+                    hub=model_hub,
+                    lib=("langchain" if model_hub in LANGCHAIN_HUBS else model_hub),
+                )
+            )
 
         if model_hub not in supported_hubs:
             raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
@@ -412,6 +425,10 @@ class ClinicalTests(BaseTask):
             "Diagnosis",
             "diagnosis",
         ],
+        "clinical_domain": [
+            "clinical_domain",
+            "domain",
+        ],
     }
     sample_class = samples.ClinicalSample
 
@@ -421,6 +438,7 @@ class ClinicalTests(BaseTask):
         patient_info_A: str = "Patient info A",
         patient_info_B: str = "Patient info B",
         diagnosis: str = "Diagnosis",
+        clinical_domain: str = "clinical_domain",
         dataset_name: str = "clinicaltests",
     ) -> samples.ClinicalSample:
         """Create a sample."""
@@ -428,13 +446,14 @@ class ClinicalTests(BaseTask):
         keys = list(row_data.keys())
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(
-            keys, [patient_info_A, patient_info_B, diagnosis]
+            keys, [patient_info_A, patient_info_B, diagnosis, clinical_domain]
         )
 
         return samples.ClinicalSample(
             patient_info_A=row_data[column_mapper[patient_info_A]],
             patient_info_B=row_data[column_mapper[patient_info_B]],
             diagnosis=row_data[column_mapper[diagnosis]],
+            clinical_domain=row_data[column_mapper[clinical_domain]],
             dataset_name=dataset_name,
         )
 
@@ -611,7 +630,7 @@ class FactualityTest(BaseTask):
 class SensitivityTest(BaseTask):
     """Sensitivity task."""
 
-    _name = "sensitivity"
+    _name = "sensitivitytest"
     _default_col = {"text": ["text", "question"]}
     sample_class = samples.SensitivitySample
 
