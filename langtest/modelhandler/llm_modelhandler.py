@@ -242,8 +242,13 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         Raises:
             ValueError: If the input 'model' is not a tuple.
         """
+        if isinstance(model, str):
+            model = self.load_model(model)
 
-        self.model, self.embeddings_model = model
+        from ..embeddings.openai import OpenaiEmbeddings
+
+        self.model = model
+        self.embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
 
     @classmethod
     def load_model(cls, path: str, *args, **kwargs) -> tuple:
@@ -261,17 +266,13 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         """
         try:
             if isinstance(path, str):
-                from ..embeddings.openai import OpenaiEmbeddings
-
                 llm = OpenAI(
                     model_name=path,
                     temperature=0,
                     openai_api_key=os.environ["OPENAI_API_KEY"],
-                    *args,
-                    **kwargs,
                 )
-                embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
-                return cls((llm, embeddings_model))
+
+                return cls(llm)
             return cls(path)
         except KeyError:
             raise ValueError(Errors.E032)
