@@ -30,9 +30,9 @@ class PretrainedModelForNER(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
         )
+
         self.model = model
 
     @staticmethod
@@ -221,8 +221,7 @@ class PretrainedModelForTextClassification(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
         )
         self.model = model
 
@@ -301,8 +300,7 @@ class PretrainedModelForTranslation(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
         )
         self.model = model
 
@@ -360,9 +358,9 @@ class PretrainedModelForWinoBias(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
         )
+
         self.model = model
 
     @classmethod
@@ -439,9 +437,9 @@ class PretrainedModelForCrowsPairs(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
         )
+
         self.model = model
 
     @classmethod
@@ -551,9 +549,9 @@ class PretrainedModelForQA(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            f"Invalid transformers pipeline! "
-            f"Pipeline should be '{Pipeline}', passed model is: '{type(model)}'"
+            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
         )
+
         self.model = model
 
     def _check_langchain_package(self):
@@ -676,8 +674,6 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
     """
 
-    tokenizer = None
-
     def __init__(self, model, *args, **kwargs):
         """Initialize a PretrainedModelForSensitivityTest instance.
 
@@ -706,6 +702,8 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
             model, cls.tokenizer = get_model_n_tokenizer(model_name=path)
             return cls(model)
+
+        cls.tokenizer = None
         return cls(path)
 
     def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
