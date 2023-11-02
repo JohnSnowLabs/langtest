@@ -6,14 +6,20 @@
     <a href="https://github.com/JohnSnowLabs/langtest/releases">
         <img alt="Release Notes" src="https://img.shields.io/github/v/release/johnsnowlabs/langtest.svg">
     </a>
+    <a href="https://www.johnsnowlabs.com/responsible-ai-blog/">
+        <img alt="Blog" src="https://img.shields.io/badge/Responsible AI Blogs-8A2BE2">
+    </a>
     <a href="https://langtest.org/docs/pages/docs/install">
         <img alt="Documentation" src="https://img.shields.io/website?up_message=online&url=https%3A%2F%2Flangtest.org%2F">
     </a>
     <a href="https://star-history.com/#JohnSnowLabs/langtest">
         <img alt="GitHub star chart" src="https://img.shields.io/github/stars/JohnSnowLabs/langtest?style=social">
     </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/JohnSnowLabs/langtest">
+    </a>
     <a href="https://pepy.tech/project/langtest">
-        <img alt="Downloads" src="https://static.pepy.tech/badge/langtest/month">
+        <img alt="Downloads" src="https://static.pepy.tech/badge/langtest">
     </a>
     <a href="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml">
         <img alt="CI" src="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml/badge.svg">
@@ -21,28 +27,9 @@
     <a href="https://github.com/JohnSnowLabs/langtest/blob/master/LICENSE" alt="License">
         <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" />
     </a>
-    <a href="https://badge.fury.io/py/langtest">
-        <img alt="Python" src="https://img.shields.io/pypi/pyversions/langtest.svg">
-    </a>
     <a href="CODE_OF_CONDUCT.md">
         <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg">
     </a>
-    <a href="https://github.com/JohnSnowLabs/langtest/issues">
-        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/JohnSnowLabs/langtest">
-    </a>
-    <a href="https://github.com/JohnSnowLabs/langtest/graphs/contributors">
-        <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/JohnSnowLabs/langtest">
-    </a>
-    <a href="https://github.com/JohnSnowLabs/langtest/graphs/commit-activity">
-        <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/JohnSnowLabs/langtest">
-    </a>
-    <a href="https://github.com/JohnSnowLabs/langtest/issues?q=is%3Aissue+is%3Aclosed">
-        <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/JohnSnowLabs/langtest">
-    </a>
-    <a href="https://github.com/JohnSnowLabs/langtest/pulls">
-        <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr-raw/JohnSnowLabs/langtest">
-    </a>
-</p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png" alt="Image" />
