@@ -35,6 +35,8 @@ class BaseTask(ABC):
         supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
 
         if model_hub not in INSTALLED_HUBS:
+            if model_hub in ("huggingface"):
+                model_hub = "transformers"
             raise AssertionError(
                 Errors.E078.format(
                     hub=model_hub,

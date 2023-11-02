@@ -19,7 +19,10 @@ libraries = [
 for library_name, import_statement in libraries:
     if importlib.util.find_spec(library_name):
         importlib.import_module(import_statement)
-        INSTALLED_HUBS.append(library_name)
+        if library_name in ("transformers"):
+            INSTALLED_HUBS.append("huggingface")
+        else:
+            INSTALLED_HUBS.append(library_name)
 
 if "langchain" in INSTALLED_HUBS:
     import langchain
