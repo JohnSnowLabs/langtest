@@ -1,6 +1,6 @@
 import importlib
+import langtest.modelhandler.custom_modelhandler
 from .modelhandler import ModelAPI
-
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
@@ -9,24 +9,20 @@ RENAME_HUBS = {
 
 INSTALLED_HUBS = []
 
-if importlib.util.find_spec("johnsnowlabs"):
-    import langtest.modelhandler.jsl_modelhandler
+libraries = [
+    ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
+    ("transformers", "langtest.modelhandler.transformers_modelhandler"),
+    ("spacy", "langtest.modelhandler.spacy_modelhandler"),
+    ("langchain", ("langchain", "langtest.modelhandler.llm_modelhandler")),
+]
 
-    INSTALLED_HUBS.append("johnsnowlabs")
+for library_name, import_statement in libraries:
+    if importlib.util.find_spec(library_name):
+        importlib.import_module(import_statement)
+        INSTALLED_HUBS.append(library_name)
 
-if importlib.util.find_spec("transformers"):
-    import langtest.modelhandler.transformers_modelhandler
-
-    INSTALLED_HUBS.append("transformers")
-
-if importlib.util.find_spec("spacy"):
-    import langtest.modelhandler.spacy_modelhandler
-
-    INSTALLED_HUBS.append("spacy")
-
-if importlib.util.find_spec("langchain"):
+if "langchain" in INSTALLED_HUBS:
     import langchain
-    import langtest.modelhandler.llm_modelhandler
 
     LANGCHAIN_HUBS = {
         RENAME_HUBS.get(hub.lower(), hub.lower())
@@ -34,8 +30,6 @@ if importlib.util.find_spec("langchain"):
         else hub.lower(): hub
         for hub in langchain.llms.__all__
     }
-    INSTALLED_HUBS + list(LANGCHAIN_HUBS.keys())
+    INSTALLED_HUBS += list(LANGCHAIN_HUBS.keys())
 else:
     LANGCHAIN_HUBS = {}
-
-import langtest.modelhandler.custom_modelhandler
