@@ -1,7 +1,7 @@
 import re
 from abc import ABC, abstractmethod
 from typing import Union
-from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS
+from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS, INSTALLED_HUBS
 from langtest.errors import Errors, ColumnNameError
 
 from langtest.utils import custom_types as samples
@@ -33,6 +33,14 @@ class BaseTask(ABC):
             base_hubs.remove("llm")
 
         supported_hubs = base_hubs + list(LANGCHAIN_HUBS.keys())
+
+        if model_hub not in INSTALLED_HUBS:
+            raise AssertionError(
+                Errors.E078.format(
+                    hub=model_hub,
+                    lib=("langchain" if model_hub in LANGCHAIN_HUBS else model_hub),
+                )
+            )
 
         if model_hub not in supported_hubs:
             raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
