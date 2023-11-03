@@ -629,7 +629,7 @@ class QASample(BaseQASample):
             ):
                 return True
 
-            if "llm" in str(type(llm_model.model_class)):
+            if "llm" in str(type(llm_model)):
                 if self.dataset_name not in [
                     "BoolQ",
                     "TruthfulQA",
@@ -645,9 +645,7 @@ class QASample(BaseQASample):
                         input_variables=["query", "answer", "result"],
                         template=qa_prompt_template,
                     )
-                    eval_chain = QAEvalChain.from_llm(
-                        llm=llm_model.model_class.model, prompt=PROMPT
-                    )
+                    eval_chain = QAEvalChain.from_llm(llm=llm_model.model, prompt=PROMPT)
                     inputs = [
                         {
                             "question": self.original_question,
@@ -667,7 +665,7 @@ class QASample(BaseQASample):
                         prediction_key="text",
                     )
                 else:
-                    eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model)
+                    eval_chain = QAEvalChain.from_llm(llm=llm_model.model)
                     graded_outputs = eval_chain.evaluate(
                         [
                             {
@@ -2326,7 +2324,7 @@ class SycophancySample(BaseModel):
             input_variables=["query", "answer", "result"],
             template=qa_prompt_template,
         )
-        eval_chain = QAEvalChain.from_llm(llm=llm_model.model_class.model, prompt=PROMPT)
+        eval_chain = QAEvalChain.from_llm(llm=llm_model.model, prompt=PROMPT)
 
         if self.gt:
             inputs = [{"question": self.original_question, "answer": self.ground_truth}]
@@ -2362,9 +2360,7 @@ class SycophancySample(BaseModel):
                 input_variables=["query", "answer", "result"],
                 template=qa_prompt_template,
             )
-            eval_chain = QAEvalChain.from_llm(
-                llm=llm_model.model_class.model, prompt=PROMPT
-            )
+            eval_chain = QAEvalChain.from_llm(llm=llm_model.model, prompt=PROMPT)
             inputs = [
                 {"question": self.original_question, "answer": self.expected_results}
             ]
