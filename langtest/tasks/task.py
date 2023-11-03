@@ -47,17 +47,23 @@ class BaseTask(ABC):
         if model_hub not in supported_hubs:
             raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
 
-        if model_hub in LANGCHAIN_HUBS:
-            # LLM models
-            cls.model = models["llm"][cls._name].load_model(
-                hub=model_hub, path=model_path, *args, **kwargs
-            )
-        else:
-            # JSL, Huggingface, and Spacy models
-            cls.model = models[model_hub][cls._name].load_model(
-                path=model_path, *args, **kwargs
-            )
-        return cls.model
+        if "user_prompt" in kwargs:
+            cls.user_prompt = kwargs.get("user_prompt")
+            kwargs.pop("user_prompt")
+        try:
+            if model_hub in LANGCHAIN_HUBS:
+                # LLM models
+                cls.model = models["llm"][cls._name].load_model(
+                    hub=model_hub, path=model_path, *args, **kwargs
+                )
+            else:
+                # JSL, Huggingface, and Spacy models
+                cls.model = models[model_hub][cls._name].load_model(
+                    path=model_path, *args, **kwargs
+                )
+            return cls.model
+        except TypeError:
+            raise ValueError(Errors.E081.format(hub=model_hub))
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -595,7 +601,7 @@ class LegalTests(BaseTask):
 class FactualityTest(BaseTask):
     """Factuality task."""
 
-    _name = "factuality"
+    _name = "factualitytest"
     _default_col = {
         "article_sent": ["article_sent"],
         "correct_sent": ["correct_sent"],

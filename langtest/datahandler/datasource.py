@@ -145,6 +145,7 @@ class DataFactory:
     """
 
     data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
+    CURATED_DATASETS = ["BoolQ-bias", "XSum-bias"]
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
@@ -172,6 +173,9 @@ class DataFactory:
             elif self._file_path in ("synthetic-math-data", "synthetic-nlp-data"):
                 self.file_ext = "syntetic"
                 self._file_path = file_path
+            elif self._file_path in self.CURATED_DATASETS:
+                self.file_ext = "curated"
+                self._file_path = file_path.get("data_source")
             else:
                 self._file_path = self._load_dataset(self._file_path)
                 _, self.file_ext = os.path.splitext(self._file_path)
@@ -193,17 +197,16 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
-        # if "data_source" in self._file_path:
-        #     if isinstance(self._file_path["data_source"], list):
-        #         return self._file_path
-        # elif isinstance(self._file_path, list):
-        #     return self._file_path
 
         if len(self._custom_label) > 1 and self.file_ext == "csv":
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
-        # if
+        elif self._file_path in self.CURATED_DATASETS and self.task in (
+            "question-answering",
+            "summarization",
+        ):
+            return DataFactory.load_curated_bias(self._file_path)
         else:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._file_path, task=self.task, **self.kwargs

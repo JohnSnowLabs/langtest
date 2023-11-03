@@ -221,6 +221,7 @@ class Errors(metaclass=ErrorsWithCodes):
             "Pipeline should be '{Pipeline}', passed model is: '{type_model}'")
     E080 = ("Invalid SpaCy Pipeline. Expected return type is {expected_type} "
             "but pipeline returns: {returned_type}")
+    E081 = ("Provded the task is not supported in the {hub} hub.")
 
 
 class ColumnNameError(Exception):
