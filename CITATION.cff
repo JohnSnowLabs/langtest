@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "John Snow Labs"
+title: "LangTest"
+date-released: 2022-11-18
+url: "https://github.com/JohnSnowLabs/langtest"
