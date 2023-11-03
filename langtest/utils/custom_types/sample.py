@@ -1065,27 +1065,30 @@ class TranslationSample(BaseModel):
         if self.test_case == self.actual_results.translation_text:
             return False, 1
         else:
-            from ...embeddings.huggingface import HuggingfaceEmbeddings
+            from ...langtest import HARNESS_CONFIG as harness_config
+            if "embeddings" in harness_config.keys():
+                module = importlib.import_module(f"langtest.embeddings.{harness_config['embeddings']['hub']}")
+                model = getattr(module, f"{harness_config['embeddings']['hub'].capitalize()}Embeddings")(model=harness_config['embeddings']['model'])
 
-            model = HuggingfaceEmbeddings(
-                model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-            )
+            else:
+                from ...embeddings.huggingface import HuggingfaceEmbeddings
+                model = HuggingfaceEmbeddings(model="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
 
             # Get the sentence vectors
-            vectors1 = model.get_embedding([self.original], convert_to_tensor=True)
-            vectors2 = model.get_embedding([self.test_case], convert_to_tensor=True)
+            vectors1 = model.get_embedding(self.original)
+            vectors2 = model.get_embedding(self.test_case)
             vectors3 = model.get_embedding(
-                [self.expected_results.translation_text], convert_to_tensor=True
+                self.expected_results.translation_text
             )
             vectors4 = model.get_embedding(
-                [self.actual_results.translation_text], convert_to_tensor=True
+                self.actual_results.translation_text
             )
 
             original_similarities = EmbeddingDistance()._cosine_distance(
-                vectors1.cpu().numpy(), vectors2.cpu().numpy()
+                vectors1, vectors2
             )
             translation_similarities = EmbeddingDistance()._cosine_distance(
-                vectors3.cpu().numpy(), vectors4.cpu().numpy()
+                vectors3, vectors4
             )
 
             return (
@@ -1251,14 +1254,15 @@ class ClinicalSample(BaseModel):
     def _is_eval(self) -> bool:
         """"""
 
-        from ...embeddings.huggingface import HuggingfaceEmbeddings
         from ...langtest import HARNESS_CONFIG as harness_config
 
-        model_name = harness_config["tests"]["clinical"]["demographic-bias"].get(
-            "sentence_transformer",
-            "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb",
-        )
-        model = HuggingfaceEmbeddings(model=model_name)
+        if "embeddings" in harness_config.keys():
+            module = importlib.import_module(f"langtest.embeddings.{harness_config['embeddings']['hub']}")
+            model = getattr(module, f"{harness_config['embeddings']['hub'].capitalize()}Embeddings")(model=harness_config['embeddings']['model'])
+
+        else:
+            from ...embeddings.huggingface import HuggingfaceEmbeddings
+            model = HuggingfaceEmbeddings(model="pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb")
 
         sentences = [self.treatment_plan_A, self.treatment_plan_B]
 
@@ -1411,13 +1415,13 @@ class DisinformationSample(BaseModel):
         evaluation = harness_config.get("evaluation", {"threshold": 0.85})
         threshold = evaluation["threshold"]
 
-        from ...embeddings.huggingface import HuggingfaceEmbeddings
+        if "embeddings" in harness_config.keys():
+            module = importlib.import_module(f"langtest.embeddings.{harness_config['embeddings']['hub']}")
+            model = getattr(module, f"{harness_config['embeddings']['hub'].capitalize()}Embeddings")(model=harness_config['embeddings']['model'])
 
-        model_name = harness_config["tests"]["disinformation"]["narrative_wedging"].get(
-            "sentence_transformer",
-            "sentence-transformers/distiluse-base-multilingual-cased-v2",
-        )
-        model = HuggingfaceEmbeddings(model=model_name)
+        else:
+            from ...embeddings.huggingface import HuggingfaceEmbeddings
+            model = HuggingfaceEmbeddings(model="sentence-transformers/distiluse-base-multilingual-cased-v2")
 
         sentences = [self.statements, self.model_response]
 
@@ -1981,14 +1985,13 @@ class FactualitySample(BaseModel):
 
                 evaluation = harness_config.get("evaluation", {"threshold": 0.85})
 
-                from ...embeddings.huggingface import HuggingfaceEmbeddings
+                if "embeddings" in harness_config.keys():
+                    module = importlib.import_module(f"langtest.embeddings.{harness_config['embeddings']['hub']}")
+                    model = getattr(module, f"{harness_config['embeddings']['hub'].capitalize()}Embeddings")(model=harness_config['embeddings']['model'])
 
-                model_name = harness_config["tests"]["factuality"]["order_bias"].get(
-                    "sentence_transformer",
-                    "sentence-transformers/distiluse-base-multilingual-cased-v2",
-                )
-                print(f"Using model {model_name}")
-                model = HuggingfaceEmbeddings(model=model_name)
+                else:
+                    from ...embeddings.huggingface import HuggingfaceEmbeddings
+                    model = HuggingfaceEmbeddings(model="sentence-transformers/distiluse-base-multilingual-cased-v2")
 
                 threshold = evaluation["threshold"]
 
