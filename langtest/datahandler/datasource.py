@@ -207,7 +207,7 @@ class DataFactory:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
-        elif self._file_path in ("BoolQ-bias", "XSum-bias") and self.task in (
+        elif self._file_path in self.CURATED_DATASETS and self.task in (
             "question-answering",
             "summarization",
         ):
