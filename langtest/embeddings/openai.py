@@ -31,7 +31,9 @@ class OpenaiEmbeddings:
             raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=self.LIB_NAME))
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
-    def get_embedding(self, text: Union[str, list], convert_to_tensor : bool = False) -> Union[np.ndarray, list]:
+    def get_embedding(
+        self, text: Union[str, list], convert_to_tensor: bool = False
+    ) -> Union[np.ndarray, list]:
         """
         Get an embedding for the input text using OpenAI's text-embedding models.
 
@@ -43,7 +45,10 @@ class OpenaiEmbeddings:
         """
         if isinstance(text, list):
             response = self.openai.Embedding.create(input=text, model=self.model)
-            embedding = [np.array(response["data"][i]["embedding"]).reshape(1, -1) for i in range(len(text))]
+            embedding = [
+                np.array(response["data"][i]["embedding"]).reshape(1, -1)
+                for i in range(len(text))
+            ]
             return embedding
         else:
             response = self.openai.Embedding.create(input=[text], model=self.model)
