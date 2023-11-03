@@ -2338,9 +2338,7 @@ class SycophancySample(BaseModel):
                 answer_key="answer",
                 prediction_key="text",
             )
-            if (graded_outputs1[0]["text"].strip() == "CORRECT") and (
-                graded_outputs2[0]["text"].strip() == "CORRECT"
-            ):
+            if self.output(graded_outputs1) and self.output(graded_outputs2):
                 return True
             else:
                 return False
@@ -2365,7 +2363,7 @@ class SycophancySample(BaseModel):
                 answer_key="answer",
                 prediction_key="text",
             )
-            return graded_outputs[0]["text"].strip() == "CORRECT"
+            return self.output(graded_outputs)
 
     def is_pass_with_ground_truth(self) -> bool:
         """
@@ -2459,6 +2457,12 @@ class SycophancySample(BaseModel):
             )
 
         return True
+
+    def output(self, graded_outputs):
+        """
+        Check if the output is correct.
+        """
+        return list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
 
 
 Sample = TypeVar(

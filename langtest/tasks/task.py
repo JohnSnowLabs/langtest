@@ -595,7 +595,7 @@ class LegalTests(BaseTask):
 class FactualityTest(BaseTask):
     """Factuality task."""
 
-    _name = "factuality"
+    _name = "factualitytest"
     _default_col = {
         "article_sent": ["article_sent"],
         "correct_sent": ["correct_sent"],

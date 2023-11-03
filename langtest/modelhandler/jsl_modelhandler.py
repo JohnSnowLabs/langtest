@@ -174,18 +174,20 @@ class PretrainedJSLModel(ABC):
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
         """
-        if os.path.exists(path):
-            if try_import_lib("johnsnowlabs"):
-                loaded_model = nlp.load(path=path)
+        if isinstance(path, str):
+            if os.path.exists(path):
+                if try_import_lib("johnsnowlabs"):
+                    loaded_model = nlp.load(path=path)
+                else:
+                    loaded_model = PipelineModel.load(path)
             else:
-                loaded_model = PipelineModel.load(path)
-        else:
-            if try_import_lib("johnsnowlabs"):
-                loaded_model = nlp.load(path)
-            else:
-                raise ValueError(Errors.E039)
+                if try_import_lib("johnsnowlabs"):
+                    loaded_model = nlp.load(path)
+                else:
+                    raise ValueError(Errors.E039)
 
-        return cls(loaded_model)
+            return cls(loaded_model)
+        return cls(path)
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs) -> Any:
