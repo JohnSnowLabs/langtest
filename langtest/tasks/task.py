@@ -50,21 +50,20 @@ class BaseTask(ABC):
         if "user_prompt" in kwargs:
             cls.user_prompt = kwargs.get("user_prompt")
             kwargs.pop("user_prompt")
-
-        if cls._name in models[model_hub] or cls._name in models["llm"]:
+        try:
+            if model_hub in LANGCHAIN_HUBS:
+                # LLM models
+                cls.model = models["llm"][cls._name].load_model(
+                    hub=model_hub, path=model_path, *args, **kwargs
+                )
+            else:
+                # JSL, Huggingface, and Spacy models
+                cls.model = models[model_hub][cls._name].load_model(
+                    path=model_path, *args, **kwargs
+                )
+            return cls.model
+        except TypeError:
             raise ValueError(Errors.E081.format(hub=model_hub))
-
-        if model_hub in LANGCHAIN_HUBS:
-            # LLM models
-            cls.model = models["llm"][cls._name].load_model(
-                hub=model_hub, path=model_path, *args, **kwargs
-            )
-        else:
-            # JSL, Huggingface, and Spacy models
-            cls.model = models[model_hub][cls._name].load_model(
-                path=model_path, *args, **kwargs
-            )
-        return cls.model
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
