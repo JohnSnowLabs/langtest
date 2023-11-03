@@ -47,6 +47,13 @@ class BaseTask(ABC):
         if model_hub not in supported_hubs:
             raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
 
+        if "user_prompt" in kwargs:
+            cls.user_prompt = kwargs.get("user_prompt")
+            kwargs.pop("user_prompt")
+
+        if cls._name in models[model_hub] or cls._name in models["llm"]:
+            raise ValueError(Errors.E081.format(hub=model_hub))
+
         if model_hub in LANGCHAIN_HUBS:
             # LLM models
             cls.model = models["llm"][cls._name].load_model(
