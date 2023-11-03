@@ -1,16 +1,41 @@
-# LangTest: Deliver Safe & Effective Language Models
+<div align="center">
+  <h1 style="text-align: center; vertical-align: middle;">LangTest: Deliver Safe & Effective Language Models</h1>
+</div>
 
 <p align="center">
-    <a href="https://github.com/JohnSnowLabs/langtest/actions" alt="build">
-        <img src="https://github.com/JohnSnowLabs/langtest/workflows/build/badge.svg" /></a>
-    <a href="https://github.com/JohnSnowLabs/langtest/releases" alt="Current Release Version">
-        <img src="https://img.shields.io/github/v/release/JohnSnowLabs/langtest.svg?style=flat-square&logo=github" /></a>
+    <a href="https://github.com/JohnSnowLabs/langtest/releases">
+        <img alt="Release Notes" src="https://img.shields.io/github/v/release/johnsnowlabs/langtest.svg">
+    </a>
+    <a href="https://www.johnsnowlabs.com/responsible-ai-blog/">
+        <img alt="Blog" src="https://img.shields.io/badge/Responsible AI Blogs-8A2BE2">
+    </a>
+    <a href="https://langtest.org/docs/pages/docs/install">
+        <img alt="Documentation" src="https://img.shields.io/website?up_message=online&url=https%3A%2F%2Flangtest.org%2F">
+    </a>
+    <a href="https://star-history.com/#JohnSnowLabs/langtest">
+        <img alt="GitHub star chart" src="https://img.shields.io/github/stars/JohnSnowLabs/langtest?style=social">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/JohnSnowLabs/langtest">
+    </a>
+    <a href="https://pepy.tech/project/langtest">
+        <img alt="Downloads" src="https://static.pepy.tech/badge/langtest">
+    </a>
+    <a href="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml">
+        <img alt="CI" src="https://github.com/JohnSnowLabs/langtest/actions/workflows/build_and_test.yml/badge.svg">
+    </a>
     <a href="https://github.com/JohnSnowLabs/langtest/blob/master/LICENSE" alt="License">
-        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" /></a>
-    <a href="https://pypi.org/project/langtest/" alt="PyPi downloads">
-        <img src="https://static.pepy.tech/personalized-badge/langtest?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads" /></a>
+        <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" />
+    </a>
+    <a href="CODE_OF_CONDUCT.md">
+        <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg">
+    </a>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png" alt="Image" />
 </p>
 
+![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 <p align="center">
   <a href="#project's-website">Project's Website</a> •
@@ -21,8 +46,6 @@
   <a href="#mission">Mission</a> •
   <a href="#license">License</a>
 </p>
-
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 ## Project's Website
 
@@ -87,9 +110,9 @@ Langtest comes with different datasets to test your models, covering a wide rang
 |[**LogiQA**](https://aclanthology.org/2020.findings-emnlp.301/) | Evaluate your model's accuracy on Machine Reading Comprehension with Logical Reasoning questions. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LogiQA_dataset.ipynb)
 |[**BigBench Abstract narrative understanding**](https://arxiv.org/abs/2206.04615) | Evaluate your model's performance in selecting the most relevant proverb for a given narrative. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
 |[**BigBench Causal Judgment**](https://arxiv.org/abs/2206.04615) | Evaluate your model's performance in measuring the ability to reason about cause and effect. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
-|[**BigBench DisambiguationQA**](https://arxiv.org/abs/2206.04615) | Evaluate your model's performance on determining the interpretation of sentences containing ambiguous pronoun references.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](hhttps://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
+|[**BigBench DisambiguationQA**](https://arxiv.org/abs/2206.04615) | Evaluate your model's performance in determining the interpretation of sentences containing ambiguous pronoun references.| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](hhttps://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
 |[**BigBench DisflQA**](https://arxiv.org/abs/2206.04615) | Evaluate your model's performance in picking the correct answer span from the context given the disfluent question. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
-|[**ASDiv**](https://arxiv.org/abs/2106.15772) | Evaluate your model's ability answer questions based on Math Word Problems. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/ASDiv_dataset.ipynb)
+|[**ASDiv**](https://arxiv.org/abs/2106.15772) | Evaluate your model's ability to answer questions based on Math Word Problems. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/ASDiv_dataset.ipynb)
 |[**Legal-QA**](https://arxiv.org/abs/2308.11462)                | Evaluate your model's performance on legal-qa datasets | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)      |
 | [**CommonsenseQA**](https://arxiv.org/abs/1811.00937)                  | Evaluate your model's performance on the CommonsenseQA dataset, which demands a diverse range of commonsense knowledge to accurately predict the correct answers in a multiple-choice question answering format.  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/CommonsenseQA_dataset.ipynb)               |
 | [**SIQA**](https://arxiv.org/abs/1904.09728)                 | Evaluate your model's performance by assessing its accuracy in understanding social situations, inferring the implications of actions, and comparing human-curated and machine-generated answers.  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/SIQA_dataset.ipynb)               |
@@ -125,13 +148,13 @@ You can check out the following langtest articles:
 
 We welcome all sorts of contributions:
 
-- Ideas
-- Feedback
-- Documentation
-- Bug reports
-- Development and testing
+- [Ideas](https://github.com/JohnSnowLabs/langtest/discussions/categories/ideas)
+- [Discussions](https://github.com/JohnSnowLabs/langtest/discussions)
+- [Feedback](https://github.com/JohnSnowLabs/langtest/discussions/categories/general)
+- [Documentation](https://www.example.com/documentation)
+- [Bug reports](https://www.example.com/bug-reports)
 
-Feel free to clone the repo and submit pull-requests! You can also contribute by simply opening an issue or discussion in this repo.
+Feel free to clone the repo and submit pull-requests! You can also contribute by simply opening an [issue](https://github.com/JohnSnowLabs/langtest/issues) or [discussion](https://github.com/JohnSnowLabs/langtest/discussions) in this repo.
 
 ## Contributors
 
