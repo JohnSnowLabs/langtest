@@ -16,10 +16,8 @@ The Factuality Test is designed to evaluate the ability of language models (LLMs
   factuality:
     order_bias:
       min_pass_rate: 0.70
-      sentence_transformer: sentence-transformers/distiluse-base-multilingual-cased-v2
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
-- **sentence_transformer (str):** Sentence transformer to be used in evaluation (default is "sentence-transformers/distiluse-base-multilingual-cased-v2").
 
 </div><div class="h3-box" markdown="1">
 

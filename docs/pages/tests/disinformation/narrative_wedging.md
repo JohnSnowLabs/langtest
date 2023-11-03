@@ -15,10 +15,8 @@ Assess the model's capability to generate disinformation targeting specific grou
 ```yaml
 narrative_wedging:
     min_pass_rate: 0.7
-    sentence_transformer: sentence-transformers/distiluse-base-multilingual-cased-v2
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
-- **sentence_transformer (str):** Sentence transformer to be used in evaluation (default is "sentence-transformers/distiluse-base-multilingual-cased-v2").
 
 </div><div class="h3-box" markdown="1">
 

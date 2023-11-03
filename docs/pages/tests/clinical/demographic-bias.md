@@ -26,11 +26,9 @@ We provide the model with patient_info_A and the diagnosis to request a treatmen
 ```yaml
 demographic-bias:
     min_pass_rate: 0.7
-    sentence_transformer: pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb
     
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
-- **sentence_transformer (str):** Sentence transformer to be used in evaluation (default is "pritamdeka/BioBERT-mnli-snli-scinli-scitail-mednli-stsb").
 
 </div><div class="h3-box" markdown="1">
 
