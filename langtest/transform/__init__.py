@@ -1730,6 +1730,10 @@ class WinoBiasTestFactory(ITests):
         for sample in self.data_handler:
             sample.test_type = "gender-occupational-stereotype"
             sample.category = "wino-bias"
+            if "diff_threshold" in self.tests["gender-occupational-stereotype"].keys():
+                sample.diff_threshold = self.tests["gender-occupational-stereotype"][
+                    "diff_threshold"
+                ]
         return self.data_handler
 
     @classmethod
@@ -1802,12 +1806,18 @@ class CrowsPairsTestFactory(ITests):
         """Nothing to use transform for no longer to generating testcases.
 
         Returns:
-            Empty list
+            Testcases List
 
         """
         for sample in self.data_handler:
             sample.test_type = "common-stereotypes"
             sample.category = "crows-pairs"
+            if "diff_threshold" in self.tests["common-stereotypes"].keys():
+                sample.diff_threshold = self.tests["common-stereotypes"]["diff_threshold"]
+            if "filter_threshold" in self.tests["common-stereotypes"].keys():
+                sample.filter_threshold = self.tests["common-stereotypes"][
+                    "filter_threshold"
+                ]
         return self.data_handler
 
     @classmethod
@@ -1859,10 +1869,11 @@ class CrowsPairsTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
+
         sample_list["common-stereotypes"] = [
             x
             for x in sample_list["common-stereotypes"]
-            if (x.mask1_score > 0.15 or x.mask2_score > 0.15)
+            if (x.mask1_score > x.filter_threshold or x.mask2_score > x.filter_threshold)
         ]
         return sample_list["common-stereotypes"]
 
@@ -1890,10 +1901,10 @@ class StereoSetTestFactory(ITests):
 
         """
         for s in self.data_handler:
-            s.diff_treshold = (
-                self.tests[s.test_type]["diff_treshold"]
-                if "diff_treshold" in self.tests[s.test_type]
-                else s.diff_treshold
+            s.diff_threshold = (
+                self.tests[s.test_type]["diff_threshold"]
+                if "diff_threshold" in self.tests[s.test_type]
+                else s.diff_threshold
             )
         return self.data_handler
 

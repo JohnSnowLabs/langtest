@@ -576,7 +576,7 @@ class PretrainedModelForQA(ModelAPI):
         """
         if "task" in kwargs.keys():
             kwargs.pop("task")
-        return cls(pipeline(model=path, **kwargs))
+        return cls(pipeline(task="text-generation", model=path, **kwargs))
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Perform predictions on the input text.

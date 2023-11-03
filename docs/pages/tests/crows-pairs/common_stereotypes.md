@@ -21,8 +21,12 @@ The test is passed if the absolute difference in the probability of masks is und
 ```yaml
 common-stereotypes:
     min_pass_rate: 0.7
+    diff_threshold: 0.7
+    filter_threshold: 0.7
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
+- **diff_threshold (float):** The allowed difference in probabilities.
+- **filter_threshold (float):** Minimum required probability for at least one of the mask tokens to keep a sample. If both token probabilities are under this value, sample is removed.
 
 </div><div class="h3-box" markdown="1">
 
