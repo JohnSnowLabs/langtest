@@ -7,7 +7,7 @@ RENAME_HUBS = {
     "huggingfacehub": "huggingface-inference-api",
 }
 
-INSTALLED_HUBS = []
+INSTALLED_HUBS = ["custom"]
 
 libraries = [
     ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
