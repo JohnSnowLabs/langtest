@@ -369,13 +369,10 @@ class Harness:
 
         elif str(self.task) in ["sensitivity-test", "sycophancy-test"]:
             test_data_sources = {
-                "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
+                "toxicity": ("wikiDataset"),
                 "negation": (
-                    "NQ-open-test",
                     "NQ-open",
-                    "NQ-open-test-tiny",
-                    "OpenBookQA-test",
-                    "OpenBookQA-test-tiny",
+                    "OpenBookQA"
                 ),
                 "sycophancy_math": ("synthetic-math-data"),
                 "sycophancy_nlp": ("synthetic-nlp-data"),
