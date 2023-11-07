@@ -237,7 +237,7 @@ You can check out the following LangTest articles:
 * Fixed clinical test evaluation.
 * Fixed QA/Summarization Dataset Issues for Accuracy/Fairness Testing.
 
-## Versions
+## ⚒️ Previous Versions
 
 </div>
 {%- include docs-langtest-pagination.html -%}
