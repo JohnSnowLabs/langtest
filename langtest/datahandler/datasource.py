@@ -303,7 +303,7 @@ class DataFactory:
         """
         dataset_name: str = custom_label.get("data_source")
         subset: str = custom_label.get("subset")
-        split: str = custom_label.get("split", "test-tiny")
+        split: str = custom_label.get("split")
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
 
@@ -324,12 +324,12 @@ class DataFactory:
             "MMLU": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "OpenBookQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "Quac": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Toxicity": {"split": ("test-tiny"), "extension": ".jsonl"},
+            "Toxicity": {"split": ("test",), "extension": ".jsonl"},
             "NarrativeQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "HellaSwag": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Translation": {"split": ("test"), "extension": ".jsonl"},
+            "Translation": {"split": ("test",), "extension": ".jsonl"},
             "BBQ": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Prompt-Injection-Attack": {"split": ("test"), "extension": ".jsonl"},
+            "Prompt-Injection-Attack": {"split": ("test",), "extension": ".jsonl"},
             "Clinical": {
                 "split": (
                     "Medical-files",
@@ -355,10 +355,10 @@ class DataFactory:
                 },
             },
             "LogiQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Narrative-Wedging": {"split": ("test-tiny"), "extension": ".jsonl"},
-            "Wino-test": {"split": ("test"), "extension": ".jsonl"},
-            "Legal-Support": {"split": ("test"), "extension": ".jsonl"},
-            "Factual-Summary-Pairs": {"split": ("test"), "extension": ".jsonl"},
+            "Narrative-Wedging": {"split": ("test-tiny",), "extension": ".jsonl"},
+            "Wino-test": {"split": ("test",), "extension": ".jsonl"},
+            "Legal-Support": {"split": ("test",), "extension": ".jsonl"},
+            "Factual-Summary-Pairs": {"split": ("test",), "extension": ".jsonl"},
             "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "CommonsenseQA": {
@@ -367,12 +367,12 @@ class DataFactory:
             },
             "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "PIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Consumer-Contracts": {"split": ("test"), "extension": ".jsonl"},
-            "Contracts": {"split": ("test"), "extension": ".jsonl"},
-            "Privacy-Policy": {"split": ("test"), "extension": ".jsonl"},
-            "Crows-Pairs": {"split": ("test"), "extension": ".csv"},
-            "StereoSet": {"split": ("test"), "extension": ".jsonl"},
-            "Fiqa": {"split": ("test"), "extension": ".jsonl"},
+            "Consumer-Contracts": {"split": ("test",), "extension": ".jsonl"},
+            "Contracts": {"split": ("test",), "extension": ".jsonl"},
+            "Privacy-Policy": {"split": ("test",), "extension": ".jsonl"},
+            "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
+            "StereoSet": {"split": ("test",), "extension": ".jsonl"},
+            "Fiqa": {"split": ("test",), "extension": ".jsonl"},
         }
 
         if dataset_name not in datasets_info:
@@ -381,37 +381,37 @@ class DataFactory:
         dataset_info = datasets_info[dataset_name]
 
         if "split" not in dataset_info:
-            if subset not in dataset_info:
-                default_subset = list(dataset_info.keys())[0]
+            if subset is None:
+                subset = list(dataset_info.keys())[0]
                 logging.warning(
-                    f"{subset} is not a valid subset for {dataset_name}. Loading the default subset: {default_subset}"
+                    f"You haven't provided the subset. Loading the default subset: {subset}"
                 )
-                subset = default_subset
-            if split not in dataset_info[subset]["split"]:
-                default_split = dataset_info[subset]["split"][0]
+            if split is None:
+                split = dataset_info[subset]["split"][0]
                 logging.warning(
-                    f"{split} is not a valid split name for {dataset_name}. Loading the default split: {default_split}"
+                    f"You haven't provided the split. Loading the default split: {split}"
                 )
-                split = default_split
 
-            extension = dataset_info[subset].get("extension", "jsonl")
-            return (
-                script_dir[:-7]
-                + "/"
-                + dataset_name
-                + "/"
-                + subset
-                + "/"
-                + split
-                + extension
-            )
-        else:
-            if split not in dataset_info["split"]:
-                default_split = dataset_info["split"][0]
-                logging.warning(
-                    f"{split} is not a valid split name for {dataset_name}. Loading the default split: {default_split}"
+            if subset not in dataset_info or split not in dataset_info[subset]["split"]:
+                available_subset_splits = ", ".join([f"{s}: {info['split']}" for s, info in dataset_info.items()])
+                raise ValueError(
+                    f"Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}"
                 )
-                split = default_split
+            extension = dataset_info[subset].get("extension", "jsonl")
+            return script_dir[:-7]+ "/"+ dataset_name+ "/"+ subset+ "/"+ split+ extension
+        else:
+            if split is None:
+                split = dataset_info["split"][0]
+                logging.warning(
+                    f"You haven't provided the split. Loading the default split: {split}"
+                )
+            
+            if split not in dataset_info["split"]:
+                available_splits = ", ".join(dataset_info["split"])
+                raise ValueError(
+                    f"split: {split} is not valid for {dataset_name}. Available splits: {available_splits}"
+                )
+            
             extension = dataset_info.get("extension", "jsonl")
             return script_dir[:-7] + "/" + dataset_name + "/" + split + extension
 
