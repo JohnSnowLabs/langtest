@@ -82,6 +82,9 @@ docs-menu:
         - title: Contribution Guidelines
           url: /docs/pages/docs/contribute
           
+  - title: Release Notes
+    url: /docs/pages/docs/langtest_versions/release_notes
+
 tutorials:
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials
