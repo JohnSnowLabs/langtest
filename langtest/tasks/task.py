@@ -773,3 +773,26 @@ class SycophancyTest(BaseTask):
             *args,
             **kwargs,
         )
+
+
+class TextGeneration(BaseTask):
+    """Text Generation task."""
+
+    _name = "toxicity"
+    _default_col = {"text": ["text", "prompt"]}
+    sample_class = samples.TextGenerationSample
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "textgeneration"
+    ) -> samples.TextGenerationSample:
+        """Create a sample."""
+
+        keys = list(row_data.keys())
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
+
+        return samples.TextGenerationSample(
+            prompt=row_data[column_mapper[feature_column]],
+            dataset_name=dataset_name,
+        )
