@@ -161,7 +161,7 @@ You can check out the following LangTest articles:
 |  Custom Model API   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Custom_Hub_Notebook.ipynb)     |
 |  FiQA Dataset   |  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Fiqa_dataset.ipynb) |
 
-## Previous versions
+## ⚒️ Previous Versions
 
 </div>
 {%- include docs-langtest-pagination.html -%}
