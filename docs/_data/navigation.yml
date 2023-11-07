@@ -2,7 +2,7 @@ header:
   - title: Home
     url: /
   - title: Docs
-    url: /docs/pages/docs/install
+    url: /docs/pages/docs/quickstart
     key: docs
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials
@@ -17,8 +17,10 @@ header:
 
 docs-menu:
   - title: Quick Start
-    url: /docs/pages/docs/install
+    url: /docs/pages/docs/quickstart
     children:
+        - title: Getting Started
+          url: /docs/pages/docs/quickstart
         - title: Installation
           url: /docs/pages/docs/install
         - title:  One Liners
