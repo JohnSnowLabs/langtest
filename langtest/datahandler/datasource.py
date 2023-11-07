@@ -145,7 +145,7 @@ class DataFactory:
     """
 
     data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
-    CURATED_DATASETS = ["BoolQ-bias", "XSum-bias"]
+    CURATED_BIAS_DATASETS = ["BoolQ", "XSum"]
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
@@ -173,7 +173,10 @@ class DataFactory:
             elif self._file_path in ("synthetic-math-data", "synthetic-nlp-data"):
                 self.file_ext = "syntetic"
                 self._file_path = file_path
-            elif self._file_path in self.CURATED_DATASETS:
+            elif (
+                "bias" == self._custom_label.get("split")
+                and self._file_path in self.CURATED_BIAS_DATASETS
+            ):
                 self.file_ext = "curated"
                 self._file_path = file_path.get("data_source")
             else:
@@ -202,7 +205,7 @@ class DataFactory:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
-        elif self._file_path in self.CURATED_DATASETS and self.task in (
+        elif self._file_path in self.CURATED_BIAS_DATASETS and self.task in (
             "question-answering",
             "summarization",
         ):
@@ -236,7 +239,7 @@ class DataFactory:
         """
         data = []
         path = os.path.abspath(__file__)
-        if file_path == "BoolQ-bias":
+        if file_path == "BoolQ":
             bias_jsonl = os.path.dirname(path)[:-7] + "/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
@@ -251,7 +254,7 @@ class DataFactory:
                             dataset_name="BoolQ",
                         )
                     )
-        elif file_path == "XSum-bias":
+        elif file_path == "XSum":
             bias_jsonl = os.path.dirname(path)[:-7] + "/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
@@ -309,14 +312,14 @@ class DataFactory:
 
         datasets_info = {
             "BoolQ": {
-                "split": ("test-tiny", "test", "dev-tiny", "dev", "bias", "combined"),
+                "split": ("test-tiny", "test", "dev-tiny", "dev", "combined"),
                 "extension": ".jsonl",
             },
             "NQ-open": {
                 "split": ("test-tiny", "test", "combined"),
                 "extension": ".jsonl",
             },
-            "XSum": {"split": ("test-tiny", "test", "bias"), "extension": ".jsonl"},
+            "XSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "TruthfulQA": {
                 "split": ("test-tiny", "test", "combined"),
                 "extension": ".jsonl",
@@ -393,25 +396,36 @@ class DataFactory:
                 )
 
             if subset not in dataset_info or split not in dataset_info[subset]["split"]:
-                available_subset_splits = ", ".join([f"{s}: {info['split']}" for s, info in dataset_info.items()])
+                available_subset_splits = ", ".join(
+                    [f"{s}: {info['split']}" for s, info in dataset_info.items()]
+                )
                 raise ValueError(
                     f"Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}"
                 )
             extension = dataset_info[subset].get("extension", "jsonl")
-            return script_dir[:-7]+ "/"+ dataset_name+ "/"+ subset+ "/"+ split+ extension
+            return (
+                script_dir[:-7]
+                + "/"
+                + dataset_name
+                + "/"
+                + subset
+                + "/"
+                + split
+                + extension
+            )
         else:
             if split is None:
                 split = dataset_info["split"][0]
                 logging.warning(
                     f"You haven't provided the split. Loading the default split: {split}"
                 )
-            
+
             if split not in dataset_info["split"]:
                 available_splits = ", ".join(dataset_info["split"])
                 raise ValueError(
                     f"split: {split} is not valid for {dataset_name}. Available splits: {available_splits}"
                 )
-            
+
             extension = dataset_info.get("extension", "jsonl")
             return script_dir[:-7] + "/" + dataset_name + "/" + split + extension
 
