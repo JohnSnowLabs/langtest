@@ -1710,7 +1710,7 @@ class WinoBiasTestFactory(ITests):
 
     alias_name = "wino-bias"
     supported_tasks = [
-        "wino-bias",
+        "wino-bias", "fill-mask", "question-answering",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1764,7 +1764,7 @@ class WinoBiasTestFactory(ITests):
         return {"gender-occupational-stereotype": cls}
 
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
-        """Runs the clinical tests
+        """Runs the wino tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
@@ -1792,7 +1792,7 @@ class CrowsPairsTestFactory(ITests):
 
     alias_name = "crows-pairs"
     supported_tasks = [
-        "crows-pairs",
+        "crows-pairs", "fill-mask",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1937,12 +1937,12 @@ class StereoSetTestFactory(ITests):
 
     @staticmethod
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
-        """Runs the clinical tests
+        """Runs the StereoSet tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the crows-pairs tests
+            **kwargs: Additional arguments to be passed to the StereoSet tests
 
         Returns:
             List[Sample]: The transformed data based on the implemented crows-pairs tests
