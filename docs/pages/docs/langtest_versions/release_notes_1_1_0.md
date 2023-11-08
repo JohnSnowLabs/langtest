@@ -14,7 +14,7 @@ modify_date: 2023-08-11
 
 ## 📢 Highlights
 
-**LangTest 1.1.0 Release by John Snow Labs** 🚀: LangTest 1.1.0 🚀 comes with brand new features, including: new capabilities to run different types of toxicity tests (lgbtqphobia, ideology, racism, xenophobia, sexism), support for doing templatic augmentations, extending support for HF datasets for summarization, support for BBQ-data, custom-replacement dicts for representation tests,  CSV augmentations for text classification, using poetry as a dependency manager and adding new robustness tests (adjective-swapping and strip-all-punctuation) with many other enhancements and bug fixes!
+**LangTest 1.1.0 Release by John Snow Labs** 🚀: New capabilities to run different types of toxicity tests (lgbtqphobia, ideology, racism, xenophobia, sexism), support for doing templatic augmentations, extending support for HF datasets for summarization, support for BBQ-data, custom-replacement dicts for representation tests,  CSV augmentations for text classification, using poetry as a dependency manager and adding new robustness tests (adjective-swapping and strip-all-punctuation) with many other enhancements and bug fixes!
 
 </div><div class="h3-box" markdown="1">
 
