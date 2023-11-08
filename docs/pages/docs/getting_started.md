@@ -10,6 +10,10 @@ header: true
 
 <div class="main-docs" markdown="1">
 
+## LangTest
+
+The rise of Large Language Models (LLMs) poses challenges due to their integration without thorough testing. LangTest, an open-source Python library, addresses this by automatically generating test cases for LLMs across 10 dimensions, offering data augmentation and seamless integration into MLOps tools. It supports over 20 LLM providers, includes 60+ test types, and has proven effective in identifying and addressing Responsible AI issues quickly.
+
 <div class="block-box quickstart-box"><div class="left-box" markdown="1">
 
 ## Requirements & Setup
