@@ -5,7 +5,7 @@ seotitle: LangTest - Deliver Safe and Effective Language Models | John Snow Labs
 title: LangTest Release Notes
 permalink: /docs/pages/docs/langtest_versions/release_notes/release_notes_1_6_0
 key: docs-release-notes
-modify_date: 2023-10-17
+modify_date: 2023-08-11
 ---
 
 <div class="h3-box" markdown="1">
