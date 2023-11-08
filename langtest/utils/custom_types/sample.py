@@ -2570,7 +2570,7 @@ class FillMaskSample(TextGenerationSample):
     Inherits:
         TextGenerationSample: The base class for TextGenerationSample.
     """
-   
+
     pass
 
 
