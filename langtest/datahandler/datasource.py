@@ -386,21 +386,21 @@ class DataFactory:
         if "split" not in dataset_info:
             if subset is None:
                 subset = list(dataset_info.keys())[0]
-                logging.warning(
-                    f"You haven't provided the subset. Loading the default subset: {subset}"
-                )
+                logging.warning(Warnings.W012.format(var1="subset", var2=subset))
             if split is None:
                 split = dataset_info[subset]["split"][0]
-                logging.warning(
-                    f"You haven't provided the split. Loading the default split: {split}"
-                )
+                logging.warning(Warnings.W012.format(var1="split", var2=split))
 
             if subset not in dataset_info or split not in dataset_info[subset]["split"]:
-                available_subset_splits = ", ".join(
-                    [f"{s}: {info['split']}" for s, info in dataset_info.items()]
-                )
                 raise ValueError(
-                    f"Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}"
+                    Errors.E082.format(
+                        subset=subset,
+                        split=split,
+                        dataset_name=dataset_name,
+                        available_subset_splits=", ".join(
+                            [f"{s}: {info['split']}" for s, info in dataset_info.items()]
+                        ),
+                    )
                 )
             extension = dataset_info[subset].get("extension", "jsonl")
             return (
@@ -416,14 +416,15 @@ class DataFactory:
         else:
             if split is None:
                 split = dataset_info["split"][0]
-                logging.warning(
-                    f"You haven't provided the split. Loading the default split: {split}"
-                )
+                logging.warning(Warnings.W012.format(var1="split", var2=split))
 
             if split not in dataset_info["split"]:
-                available_splits = ", ".join(dataset_info["split"])
                 raise ValueError(
-                    f"split: {split} is not valid for {dataset_name}. Available splits: {available_splits}"
+                    Errors.E083.format(
+                        split=split,
+                        dataset_name=dataset_name,
+                        available_splits=", ".join(dataset_info["split"]),
+                    )
                 )
 
             extension = dataset_info.get("extension", "jsonl")
