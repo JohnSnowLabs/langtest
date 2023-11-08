@@ -20,7 +20,7 @@ from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
-from .political import BasePolitical
+from .ideology import BaseIdeology
 from .sensitivity import BaseSensitivity
 from .sycophancy import BaseSycophancy
 from .constants import (
@@ -1531,10 +1531,10 @@ class DisinformationTestFactory(ITests):
         return sample_list["narrative_wedging"]
 
 
-class PoliticalTestFactory(ITests):
+class IdeologyTestFactory(ITests):
     """Factory class for the clinical tests"""
 
-    alias_name = "political"
+    alias_name = "ideology"
     supported_tasks = ["question_answering", "summarization"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1591,7 +1591,7 @@ class PoliticalTestFactory(ITests):
 
         tests = {
             j: i
-            for i in BasePolitical.__subclasses__()
+            for i in BaseIdeology.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests

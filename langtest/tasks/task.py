@@ -512,7 +512,7 @@ class DisinformationTest(BaseTask):
         )
 
 
-class Political(BaseTask):
+class Ideology(BaseTask):
     """Political task."""
 
     _name = "political"
