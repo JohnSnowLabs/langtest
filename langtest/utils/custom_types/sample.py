@@ -2565,64 +2565,6 @@ class TextGenerationSample(BaseModel):
         )
         return True
 
-class TextGenerationSample(BaseModel):
-    category: str = Field(default=None, alias="category")
-    test_type: str = Field(default=None, alias="test_type")
-    state: str = Field(default=None, alias="state")
-    dataset_name: str = Field(default=None, alias="dataset_name")
-    task: str = Field(default=None, alias="task")
-    __given_attributes: List[str] = []
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        for k, v in data.items():
-            setattr(self, k, v)
-
-    def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts the TextGenerationSample object to a dictionary.
-
-        Returns:
-            Dict[str, Any]: A dictionary representation of the TextGenerationSample object.
-        """
-        result = {
-            "category": self.category,
-            "test_type": self.test_type,
-            "pass": self.is_pass(),
-        }
-        for attr in self.__given_attributes:
-            temp_value = getattr(self, attr)
-            if temp_value:
-                result[attr] = temp_value
-
-        return result
-
-    def is_pass(self):
-        """"""
-        return self._is_eval()
-
-    def _is_eval(self) -> bool:
-        """"""
-        return True
-
-    def __setattr__(self, name, value):
-        self.__given_attributes.append(name)
-        return super().__setattr__(name, value)
-
-    def attributes(self):
-        return self.__given_attributes
-
-    def run(self, model, **kwargs):
-        dataset_name = self.dataset_name.split("-")[0].lower()
-        prompt_template = kwargs.get(
-            "user_prompt", default_user_prompt.get(dataset_name, "{context}")
-        )
-
-        self.completion = model(
-            text={"context": self.prompt},
-            prompt={"template": prompt_template, "input_variables": ["context"]},
-        )
-        return True
 class FillMaskSample(TextGenerationSample):
     """
     Inherits:
@@ -2630,8 +2572,6 @@ class FillMaskSample(TextGenerationSample):
     """
    
     pass
-
-
 
 
 Sample = TypeVar(
