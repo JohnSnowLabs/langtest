@@ -1482,8 +1482,8 @@ class WinoBiasSample(BaseModel):
 
     masked_text: str
     options: str
-    category: str = "wino-bias"
-    test_type: str = "gender-occupational-stereotype"
+    category: str = "stereotype"
+    test_type: str = "wino-bias"
     state: str = None
     dataset_name: str = None
     model_response: str = None
