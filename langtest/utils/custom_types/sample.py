@@ -1579,8 +1579,8 @@ class CrowsPairsSample(BaseModel):
     mask2: str = None
     mask1_score: float = None
     mask2_score: float = None
-    category: str = "crows-pairs"
-    test_type: str = "common-stereotypes"
+    category: str = "stereotype"
+    test_type: str = "crows-pairs"
     state: str = None
     diff_threshold: float = 0.10
     filter_threshold: float = 0.15

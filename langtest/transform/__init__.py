@@ -1791,7 +1791,7 @@ class WinoBiasTestFactory(ITests):
 class CrowsPairsTestFactory(ITests):
     """Factory class for the crows-pairs tests"""
 
-    alias_name = "crows-pairs"
+    alias_name = "stereotype"
     supported_tasks = [
         "crows-pairs",
         "fill-mask",
@@ -1812,12 +1812,12 @@ class CrowsPairsTestFactory(ITests):
 
         """
         for sample in self.data_handler:
-            sample.test_type = "common-stereotypes"
-            sample.category = "crows-pairs"
-            if "diff_threshold" in self.tests["common-stereotypes"].keys():
-                sample.diff_threshold = self.tests["common-stereotypes"]["diff_threshold"]
-            if "filter_threshold" in self.tests["common-stereotypes"].keys():
-                sample.filter_threshold = self.tests["common-stereotypes"][
+            sample.test_type = "crows-pairs"
+            sample.category = "stereotype"
+            if "diff_threshold" in self.tests["crows-pairs"].keys():
+                sample.diff_threshold = self.tests["crows-pairs"]["diff_threshold"]
+            if "filter_threshold" in self.tests["crows-pairs"].keys():
+                sample.filter_threshold = self.tests["crows-pairs"][
                     "filter_threshold"
                 ]
         return self.data_handler
@@ -1847,7 +1847,7 @@ class CrowsPairsTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no crows-pairs tests
         """
-        return {"common-stereotypes": cls}
+        return {"crows-pairs": cls}
 
     @staticmethod
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
@@ -1863,7 +1863,7 @@ class CrowsPairsTestFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["common-stereotypes"]:
+        for sample in sample_list["crows-pairs"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1872,12 +1872,12 @@ class CrowsPairsTestFactory(ITests):
             if progress:
                 progress.update(1)
 
-        sample_list["common-stereotypes"] = [
+        sample_list["crows-pairs"] = [
             x
-            for x in sample_list["common-stereotypes"]
+            for x in sample_list["crows-pairs"]
             if (x.mask1_score > x.filter_threshold or x.mask2_score > x.filter_threshold)
         ]
-        return sample_list["common-stereotypes"]
+        return sample_list["crows-pairs"]
 
 
 class StereoSetTestFactory(ITests):
