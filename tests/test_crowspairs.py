@@ -12,7 +12,7 @@ class CrowsPairsTestCase(unittest.TestCase):
         Set up the test case by initializing the langtest Harness and configure it.
         """
         self.harness = Harness(
-            task={"name": "fill-mask", "category": "crows-pairs"},
+            task={"task": "fill-mask", "category": "crows-pairs"},
             model={"model": "bert-base-uncased", "hub": "huggingface"},
             data={"data_source": "Crows-Pairs"},
         )

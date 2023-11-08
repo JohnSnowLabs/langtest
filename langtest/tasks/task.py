@@ -125,7 +125,7 @@ class TaskManager:
             self.__task_name = task_name
             self.__task: BaseTask = BaseTask.task_registry[task_name]()
         else:
-            task_name = task["name"]
+            task_name = task["task"]
             if task_name not in BaseTask.task_registry:
                 raise AssertionError(
                     Errors.E043.format(l=list(BaseTask.task_registry.keys()))

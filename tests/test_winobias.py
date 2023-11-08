@@ -12,7 +12,7 @@ class WinoBiasTestCase(unittest.TestCase):
         Set up the test case by initializing the langtest Harness and configure it.
         """
         self.harness = Harness(
-            task={"name": "fill-mask", "category": "wino-bias"},
+            task={"task": "fill-mask", "category": "wino-bias"},
             model={"model": "bert-base-uncased", "hub": "huggingface"},
             data={"data_source": "Wino-test"},
         )
