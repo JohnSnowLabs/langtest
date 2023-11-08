@@ -10,7 +10,7 @@ modify_date: 2023-08-11
 
 <div class="h3-box" markdown="1">
 
-## 1.6.0
+## 1.5.0
 
 ## 📢 Highlights
 
