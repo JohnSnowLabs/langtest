@@ -115,6 +115,7 @@ class TaskManager:
     """Task manager."""
 
     def __init__(self, task: Union[str, dict]):
+        self.__category = None
         if isinstance(task, str):
             task_name = task
             if task_name not in BaseTask.task_registry:
