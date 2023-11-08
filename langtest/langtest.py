@@ -159,7 +159,7 @@ class Harness:
 
     def __init__(
         self,
-        task: str,
+        task: Union[str, dict],
         model: Optional[Union[list, dict]] = None,
         data: Optional[dict] = None,
         config: Optional[Union[str, dict]] = None,
@@ -201,7 +201,9 @@ class Harness:
             self._actual_model = model
         else:
             hub = None
-
+            
+        
+    
         # loading task
 
         self.task = TaskManager(task)
