@@ -130,7 +130,8 @@ class TaskManager:
                     Errors.E043.format(l=list(BaseTask.task_registry.keys()))
                 )
             self.__task_name = task_name
-            self.__task: BaseTask = BaseTask.task_registry[task["category"]]()
+            self.__category = task["category"]
+            self.__task: BaseTask = BaseTask.task_registry[self.__category]()
 
     def create_sample(self, *args, **kwargs):
         """Add a task to the task manager."""
@@ -163,6 +164,11 @@ class TaskManager:
     def task_name(self):
         """Return the task name."""
         return self.__task_name
+
+    @property
+    def category(self):
+        """Return the task category."""
+        return self.__category
 
     @property
     def get_sample_class(self):

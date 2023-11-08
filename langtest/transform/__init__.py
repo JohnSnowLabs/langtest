@@ -1870,7 +1870,7 @@ class StereoTypeFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for key, value in sample_list:
+        for key, value in sample_list.items():
             if key == "crows-pairs":
                 for sample in value:
                     if sample.state != "done":
