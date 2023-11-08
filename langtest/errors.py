@@ -69,7 +69,8 @@ class Warnings(metaclass=ErrorsWithCodes):
     W009 = ("Removing samples where no transformation has been applied:\n")
     W010 = ("- Test '{test}': {count} samples removed out of {total_sample}\n")
     W011 = ("{class_name} successfully ran!")
-    W012 =("You haven't provided the {var1}. Loading the default {var1}: {var2}")
+    W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
+
 
 class Errors(metaclass=ErrorsWithCodes):
     """
@@ -222,8 +223,9 @@ class Errors(metaclass=ErrorsWithCodes):
     E080 = ("Invalid SpaCy Pipeline. Expected return type is {expected_type} "
             "but pipeline returns: {returned_type}")
     E081 = ("Provded the task is not supported in the {hub} hub.")
-    E082 =("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
-    E083= ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
+    E082 = ("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
+    E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
+
 
 class ColumnNameError(Exception):
     """ColumnNameError class is used to raise an exception
