@@ -1709,7 +1709,7 @@ class SensitivityTestFactory(ITests):
 class WinoBiasTestFactory(ITests):
     """Factory class for the wino-bias tests"""
 
-    alias_name = "wino-bias"
+    alias_name = "stereotype"
     supported_tasks = [
         "wino-bias",
         "fill-mask",
@@ -1731,12 +1731,10 @@ class WinoBiasTestFactory(ITests):
 
         """
         for sample in self.data_handler:
-            sample.test_type = "gender-occupational-stereotype"
-            sample.category = "wino-bias"
-            if "diff_threshold" in self.tests["gender-occupational-stereotype"].keys():
-                sample.diff_threshold = self.tests["gender-occupational-stereotype"][
-                    "diff_threshold"
-                ]
+            sample.test_type = "wino-bias"
+            sample.category = "stereotype"
+            if "diff_threshold" in self.tests["wino-bias"].keys():
+                sample.diff_threshold = self.tests["wino-bias"]["diff_threshold"]
         return self.data_handler
 
     @classmethod
@@ -1764,7 +1762,7 @@ class WinoBiasTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no wino-bias tests
         """
-        return {"gender-occupational-stereotype": cls}
+        return {"wino-bias": cls}
 
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the wino tests
@@ -1779,7 +1777,7 @@ class WinoBiasTestFactory(ITests):
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["gender-occupational-stereotype"]:
+        for sample in sample_list["wino-bias"]:
             if sample.state != "done":
                 if hasattr(sample, "run"):
                     sample_status = sample.run(model, **kwargs)
@@ -1787,7 +1785,7 @@ class WinoBiasTestFactory(ITests):
                         sample.state = "done"
             if progress:
                 progress.update(1)
-        return sample_list["gender-occupational-stereotype"]
+        return sample_list["wino-bias"]
 
 
 class CrowsPairsTestFactory(ITests):

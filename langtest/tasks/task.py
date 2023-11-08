@@ -806,3 +806,7 @@ class TextGeneration(BaseTask):
             prompt=row_data[column_mapper[feature_column]],
             dataset_name=dataset_name,
         )
+
+
+class FillMask(BaseTask):
+    pass

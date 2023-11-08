@@ -2512,7 +2512,7 @@ class TextGenerationSample(BaseModel):
     state: str = Field(default=None, alias="state")
     dataset_name: str = Field(default=None, alias="dataset_name")
     task: str = Field(default=None, alias="task")
-    __given_attributes: List[str] = []
+    _given_attributes: List[str] = []
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -2531,7 +2531,7 @@ class TextGenerationSample(BaseModel):
             "test_type": self.test_type,
             "pass": self.is_pass(),
         }
-        for attr in self.__given_attributes:
+        for attr in self._given_attributes:
             temp_value = getattr(self, attr)
             if temp_value:
                 result[attr] = temp_value
@@ -2547,11 +2547,11 @@ class TextGenerationSample(BaseModel):
         return True
 
     def __setattr__(self, name, value):
-        self.__given_attributes.append(name)
+        self._given_attributes.append(name)
         return super().__setattr__(name, value)
 
     def attributes(self):
-        return self.__given_attributes
+        return self._given_attributes
 
     def run(self, model, **kwargs):
         dataset_name = self.dataset_name.split("-")[0].lower()
@@ -2564,6 +2564,7 @@ class TextGenerationSample(BaseModel):
             prompt={"template": prompt_template, "input_variables": ["context"]},
         )
         return True
+
 
 class FillMaskSample(TextGenerationSample):
     """
