@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/RakshitKhajuria/test/assets/71117423/4e759227-de04-4ba6-8f41-bf33b948d614" alt="johnsnowlabs_logo" width="360" style="text-align:center;">
+</p>
+
 <div align="center">
   <h1 style="text-align: center; vertical-align: middle;">LangTest: Deliver Safe & Effective Language Models</h1>
 </div>
@@ -30,10 +34,6 @@
     <a href="CODE_OF_CONDUCT.md">
         <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg">
     </a>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png" alt="Image" />
-</p>
 
 ![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
