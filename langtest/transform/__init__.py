@@ -1413,7 +1413,7 @@ class ClinicalTestFactory(ITests):
 
     alias_name = "clinical"
     supported_tasks = [
-        "clinical-tests",
+        "clinical-tests", "text-generation",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
