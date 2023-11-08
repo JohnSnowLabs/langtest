@@ -665,7 +665,7 @@ class CSVDataset(BaseDataset):
             self.delimiter = self._find_delimiter(file_path["data_source"])
         else:
             task_name = task.task_name
-            if task_name == "fill-mask":
+            if task_name in ("fill-mask", "text-generation", "question-answering"):
                 task_name = task.category
             if task_name in self.COLUMN_NAMES:
                 self.COLUMN_NAMES = self.COLUMN_NAMES[task_name]

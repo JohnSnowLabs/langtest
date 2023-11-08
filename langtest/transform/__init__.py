@@ -1673,7 +1673,7 @@ class SensitivityTestFactory(ITests):
             transformed_samples = data_handler_copy
 
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
-                TestFactory.task, transformed_samples, test_name
+                TestFactory.task.category, transformed_samples, test_name
             )
             all_samples.extend(new_transformed_samples)
 
