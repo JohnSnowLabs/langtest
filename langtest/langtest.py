@@ -201,9 +201,7 @@ class Harness:
             self._actual_model = model
         else:
             hub = None
-            
-        
-    
+
         # loading task
 
         self.task = TaskManager(task)

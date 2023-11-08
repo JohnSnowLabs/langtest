@@ -1413,7 +1413,8 @@ class ClinicalTestFactory(ITests):
 
     alias_name = "clinical"
     supported_tasks = [
-        "clinical-tests", "text-generation",
+        "clinical-tests",
+        "text-generation",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1710,7 +1711,9 @@ class WinoBiasTestFactory(ITests):
 
     alias_name = "wino-bias"
     supported_tasks = [
-        "wino-bias", "fill-mask", "question-answering",
+        "wino-bias",
+        "fill-mask",
+        "question-answering",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1792,7 +1795,8 @@ class CrowsPairsTestFactory(ITests):
 
     alias_name = "crows-pairs"
     supported_tasks = [
-        "crows-pairs", "fill-mask",
+        "crows-pairs",
+        "fill-mask",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:

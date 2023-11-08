@@ -124,14 +124,13 @@ class TaskManager:
             self.__task_name = task_name
             self.__task: BaseTask = BaseTask.task_registry[task_name]()
         else:
-            task_name = task['name']
+            task_name = task["name"]
             if task_name not in BaseTask.task_registry:
                 raise AssertionError(
                     Errors.E043.format(l=list(BaseTask.task_registry.keys()))
                 )
             self.__task_name = task_name
-            self.__task: BaseTask = BaseTask.task_registry[task['category']]()
-            
+            self.__task: BaseTask = BaseTask.task_registry[task["category"]]()
 
     def create_sample(self, *args, **kwargs):
         """Add a task to the task manager."""

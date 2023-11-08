@@ -2565,6 +2565,7 @@ class TextGenerationSample(BaseModel):
         )
         return True
 
+
 class TextGenerationSample(BaseModel):
     category: str = Field(default=None, alias="category")
     test_type: str = Field(default=None, alias="test_type")
@@ -2623,15 +2624,15 @@ class TextGenerationSample(BaseModel):
             prompt={"template": prompt_template, "input_variables": ["context"]},
         )
         return True
+
+
 class FillMaskSample(TextGenerationSample):
     """
     Inherits:
         TextGenerationSample: The base class for TextGenerationSample.
     """
-   
+
     pass
-
-
 
 
 Sample = TypeVar(
