@@ -15,7 +15,7 @@ modify_date: "2019-05-16"
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-The following table gives an overview of the different tutorial notebooks. We have test specific (Accuracy, Fairness, Robustness, Representation and Bias) and library specific (John Snow Labs, Hugging Face, Spacy) tutorial notebooks.
+The following table gives an overview of the different tutorial notebooks. In this section we have miscellaneous notebooks to enhance user experience with different features.
 
 </div><div class="h3-box" markdown="1">
 
