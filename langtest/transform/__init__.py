@@ -1916,9 +1916,7 @@ class LegalTestFactory(ITests):
     """Factory class for the legal tests"""
 
     alias_name = "legal"
-    supported_tasks = [
-        "legal-tests", "question-answering"
-    ]
+    supported_tasks = ["legal-tests", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the legal tests"""
