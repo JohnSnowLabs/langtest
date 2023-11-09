@@ -218,7 +218,7 @@ import os
 os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
-h = Harness(task="toxicity", 
+h = Harness(task={"task":"text-generation", "category":"toxicity"}, 
             model={"model": "text-davinci-002","hub":"openai"}, 
             data={"data_source" :"toxicity-test-tiny"})
 
@@ -305,7 +305,7 @@ os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="clinical-tests",
+h = Harness(task={"task":"text-generation", "category":"clinical-tests"}, 
             model={"model": "text-davinci-003", "hub": "openai"},
             data = {"data_source": "Gastroenterology-files"})
 
@@ -336,7 +336,7 @@ os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="security",
+h = Harness(task={"task":"text-generation", "category":"security"}, 
             model={'model': "text-davinci-003", "hub": "openai"},
             data={'data_source':'Prompt-Injection-Attack'})
 
@@ -367,7 +367,7 @@ os.environ["AI21_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h  =  Harness(task="disinformation-test",
+h  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
               model={"model": "j2-jumbo-instruct", "hub":"ai21"},
               data = {"data_source": "Narrative-Wedging"})
 
@@ -396,7 +396,7 @@ os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="political", model={'model': "text-davinci-003", "hub": "openai"})
+h = Harness(task={"task":"text-generation", "category":"ideology"}, model={'model': "text-davinci-003", "hub": "openai"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -423,7 +423,7 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h  =  Harness(task="factuality-test",
+h  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
               model = {"model": "text-davinci-003", "hub":"openai"},
               data = {"data_source": "Factual-Summary-Pairs"})
 
@@ -452,7 +452,7 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h  =  Harness(task="sensitivity-test",
+h  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
               model = {"model": "text-davinci-003", "hub":"openai"},
               data = {"data_source": "NQ-open-test-tiny"})
 
@@ -479,7 +479,7 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="wino-bias", model={"model" : "bert-base-uncased", 
+h = Harness(task={"task":"fill-mask", "category":"wino-bias"}, model={"model" : "bert-base-uncased", 
   "hub":"huggingface" } , data = {"data_source":"Wino-test"}, config="wino_config.yml")
 
 # Generate, run and get a report on your test cases
@@ -506,7 +506,7 @@ import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 
 # Create a Harness object
-harness = Harness(task="wino-bias",
+harness = Harness(task={"task":"text-generation", "category":"wino-bias"},
                   model={"model": "text-davinci-003","hub":"openai"},
                   data ={"data_source":"Wino-test"})
 
@@ -536,7 +536,7 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="legal-tests", model={"model" : "text-davinci-002",
+h = Harness(task={"task":"question-answering", "category":"legal-tests"}, model={"model" : "text-davinci-002",
            "hub":"openai"}, data = {"data_source":"Legal-Support-test"})
 
 # Generate, run and get a report on your test cases
@@ -565,7 +565,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(
-            task="sycophancy-test",
+            task={"task":"question-answering", "category":"sycophancy-test"},
             model={"model": "text-davinci-003","hub":"openai"}, 
             data={"data_source": 'synthetic-math-data',}
             )
@@ -593,7 +593,7 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="crows-pairs", model={"model" : "bert-base-uncased", 
+h = Harness(task={"task":"fill-mask", "category":"crows-pairs"}, model={"model" : "bert-base-uncased", 
   "hub":"huggingface" } , data = {"data_source":"Crows-Pairs"})
 
 # Generate, run and get a report on your test cases
