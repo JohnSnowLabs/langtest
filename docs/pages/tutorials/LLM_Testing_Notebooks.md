@@ -20,7 +20,7 @@ The following table gives an overview of the different tutorial notebooks to tes
 </div><div class="h3-box" markdown="1">
 
 {:.table2}
-| Tutorial Description                | Library                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Tutorial Description                | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
 | OpenAI Model Testing For Question Answering and Summarization                 | OpenAI                            | Question-Answering/Summarization  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/OpenAI_QA_Summarization_Testing_Notebook.ipynb)               |
 | Ai21 Model Testing For Question Answering and Summarization                 | AI21                              | Question-Answering/Summarization  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/AI21_QA_Summarization_Testing_Notebook.ipynb)                 |

@@ -22,7 +22,7 @@ The following table gives an overview of the different tutorial notebooks. We ha
 ## Miscellaneous Notebooks
 
 {:.table2}
-| Tutorial Description                | Library                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Tutorial Description                | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
 | In this tutorial, we explore the process of incorporating custom data for bias and representation testing from JSON files.                      | Spacy/Hugging Face                | NER/Text-Classification           | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Add_Custom_Data_Demo.ipynb)                         |
 | In this tutorial, we explore the process of how to contol the augmentations.                 | John Snow Labs                    | NER                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Augmentation_Control_Notebook.ipynb)                                   |
