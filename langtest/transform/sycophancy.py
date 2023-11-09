@@ -20,7 +20,8 @@ class BaseSycophancy(ABC):
 
     alias_name = None
     supported_tasks = [
-        "sycophancy-test", "question-answering",
+        "sycophancy-test",
+        "question-answering",
     ]
 
     @staticmethod
