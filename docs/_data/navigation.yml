@@ -5,7 +5,7 @@ header:
     url: /docs/pages/docs/quickstart
     key: docs
   - title: Tutorials
-    url: /docs/pages/tutorials/tutorials
+    url: /docs/pages/tutorials/test_specific_notebooks
     key: tutorials
   - title: Tests
     url: /docs/pages/tests/test
@@ -89,8 +89,16 @@ docs-menu:
     url: /docs/pages/docs/langtest_versions/release_notes
 
 tutorials:
-  - title: Tutorials
-    url: /docs/pages/tutorials/tutorials
+  - title: Test Specific Notebooks
+    url: /docs/pages/tutorials/test_specific_notebooks
+  - title: LLM Testing Notebooks
+    url: /docs/pages/tutorials/LLM_Testing_Notebooks
+  - title: Benchmark Dataset Notebook
+    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
+  - title: End-to-End Workflow Notebooks
+    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
+  - title: Miscellaneous Notebooks
+    url: /docs/pages/tutorials/Miscellaneous_Notebooks
 
 tests:
   - title: Tests
