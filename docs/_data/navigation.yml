@@ -5,7 +5,7 @@ header:
     url: /docs/pages/docs/quickstart
     key: docs
   - title: Tutorials
-    url: /docs/pages/tutorials/tutorials
+    url: /docs/pages/tutorials/test_specific_notebooks
     key: tutorials
   - title: Tests
     url: /docs/pages/tests/test
