@@ -618,7 +618,7 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task="stereoset", model={"model" : "bert-base-uncased", 
+h = Harness( task={"task":"question-answering", "category":"stereoset"}, model={"model" : "bert-base-uncased", 
   "hub":"huggingface" } , data = {"data_source":"StereoSet"})
 
 # Generate, run and get a report on your test cases
