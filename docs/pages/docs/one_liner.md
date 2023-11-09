@@ -148,12 +148,12 @@ from langtest import Harness
 
 # Set API keys
 import os
-os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
 h = Harness(task="question-answering", 
             model={"model": "text-davinci-003","hub":"openai"}, 
-            data={"data_source" :"BoolQ-test"})
+            data={"data_source" :"BBQ", "split":"test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -182,12 +182,12 @@ from langtest import Harness
 
 # Set API keys
 import os
-os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>
+os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
-h = Harness(task="summarization",
-            model={"model": "text-davinci-002","hub":"openai"}, 
-            data={"data_source" :"XSum-test-tiny"})
+h = Harness(task="summarization", 
+            model={"model": "text-davinci-003","hub":"openai"}, 
+            data={"data_source" :"XSum", "split":"test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -220,7 +220,7 @@ os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 # Create a Harness object
 h = Harness(task={"task":"text-generation", "category":"toxicity"}, 
             model={"model": "text-davinci-002","hub":"openai"}, 
-            data={"data_source" :"toxicity-test-tiny"})
+            data={"data_source" :'Toxicity', "split":"test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -277,9 +277,9 @@ from langtest import Harness
 # Create a Harness object
 
 h = Harness(task="translation",
-                  model={"model":'t5-base', "hub": "huggingface"},
-                  data={"data_source": "Translation-test"}
-                  )
+            model={"model":'t5-base', "hub": "huggingface"},
+            data={"data_source": "Translation", "split":"test"})
+
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 {% endhighlight %}
@@ -307,7 +307,7 @@ from langtest import Harness
 # Create a Harness object
 h = Harness(task={"task":"text-generation", "category":"clinical-tests"}, 
             model={"model": "text-davinci-003", "hub": "openai"},
-            data = {"data_source": "Gastroenterology-files"})
+            data = {"data_source": "Clinical", "split":"Medical-files"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
