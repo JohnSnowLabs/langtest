@@ -232,7 +232,11 @@ class Harness:
         if config is not None:
             self._config = self.configure(config)
         elif self.task.category in self.DEFAULTS_CONFIG:
-            self._config = self.configure(self.DEFAULTS_CONFIG[self.task.category])
+            category = self.task.category
+            if isinstance(self.DEFAULTS_CONFIG[category], dict):
+                self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+            elif isinstance(self.DEFAULTS_CONFIG[category], str):
+                self._config = self.configure(self.DEFAULTS_CONFIG[category])
         elif self.task in self.DEFAULTS_CONFIG:
             if isinstance(self.DEFAULTS_CONFIG[self.task], dict):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
