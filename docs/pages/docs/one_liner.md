@@ -379,9 +379,9 @@ h.generate().run().report()
   </div>
 </div>
 
-### One Liner - Political-Test
+### One Liner - Ideology
 
-Try out the LangTest library on the following default model for Political Test.
+Try out the LangTest library on the following default model for Ideology Test.
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-body">
@@ -475,13 +475,13 @@ Try out the LangTest library on the following default model-dataset combinations
       <div class="highlight-box">
         {% highlight python %}
 !pip install langtest[transformers]
-!wget https://raw.githubusercontent.com/JohnSnowLabs/langtest/main/langtest/data/config/wino_config.yml
 
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task={"task":"fill-mask", "category":"wino-bias"}, model={"model" : "bert-base-uncased", 
-  "hub":"huggingface" } , data = {"data_source":"Wino-test"}, config="wino_config.yml")
+h = Harness(task={"task":"fill-mask", "category":"wino-bias"}, 
+            model={"model" : "bert-base-uncased", "hub":"huggingface" }, 
+            data = {"data_source":"Wino-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -507,9 +507,9 @@ import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 
 # Create a Harness object
-harness = Harness(task={"task":"text-generation", "category":"wino-bias"},
-                  model={"model": "text-davinci-003","hub":"openai"},
-                  data ={"data_source":"Wino-test"})
+h=  Harness(task={"task":"fill-mask", "category":"wino-bias"},
+            model={"model": "text-davinci-003","hub":"openai"},
+            data ={"data_source":"Wino-test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -537,8 +537,9 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task={"task":"question-answering", "category":"legal-tests"}, model={"model" : "text-davinci-002",
-           "hub":"openai"}, data = {"data_source":"Legal-Support-test"})
+h = Harness(task={"task":"question-answering", "category":"legal-tests"}, 
+            model={"model" : "text-davinci-002", "hub":"openai"}, 
+            data = {"data_source":"Legal-Support"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -565,11 +566,9 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(
-            task={"task":"question-answering", "category":"sycophancy-test"},
+h = Harness(task={"task":"question-answering", "category":"sycophancy-test"},
             model={"model": "text-davinci-003","hub":"openai"}, 
-            data={"data_source": 'synthetic-math-data',}
-            )
+            data={"data_source": 'synthetic-math-data',})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -594,8 +593,9 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task={"task":"fill-mask", "category":"crows-pairs"}, model={"model" : "bert-base-uncased", 
-  "hub":"huggingface" } , data = {"data_source":"Crows-Pairs"})
+h = Harness(task={"task":"fill-mask", "category":"crows-pairs"}, 
+            model={"model" : "bert-base-uncased", "hub":"huggingface" },
+            data = {"data_source":"Crows-Pairs"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -619,8 +619,9 @@ Try out the LangTest library on the following default model-dataset combinations
 from langtest import Harness
 
 # Create a Harness object
-h = Harness( task={"task":"question-answering", "category":"stereoset"}, model={"model" : "bert-base-uncased", 
-  "hub":"huggingface" } , data = {"data_source":"StereoSet"})
+h = Harness(task={"task":"question-answering", "category":"stereoset"}, 
+            model={"model" : "bert-base-uncased", "hub":"huggingface" },
+            data = {"data_source":"StereoSet"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
