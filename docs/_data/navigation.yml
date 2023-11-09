@@ -93,7 +93,7 @@ tutorials:
     url: /docs/pages/tutorials/test_specific_notebooks
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_Testing_Notebooks
-  - title: Benchmark Dataset Notebook
+  - title: Benchmark Dataset Notebooks
     url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
   - title: End-to-End Workflow Notebooks
     url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
