@@ -100,8 +100,8 @@ class TestFactory:
         all_results = []
         all_categories = TestFactory.test_categories()
         test_names = list(test_types.keys())
-        if TestFactory.task is None:
-            TestFactory.task = task
+        TestFactory.task = task
+
         if "defaults" in test_names:
             test_names.pop(test_names.index("defaults"))
         tests = tqdm(
