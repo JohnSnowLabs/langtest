@@ -463,7 +463,7 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
 
-        if self.task == "political":
+        if self.task.category == "ideology":
             self.df_report = report.political_report(self._generated_results)
             return self.df_report
 
