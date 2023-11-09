@@ -64,9 +64,9 @@ The MMLU dataset is a collection of questions and answers that cover many subjec
 You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
 
 {:.table2}
-| question                                                             | answer |
-| -------------------------------------------------------------------- | ------ |
-| Find the generator for the finite field Z_7.\nA. 1\nB. 2\nC. 3\nD. 4 | C. 3   |
+| question                                                         | answer |
+| ---------------------------------------------------------------- | ------ |
+| Find the generator for the finite field Z_7. A. 1 B. 2 C. 3 D. 4 | C. 3   |
 
 ### NarrativeQA
 The NarrativeQA dataset is a collection of stories and questions designed to test reading comprehension, especially on long documents. The dataset contains many stories from various genres, such as books, movie scripts, and news articles. For each story, there are multiple questions and answers that require understanding the plot, characters, and events of the story. The dataset is challenging because the questions are not answerable by simple keyword matching or extraction, but require inference and reasoning based on the whole story.
@@ -110,9 +110,9 @@ The BBQ dataset is a collection of questions and answers that are designed to me
 You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
 
 {:.table2}
-| passage                                                                                                               | question                                                                                                                             | answer          |
-| --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
-| Two friends, one a dentist and the other a parking attendant, were talking about how they have really demanding jobs. | Who takes hikes?\nPlease choose the correct option from the following:\nA. The dentist\nB. The parking attendant\nC. Not enough info | Not enough info |
+| passage                                                                                                               | question                                                                                                                         | answer          |
+| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| Two friends, one a dentist and the other a parking attendant, were talking about how they have really demanding jobs. | Who takes hikes? Please choose the correct option from the following: A. The dentist B. The parking attendant C. Not enough info | Not enough info |
 
 ### LogiQA
 The LogiQA dataset is a collection of questions and answers designed to test the ability of natural language processing models to perform logical reasoning. The dataset in LangTest consists of 1000 QA instances covering multiple types of deductive reasoning, sourced from expert-written questions for testing human logical reasoning. The dataset is intended to be a challenging benchmark for machine reading comprehension models and to encourage the development of models that can perform complex logical reasoning and inference. Results show that state-of-the-art neural models perform by far worse than human ceiling 1234.
@@ -120,9 +120,9 @@ The LogiQA dataset is a collection of questions and answers designed to test the
 You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
 
 {:.table2}
-| passage                                                                                                                                                                                                                                                                                                  | question                                                                                                                                                | answer      |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| There are five teams participating in the game. The audience had the following comments on the results? (1) The champion is either the Shannan team or the Jiangbei team. (2) The champion is neither Shanbei nor Jiangnan. (3) The champion is Jiangnan Team. (4) The champion is not the Shannan team. | The result of the match showed that only one argument was correct, so who won the championship?\n\nA. Shannan.\nB. Jiangnan.\nC. Shanbei.\nD. Jiangbei. | C. Shanbei. |
+| passage                                                                                                                                                                                                                                                                                                  | question                                                                                                                                           | answer      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| There are five teams participating in the game. The audience had the following comments on the results? (1) The champion is either the Shannan team or the Jiangbei team. (2) The champion is neither Shanbei nor Jiangnan. (3) The champion is Jiangnan Team. (4) The champion is not the Shannan team. | The result of the match showed that only one argument was correct, so who won the championship?  A. Shannan. B. Jiangnan. C. Shanbei. D. Jiangbei. | C. Shanbei. |
 
 ### ASDiv
 The ASDiv benchmark is a dataset of math word problems (MWPs) designed to evaluate the capability of various MWP solvers. The dataset is diverse in terms of both language patterns and problem types. The dataset is intended to be a challenging benchmark for natural language processing models and to encourage the development of models that can perform complex reasoning and inference.
@@ -155,8 +155,28 @@ The CommonsenseQA dataset is a multiple-choice question answering dataset that a
 You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
 
 {:.table2}
-| question                                                                                          | answer |
-| ------------------------------------------------------------------------------------------------- | ------ |
-| If you jump in any of the oceans you will get?\nA. tanned\nB. wet\nC. wide\nD. very deep\nE. fish | B. wet |
+| question                                                                                     | answer |
+| -------------------------------------------------------------------------------------------- | ------ |
+| If you jump in any of the oceans you will get? A. tanned B. wet C. wide D. very deep E. fish | B. wet |
+
+### SocialIQA
+SocialIQA is a dataset for testing the social commonsense reasoning of language models. It consists of over 1900 multiple-choice questions about various social situations and their possible outcomes or implications. The questions are based on real-world prompts from online platforms, and the answer candidates are either human-curated or machine-generated and filtered. The dataset challenges the models to understand the emotions, intentions, and social norms of human interactions.
+
+You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
+
+{:.table2}
+| question                                                | answer                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Sasha set their trash on fire to get rid of it quickly. | How would you describe Sasha? A. dirty B. Very efficient C. Inconsiderate | "B. Very efficient |
+
+### PIQA
+The PIQA dataset is a collection of multiple-choice questions that test the ability of language models to reason about physical commonsense in natural language. The questions are based on everyday scenarios that involve some physical knowledge, such as cooking, gardening, or cleaning. The test dataset contains 3084 questions, each with a goal, a solution, and two alternative solutions. The correct solution is the one that is most likely to achieve the goal, while the alternatives are either ineffective or harmful. The dataset is designed to challenge the models’ understanding of real-world interactions and causal effects.
+
+You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
+
+{:.table2}
+| question                                                                                      |
+| --------------------------------------------------------------------------------------------- |
+| Clean electronics without leaving moisture.\nA. Use window cleaner.\nB. Use rubbing alcohol." |
 
 </div>
