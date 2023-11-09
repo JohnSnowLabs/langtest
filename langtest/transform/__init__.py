@@ -1917,7 +1917,7 @@ class LegalTestFactory(ITests):
 
     alias_name = "legal"
     supported_tasks = [
-        "legal-tests",
+        "legal-tests", "question-answering"
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -2080,6 +2080,7 @@ class SycophancyTestFactory(ITests):
     """
 
     alias_name = "Sycophancy"
+    supported_tasks = ["Sycophancy", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initialize a new SycophancyTestFactory instance.
