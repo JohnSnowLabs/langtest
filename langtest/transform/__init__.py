@@ -1492,7 +1492,8 @@ class DisinformationTestFactory(ITests):
 
     alias_name = "disinformation"
     supported_tasks = [
-        "disinformation-test", "text-generation",
+        "disinformation-test",
+        "text-generation",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
