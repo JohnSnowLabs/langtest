@@ -20,7 +20,7 @@ from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
 from .toxicity import BaseToxicity
-from .political import BasePolitical
+from .ideology import BaseIdeology
 from .sensitivity import BaseSensitivity
 from .sycophancy import BaseSycophancy
 from .constants import (
@@ -100,8 +100,8 @@ class TestFactory:
         all_results = []
         all_categories = TestFactory.test_categories()
         test_names = list(test_types.keys())
-        if TestFactory.task is None:
-            TestFactory.task = task
+        TestFactory.task = task
+
         if "defaults" in test_names:
             test_names.pop(test_names.index("defaults"))
         tests = tqdm(
@@ -1414,6 +1414,7 @@ class ClinicalTestFactory(ITests):
     alias_name = "clinical"
     supported_tasks = [
         "clinical-tests",
+        "text-generation",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1530,10 +1531,10 @@ class DisinformationTestFactory(ITests):
         return sample_list["narrative_wedging"]
 
 
-class PoliticalTestFactory(ITests):
+class IdeologyTestFactory(ITests):
     """Factory class for the clinical tests"""
 
-    alias_name = "political"
+    alias_name = "ideology"
     supported_tasks = ["question_answering", "summarization"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1590,7 +1591,7 @@ class PoliticalTestFactory(ITests):
 
         tests = {
             j: i
-            for i in BasePolitical.__subclasses__()
+            for i in BaseIdeology.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
@@ -1672,7 +1673,7 @@ class SensitivityTestFactory(ITests):
             transformed_samples = data_handler_copy
 
             new_transformed_samples, removed_samples_tests = filter_unique_samples(
-                TestFactory.task, transformed_samples, test_name
+                TestFactory.task.category, transformed_samples, test_name
             )
             all_samples.extend(new_transformed_samples)
 
@@ -1705,98 +1706,19 @@ class SensitivityTestFactory(ITests):
         return tests
 
 
-class WinoBiasTestFactory(ITests):
-    """Factory class for the wino-bias tests"""
+class StereoTypeFactory(ITests):
+    """Factory class for the crows-pairs or wino-bias tests"""
 
-    alias_name = "wino-bias"
+    alias_name = "stereotype"
     supported_tasks = [
         "wino-bias",
-    ]
-
-    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the wion-bias tests"""
-
-        self.data_handler = data_handler
-        self.tests = tests
-        self.kwargs = kwargs
-
-    def transform(self) -> List[Sample]:
-        """Nothing to use transform for no longer to generating testcases.
-
-        Returns:
-            Empty list
-
-        """
-        for sample in self.data_handler:
-            sample.test_type = "gender-occupational-stereotype"
-            sample.category = "wino-bias"
-            if "diff_threshold" in self.tests["gender-occupational-stereotype"].keys():
-                sample.diff_threshold = self.tests["gender-occupational-stereotype"][
-                    "diff_threshold"
-                ]
-        return self.data_handler
-
-    @classmethod
-    async def run(
-        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
-        """Runs the wino-bias tests
-
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the wino-bias tests
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented wino-bias tests
-
-        """
-        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
-        return task
-
-    @classmethod
-    def available_tests(cls) -> Dict[str, str]:
-        """Returns the empty dict, no wino-bias tests
-
-        Returns:
-            Dict[str, str]: Empty dict, no wino-bias tests
-        """
-        return {"gender-occupational-stereotype": cls}
-
-    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
-        """Runs the clinical tests
-
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the wino-bias tests
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented wino-bias tests
-
-        """
-        progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["gender-occupational-stereotype"]:
-            if sample.state != "done":
-                if hasattr(sample, "run"):
-                    sample_status = sample.run(model, **kwargs)
-                    if sample_status:
-                        sample.state = "done"
-            if progress:
-                progress.update(1)
-        return sample_list["gender-occupational-stereotype"]
-
-
-class CrowsPairsTestFactory(ITests):
-    """Factory class for the crows-pairs tests"""
-
-    alias_name = "crows-pairs"
-    supported_tasks = [
         "crows-pairs",
+        "fill-mask",
+        "question-answering",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the crows-pairs tests"""
+        """Initializes the crows-pairs or wino-bias tests"""
 
         self.data_handler = data_handler
         self.tests = tests
@@ -1810,29 +1732,32 @@ class CrowsPairsTestFactory(ITests):
 
         """
         for sample in self.data_handler:
-            sample.test_type = "common-stereotypes"
-            sample.category = "crows-pairs"
-            if "diff_threshold" in self.tests["common-stereotypes"].keys():
-                sample.diff_threshold = self.tests["common-stereotypes"]["diff_threshold"]
-            if "filter_threshold" in self.tests["common-stereotypes"].keys():
-                sample.filter_threshold = self.tests["common-stereotypes"][
-                    "filter_threshold"
-                ]
+            if sample.test_type == "crows-pairs":
+                if "diff_threshold" in self.tests["crows-pairs"].keys():
+                    sample.diff_threshold = self.tests["crows-pairs"]["diff_threshold"]
+                if "filter_threshold" in self.tests["crows-pairs"].keys():
+                    sample.filter_threshold = self.tests["crows-pairs"][
+                        "filter_threshold"
+                    ]
+            else:
+                if "diff_threshold" in self.tests["wino-bias"].keys():
+                    sample.diff_threshold = self.tests["wino-bias"]["diff_threshold"]
+
         return self.data_handler
 
     @classmethod
     async def run(
         cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
-        """Runs the crows-pairs tests
+        """Runs the crows-pairs or wino-bias  tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the crows-pairs tests
+            **kwargs: Additional arguments to be passed to the crows-pairs or wino-bias tests
 
         Returns:
-            List[Sample]: The transformed data based on the implemented crows-pairs tests
+            List[Sample]: The transformed data based on the implemented crows-pairs or wino-bias tests
 
         """
         task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
@@ -1840,42 +1765,59 @@ class CrowsPairsTestFactory(ITests):
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
-        """Returns the empty dict, no crows-pairs tests
+        """Returns the empty dict, no crows-pairs or wino-bias tests
 
         Returns:
-            Dict[str, str]: Empty dict, no crows-pairs tests
+            Dict[str, str]: Empty dict, no crows-pairs or wino-bias tests
         """
-        return {"common-stereotypes": cls}
+
+        return {"crows-pairs": cls, "wino-bias": cls}
 
     @staticmethod
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
-        """Runs the clinical tests
+        """Runs the crows-pairs or wino-bias tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the crows-pairs tests
+            **kwargs: Additional arguments to be passed to the crows-pairs or wino-bias tests
 
         Returns:
-            List[Sample]: The transformed data based on the implemented crows-pairs tests
+            List[Sample]: The transformed data based on the implemented crows-pairs or wino-biastests
 
         """
         progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["common-stereotypes"]:
-            if sample.state != "done":
-                if hasattr(sample, "run"):
-                    sample_status = sample.run(model, **kwargs)
-                    if sample_status:
-                        sample.state = "done"
-            if progress:
-                progress.update(1)
+        for key, value in sample_list.items():
+            if key == "crows-pairs":
+                for sample in value:
+                    if sample.state != "done":
+                        if hasattr(sample, "run"):
+                            sample_status = sample.run(model, **kwargs)
+                            if sample_status:
+                                sample.state = "done"
+                    if progress:
+                        progress.update(1)
 
-        sample_list["common-stereotypes"] = [
-            x
-            for x in sample_list["common-stereotypes"]
-            if (x.mask1_score > x.filter_threshold or x.mask2_score > x.filter_threshold)
-        ]
-        return sample_list["common-stereotypes"]
+                sample_list["crows-pairs"] = [
+                    x
+                    for x in sample_list["crows-pairs"]
+                    if (
+                        x.mask1_score > x.filter_threshold
+                        or x.mask2_score > x.filter_threshold
+                    )
+                ]
+                return sample_list["crows-pairs"]
+        else:
+            for sample in value:
+                if sample.state != "done":
+                    if hasattr(sample, "run"):
+                        sample_status = sample.run(model, **kwargs)
+                        if sample_status:
+                            sample.state = "done"
+                if progress:
+                    progress.update(1)
+
+            return sample_list["wino-bias"]
 
 
 class StereoSetTestFactory(ITests):
@@ -1884,6 +1826,7 @@ class StereoSetTestFactory(ITests):
     alias_name = "stereoset"
     supported_tasks = [
         "stereoset",
+        "question-answering",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -1937,12 +1880,12 @@ class StereoSetTestFactory(ITests):
 
     @staticmethod
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
-        """Runs the clinical tests
+        """Runs the StereoSet tests
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
             model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the crows-pairs tests
+            **kwargs: Additional arguments to be passed to the StereoSet tests
 
         Returns:
             List[Sample]: The transformed data based on the implemented crows-pairs tests
@@ -1974,9 +1917,7 @@ class LegalTestFactory(ITests):
     """Factory class for the legal tests"""
 
     alias_name = "legal"
-    supported_tasks = [
-        "legal-tests",
-    ]
+    supported_tasks = ["legal-tests", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the legal tests"""
@@ -2052,9 +1993,7 @@ class FactualityTestFactory(ITests):
     """Factory class for factuality test"""
 
     alias_name = "factuality"
-    supported_tasks = [
-        "factuality-test",
-    ]
+    supported_tasks = ["factuality-test", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the factuality-test"""
@@ -2140,6 +2079,7 @@ class SycophancyTestFactory(ITests):
     """
 
     alias_name = "Sycophancy"
+    supported_tasks = ["Sycophancy", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initialize a new SycophancyTestFactory instance.

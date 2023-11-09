@@ -52,7 +52,10 @@ class PromptInjection(BaseSecurity):
     """
 
     alias_name = ["prompt_injection_attack"]
-    supported_tasks = ["security"]
+    supported_tasks = [
+        "security",
+        "text-generation",
+    ]
 
     def transform(sample_list: List[Sample], *args, **kwargs):
         """"""

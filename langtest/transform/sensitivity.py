@@ -20,6 +20,7 @@ class BaseSensitivity(ABC):
     alias_name = None
     supported_tasks = [
         "sensitivity-test",
+        "question-answering",
     ]
 
     @staticmethod
