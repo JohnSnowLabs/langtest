@@ -10,6 +10,9 @@ header:
   - title: Tests
     url: /docs/pages/tests/test
     key: tests
+  - title: Benchmarks
+    url: /docs/pages/benchmarks/benchmark
+    key: benchmarks
   - title: Blog
     url: https://www.johnsnowlabs.com/responsible-ai-blog/
     key: blog
@@ -89,7 +92,6 @@ tutorials:
   - title: Tutorials
     url: /docs/pages/tutorials/tutorials
 
-
 tests:
   - title: Tests
     url: /docs/pages/tests/test
@@ -125,3 +127,14 @@ tests:
     url: /docs/pages/tests/legal
   - title: Sycophancy 
     url: /docs/pages/tests/sycophancy
+
+benchmarks:
+  - title: Benchmarks
+    url: /docs/pages/benchmarks/benchmark
+    children:
+      - title: BoolQ
+        url: /docs/pages/benchmarks/boolq
+      - title: Natural Questions
+        url: /docs/pages/benchmarks/natural_questions
+
+  
