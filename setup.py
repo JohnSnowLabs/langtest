@@ -171,7 +171,7 @@ setup(
             "data/BoolQ/*",
             "data/NQ-open/*",
             "data/config/*",
-            "data/Xsum/*",
+            "data/XSum/*",
             "data/HellaSwag/*",
             "data/Toxicity/*",
             "data/TruthfulQA/*",
