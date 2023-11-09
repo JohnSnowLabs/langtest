@@ -2,6 +2,10 @@
   <img src="https://github.com/RakshitKhajuria/test/assets/71117423/4e759227-de04-4ba6-8f41-bf33b948d614" alt="johnsnowlabs_logo" width="360" style="text-align:center;">
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png" alt="Image" />
+</p>
+
 <div align="center">
   <h1 style="text-align: center; vertical-align: middle;">LangTest: Deliver Safe & Effective Language Models</h1>
 </div>
@@ -142,9 +146,10 @@ You can check out the following langtest articles:
 | [**Unveiling Bias in Language Models: Gender, Race, Disability, and Socioeconomic Perspectives**](https://medium.com/john-snow-labs/unveiling-bias-in-language-models-gender-race-disability-and-socioeconomic-perspectives-af0206ed0feb) | In this blog post, we explore bias in Language Models, focusing on gender, race, disability, and socioeconomic factors. We assess this bias using the CrowS-Pairs dataset, designed to measure stereotypical biases. To address these biases, we discuss the importance of tools like LangTest in promoting fairness in NLP systems. |
 | [**Unmasking the Biases Within AI: How Gender, Ethnicity, Religion, and Economics Shape NLP and Beyond**](https://medium.com/@chakravarthik27/cf69c203f52c) | In this blog post, we tackle AI bias on how Gender, Ethnicity, Religion, and Economics Shape NLP systems. We discussed strategies for reducing bias and promoting fairness in AI systems. |
 > **Note**
-> To checkout all blogs, head over to [Blogs](https://www.johnsnowlabs.com/responsible-ai-blog/)
+> To check all blogs, head over to [Blogs](https://www.johnsnowlabs.com/responsible-ai-blog/)
 
-## Contributing
+
+## Contributing to LangTest
 
 We welcome all sorts of contributions:
 
@@ -154,7 +159,14 @@ We welcome all sorts of contributions:
 - [Documentation](https://www.example.com/documentation)
 - [Bug reports](https://www.example.com/bug-reports)
 
-Feel free to clone the repo and submit pull-requests! You can also contribute by simply opening an [issue](https://github.com/JohnSnowLabs/langtest/issues) or [discussion](https://github.com/JohnSnowLabs/langtest/discussions) in this repo.
+A detailed overview of contributing can be found in the **[contributing guide](https://github.com/JohnSnowLabs/langtest/blob/main/CONTRIBUTING.md)**.
+
+If you are looking to start working with the LangTest codebase, navigate to the GitHub ["issues"](https://github.com/JohnSnowLabs/langtest/issues) tab and start looking through interesting issues. There are a number of issues listed under where you could start out.
+Or maybe through using LangTest you have an idea of your own or are looking for something in the documentation and thinking ‘This can be improved’...you can do something about it!
+
+Feel free to ask questions on the [Q&A](https://github.com/JohnSnowLabs/langtest/discussions/categories/q-a) discussions.
+
+As contributors and maintainers to this project, you are expected to abide by LangTest's code of conduct. More information can be found at: [Contributor Code of Conduct](https://github.com/JohnSnowLabs/langtest/blob/release/1.8.0/CODE_OF_CONDUCT.md)
 
 ## Contributors
 
