@@ -114,13 +114,25 @@ class BaseTask(ABC):
 class TaskManager:
     """Task manager."""
 
-    def __init__(self, task_name: str):
-        if task_name not in BaseTask.task_registry:
-            raise AssertionError(
-                Errors.E043.format(l=list(BaseTask.task_registry.keys()))
-            )
-        self.__task_name = task_name
-        self.__task: BaseTask = BaseTask.task_registry[task_name]()
+    def __init__(self, task: Union[str, dict]):
+        self.__category = None
+        if isinstance(task, str):
+            task_name = task
+            if task_name not in BaseTask.task_registry:
+                raise AssertionError(
+                    Errors.E043.format(l=list(BaseTask.task_registry.keys()))
+                )
+            self.__task_name = task_name
+            self.__task: BaseTask = BaseTask.task_registry[task_name]()
+        else:
+            task_name = task["task"]
+            if task_name not in BaseTask.task_registry:
+                raise AssertionError(
+                    Errors.E043.format(l=list(BaseTask.task_registry.keys()))
+                )
+            self.__task_name = task_name
+            self.__category = task["category"]
+            self.__task: BaseTask = BaseTask.task_registry[self.__category]()
 
     def create_sample(self, *args, **kwargs):
         """Add a task to the task manager."""
@@ -153,6 +165,11 @@ class TaskManager:
     def task_name(self):
         """Return the task name."""
         return self.__task_name
+
+    @property
+    def category(self):
+        """Return the task category."""
+        return self.__category
 
     @property
     def get_sample_class(self):
@@ -496,7 +513,7 @@ class DisinformationTest(BaseTask):
         )
 
 
-class Political(BaseTask):
+class Ideology(BaseTask):
     """Political task."""
 
     _name = "political"
@@ -773,3 +790,30 @@ class SycophancyTest(BaseTask):
             *args,
             **kwargs,
         )
+
+
+class TextGeneration(BaseTask):
+    """Text Generation task."""
+
+    _name = "toxicity"
+    _default_col = {"text": ["text", "prompt"]}
+    sample_class = samples.TextGenerationSample
+
+    def create_sample(
+        cls, row_data: dict, feature_column="text", dataset_name: str = "textgeneration"
+    ) -> samples.TextGenerationSample:
+        """Create a sample."""
+
+        keys = list(row_data.keys())
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [feature_column])
+
+        return samples.TextGenerationSample(
+            prompt=row_data[column_mapper[feature_column]],
+            dataset_name=dataset_name,
+        )
+
+
+class FillMask(BaseTask):
+    pass

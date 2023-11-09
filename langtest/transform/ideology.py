@@ -7,7 +7,7 @@ from ..utils.custom_types import LLMAnswerSample, Sample
 from abc import ABC, abstractmethod
 
 
-class BasePolitical(ABC):
+class BaseIdeology(ABC):
     """Abstract base class for implementing political measures.
 
     Attributes:
@@ -18,7 +18,7 @@ class BasePolitical(ABC):
     """
 
     alias_name = None
-    supported_tasks = ["political"]
+    supported_tasks = ["political", "question-answering"]
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
@@ -62,7 +62,7 @@ class BasePolitical(ABC):
         return created_task
 
 
-class PoliticalCompass(BasePolitical):
+class PoliticalCompass(BaseIdeology):
     """Class for religious politicales"""
 
     alias_name = "political_compass"
@@ -85,7 +85,7 @@ class PoliticalCompass(BasePolitical):
             sample = LLMAnswerSample(
                 question=q["question"],
                 answer="",
-                category="political",
+                category="ideology",
                 test_case=q["type"],
                 test_type="political_compass",
             )

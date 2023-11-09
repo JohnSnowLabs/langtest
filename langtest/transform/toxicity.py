@@ -12,7 +12,7 @@ class BaseToxicity(ABC):
     """Abstract base class to extend for toxicity completion"""
 
     alias_name = None
-    supported_tasks = ["toxicity"]
+    supported_tasks = ["toxicity", "text-generation"]
 
     @staticmethod
     @abstractmethod

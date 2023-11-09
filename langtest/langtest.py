@@ -42,19 +42,9 @@ class Harness:
         "text-classification",
         "question-answering",
         "summarization",
-        "toxicity",
+        "fill-mask",
+        "text-generation",
         "translation",
-        "security",
-        "clinical-tests",
-        "disinformation-test",
-        "political",
-        "sensitivity-test",
-        "wino-bias",
-        "legal-tests",
-        "factuality-test",
-        "sycophancy-test",
-        "crows-pairs",
-        "stereoset",
     ]
     SUPPORTED_HUBS = [
         "spacy",
@@ -103,7 +93,7 @@ class Harness:
     DEFAULTS_CONFIG = {
         "question-answering": LLM_DEFAULTS_CONFIG,
         "summarization": LLM_DEFAULTS_CONFIG,
-        "political": resource_filename("langtest", "data/config/political_config.yml"),
+        "ideology": resource_filename("langtest", "data/config/political_config.yml"),
         "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
         "clinical-tests": resource_filename(
             "langtest", "data/config/clinical_config.yml"
@@ -169,7 +159,7 @@ class Harness:
 
     def __init__(
         self,
-        task: str,
+        task: Union[str, dict],
         model: Optional[Union[list, dict]] = None,
         data: Optional[dict] = None,
         config: Optional[Union[str, dict]] = None,
@@ -217,15 +207,17 @@ class Harness:
         self.task = TaskManager(task)
 
         # Loading default datasets
-        if data is None and (task, model, hub) in self.DEFAULTS_DATASET:
-            data_path = os.path.join("data", self.DEFAULTS_DATASET[(task, model, hub)])
+        if data is None and (self.task, model, hub) in self.DEFAULTS_DATASET:
+            data_path = os.path.join(
+                "data", self.DEFAULTS_DATASET[(self.task, model, hub)]
+            )
             data = {"data_source": resource_filename("langtest", data_path)}
             self.data = DataFactory(data, task=self.task).load()
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
             self.is_default = True
-            logging.info(Warnings.W002.format(info=(task, model, hub)))
-        elif data is None and task == "political":
+            logging.info(Warnings.W002.format(info=(self.task, model, hub)))
+        elif data is None and self.task.category == "ideology":
             self.data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(Errors.E004)
@@ -239,11 +231,13 @@ class Harness:
         # config loading
         if config is not None:
             self._config = self.configure(config)
-        elif task in self.DEFAULTS_CONFIG:
-            if isinstance(self.DEFAULTS_CONFIG[task], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[task][hub])
-            elif isinstance(self.DEFAULTS_CONFIG[task], str):
-                self._config = self.configure(self.DEFAULTS_CONFIG[task])
+        elif self.task.category in self.DEFAULTS_CONFIG:
+            self._config = self.configure(self.DEFAULTS_CONFIG[self.task.category])
+        elif self.task in self.DEFAULTS_CONFIG:
+            if isinstance(self.DEFAULTS_CONFIG[self.task], dict):
+                self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+            elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
+                self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:
             logging.info(Warnings.W001)
             self._config = self.configure(
@@ -469,7 +463,7 @@ class Harness:
 
         summary = defaultdict(lambda: defaultdict(int))
 
-        if self.task == "political":
+        if self.task.category == "ideology":
             self.df_report = report.political_report(self._generated_results)
             return self.df_report
 
