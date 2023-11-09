@@ -275,10 +275,10 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='question-answering',
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
-                  data={"data_source":'BoolQ-test'}, 
-                  config='config.yml')
+harness = Harness(task="question-answering", 
+                  model={"model": "text-davinci-003", "hub":"openai"}, 
+                  data={"data_source" :"BBQ", "split":"test-tiny"}, config='config.yml')
+
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -318,10 +318,12 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='summarization',
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
-                  data={"data_source":'XSum-test-tiny'}, 
+harness = Harness(task="summarization", 
+                  model={"model": "text-davinci-003","hub":"openai"}, 
+                  data={"data_source" :"XSum", "split":"test-tiny"},
                   config='config.yml')
+   
+
 ```
 
 #### Passing a Hugging Face Dataset for Summarization to the Harness
@@ -373,9 +375,10 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='toxicity',
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
-                  data={"data_source":'toxicity-test-tiny'})
+harness = Harness(task={"task":"text-generation", "category":"toxicity"}, 
+                  model={"model": "text-davinci-002","hub":"openai"}, 
+                  data={"data_source" :'Toxicity', "split":"test"})
+
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -410,13 +413,14 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='disinformation-test',
-                  model={"model": "j2-jumbo-instruct", "hub":"ai21"},
-                  data={"data_source": "Narrative-Wedging"})
+harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
+                    model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+                    data = {"data_source": "Narrative-Wedging"})
+
 ```
 </div><div class="h3-box" markdown="1">
 
-### Political Test
+### Ideology Test
 
 This test evaluates the model's political orientation. There is one default dataset used for this test.
 
@@ -425,20 +429,20 @@ This test evaluates the model's political orientation. There is one default data
 {:.table2}
 | Dataset                         | Source                                                                                  | Description                                                      |
 | ------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Political Compass Questions** | [3 Axis Political Compass Test](https://github.com/SapplyValues/SapplyValues.github.io) | Political Compass questions, containing 40 questions for 2 axes. |
+| **Ideology Compass Questions** | [3 Axis Political Compass Test](https://github.com/SapplyValues/SapplyValues.github.io) | Political Compass questions, containing 40 questions for 2 axes. |
 
 </div><div class="h3-box" markdown="1">
 
 #### Passing a Disinformation Dataset to the Harness
 
-In political test, the data is automatically loaded since there is only one dataset available for now:
+In ideology test, the data is automatically loaded since there is only one dataset available for now:
 
 ```python
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='political',
-                  model={"model": "j2-jumbo-instruct", "hub":"ai21"})
+harness = Harness(task={"task":"question-answering", "category":"ideology"}, 
+            model={'model': "text-davinci-003", "hub": "openai"})
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -473,9 +477,9 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='factuality-test',
-                  model={"model": "text-davinci-003", "hub":"openai"},
-                  data={"data_source": "Factual-Summary-Pairs"})
+harness  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
+                    model = {"model": "text-davinci-003", "hub":"openai"},
+                    data = {"data_source": "Factual-Summary-Pairs"})
 ```
 </div><div class="h3-box" markdown="1">
 
@@ -516,9 +520,9 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='sensitivity-test',
-                  model={"model": "text-davinci-003", "hub":"openai"},
-                  data = {"data_source": "NQ-open-test-tiny"})
+harness  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
+                    model = {"model": "text-davinci-003", "hub":"openai"},
+                    data={"data_source" :"NQ-open","split":"test-tiny"})
 ```
 
 ### Sycophancy Test
@@ -544,10 +548,8 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(
-                  task="sycophancy-test",
+harness = Harness(task={"task":"question-answering", "category":"sycophancy-test"},
                   model={"model": "text-davinci-003","hub":"openai"}, 
-                  data={"data_source": 'synthetic-math-data',}
-                  )
+                  data={"data_source": 'synthetic-math-data',})
 ```
 </div></div>
