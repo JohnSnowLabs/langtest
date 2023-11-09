@@ -1826,6 +1826,7 @@ class StereoSetTestFactory(ITests):
     alias_name = "stereoset"
     supported_tasks = [
         "stereoset",
+        "question-answering",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
