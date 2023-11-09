@@ -11,7 +11,6 @@ from typing import Optional
 
 import jsonlines
 import pandas as pd
-from langtest.exceptions.datasets import InvaildDataError
 from langtest.tasks.task import TaskManager
 from langtest.transform.constants import DATASETS
 
@@ -30,6 +29,7 @@ from langtest.utils.custom_types import (
     SycophancySample,
 )
 from ..utils.lib_manager import try_import_lib
+from ..errors import Warnings, Errors
 
 COLUMN_MAPPER = {
     "text-classification": {
@@ -145,6 +145,7 @@ class DataFactory:
     """
 
     data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
+    CURATED_DATASETS = ["BoolQ-bias", "XSum-bias"]
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
@@ -154,12 +155,10 @@ class DataFactory:
             task (str): Task to be evaluated.
         """
         if not isinstance(file_path, dict):
-            raise ValueError("'file_path' must be a dictionary.")
+            raise ValueError(Errors.E024)
 
         if "data_source" not in file_path:
-            raise ValueError(
-                "The 'data_source' key must be provided in the 'file_path' dictionary."
-            )
+            raise ValueError(Errors.E025)
         self._custom_label = file_path
         self._file_path = file_path.get("data_source")
 
@@ -171,6 +170,12 @@ class DataFactory:
             elif "source" in file_path:
                 self.file_ext = file_path["source"]
                 self._file_path = file_path
+            elif self._file_path in ("synthetic-math-data", "synthetic-nlp-data"):
+                self.file_ext = "syntetic"
+                self._file_path = file_path
+            elif self._file_path in self.CURATED_DATASETS:
+                self.file_ext = "curated"
+                self._file_path = file_path.get("data_source")
             else:
                 self._file_path = self._load_dataset(self._file_path)
                 _, self.file_ext = os.path.splitext(self._file_path)
@@ -192,16 +197,16 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
-        # if "data_source" in self._file_path:
-        #     if isinstance(self._file_path["data_source"], list):
-        #         return self._file_path
-        # elif isinstance(self._file_path, list):
-        #     return self._file_path
 
         if len(self._custom_label) > 1 and self.file_ext == "csv":
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
+        elif self._file_path in self.CURATED_DATASETS and self.task in (
+            "question-answering",
+            "summarization",
+        ):
+            return DataFactory.load_curated_bias(self._file_path)
         else:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._file_path, task=self.task, **self.kwargs
@@ -275,13 +280,15 @@ class DataFactory:
             List[Sample]: list of processed samples
         """
         data = []
-        warning_message = ""
         for item in bias_data:
             if item.test_type in tests_to_filter:
                 data.append(item)
-
-        warning_message += f"Filtering provided bias tests from {len(bias_data)} samples - {len(bias_data) - len(data)} samples removed "
-        logging.warning(warning_message)
+        logging.warning(
+            Warnings.W003.format(
+                len_bias_data=len(bias_data),
+                len_samples_removed=len(bias_data) - len(data),
+            )
+        )
         return data
 
     @classmethod
@@ -443,9 +450,7 @@ class ConllDataset(BaseDataset):
                     valid_tokens, token_list = self.__token_validation(tokens)
 
                     if not valid_tokens:
-                        logging.warning(
-                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
-                        )
+                        logging.warning(Warnings.W004.format(sent=sent))
                         continue
 
                     #  get token and labels from the split
@@ -487,9 +492,7 @@ class ConllDataset(BaseDataset):
                     valid_tokens, token_list = self.__token_validation(tokens)
 
                     if not valid_tokens:
-                        logging.warning(
-                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
-                        )
+                        logging.warning(Warnings.W004.format(sent=sent))
                         continue
 
                     #  get token and labels from the split
@@ -563,10 +566,7 @@ class ConllDataset(BaseDataset):
                 token_list.append(tsplit)
                 valid_labels.append(tsplit[-1])
             else:
-                logging.warning(
-                    # invalid label entries in the sentence
-                    f" Invalid or Missing label entries in the sentence: {t}"
-                )
+                logging.warning(Warnings.W008.format(sent=t))
                 return False, token_list
 
         if valid_labels[0].startswith("I-"):
@@ -667,10 +667,7 @@ class CSVDataset(BaseDataset):
             if task.task_name in self.COLUMN_NAMES:
                 self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
             elif "is_import" not in kwargs:
-                raise ValueError(
-                    f"Given task ({task}) is not matched with template. \
-                    CSV dataset can ne only loaded for text-classification and ner!"
-                )
+                raise ValueError(Errors.E026.format(task=task))
             self.delimiter = self._find_delimiter(file_path)
 
         self.column_map = None
@@ -699,7 +696,9 @@ class CSVDataset(BaseDataset):
 
             if feature_column not in df.columns or target_column not in df.columns:
                 raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                    Errors.E027.format(
+                        feature_column=feature_column, target_column=target_column
+                    )
                 )
 
             if self.task == "text-classification":
@@ -805,8 +804,8 @@ class CSVDataset(BaseDataset):
                 )
                 data.append(sample)
 
-            except InvaildDataError as e:
-                logging.warning(f"Skipping row {idx} due to invalid data: {e}")
+            except Exception as e:
+                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
                 continue
 
         return data
@@ -885,13 +884,12 @@ class CSVDataset(BaseDataset):
             feature_column = self._file_path.get("feature_column", "text")
             target_column = self._file_path.get("target_column", "ner")
 
-            if (
-                feature_column not in dataset.columns
-                or target_column not in dataset.columns
-            ):
-                raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
-                )
+            if feature_column not in dataset.columns:
+                raise ValueError(Errors.E027.format(feature_column=feature_column))
+
+            if target_column not in dataset.columns:
+                logging.warning(Warnings.W006.format(target_column=target_column))
+                dataset["ner"] = None
 
             dataset.rename(
                 columns={feature_column: "text", target_column: "ner"},
@@ -930,13 +928,12 @@ class CSVDataset(BaseDataset):
             feature_column = self._file_path.get("feature_column", "text")
             target_column = self._file_path.get("target_column", "label")
 
-            if (
-                feature_column not in dataset.columns
-                or target_column not in dataset.columns
-            ):
-                raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
-                )
+            if feature_column not in dataset.columns:
+                raise ValueError(Errors.E027.format(feature_column=feature_column))
+
+            if target_column not in dataset.columns:
+                logging.warning(Warnings.W006.format(target_column=target_column))
+                dataset["label"] = None
 
             if feature_column and target_column:
                 dataset.rename(
@@ -975,13 +972,9 @@ class CSVDataset(BaseDataset):
             target_column = self._file_path.get("target_column", "summary")
 
             if feature_column not in dataset.columns:
-                raise ValueError(
-                    f"feature_column '{feature_column}' not found in the dataset."
-                )
+                raise ValueError(Errors.E027.format(feature_column=feature_column))
             if target_column not in dataset.columns:
-                logging.warning(
-                    f"target_column '{target_column}' not found in the dataset."
-                )
+                logging.warning(Warnings.W006.format(target_column=target_column))
                 dataset["summary"] = None
             else:
                 dataset.rename(columns={target_column: "summary"}, inplace=True)
@@ -1033,22 +1026,18 @@ class CSVDataset(BaseDataset):
                 or feature_column["question"] not in dataset_columns
             ):
                 raise ValueError(
-                    f"'feature_column' '{feature_column['question']}' not found in the dataset."
+                    Errors.E027.format(feature_column=feature_column["question"])
                 )
 
             if target_column not in dataset_columns:
-                logging.warning(
-                    f"target_column '{target_column}' not found in the dataset."
-                )
+                logging.warning(Warnings.W006.format(target_column=target_column))
                 dataset["answer"] = None
             else:
                 dataset.rename(columns={target_column: "answer"}, inplace=True)
 
             if passage_column:
                 if passage_column not in dataset_columns:
-                    logging.warning(
-                        f"'feature_column' '{passage_column}' not found in the dataset."
-                    )
+                    logging.warning(Warnings.W007.format(passage_column=passage_column))
                     dataset["passage"] = "-"
                 else:
                     dataset.rename(columns={passage_column: "passage"}, inplace=True)
@@ -1240,9 +1229,10 @@ class CSVDataset(BaseDataset):
             "ner" in not_referenced_columns or "label" in not_referenced_columns
         ):
             raise OSError(
-                f"CSV file is invalid. CSV handler works with template column names!\n"
-                f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
-                f"You can use following namespaces:\n{not_referenced_columns}"
+                Errors.E028.__format__(
+                    not_referenced_columns_keys=", ".join(not_referenced_columns.keys()),
+                    not_referenced_columns=not_referenced_columns,
+                )
             )
         return column_map
 
@@ -1326,8 +1316,10 @@ class JSONLDataset(BaseDataset):
 
         if "text" in not_referenced_columns:
             raise OSError(
-                f"Your dataset needs to have at least have a column with one of the following name: "
-                f"{self.COLUMN_NAMES[self.task.task_name]['text']}, found: {column_names}."
+                Errors.E029.format(
+                    valid_column_names=self.COLUMN_NAMES[self.task.task_name]["text"],
+                    column_names=column_names,
+                )
             )
 
         for missing_col in not_referenced_columns:
@@ -1354,6 +1346,19 @@ class JSONLDataset(BaseDataset):
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
+
+                # elif self.task == "stereoset":
+                #     data.append(
+                #         StereoSetSample(
+                #             test_type=item["type"],
+                #             target=item["target"],
+                #             bias_type=item["bias_type"],
+                #             context=item["context"],
+                #             sent_stereo=item["stereotype"],
+                #             sent_antistereo=item["anti-stereotype"],
+                #             sent_unrelated=item["unrelated"],
+                #         )
+                #     )
 
         return data
 
@@ -1406,9 +1411,7 @@ class HuggingFaceDataset(BaseDataset):
             dataset_module = importlib.import_module(self.LIB_NAME)
             self.load_dataset = getattr(dataset_module, "load_dataset")
         else:
-            raise ModuleNotFoundError(
-                f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'."
-            )
+            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=self.LIB_NAME))
 
     def load_raw_data(
         self,
@@ -1493,7 +1496,7 @@ class SynteticDataset(BaseDataset):
 
     supported_tasks = ["sycophancy-test"]
 
-    def __init__(self, dataset: dict, task: str):
+    def __init__(self, dataset: dict, task: TaskManager):
         """
         Initialize the SynteticData class.
 
@@ -1545,13 +1548,12 @@ class SynteticDataset(BaseDataset):
             List[Sample]:
                 A list of Sample objects containing loaded data.
         """
-
-        if self.task == "sycophancy-test":
-            samples = getattr(self, f"load_{self.dataset_name.replace('-', '_')}")()
+        method_name = f"load_{self.dataset_name.replace('-', '_')}"
+        if hasattr(self, method_name):
+            samples = getattr(self, method_name)()
             return samples
-
         else:
-            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
+            raise ValueError(Errors.E030.format(dataset_name=self.dataset_name))
 
     @staticmethod
     def extract_data_with_equal_proportion(data_dict, total_samples):
@@ -1643,7 +1645,11 @@ class SynteticDataset(BaseDataset):
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
-        samples = [self._row_to_sample_sycophancy(row) for _, row in dataset.iterrows()]
+        dataset_name = self.dataset_name.replace("-", "").lower()
+        samples = [
+            self.task.create_sample(row, dataset_name=dataset_name)
+            for _, row in dataset.iterrows()
+        ]
         return samples
 
     def load_synthetic_nlp_data(self) -> List[Sample]:
@@ -1722,7 +1728,11 @@ class SynteticDataset(BaseDataset):
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
-        samples = [self._row_to_sample_sycophancy(row) for _, row in dataset.iterrows()]
+        dataset_name = self.dataset_name.replace("-", "").lower()
+        samples = [
+            self.task.create_sample(row, dataset_name=dataset_name)
+            for row in dataset.to_dict(orient="records")
+        ]
         return samples
 
     def _row_to_sample_sycophancy(self, row: pd.Series) -> SycophancySample:

@@ -1,6 +1,7 @@
 import re
 from typing import List
 from ..transform.constants import CMU_dict
+from ..errors import Errors
 
 
 class G2p(object):
@@ -68,10 +69,7 @@ class WordFunctions:
             elif generate:
                 return PronunciationFunctions.generate_pronunciation(term)
             else:
-                raise ValueError(
-                    "Dictionary Error: Search term or search token not found in dictionary. "
-                    "Contact administrator to update dictionary if necessary."
-                )
+                raise ValueError(Errors.E073)
 
         pron = [
             p for sublist in search_pron for p in sublist

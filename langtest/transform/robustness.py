@@ -2,6 +2,7 @@ import asyncio
 import random
 import re
 import string
+from ..errors import Errors
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
@@ -471,14 +472,10 @@ class SwapEntities(BaseRobustness):
             List[Sample]: The transformed sample list with entities swapped.
         """
         if terminology is None:
-            raise ValueError(
-                "In order to generate test cases for swap_entities, terminology should be passed!"
-            )
+            raise ValueError(Errors.E065.format(var="terminology"))
 
         if labels is None:
-            raise ValueError(
-                "In order to generate test cases for swap_entities, labels should be passed!"
-            )
+            raise ValueError(Errors.E065.format(var="labels"))
 
         assert len(sample_list) == len(
             labels
@@ -661,9 +658,7 @@ class AddContext(BaseRobustness):
             if strategy is None:
                 strategy = random.choice(possible_methods)
             elif strategy not in possible_methods:
-                raise ValueError(
-                    f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}."
-                )
+                raise ValueError(Errors.E066.format(strategy=strategy))
 
             transformations = []
 
@@ -1329,7 +1324,7 @@ class MultiplePerturbations(BaseRobustness):
             elif order == "strip_all_punctuation":
                 transformed_list = StripAllPunctuation.transform(sample, prob)
             else:
-                raise ValueError(f"Unknown transformation: {order}")
+                raise ValueError(Errors.E067.format(order=order))
             return transformed_list
 
         if isinstance(sample_list[0], SequenceClassificationSample):
