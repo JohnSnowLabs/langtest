@@ -300,7 +300,7 @@ class QuestionAnswering(BaseTask):
     _name = "qa"
     _default_col = {
         "text": ["question"],
-        "context": ["context", "passage"],
+        "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
     }
     sample_class = samples.QASample

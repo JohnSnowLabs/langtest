@@ -145,7 +145,7 @@ class DataFactory:
     """
 
     data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
-    CURATED_DATASETS = ["BoolQ-bias", "XSum-bias"]
+    CURATED_BIAS_DATASETS = ["BoolQ", "XSum"]
 
     def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
@@ -173,11 +173,14 @@ class DataFactory:
             elif self._file_path in ("synthetic-math-data", "synthetic-nlp-data"):
                 self.file_ext = "syntetic"
                 self._file_path = file_path
-            elif self._file_path in self.CURATED_DATASETS:
+            elif (
+                "bias" == self._custom_label.get("split")
+                and self._file_path in self.CURATED_BIAS_DATASETS
+            ):
                 self.file_ext = "curated"
                 self._file_path = file_path.get("data_source")
             else:
-                self._file_path = self._load_dataset(self._file_path)
+                self._file_path = self._load_dataset(self._custom_label)
                 _, self.file_ext = os.path.splitext(self._file_path)
 
         self.task = task
@@ -202,7 +205,7 @@ class DataFactory:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
-        elif self._file_path in self.CURATED_DATASETS and self.task in (
+        elif self._file_path in self.CURATED_BIAS_DATASETS and self.task in (
             "question-answering",
             "summarization",
         ):
@@ -236,7 +239,7 @@ class DataFactory:
         """
         data = []
         path = os.path.abspath(__file__)
-        if file_path == "BoolQ-bias":
+        if file_path == "BoolQ":
             bias_jsonl = os.path.dirname(path)[:-7] + "/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
@@ -251,7 +254,7 @@ class DataFactory:
                             dataset_name="BoolQ",
                         )
                     )
-        elif file_path == "XSum-bias":
+        elif file_path == "XSum":
             bias_jsonl = os.path.dirname(path)[:-7] + "/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
@@ -292,7 +295,7 @@ class DataFactory:
         return data
 
     @classmethod
-    def _load_dataset(cls, dataset_name: str) -> str:
+    def _load_dataset(cls, custom_label: dict) -> str:
         """Loads a dataset
 
         Args:
@@ -301,105 +304,131 @@ class DataFactory:
         Returns:
             str: path to our data
         """
+        dataset_name: str = custom_label.get("data_source")
+        subset: str = custom_label.get("subset")
+        split: str = custom_label.get("split")
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
+
         datasets_info = {
-            "BoolQ-dev-tiny": script_dir[:-7] + "/BoolQ/dev-tiny.jsonl",
-            "BoolQ-dev": script_dir[:-7] + "/BoolQ/dev.jsonl",
-            "BoolQ-test-tiny": script_dir[:-7] + "/BoolQ/test-tiny.jsonl",
-            "BoolQ-test": script_dir[:-7] + "/BoolQ/test.jsonl",
-            "BoolQ-bias": script_dir[:-7] + "/BoolQ/bias.jsonl",
-            "BoolQ": script_dir[:-7] + "/BoolQ/combined.jsonl",
-            "NQ-open-test": script_dir[:-7] + "/NQ-open/test.jsonl",
-            "NQ-open": script_dir[:-7] + "/NQ-open/combined.jsonl",
-            "NQ-open-test-tiny": script_dir[:-7] + "/NQ-open/test-tiny.jsonl",
-            "XSum-test-tiny": script_dir[:-7] + "/Xsum/XSum-test-tiny.jsonl",
-            "XSum-test": script_dir[:-7] + "/Xsum/XSum-test.jsonl",
-            "XSum-bias": script_dir[:-7] + "/Xsum/bias.jsonl",
-            "TruthfulQA-combined": script_dir[:-7]
-            + "/TruthfulQA/TruthfulQA-combined.jsonl",
-            "TruthfulQA-test": script_dir[:-7] + "/TruthfulQA/TruthfulQA-test.jsonl",
-            "TruthfulQA-test-tiny": script_dir[:-7]
-            + "/TruthfulQA/TruthfulQA-test-tiny.jsonl",
-            "MMLU-test-tiny": script_dir[:-7] + "/MMLU/MMLU-test-tiny.jsonl",
-            "MMLU-test": script_dir[:-7] + "/MMLU/MMLU-test.jsonl",
-            "OpenBookQA-test": script_dir[:-7] + "/OpenBookQA/OpenBookQA-test.jsonl",
-            "OpenBookQA-test-tiny": script_dir[:-7]
-            + "/OpenBookQA/OpenBookQA-test-tiny.jsonl",
-            "Quac-test": script_dir[:-7] + "/quac/Quac-test.jsonl",
-            "Quac-test-tiny": script_dir[:-7] + "/quac/Quac-test-tiny.jsonl",
-            "toxicity-test-tiny": script_dir[:-7] + "/toxicity/toxicity-test-tiny.jsonl",
-            "NarrativeQA-test": script_dir[:-7] + "/NarrativeQA/NarrativeQA-test.jsonl",
-            "NarrativeQA-test-tiny": script_dir[:-7]
-            + "/NarrativeQA/NarrativeQA-test-tiny.jsonl",
-            "HellaSwag-test": script_dir[:-7] + "/HellaSwag/hellaswag-test.jsonl",
-            "HellaSwag-test-tiny": script_dir[:-7]
-            + "/HellaSwag/hellaswag-test-tiny.jsonl",
-            "Translation-test": script_dir[:-7]
-            + "/Translation/translation-test-tiny.jsonl",
-            "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
-            "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
-            "Prompt-Injection-Attack": script_dir[:-7]
-            + "/security/Prompt-Injection-Attack.jsonl",
-            "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
-            "Gastroenterology-files": script_dir[:-7]
-            + "/Clinical-Tests/Gastroenterology-files.jsonl",
-            "Oromaxillofacial-files": script_dir[:-7]
-            + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
-            "ASDiv-test": script_dir[:-7] + "/asdiv/asdiv-test.jsonl",
-            "ASDiv-test-tiny": script_dir[:-7] + "/asdiv/asdiv-test-tiny.jsonl",
-            "Bigbench-Causal-judgment-test": script_dir[:-7]
-            + "/Bigbench/CausalJudgment/causal-judgment-test.jsonl",
-            "Bigbench-Causal-judgment-test-tiny": script_dir[:-7]
-            + "/Bigbench/CausalJudgment/causal-judgment-test-tiny.jsonl",
-            "Bigbench-DisflQA-test": script_dir[:-7]
-            + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
-            "Bigbench-DisflQA-test-tiny": script_dir[:-7]
-            + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
-            "Bigbench-Abstract-narrative-understanding-test-tiny": script_dir[:-7]
-            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test-tiny.jsonl",
-            "Bigbench-Abstract-narrative-understanding-test": script_dir[:-7]
-            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test.jsonl",
-            "Bigbench-DisambiguationQA-test": script_dir[:-7]
-            + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
-            "Bigbench-DisambiguationQA-test-tiny": script_dir[:-7]
-            + "/Bigbench/DisambiguationQA/DisambiguationQA-test-tiny.jsonl",
-            "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
-            "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
-            "Narrative-Wedging": script_dir[:-7]
-            + "/NarrativeWedging/Narrative_Wedging.jsonl",
-            "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
-            "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl",
-            "Factual-Summary-Pairs": script_dir[:-7]
-            + "/Factuality/Factual-Summary-Pairs.jsonl",
-            "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
-            "MultiLexSum-test-tiny": script_dir[:-7]
-            + "/MultiLexSum/MultiLexSum-test.jsonl",
-            "wikiDataset-test": script_dir[:-7] + "/wikiDataset/wikiDataset-test.jsonl",
-            "wikiDataset-test-tiny": script_dir[:-7]
-            + "/wikiDataset/wikiDataset-test-tiny.jsonl",
-            "CommonsenseQA-test": script_dir[:-7]
-            + "/CommonsenseQA/commonsenseQA-test.jsonl",
-            "CommonsenseQA-test-tiny": script_dir[:-7]
-            + "/CommonsenseQA/commonsenseQA-test-tiny.jsonl",
-            "CommonsenseQA-validation": script_dir[:-7]
-            + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
-            "CommonsenseQA-validation-tiny": script_dir[:-7]
-            + "/CommonsenseQA/CommonsenseQA-validation-tiny.jsonl",
-            "SIQA-test": script_dir[:-7] + "/SIQA/SIQA-test.jsonl",
-            "SIQA-test-tiny": script_dir[:-7] + "/SIQA/SIQA-test-tiny.jsonl",
-            "PIQA-test": script_dir[:-7] + "/PIQA/PIQA-test.jsonl",
-            "PIQA-test-tiny": script_dir[:-7] + "/PIQA/PIQA-test-tiny.jsonl",
-            "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
-            "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
-            "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
-            "Crows-Pairs": script_dir[:-7]
-            + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
-            "StereoSet": script_dir[:-7] + "/StereoSet/stereoset.jsonl",
-            "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
+            "BoolQ": {
+                "split": ("test-tiny", "test", "dev-tiny", "dev", "combined"),
+                "extension": ".jsonl",
+            },
+            "NQ-open": {
+                "split": ("test-tiny", "test", "combined"),
+                "extension": ".jsonl",
+            },
+            "XSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "TruthfulQA": {
+                "split": ("test-tiny", "test", "combined"),
+                "extension": ".jsonl",
+            },
+            "MMLU": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "OpenBookQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Quac": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Toxicity": {"split": ("test",), "extension": ".jsonl"},
+            "NarrativeQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "HellaSwag": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Translation": {"split": ("test",), "extension": ".jsonl"},
+            "BBQ": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Prompt-Injection-Attack": {"split": ("test",), "extension": ".jsonl"},
+            "Clinical": {
+                "split": (
+                    "Medical-files",
+                    "Gastroenterology-files",
+                    "Oromaxillofacial-files",
+                ),
+                "extension": ".jsonl",
+            },
+            "ASDiv": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Bigbench": {
+                "Causal-judgment": {
+                    "split": ("test-tiny", "test"),
+                    "extension": ".jsonl",
+                },
+                "DisflQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+                "Abstract-narrative-understanding": {
+                    "split": ("test-tiny", "test"),
+                    "extension": ".jsonl",
+                },
+                "DisambiguationQA": {
+                    "split": ("test-tiny", "test"),
+                    "extension": ".jsonl",
+                },
+            },
+            "LogiQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Narrative-Wedging": {"split": ("test-tiny",), "extension": ".jsonl"},
+            "Wino-test": {"split": ("test",), "extension": ".jsonl"},
+            "Legal-Support": {"split": ("test",), "extension": ".jsonl"},
+            "Factual-Summary-Pairs": {"split": ("test",), "extension": ".jsonl"},
+            "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "CommonsenseQA": {
+                "split": ("test-tiny", "test", "validation-tiny", "validation"),
+                "extension": ".jsonl",
+            },
+            "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "PIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Consumer-Contracts": {"split": ("test",), "extension": ".jsonl"},
+            "Contracts": {"split": ("test",), "extension": ".jsonl"},
+            "Privacy-Policy": {"split": ("test",), "extension": ".jsonl"},
+            "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
+            "StereoSet": {"split": ("test",), "extension": ".jsonl"},
+            "Fiqa": {"split": ("test",), "extension": ".jsonl"},
         }
 
-        return datasets_info[dataset_name]
+        if dataset_name not in datasets_info:
+            raise ValueError(f"{dataset_name} is not a valid dataset name")
+
+        dataset_info = datasets_info[dataset_name]
+
+        if "split" not in dataset_info:
+            if subset is None:
+                subset = list(dataset_info.keys())[0]
+                logging.warning(Warnings.W012.format(var1="subset", var2=subset))
+            if split is None:
+                split = dataset_info[subset]["split"][0]
+                logging.warning(Warnings.W012.format(var1="split", var2=split))
+
+            if subset not in dataset_info or split not in dataset_info[subset]["split"]:
+                raise ValueError(
+                    Errors.E082.format(
+                        subset=subset,
+                        split=split,
+                        dataset_name=dataset_name,
+                        available_subset_splits=", ".join(
+                            [f"{s}: {info['split']}" for s, info in dataset_info.items()]
+                        ),
+                    )
+                )
+            extension = dataset_info[subset].get("extension", "jsonl")
+            return (
+                script_dir[:-7]
+                + "/"
+                + dataset_name
+                + "/"
+                + subset
+                + "/"
+                + split
+                + extension
+            )
+        else:
+            if split is None:
+                split = dataset_info["split"][0]
+                logging.warning(Warnings.W012.format(var1="split", var2=split))
+
+            if split not in dataset_info["split"]:
+                raise ValueError(
+                    Errors.E083.format(
+                        split=split,
+                        dataset_name=dataset_name,
+                        available_splits=", ".join(dataset_info["split"]),
+                    )
+                )
+
+            extension = dataset_info.get("extension", "jsonl")
+            return script_dir[:-7] + "/" + dataset_name + "/" + split + extension
 
 
 class ConllDataset(BaseDataset):
@@ -1344,24 +1373,11 @@ class JSONLDataset(BaseDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                dataset_name = self._file_path.split("/")[-2]
+                dataset_name = self._file_path.split("/")[-2].replace("-", "")
                 sample = self.task.create_sample(
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
-
-                # elif self.task == "stereoset":
-                #     data.append(
-                #         StereoSetSample(
-                #             test_type=item["type"],
-                #             target=item["target"],
-                #             bias_type=item["bias_type"],
-                #             context=item["context"],
-                #             sent_stereo=item["stereotype"],
-                #             sent_antistereo=item["anti-stereotype"],
-                #             sent_unrelated=item["unrelated"],
-                #         )
-                #     )
 
         return data
 

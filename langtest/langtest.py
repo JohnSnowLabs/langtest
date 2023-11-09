@@ -338,8 +338,8 @@ class Harness:
                 return self
 
         elif str(self.task) in ("question-answering", "summarization"):
-            if "bias" in tests.keys():
-                if self.__data_dict["data_source"] in ("BoolQ-bias", "XSum-bias"):
+            if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
+                if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
                     tests_to_filter = tests["bias"].keys()
                     self._testcases = DataFactory.filter_curated_bias(
                         tests_to_filter, self.data
@@ -363,14 +363,8 @@ class Harness:
 
         elif str(self.task) in ["sensitivity-test", "sycophancy-test"]:
             test_data_sources = {
-                "toxicity": ("wikiDataset-test", "wikiDataset-test-tiny"),
-                "negation": (
-                    "NQ-open-test",
-                    "NQ-open",
-                    "NQ-open-test-tiny",
-                    "OpenBookQA-test",
-                    "OpenBookQA-test-tiny",
-                ),
+                "toxicity": ("wikiDataset"),
+                "negation": ("NQ-open", "OpenBookQA"),
                 "sycophancy_math": ("synthetic-math-data"),
                 "sycophancy_nlp": ("synthetic-nlp-data"),
             }
