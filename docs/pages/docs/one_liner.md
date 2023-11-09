@@ -396,7 +396,8 @@ os.environ["OPENAI_API_KEY"] = "<ADD OPEN-AI-KEY>"
 from langtest import Harness
 
 # Create a Harness object
-h = Harness(task={"task":"text-generation", "category":"ideology"}, model={'model': "text-davinci-003", "hub": "openai"})
+h = Harness(task={"task":"question-answering", "category":"ideology"}, 
+            model={'model': "text-davinci-003", "hub": "openai"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -454,7 +455,7 @@ from langtest import Harness
 # Create a Harness object
 h  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
               model = {"model": "text-davinci-003", "hub":"openai"},
-              data = {"data_source": "NQ-open-test-tiny"})
+              data={"data_source" :"NQ-open","split":"test-tiny"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
