@@ -426,7 +426,9 @@ from langtest import Harness
 # Create a Harness object
 h  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
               model = {"model": "text-davinci-003", "hub":"openai"},
-              data = {"data_source": "Factual-Summary-Pairs"})
+              data = {"data_source": "Factual-Summary-Pairs", "split":"test"})
+
+              
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
