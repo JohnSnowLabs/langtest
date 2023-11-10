@@ -2,14 +2,17 @@ header:
   - title: Home
     url: /
   - title: Docs
-    url: /docs/pages/docs/install
+    url: /docs/pages/docs/quickstart
     key: docs
   - title: Tutorials
-    url: /docs/pages/tutorials/tutorials
+    url: /docs/pages/tutorials/test_specific_notebooks
     key: tutorials
   - title: Tests
     url: /docs/pages/tests/test
     key: tests
+  - title: Benchmarks
+    url: /docs/pages/benchmarks/benchmark
+    key: benchmarks
   - title: Blog
     url: https://www.johnsnowlabs.com/responsible-ai-blog/
     key: blog
@@ -17,8 +20,10 @@ header:
 
 docs-menu:
   - title: Quick Start
-    url: /docs/pages/docs/install
+    url: /docs/pages/docs/quickstart
     children:
+        - title: Getting Started
+          url: /docs/pages/docs/quickstart
         - title: Installation
           url: /docs/pages/docs/install
         - title:  One Liners
@@ -80,10 +85,20 @@ docs-menu:
         - title: Contribution Guidelines
           url: /docs/pages/docs/contribute
           
-tutorials:
-  - title: Tutorials
-    url: /docs/pages/tutorials/tutorials
+  - title: Release Notes
+    url: /docs/pages/docs/langtest_versions/release_notes
 
+tutorials:
+  - title: Test Specific Notebooks
+    url: /docs/pages/tutorials/test_specific_notebooks
+  - title: LLM Testing Notebooks
+    url: /docs/pages/tutorials/LLM_Testing_Notebooks
+  - title: Benchmark Dataset Notebooks
+    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
+  - title: End-to-End Workflow Notebooks
+    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
+  - title: Miscellaneous Notebooks
+    url: /docs/pages/tutorials/Miscellaneous_Notebooks
 
 tests:
   - title: Tests
@@ -120,3 +135,52 @@ tests:
     url: /docs/pages/tests/legal
   - title: Sycophancy 
     url: /docs/pages/tests/sycophancy
+  - title: Ideology 
+    url: /docs/pages/tests/ideology
+  - title: Benchmark Datasets 
+    url: /docs/pages/benchmarks/boolq
+
+benchmarks:
+  - title: Benchmarks
+    url: /docs/pages/benchmarks/benchmark
+    children:
+      - title: ASDiv
+        url: /docs/pages/benchmarks/asdiv
+      - title: BBQ
+        url: /docs/pages/benchmarks/bbq
+      - title: Bigbench
+        url: /docs/pages/benchmarks/bigbench
+      - title: BoolQ
+        url: /docs/pages/benchmarks/boolq
+      - title: CommonsenseQA
+        url: /docs/pages/benchmarks/commonsenseqa
+      - title: FIQA
+        url: /docs/pages/benchmarks/fiqa
+      - title: HellaSwag
+        url: /docs/pages/benchmarks/hellaswag
+      - title: LegalBench
+        url: /docs/pages/benchmarks/legalbench
+      - title: LogiQA
+        url: /docs/pages/benchmarks/logiqa
+      - title: MMLU
+        url: /docs/pages/benchmarks/mmlu
+      - title: MultiLexSum
+        url: /docs/pages/benchmarks/multilexsum
+      - title: NarrativeQA
+        url: /docs/pages/benchmarks/narrativeqa
+      - title: NaturalQuestions
+        url: /docs/pages/benchmarks/natural-questions
+      - title: OpenBookQA
+        url: /docs/pages/benchmarks/openbookqa
+      - title: PIQA
+        url: /docs/pages/benchmarks/piqa
+      - title: Quac
+        url: /docs/pages/benchmarks/quac
+      - title: SIQA
+        url: /docs/pages/benchmarks/siqa
+      - title: TruthfulQA
+        url: /docs/pages/benchmarks/truthfulqa
+      - title: XSum
+        url: /docs/pages/benchmarks/xsum
+
+  

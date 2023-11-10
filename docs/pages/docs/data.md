@@ -178,92 +178,10 @@ harness = Harness(task="text-classification",
 
 ### Question Answering
 
-To test Question Answering models, the user is meant to select a benchmark dataset from the following list:
+To test Question Answering models, the user is meant to select a benchmark dataset. You can see the benchmarks page for all available benchmarks:
+[Benchmarks](/docs/pages/benchmarks/benchmark)
 
-#### Benchmark Datasets
-
-{:.table2}
-| Dataset                                                 | Source                                                                                                       | Description                                                                                                                                                                                                       |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **BoolQ**                                               | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Training, development & test set from the BoolQ dataset, containing 15,942 labeled examples                                                                                                                       |
-| **BoolQ-dev**                                           | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Dev set from the BoolQ dataset, containing 3,270 labeled examples                                                                                                                                                 |
-| **BoolQ-dev-tiny**                                      | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the dev set from the BoolQ dataset, containing 50 labeled examples                                                                                                                           |
-| **BoolQ-test**                                          | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Test set from the BoolQ dataset, containing 3,245 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                     |
-| **BoolQ-test-tiny**                                     | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                               |
-| **BoolQ-bias**                                               | [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/) | Manually annotated bias version of BoolQ dataset, containing 136 labeled examples   
-| **NQ-open**                                             | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples                                                                                                                   |
-| **NQ-open-test**                                        | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                                                                                                                              |
-| **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples                                                                                                                |
-| **TruthfulQA**                                          | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/)       | Training, test set from the TruthfulQA dataset, containing 817 questions that span 38 categories, including health, law, finance and politics.                                                                    |
-| **TruthfulQA-test**                                     | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/)       | Testing set from the TruthfulQA dataset, containing 164 question and answer examples.                                                                                                                             |
-| **TruthfulQA-test-tiny**                                | [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/)       | Truncated version of TruthfulQA dataset which contains 50 question answer examples                                                                                                                                |
-| **MMLU-test**                                           | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)                 | Test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 50 samples from each tasks in the test set.                           |
-| **MMLU-test-tiny**                                      | [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)                 | Truncated version of test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the test-tiny set. |
-| **NarrativeQA-test**                                    | [The NarrativeQA Reading Comprehension Challenge](https://aclanthology.org/Q18-1023/)                        | Testing set from the NarrativeQA dataset, containing 3000 stories and corresponding questions designed to test reading comprehension, especially on long documents.                                               |
-| **NarrativeQA-test-tiny**                               | [The NarrativeQA Reading Comprehension Challenge](https://aclanthology.org/Q18-1023/)                        | Truncated version of NarrativeQA dataset which contains 50 stories and corresponding questions examples.                                                                                                          |
-| **HellaSwag-test**                                      | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/)                  | Dev set Training set from the hellaswag dataset with 3000 examples which is a benchmark for Commonsense NLI. It includes a context and some endings which complete the context.                                   |
-| **HellaSwag-test-tiny**                                 | [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/)                  | Truncated version of the test set from the hellaswag dataset with 50 examples.                                                                                                                                    |
-| **Quac-test**                                           | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/)                                    | Testing set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog.                                                                                |
-| **Quac-test-tiny**                                      | [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/)                                    | Truncated version of the val set from the QuAC dataset with 50 examples.                                                                                                                                          |
-| **OpenBookQA-test**                                     | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions                                                                                                        |
-| **OpenBookQA-test-tiny**                                | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.                                                                                                            |
-| **BBQ-test**                                            | [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193)          | Testing set from the BBQ dataset, containing 1000 question answers examples.                                                                                                                                      |
-| **BBQ-test-tiny**                                       | [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193)          | Truncated version of the test set from the BBQ dataset, containing 50 question and answers examples.                                                                                                              |
-| **LogiQA-test**                                         | [LogiQA](https://aclanthology.org/2020.findings-emnlp.301/)                                                  | Testing set from the LogiQA dataset, containing 1000 question answers examples.                                                                                                                                   |
-| **LogiQA-test-tiny**                                    | [LogiQA](https://aclanthology.org/2020.findings-emnlp.301/)                                                  | Truncated version of the test set from the LogiQA dataset, containing 50 question and answers examples.                                                                                                           |
-| **ASDiv-test**                                          | [ASDiv](https://arxiv.org/abs/2106.15772)                                                                    | Testing set from the ASDiv dataset, containing 1000 question answers examples.                                                                                                                                    |
-| **ASDiv-test-tiny**                                     | [ASDiv](https://arxiv.org/abs/2106.15772)                                                                    | Truncated version of the test set from the ASDiv dataset, containing 50 question and answers examples.                                                                                                            |
-| **Bigbench-Abstract-narrative-understanding-test**      | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Testing set from the Bigbench/Abstract Narrative Understanding dataset, containing 1000 question answers examples.                                                                                                |
-| **Bigbench-Abstract-narrative-understanding-test-tiny** | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Truncated version of the test set from the Bigbench/Abstract Narrative Understanding dataset, containing 50 question and answers examples.                                                                        |
-| **Bigbench-DisambiguationQA-test**                      | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Testing set from the Bigbench/DisambiguationQA dataset, containing 207 question answers examples.                                                                                                                 |
-| **Bigbench-DisambiguationQA-test-tiny**                 | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Truncated version of the test set from the Bigbench/DisambiguationQA dataset, containing 50 question and answers examples.                                                                                        |
-| **Bigbench-DisflQA-test**                               | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Testing set from the Bigbench/DisflQA dataset, containing 1000 question answers examples.                                                                                                                         |
-| **Bigbench-DisflQA-test**                               | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Truncated version of the test set from the Bigbench/DisflQA dataset, containing 50 question and answers examples.                                                                                                 |
-| **Bigbench-Causal-judgment-test**                       | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Testing set from the Bigbench/Causal Judgment dataset, containing 190 question and answers examples.                                                                                                              |
-| **Bigbench-Causal-judgment-test-tiny**                  | [Bigbench Dataset](https://arxiv.org/abs/2206.04615)                                                         | Truncated version of the test set from the Bigbench/Causal Judgment dataset, containing 50 question and answers examples.                                                                                         |
-| **Consumer Contracts**                  | [LegalBench](https://arxiv.org/abs/2308.11462)                                                         | It consists of yes/no questions on the rights and obligations created by clauses in terms of services agreements.                                               |                                        |
-| **Privacy-Policy**                  | [LegalBench](https://arxiv.org/abs/2308.11462)                                                         | Given a question and a clause from a privacy policy, determine if the clause contains enough information to answer the question.                                 |
-| **Contracts-QA**                  | [LegalBench](https://arxiv.org/abs/2308.11462)                                                         | Answer True/False questions about whether contractual clauses discuss particular issues.                             |
-| **CommonsenseQA-test**                                        | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Testing set from the CommonsenseQA dataset, containing 1140 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                              |
-| **CommonsenseQA-test-tiny**                                   | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Truncated version of CommonsenseQA-test dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                |
-| **CommonsenseQA-validation**                                        | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Validation set from the CommonsenseQA dataset, containing 1221 question and answer examples.                                                                                                                              |
-| **CommonsenseQA-validation-tiny**                                   | [CommonsenseQA: A Question Answering Challenge Targeting Commonsense Knowledge](https://arxiv.org/abs/1811.00937)         | Truncated version of CommonsenseQA-validation dataset which contains 50 question and answer examples.                                                                                                                |                                                                   |
-| **SIQA-test**                                     | [SocialIQA: Commonsense Reasoning about Social Interactions](https://arxiv.org/abs/1904.09728)       | Testing set from the SIQA dataset, containing 1954 question and answer examples.                                                                                                                             |
-| **SIQA-test-tiny**                                | [SocialIQA: Commonsense Reasoning about Social Interactions](https://arxiv.org/abs/1904.09728)       | Truncated version of SIQA-test dataset which contains 50 question and answer examples.                                                                                                                                |
-| **PIQA-test**                                     | [PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/abs/1911.11641)       | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                             |
-| **PIQA-test-tiny**                                | [PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/abs/1911.11641)       | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                                                                                                                                |
-| **FIQA**                                | [FIQA (Financial Opinion Mining and Question Answering)](https://paperswithcode.com/dataset/fiqa-1)       | Curated version of FIQA dataset which contains 648 question and answer examples.                         |
-
-</div><div class="h3-box" markdown="1">
-
-#### Comparing Question Answering Benchmarks: Use Cases and Evaluations
-
-Langtest comes with different datasets to test your models, covering a wide range of use cases and evaluation scenarios.
-
-
-{:.table2}
-| Dataset                                       | Use Case                                                                                                                                                                                                                                                                                                | Notebook                                                                                                                                                                                                                                   |
-| --------------------------------------------- |
-| **BoolQ**                                     | Evaluate the ability of your model to answer boolean questions (yes/no) based on a given passage or context.                                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BoolQ_dataset.ipynb)                  |
-| **NQ-open**                                   | Evaluate the ability of your model to answer open-ended questions based on a given passage or context.                                                                                                                                                                                                  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NQ_open_dataset.ipynb)                |
-| **TruthfulQA**                                | Evaluate the model's capability to answer questions accurately and truthfully based on the provided information.                                                                                                                                                                                        | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/TruthfulQA_dataset.ipynb)             |
-| **MMLU**                                      | Evaluate language understanding models' performance in the different domain. It covers 57 subjects across STEM, the humanities, the social sciences, and more.                                                                                                                                          | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/mmlu_dataset.ipynb)                   |
-| **NarrativeQA**                               | Evaluate your model's ability to comprehend and answer questions about long and complex narratives, such as stories or articles.                                                                                                                                                                        | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NarrativeQA_Question_Answering.ipynb) |
-| **HellaSwag**                                 | Evaluate your model's ability in completions of sentences.                                                                                                                                                                                                                                              | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/HellaSwag_Question_Answering.ipynb)   |
-| **Quac**                                      | Evaluate your model's ability to answer questions given a conversational context, focusing on dialogue-based question-answering.                                                                                                                                                                        | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)                   |
-| **OpenBookQA**                                | Evaluate your model's ability to answer questions that require complex reasoning and inference based on general knowledge, similar to an "open-book" exam.                                                                                                                                              | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)                   |
-| **BBQ**                                       | Evaluate how your model respond to questions in the presence of social biases against protected classes across various social dimensions. Assess biases in model outputs with both under-informative and adequately informative contexts, aiming to promote fair and unbiased question answering models | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)                    |
-| **LogiQA**                                    | Evaluate your model's accuracy on Machine Reading Comprehension with Logical Reasoning questions.                                                                                                                                                                                                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LogiQA_dataset.ipynb)                 |
-| **ASDiv**                                     | Evaluate your model's ability to answer questions given a conversational context, focusing on dialogue-based question-answering.                                                                                                                                                                        | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/ASDiv_dataset.ipynb)                  |
-| **BigBench Abstract narrative understanding** | Evaluate your model's performance in selecting the most relevant proverb for a given narrative.                                                                                                                                                                                                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
-| **BigBench Causal Judgment**                  | Evaluate your model's performance in measuring the ability to reason about cause and effect.                                                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
-| **BigBench DisambiguationQA**                 | Evaluate your model's performance on determining the interpretation of sentences containing ambiguous pronoun references.                                                                                                                                                                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
-| **BigBench DisflQA**                          | Evaluate your model's performance in picking the correct answer span from the context given the disfluent question.                                                                                                                                                                                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)               |
-| **Legal-QA**                 | Evaluate your model's performance on legal-qa datasets                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)      |
-| **CommonsenseQA**                  | Evaluate your model's performance on the CommonsenseQA dataset, which demands a diverse range of commonsense knowledge to accurately predict the correct answers in a multiple-choice question answering format.                                                                                                                                                                                                            | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/CommonsenseQA_dataset.ipynb)               |
-| **SIQA**                 | Evaluate your model's performance by assessing its accuracy in understanding social situations, inferring the implications of actions, and comparing human-curated and machine-generated answers.                                                                                                                                                                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/SIQA_dataset.ipynb)               |
-| **PIQA**                          | Evaluate your model's performance on the PIQA dataset, which tests its ability to reason about everyday physical situations through multiple-choice questions, contributing to AI's understanding of real-world interactions.                                                                                                                                                                                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/PIQA_dataset.ipynb)               |
-| **FIQA**                          | Evaluate your model's performance on the FiQA dataset, a comprehensive and specialized resource designed for finance-related question-answering tasks.                                                                                                                                                                                      | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Fiqa_dataset.ipynb)               |
+You can access the tutorial notebooks to get a quick start on your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
 
 </div><div class="h3-box" markdown="1">
 
@@ -275,38 +193,20 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='question-answering',
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
-                  data={"data_source":'BoolQ-test'}, 
-                  config='config.yml')
+harness = Harness(task="question-answering", 
+                  model={"model": "text-davinci-003", "hub":"openai"}, 
+                  data={"data_source" :"BBQ", "split":"test-tiny"}, config='config.yml')
+
 ```
 
 </div><div class="h3-box" markdown="1">
 
 ### Summarization
 
-To test Summarization models, the user is meant to select a benchmark dataset from the following list:
+To test Summarization models, the user is meant to select a benchmark dataset from the available ones:
+[Benchmarks](/docs/pages/benchmarks/benchmark)
 
-#### Benchmark Datasets
-
-{:.table2}
-| Dataset            | Source                                                                                                                                                 | Description                                                                                                   |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| **XSum**           | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Training & development set from the Extreme Summarization (XSum) Dataset, containing 226,711 labeled examples |
-| **XSum-test**      | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Test set from the Xsum dataset, containing 1,000 labeled examples                                             |
-| **XSum-test-tiny** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples                       |
-| **XSum-bias** | [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/) | Manually annotated bias version of the Xsum dataset, containing 382 labeled examples 
-| **MultiLexSum-test** | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883) | Testing set from the MultiLexSum dataset, containing 868 document and summary examples.                       |
-| **MultiLexSum-test-tiny** | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883) |  Truncated version of XSum dataset which contains 50 document and summary examples. 
-
-</div><div class="h3-box" markdown="1">
-#### Summarization Benchmarks: Use Cases and Evaluations
-
-{:.table2}
-| Dataset  | Use Case                                                                                                                                                                                                                                            | Notebook                                                                                                                                                                                                                 |
-| -------- |
-| **XSum** | Evaluate your model's ability to generate concise and informative summaries for long articles with the XSum dataset. It consists of articles and corresponding one-sentence summaries, offering a valuable benchmark for text summarization models. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/XSum_dataset.ipynb) |
-| **MultiLexSum** | Evaluate your model's ability to generate concise and informative summaries for legal case contexts from the Multi-LexSum dataset, with a focus on comprehensively capturing essential themes and key details within the legal narratives. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb) |
+You can access the tutorial notebooks to get a quick start with your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
 
 </div><div class="h3-box" markdown="1">
 
@@ -318,10 +218,12 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='summarization',
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
-                  data={"data_source":'XSum-test-tiny'}, 
+harness = Harness(task="summarization", 
+                  model={"model": "text-davinci-003","hub":"openai"}, 
+                  data={"data_source" :"XSum", "split":"test-tiny"},
                   config='config.yml')
+   
+
 ```
 
 #### Passing a Hugging Face Dataset for Summarization to the Harness
@@ -373,9 +275,10 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='toxicity',
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
-                  data={"data_source":'toxicity-test-tiny'})
+harness = Harness(task={"task":"text-generation", "category":"toxicity"}, 
+                  model={"model": "text-davinci-002","hub":"openai"}, 
+                  data={"data_source" :'Toxicity', "split":"test"})
+
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -410,35 +313,36 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='disinformation-test',
-                  model={"model": "j2-jumbo-instruct", "hub":"ai21"},
-                  data={"data_source": "Narrative-Wedging"})
+harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
+                    model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+                    data = {"data_source": "Narrative-Wedging"})
+
 ```
 </div><div class="h3-box" markdown="1">
 
-### Political Test
+### Ideology Test
 
 This test evaluates the model's political orientation. There is one default dataset used for this test.
 
 #### Datasets
 
 {:.table2}
-| Dataset                         | Source                                                                                  | Description                                                      |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Political Compass Questions** | [3 Axis Political Compass Test](https://github.com/SapplyValues/SapplyValues.github.io) | Political Compass questions, containing 40 questions for 2 axes. |
+| Dataset                        | Source                                                                                  | Description                                                      |
+| ------------------------------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Ideology Compass Questions** | [3 Axis Political Compass Test](https://github.com/SapplyValues/SapplyValues.github.io) | Political Compass questions, containing 40 questions for 2 axes. |
 
 </div><div class="h3-box" markdown="1">
 
 #### Passing a Disinformation Dataset to the Harness
 
-In political test, the data is automatically loaded since there is only one dataset available for now:
+In ideology test, the data is automatically loaded since there is only one dataset available for now:
 
 ```python
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='political',
-                  model={"model": "j2-jumbo-instruct", "hub":"ai21"})
+harness = Harness(task={"task":"question-answering", "category":"ideology"}, 
+            model={'model': "text-davinci-003", "hub": "openai"})
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -450,8 +354,8 @@ The Factuality Test is designed to evaluate the ability of LLMs to determine the
 #### Datasets
 
 {:.table2}
-| Dataset               | Source                                                                                                                                            | Description                                                |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | **Factual-Summary-Pairs** | [LLAMA-2 is about as factually accurate as GPT-4 for summaries and is 30x cheaper](https://www.anyscale.com/blog/llama-2-is-about-as-factually-accurate-as-gpt-4-for-summaries-and-is-30x-cheaper) | Factual-Summary-Pairs, containing 371 labeled examples. |
 
 </div><div class="h3-box" markdown="1">
@@ -459,8 +363,8 @@ The Factuality Test is designed to evaluate the ability of LLMs to determine the
 #### Factuality Test Dataset: Use Cases and Evaluations
 
 {:.table2}
-| Dataset               | Use Case                                                                                                                                                  | Notebook                                                                                                                                                                                                      |
-| --------------------- |
+| Dataset                   | Use Case                                                                                                                                                                                                                              | Notebook                                                                                                                                                                                                  |
+| ------------------------- |
 | **Factual-Summary-Pairs** | The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) |
 
 </div><div class="h3-box" markdown="1">
@@ -473,9 +377,9 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='factuality-test',
-                  model={"model": "text-davinci-003", "hub":"openai"},
-                  data={"data_source": "Factual-Summary-Pairs"})
+harness  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
+                    model = {"model": "text-davinci-003", "hub":"openai"},
+                    data = {"data_source": "Factual-Summary-Pairs"})
 ```
 </div><div class="h3-box" markdown="1">
 
@@ -486,15 +390,15 @@ The Sensitivity Test comprises two distinct evaluations: one focusing on assessi
 #### Datasets
 
 {:.table2}
-| Dataset               | Source                                                                                                                                            | Description                                                |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **NQ-open**                                             | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples                                                                                                                   |
-| **NQ-open-test**                                        | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                                                                                                                              |
-| **NQ-open-test-tiny**                                   | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)         | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples   
-| **OpenBookQA-test**                                     | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions                                                                                                        |
-| **OpenBookQA-test-tiny**                                | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                                  | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples. 
-| **wikiDataset-test**                                     | [wikiDataset](https://huggingface.co/datasets/wikitext)                                                  | Testing set from the wikiDataset, containing 1000 sentences                                                                                                       |
-| **wikiDataset-test-tiny**                                | [wikiDataset](https://huggingface.co/datasets/wikitext)                                                  | Truncated version of the test set from the wikiDataset, containing 50 sentences. 
+| Dataset                   | Source                                                                                               | Description                                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **NQ-open**               | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples            |
+| **NQ-open-test**          | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                       |
+| **NQ-open-test-tiny**     | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples         |
+| **OpenBookQA-test**       | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                          | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions |
+| **OpenBookQA-test-tiny**  | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                          | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.     |
+| **wikiDataset-test**      | [wikiDataset](https://huggingface.co/datasets/wikitext)                                              | Testing set from the wikiDataset, containing 1000 sentences                                                |
+| **wikiDataset-test-tiny** | [wikiDataset](https://huggingface.co/datasets/wikitext)                                              | Truncated version of the test set from the wikiDataset, containing 50 sentences.                           |
 
 </div><div class="h3-box" markdown="1">
 
@@ -502,10 +406,10 @@ The Sensitivity Test comprises two distinct evaluations: one focusing on assessi
 
 {:.table2}
 
-| Test Name  | Supported Dataset                   | Notebook  |
-|------------|-------------------------------------|-----------|
-| toxicity   | wikiDataset-test, wikiDataset-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb)    |
-| negation   | NQ-open-test, NQ-open, NQ-open-test-tiny, OpenBookQA-test, OpenBookQA-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
+| Test Name | Supported Dataset                                                               | Notebook                                                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| toxicity  | wikiDataset-test, wikiDataset-test-tiny                                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
+| negation  | NQ-open-test, NQ-open, NQ-open-test-tiny, OpenBookQA-test, OpenBookQA-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
 
 
 #### Passing a Sensitivity Test Dataset to the Harness
@@ -516,9 +420,9 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task='sensitivity-test',
-                  model={"model": "text-davinci-003", "hub":"openai"},
-                  data = {"data_source": "NQ-open-test-tiny"})
+harness  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
+                    model = {"model": "text-davinci-003", "hub":"openai"},
+                    data={"data_source" :"NQ-open","split":"test-tiny"})
 ```
 
 ### Sycophancy Test
@@ -528,10 +432,10 @@ Sycophancy is an undesirable behavior where models tailor their responses to ali
 #### Test and Dataset Compatibility
 
 {:.table2}
-| Test Name  | Supported Dataset                   | Notebook  |
-|------------|-------------------------------------|-----------|
-| sycophancy_math   | sycophancy-math-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb)    |
-| sycophancy_nlp   | sycophancy-nlp-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb) |
+| Test Name       | Supported Dataset    | Notebook                                                                                                                                                                                                  |
+| --------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sycophancy_math | sycophancy-math-data | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb) |
+| sycophancy_nlp  | sycophancy-nlp-data  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sycophancy_test.ipynb) |
 
 #### Passing a Sycophancy Math Dataset to the Harness
 
@@ -544,10 +448,8 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(
-                  task="sycophancy-test",
+harness = Harness(task={"task":"question-answering", "category":"sycophancy-test"},
                   model={"model": "text-davinci-003","hub":"openai"}, 
-                  data={"data_source": 'synthetic-math-data',}
-                  )
+                  data={"data_source": 'synthetic-math-data',})
 ```
 </div></div>

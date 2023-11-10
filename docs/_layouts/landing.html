@@ -54,8 +54,6 @@ article_header:
 # Using PyPI
 pip install langtest
 
-# Using Conda
-conda install -c johnsnowlabs langtest
 {% endhighlight %}
                   </div>
               </div>
@@ -125,7 +123,7 @@ h.generate().run().report()
                     <div class="highlight-box">
                       {% highlight python %}
 
-!pip install "langtest[openai]"
+!pip install langtest[openai]
                  
 from langtest import Harness
 
@@ -135,7 +133,7 @@ os.environ['OPENAI_API_KEY'] = ''
 # Create a Harness object
 h = Harness(task="question-answering", 
               model={"model": "text-davinci-003","hub":"openai"}, 
-              data={"data_source" :"BoolQ-test"})
+              data={"data_source" :"BoolQ", "split":"test-tiny"}
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
