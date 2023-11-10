@@ -15,9 +15,23 @@ modify_date: "2019-05-16"
 ---
 
 ### BoolQ
+Source: [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/)
+
 The BoolQ dataset is a collection of yes/no questions that are naturally occurring and generated in unprompted and unconstrained settings. The dataset contains about 16k examples, each consisting of a question, a passage, and an answer. The questions are about various topics and require reading comprehension and reasoning skills to answer. The dataset is intended to explore the surprising difficulty of natural yes/no questions and to benchmark natural language understanding systems.
 
-You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
+You can see which subsets and splits are available below.
+
+{:.table2}
+| Split Name          | Details                                                                                                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BoolQ**           | Training, development & test set from the BoolQ dataset, containing 15,942 labeled examples                                                                                         |
+| **BoolQ-dev**       | Dev set from the BoolQ dataset, containing 3,270 labeled examples                                                                                                                   |
+| **BoolQ-dev-tiny**  | Truncated version of the dev set from the BoolQ dataset, containing 50 labeled examples                                                                                             |
+| **BoolQ-test**      | Test set from the BoolQ dataset, containing 3,245 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.                       |
+| **BoolQ-test-tiny** | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
+| **BoolQ-bias**      | Manually annotated bias version of BoolQ dataset, containing 136 labeled examples                                                                                                   |
+
+Here is a sample from the dataset:
 
 {:.table2}
 | question                                  | passage                                                                                   | answer |

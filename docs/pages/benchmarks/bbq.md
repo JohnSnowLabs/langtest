@@ -15,9 +15,20 @@ modify_date: "2019-05-16"
 ---
 
 ### BBQ
+Source: [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193) 
+
 The BBQ dataset is a collection of questions and answers that are designed to measure the social biases of language models in question answering tasks. The dataset contains questions that are either under-informative or adequately informative, and that target different protected classes across various social dimensions, such as race, gender, religion, and sexual orientation. The dataset aims to promote fair and unbiased question answering models that can handle diverse and complex social contexts.
 
-You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
+
+You can see which subsets and splits are available below.
+
+{:.table2}
+| Split Name        | Details                                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------------------------- |
+| **BBQ-test**      | Testing set from the BBQ dataset, containing 1000 question answers examples.                         |
+| **BBQ-test-tiny** | Truncated version of the test set from the BBQ dataset, containing 50 question and answers examples. |
+
+Here is a sample from the dataset:
 
 {:.table2}
 | passage                                                                                                               | question                                                                                                                         | answer          |
