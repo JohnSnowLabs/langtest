@@ -11,7 +11,7 @@ header:
     url: /docs/pages/tests/test
     key: tests
   - title: Benchmarks
-    url: /docs/pages/benchmarks/benchmark
+    url: /docs/pages/benchmarks/boolq
     key: benchmarks
   - title: Blog
     url: https://www.johnsnowlabs.com/responsible-ai-blog/
@@ -135,10 +135,14 @@ tests:
     url: /docs/pages/tests/legal
   - title: Sycophancy 
     url: /docs/pages/tests/sycophancy
+  - title: Ideology 
+    url: /docs/pages/tests/ideology
+  - title: Benchmark Datasets 
+    url: /docs/pages/benchmarks/benchmark
 
 benchmarks:
   - title: Benchmarks
-    url: /docs/pages/benchmarks/benchmark
+    url: /docs/pages/benchmarks/boolq
     children:
       - title: BoolQ
         url: /docs/pages/benchmarks/boolq
