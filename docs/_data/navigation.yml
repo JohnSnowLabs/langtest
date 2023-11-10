@@ -135,6 +135,10 @@ tests:
     url: /docs/pages/tests/legal
   - title: Sycophancy 
     url: /docs/pages/tests/sycophancy
+  - title: Ideology 
+    url: /docs/pages/tests/ideology
+  - title: Benchmark Datasets 
+    url: /docs/pages/benchmarks/benchmark
 
 benchmarks:
   - title: Benchmarks
