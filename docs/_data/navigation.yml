@@ -142,7 +142,7 @@ tests:
 
 benchmarks:
   - title: Benchmarks
-    url: /docs/pages/benchmarks/boolq
+    url: /docs/pages/benchmarks/benchmark
     children:
       - title: BoolQ
         url: /docs/pages/benchmarks/boolq
