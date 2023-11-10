@@ -178,7 +178,8 @@ harness = Harness(task="text-classification",
 
 ### Question Answering
 
-To test Question Answering models, the user is meant to select a benchmark dataset from the following list:
+To test Question Answering models, the user is meant to select a benchmark dataset. You can see the benchmarks page for all available benchmarks:
+[Benchmarks](/pages/benchmarks/benchmark)
 
 #### Benchmark Datasets
 
