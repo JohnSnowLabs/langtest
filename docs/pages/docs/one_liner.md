@@ -481,7 +481,7 @@ from langtest import Harness
 # Create a Harness object
 h = Harness(task={"task":"fill-mask", "category":"wino-bias"}, 
             model={"model" : "bert-base-uncased", "hub":"huggingface" }, 
-            data = {"data_source":"Wino-test"})
+            data ={"data_source":"Wino-test", "split":"test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -507,9 +507,9 @@ import os
 os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 
 # Create a Harness object
-h=  Harness(task={"task":"fill-mask", "category":"wino-bias"},
+h=  Harness(task={"task":"question-answering", "category":"wino-bias"},
             model={"model": "text-davinci-003","hub":"openai"},
-            data ={"data_source":"Wino-test"})
+            data ={"data_source":"Wino-test", "split":"test"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
