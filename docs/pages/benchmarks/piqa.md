@@ -30,8 +30,6 @@ You can see which subsets and splits are available below.
 Here is a sample from the dataset:
 
 {:.table2}
-| question                                    |
-| ------------------------------------------- |
-| Clean electronics without leaving moisture. |
-A. Use window cleaner.
-B. Use rubbing alcohol." |
+| question                                                                                    |
+| ------------------------------------------------------------------------------------------- |
+| Clean electronics without leaving moisture.  A. Use window cleaner.B. Use rubbing alcohol." |
