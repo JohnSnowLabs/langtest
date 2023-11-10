@@ -58,7 +58,7 @@ Take a look at our official page for user documentation and examples: [langtest.
 - Test all aspects of model quality: robustness, bias, representation, fairness and accuracy.​
 - Automatically augment training data based on test results (for select models)​
 - Support for popular NLP frameworks for NER, Translation and Text-Classifcation: Spark NLP, Hugging Face & Transformers.
-- Support for testing LLMS ( OpenAI, Cohere, AI21, Hugging Face Inference API and Azure-OpenAI LLMs) for question answering, toxicity, clinical-tests, legal-support, factuality, sycophancy and summarization task. 
+- Support for testing LLMS ( OpenAI, Cohere, AI21, Hugging Face Inference API and Azure-OpenAI LLMs) for question answering, toxicity, clinical-tests, legal-support, factuality, sycophancy, summarization and other popular tests. 
 
 ## Benchmark Datasets
 
@@ -98,6 +98,10 @@ You can check out the following LangTest articles:
 | [**Unmasking Language Model Sensitivity in Negation and Toxicity Evaluations**](https://medium.com/john-snow-labs/unmasking-language-model-sensitivity-in-negation-and-toxicity-evaluations-f835cdc9cabf) | In this blog post, we delve into Language Model Sensitivity, examining how models handle negations and toxicity in language. Through these tests, we gain insights into the models' adaptability and responsiveness, emphasizing the continuous need for improvement in NLP models. |
 | [**Unveiling Bias in Language Models: Gender, Race, Disability, and Socioeconomic Perspectives**](https://medium.com/john-snow-labs/unveiling-bias-in-language-models-gender-race-disability-and-socioeconomic-perspectives-af0206ed0feb) | In this blog post, we explore bias in Language Models, focusing on gender, race, disability, and socioeconomic factors. We assess this bias using the CrowS-Pairs dataset, designed to measure stereotypical biases. To address these biases, we discuss the importance of tools like LangTest in promoting fairness in NLP systems. |
 | [**Unmasking the Biases Within AI: How Gender, Ethnicity, Religion, and Economics Shape NLP and Beyond**](https://medium.com/@chakravarthik27/cf69c203f52c) | In this blog post, we tackle AI bias on how Gender, Ethnicity, Religion, and Economics Shape NLP systems. We discussed strategies for reducing bias and promoting fairness in AI systems. |
+| [**Evaluating Large Language Models on Gender-Occupational Stereotypes Using the Wino Bias Test**](https://medium.com/john-snow-labs/evaluating-large-language-models-on-gender-occupational-stereotypes-using-the-wino-bias-test-2a96619b4960) | In this blog post, we dive into testing the WinoBias dataset on LLMs, examining language models’ handling of gender and occupational roles, evaluation metrics, and the wider implications. Let’s explore the evaluation of language models with LangTest on the WinoBias dataset and confront the challenges of addressing bias in AI. |
+| [**Streamlining ML Workflows: Integrating MLFlow Tracking with LangTest for Enhanced Model Evaluations**](https://medium.com/john-snow-labs/streamlining-ml-workflows-integrating-mlflow-tracking-with-langtest-for-enhanced-model-evaluations-4ce9863a0ff1) | In this blog post, we dive into the growing need for transparent, systematic, and comprehensive tracking of models. Enter MLFlow and LangTest: two tools that, when combined, create a revolutionary approach to ML development. |
+| [**Testing the Question Answering Capabilities of Large Language Models**](https://medium.com/john-snow-labs/testing-the-question-answering-capabilities-of-large-language-models-1bc424d61740) | In this blog post, we dive into enhancing the QA evaluation capabilities using LangTest library. Explore about different evaluation methods that LangTest offers to address the complexities of evaluating Question Answering (QA) tasks. |
+
 > **Note**
 > To check all blogs, head over to [Blogs](https://www.johnsnowlabs.com/responsible-ai-blog/)
 
