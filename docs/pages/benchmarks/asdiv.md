@@ -17,10 +17,13 @@ modify_date: "2019-05-16"
 ### ASDiv
 The ASDiv benchmark is a dataset of math word problems (MWPs) designed to evaluate the capability of various MWP solvers. The dataset is diverse in terms of both language patterns and problem types. The dataset is intended to be a challenging benchmark for natural language processing models and to encourage the development of models that can perform complex reasoning and inference.
 
-You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
+You can see which subsets and splits are available below.
 
-| **ASDiv-test**                                          | [ASDiv](https://arxiv.org/abs/2106.15772)                                                                         | Testing set from the ASDiv dataset, containing 1000 question answers examples.                                                                                                                                    |
-| **ASDiv-test-tiny**                                     | [ASDiv](https://arxiv.org/abs/2106.15772)                                                                         | Truncated version of the test set from the ASDiv dataset, containing 50 question and answers examples.   
+{:.table2}
+| Split Name          | Source                                    | Details                                                                                                |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **ASDiv-test**      | [ASDiv](https://arxiv.org/abs/2106.15772) | Testing set from the ASDiv dataset, containing 1000 question answers examples.                         |
+| **ASDiv-test-tiny** | [ASDiv](https://arxiv.org/abs/2106.15772) | Truncated version of the test set from the ASDiv dataset, containing 50 question and answers examples. |
 
 {:.table2}
 | passage                                                    | question                        | answer     |
