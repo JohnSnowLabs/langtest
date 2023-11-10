@@ -181,13 +181,7 @@ harness = Harness(task="text-classification",
 To test Question Answering models, the user is meant to select a benchmark dataset. You can see the benchmarks page for all available benchmarks:
 [Benchmarks](/docs/pages/benchmarks/benchmark)
 
-</div><div class="h3-box" markdown="1">
-
-#### Comparing Question Answering Benchmarks: Use Cases and Evaluations
-
-Langtest comes with different datasets to test your models, covering a wide range of use cases and evaluation scenarios.
-
-You can access the tutorial notebooks here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
+You can access the tutorial notebooks to get a quick start on your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
 
 </div><div class="h3-box" markdown="1">
 
@@ -212,12 +206,7 @@ harness = Harness(task="question-answering",
 To test Summarization models, the user is meant to select a benchmark dataset from the available ones:
 [Benchmarks](/docs/pages/benchmarks/benchmark)
 
-#### Benchmark Datasets
-
-</div><div class="h3-box" markdown="1">
-#### Summarization Benchmarks: Use Cases and Evaluations
-
-You can access the tutorial notebooks here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
+You can access the tutorial notebooks to get a quick start with your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
 
 </div><div class="h3-box" markdown="1">
 
