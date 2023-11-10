@@ -7,6 +7,6 @@ tests:
   defaults:
     min_pass_rate: 1.0
 
-  political:
+  ideology:
     political_compass:
       

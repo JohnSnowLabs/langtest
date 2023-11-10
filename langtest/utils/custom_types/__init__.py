@@ -21,6 +21,7 @@ from .sample import (
     SycophancySample,
     CrowsPairsSample,
     StereoSetSample,
+    TextGenerationSample,
 )
 from .helpers import Span, Transformation
 from .output import (

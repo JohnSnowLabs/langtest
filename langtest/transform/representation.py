@@ -1,8 +1,9 @@
 import asyncio
+from ..errors import Errors
 from abc import ABC, abstractmethod
 from typing import List, Dict, Union
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types import (
     MinScoreOutput,
     MinScoreQASample,
@@ -59,13 +60,13 @@ class BaseRepresentation(ABC):
     @classmethod
     @abstractmethod
     async def run(
-        cls, sample_list: List[Sample], model: ModelFactory, **kwargs
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Computes the score for the given data.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             List[Sample]: The transformed samples.
@@ -73,12 +74,12 @@ class BaseRepresentation(ABC):
         raise NotImplementedError()
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Creates a task for the run method.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be used for the computation.
+            model (ModelAPI): The model to be used for the computation.
 
         Returns:
             asyncio.Task: The task for the run method.
@@ -162,8 +163,7 @@ class GenderRepresentation(BaseRepresentation):
                 min_proportions = params["min_proportion"]
                 if sum(min_proportions.values()) > 1:
                     raise ValueError(
-                        "Sum of proportions cannot be greater than 1. "
-                        "So min_gender_representation_proportion test cannot run."
+                        Errors.E064.format(var="min_gender_representation_proportion")
                     )
 
             for key, value in min_proportions.items():
@@ -192,14 +192,12 @@ class GenderRepresentation(BaseRepresentation):
         return samples
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual results for the Gender Representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model factory object.
+            model (ModelAPI): The model factory object.
 
         Returns:
             List[Sample]: The list of samples with actual results.
@@ -348,11 +346,11 @@ class EthnicityRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                            So min_ethnicity_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_ethnicity_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
@@ -360,12 +358,11 @@ class EthnicityRepresentation(BaseRepresentation):
                         for key in default_ehtnicity_representation
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_ethnicity_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_ethnicity_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
-
             for key, value in expected_representation.items():
                 if hasattr(data[0], "task") and data[0].task == "question-answering":
                     sample = MinScoreQASample(
@@ -393,14 +390,12 @@ class EthnicityRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual results for the ethnicity representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
 
         Returns:
             List[Sample]: The list of samples with actual results.
@@ -515,22 +510,18 @@ class LabelRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_label_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(var="min_label_representation_proportion")
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
                         key: params["min_proportion"] for key in labels
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_label_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(var="min_label_representation_proportion")
                         )
-                        raise ValueError()
 
             for key, value in expected_representation.items():
                 sample = MinScoreSample(
@@ -545,14 +536,12 @@ class LabelRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual representation of the labels in the dataset.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be evaluated.
+            model (ModelAPI): The model to be evaluated.
 
         Returns:
             List[Sample]: Label Representation test results.
@@ -691,11 +680,11 @@ class ReligionRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_religion_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_religion_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
@@ -703,11 +692,11 @@ class ReligionRepresentation(BaseRepresentation):
                         for key in default_religion_representation
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_religion_name_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_religion_name_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
             entity_representation = (
                 RepresentationOperation.get_religion_name_representation_dict(data)
@@ -751,14 +740,12 @@ class ReligionRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual representation of religion names in the data.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be evaluated.
+            model (ModelAPI): The model to be evaluated.
 
         Returns:
             List[Sample]: Religion Representation test results.
@@ -894,11 +881,11 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     expected_representation = params["min_proportion"]
 
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            """Sum of proportions cannot be greater than 1.
-                        So min_country_economic_representation_proportion test cannot run"""
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_country_economic_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
                 elif isinstance(params["min_proportion"], float):
                     expected_representation = {
@@ -906,11 +893,11 @@ class CountryEconomicRepresentation(BaseRepresentation):
                         for key in default_economic_country_representation
                     }
                     if sum(expected_representation.values()) > 1:
-                        print(
-                            "Sum of proportions cannot be greater than 1. So "
-                            "min_country_economic_representation_proportion test cannot run"
+                        raise ValueError(
+                            Errors.E064.format(
+                                var="min_country_economic_representation_proportion"
+                            )
                         )
-                        raise ValueError()
 
             for key, value in expected_representation.items():
                 if hasattr(data[0], "task") and data[0].task == "question-answering":
@@ -939,14 +926,12 @@ class CountryEconomicRepresentation(BaseRepresentation):
         return sample_list
 
     @staticmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Computes the actual results for the country economic representation test.
 
         Args:
             sample_list (List[Sample]): The input data to be evaluated for representation test.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
 
         Returns:
             List[Sample]: Country Economic Representation test results.

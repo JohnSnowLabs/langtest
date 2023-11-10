@@ -1,5 +1,5 @@
 from .datahandler.datasource import DataFactory
-from .modelhandler.modelhandler import ModelFactory
+from .modelhandler.modelhandler import ModelAPI
 from .langtest import Harness
 
 """
@@ -12,13 +12,13 @@ Harness is a class, which can be instaniting and do testing in flow like
 workflow: generate --> run --> report --> save
 >>> from langtest import Harness
 
-ModelFactory is for handling of strings to models
+ModelAPI is for handling of strings to models
 like access or download resources from cloud.
->>> from langtest import ModelFactory
+>>> from langtest import ModelAPI
 
 DataFactory is for handling of like csv, json, conll ...
 >>> from langtest import DataFactory
 
 
 """
-__all__ = [Harness, ModelFactory, DataFactory]
+__all__ = [Harness, ModelAPI, DataFactory]

@@ -2,7 +2,9 @@ tests:
   defaults:
     min_pass_rate: 1.0
 
-  crows-pairs:
-    common-stereotypes:
+  stereotype:
+    crows-pairs:
       min_pass_rate: 0.70
+      diff_threshold: 0.10
+      filter_threshold: 0.15
 

@@ -6,6 +6,7 @@ import yaml
 
 from langtest.augmentation import AugmentRobustness, TemplaticAugment
 from langtest.langtest import Harness
+from langtest.tasks import TaskManager
 
 
 class AugmentWorkflowTestCase(unittest.TestCase):
@@ -73,7 +74,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
         )
 
         augment = AugmentRobustness(
-            task="ner",
+            task=TaskManager("ner"),
             h_report=temp_df,
             config=yaml.safe_load("tests/fixtures/config_ner.yaml"),
         )
@@ -146,7 +147,7 @@ class AugmentWorkflowTestCase(unittest.TestCase):
 
         generator = TemplaticAugment(
             templates=["I living in {LOC}", "you are working in {ORG}"],
-            task="ner",
+            task=TaskManager("ner"),
         )
         self.assertIsInstance(generator, TemplaticAugment)
         generator.fix(
@@ -302,7 +303,7 @@ class TestTemplaticAugmentation(unittest.TestCase):
             "City -X- -X- I-LOC",
         ]
         generator = TemplaticAugment(
-            templates=["My name is {PER} and I am from {LOC}"], task="ner"
+            templates=["My name is {PER} and I am from {LOC}"], task=TaskManager("ner")
         )
         generator.fix(
             training_data={"data_source": self.conll_path},

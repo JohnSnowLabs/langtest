@@ -8,6 +8,7 @@ from langtest.datahandler.datasource import (
     JSONLDataset,
     SynteticDataset,
 )
+from langtest.tasks import TaskManager
 from langtest.utils.custom_types.output import (
     NEROutput,
     SequenceClassificationOutput,
@@ -45,12 +46,14 @@ class TestNERDataset:
         "dataset,feature_col,target_col",
         [
             (
-                CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"),
+                CSVDataset(file_path="tests/fixtures/tner.csv", task=TaskManager("ner")),
                 "tokens",
                 "ner_tags",
             ),
             (
-                ConllDataset(file_path="tests/fixtures/test.conll", task="ner"),
+                ConllDataset(
+                    file_path="tests/fixtures/test.conll", task=TaskManager("ner")
+                ),
                 "text",
                 "labels",
             ),
@@ -77,7 +80,9 @@ class TestNERDataset:
         "dataset,params",
         [
             (
-                HuggingFaceDataset(dataset_name="wikiann", task="ner"),
+                HuggingFaceDataset(
+                    source_info={"data_source": "wikiann"}, task=TaskManager("ner")
+                ),
                 {
                     "subset": "fo",
                     "feature_column": "tokens",
@@ -86,14 +91,20 @@ class TestNERDataset:
                 },
             ),
             (
-                HuggingFaceDataset(dataset_name="Prikshit7766/12", task="ner"),
+                HuggingFaceDataset(
+                    source_info={"data_source": "Prikshit7766/12"},
+                    task=TaskManager("ner"),
+                ),
                 {
                     "feature_column": "tokens",
                     "target_column": "ner_tags",
                     "split": "test",
                 },
             ),
-            (CSVDataset(file_path="tests/fixtures/tner.csv", task="ner"), {}),
+            (
+                CSVDataset(file_path="tests/fixtures/tner.csv", task=TaskManager("ner")),
+                {},
+            ),
             (
                 CSVDataset(
                     file_path={
@@ -101,11 +112,16 @@ class TestNERDataset:
                         "feature_column": "tokens",
                         "target_column": "ner_tags",
                     },
-                    task="ner",
+                    task=TaskManager("ner"),
                 ),
                 {},
             ),
-            (ConllDataset(file_path="tests/fixtures/test.conll", task="ner"), {}),
+            (
+                ConllDataset(
+                    file_path="tests/fixtures/test.conll", task=TaskManager("ner")
+                ),
+                {},
+            ),
         ],
     )
     def test_load_data(self, dataset, params):
@@ -120,7 +136,7 @@ class TestNERDataset:
 
     def test_export_data_csv(self):
         """"""
-        dataset = CSVDataset(file_path="tests/fixtures/tner.csv", task="ner")
+        dataset = CSVDataset(file_path="tests/fixtures/tner.csv", task=TaskManager("ner"))
         dataset.export_data(
             data=[self.sample, self.sample], output_path="/tmp/exported_sample.csv"
         )
@@ -133,7 +149,9 @@ class TestNERDataset:
 
     def test_export_data_conll(self):
         """"""
-        dataset = ConllDataset(file_path="tests/fixtures/test.conll", task="ner")
+        dataset = ConllDataset(
+            file_path="tests/fixtures/test.conll", task=TaskManager("ner")
+        )
         dataset.export_data(
             data=[self.sample, self.sample], output_path="/tmp/exported_sample.conll"
         )
@@ -172,7 +190,7 @@ class TestNERDataset:
         (
             CSVDataset(
                 file_path="tests/fixtures/text_classification.csv",
-                task="text-classification",
+                task=TaskManager("text-classification"),
             ),
             "text",
             "label",
@@ -184,13 +202,16 @@ class TestNERDataset:
                     "feature_column": "text",
                     "target_column": "label",
                 },
-                task="text-classification",
+                task=TaskManager("text-classification"),
             ),
             "text",
             "label",
         ),
         (
-            HuggingFaceDataset(dataset_name="dbrd", task="text-classification"),
+            HuggingFaceDataset(
+                source_info={"data_source": "dbrd"},
+                task=TaskManager("text-classification"),
+            ),
             "text",
             "label",
         ),
@@ -226,7 +247,8 @@ class TestTextClassificationDataset:
     [
         (
             HuggingFaceDataset(
-                dataset_name="JulesBelveze/tldr_news", task="summarization"
+                source_info={"data_source": "JulesBelveze/tldr_news"},
+                task=TaskManager("summarization"),
             ),
             "content",
             "headline",
@@ -234,13 +256,15 @@ class TestTextClassificationDataset:
         (
             JSONLDataset(
                 file_path="tests/fixtures/XSum-test-tiny.jsonl",
-                task="summarization",
+                task=TaskManager("summarization"),
             ),
             "document",
             "summary",
         ),
         (
-            JSONLDataset(file_path="/tmp/summarization_1.jsonl", task="summarization"),
+            JSONLDataset(
+                file_path="/tmp/summarization_1.jsonl", task=TaskManager("summarization")
+            ),
             "text",
             "summary",
         ),
@@ -267,7 +291,9 @@ class TestSummarizationDataset:
                 feature_column=feature_col, target_column=target_col, split="test[:30]"
             )
         else:
-            samples = dataset.load_data()
+            samples = dataset.load_data(
+                feature_column=feature_col, target_column=target_col
+            )
 
         assert isinstance(samples, list)
 
@@ -280,7 +306,7 @@ class TestSummarizationDataset:
     [
         JSONLDataset(
             file_path="tests/fixtures/translation-test-tiny.jsonl",
-            task="translation",
+            task=TaskManager("translation"),
         )
     ],
 )
@@ -310,7 +336,7 @@ class TestTranslationDataset:
     [
         JSONLDataset(
             file_path="tests/fixtures/toxicity-test-tiny.jsonl",
-            task="toxicity",
+            task=TaskManager("toxicity"),
         )
     ],
 )
@@ -336,29 +362,36 @@ class TestToxicityDataset:
 
 
 @pytest.mark.parametrize(
-    "dataset",
+    "dataset,feature_col,target_col",
     [
-        JSONLDataset(
-            file_path="tests/fixtures/TruthfulQA-test-tiny.jsonl",
-            task="question-answering",
-        )
+        (
+            JSONLDataset(
+                file_path="tests/fixtures/TruthfulQA-test-tiny.jsonl",
+                task=TaskManager("question-answering"),
+            ),
+            "question",
+            "answer",
+        ),
     ],
 )
 class TestQADataset:
     """Test cases for QA datasets"""
 
-    def test_load_raw_data(self, dataset):
+    def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
         raw_data = dataset.load_raw_data()
         assert isinstance(raw_data, list)
 
         for sample in raw_data:
-            assert isinstance(sample["question"], str)
-            assert isinstance(sample["answer"], list)
+            assert isinstance(sample[feature_col], str)
+            assert isinstance(sample[target_col], list)
 
-    def test_load_data(self, dataset):
+    def test_load_data(self, dataset, feature_col, target_col):
         """"""
-        samples = dataset.load_data()
+        samples = dataset.load_data(
+            question=feature_col,
+            target_column=target_col,
+        )
 
         assert isinstance(samples, list)
 
@@ -378,7 +411,9 @@ class TestSynteticData:
 
     def test_load_data(self, dataset_config):
         """Test the load_data method"""
-        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(
+            dataset=dataset_config, task=TaskManager("sycophancy-test")
+        )
         samples = dataset.load_data()
         assert isinstance(samples, list)
         for sample in samples:
@@ -386,7 +421,9 @@ class TestSynteticData:
 
     def test_load_raw_data(self, dataset_config):
         """Test the load_raw_data method"""
-        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(
+            dataset=dataset_config, task=TaskManager("sycophancy-test")
+        )
         raw_data = dataset.load_raw_data()
         assert len(raw_data) > 0
         assert isinstance(raw_data, list)
@@ -399,7 +436,9 @@ class TestSynteticData:
                 ground_truth="(B) Disagree",
             )
         ]
-        dataset = SynteticDataset(dataset=dataset_config, task="sycophancy-test")
+        dataset = SynteticDataset(
+            dataset=dataset_config, task=TaskManager("sycophancy-test")
+        )
         dataset.export_data(data=sample, output_path="/tmp/exported_sample.csv")
         df = pd.read_csv("/tmp/exported_sample.csv")
         assert len(df) == len(sample)
