@@ -142,7 +142,39 @@ benchmarks:
     children:
       - title: BoolQ
         url: /docs/pages/benchmarks/boolq
-      - title: Natural Questions
-        url: /docs/pages/benchmarks/natural_questions
+      - title: ASDiv
+        url: /docs/pages/benchmarks/asdiv
+      - title: BBQ
+        url: /docs/pages/benchmarks/bbq
+      - title: Bigbench
+        url: /docs/pages/benchmarks/bigbench
+      - title: BoolQ
+        url: /docs/pages/benchmarks/boolq
+      - title: CommonsenseQA
+        url: /docs/pages/benchmarks/commonsenseqa
+      - title: FIQA
+        url: /docs/pages/benchmarks/fiqa
+      - title: HellaSwag
+        url: /docs/pages/benchmarks/hellaswag
+      - title: LegalBench
+        url: /docs/pages/benchmarks/legalbench
+      - title: LogiQA
+        url: /docs/pages/benchmarks/logiqa
+      - title: MMLU
+        url: /docs/pages/benchmarks/mmlu
+      - title: NarrativeQA
+        url: /docs/pages/benchmarks/narrativeqa
+      - title: NaturalQuestions
+        url: /docs/pages/benchmarks/natural-questions
+      - title: OpenBookQA
+        url: /docs/pages/benchmarks/openbookqa
+      - title: PIQA
+        url: /docs/pages/benchmarks/piqa
+      - title: Quac
+        url: /docs/pages/benchmarks/quac
+      - title: SIQA
+        url: /docs/pages/benchmarks/siqa
+      - title: TruthfulQA
+        url: /docs/pages/benchmarks/truthfulqa
 
   
