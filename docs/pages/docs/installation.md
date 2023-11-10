@@ -23,23 +23,6 @@ You can install **langtest** using pip or conda.
 pip install langtest
 ```
 
-**Using Conda**: 
-
-Download from johnsnowlabs or conda-forge channel.
-
-```sh
-# Option 1: From the johnsowlabs channel
-conda install -c johnsnowlabs langtest
-
-# Option 2: From the conda-forge channel
-conda install -c conda-forge langtest
-```
-
-> :bulb: The conda solver is slower than the mamba solver. Install mamba in the 
-> conda environment first, then replace all `conda install` commands with 
-> `mamba install` to get a much faster installation of packages.
-> To install mamba: `conda install -c conda-forge mamba`  
-
-The library supports 50+ out of the box tests for **John Snow Labs**, **Hugging Face**, **OpenAI**, **Cohere**, **AI21**, **Azure-OpenAI** and **Spacy** models. These tests fall into robustness, toxicity, accuracy, bias, representation and fairness test categories for NER, Text Classification, Summarization and Question Answering models, with support for many more models and test types actively being developed.
+The library supports 60+ out of the box tests for **John Snow Labs**, **Hugging Face**, **OpenAI**, **Cohere**, **AI21**, **Azure-OpenAI** and **Spacy** models. These tests fall into robustness, toxicity, accuracy, bias, representation, legal-tests, clinical-tests, sensitivity, sycophancy, fairness and many other test categories for NER, Text Classification, Summarization, Translation, Text-Generation, Fill-Mask and Question Answering models, with support for many more models and test types actively being developed.
 
 </div></div>

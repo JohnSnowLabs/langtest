@@ -4,9 +4,10 @@ from typing import Any, List, Union, Dict, Tuple
 
 from langtest.utils.custom_types.output import TranslationOutput
 
-from .modelhandler import _ModelHandler
+from ..modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
 from ..utils.lib_manager import try_import_lib
+from ..errors import Errors
 
 if try_import_lib("pyspark"):
     from pyspark.ml import PipelineModel
@@ -133,6 +134,8 @@ class PretrainedJSLModel(ABC):
             Loaded SparkNLP LightPipeline for inference.
     """
 
+    hub = "johnsnowlabs"
+
     @abstractmethod
     def __init__(
         self,
@@ -162,11 +165,7 @@ class PretrainedJSLModel(ABC):
             self.model = _pipeline.fit(tmp_df)
 
         else:
-            raise ValueError(
-                f"Invalid SparkNLP model object: {type(model)}. "
-                f"John Snow Labs model handler accepts: "
-                f"[NLUPipeline, PretrainedPipeline, PipelineModel, LightPipeline]"
-            )
+            raise ValueError(Errors.E038.format(model_type=type(model)))
 
     @classmethod
     def load_model(cls, path) -> "NLUPipeline":
@@ -175,21 +174,20 @@ class PretrainedJSLModel(ABC):
         Args:
             path (str): Path to pretrained local or NLP Models Hub SparkNLP model
         """
-        if os.path.exists(path):
-            if try_import_lib("johnsnowlabs"):
-                loaded_model = nlp.load(path=path)
+        if isinstance(path, str):
+            if os.path.exists(path):
+                if try_import_lib("johnsnowlabs"):
+                    loaded_model = nlp.load(path=path)
+                else:
+                    loaded_model = PipelineModel.load(path)
             else:
-                loaded_model = PipelineModel.load(path)
-        else:
-            if try_import_lib("johnsnowlabs"):
-                loaded_model = nlp.load(path)
-            else:
-                raise ValueError(
-                    "johnsnowlabs is not installed. "
-                    "In order to use NLP Models Hub, johnsnowlabs should be installed!"
-                )
+                if try_import_lib("johnsnowlabs"):
+                    loaded_model = nlp.load(path)
+                else:
+                    raise ValueError(Errors.E039)
 
-        return loaded_model
+            return cls(loaded_model)
+        return cls(path)
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs) -> Any:
@@ -207,8 +205,10 @@ class PretrainedJSLModel(ABC):
         return self.predict(text=text)
 
 
-class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
+class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
     """Pretrained model for NER tasks."""
+
+    task = "ner"
 
     def __init__(
         self,
@@ -232,9 +232,7 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
                 break
 
         if ner_model is None:
-            raise ValueError(
-                "Invalid PipelineModel! There should be at least one NER component."
-            )
+            raise ValueError(Errors.E040.format(var="NER"))
 
         self.output_col = ner_model.getOutputCol()
 
@@ -387,8 +385,10 @@ class PretrainedModelForNER(PretrainedJSLModel, _ModelHandler):
         return False
 
 
-class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
+class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
     """Pretrained model for text classification tasks"""
+
+    task = "text-classification"
 
     def __init__(
         self,
@@ -411,9 +411,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
                 break
 
         if _classifier is None:
-            raise ValueError(
-                "Invalid PipelineModel! There should be at least one classifier component."
-            )
+            raise ValueError(Errors.E040.format(var="classifier"))
 
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
@@ -466,8 +464,10 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, _ModelHandler):
         return [x["label"] for x in prediction]
 
 
-class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
+class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
     """Pretrained model for translations tasks"""
+
+    task = "translation"
 
     def __init__(
         self,
@@ -490,9 +490,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, _ModelHandler):
                 break
 
         if _translator is None:
-            raise ValueError(
-                "Invalid PipelineModel! There should be at least one translator component."
-            )
+            raise ValueError(Errors.E040.format(var="translator"))
 
         self.output_col = _translator.getOutputCol()
         self.model = LightPipeline(self.model)

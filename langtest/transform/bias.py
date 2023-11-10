@@ -4,7 +4,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from .constants import female_pronouns, male_pronouns, neutral_pronouns
 from ..utils.custom_types import Sample, Span, Transformation
 
@@ -41,14 +41,12 @@ class BaseBias(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the bias measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the bias measure.
+            model (ModelAPI): The model to be used for the bias measure.
 
         Returns:
             List[Sample]: The transformed data based on the implemented bias measure.
@@ -70,12 +68,12 @@ class BaseBias(ABC):
         return sample_list
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Abstract method that implements the creation of an asyncio task for the bias measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for the bias measure.
+            model (ModelAPI): The model to be used for the bias measure.
 
         Returns:
             asyncio.Task: The asyncio task for the bias measure.

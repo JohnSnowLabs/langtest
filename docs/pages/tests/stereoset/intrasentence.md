@@ -22,10 +22,10 @@ The test is passed if the absolute difference in the probability of masks is und
 stereoset:
     intrasentence:
         min_pass_rate: 0.70
-        diff_treshold: 0.10
+        diff_threshold: 0.10
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
-- **diff_treshold (float):** Allowed difference between sentences (percentage). Default value is 0.1.
+- **diff_threshold (float):** Allowed difference between sentences (percentage). Default value is 0.1.
 
 </div><div class="h3-box" markdown="1">
 

@@ -2,8 +2,8 @@ import csv
 import importlib
 import logging
 import os
-import re
 import random
+import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List, Union
@@ -11,8 +11,9 @@ from typing import Optional
 
 import jsonlines
 import pandas as pd
+from langtest.tasks.task import TaskManager
+from langtest.transform.constants import DATASETS
 
-from langtest.utils.custom_types import sample
 from .format import Formatter
 from langtest.utils.custom_types import (
     NEROutput,
@@ -24,21 +25,11 @@ from langtest.utils.custom_types import (
     SequenceClassificationSample,
     SequenceLabel,
     SummarizationSample,
-    ToxicitySample,
-    TranslationSample,
-    ClinicalSample,
-    SecuritySample,
-    DisinformationSample,
-    SensitivitySample,
-    WinoBiasSample,
-    LegalSample,
-    FactualitySample,
-    SycophancySample,
     CrowsPairsSample,
-    StereoSetSample,
+    SycophancySample,
 )
 from ..utils.lib_manager import try_import_lib
-from ..transform.constants import DATASETS
+from ..errors import Warnings, Errors
 
 COLUMN_MAPPER = {
     "text-classification": {
@@ -109,11 +100,13 @@ COLUMN_MAPPER = {
 }
 
 
-class _IDataset(ABC):
+class BaseDataset(ABC):
     """Abstract base class for Dataset.
 
     Defines the load_data method that all subclasses must implement.
     """
+
+    data_sources = defaultdict()
 
     @abstractmethod
     def load_raw_data(self):
@@ -137,6 +130,12 @@ class _IDataset(ABC):
         """
         return NotImplementedError()
 
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        dataset_cls = cls.__name__.replace("Dataset", "").lower()
+        cls.data_sources[dataset_cls] = cls
+
 
 class DataFactory:
     """Data factory for creating Dataset objects.
@@ -145,7 +144,10 @@ class DataFactory:
     correct Dataset type based on the file extension.
     """
 
-    def __init__(self, file_path: dict, task: str, **kwargs) -> None:
+    data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
+    CURATED_BIAS_DATASETS = ["BoolQ", "XSum"]
+
+    def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
 
         Args:
@@ -153,31 +155,41 @@ class DataFactory:
             task (str): Task to be evaluated.
         """
         if not isinstance(file_path, dict):
-            raise ValueError("'file_path' must be a dictionary.")
+            raise ValueError(Errors.E024)
 
         if "data_source" not in file_path:
-            raise ValueError(
-                "The 'data_source' key must be provided in the 'file_path' dictionary."
-            )
+            raise ValueError(Errors.E025)
         self._custom_label = file_path
         self._file_path = file_path.get("data_source")
-        self._class_map = {
-            cls.__name__.replace("Dataset", "").lower(): cls
-            for cls in _IDataset.__subclasses__()
-        }
-        _, self.file_ext = os.path.splitext(self._file_path)
-        if len(self.file_ext) > 0:
-            self.file_ext = self.file_ext.replace(".", "")
-        else:
-            self._file_path = self._load_dataset(self._file_path)
+
+        if isinstance(self._file_path, str):
             _, self.file_ext = os.path.splitext(self._file_path)
+
+            if len(self.file_ext) > 0:
+                self.file_ext = self.file_ext.replace(".", "")
+            elif "source" in file_path:
+                self.file_ext = file_path["source"]
+                self._file_path = file_path
+            elif self._file_path in ("synthetic-math-data", "synthetic-nlp-data"):
+                self.file_ext = "syntetic"
+                self._file_path = file_path
+            elif (
+                "bias" == self._custom_label.get("split")
+                and self._file_path in self.CURATED_BIAS_DATASETS
+            ):
+                self.file_ext = "curated"
+                self._file_path = file_path.get("data_source")
+            else:
+                self._file_path = self._load_dataset(self._custom_label)
+                _, self.file_ext = os.path.splitext(self._file_path)
+
         self.task = task
-        self.init_cls = None
+        self.init_cls: BaseDataset = None
         self.kwargs = kwargs
 
     def load_raw(self):
         """Loads the data into a raw format"""
-        self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+        self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
             self._file_path, task=self.task, **self.kwargs
         )
         return self.init_cls.load_raw_data()
@@ -188,12 +200,18 @@ class DataFactory:
         Returns:
             list[Sample]: Loaded text data.
         """
+
         if len(self._custom_label) > 1 and self.file_ext == "csv":
-            self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
+        elif self._file_path in self.CURATED_BIAS_DATASETS and self.task in (
+            "question-answering",
+            "summarization",
+        ):
+            return DataFactory.load_curated_bias(self._file_path)
         else:
-            self.init_cls = self._class_map[self.file_ext.replace(".", "")](
+            self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._file_path, task=self.task, **self.kwargs
             )
         return self.init_cls.load_data()
@@ -221,7 +239,7 @@ class DataFactory:
         """
         data = []
         path = os.path.abspath(__file__)
-        if file_path == "BoolQ-bias":
+        if file_path == "BoolQ":
             bias_jsonl = os.path.dirname(path)[:-7] + "/BoolQ/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
@@ -236,7 +254,7 @@ class DataFactory:
                             dataset_name="BoolQ",
                         )
                     )
-        elif file_path == "XSum-bias":
+        elif file_path == "XSum":
             bias_jsonl = os.path.dirname(path)[:-7] + "/Xsum/bias.jsonl"
             with jsonlines.open(bias_jsonl) as reader:
                 for item in reader:
@@ -265,17 +283,19 @@ class DataFactory:
             List[Sample]: list of processed samples
         """
         data = []
-        warning_message = ""
         for item in bias_data:
             if item.test_type in tests_to_filter:
                 data.append(item)
-
-        warning_message += f"Filtering provided bias tests from {len(bias_data)} samples - {len(bias_data) - len(data)} samples removed "
-        logging.warning(warning_message)
+        logging.warning(
+            Warnings.W003.format(
+                len_bias_data=len(bias_data),
+                len_samples_removed=len(bias_data) - len(data),
+            )
+        )
         return data
 
     @classmethod
-    def _load_dataset(cls, dataset_name: str) -> str:
+    def _load_dataset(cls, custom_label: dict) -> str:
         """Loads a dataset
 
         Args:
@@ -284,115 +304,141 @@ class DataFactory:
         Returns:
             str: path to our data
         """
+        dataset_name: str = custom_label.get("data_source")
+        subset: str = custom_label.get("subset")
+        split: str = custom_label.get("split")
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
+
         datasets_info = {
-            "BoolQ-dev-tiny": script_dir[:-7] + "/BoolQ/dev-tiny.jsonl",
-            "BoolQ-dev": script_dir[:-7] + "/BoolQ/dev.jsonl",
-            "BoolQ-test-tiny": script_dir[:-7] + "/BoolQ/test-tiny.jsonl",
-            "BoolQ-test": script_dir[:-7] + "/BoolQ/test.jsonl",
-            "BoolQ-bias": script_dir[:-7] + "/BoolQ/bias.jsonl",
-            "BoolQ": script_dir[:-7] + "/BoolQ/combined.jsonl",
-            "NQ-open-test": script_dir[:-7] + "/NQ-open/test.jsonl",
-            "NQ-open": script_dir[:-7] + "/NQ-open/combined.jsonl",
-            "NQ-open-test-tiny": script_dir[:-7] + "/NQ-open/test-tiny.jsonl",
-            "XSum-test-tiny": script_dir[:-7] + "/Xsum/XSum-test-tiny.jsonl",
-            "XSum-test": script_dir[:-7] + "/Xsum/XSum-test.jsonl",
-            "XSum-bias": script_dir[:-7] + "/Xsum/bias.jsonl",
-            "TruthfulQA-combined": script_dir[:-7]
-            + "/TruthfulQA/TruthfulQA-combined.jsonl",
-            "TruthfulQA-test": script_dir[:-7] + "/TruthfulQA/TruthfulQA-test.jsonl",
-            "TruthfulQA-test-tiny": script_dir[:-7]
-            + "/TruthfulQA/TruthfulQA-test-tiny.jsonl",
-            "MMLU-test-tiny": script_dir[:-7] + "/MMLU/MMLU-test-tiny.jsonl",
-            "MMLU-test": script_dir[:-7] + "/MMLU/MMLU-test.jsonl",
-            "OpenBookQA-test": script_dir[:-7] + "/OpenBookQA/OpenBookQA-test.jsonl",
-            "OpenBookQA-test-tiny": script_dir[:-7]
-            + "/OpenBookQA/OpenBookQA-test-tiny.jsonl",
-            "Quac-test": script_dir[:-7] + "/quac/Quac-test.jsonl",
-            "Quac-test-tiny": script_dir[:-7] + "/quac/Quac-test-tiny.jsonl",
-            "toxicity-test-tiny": script_dir[:-7] + "/toxicity/toxicity-test-tiny.jsonl",
-            "NarrativeQA-test": script_dir[:-7] + "/NarrativeQA/NarrativeQA-test.jsonl",
-            "NarrativeQA-test-tiny": script_dir[:-7]
-            + "/NarrativeQA/NarrativeQA-test-tiny.jsonl",
-            "HellaSwag-test": script_dir[:-7] + "/HellaSwag/hellaswag-test.jsonl",
-            "HellaSwag-test-tiny": script_dir[:-7]
-            + "/HellaSwag/hellaswag-test-tiny.jsonl",
-            "Translation-test": script_dir[:-7]
-            + "/Translation/translation-test-tiny.jsonl",
-            "BBQ-test": script_dir[:-7] + "/BBQ/BBQ-test.jsonl",
-            "BBQ-test-tiny": script_dir[:-7] + "/BBQ/BBQ-test-tiny.jsonl",
-            "Prompt-Injection-Attack": script_dir[:-7]
-            + "/security/Prompt-Injection-Attack.jsonl",
-            "Medical-files": script_dir[:-7] + "/Clinical-Tests/Medical-files.jsonl",
-            "Gastroenterology-files": script_dir[:-7]
-            + "/Clinical-Tests/Gastroenterology-files.jsonl",
-            "Oromaxillofacial-files": script_dir[:-7]
-            + "/Clinical-Tests/Oromaxillofacial-files.jsonl",
-            "ASDiv-test": script_dir[:-7] + "/asdiv/asdiv-test.jsonl",
-            "ASDiv-test-tiny": script_dir[:-7] + "/asdiv/asdiv-test-tiny.jsonl",
-            "Bigbench-Causal-judgment-test": script_dir[:-7]
-            + "/Bigbench/CausalJudgment/causal-judgment-test.jsonl",
-            "Bigbench-Causal-judgment-test-tiny": script_dir[:-7]
-            + "/Bigbench/CausalJudgment/causal-judgment-test-tiny.jsonl",
-            "Bigbench-DisflQA-test": script_dir[:-7]
-            + "/Bigbench/DisflQA/disfl-qa-test.jsonl",
-            "Bigbench-DisflQA-test-tiny": script_dir[:-7]
-            + "/Bigbench/DisflQA/disfl-qa-test-tiny.jsonl",
-            "Bigbench-Abstract-narrative-understanding-test-tiny": script_dir[:-7]
-            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test-tiny.jsonl",
-            "Bigbench-Abstract-narrative-understanding-test": script_dir[:-7]
-            + "/Bigbench/AbstractNarrativeUnderstanding/Abstract-narrative-understanding-test.jsonl",
-            "Bigbench-DisambiguationQA-test": script_dir[:-7]
-            + "/Bigbench/DisambiguationQA/DisambiguationQA-test.jsonl",
-            "Bigbench-DisambiguationQA-test-tiny": script_dir[:-7]
-            + "/Bigbench/DisambiguationQA/DisambiguationQA-test-tiny.jsonl",
-            "LogiQA-test-tiny": script_dir[:-7] + "/LogiQA/LogiQA-test-tiny.jsonl",
-            "LogiQA-test": script_dir[:-7] + "/LogiQA/LogiQA-test.jsonl",
-            "Narrative-Wedging": script_dir[:-7]
-            + "/NarrativeWedging/Narrative_Wedging.jsonl",
-            "Wino-test": script_dir[:-7] + "/Wino-Bias/wino-bias-test.jsonl",
-            "Legal-Support-test": script_dir[:-7] + "/Legal-Support/legal-test.jsonl",
-            "Factual-Summary-Pairs": script_dir[:-7]
-            + "/Factuality/Factual-Summary-Pairs.jsonl",
-            "MultiLexSum-test": script_dir[:-7] + "/MultiLexSum/MultiLexSum-test.jsonl",
-            "MultiLexSum-test-tiny": script_dir[:-7]
-            + "/MultiLexSum/MultiLexSum-test.jsonl",
-            "wikiDataset-test": script_dir[:-7] + "/wikiDataset/wikiDataset-test.jsonl",
-            "wikiDataset-test-tiny": script_dir[:-7]
-            + "/wikiDataset/wikiDataset-test-tiny.jsonl",
-            "CommonsenseQA-test": script_dir[:-7]
-            + "/CommonsenseQA/commonsenseQA-test.jsonl",
-            "CommonsenseQA-test-tiny": script_dir[:-7]
-            + "/CommonsenseQA/commonsenseQA-test-tiny.jsonl",
-            "CommonsenseQA-validation": script_dir[:-7]
-            + "/CommonsenseQA/CommonsenseQA-validation.jsonl",
-            "CommonsenseQA-validation-tiny": script_dir[:-7]
-            + "/CommonsenseQA/CommonsenseQA-validation-tiny.jsonl",
-            "SIQA-test": script_dir[:-7] + "/SIQA/SIQA-test.jsonl",
-            "SIQA-test-tiny": script_dir[:-7] + "/SIQA/SIQA-test-tiny.jsonl",
-            "PIQA-test": script_dir[:-7] + "/PIQA/PIQA-test.jsonl",
-            "PIQA-test-tiny": script_dir[:-7] + "/PIQA/PIQA-test-tiny.jsonl",
-            "Consumer-Contracts": script_dir[:-7] + "/Consumer-Contracts/test.jsonl",
-            "Contracts": script_dir[:-7] + "/Contracts/test_contracts.jsonl",
-            "Privacy-Policy": script_dir[:-7] + "/Privacy-Policy/test_privacy_qa.jsonl",
-            "Crows-Pairs": script_dir[:-7]
-            + "/CrowS-Pairs/crows_pairs_anonymized_masked.csv",
-            "StereoSet": script_dir[:-7] + "/StereoSet/stereoset.jsonl",
-            "Fiqa": script_dir[:-7] + "/Finance/test.jsonl",
+            "BoolQ": {
+                "split": ("test-tiny", "test", "dev-tiny", "dev", "combined"),
+                "extension": ".jsonl",
+            },
+            "NQ-open": {
+                "split": ("test-tiny", "test", "combined"),
+                "extension": ".jsonl",
+            },
+            "XSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "TruthfulQA": {
+                "split": ("test-tiny", "test", "combined"),
+                "extension": ".jsonl",
+            },
+            "MMLU": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "OpenBookQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Quac": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Toxicity": {"split": ("test",), "extension": ".jsonl"},
+            "NarrativeQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "HellaSwag": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Translation": {"split": ("test",), "extension": ".jsonl"},
+            "BBQ": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Prompt-Injection-Attack": {"split": ("test",), "extension": ".jsonl"},
+            "Clinical": {
+                "split": (
+                    "Medical-files",
+                    "Gastroenterology-files",
+                    "Oromaxillofacial-files",
+                ),
+                "extension": ".jsonl",
+            },
+            "ASDiv": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Bigbench": {
+                "Causal-judgment": {
+                    "split": ("test-tiny", "test"),
+                    "extension": ".jsonl",
+                },
+                "DisflQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+                "Abstract-narrative-understanding": {
+                    "split": ("test-tiny", "test"),
+                    "extension": ".jsonl",
+                },
+                "DisambiguationQA": {
+                    "split": ("test-tiny", "test"),
+                    "extension": ".jsonl",
+                },
+            },
+            "LogiQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Narrative-Wedging": {"split": ("test-tiny",), "extension": ".jsonl"},
+            "Wino-test": {"split": ("test",), "extension": ".jsonl"},
+            "Legal-Support": {"split": ("test",), "extension": ".jsonl"},
+            "Factual-Summary-Pairs": {"split": ("test",), "extension": ".jsonl"},
+            "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "CommonsenseQA": {
+                "split": ("test-tiny", "test", "validation-tiny", "validation"),
+                "extension": ".jsonl",
+            },
+            "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "PIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "Consumer-Contracts": {"split": ("test",), "extension": ".jsonl"},
+            "Contracts": {"split": ("test",), "extension": ".jsonl"},
+            "Privacy-Policy": {"split": ("test",), "extension": ".jsonl"},
+            "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
+            "StereoSet": {"split": ("test",), "extension": ".jsonl"},
+            "Fiqa": {"split": ("test",), "extension": ".jsonl"},
         }
 
-        return datasets_info[dataset_name]
+        if dataset_name not in datasets_info:
+            raise ValueError(f"{dataset_name} is not a valid dataset name")
+
+        dataset_info = datasets_info[dataset_name]
+
+        if "split" not in dataset_info:
+            if subset is None:
+                subset = list(dataset_info.keys())[0]
+                logging.warning(Warnings.W012.format(var1="subset", var2=subset))
+            if split is None:
+                split = dataset_info[subset]["split"][0]
+                logging.warning(Warnings.W012.format(var1="split", var2=split))
+
+            if subset not in dataset_info or split not in dataset_info[subset]["split"]:
+                raise ValueError(
+                    Errors.E082.format(
+                        subset=subset,
+                        split=split,
+                        dataset_name=dataset_name,
+                        available_subset_splits=", ".join(
+                            [f"{s}: {info['split']}" for s, info in dataset_info.items()]
+                        ),
+                    )
+                )
+            extension = dataset_info[subset].get("extension", "jsonl")
+            return (
+                script_dir[:-7]
+                + "/"
+                + dataset_name
+                + "/"
+                + subset
+                + "/"
+                + split
+                + extension
+            )
+        else:
+            if split is None:
+                split = dataset_info["split"][0]
+                logging.warning(Warnings.W012.format(var1="split", var2=split))
+
+            if split not in dataset_info["split"]:
+                raise ValueError(
+                    Errors.E083.format(
+                        split=split,
+                        dataset_name=dataset_name,
+                        available_splits=", ".join(dataset_info["split"]),
+                    )
+                )
+
+            extension = dataset_info.get("extension", "jsonl")
+            return script_dir[:-7] + "/" + dataset_name + "/" + split + extension
 
 
-class ConllDataset(_IDataset):
-    """Class to handle Conll files. Subclass of _IDataset."""
+class ConllDataset(BaseDataset):
+    """Class to handle Conll files. Subclass of BaseDataset."""
 
     supported_tasks = ["ner"]
 
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, file_path: str, task: str) -> None:
+    def __init__(self, file_path: str, task: TaskManager) -> None:
         """Initializes ConllDataset object.
 
         Args:
@@ -402,10 +448,6 @@ class ConllDataset(_IDataset):
         super().__init__()
         self._file_path = file_path
 
-        if task != "ner":
-            raise ValueError(
-                f"Given task ({task}) is not matched with ner. CoNLL dataset can ne only loaded for ner!"
-            )
         self.task = task
 
     def load_raw_data(self) -> List[Dict]:
@@ -437,9 +479,7 @@ class ConllDataset(_IDataset):
                     valid_tokens, token_list = self.__token_validation(tokens)
 
                     if not valid_tokens:
-                        logging.warning(
-                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
-                        )
+                        logging.warning(Warnings.W004.format(sent=sent))
                         continue
 
                     #  get token and labels from the split
@@ -481,9 +521,7 @@ class ConllDataset(_IDataset):
                     valid_tokens, token_list = self.__token_validation(tokens)
 
                     if not valid_tokens:
-                        logging.warning(
-                            f"\n{'='*100}\nInvalid tokens found in sentence:\n{sent}. \nSkipping sentence.\n{'='*100}\n"
-                        )
+                        logging.warning(Warnings.W004.format(sent=sent))
                         continue
 
                     #  get token and labels from the split
@@ -510,7 +548,7 @@ class ConllDataset(_IDataset):
                     original = " ".join([label.span.word for label in ner_labels])
 
                     data.append(
-                        NERSample(
+                        self.task.get_sample_class(
                             original=original,
                             expected_results=NEROutput(predictions=ner_labels),
                         )
@@ -557,10 +595,7 @@ class ConllDataset(_IDataset):
                 token_list.append(tsplit)
                 valid_labels.append(tsplit[-1])
             else:
-                logging.warning(
-                    # invalid label entries in the sentence
-                    f" Invalid or Missing label entries in the sentence: {t}"
-                )
+                logging.warning(Warnings.W008.format(sent=t))
                 return False, token_list
 
         if valid_labels[0].startswith("I-"):
@@ -574,8 +609,8 @@ class ConllDataset(_IDataset):
         return True, token_list  # All labels are valid
 
 
-class JSONDataset(_IDataset):
-    """Class to handle JSON dataset files. Subclass of _IDataset."""
+class JSONDataset(BaseDataset):
+    """Class to handle JSON dataset files. Subclass of BaseDataset."""
 
     def __init__(self, file_path: str):
         """Initializes JSONDataset object.
@@ -610,7 +645,7 @@ class JSONDataset(_IDataset):
         raise NotImplementedError()
 
 
-class CSVDataset(_IDataset):
+class CSVDataset(BaseDataset):
     supported_tasks = [
         "ner",
         "text-classification",
@@ -621,7 +656,7 @@ class CSVDataset(_IDataset):
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
     """
-    A class to handle CSV files datasets. Subclass of _IDataset.
+    A class to handle CSV files datasets. Subclass of BaseDataset.
 
     Attributes:
         _file_path (Union[str, Dict]):
@@ -633,7 +668,7 @@ class CSVDataset(_IDataset):
             The delimiter used in the CSV file to separate columns (only for file_path as str).
     """
 
-    def __init__(self, file_path: Union[str, Dict], task: str, **kwargs) -> None:
+    def __init__(self, file_path: Union[str, Dict], task: TaskManager, **kwargs) -> None:
         """
         Initializes a CustomCSVDataset object.
 
@@ -658,13 +693,13 @@ class CSVDataset(_IDataset):
         if type(file_path) == dict:
             self.delimiter = self._find_delimiter(file_path["data_source"])
         else:
-            if task in self.COLUMN_NAMES:
-                self.COLUMN_NAMES = self.COLUMN_NAMES[self.task]
+            task_name = task.task_name
+            if task_name in ("fill-mask", "text-generation", "question-answering"):
+                task_name = task.category
+            if task_name in self.COLUMN_NAMES:
+                self.COLUMN_NAMES = self.COLUMN_NAMES[task_name]
             elif "is_import" not in kwargs:
-                raise ValueError(
-                    f"Given task ({task}) is not matched with template. \
-                    CSV dataset can ne only loaded for text-classification and ner!"
-                )
+                raise ValueError(Errors.E026.format(task=task))
             self.delimiter = self._find_delimiter(file_path)
 
         self.column_map = None
@@ -693,7 +728,9 @@ class CSVDataset(_IDataset):
 
             if feature_column not in df.columns or target_column not in df.columns:
                 raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
+                    Errors.E027.format(
+                        feature_column=feature_column, target_column=target_column
+                    )
                 )
 
             if self.task == "text-classification":
@@ -774,25 +811,36 @@ class CSVDataset(_IDataset):
             return self._import_data(self._file_path, **kwargs)
 
         if type(self._file_path) == dict:
-            dataset = pd.read_csv(self._file_path["data_source"])
+            dataset = pd.read_csv(
+                self._file_path["data_source"], encoding_errors="ignore"
+            )
         else:
-            dataset = pd.read_csv(self._file_path)
+            dataset = pd.read_csv(self._file_path, encoding_errors="ignore")
             if not self.column_map:
                 self.column_map = self._match_column_names(list(dataset.columns))
 
-        task_functions = {
-            "text-classification": self.load_data_classification,
-            "ner": self.load_data_ner,
-            "summarization": self.load_data_summarization,
-            "question-answering": self.load_data_question_answering,
-            "crows-pairs": self.load_data_crows_pairs,
-        }
+        data = []
+        column_names = self._file_path
 
-        if self.task in task_functions:
-            task_function = task_functions[self.task]
-            return task_function(dataset)
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
         else:
-            raise ValueError(f"Unsupported task: {self.task}")
+            column_names = dict()
+
+        for idx, row_data in enumerate(dataset.to_dict(orient="records")):
+            try:
+                sample = self.task.create_sample(
+                    row_data,
+                    **column_names,
+                )
+                data.append(sample)
+
+            except Exception as e:
+                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
+                continue
+
+        return data
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
@@ -868,13 +916,12 @@ class CSVDataset(_IDataset):
             feature_column = self._file_path.get("feature_column", "text")
             target_column = self._file_path.get("target_column", "ner")
 
-            if (
-                feature_column not in dataset.columns
-                or target_column not in dataset.columns
-            ):
-                raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
-                )
+            if feature_column not in dataset.columns:
+                raise ValueError(Errors.E027.format(feature_column=feature_column))
+
+            if target_column not in dataset.columns:
+                logging.warning(Warnings.W006.format(target_column=target_column))
+                dataset["ner"] = None
 
             dataset.rename(
                 columns={feature_column: "text", target_column: "ner"},
@@ -913,13 +960,12 @@ class CSVDataset(_IDataset):
             feature_column = self._file_path.get("feature_column", "text")
             target_column = self._file_path.get("target_column", "label")
 
-            if (
-                feature_column not in dataset.columns
-                or target_column not in dataset.columns
-            ):
-                raise ValueError(
-                    f"Columns '{feature_column}' and '{target_column}' not found in the dataset."
-                )
+            if feature_column not in dataset.columns:
+                raise ValueError(Errors.E027.format(feature_column=feature_column))
+
+            if target_column not in dataset.columns:
+                logging.warning(Warnings.W006.format(target_column=target_column))
+                dataset["label"] = None
 
             if feature_column and target_column:
                 dataset.rename(
@@ -958,13 +1004,9 @@ class CSVDataset(_IDataset):
             target_column = self._file_path.get("target_column", "summary")
 
             if feature_column not in dataset.columns:
-                raise ValueError(
-                    f"feature_column '{feature_column}' not found in the dataset."
-                )
+                raise ValueError(Errors.E027.format(feature_column=feature_column))
             if target_column not in dataset.columns:
-                logging.warning(
-                    f"target_column '{target_column}' not found in the dataset."
-                )
+                logging.warning(Warnings.W006.format(target_column=target_column))
                 dataset["summary"] = None
             else:
                 dataset.rename(columns={target_column: "summary"}, inplace=True)
@@ -1016,22 +1058,18 @@ class CSVDataset(_IDataset):
                 or feature_column["question"] not in dataset_columns
             ):
                 raise ValueError(
-                    f"'feature_column' '{feature_column['question']}' not found in the dataset."
+                    Errors.E027.format(feature_column=feature_column["question"])
                 )
 
             if target_column not in dataset_columns:
-                logging.warning(
-                    f"target_column '{target_column}' not found in the dataset."
-                )
+                logging.warning(Warnings.W006.format(target_column=target_column))
                 dataset["answer"] = None
             else:
                 dataset.rename(columns={target_column: "answer"}, inplace=True)
 
             if passage_column:
                 if passage_column not in dataset_columns:
-                    logging.warning(
-                        f"'feature_column' '{passage_column}' not found in the dataset."
-                    )
+                    logging.warning(Warnings.W007.format(passage_column=passage_column))
                     dataset["passage"] = "-"
                 else:
                     dataset.rename(columns={passage_column: "passage"}, inplace=True)
@@ -1223,9 +1261,10 @@ class CSVDataset(_IDataset):
             "ner" in not_referenced_columns or "label" in not_referenced_columns
         ):
             raise OSError(
-                f"CSV file is invalid. CSV handler works with template column names!\n"
-                f"{', '.join(not_referenced_columns.keys())} column could not be found in header.\n"
-                f"You can use following namespaces:\n{not_referenced_columns}"
+                Errors.E028.__format__(
+                    not_referenced_columns_keys=", ".join(not_referenced_columns.keys()),
+                    not_referenced_columns=not_referenced_columns,
+                )
             )
         return column_map
 
@@ -1240,26 +1279,21 @@ class CSVDataset(_IDataset):
             List[Sample]:       list of samples
         """
         data = pd.read_csv(file_name, **kwargs)
-        custom_names = {
-            "question-answering": "qa",
-            "text-classification": "sequenceclassification",
-        }
-        sample_models = {
-            k.lower(): v for k, v in sample.__dict__.items() if k.endswith("Sample")
-        }
         samples = []
 
         for i in data.to_dict(orient="records"):
-            if self.task in custom_names:
-                sample_name = custom_names[self.task] + "sample"
-            else:
-                sample_name = self.task.lower() + "sample"
-            samples.append(sample_models[sample_name](**i))
+            # if self.task in custom_names:
+            #     sample_name = custom_names[self.task] + "sample"
+            # else:
+            #     sample_name = self.task.lower() + "sample"
+            # samples.append(sample_models[sample_name](**i))
+            sample = self.task.get_sample_class(**i)
+            samples.append(sample)
         return samples
 
 
-class JSONLDataset(_IDataset):
-    """Class to handle JSONL datasets. Subclass of _IDataset."""
+class JSONLDataset(BaseDataset):
+    """Class to handle JSONL datasets. Subclass of BaseDataset."""
 
     supported_tasks = [
         "ner",
@@ -1279,7 +1313,7 @@ class JSONLDataset(_IDataset):
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, file_path: str, task: str) -> None:
+    def __init__(self, file_path: str, task: TaskManager) -> None:
         """Initializes JSONLDataset object.
 
         Args:
@@ -1304,18 +1338,20 @@ class JSONLDataset(_IDataset):
         """
         column_map = {}
         for column in column_names:
-            for key, reference_columns in self.COLUMN_NAMES[self.task].items():
+            for key, reference_columns in self.COLUMN_NAMES[self.task.task_name].items():
                 if column.lower() in reference_columns:
                     column_map[key] = column
 
         not_referenced_columns = [
-            col for col in self.COLUMN_NAMES[self.task] if col not in column_map
+            col for col in self.COLUMN_NAMES[self.task.task_name] if col not in column_map
         ]
 
         if "text" in not_referenced_columns:
             raise OSError(
-                f"Your dataset needs to have at least have a column with one of the following name: "
-                f"{self.COLUMN_NAMES[self.task]['text']}, found: {column_names}."
+                Errors.E029.format(
+                    valid_column_names=self.COLUMN_NAMES[self.task.task_name]["text"],
+                    column_names=column_names,
+                )
             )
 
         for missing_col in not_referenced_columns:
@@ -1328,7 +1364,7 @@ class JSONLDataset(_IDataset):
             data = [obj for obj in reader]
         return data
 
-    def load_data(self) -> List[Sample]:
+    def load_data(self, *args, **kwargs) -> List[Sample]:
         """Loads data from a JSONL file and format it into a list of Sample.
 
         Returns:
@@ -1337,140 +1373,11 @@ class JSONLDataset(_IDataset):
         data = []
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
-                if self.column_matcher is None:
-                    self.column_matcher = self._match_column_names(item.keys())
-
-                if self.task == "question-answering":
-                    expected_results = item.get(self.column_matcher["answer"])
-                    if isinstance(expected_results, str) or isinstance(
-                        expected_results, bool
-                    ):
-                        expected_results = [str(expected_results)]
-
-                    data.append(
-                        QASample(
-                            original_question=item[self.column_matcher["text"]],
-                            original_context=item.get(
-                                self.column_matcher["context"], "-"
-                            ),
-                            expected_results=expected_results,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "summarization":
-                    expected_results = item.get(self.column_matcher["summary"])
-                    if isinstance(expected_results, str) or isinstance(
-                        expected_results, bool
-                    ):
-                        expected_results = [str(expected_results)]
-                    data.append(
-                        SummarizationSample(
-                            original=item[self.column_matcher["text"]],
-                            expected_results=expected_results,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-                elif self.task == "toxicity":
-                    data.append(
-                        ToxicitySample(
-                            prompt=item[self.column_matcher["text"]],
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "translation":
-                    data.append(
-                        TranslationSample(
-                            original=item[self.column_matcher["text"]],
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-                elif self.task == "security":
-                    data.append(
-                        SecuritySample(
-                            prompt=item["text"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "clinical-tests":
-                    data.append(
-                        ClinicalSample(
-                            patient_info_A=item["Patient info A"],
-                            patient_info_B=item["Patient info B"],
-                            diagnosis=item["Diagnosis"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                            clinical_domain=item["clinical_domain"],
-                        )
-                    )
-                elif self.task == "disinformation-test":
-                    data.append(
-                        DisinformationSample(
-                            hypothesis=item["hypothesis"],
-                            statements=item["statements"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    ),
-                elif self.task == "sensitivity-test":
-                    supported_data = ("NQ-open", "OpenBookQA", "wikiDataset")
-                    if self._file_path.split("/")[-2] in supported_data:
-                        data.append(
-                            SensitivitySample(original=item[self.column_matcher["text"]])
-                        )
-                    else:
-                        raise ValueError(
-                            f"Unsupported dataset for sensitivity-test. Please use one of: {', '.join(supported_data)} with their 'test' or 'test-tiny' version."
-                        )
-
-                elif self.task == "wino-bias":
-                    data.append(
-                        WinoBiasSample(
-                            masked_text=item["text"],
-                            options=item["options"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "legal-tests":
-                    data.append(
-                        LegalSample(
-                            case=item["case"],
-                            legal_claim=item["legal-claim"],
-                            legal_conclusion_A=item["legal_conclusion_a"],
-                            legal_conclusion_B=item["legal_conclusion_b"],
-                            correct_conlusion=item["correct_choice"],
-                            task=self.task,
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "factuality-test":
-                    data.append(
-                        FactualitySample(
-                            article_sent=item["article_sent"],
-                            incorrect_sent=item["incorrect_sent"],
-                            correct_sent=item["correct_sent"],
-                            dataset_name=self._file_path.split("/")[-2],
-                        )
-                    )
-
-                elif self.task == "stereoset":
-                    data.append(
-                        StereoSetSample(
-                            test_type=item["type"],
-                            target=item["target"],
-                            bias_type=item["bias_type"],
-                            context=item["context"],
-                            sent_stereo=item["stereotype"],
-                            sent_antistereo=item["anti-stereotype"],
-                            sent_unrelated=item["unrelated"],
-                        )
-                    )
+                dataset_name = self._file_path.split("/")[-2].replace("-", "")
+                sample = self.task.create_sample(
+                    item, dataset_name=dataset_name, *args, **kwargs
+                )
+                data.append(sample)
 
         return data
 
@@ -1486,7 +1393,7 @@ class JSONLDataset(_IDataset):
         raise NotImplementedError()
 
 
-class HuggingFaceDataset(_IDataset):
+class HuggingFaceDataset(BaseDataset):
     """Example dataset class that loads data using the Hugging Face dataset library."""
 
     supported_tasks = [
@@ -1499,17 +1406,19 @@ class HuggingFaceDataset(_IDataset):
     LIB_NAME = "datasets"
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, dataset_name: str, task: str):
+    def __init__(self, source_info: dict, task: TaskManager, **kwargs):
         """Initialize the HuggingFaceDataset class.
 
         Args:
-            dataset_name (str):
+            source_info (dict):
                 Name of the dataset to load.
             task (str):
                 Task to be evaluated on.
         """
-        self.dataset_name = dataset_name
+        self.source_info = source_info
+        self.dataset_name = source_info["data_source"]
         self.task = task
+        self.kwargs = kwargs
         self._check_datasets_package()
 
     def _check_datasets_package(self):
@@ -1521,210 +1430,7 @@ class HuggingFaceDataset(_IDataset):
             dataset_module = importlib.import_module(self.LIB_NAME)
             self.load_dataset = getattr(dataset_module, "load_dataset")
         else:
-            raise ModuleNotFoundError(
-                f"The '{self.LIB_NAME}' package is not installed. Please install it using 'pip install {self.LIB_NAME}'."
-            )
-
-    def load_data_ner(
-        self,
-        feature_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the given ner dataset."""
-        feature_column = "text" if feature_column is None else feature_column
-        target_column = "label" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        if "label" in str(type(dataset.features[target_column].feature)):
-            label_names = dataset.features[target_column].feature.names
-            dataset = map(
-                lambda example: {
-                    "tokens": example[feature_column],
-                    "ner_tags": [label_names[x] for x in example[target_column]],
-                },
-                dataset,
-            )
-        else:
-            dataset = map(
-                lambda example: {
-                    "tokens": example[feature_column],
-                    "ner_tags": example[target_column],
-                },
-                dataset,
-            )
-
-        samples = [self._row_to_ner_sample(example) for example in dataset]
-        return samples
-
-    def load_data_classification(
-        self,
-        feature_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the dataset library.
-
-        Args:
-            feature_column (str):
-                Name of the feature_column column.
-            target_column (str):
-                Name of the target_column column.
-            split (str):
-                Name of the split to load (e.g., train, validation, test).
-            subset (str):
-                Name of the configuration.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects.
-        """
-        feature_column = "text" if feature_column is None else feature_column
-        target_column = "label" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        dataset = dataset.map(
-            lambda example: {
-                "text": example[feature_column],
-                "label": example[target_column],
-            }
-        )
-
-        samples = [self._row_to_sample_classification(example) for example in dataset]
-        return samples
-
-    def load_data_summarization(
-        self,
-        feature_column: str,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the dataset for summarization task.
-
-        Args:
-            feature_column (str):
-                Name of the column containing the input text or document.
-            target_column (str):
-                Name of the column containing the target summary.
-            split (str):
-                Name of the split to load (e.g., train, validation, test).
-            subset (str):
-                Name of the configuration or subset to load.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects for summarization task.
-        """
-        feature_column = "document" if feature_column is None else feature_column
-        target_column = "summary" if target_column is None else target_column
-        split = "test" if split is None else split
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        dataset = pd.DataFrame(dataset)
-
-        if feature_column not in dataset.columns:
-            raise ValueError(
-                f"feature_column '{feature_column}' not found in the dataset."
-            )
-        if target_column not in dataset.columns:
-            logging.warning(f"target_column '{target_column}' not found in the dataset.")
-            dataset["summary"] = None
-        else:
-            dataset.rename(columns={target_column: "summary"}, inplace=True)
-
-        dataset.rename(
-            columns={feature_column: "document"},
-            inplace=True,
-        )
-
-        samples = [
-            self._row_to_sample_summarization(row) for _, row in dataset.iterrows()
-        ]
-        return samples
-
-    def load_data_qa(
-        self,
-        feature_column: dict,
-        target_column: str,
-        split: str,
-        subset: str = None,
-    ) -> List[Sample]:
-        """Load the specified split from the dataset for QA task.
-
-        Args:
-            feature_column (str):
-                Name of the column containing the input question or passage.
-            target_column (str):
-                Name of the column containing the target answer.
-            split (str):
-                Name of the split to load (e.g., train, validation, test).
-            subset (str):
-                Name of the configuration or subset to load.
-
-        Returns:
-            List[Sample]:
-                Loaded split as a list of Sample objects for QA task.
-        """
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
-
-        else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
-
-        dataset = pd.DataFrame(dataset)
-
-        passage_column = feature_column.get("passage")
-        question_column = feature_column.get("question")
-
-        dataset_columns = set(dataset.columns)
-        if (
-            "question" not in feature_column
-            or feature_column["question"] not in dataset_columns
-        ):
-            raise ValueError(
-                f"'feature_column' '{feature_column['question']}' not found in the dataset."
-            )
-
-        if target_column not in dataset_columns:
-            logging.warning(f"target_column '{target_column}' not found in the dataset.")
-            dataset["answer"] = None
-        else:
-            dataset.rename(columns={target_column: "answer"}, inplace=True)
-
-        if passage_column:
-            if passage_column not in dataset_columns:
-                logging.warning(
-                    f"'feature_column' '{passage_column}' not found in the dataset."
-                )
-                dataset["passage"] = "-"
-            else:
-                dataset.rename(columns={passage_column: "passage"}, inplace=True)
-        else:
-            dataset["passage"] = "-"
-
-        if question_column in dataset.columns:
-            dataset.rename(columns={question_column: "question"}, inplace=True)
-
-        samples = [self._row_to_sample_qa(row) for _, row in dataset.iterrows()]
-        return samples
+            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=self.LIB_NAME))
 
     def load_raw_data(
         self,
@@ -1745,6 +1451,7 @@ class HuggingFaceDataset(_IDataset):
         target_column: Optional[str] = None,
         split: Optional[str] = None,
         subset: Optional[str] = None,
+        **kwargs,
     ) -> List[Sample]:
         """Load the specified data based on the task.
 
@@ -1766,60 +1473,24 @@ class HuggingFaceDataset(_IDataset):
             ValueError:
                 If an unsupported task is provided.
         """
-        if self.task == "text-classification":
-            return self.load_data_classification(
-                feature_column, target_column, split, subset
-            )
-        elif self.task == "summarization":
-            return self.load_data_summarization(
-                feature_column, target_column, split, subset
-            )
-        elif self.task == "ner":
-            return self.load_data_ner(feature_column, target_column, split, subset)
+        feature_column = feature_column or self.source_info.get("feature_column", "text")
+        target_column = target_column or self.source_info.get("target_column", "label")
+        split = split or self.source_info.get("split", "test")
+        subset = subset or self.source_info.get("subset", None)
 
-        elif self.task == "question-answering":
-            return self.load_data_qa(feature_column, target_column, split, subset)
-
+        if subset:
+            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
         else:
-            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
+            dataset = self.load_dataset(self.dataset_name, split=split)
 
-    @staticmethod
-    def _row_to_sample_summarization(row: pd.Series) -> Sample:
-        """Convert a row from the dataset into a Sample for summarization.
+        data = []
+        for row_data in dataset:
+            sample = self.task.create_sample(
+                row_data, feature_column=feature_column, target_column=target_column
+            )
+            data.append(sample)
 
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object for summarization.
-        """
-        original = row.loc["document"]
-        summary = row.loc["summary"]
-
-        return SummarizationSample(original=original, expected_results=summary)
-
-    @staticmethod
-    def _row_to_sample_qa(row: pd.Series) -> QASample:
-        """Convert a row from the dataset into a Sample for summarization.
-
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object for summarization.
-        """
-        question = row.loc["question"]
-        passage = row.loc["passage"]
-        answer = row.loc["answer"]
-        return QASample(
-            original_question=question,
-            original_context=passage,
-            expected_results=answer,
-        )
+        return data
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'.
@@ -1838,96 +1509,13 @@ class HuggingFaceDataset(_IDataset):
         df = pd.DataFrame(rows, columns=list(self.COLUMN_NAMES[self.task].keys()))
         df.to_csv(output_path, index=False, encoding="utf-8")
 
-    def _row_to_sample_classification(self, data_row: Dict[str, str]) -> Sample:
-        """Convert a row from the dataset into a Sample for text classification.
 
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object.
-        """
-        input_column = next(
-            (
-                col
-                for col in self.COLUMN_NAMES["text-classification"]["text"]
-                if col in data_row
-            ),
-            None,
-        )
-        output_column = next(
-            (
-                col
-                for col in self.COLUMN_NAMES["text-classification"]["label"]
-                if col in data_row
-            ),
-            None,
-        )
-
-        original = data_row.get(input_column, "")
-        label = SequenceLabel(label=data_row.get(output_column, ""), score=1)
-
-        return SequenceClassificationSample(
-            original=original,
-            expected_results=SequenceClassificationOutput(predictions=[label]),
-        )
-
-    def _row_to_ner_sample(self, data_row: dict) -> Sample:
-        """Convert a row from the dataset into a Sample for NER.
-
-        Args:
-            data_row (Dict[str, str]):
-                Single row of the dataset.
-
-        Returns:
-            Sample:
-                Row formatted into a Sample object.
-        """
-        input_column = next(
-            (col for col in self.COLUMN_NAMES["ner"]["text"] if col in data_row),
-            None,
-        )
-        output_column = next(
-            (col for col in self.COLUMN_NAMES["ner"]["ner"] if col in data_row),
-            None,
-        )
-
-        tokens = data_row.get(input_column, [])
-        labels = data_row.get(output_column, [])
-
-        #  get token and labels from the split
-        ner_labels = []
-        cursor = 0
-        for token, label in zip(tokens, labels):
-            ner_labels.append(
-                NERPrediction.from_span(
-                    entity=label,
-                    word=token,
-                    start=cursor,
-                    end=cursor + len(token),
-                    doc_id=0,
-                    doc_name="",
-                    pos_tag="XX",
-                    chunk_tag="XX",
-                )
-            )
-            # +1 to account for the white space
-            cursor += len(token) + 1
-
-        original = " ".join(tokens)
-        return NERSample(
-            original=original, expected_results=NEROutput(predictions=ner_labels)
-        )
-
-
-class SynteticDataset(_IDataset):
+class SynteticDataset(BaseDataset):
     """Example dataset class that loads data using the Hugging Face dataset library and also generates synthetic math data."""
 
     supported_tasks = ["sycophancy-test"]
 
-    def __init__(self, dataset: dict, task: str):
+    def __init__(self, dataset: dict, task: TaskManager):
         """
         Initialize the SynteticData class.
 
@@ -1979,13 +1567,12 @@ class SynteticDataset(_IDataset):
             List[Sample]:
                 A list of Sample objects containing loaded data.
         """
-
-        if self.task == "sycophancy-test":
-            samples = getattr(self, f"load_{self.dataset_name.replace('-', '_')}")()
+        method_name = f"load_{self.dataset_name.replace('-', '_')}"
+        if hasattr(self, method_name):
+            samples = getattr(self, method_name)()
             return samples
-
         else:
-            raise ValueError(f"Unsupported task for HF datasets: {self.task}")
+            raise ValueError(Errors.E030.format(dataset_name=self.dataset_name))
 
     @staticmethod
     def extract_data_with_equal_proportion(data_dict, total_samples):
@@ -2077,7 +1664,11 @@ class SynteticDataset(_IDataset):
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
-        samples = [self._row_to_sample_sycophancy(row) for _, row in dataset.iterrows()]
+        dataset_name = self.dataset_name.replace("-", "").lower()
+        samples = [
+            self.task.create_sample(row, dataset_name=dataset_name)
+            for _, row in dataset.iterrows()
+        ]
         return samples
 
     def load_synthetic_nlp_data(self) -> List[Sample]:
@@ -2156,7 +1747,11 @@ class SynteticDataset(_IDataset):
             for prompt, answer in self.prompt_to_answer.items()
         ]
         dataset = pd.DataFrame(data)
-        samples = [self._row_to_sample_sycophancy(row) for _, row in dataset.iterrows()]
+        dataset_name = self.dataset_name.replace("-", "").lower()
+        samples = [
+            self.task.create_sample(row, dataset_name=dataset_name)
+            for row in dataset.to_dict(orient="records")
+        ]
         return samples
 
     def _row_to_sample_sycophancy(self, row: pd.Series) -> SycophancySample:

@@ -2,11 +2,12 @@ import asyncio
 import random
 import re
 import string
+from ..errors import Errors
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types import SequenceClassificationSample
 from .constants import (
     CONTRACTION_MAP,
@@ -65,14 +66,12 @@ class BaseRobustness(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the robustness measure.
 
         Returns:
@@ -95,12 +94,12 @@ class BaseRobustness(ABC):
         return sample_list
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Creates a task to run the robustness measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the robustness measure.
 
         Returns:
@@ -473,14 +472,10 @@ class SwapEntities(BaseRobustness):
             List[Sample]: The transformed sample list with entities swapped.
         """
         if terminology is None:
-            raise ValueError(
-                "In order to generate test cases for swap_entities, terminology should be passed!"
-            )
+            raise ValueError(Errors.E065.format(var="terminology"))
 
         if labels is None:
-            raise ValueError(
-                "In order to generate test cases for swap_entities, labels should be passed!"
-            )
+            raise ValueError(Errors.E065.format(var="labels"))
 
         assert len(sample_list) == len(
             labels
@@ -663,9 +658,7 @@ class AddContext(BaseRobustness):
             if strategy is None:
                 strategy = random.choice(possible_methods)
             elif strategy not in possible_methods:
-                raise ValueError(
-                    f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}."
-                )
+                raise ValueError(Errors.E066.format(strategy=strategy))
 
             transformations = []
 
@@ -1331,7 +1324,7 @@ class MultiplePerturbations(BaseRobustness):
             elif order == "strip_all_punctuation":
                 transformed_list = StripAllPunctuation.transform(sample, prob)
             else:
-                raise ValueError(f"Unknown transformation: {order}")
+                raise ValueError(Errors.E067.format(order=order))
             return transformed_list
 
         if isinstance(sample_list[0], SequenceClassificationSample):

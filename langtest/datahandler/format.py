@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple, Union
 
 from ..utils.custom_types import NERSample, Sample, SequenceClassificationSample
+from ..errors import Errors
 
 
 class BaseFormatter(ABC):
@@ -80,7 +81,7 @@ class Formatter:
                 sample, *args, **kwargs
             )
         except KeyError:
-            raise NameError(f"Class '{class_name}Formatter' not yet implemented.")
+            raise NameError(Errors.E031.format(class_name=class_name))
 
 
 class SequenceClassificationOutputFormatter(BaseFormatter, ABC):

@@ -1,7 +1,8 @@
 import asyncio
 from abc import ABC, abstractmethod
+from ..errors import Errors
 from typing import List, Optional
-from langtest.modelhandler.modelhandler import ModelFactory
+from langtest.modelhandler import ModelAPI
 from ..utils.custom_types import Sample
 import random
 
@@ -19,6 +20,7 @@ class BaseSensitivity(ABC):
     alias_name = None
     supported_tasks = [
         "sensitivity-test",
+        "question-answering",
     ]
 
     @staticmethod
@@ -36,14 +38,12 @@ class BaseSensitivity(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(
-        sample_list: List[Sample], model: ModelFactory, **kwargs
-    ) -> List[Sample]:
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
         """Abstract method that implements the sensitivity measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the sensitivity measure.
 
         Returns:
@@ -66,12 +66,12 @@ class BaseSensitivity(ABC):
         return sample_list
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Creates a task to run the sensitivity measure.
 
         Args:
             sample_list (List[Sample]): The input data to be transformed.
-            model (ModelFactory): The model to be used for evaluation.
+            model (ModelAPI): The model to be used for evaluation.
             **kwargs: Additional arguments to be passed to the sensitivity measure.
 
         Returns:
@@ -163,9 +163,7 @@ class Toxicity(BaseSensitivity):
             if strategy is None:
                 strategy = random.choice(possible_methods)
             elif strategy not in possible_methods:
-                raise ValueError(
-                    f"Add context strategy must be one of 'start', 'end', 'combined'. Cannot be {strategy}."
-                )
+                raise ValueError(Errors.E066.format(strategy=strategy))
 
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)

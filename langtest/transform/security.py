@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import asyncio
 from typing import List
-from langtest.modelhandler.modelhandler import ModelFactory
-
+from ..errors import Errors
+from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types.sample import Sample
 
 
@@ -19,11 +19,11 @@ class BaseSecurity(ABC):
     @abstractmethod
     def transform():
         """Abstract method that transforms the sample data based on the implemented model security."""
-        raise NotImplementedError("Please Implement this method")
+        raise NotImplementedError(Errors.E063)
 
     @staticmethod
     @abstractmethod
-    async def run(sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Abstract method that implements the model security."""
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
@@ -40,7 +40,7 @@ class BaseSecurity(ABC):
         return sample_list
 
     @classmethod
-    async def async_run(cls, sample_list: List[Sample], model: ModelFactory, **kwargs):
+    async def async_run(cls, sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Abstract method that implements the model security."""
         created_task = await asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
@@ -52,7 +52,10 @@ class PromptInjection(BaseSecurity):
     """
 
     alias_name = ["prompt_injection_attack"]
-    supported_tasks = ["security"]
+    supported_tasks = [
+        "security",
+        "text-generation",
+    ]
 
     def transform(sample_list: List[Sample], *args, **kwargs):
         """"""

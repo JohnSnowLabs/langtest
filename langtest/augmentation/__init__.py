@@ -17,6 +17,7 @@ from langtest.utils.custom_types import Sample
 from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
+from langtest.tasks import TaskManager
 
 
 class BaseAugmentaion(ABC):
@@ -62,7 +63,7 @@ class AugmentRobustness(BaseAugmentaion):
 
     def __init__(
         self,
-        task: str,
+        task: TaskManager,
         h_report: "pd.DataFrame",
         config: Dict,
         custom_proportions: Union[Dict, List] = None,
@@ -114,17 +115,17 @@ class AugmentRobustness(BaseAugmentaion):
             List[Dict[str, Any]]: A list of augmented data samples.
         """
 
-        if "source" in training_data and training_data["source"] == "huggingface":
-            self.df = HuggingFaceDataset(training_data["data_source"], self.task)
-            data = self.df.load_data(
-                feature_column=training_data.get("feature_column", "text"),
-                target_column=training_data.get("target_column", "label"),
-                split=training_data.get("split", "test"),
-                subset=training_data.get("subset", None),
-            )
-        else:
-            self.df = DataFactory(training_data, self.task)
-            data = self.df.load()
+        # if "source" in training_data and training_data["source"] == "huggingface":
+        #     self.df = HuggingFaceDataset(training_data, self.task)
+        #     data = self.df.load_data(
+        #         feature_column=training_data.get("feature_column", "text"),
+        #         target_column=training_data.get("target_column", "label"),
+        #         split=training_data.get("split", "test"),
+        #         subset=training_data.get("subset", None),
+        #     )
+        # else:
+        self.df = DataFactory(training_data, self.task)
+        data = self.df.load()
         TestFactory.is_augment = True
         supported_tests = TestFactory.test_scenarios()
         suggest: pd.DataFrame = self.suggestions(self.h_report)
@@ -185,12 +186,12 @@ class AugmentRobustness(BaseAugmentaion):
         if "." not in training_data["data_source"]:
             if export_mode == "inplace":
                 final_aug_data = list(hash_map.values())
-                self.df.export_data(final_aug_data, output_path)
+                self.df.export(final_aug_data, output_path)
             elif export_mode == "transformed":
-                self.df.export_data(transformed_data, output_path)
+                self.df.export(transformed_data, output_path)
             else:
                 data.extend(final_aug_data)
-                self.df.export_data(data, output_path)
+                self.df.export(data, output_path)
 
             TestFactory.is_augment = False
             return final_aug_data
@@ -309,7 +310,7 @@ class TemplaticAugment(BaseAugmentaion):
             Performs the templatic augmentation and exports the results to a specified path.
     """
 
-    def __init__(self, templates: Union[str, List[str]], task: str) -> None:
+    def __init__(self, templates: Union[str, List[str]], task: TaskManager) -> None:
         """This constructor for the TemplaticAugment class.
 
         Args:
@@ -331,6 +332,7 @@ class TemplaticAugment(BaseAugmentaion):
         training_data: Dict[str, Any],
         output_path: str,
         max_num: int = None,
+        append_original: bool = False,
         *args,
         **kwargs,
     ) -> bool:
@@ -342,6 +344,7 @@ class TemplaticAugment(BaseAugmentaion):
             training_data (dict): A dictionary containing the input data for augmentation.
             output_path (str): The path where the augmented data will be saved.
             max_num (int): Maximum number of new samples to generate
+            append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
@@ -350,7 +353,13 @@ class TemplaticAugment(BaseAugmentaion):
         """
         df = DataFactory(training_data, self.__task)
         data = df.load()
-        new_data = []
+        new_data = (
+            data.copy()
+            if isinstance(data, (pd.DataFrame, pd.Series))
+            else copy.deepcopy(data)
+            if append_original
+            else []
+        )
         self.__search_results = self.search_sample_results(data)
         if not max_num:
             max_num = max(len(i) for i in self.__search_results.values())

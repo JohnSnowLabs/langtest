@@ -5,8 +5,8 @@ tests:
   stereoset:
     intrasentence:
       min_pass_rate: 0.70
-      diff_treshold: 0.1
+      diff_threshold: 0.1
     intersentence:
       min_pass_rate: 0.70
-      diff_treshold: 0.1
+      diff_threshold: 0.1
 

@@ -1,12 +1,13 @@
 import unittest
-from langtest.modelhandler import ModelFactory
+from langtest.modelhandler import ModelAPI
+from langtest.tasks import TaskManager
 
 
 class HuggingFaceTestCase(unittest.TestCase):
     """
     A test case for Hugging Face models.
 
-    This test case performs tests related to loading and handling Hugging Face models using the `ModelFactory` class.
+    This test case performs tests related to loading and handling Hugging Face models using the `ModelAPI` class.
 
     Attributes:
         models (List[str]): A list of Hugging Face model names.
@@ -31,33 +32,33 @@ class HuggingFaceTestCase(unittest.TestCase):
         """
         Test loading Hugging Face models.
 
-        This method tests the loading of a Hugging Face model using the `ModelFactory` class.
-        It asserts that the loaded model is an instance of `ModelFactory`.
+        This method tests the loading of a Hugging Face model using the `ModelAPI` class.
+        It asserts that the loaded model is an instance of `ModelAPI`.
         """
-        model = ModelFactory.load_model(
-            task=self.tasks[0], hub="huggingface", path=self.models[0]
-        )
-        self.assertIsInstance(model, ModelFactory)
+        task = TaskManager(self.tasks[0])
+        model = task.model(model_path=self.models[0], model_hub="huggingface")
+        self.assertIsInstance(model, ModelAPI)
 
     def test_transformers_QA_models(self):
         """
         Test loading Hugging Face models.
 
-        This method tests the loading of a Hugging Face model using the `ModelFactory` class.
-        It asserts that the loaded model is an instance of `ModelFactory`.
+        This method tests the loading of a Hugging Face model using the `ModelAPI` class.
+        It asserts that the loaded model is an instance of `ModelAPI`.
         """
-        model = ModelFactory.load_model(
-            task="question-answering", hub="huggingface", path="gpt2"
-        )
-        self.assertIsInstance(model, ModelFactory)
+        task = TaskManager("question-answering")
+        model = task.model(model_path="gpt2", model_hub="huggingface")
+
+        self.assertIsInstance(model, ModelAPI)
 
     def test_unsupported_task(self):
         """
         Test unsupported task.
 
-        This method tests the behavior of `ModelFactory` when an unsupported task is provided.
+        This method tests the behavior of `ModelAPI` when an unsupported task is provided.
         It expects an `AssertionError` to be raised when attempting to create a model with an unsupported task.
         """
         # Raises with unsupported task to model Factory
         with self.assertRaises(AssertionError):
-            ModelFactory(self.models[0], self.tasks[1], hub="huggingface")
+            task = TaskManager(self.tasks[1])
+            task.model(model_path=self.models[0], model_hub="huggingface")

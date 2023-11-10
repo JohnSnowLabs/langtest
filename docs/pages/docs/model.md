@@ -127,7 +127,10 @@ from langtest import Harness
 os.environ['OPENAI_API_KEY'] = ''
 
 # Create test Harness
-h = Harness(task='question-answering', model={'model': 'text-davinci-003', 'hub':'openai'}, data={'data_source':'BoolQ-test'}, config='config.yml')
+h = Harness(task="question-answering", 
+            model={"model": "text-davinci-003", "hub":"openai"}, 
+            data={"data_source" :"BBQ", "split":"test-tiny"},
+			config='config.yml')
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 ```
@@ -180,7 +183,10 @@ from langtest import Harness
 os.environ["COHERE_API_KEY"] = "<YOUR_API_KEY>"
 
 # Create test Harness
-h = Harness(task="question-answering", model={'model': 'command-xlarge-nightly', 'hub':'cohere'}, data={'data_source':'BoolQ-test'}, config='config.yml')
+h = Harness(task="question-answering", 
+			model={"model": "command-xlarge-nightly", "hub":"cohere"}, 
+			data={"data_source" :"NQ-open", "split":"test-tiny"},
+			config='config.yml')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -203,7 +209,11 @@ from langtest import Harness
 os.environ["AI21_API_KEY"] = "<YOUR_API_KEY>"
 
 # Create test Harness
-h = Harness(task="question-answering", model={'model': 'j2-jumbo-instruct', 'hub':'ai21'}, data={'data_source':'BoolQ-test-tiny'}, config='config.yml')
+h = Harness(task="question-answering", 
+            model={"model": "j2-jumbo-instruct", "hub":"ai21"}, 
+            data={"data_source" :"BBQ", "split":"test-tiny"},
+			config='config.yml')
+
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -229,7 +239,10 @@ openai.api_version = "2022-12-01"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Create test Harness
-h = Harness(task="question-answering", model={'model': 'text-davinci-003', 'hub':'azure-openai'}, data={'data_source':'BoolQ-test-tiny'}, config='config.yml')
+h = Harness(task="question-answering", 
+            model={"model": "text-davinci-003", 'hub':'azure-openai'}, 
+            data={"data_source" :"BBQ", "split":"test-tiny"},
+			config='config.yml')
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -253,7 +266,11 @@ from langtest import Harness
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = "<API_TOKEN>"
 
 # Create test Harness
-h = Harness(task="question-answering", model={'model': 'google/flan-t5-small', 'hub':'huggingface-inference-api'}, data={'data_source':'BoolQ-test-tiny'}, config='config.yml')
+h = Harness(task="question-answering", 
+            model={"model": "google/flan-t5-small","hub": "huggingface-inference-api"},
+            data={"data_source" :"BoolQ", "split":"test-tiny"},
+            config='config.yml')
+			
 # Generate, run and get a report on your test cases
 h.generate().run().report()
 ```

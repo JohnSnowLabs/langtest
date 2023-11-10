@@ -28,6 +28,38 @@ jQuery(document).ready(function($) {
 
 /* Tabs
 	 ========================================================*/
+   try {
+    //Pagination active
+    let paginationItems = document.querySelectorAll('.pagination_big li'),
+        nextVersionContainer = document.querySelector('#nextver'),
+        previosVersionContainer = document.querySelector('#previosver'),
+        currentVersionContainer = document.querySelector('#currversion'),
+        currentPageTitle = document.querySelector('#section').innerText;
+  
+    // Set active page and update version containers
+    for (let i = 0; i < paginationItems.length; i++) {
+      const item = paginationItems[i];
+      const itemTitle = item.firstElementChild.innerHTML;
+      if (itemTitle === currentPageTitle) {
+        item.classList.add('active');
+        currentVersionContainer.textContent = itemTitle;       
+        if(item.previousElementSibling) {
+          previosVersionContainer.textContent = item.previousElementSibling.innerText; 
+          previosVersionContainer.parentElement.href = 'release_notes_' + item.previousElementSibling.innerText.replaceAll('.', '_');
+        } else {
+          previosVersionContainer.parentElement.parentElement.classList.add('hide');
+        }
+        if(item.nextElementSibling) {
+          nextVersionContainer.textContent = item.nextElementSibling.innerText;
+          nextVersionContainer.parentElement.href = 'release_notes_' + item.nextElementSibling.innerText.replaceAll('.', '_');
+        } else {
+          nextVersionContainer.parentElement.parentElement.classList.add('hide');
+        }         
+        break;
+      }
+    }
+  } catch(e){}
+
 try {
   const tabs = (tabContainer, headerSelector, tabSelector, contentSelector, activeClass, display = 'block') => {
     const tabWrapper = document.querySelectorAll(tabContainer);
