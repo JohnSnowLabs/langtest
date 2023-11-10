@@ -29,8 +29,8 @@ class PretrainedCustomModel(ABC):
             raise ValueError(Errors.E037)
 
     @classmethod
-    def load_model(cls, model: Any) -> "Any":
-        return cls(model)
+    def load_model(cls, path: Any) -> "Any":
+        return cls(path)
 
     @abstractmethod
     def predict(self, text: str, *args, **kwargs):
