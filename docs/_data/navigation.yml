@@ -11,7 +11,7 @@ header:
     url: /docs/pages/tests/test
     key: tests
   - title: Benchmarks
-    url: /docs/pages/benchmarks/boolq
+    url: /docs/pages/benchmarks/benchmark
     key: benchmarks
   - title: Blog
     url: https://www.johnsnowlabs.com/responsible-ai-blog/
@@ -144,8 +144,6 @@ benchmarks:
   - title: Benchmarks
     url: /docs/pages/benchmarks/benchmark
     children:
-      - title: BoolQ
-        url: /docs/pages/benchmarks/boolq
       - title: ASDiv
         url: /docs/pages/benchmarks/asdiv
       - title: BBQ
