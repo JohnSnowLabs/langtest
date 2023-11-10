@@ -54,7 +54,7 @@ Take a look at our official page for user documentation and examples: [langtest.
 
 ## Key Features
 
-- Generate and execute more than 50 distinct types of tests only with 1 line of code
+- Generate and execute more than 60 distinct types of tests only with 1 line of code
 - Test all aspects of model quality: robustness, bias, representation, fairness and accuracy.​
 - Automatically augment training data based on test results (for select models)​
 - Support for popular NLP frameworks for NER, Translation and Text-Classifcation: Spark NLP, Hugging Face & Transformers.
