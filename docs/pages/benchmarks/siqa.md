@@ -30,6 +30,6 @@ You can see which subsets and splits are available below.
 Here is a sample from the dataset:
 
 {:.table2}
-| question                                                | answer                                                                    |
+| passage                                                 | question                                                                  | answer            |
 | ------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Sasha set their trash on fire to get rid of it quickly. | How would you describe Sasha? A. dirty B. Very efficient C. Inconsiderate | "B. Very efficient |
+| Sasha set their trash on fire to get rid of it quickly. | How would you describe Sasha? A. dirty B. Very efficient C. Inconsiderate | B. Very efficient |
