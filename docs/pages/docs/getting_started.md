@@ -11,21 +11,20 @@ header: true
 <div class="main-docs" markdown="1">
 
 ## LangTest
-
-The rise of Large Language Models (LLMs) poses challenges due to their integration without thorough testing. LangTest, an open-source Python library, addresses this by automatically generating test cases for LLMs across 10 dimensions, offering data augmentation and seamless integration into MLOps tools. It supports over 20 LLM providers, includes 60+ test types, and has proven effective in identifying and addressing Responsible AI issues quickly.
+While there is a lot of talk about the need to train AI models that are safe, robust, and fair - few tools have been made available to data scientists to meet these goals. As a result, the front line of NLP models or LLMs in production systems reflects a sorry state of affairs. 
+LangTest, an open-source Python library, addresses this by automatically generating test cases and testing across 10 dimensions and offering data augmentation and seamless integration into MLOps tools. It supports many LLM providers, includes 60+ test types, and has proven effective in identifying and addressing Responsible AI issues quickly.
 
 <div class="block-box quickstart-box"><div class="left-box" markdown="1">
 
-## Requirements & Setup
+## Resources
 
 It is recommended to have basic knowledge of the framework and a working environment before using LangTest.
 
 </div><div class="right-box" markdown="1">
 
-Install LangTest in
 
 {:.btn-list}
-* [Python](/docs/pages/docs/install)
+* [Langtest Installation](/docs/pages/docs/install)
 
 </div></div>
 
@@ -40,7 +39,7 @@ Show your support by giving us a star on GitHub, it's the fuel that keeps our jo
 
 </div><div class="block-box" markdown="1">
 
-## LangTest Articles
+## Articles
 
 If you thrive on interactive education, our blogs are your gateway to immersive knowledge.
 
@@ -51,11 +50,11 @@ If you thrive on interactive education, our blogs are your gateway to immersive 
 
 <div class="block-wrapper"><div class="block-box" markdown="1">
 
-## LangTest Tutorial Examples
+## Tutorials
 If you prefer learning by example, check the tutorials section:
 
 {:.btn-block}
-[🎯 LangTest Examples](https://langtest.org/docs/pages/tutorials/tutorials){:.button.button--primary.button--rounded.button--md}
+[🎯 Tutorial Notebooks](https://langtest.org/docs/pages/tutorials/tutorials){:.button.button--primary.button--rounded.button--md}
 
 </div><div class="block-wrapper"><div class="block-box" markdown="1">
 
