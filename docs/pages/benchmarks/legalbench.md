@@ -24,6 +24,6 @@ You can see which subsets and splits are available below.
 {:.table2}
 | Split Name             | Details                                                                                                                          |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Consumer Contracts** | It consists of yes/no questions on the rights and obligations created by clauses in terms of services agreements.                |  |
+| **Consumer Contracts** | It consists of yes/no questions on the rights and obligations created by clauses in terms of services agreements.                |  
 | **Privacy-Policy**     | Given a question and a clause from a privacy policy, determine if the clause contains enough information to answer the question. |
 | **Contracts-QA**       | Answer True/False questions about whether contractual clauses discuss particular issues.                                         |
