@@ -166,6 +166,8 @@ benchmarks:
         url: /docs/pages/benchmarks/logiqa
       - title: MMLU
         url: /docs/pages/benchmarks/mmlu
+      - title: MultiLexSum
+        url: /docs/pages/benchmarks/multilexsum
       - title: NarrativeQA
         url: /docs/pages/benchmarks/narrativeqa
       - title: NaturalQuestions
@@ -180,5 +182,7 @@ benchmarks:
         url: /docs/pages/benchmarks/siqa
       - title: TruthfulQA
         url: /docs/pages/benchmarks/truthfulqa
+      - title: XSum
+        url: /docs/pages/benchmarks/xsum
 
   
