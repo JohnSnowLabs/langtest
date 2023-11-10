@@ -19,6 +19,9 @@ The ASDiv benchmark is a dataset of math word problems (MWPs) designed to evalua
 
 You can see which subsets and splits are available and the other details of the dataset [here](docs/pages/docs/data#question-answering).
 
+| **ASDiv-test**                                          | [ASDiv](https://arxiv.org/abs/2106.15772)                                                                         | Testing set from the ASDiv dataset, containing 1000 question answers examples.                                                                                                                                    |
+| **ASDiv-test-tiny**                                     | [ASDiv](https://arxiv.org/abs/2106.15772)                                                                         | Truncated version of the test set from the ASDiv dataset, containing 50 question and answers examples.   
+
 {:.table2}
 | passage                                                    | question                        | answer     |
 | ---------------------------------------------------------- | ------------------------------- | ---------- |
