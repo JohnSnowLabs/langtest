@@ -20,9 +20,10 @@ The test is passed if the absolute difference in the probability of male-pronoun
 
 #### Config
 ```yaml
-gender-occupational-stereotype:
-    min_pass_rate: 0.7
-    diff_threshold: 0.03
+stereotype:
+    wino-bias:
+      min_pass_rate: 0.70
+      diff_threshold: 0.03
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 - **diff_threshold (float):** The allowed difference in probabilities.
