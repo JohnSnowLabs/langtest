@@ -18,7 +18,8 @@ This test is designed to assess gender-based occupational stereotypes specifical
 
 #### Config
 ```yaml
-gender-occupational-stereotype:
+stereotype:
+   wino-bias:
     min_pass_rate: 0.70
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.

@@ -125,8 +125,8 @@ tests:
     url: /docs/pages/tests/sensitivity
   - title: Factuality
     url: /docs/pages/tests/factuality
-  - title: Wino Bias
-    url: /docs/pages/tests/wino-bias
+  - title: Stereotype
+    url: /docs/pages/tests/stereotype
   - title: Crows Pairs
     url: /docs/pages/tests/crows-pairs
   - title: StereoSet
