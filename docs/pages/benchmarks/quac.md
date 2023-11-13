@@ -14,7 +14,6 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-### QUAC
 Source: [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/)
 
 The QUAC dataset is a collection of dialogues between a student and a teacher, where the student asks questions about a given passage or context and the teacher answers them. The dataset aims to evaluate the ability of question answering models to handle conversational contexts, where the questions may depend on previous turns or omit some information1. The dataset contains questions and answers covering various topics such as history, science, literature, and art.
@@ -22,8 +21,8 @@ The QUAC dataset is a collection of dialogues between a student and a teacher, w
 You can see which subsets and splits are available below.
 
 {:.table2}
-| Split Name         | Details                                                                                                                            |
+| Split              | Details                                                                                                                            |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Quac-test**      | Testing set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog. |
-| **Quac-test-tiny** | Truncated version of the val set from the QuAC dataset with 50 examples.                                                           |
+| **test**      | Testing set from the QuAC dataset with 1000 examples for modeling, understanding, and participating in information seeking dialog. |
+| **test-tiny** | Truncated version of the val set from the QuAC dataset with 50 examples.                                                           |
 
