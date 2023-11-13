@@ -14,7 +14,6 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-### HellaSwag
 Source: [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/)
 
 HellaSWAG is a dataset for studying grounded commonsense inference. The samples start with one ore two sentence and the last sentence is left incomplete, there are some possible senseful completions in the dataset and model's completion is compared to them.
@@ -22,10 +21,10 @@ HellaSWAG is a dataset for studying grounded commonsense inference. The samples 
 You can see which subsets and splits are available below.
 
 {:.table2}
-| Split Name              | Details                                                                                                                                                                         |
+| Split                    | Details                                                                                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **HellaSwag-test**      | Dev set Training set from the hellaswag dataset with 3000 examples which is a benchmark for Commonsense NLI. It includes a context and some endings which complete the context. |
-| **HellaSwag-test-tiny** | Truncated version of the test set from the hellaswag dataset with 50 examples.                                                                                                  |
+| **test**      | Dev set Training set from the hellaswag dataset with 3000 examples which is a benchmark for Commonsense NLI. It includes a context and some endings which complete the context. |
+| **test-tiny** | Truncated version of the test set from the hellaswag dataset with 50 examples.                                                                                                  |
 
 Here is a sample from the dataset:
 
