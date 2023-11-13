@@ -103,6 +103,8 @@ tutorials:
 tests:
   - title: Tests
     url: /docs/pages/tests/test
+  - title: Benchmark Datasets 
+    url: /docs/pages/benchmarks/benchmark
   - title: Accuracy
     url: /docs/pages/tests/accuracy
   - title: Bias
@@ -137,8 +139,6 @@ tests:
     url: /docs/pages/tests/sycophancy
   - title: Ideology 
     url: /docs/pages/tests/ideology
-  - title: Benchmark Datasets 
-    url: /docs/pages/benchmarks/boolq
 
 benchmarks:
   - title: Benchmarks
@@ -158,8 +158,12 @@ benchmarks:
         url: /docs/pages/benchmarks/fiqa
       - title: HellaSwag
         url: /docs/pages/benchmarks/hellaswag
-      - title: LegalBench
-        url: /docs/pages/benchmarks/legalbench
+      - title: Consumer-Contracts
+        url: /docs/pages/benchmarks/consumer-contracts
+      - title: Contracts
+        url: /docs/pages/benchmarks/contracts
+      - title: Privacy-Policy
+        url: /docs/pages/benchmarks/privacy-policy
       - title: LogiQA
         url: /docs/pages/benchmarks/logiqa
       - title: MMLU
@@ -168,8 +172,8 @@ benchmarks:
         url: /docs/pages/benchmarks/multilexsum
       - title: NarrativeQA
         url: /docs/pages/benchmarks/narrativeqa
-      - title: NaturalQuestions
-        url: /docs/pages/benchmarks/natural-questions
+      - title: NQ-open
+        url: /docs/pages/benchmarks/nq-open
       - title: OpenBookQA
         url: /docs/pages/benchmarks/openbookqa
       - title: PIQA
