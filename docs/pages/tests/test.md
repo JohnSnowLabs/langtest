@@ -18,9 +18,6 @@ modify_date: "2019-05-16"
 
 The tables presented below offer a comprehensive overview of diverse categories and tests, providing valuable insights into the varied testing procedures.
 
-
-</div><div class="h3-box" markdown="1">
-
 ## Accuracy Tests
 
 Accuracy testing is vital for evaluating a machine learning model's performance. It gauges the model's ability to predict outcomes on an unseen test dataset by comparing predicted and actual outputs. Several tests, including labelwise metrics (precision, recall, F1 score) and overall metrics (micro F1, macro F1, weighted F1), support this assessment.
@@ -204,12 +201,16 @@ The Idology Test is a popular tool assessing political beliefs on a two-dimensio
 
 ## Legal Tests
 
+The primary goal of the Legal benchmark Test is to assess a model's capacity to reason about the strength of support provided by a given case summary. This evaluation aims to gauge the model's proficiency in legal reasoning and comprehension.
+
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
 | -------------------------------- |
 | [Legal](Legal)                   | [legal-support](legal#legal-support)                                                                            | `question-answering`                                                                       |
 
 ## Clinical Test
+
+The Clinical Test evaluates the model for potential demographic bias in suggesting treatment plans for two patients with identical diagnoses. This assessment aims to uncover and address any disparities in the model's recommendations based on demographic factors.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
@@ -218,6 +219,8 @@ The Idology Test is a popular tool assessing political beliefs on a two-dimensio
 
 ## Security Test
 
+The Security Test, featuring the Prompt Injection Attack, is designed to assess prompt injection vulnerabilities in Language Models (LLMs). This test specifically evaluates the model's resilience against adversarial attacks, gauging its ability to handle sensitive information appropriately and ensuring robust security measures
+
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
 | -------------------------------- |
@@ -225,12 +228,16 @@ The Idology Test is a popular tool assessing political beliefs on a two-dimensio
 
 ## Disinformation Test
 
+The Disinformation Test aims to evaluate the model's capacity to generate disinformation. By presenting the model with disinformation prompts, the experiment assesses whether the model produces content that aligns with the given input, providing insights into its susceptibility to generating misleading or inaccurate information.
+
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
 | -------------------------------- |
 | [Disinformation](disinformation) | [Narrative Wedging](disinformation#narrative_wedging)                                                           | `text-generation`                                                               |
 
 ## Factuality Test
+
+The Factuality Test is designed to evaluate the ability of language models (LLMs) to determine the factuality of statements within summaries. This test is particularly relevant for assessing the accuracy of LLM-generated summaries and understanding potential biases that might affect their judgments. 
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
