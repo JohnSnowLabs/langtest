@@ -14,7 +14,6 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-### PIQA
 Source: [PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/abs/1911.11641)
 
 The PIQA dataset is a collection of multiple-choice questions that test the ability of language models to reason about physical commonsense in natural language. The questions are based on everyday scenarios that involve some physical knowledge, such as cooking, gardening, or cleaning. The test dataset contains 3084 questions, each with a goal, a solution, and two alternative solutions. The correct solution is the one that is most likely to achieve the goal, while the alternatives are either ineffective or harmful. The dataset is designed to challenge the models’ understanding of real-world interactions and causal effects.
@@ -22,10 +21,10 @@ The PIQA dataset is a collection of multiple-choice questions that test the abil
 You can see which subsets and splits are available below.
 
 {:.table2}
-| Split Name         | Details                                                                                                                                                  |
+| Split              | Details                                                                                                                                                  |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **PIQA-test**      | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.  |
-| **PIQA-test-tiny** | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
+| **test**      | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.  |
+| **test-tiny** | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
 
 Here is a sample from the dataset:
 
