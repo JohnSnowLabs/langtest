@@ -29,7 +29,7 @@ docs-menu:
         - title:  One Liners
           url:    /docs/pages/docs/one_liner
 
-  - title: Test Harness
+  - title: General Concepts
     url: /docs/pages/docs/harness
     children:
         - title: Harness
