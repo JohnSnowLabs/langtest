@@ -86,7 +86,7 @@ docs-menu:
           url: /docs/pages/docs/contribute
           
   - title: Release Notes
-    url: /docs/pages/docs/langtest_versions/release_notes
+    url: /docs/pages/docs/langtest_versions/latest_release
 
 tutorials:
   - title: Test Specific Notebooks
