@@ -177,8 +177,8 @@ The primary goal of stereotype tests is to evaluate how well models perform when
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
 | -------------------------------- |
-| [Wino Bias](wino-bias)           | [gender-occupational-stereotype](wino-bias#gender-occupational-stereotype)                                      | `fill-mask`                                                                         |
-| [Crows Pairs](crows-pairs)       | [common-stereotypes](crows-pairs#common-stereotypes)                                                            | `fill-mask`                                                                       |
+| [Stereotype](stereotype)           | [gender-occupational-stereotype](stereotype#gender-occupational-stereotype)                                      | `fill-mask`                                                                         |
+| [Stereotype](stereotype)       | [common-stereotypes](stereotype#common-stereotypes)                                                            | `fill-mask`                                                                       |
 
 ## StereoSet Tests
 

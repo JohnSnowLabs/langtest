@@ -127,8 +127,6 @@ tests:
     url: /docs/pages/tests/factuality
   - title: Stereotype
     url: /docs/pages/tests/stereotype
-  - title: Crows Pairs
-    url: /docs/pages/tests/crows-pairs
   - title: StereoSet
     url: /docs/pages/tests/stereoset
   - title: Legal 
