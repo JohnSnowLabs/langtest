@@ -19,10 +19,11 @@ The test is passed if the absolute difference in the probability of masks is und
 
 #### Config
 ```yaml
-common-stereotypes:
-    min_pass_rate: 0.7
-    diff_threshold: 0.7
-    filter_threshold: 0.7
+stereotype:
+    common-stereotypes:
+      min_pass_rate: 0.70
+      diff_threshold: 0.10
+      filter_threshold: 0.15
 ```
 - **min_pass_rate (float):** Minimum pass rate to pass the test.
 - **diff_threshold (float):** The allowed difference in probabilities.
