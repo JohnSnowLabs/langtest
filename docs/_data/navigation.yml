@@ -102,6 +102,14 @@ tutorials:
           url: /docs/pages/tutorials/test_specific_notebooks/robustness
         - title: Fairness
           url: /docs/pages/tutorials/test_specific_notebooks/fairness
+        - title: Performance
+          url: /docs/pages/tutorials/test_specific_notebooks/performance
+        - title: Translation 
+          url: /docs/pages/tutorials/test_specific_notebooks/translation          
+        - title: Stereotype
+          url: /docs/pages/tutorials/test_specific_notebooks/stereotype
+        - title: Stereoset 
+          url: /docs/pages/tutorials/test_specific_notebooks/stereoset
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_Testing_Notebooks
   - title: Benchmark Dataset Notebooks
