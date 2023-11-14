@@ -28,9 +28,13 @@ You can see which subsets and splits are available below.
 | **test**      | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples               |
 | **test-tiny** | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| question                                | answer                |
-| --------------------------------------- | --------------------- |
-| when was me talk pretty one day written | "May 2, 2000", "2000" |
+
+{:.table3}
+| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | add_abbreviation | - | on the 6th day of christmas my true love sent to me | - |on da 6th day of christmas my true <3333 sent 2 me | Six geese a-laying. | On the sixth day of Christmas, my true love sent to me two turtle doves.	  | False |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`

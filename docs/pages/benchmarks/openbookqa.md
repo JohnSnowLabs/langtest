@@ -26,9 +26,13 @@ You can see which subsets and splits are available below.
 | **test**      | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions |
 | **test-tiny** | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.     |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| question                                                             | answer    |
-| -------------------------------------------------------------------- | --------- |
-| A cactus stem is used to store  A. fruit B. liquid C. food D. spines | B. liquid |
+
+{:.table3}
+| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | add_abbreviation | - | There is most likely going to be fog around:\n\nA. a marsh\nB. a tundra\nC. the plains\nD. a desert | - |There is most likely going 2 b fog around:\n\nA. a marsh\nB. a tundra\nC. da plains\nD. a desert	 | A. a marsh | A. a marsh  | True |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`
