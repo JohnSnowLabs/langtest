@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In this representation notebook section, we are evaluating `ner.dl` model on representation tests. The goal of representation testing is to determine if a given dataset represents a specific population accurately or if it contains biases that could negatively impact the results of any analysis conducted on it.
+In this representation notebook, we are evaluating `ner.dl` model on representation tests. The goal of representation testing is to determine if a given dataset represents a specific population accurately or if it contains biases that could negatively impact the results of any analysis conducted on it.
 
 
 ## Open in Collab
