@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/mmlu_dataset.ipynb)
+
+**Source:** [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
 
 The MMLU dataset is a collection of questions and answers that cover many subjects across various domains, such as STEM, humanities, social sciences, and more. The dataset is designed to measure the performance of language understanding models on a wide range of tasks, such as elementary mathematics, US history, computer science, law, and more. Each sample has a question, and 4 choices and one of them is correct. The dataset can be used to evaluate the models’ ability to reason, recall facts, and apply knowledge to different scenarios.
 

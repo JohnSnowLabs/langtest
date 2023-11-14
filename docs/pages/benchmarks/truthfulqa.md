@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/TruthfulQA_dataset.ipynb)
+
+**Source:** [TruthfulQA: Measuring How Models Mimic Human Falsehoods](https://aclanthology.org/2022.acl-long.229/)
 
 The TruthfulQA dataset is a collection of questions and answers that are designed to measure how models mimic human falsehoods. The dataset contains 817 questions. The questions are based on real-world information, but the answers are either truthful or false, depending on the source. The goal is to evaluate the model’s capability to answer questions accurately and truthfully.
 

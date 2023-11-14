@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/HellaSwag_Question_Answering.ipynb)
+
+**Source:** [HellaSwag: Can a Machine Really Finish Your Sentence?](https://aclanthology.org/P19-1472/)
 
 HellaSWAG is a dataset for studying grounded commonsense inference. The samples start with one ore two sentence and the last sentence is left incomplete, there are some possible senseful completions in the dataset and model's completion is compared to them.
 

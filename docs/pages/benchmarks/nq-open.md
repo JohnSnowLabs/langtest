@@ -14,8 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NQ_open_dataset.ipynb)
 
-Source: [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)
+**Source:** [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)
 
 The Natural Questions dataset is a large-scale collection of real user questions and answers from Wikipedia. It is designed to evaluate the performance of automatic question answering systems on open-domain questions. The dataset included in LangTest about 3,500 test examples. Each example consists of a query and one or more answers from the wikipedia page.
 

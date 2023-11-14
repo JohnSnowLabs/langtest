@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [FIQA (Financial Opinion Mining and Question Answering)](https://huggingface.co/datasets/explodinggradients/fiqa) 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Fiqa_dataset.ipynb)
+
+**Source:** [FIQA (Financial Opinion Mining and Question Answering)](https://huggingface.co/datasets/explodinggradients/fiqa) 
 
 The Fiqa dataset is a collection of question and answer pairs related to financial topics, such as stocks, bonds, loans, and mortgages. The dataset is curated from the explodinggradients/fiqa Hugging Face dataset, which contains 648 examples for testing. The dataset can be used to evaluate the performance of language models on the question answering task in the financial domain.
 
