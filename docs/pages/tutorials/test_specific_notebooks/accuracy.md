@@ -44,4 +44,21 @@ tests:
       LOC: 0.60
 ```
 
+<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
+
+## Supported Tests
+
+- **`min_precision_score`**: Determine if the actual precision score is less than the desired precision score.
+
+- **`min_recall_score`**:  Determine if the actual recall score is less than the desired recall score.
+
+- **`min_f1_score`**: Determine if the actual f1 score is less than the desired f1 score.
+
+- **`min_micro_f1_score`**:  Determine if the actual micro-f1 score is less than the desired micro-f1 score.
+
+- **`min_macro_f1_score`**:  Determine if the actual macro-f1 score is less than the desired macro-f1 score.
+
+- **`min_weighted_f1_score`**:  Determine if the actual min-weighted-f1 score is less than the desired min-weighted-f1 score.
+
+
 </div></div>
