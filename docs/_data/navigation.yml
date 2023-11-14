@@ -100,6 +100,8 @@ tutorials:
           url: /docs/pages/tutorials/test_specific_notebooks/bias
         - title: Robustness
           url: /docs/pages/tutorials/test_specific_notebooks/robustness
+        - title: Fairness
+          url: /docs/pages/tutorials/test_specific_notebooks/fairness
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_Testing_Notebooks
   - title: Benchmark Dataset Notebooks
