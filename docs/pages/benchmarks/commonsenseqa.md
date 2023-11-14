@@ -33,7 +33,7 @@ You can see which subsets and splits are available below.
 {:.table3}
 | category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
 |-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | add_abbreviation | - | A revolving door is convenient for two direction travel, but it also serves as a security measure at a what?\nA. bank\nB. library\nC. department store\nD. mall\nE. new york	 | - |A revolving door is convenient 4 two direction travel, but it also serves as a security measure at a wat?\nA. bank\nB. library\nC. department store\nD. mall\nE. new york | A. bank	 | A. bank  |True
+| robustness | add_abbreviation | - | A revolving door is convenient for two direction travel, but it also serves as a security measure at a what?<br>A. bank<br>B. library<br>C. department store<br>D. mall<br>E. new york	 | - |A revolving door is convenient 4 two direction travel, but it also serves as a security measure at a wat?<br>A. bank<br>B. library<br>C. department store<br>D. mall<br>E. new york | A. bank	 | A. bank  |True
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`

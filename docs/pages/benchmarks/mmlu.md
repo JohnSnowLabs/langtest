@@ -32,7 +32,7 @@ You can see which subsets and splits are available below.
 {:.table3}
 | category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
 |-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | add_speech_to_text_typo | - | Find the degree for the given field extension Q(sqrt(2), sqrt(3), sqrt(18)) over Q.\nA. 0\nB. 4\nC. 2\nD. 6 | - |Find the degree for the given field extension Kew(sqrt(2), sqrt(3), sqrt(18)) over Q.\nA. 0\nB. 4\nC. 2\nD. 6 | B. 4 | B. 4  | True |
+| robustness | add_speech_to_text_typo | - | Find the degree for the given field extension Q(sqrt(2), sqrt(3), sqrt(18)) over Q.<br>A. 0<br>B. 4<br>C. 2<br>D. 6 | - |Find the degree for the given field extension Kew(sqrt(2), sqrt(3), sqrt(18)) over Q.<br>A. 0<br>B. 4<br>C. 2<br>D. 6 | B. 4 | B. 4  | True |
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`

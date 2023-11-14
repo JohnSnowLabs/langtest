@@ -32,7 +32,7 @@ You can see which subsets and splits are available below.
 {:.table3}
 | category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
 |-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | add_abbreviation | - | There is most likely going to be fog around:\n\nA. a marsh\nB. a tundra\nC. the plains\nD. a desert | - |There is most likely going 2 b fog around:\n\nA. a marsh\nB. a tundra\nC. da plains\nD. a desert	 | A. a marsh | A. a marsh  | True |
+| robustness | add_abbreviation | - | There is most likely going to be fog around:<br><br>A. a marsh<br>B. a tundra<br>C. the plains<br>D. a desert | - |There is most likely going 2 b fog around:<br><br>A. a marsh<br>B. a tundra<br>C. da plains<br>D. a desert	 | A. a marsh | A. a marsh  | True |
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`
