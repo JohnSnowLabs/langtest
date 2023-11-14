@@ -21,5 +21,12 @@ The Factuality Test is designed to evaluate the ability of language models (LLMs
 
 </div><div class="h3-box" markdown="1">
 
+#### Example
+
+{:.table3}
+| article_sentence | correct_sentence | incorrect_sentence | result | swapped_result | pass |
+|-------------------|------------------|---------------------|--------|-----------------|------|
+| the abc have reported that those who receive centrelink payments made up half of radio rental's income last year. | those who receive centrelink payments made up half of radio rental's income last year. | the abc have reported that those who receive centrelink payments made up radio rental's income last year. | A | B | True |
+
 
 </div>
