@@ -91,6 +91,15 @@ docs-menu:
 tutorials:
   - title: Test Specific Notebooks
     url: /docs/pages/tutorials/test_specific_notebooks
+    children:
+        - title: Accuracy
+          url: /docs/pages/tutorials/test_specific_notebooks/accuracy
+        - title: Representation
+          url: /docs/pages/tutorials/test_specific_notebooks/representation
+        - title: Bias
+          url: /docs/pages/tutorials/test_specific_notebooks/bias
+        - title: Robustness
+          url: /docs/pages/tutorials/test_specific_notebooks/robustness
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_Testing_Notebooks
   - title: Benchmark Dataset Notebooks
