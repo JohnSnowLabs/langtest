@@ -18,7 +18,7 @@ The primary goal of stereotype tests is to evaluate how well models perform when
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-## Common Stereotypes Notebook
+## CrowS Pairs Notebook
 
 In this notebook we are measuring the degree to which stereotypical biases are present in masked language models using Crows Pairs dataset.
 
@@ -27,7 +27,7 @@ In this notebook we are measuring the degree to which stereotypical biases are p
 {:.table2}
 | Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
-| **Common-Stereotypes** | Hugging Face                      | Fill-Mask                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Crows_Pairs_Notebook.ipynb)                         |
+| **CrowS Pairs** | Hugging Face                      | Fill-Mask                     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Crows_Pairs_Notebook.ipynb)                         |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
@@ -37,16 +37,17 @@ In this notebook we are measuring the degree to which stereotypical biases are p
 tests:
   defaults:
     min_pass_rate: 1.0
-  crows-pairs:
-    common-stereotypes:
-      min_pass_rate: 0.7
-      diff_threshold: 0.1
+
+  stereotype:
+    crows-pairs:
+      min_pass_rate: 0.70
+      diff_threshold: 0.10
       filter_threshold: 0.15
 ```
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-## Gender Occupational Stereotype Notebook
+## Wino-Bias HuggingFace Notebook
 
 In this tutorial, we assess the model on gender occupational stereotype statements using Hugging Face fill mask models.
 
@@ -55,7 +56,7 @@ In this tutorial, we assess the model on gender occupational stereotype statemen
 {:.table2}
 | Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
-| **Gender-Occupational-Stereotype**| Hugging Face                      | Fill-Mask                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Wino_Bias.ipynb)                                    |
+| **Wino-Bias**| Hugging Face                      | Fill-Mask                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Wino_Bias.ipynb)                                    |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
@@ -65,9 +66,10 @@ In this tutorial, we assess the model on gender occupational stereotype statemen
 tests:
   defaults:
     min_pass_rate: 1.0
-  wino-bias:
-    gender-occupational-stereotype:
-      min_pass_rate: 0.7
+
+  stereotype:
+    wino-bias:
+      min_pass_rate: 0.70
       diff_threshold: 0.03
 
 ```
