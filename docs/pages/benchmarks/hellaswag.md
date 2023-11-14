@@ -26,9 +26,13 @@ You can see which subsets and splits are available below.
 | **test**      | Dev set Training set from the hellaswag dataset with 3000 examples which is a benchmark for Commonsense NLI. It includes a context and some endings which complete the context. |
 | **test-tiny** | Truncated version of the test set from the hellaswag dataset with 50 examples.                                                                                                  |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| question                                                                               | answer                                                                           |
-| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| He adds pasta to a large pot on the stove. He starts cooking in a pan on the stove. he | "stirs it up and adds eggs.", "lets the pasta go.", "covers the pan with a lid." |
+
+{:.table3}
+| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | 	add_slangs  | - | 	A huge crowd is in the stands in an arena. A man throws a javelin. Photographers take pictures in the background. several men | - |A humongous crowd is in the stands in an arena. A bloke throws a javelin. Photographers take pictures in the background. several men | and women cheer as the javelin sails through the air. \n\nThe javelin lands with a thud, and the crowd erupts in applause. | and women cheer as the javelin sails through the air. \n\nThe javelin lands with a thud in the center of the field, and the crowd erupts in applause.  | True |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`
