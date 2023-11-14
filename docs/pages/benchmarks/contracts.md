@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [Answer yes/no questions about whether contractual clauses discuss particular issues.](https://github.com/HazyResearch/legalbench/tree/main/tasks/contract_qa)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)
+
+**Source:** [Answer yes/no questions about whether contractual clauses discuss particular issues.](https://github.com/HazyResearch/legalbench/tree/main/tasks/contract_qa)
 
 **Contracts** is a binary classification dataset where the LLM must determine if language from a contract contains a particular type of content.
 

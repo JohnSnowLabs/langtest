@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [SocialIQA: Commonsense Reasoning about Social Interactions](https://arxiv.org/abs/1904.09728)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/SIQA_dataset.ipynb)
+
+**Source:** [SocialIQA: Commonsense Reasoning about Social Interactions](https://arxiv.org/abs/1904.09728)
 
 SocialIQA is a dataset for testing the social commonsense reasoning of language models. It consists of over 1900 multiple-choice questions about various social situations and their possible outcomes or implications. The questions are based on real-world prompts from online platforms, and the answer candidates are either human-curated or machine-generated and filtered. The dataset challenges the models to understand the emotions, intentions, and social norms of human interactions.
 

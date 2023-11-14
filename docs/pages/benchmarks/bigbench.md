@@ -14,8 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
 
-Source: [Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models](https://arxiv.org/abs/2206.04615)
+**Source:** [Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models](https://arxiv.org/abs/2206.04615)
 
 BigBench is a large-scale benchmark for measuring the performance of language models across a wide range of natural language understanding and generation tasks. It consists of many subtasks, each with its own evaluation metrics and scoring system. The subsets included in LangTest are:
 - Abstract-narrative-understanding

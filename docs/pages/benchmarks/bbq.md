@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BBQ_dataset.ipynb)
+
+**Source:** [BBQ Dataset: A Hand-Built Bias Benchmark for Question Answering](https://arxiv.org/abs/2110.08193)
 
 The BBQ dataset is a collection of questions and answers that are designed to measure the social biases of language models in question answering tasks. The dataset contains questions that are either under-informative or adequately informative, and that target different protected classes across various social dimensions, such as race, gender, religion, and sexual orientation. The dataset aims to promote fair and unbiased question answering models that can handle diverse and complex social contexts.
 

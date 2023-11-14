@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [Answer yes/no questions on the rights and obligations created by clauses in terms of services agreements.](https://github.com/HazyResearch/legalbench/tree/main/tasks/consumer_contracts_qa)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)
+
+**Source:** [Answer yes/no questions on the rights and obligations created by clauses in terms of services agreements.](https://github.com/HazyResearch/legalbench/tree/main/tasks/consumer_contracts_qa)
 
 **Consumer Contracts** contains yes/no questions relating to consumer contracts (specifically, online terms of service) - and is relevant to the legal skill of contract interpretation.
 

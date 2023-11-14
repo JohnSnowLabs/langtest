@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/XSum_dataset.ipynb)
+
+**Source:** [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/)
 
 The XSum dataset is a collection of news articles and their corresponding one-sentence summaries. The dataset is designed to evaluate the performance of abstractive single-document summarization systems. The goal is to create a short, one-sentence summary answering the question "What is the article about?". The dataset is available in English and is monolingual. The dataset was created by EdinburghNLP and is available on Hugging Face.
 

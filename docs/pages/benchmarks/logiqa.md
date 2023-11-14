@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [LogiQA: A Challenge Dataset for Machine Reading Comprehension with Logical Reasoning](https://paperswithcode.com/paper/logiqa-a-challenge-dataset-for-machine)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LogiQA_dataset.ipynb)
+
+**Source:** [LogiQA: A Challenge Dataset for Machine Reading Comprehension with Logical Reasoning](https://paperswithcode.com/paper/logiqa-a-challenge-dataset-for-machine)
 
 The LogiQA dataset is a collection of questions and answers designed to test the ability of natural language processing models to perform logical reasoning. The dataset in LangTest consists of 1000 QA instances covering multiple types of deductive reasoning, sourced from expert-written questions for testing human logical reasoning. The dataset is intended to be a challenging benchmark for machine reading comprehension models and to encourage the development of models that can perform complex logical reasoning and inference. Results show that state-of-the-art neural models perform by far worse than human ceiling 1234.
 
