@@ -26,9 +26,13 @@ You can see which subsets and splits are available below.
 | **test**      | Test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 50 samples from each tasks in the test set.                           |
 | **test-tiny** | Truncated version of test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the test-tiny set. |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| question                                                         | answer |
-| ---------------------------------------------------------------- | ------ |
-| Find the generator for the finite field Z_7. A. 1 B. 2 C. 3 D. 4 | C. 3   |
+
+{:.table3}
+| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | add_speech_to_text_typo | - | Find the degree for the given field extension Q(sqrt(2), sqrt(3), sqrt(18)) over Q.\nA. 0\nB. 4\nC. 2\nD. 6 | - |Find the degree for the given field extension Kew(sqrt(2), sqrt(3), sqrt(18)) over Q.\nA. 0\nB. 4\nC. 2\nD. 6 | B. 4 | B. 4  | True |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`

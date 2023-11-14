@@ -26,9 +26,13 @@ You can see which subsets and splits are available below.
 | **test**      | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.  |
 | **test-tiny** | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| question                                                                                    |
-| ------------------------------------------------------------------------------------------- |
-| Clean electronics without leaving moisture.  A. Use window cleaner.B. Use rubbing alcohol." |
+
+{:.table3}
+| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | 	dyslexia_word_swap | - | hands\nA. is used to put on shoe \nB. is used to put on milk jug | - |hands\nA. is used too put on shoe \nB. is used too put on milk jug | A | A  | True |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`

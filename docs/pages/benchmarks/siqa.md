@@ -26,9 +26,13 @@ You can see which subsets and splits are available below.
 | **test**      | Testing set from the SIQA dataset, containing 1954 question and answer examples.       |
 | **test-tiny** | Truncated version of SIQA-test dataset which contains 50 question and answer examples. |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| passage                                                 | question                                                                  | answer            |
-| ------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Sasha set their trash on fire to get rid of it quickly. | How would you describe Sasha? A. dirty B. Very efficient C. Inconsiderate | B. Very efficient |
+
+{:.table3}
+| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | dyslexia_word_swap | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need to do before this?\nA. make a new plan\nB. Go home and see Riley\nC. Find somewhere to go | Tracy didn't go home that evening and resisted Riley's attacks. |What does Tracy need too do before this?\nA. make a new plan\nB. Go home and sea Riley\nC. Find somewhere too go | C. Find somewhere to go | A. Make a new plan	  | False |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`
