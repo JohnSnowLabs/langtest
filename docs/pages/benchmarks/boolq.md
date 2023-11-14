@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BoolQ_dataset.ipynb)
+
+**Source:** [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/)
 
 The BoolQ dataset is a collection of yes/no questions that are naturally occurring and generated in unprompted and unconstrained settings. The dataset contains about 16k examples, each consisting of a question, a passage, and an answer. The questions are about various topics and require reading comprehension and reasoning skills to answer. The dataset is intended to explore the surprising difficulty of natural yes/no questions and to benchmark natural language understanding systems.
 
@@ -32,6 +34,8 @@ You can see which subsets and splits are available below.
 
 
 #### Example
+
+In the evaluation process, we start by fetching *original_context* and *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_context* and *original_question*, resulting in *perturbed_context* and *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the **QAEvalChain** approach from the LangChain library. Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category.For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
 
 {:.table3}
 | category   | test_type        | original_context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | original_question                                                                      | perturbed_context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | perturbed_question                                                                  | expected_result   | actual_result   | pass   |
