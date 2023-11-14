@@ -32,7 +32,7 @@ You can see which subsets and splits are available below.
 {:.table3}
 | category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
 |-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | dyslexia_word_swap | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need to do before this?\nA. make a new plan\nB. Go home and see Riley\nC. Find somewhere to go | Tracy didn't go home that evening and resisted Riley's attacks. |What does Tracy need too do before this?\nA. make a new plan\nB. Go home and sea Riley\nC. Find somewhere too go | C. Find somewhere to go | A. Make a new plan	  | False |
+| robustness | dyslexia_word_swap | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need to do before this?<br>A. make a new plan<br>B. Go home and see Riley<br>C. Find somewhere to go | Tracy didn't go home that evening and resisted Riley's attacks. |What does Tracy need too do before this?<br>A. make a new plan<br>B. Go home and sea Riley<br>C. Find somewhere too go | C. Find somewhere to go | A. Make a new plan	  | False |
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`

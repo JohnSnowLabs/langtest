@@ -32,7 +32,7 @@ You can see which subsets and splits are available below.
 {:.table3}
 | category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
 |-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | 	dyslexia_word_swap | - | hands\nA. is used to put on shoe \nB. is used to put on milk jug | - |hands\nA. is used too put on shoe \nB. is used too put on milk jug | A | A  | True |
+| robustness | 	dyslexia_word_swap | - | hands<br>A. is used to put on shoe <br>B. is used to put on milk jug | - |hands<br>A. is used too put on shoe <br>B. is used too put on milk jug | A | A  | True |
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`
