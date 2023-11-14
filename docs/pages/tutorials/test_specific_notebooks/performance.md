@@ -16,8 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In this performance notebook, we are evaluating `dslim/bert-base-NER` model on Performance test. The goal of performance testing is to determine the time taken to complete the tests in LangTest on the datasets with Models.
-
+In this performance notebook, we are evaluating `dslim/bert-base-NER` model on Performance test. The goal of performance testing is to determine the average time taken by the model to give the complete response.
 
 ## Open in Collab
 
@@ -46,3 +45,4 @@ tests:
 ```
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
+
