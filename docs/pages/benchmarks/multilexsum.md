@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb)
+
+**Source:** [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883)
 
 The Multi-LexSum dataset is a collection of summaries of civil rights litigation lawsuits with summaries of three granularities. The dataset is designed to evaluate the performance of abstractive multi-document summarization systems. The dataset was created by multilexsum and is available on GitHub. The dataset is distinct from other datasets in its multiple target summaries, each at a different granularity (ranging from one-sentence “extreme” summaries to multi-paragraph narrations of over five hundred words).
 

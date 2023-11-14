@@ -14,7 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
-Source: [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/quac_dataset.ipynb)
+
+**Source:** [Quac: Question Answering in Context](https://aclanthology.org/D18-1241/)
 
 The QUAC dataset is a collection of dialogues between a student and a teacher, where the student asks questions about a given passage or context and the teacher answers them. The dataset aims to evaluate the ability of question answering models to handle conversational contexts, where the questions may depend on previous turns or omit some information1. The dataset contains questions and answers covering various topics such as history, science, literature, and art.
 

@@ -14,8 +14,9 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/NQ_open_dataset.ipynb)
 
-Source: [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)
+**Source:** [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/)
 
 The Natural Questions dataset is a large-scale collection of real user questions and answers from Wikipedia. It is designed to evaluate the performance of automatic question answering systems on open-domain questions. The dataset included in LangTest about 3,500 test examples. Each example consists of a query and one or more answers from the wikipedia page.
 
@@ -28,9 +29,15 @@ You can see which subsets and splits are available below.
 | **test**      | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples               |
 | **test-tiny** | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples |
 
-Here is a sample from the dataset:
+#### Example
 
-{:.table2}
-| question                                | answer                |
-| --------------------------------------- | --------------------- |
-| when was me talk pretty one day written | "May 2, 2000", "2000" |
+In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the **QAEvalChain** approach from the LangChain library. Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
+
+
+{:.table3}
+| category   | test_type    | original_question                  |  perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | add_abbreviation | on the 6th day of christmas my true love sent to me | on da 6th day of christmas my true <3333 sent 2 me | Six geese a-laying. | On the sixth day of Christmas, my true love sent to me two turtle doves.	  | False |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`
