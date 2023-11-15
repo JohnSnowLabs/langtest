@@ -113,18 +113,8 @@ tutorials:
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_testing_Notebooks
     children:
-        - title: OpenAI
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/OpenAi_QA_Sum
-        - title: AI21
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/AI21_QA_Sum
-        - title: Cohere
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/Cohere_QA_Sum
-        - title: Hugging Face Inference API
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/Hugging_Face_Inference_API_QA_Sum
-        - title: Hugging Face Hub
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/Hugging_Face_Hub_QA_Sum
-        - title: Azure-OpenAI
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/Azure_OpenAI_QA_Sum
+        - title: Question-Answering and Summarization
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Summarization
         - title: Toxicity
           url: /docs/pages/tutorials/LLM_testing_Notebooks/toxicity
         - title: Clinical
