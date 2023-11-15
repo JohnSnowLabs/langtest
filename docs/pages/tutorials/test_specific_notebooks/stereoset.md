@@ -18,7 +18,7 @@ The primary goal of StereoSet is to provide a comprehensive dataset and method f
 ## Open in Collab
 
 {:.table2}
-| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Category               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
 | **Stereoset** | Huggingface                    | Question-Answering                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/StereoSet_Notebook.ipynb)                                |
 

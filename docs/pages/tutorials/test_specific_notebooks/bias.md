@@ -23,7 +23,7 @@ We're changing things, like using different names or countries, and checking how
 ## Open in Collab
 
 {:.table2}
-| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Category               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
 |  **Bias**                          | John Snow Labs                    | NER                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Bias_Demo.ipynb)                                    |
 
