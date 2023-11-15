@@ -114,7 +114,7 @@ tutorials:
     url: /docs/pages/tutorials/LLM_testing_Notebooks
     children:
         - title: Question-Answering and Summarization
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Summarization
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Sum
         - title: Toxicity
           url: /docs/pages/tutorials/LLM_testing_Notebooks/toxicity
         - title: Clinical
