@@ -145,9 +145,6 @@ tutorials:
           url: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
         - title: Wino-Bias
           url: /docs/pages/tutorials/LLM_testing_Notebooks/wino_bias
-
-  - title: LLM Testing Notebooks
-    url: /docs/pages/tutorials/LLM_Testing_Notebooks
   - title: Benchmark Dataset Notebooks
     url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
   - title: End-to-End Workflow Notebooks
