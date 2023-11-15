@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: Comparing Models
 key: tutorials-comparing-models
-permalink: /docs/pages/tutorials/comparing_models
+permalink: /docs/pages/tutorials/misc/comparing-models
 sidebar:
     nav: tutorials
 aside:
@@ -56,9 +56,4 @@ tests:
     min_label_representation_count:
       min_count: 50
 ```
-
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-
-</div></div>
 

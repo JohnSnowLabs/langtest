@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: Custom Hub
 key: tutorials-custom-hub
-permalink: /docs/pages/tutorials/custom_hub
+permalink: /docs/pages/tutorials/misc/custom-hub
 sidebar:
     nav: tutorials
 aside:

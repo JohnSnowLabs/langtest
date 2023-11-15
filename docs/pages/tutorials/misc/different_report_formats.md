@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: Different Report Formats
 key: tutorials-different-report-formats
-permalink: /docs/pages/tutorials/different_report_formats
+permalink: /docs/pages/tutorials/misc/different-report-formats
 sidebar:
     nav: tutorials
 aside:
