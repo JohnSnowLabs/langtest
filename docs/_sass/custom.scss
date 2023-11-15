@@ -2206,7 +2206,7 @@ code {
 		}
 	  }
 	}
-  
+
 	tbody {
 	  tr {
 		td {
@@ -2230,4 +2230,26 @@ code {
 		}
 	  }
 	}
+  }
+
+  body {
+	background-color: #f0f0f0; /* Light grey background */
+  }
+  
+  .config-container {
+	display: flex;
+	justify-content: space-between;
+	background-color: #fff; /* White background for configurations container */
+	padding: 20px; /* Add padding for better readability */
+  
+	.config {
+	  flex: 1;
+	  margin-right: 20px;
+	}
+  }
+  
+  .title {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-bottom: 10px;
   }

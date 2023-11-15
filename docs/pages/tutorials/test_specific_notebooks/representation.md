@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: NLP Tutorials | Representation Test | John Snow Labs
 title: Representation Notebook
 key: test_specific
 permalink: /docs/pages/tutorials/test_specific_notebooks/representation
@@ -22,7 +22,7 @@ In this representation notebook, we are evaluating `ner.dl` model on representat
 ## Open in Collab
 
 {:.table2}
-| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Category               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
 | **Representation** | John Snow Labs                    | NER                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Representation_Demo.ipynb)                                |
 

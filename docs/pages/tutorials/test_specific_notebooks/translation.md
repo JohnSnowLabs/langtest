@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: NLP Tutorials | Translation Test | John Snow Labs
 title: Translation Notebook
 key: test_specific
 permalink: /docs/pages/tutorials/test_specific_notebooks/translation
@@ -21,7 +21,7 @@ In the Translation section, we're delving into the details of testing translatio
 ## Open in Collab
 
 {:.table2}
-| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Category               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
 | **Translation** :  | Hugging Face/John Snow Labs       | Translation                       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Translation_Notebook.ipynb)                         |
 
