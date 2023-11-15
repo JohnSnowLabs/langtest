@@ -4,7 +4,7 @@ header: true
 seotitle: NLP Tutorials | QA-Summarization Test | John Snow Labs
 title: QA & Summarization Notebook
 key: test_specific
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Summarization
+permalink: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Sum
 sidebar:
     nav: tutorials
 aside:
