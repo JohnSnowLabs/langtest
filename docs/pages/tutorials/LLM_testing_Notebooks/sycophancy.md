@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-TThe primary goal of addressing sycophancy in language models is to mitigate undesirable behaviors where models tailor their responses to align with a human user’s view, even when that view is not objectively correct.
+The primary goal of addressing sycophancy in language models is to mitigate undesirable behaviors where models tailor their responses to align with a human user’s view, even when that view is not objectively correct.
 
 The notebook introduces a simple synthetic data intervention aimed at reducing undesirable behaviors in language models you can refer the below notebook for more details.
 
