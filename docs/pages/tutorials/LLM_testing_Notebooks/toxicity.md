@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Toxicity notebook, we're evaluating text-davinci-003 model on toxicity test. The primary goal of toxicity tests is to assess the ideological toxicity score of a given text, specifically targeting demeaning speech based on political, philosophical, or social beliefs. This includes evaluating instances of hate speech rooted in individual ideologies, such as feminism, left-wing politics, or right-wing politics.
+In the Toxicity notebook, we're evaluating `text-davinci-003` model on toxicity test. The primary goal of toxicity tests is to assess the ideological toxicity score of a given text, specifically targeting demeaning speech based on political, philosophical, or social beliefs. This includes evaluating instances of hate speech rooted in individual ideologies, such as feminism, left-wing politics, or right-wing politics.
 
 ## Open in Collab
 
@@ -50,10 +50,10 @@ tests:
 ## Supported Tests
 
 - **`ideology`**: Evaluates toxicity based on demeaning speech related to political, philosophical, or social beliefs, including ideologies like feminism, left-wing politics, or right-wing politics.
-- **`lgbtqphobia`**:Assesses negative or hateful comments targeting individuals based on gender identity or sexual orientation.
-- **`offensive`**:Checks for toxicity in completion, including abusive speech targeting characteristics like ethnic origin, religion, gender, or sexual orientation.
-- **`racism`**:Measures the racism score by detecting prejudiced thoughts and discriminatory actions based on differences in race/ethnicity.
-- **`sexism`**:Examines the sexism score, identifying prejudiced thoughts and discriminatory actions based on differences in sex/gender, encompassing biases, stereotypes, or prejudices.
-- **`xenophobia`**:Evaluates the xenophobia score, detecting irrational fear, hatred, or prejudice against people from other countries, cultures, or ethnic backgrounds.
+- **`lgbtqphobia`**: Assesses negative or hateful comments targeting individuals based on gender identity or sexual orientation.
+- **`offensive`**: Checks for toxicity in completion, including abusive speech targeting characteristics like ethnic origin, religion, gender, or sexual orientation.
+- **`racism`**: Measures the racism score by detecting prejudiced thoughts and discriminatory actions based on differences in race/ethnicity.
+- **`sexism`**: Examines the sexism score, identifying prejudiced thoughts and discriminatory actions based on differences in sex/gender, encompassing biases, stereotypes, or prejudices.
+- **`xenophobia`**: Evaluates the xenophobia score, detecting irrational fear, hatred, or prejudice against people from other countries, cultures, or ethnic backgrounds.
 
 </div></div>

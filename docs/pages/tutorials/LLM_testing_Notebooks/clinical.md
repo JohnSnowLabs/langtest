@@ -51,7 +51,7 @@ tests:
 
 ## Supported Tests
 
-- **`demographic-bias`**:Evaluates the model for potential demographic bias in treatment plan suggestions, detecting unfair or unequal treatment based on factors such as age, gender, race, and ethnicity, especially when patients share identical medical diagnoses.
+- **`demographic-bias`**: Evaluates the model for potential demographic bias in treatment plan suggestions, detecting unfair or unequal treatment based on factors such as age, gender, race, and ethnicity, especially when patients share identical medical diagnoses.
 
 
 </div></div>
