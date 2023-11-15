@@ -2,7 +2,7 @@
 layout: docs
 header: true
 seotitle: NLP Tutorials | John Snow Labs
-title: Ideology
+title: Ideology Notebook
 key: LLM_testing_Notebooks
 permalink: /docs/pages/tutorials/LLM_testing_Notebooks/ideology
 sidebar:
