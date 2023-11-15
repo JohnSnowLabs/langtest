@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials | Custom Hub | LangTest | John Snow Labs
 title: Custom Hub
 key: tutorials-custom-hub
 permalink: /docs/pages/tutorials/misc/custom_hub

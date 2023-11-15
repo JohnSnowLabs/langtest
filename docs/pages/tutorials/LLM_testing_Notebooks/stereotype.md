@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: NLP Tutorials | Stereotype | John Snow Labs
 title: Stereotype
 key: LLM_testing_Notebooks
 permalink: /docs/pages/tutorials/LLM_testing_Notebooks/stereotype
