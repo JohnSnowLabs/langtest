@@ -21,9 +21,10 @@ In the Clinical Test notebook, we're evaluating `text-davinci-003` model on clin
 ## Open in Collab
 
 {:.table2}
-| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |Dataset Used
-| ----------------------------------- |
-|  **Toxicity**                          | 	OpenAI                    | Text-Generation                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb)                                    | Clinical
+| Category               | Hub       | Task               | Dataset Used | Open In Colab                                                                                                                                                                          |
+|------------------------|-----------|--------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Clinical**           | OpenAI    | Text-Generation   | Clinical     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb) |
+
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
