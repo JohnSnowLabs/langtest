@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: NLP Tutorials |  Performance Test | John Snow Labs
 title: Performance Notebook
 key: test_specific
 permalink: /docs/pages/tutorials/test_specific_notebooks/performance

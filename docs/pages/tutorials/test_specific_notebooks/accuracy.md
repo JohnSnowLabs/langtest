@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: NLP Tutorials | Accuracy Test | John Snow Labs
 title: Accuracy Notebook
 key: test_specific
 permalink: /docs/pages/tutorials/test_specific_notebooks/accuracy
