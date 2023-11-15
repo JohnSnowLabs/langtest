@@ -111,6 +111,42 @@ tutorials:
         - title: Stereoset 
           url: /docs/pages/tutorials/test_specific_notebooks/stereoset
   - title: LLM Testing Notebooks
+    url: /docs/pages/tutorials/LLM_testing_Notebooks
+    children:
+        - title: OpenAI
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/OpenAi_QA_Sum
+        - title: AI21
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/AI21_QA_Sum
+        - title: Cohere
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/Cohere_QA_Sum
+        - title: Hugging Face Inference API
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/Hugging_Face_Inference_API_QA_Sum
+        - title: Hugging Face Hub
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/Hugging_Face_Hub_QA_Sum
+        - title: Azure-OpenAI
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/Azure_OpenAI_QA_Sum
+        - title: Toxicity
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/toxicity
+        - title: Clinical
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/clinical
+        - title: Political
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/political
+        - title: Disinformation
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/disinformation
+        - title: Factuality
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/factuality
+        - title: Legal-Tests
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/legal_tests
+        - title: Security
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/security
+        - title: Sensitivity
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/sensitivity
+        - title: Sycophancy
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
+        - title: Wino-Bias
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/wino_bias
+
+  - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_Testing_Notebooks
   - title: Benchmark Dataset Notebooks
     url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
