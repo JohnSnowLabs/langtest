@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: LLM Testing Notebooks
 key: docs-test_specific_notebooks
-permalink: /docs/pages/tutorials/QA_Summarization
+permalink: /docs/pages/tutorials/LLM_testing_Notebooks
 sidebar:
     nav: tutorials
 aside:
