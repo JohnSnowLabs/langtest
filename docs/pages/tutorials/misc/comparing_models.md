@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: Comparing Models
 key: tutorials-comparing-models
-permalink: /docs/pages/tutorials/comparing_models
+permalink: /docs/pages/tutorials/misc/comparing_models
 sidebar:
     nav: tutorials
 aside:
@@ -25,7 +25,7 @@ In the Comparing Models notebook, we're evaluating `en.sentiment.imdb.glove` mod
 {:.table2}
 | Category                                                                                                | Hub                               | Task                    | Open In Colab                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------- |
-| **Multiple Model Comparison**: In this tutorial, we compared different language models on various taks. | Hugging Face/John Snow Labs/Spacy | NER/Text-Classification | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Comparing_Models_Notebook.ipynb) |
+| **Multiple Model Comparison**| Hugging Face/John Snow Labs/Spacy | NER/Text-Classification | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Comparing_Models_Notebook.ipynb) |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
@@ -56,9 +56,4 @@ tests:
     min_label_representation_count:
       min_count: 50
 ```
-
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-
-</div></div>
 

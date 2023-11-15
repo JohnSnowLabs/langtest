@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: Different Report Formats
 key: tutorials-different-report-formats
-permalink: /docs/pages/tutorials/different_report_formats
+permalink: /docs/pages/tutorials/misc/different_report_formats
 sidebar:
     nav: tutorials
 aside:
@@ -25,7 +25,7 @@ In the Different Report Formats notebook, the LangTest's capability to show and 
 {:.table2}
 | Category                                                                                                    | Hub   | Task | Open In Colab                                                                                                                                                                                             |
 | ----------------------------------------------------------------------------------------------------------- |
-| **Report Exportation**: In this tutorial, we explored different ways in which user can export their report. | Spacy | NER  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Different_Report_formats.ipynb) |
+| **Report Exportation**| Spacy | NER  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Different_Report_formats.ipynb) |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 

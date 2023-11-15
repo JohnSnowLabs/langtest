@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
-title: OpenAI QA & Summarization Notebook
+seotitle: NLP Tutorials | QA-Summarization Test | John Snow Labs
+title: QA & Summarization Notebook
 key: test_specific
 permalink: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Summarization
 sidebar:

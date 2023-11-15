@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: NLP Tutorials | John Snow Labs
+seotitle: NLP Tutorials | Security Test | John Snow Labs
 title: Security
 key: LLM_testing_Notebooks
 permalink: /docs/pages/tutorials/LLM_testing_Notebooks/Security

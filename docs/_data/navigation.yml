@@ -141,6 +141,15 @@ tutorials:
     url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
   - title: Miscellaneous Notebooks
     url: /docs/pages/tutorials/Miscellaneous_Notebooks
+    children:
+        - title: Comparing Models
+          url: /docs/pages/tutorials/misc/comparing_models
+        - title: Custom Hub
+          url: /docs/pages/tutorials/misc/custom_hub
+        - title: Different Report Formats
+          url: /docs/pages/tutorials/misc/different_report_formats
+        - title: Editing Testcases
+          url: /docs/pages/tutorials/misc/editing-testcases
 
 tests:
   - title: Tests
