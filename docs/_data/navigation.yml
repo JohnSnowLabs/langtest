@@ -119,8 +119,8 @@ tutorials:
           url: /docs/pages/tutorials/LLM_testing_Notebooks/toxicity
         - title: Clinical
           url: /docs/pages/tutorials/LLM_testing_Notebooks/clinical
-        - title: Political
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/political
+        - title: Ideology
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/ideology
         - title: Disinformation
           url: /docs/pages/tutorials/LLM_testing_Notebooks/disinformation
         - title: Factuality
@@ -133,8 +133,8 @@ tutorials:
           url: /docs/pages/tutorials/LLM_testing_Notebooks/sensitivity
         - title: Sycophancy
           url: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
-        - title: Wino-Bias
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/wino_bias
+        - title: Stereotype
+          url: /docs/pages/tutorials/LLM_testing_Notebooks/stereotype
   - title: Benchmark Dataset Notebooks
     url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
   - title: End-to-End Workflow Notebooks
