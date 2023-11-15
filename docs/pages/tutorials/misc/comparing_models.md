@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials | Model Comparison | LangTest | John Snow Labs
 title: Comparing Models
 key: tutorials-comparing-models
 permalink: /docs/pages/tutorials/misc/comparing_models

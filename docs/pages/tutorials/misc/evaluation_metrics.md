@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials |  Evaluation Metrics | LangTest | John Snow Labs
 title: Evaluation Metrics
 key: tutorials-evaluation-metrics
 permalink: /docs/pages/tutorials/misc/evaluation-metrics

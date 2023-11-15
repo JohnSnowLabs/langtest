@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials | LLM Testing | LangTest | John Snow Labs
 title: LLM Testing Notebooks
 key: docs-LLM_testing_Notebooks
 permalink: /docs/pages/tutorials/LLM_testing_Notebooks

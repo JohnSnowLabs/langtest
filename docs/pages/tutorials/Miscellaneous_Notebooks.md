@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials | Miscellaneous | LangTest | John Snow Labs
 title: Miscellaneous Notebooks
 key: docs-test_specific_notebooks
 permalink: /docs/pages/tutorials/Miscellaneous_Notebooks

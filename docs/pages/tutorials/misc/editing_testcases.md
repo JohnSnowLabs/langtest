@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials | Editing Testcases | LangTest | John Snow Labs
 title: Editing Testcases
 key: tutorials-editing-testcases
 permalink: /docs/pages/tutorials/misc/editing-testcases

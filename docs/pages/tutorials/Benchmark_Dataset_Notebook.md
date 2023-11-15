@@ -1,7 +1,7 @@
 ---
 layout: docs
 header: true
-seotitle: Tutorials | LangTest | John Snow Labs
+seotitle: Tutorials | Benchmark Notebooks | LangTest | John Snow Labs
 title: Benchmark Dataset Notebooks
 key: docs-test_specific_notebooks
 permalink: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
