@@ -2,7 +2,7 @@
 layout: docs
 header: true
 seotitle: NLP Tutorials | Sycophancy Test | John Snow Labs
-title: Legal Notebook
+title: Sycophancy Notebook
 key: LLM_testing_Notebooks
 permalink: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
 sidebar:
