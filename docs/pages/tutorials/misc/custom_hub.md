@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | LangTest | John Snow Labs
 title: Custom Hub
 key: tutorials-custom-hub
-permalink: /docs/pages/tutorials/misc/custom-hub
+permalink: /docs/pages/tutorials/misc/custom_hub
 sidebar:
     nav: tutorials
 aside:
@@ -25,7 +25,7 @@ In the Custom Hub notebook, we're evaluating our very own trained model independ
 {:.table2}
 | Category                                                                                 | Hub    | Task                | Open In Colab                                                                                                                                                                                        |
 | ---------------------------------------------------------------------------------------- |
-| **Custom Hub** :In this tutorial, we compared different language models on various taks. | Custom | Text-Classification | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Custom_Hub_Notebook.ipynb) |
+| **Custom Hub**| Custom | Text-Classification | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Custom_Hub_Notebook.ipynb) |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
