@@ -21,9 +21,9 @@ In the Toxicity notebook, we're evaluating text-davinci-003 model on toxicity te
 ## Open in Collab
 
 {:.table2}
-| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |
+| Test Type               | Hub                           | Task                              | Open In Colab                                                                                                                                                                                                                                    |Dataset Used
 | ----------------------------------- |
-|  **Toxicity**                          | 	OpenAI                    | Text-Generation                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Toxicity_NB.ipynb)                                    |
+|  **Toxicity**                          | 	OpenAI                    | Text-Generation                               | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Toxicity_NB.ipynb)                                    |Toxicity
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
