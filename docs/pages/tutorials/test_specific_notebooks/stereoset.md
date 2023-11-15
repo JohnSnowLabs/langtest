@@ -39,3 +39,11 @@ tests:
       min_pass_rate: 0.70
       diff_threshold: 0.1
 ```
+
+## Supported Tests
+
+- **`intrasentence`**: StereoSet intrasentence test encompasses both a dataset and a methodology for evaluating the presence of bias in LLM’s. 
+- **`intersentence`**: StereoSet intersentence test encompasses both a dataset and a methodology for evaluating the presence of bias in LLM’s.
+
+
+</div></div>
