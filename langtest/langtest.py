@@ -304,8 +304,17 @@ class Harness:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
 
-        global HARNESS_CONFIG
+        global HARNESS_CONFIG, GLOBAL_MODEL
         HARNESS_CONFIG = self._config
+
+        if "evaluation" in self._config and "metric" in self._config["evaluation"]:
+            if self._config["evaluation"]["metric"] == "QAEvalChain":
+                model = self._config["evaluation"].get("model", None)
+                hub = self._config["evaluation"].get("hub", None)
+                if model and hub:
+                    GLOBAL_MODEL = self.task.model(
+                        model, hub, **self._config.get("model_parameters", {})
+                    )
 
         return self._config
 
@@ -790,7 +799,7 @@ class Harness:
 
         return testcases_df.fillna("-")
 
-    def save(self, save_dir: str) -> None:
+    def save(self, save_dir: str, include_generated_results: bool = False) -> None:
         """Save the configuration, generated testcases and the `DataFactory` to be reused later.
 
         Args:
