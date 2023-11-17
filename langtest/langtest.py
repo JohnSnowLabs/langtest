@@ -281,6 +281,7 @@ class Harness:
         self.default_min_pass_dict = None
         self.df_report = None
 
+
     def __repr__(self) -> str:
         return ""
 
@@ -544,6 +545,7 @@ class Harness:
         Returns:
             pd.DataFrame: Generated dataframe.
         """
+
         if self._generated_results is None:
             logging.warning(Warnings.W000)
             return
@@ -815,6 +817,10 @@ class Harness:
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
+        
+        if include_generated_results and self._generated_results  :
+            with open(os.path.join(save_dir, "generated_results.pkl"), "wb") as writer:
+                pickle.dump(self._generated_results, writer)
 
         with open(os.path.join(save_dir, "config.yaml"), "w", encoding="utf-8") as yml:
             yml.write(yaml.safe_dump(self._config_copy))
@@ -829,9 +835,8 @@ class Harness:
     def load(
         cls,
         save_dir: str,
-        model: Union[str, "ModelAPI"],
         task: str,
-        hub: Optional[str] = None,
+        model: Optional[Union[list, dict]] = None,
     ) -> "Harness":
         """Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -858,12 +863,15 @@ class Harness:
 
         harness = Harness(
             task=task,
-            model={"model": model, "hub": hub},
+            model=model,
             data={"data_source": data},
             config=os.path.join(save_dir, "config.yaml"),
         )
         harness.generate()
-
+        if os.path.exists(os.path.join(save_dir, "generated_results.pkl")):
+            with open(os.path.join(save_dir, "generated_results.pkl"), "rb") as reader:
+                generated_results = pickle.load(reader)
+            harness._generated_results = generated_results
         return harness
 
     def edit_testcases(self, output_path: str, **kwargs):
