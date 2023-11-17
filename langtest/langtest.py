@@ -281,7 +281,6 @@ class Harness:
         self.default_min_pass_dict = None
         self.df_report = None
 
-
     def __repr__(self) -> str:
         return ""
 
@@ -817,8 +816,8 @@ class Harness:
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
-        
-        if include_generated_results and self._generated_results  :
+
+        if include_generated_results and self._generated_results:
             with open(os.path.join(save_dir, "generated_results.pkl"), "wb") as writer:
                 pickle.dump(self._generated_results, writer)
 
