@@ -12,7 +12,6 @@ import yaml
 
 
 from pkg_resources import resource_filename
-from langtest.modelhandler import ModelAPI
 
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
@@ -844,8 +843,9 @@ class Harness:
                 path to folder containing all the needed files to load an saved `Harness`
             task (str):
                 task for which the model is to be evaluated.
-            model (str | ModelAPI):
-                ModelAPI object or path to the model to be evaluated.
+            model (Union[list, dict], optional): Specifies the model to be evaluated.
+                If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
+                If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
             hub (str, optional):
                 model hub to load from the path. Required if path is passed as 'model'.
 
