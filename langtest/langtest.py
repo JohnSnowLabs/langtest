@@ -24,7 +24,7 @@ from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 from .errors import Warnings, Errors
 
-GLOBAL_MODEL = None
+EVAL_MODEL = None
 GLOBAL_HUB = None
 HARNESS_CONFIG = None
 
@@ -268,9 +268,9 @@ class Harness:
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)
 
-        global GLOBAL_MODEL, GLOBAL_HUB
+        global EVAL_MODEL, GLOBAL_HUB
         if not isinstance(model, list):
-            GLOBAL_MODEL = self.model
+            EVAL_MODEL = self.model
             GLOBAL_HUB = hub
 
         self._testcases = None
@@ -303,7 +303,7 @@ class Harness:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
 
-        global HARNESS_CONFIG, GLOBAL_MODEL
+        global HARNESS_CONFIG, EVAL_MODEL
         HARNESS_CONFIG = self._config
 
         if "evaluation" in self._config and "metric" in self._config["evaluation"]:
@@ -311,7 +311,7 @@ class Harness:
                 model = self._config["evaluation"].get("model", None)
                 hub = self._config["evaluation"].get("hub", None)
                 if model and hub:
-                    GLOBAL_MODEL = self.task.model(
+                    EVAL_MODEL = self.task.model(
                         model, hub, **self._config.get("model_parameters", {})
                     )
 

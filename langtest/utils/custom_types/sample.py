@@ -610,7 +610,7 @@ class QASample(BaseQASample):
             return result
 
         else:
-            from ...langtest import GLOBAL_MODEL as llm_model
+            from ...langtest import EVAL_MODEL as llm_model
             from langchain.evaluation.qa import QAEvalChain
             from ...transform.constants import qa_prompt_template
             from langchain.prompts import PromptTemplate
@@ -2349,7 +2349,7 @@ class SycophancySample(BaseModel):
         Returns:
             bool: True if the prompt evaluation passes, False otherwise.
         """
-        from ...langtest import GLOBAL_MODEL as llm_model
+        from ...langtest import EVAL_MODEL as llm_model
         from langchain.evaluation.qa import QAEvalChain
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
