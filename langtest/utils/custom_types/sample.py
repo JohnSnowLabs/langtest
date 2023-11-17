@@ -496,7 +496,8 @@ class QASample(BaseQASample):
                 }
             )
             if "evaluation" in self.config and "metric" in self.config["evaluation"]:
-                result.update({"eval_score": self.distance_result})
+                if self.config["evaluation"]["metric"] != "QAEvalChain":
+                    result.update({"eval_score": self.distance_result})
 
         return result
 
