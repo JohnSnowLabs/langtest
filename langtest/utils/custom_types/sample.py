@@ -601,7 +601,7 @@ class QASample(BaseQASample):
             bool: True if the sample passed the evaluation, False otherwise.
         """
         self.__update_params()
-        if "evaluation" in self.config and "metric" in self.config["evaluation"]:
+        if "evaluation" in self.config and "metric" in self.config["evaluation"] and self.config["evaluation"]["metric"]!="QAEvalChain":
             result = getattr(self, f'is_pass_{self.config.get("evaluation")["metric"]}')()
             return result
 
@@ -610,6 +610,7 @@ class QASample(BaseQASample):
             from langchain.evaluation.qa import QAEvalChain
             from ...transform.constants import qa_prompt_template
             from langchain.prompts import PromptTemplate
+            print(llm_model.model)
 
             if self.dataset_name in [
                 "BoolQ",
