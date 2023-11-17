@@ -615,8 +615,6 @@ class QASample(BaseQASample):
             from ...transform.constants import qa_prompt_template
             from langchain.prompts import PromptTemplate
 
-            print(llm_model.model)
-
             if self.dataset_name in [
                 "BoolQ",
                 "asdiv",
