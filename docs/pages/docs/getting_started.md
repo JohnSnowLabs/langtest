@@ -16,7 +16,7 @@ LangTest, an open-source Python library, addresses this by automatically generat
 
 <div class="block-box quickstart-box"><div class="left-box" markdown="1">
 
-## Resources
+## Installation
 
 It is recommended to have basic knowledge of the framework and a working environment before using LangTest.
 
@@ -58,7 +58,9 @@ If you prefer learning by example, check the tutorials section:
 
 </div><div class="block-wrapper"><div class="block-box" markdown="1">
 
-## Join our Slack channel
+
+
+## Slack channel
 
 Join #langtest on Slack for live help, discussions, and community support.
 
