@@ -378,6 +378,7 @@ class BaseQASample(BaseModel):
     test_case: str = None
     config: str = None
     distance_result: float = None
+    eval_model: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -463,8 +464,23 @@ class QASample(BaseQASample):
 
     def __update_params(self):
         from ...langtest import HARNESS_CONFIG as harness_config
+        from ...langtest import EVAL_MODEL
 
         self.config = harness_config
+
+        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
+            if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                model = harness_config["evaluation"].get("model", None)
+                hub = harness_config["evaluation"].get("hub", None)
+                if model and hub:
+                    from ...tasks import TaskManager
+
+                    load_eval_model = TaskManager(self.task)
+                    self.eval_model = load_eval_model.model(
+                        model, hub, **harness_config.get("model_parameters", {})
+                    )
+        else:
+            self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
@@ -611,7 +627,6 @@ class QASample(BaseQASample):
             return result
 
         else:
-            from ...langtest import EVAL_MODEL as llm_model
             from langchain.evaluation.qa import QAEvalChain
             from ...transform.constants import qa_prompt_template
             from langchain.prompts import PromptTemplate
@@ -634,7 +649,7 @@ class QASample(BaseQASample):
             ):
                 return True
 
-            if "llm" in str(type(llm_model)):
+            if "llm" in str(type(self.eval_model)):
                 if self.dataset_name not in [
                     "BoolQ",
                     "TruthfulQA",
@@ -650,7 +665,9 @@ class QASample(BaseQASample):
                         input_variables=["query", "answer", "result"],
                         template=qa_prompt_template,
                     )
-                    eval_chain = QAEvalChain.from_llm(llm=llm_model.model, prompt=PROMPT)
+                    eval_chain = QAEvalChain.from_llm(
+                        llm=self.eval_model.model, prompt=PROMPT
+                    )
                     inputs = [
                         {
                             "question": self.original_question,
@@ -670,7 +687,7 @@ class QASample(BaseQASample):
                         prediction_key="text",
                     )
                 else:
-                    eval_chain = QAEvalChain.from_llm(llm=llm_model.model)
+                    eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model)
                     graded_outputs = eval_chain.evaluate(
                         [
                             {
@@ -693,7 +710,7 @@ class QASample(BaseQASample):
                     == "CORRECT"
                 )
             else:
-                prediction = llm_model(
+                prediction = self.eval_model(
                     text={
                         "query": self.perturbed_question,
                         "answer": self.expected_results,
@@ -2277,6 +2294,7 @@ class SycophancySample(BaseModel):
     task: str = Field(default="sycophancy-test", const=True)
     test_case: str = None
     gt: bool = False
+    eval_model: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -2286,6 +2304,22 @@ class SycophancySample(BaseModel):
         from ...langtest import HARNESS_CONFIG as harness_config
 
         self.gt = harness_config["tests"]["defaults"].get("ground_truth", False)
+
+        from ...langtest import EVAL_MODEL
+
+        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
+            if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                model = harness_config["evaluation"].get("model", None)
+                hub = harness_config["evaluation"].get("hub", None)
+                if model and hub:
+                    from ...tasks import TaskManager
+
+                    load_eval_model = TaskManager(self.task)
+                    self.eval_model = load_eval_model.model(
+                        model, hub, **harness_config.get("model_parameters", {})
+                    )
+        else:
+            self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
@@ -2350,7 +2384,6 @@ class SycophancySample(BaseModel):
         Returns:
             bool: True if the prompt evaluation passes, False otherwise.
         """
-        from ...langtest import EVAL_MODEL as llm_model
         from langchain.evaluation.qa import QAEvalChain
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
@@ -2359,7 +2392,7 @@ class SycophancySample(BaseModel):
             input_variables=["query", "answer", "result"],
             template=qa_prompt_template,
         )
-        eval_chain = QAEvalChain.from_llm(llm=llm_model.model, prompt=PROMPT)
+        eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model, prompt=PROMPT)
 
         if self.gt:
             inputs = [{"question": self.original_question, "answer": self.ground_truth}]
@@ -2393,7 +2426,7 @@ class SycophancySample(BaseModel):
                 input_variables=["query", "answer", "result"],
                 template=qa_prompt_template,
             )
-            eval_chain = QAEvalChain.from_llm(llm=llm_model.model, prompt=PROMPT)
+            eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model, prompt=PROMPT)
             inputs = [
                 {"question": self.original_question, "answer": self.expected_results}
             ]
