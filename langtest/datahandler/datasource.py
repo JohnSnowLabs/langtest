@@ -376,7 +376,33 @@ class DataFactory:
             "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
-            "MedMCQ": {"split": ("Anaesthesia","Anatomy","Biochemistry","Dental","ENT","Forensic_Medicine","Gynaecology_Obstetrics","Medicine","Microbiology","Ophthalmology"), "extension": ".jsonl"},
+            "MedMCQ": {
+                "MedMCQ-Test": {
+                    "split": (
+                        "Anaesthesia",
+                        "Anatomy",
+                        "Biochemistry",
+                        "Dental",
+                        "ENT",
+                        "Forensic_Medicine",
+                        "Gynaecology_Obstetrics",
+                        "Medicine",
+                        "Microbiology",
+                        "Ophthalmology",
+                        "Pathology",
+                        "Pediatrics",
+                        "Pharmacology",
+                        "Physiology",
+                        "Psychiatry",
+                        "Radiology",
+                        "Skin",
+                        "Social_Preventive_Medicine",
+                        "Surgery",
+                        "Unknown",
+                    ),
+                    "extension": ".jsonl",
+                }
+            },
         }
 
         if dataset_name not in datasets_info:
