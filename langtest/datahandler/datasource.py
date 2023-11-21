@@ -324,7 +324,7 @@ class DataFactory:
                 "split": ("test-tiny", "test", "combined"),
                 "extension": ".jsonl",
             },
-            "MMLU": {"split": ("test-tiny", "test", "clinical,"), "extension": ".jsonl"},
+            "MMLU": {"split": ("test-tiny", "test", "clinical"), "extension": ".jsonl"},
             "OpenBookQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "Quac": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "Toxicity": {"split": ("test",), "extension": ".jsonl"},
