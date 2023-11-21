@@ -303,17 +303,8 @@ class Harness:
                 self._config = yaml.safe_load(yml)
         self._config_copy = self._config
 
-        global HARNESS_CONFIG, EVAL_MODEL
+        global HARNESS_CONFIG
         HARNESS_CONFIG = self._config
-
-        if "evaluation" in self._config and "metric" in self._config["evaluation"]:
-            if self._config["evaluation"]["metric"] == "QAEvalChain":
-                model = self._config["evaluation"].get("model", None)
-                hub = self._config["evaluation"].get("hub", None)
-                if model and hub:
-                    EVAL_MODEL = self.task.model(
-                        model, hub, **self._config.get("model_parameters", {})
-                    )
 
         return self._config
 
