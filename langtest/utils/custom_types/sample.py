@@ -379,7 +379,7 @@ class BaseQASample(BaseModel):
     config: str = None
     distance_result: float = None
     eval_model: str = None
-    __is_pass: bool = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -618,8 +618,9 @@ class QASample(BaseQASample):
         Returns:
             bool: True if the sample passed the evaluation, False otherwise.
         """
-        if self.__is_pass:
-            return self.__is_pass
+     
+        if self.ran_pass:
+            return self.ran_pass
         else:
             self.__update_params()
             if (
@@ -628,7 +629,7 @@ class QASample(BaseQASample):
                 and self.config["evaluation"]["metric"] != "QAEvalChain"
             ):
                 result = getattr(self, f'is_pass_{self.config.get("evaluation")["metric"]}')()
-                self.__is_pass = result
+                self.ran_pass = result
                 return result
 
             else:
@@ -652,7 +653,7 @@ class QASample(BaseQASample):
                     self.actual_results.lower().strip()
                     == self.expected_results.lower().strip()
                 ):
-                    self.__is_pass = True
+                    self.ran_pass = True
                     return True
 
                 if "llm" in str(type(self.eval_model)):
@@ -714,7 +715,7 @@ class QASample(BaseQASample):
                         list(graded_outputs[0].values())[0].replace("\n", "").strip()
                         == "CORRECT"
                     )
-                    self.__is_pass = result
+                    self.ran_pass = result
                     return result
                 else:
                     prediction = self.eval_model(
@@ -729,7 +730,7 @@ class QASample(BaseQASample):
                         },
                     )
                     result = prediction == "CORRECT"
-                    self.__is_pass = result
+                    self.ran_pass = result
                     return result
 
 
