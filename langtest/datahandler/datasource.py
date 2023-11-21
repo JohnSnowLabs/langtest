@@ -376,6 +376,7 @@ class DataFactory:
             "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
+            "MMLU-Clinical": {"split": ("test",), "extension": ".jsonl"},
         }
 
         if dataset_name not in datasets_info:
