@@ -618,8 +618,9 @@ class QASample(BaseQASample):
         Returns:
             bool: True if the sample passed the evaluation, False otherwise.
         """
-     
+
         if self.ran_pass:
+            print("Already Ran")
             return self.ran_pass
         else:
             self.__update_params()
@@ -628,7 +629,9 @@ class QASample(BaseQASample):
                 and "metric" in self.config["evaluation"]
                 and self.config["evaluation"]["metric"] != "QAEvalChain"
             ):
-                result = getattr(self, f'is_pass_{self.config.get("evaluation")["metric"]}')()
+                result = getattr(
+                    self, f'is_pass_{self.config.get("evaluation")["metric"]}'
+                )()
                 self.ran_pass = result
                 return result
 
@@ -683,7 +686,10 @@ class QASample(BaseQASample):
                         ]
 
                         predictions = [
-                            {"question": self.perturbed_question, "text": self.actual_results}
+                            {
+                                "question": self.perturbed_question,
+                                "text": self.actual_results,
+                            }
                         ]
 
                         graded_outputs = eval_chain.evaluate(
