@@ -620,7 +620,6 @@ class QASample(BaseQASample):
         """
 
         if self.ran_pass:
-            print("Already Ran")
             return self.ran_pass
         else:
             self.__update_params()
