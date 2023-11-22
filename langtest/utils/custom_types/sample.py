@@ -648,9 +648,10 @@ class QASample(BaseQASample):
                     "PIQA",
                     "CommonsenseQA",
                     "SIQA",
-                    "Privacy-Policy",
-                    "Consumer-Contracts",
+                    "PrivacyPolicy",
+                    "ConsumerContracts",
                     "Contracts",
+                    "MedMCQTest",
                 ] and (
                     self.actual_results.lower().strip()
                     == self.expected_results.lower().strip()
@@ -666,9 +667,10 @@ class QASample(BaseQASample):
                         "BBQ",
                         "PIQA",
                         "SIQA",
-                        "Consumer-Contracts",
+                        "ConsumerContracts",
                         "Contracts",
-                        "Privacy-Policy",
+                        "PrivacyPolicy",
+                        "MedMCQTest",
                     ]:
                         PROMPT = PromptTemplate(
                             input_variables=["query", "answer", "result"],
