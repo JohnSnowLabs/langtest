@@ -659,8 +659,6 @@ class QASample(BaseQASample):
                 ):
                     self.ran_pass = True
                     return True
-                
-
 
                 if "llm" in str(type(self.eval_model)):
                     if self.dataset_name not in [
@@ -675,7 +673,6 @@ class QASample(BaseQASample):
                         "PrivacyPolicy",
                         "MedMCQTest",
                         "MedQA",
-
                     ]:
                         PROMPT = PromptTemplate(
                             input_variables=["query", "answer", "result"],
