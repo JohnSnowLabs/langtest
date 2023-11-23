@@ -826,6 +826,7 @@ class Harness:
         save_dir: str,
         task: str,
         model: Optional[Union[list, dict]] = None,
+        load_testcases: bool = False,
     ) -> "Harness":
         """Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -844,9 +845,9 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
-        for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
+        for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(Errors.E017)
+                raise OSError(Errors.E017.format(filename=filename))
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
@@ -857,7 +858,16 @@ class Harness:
             data={"data_source": data},
             config=os.path.join(save_dir, "config.yaml"),
         )
-        harness.generate()
+        if load_testcases:
+            if os.path.exists(os.path.join(save_dir, "test_cases.pkl")):
+                with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
+                    testcases = pickle.load(reader)
+                harness._testcases = testcases
+            else:
+                logging.warning(Warnings.W013.format(save_dir=save_dir))
+                harness.generate()
+        else:
+            harness.generate()
         if os.path.exists(os.path.join(save_dir, "generated_results.pkl")):
             with open(os.path.join(save_dir, "generated_results.pkl"), "rb") as reader:
                 generated_results = pickle.load(reader)
