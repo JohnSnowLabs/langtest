@@ -652,12 +652,15 @@ class QASample(BaseQASample):
                     "ConsumerContracts",
                     "Contracts",
                     "MedMCQTest",
+                    "MedQA",
                 ] and (
                     self.actual_results.lower().strip()
                     == self.expected_results.lower().strip()
                 ):
                     self.ran_pass = True
                     return True
+                
+
 
                 if "llm" in str(type(self.eval_model)):
                     if self.dataset_name not in [
@@ -671,6 +674,8 @@ class QASample(BaseQASample):
                         "Contracts",
                         "PrivacyPolicy",
                         "MedMCQTest",
+                        "MedQA",
+
                     ]:
                         PROMPT = PromptTemplate(
                             input_variables=["query", "answer", "result"],
