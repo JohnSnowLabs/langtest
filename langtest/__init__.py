@@ -1,6 +1,7 @@
 from .datahandler.datasource import DataFactory
 from .modelhandler.modelhandler import ModelAPI
 from .langtest import Harness
+from .callback import LangTestCallback
 
 """
 langtest is python library package which can useful for testing of nlp models
@@ -21,4 +22,4 @@ DataFactory is for handling of like csv, json, conll ...
 
 
 """
-__all__ = [Harness, ModelAPI, DataFactory]
+__all__ = [Harness, ModelAPI, DataFactory, LangTestCallback]
