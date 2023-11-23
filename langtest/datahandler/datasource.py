@@ -377,6 +377,7 @@ class DataFactory:
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
             "MedQA": {"split": ("test",), "extension": ".jsonl"},
+            "PubMedQA": {"split": ("pqaa","pqal",), "extension": ".jsonl"},
             "MedMCQ": {
                 "MedMCQ-Test": {
                     "split": (
