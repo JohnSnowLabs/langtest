@@ -619,7 +619,7 @@ class QASample(BaseQASample):
             bool: True if the sample passed the evaluation, False otherwise.
         """
 
-        if self.ran_pass:
+        if self.ran_pass is not None:
             return self.ran_pass
         else:
             self.__update_params()
