@@ -377,7 +377,13 @@ class DataFactory:
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
             "MedQA": {"split": ("test",), "extension": ".jsonl"},
-            "PubMedQA": {"split": ("pqaa","pqal",), "extension": ".jsonl"},
+            "PubMedQA": {
+                "split": (
+                    "pqaa",
+                    "pqal",
+                ),
+                "extension": ".jsonl",
+            },
             "MedMCQ": {
                 "MedMCQ-Test": {
                     "split": (
@@ -403,7 +409,32 @@ class DataFactory:
                         "Unknown",
                     ),
                     "extension": ".jsonl",
-                }
+                },
+                "MedMCQ-Validation": {
+                    "split": (
+                        "Anaesthesia",
+                        "Anatomy",
+                        "Biochemistry",
+                        "Dental",
+                        "ENT",
+                        "Forensic_Medicine",
+                        "Gynaecology_Obstetrics",
+                        "Medicine",
+                        "Microbiology",
+                        "Ophthalmology",
+                        "Pathology",
+                        "Pediatrics",
+                        "Pharmacology",
+                        "Physiology",
+                        "Psychiatry",
+                        "Radiology",
+                        "Skin",
+                        "Social_Preventive_Medicine",
+                        "Surgery",
+                        "Unknown",
+                    ),
+                    "extension": ".jsonl",
+                },
             },
         }
 
