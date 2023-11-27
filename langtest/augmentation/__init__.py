@@ -325,9 +325,8 @@ class TemplaticAugment(BaseAugmentaion):
         if generate_templates:
             if try_import_lib("openai"):
                  import openai
-                # Define the prompt
-              
-                 for template in self.__templates:
+                 given_template = self.__templates
+                 for template in given_template:
                         prompt = f"""Based on the template provided, create 10 new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
 
                         Template:
@@ -341,15 +340,25 @@ class TemplaticAugment(BaseAugmentaion):
                         response = openai.Completion.create(
                             engine="text-davinci-003",  # Choose the appropriate model
                             prompt=prompt,
-                            max_tokens=500  # Adjust the number of tokens as needed
+                            max_tokens=500,
+                            temperature=0 , 
                         )
 
                         generated_response = (response.choices[0].text)
 
-                        parsed_sentences = [line.split('. ', 1)[1] for line in generated_response.strip().split('\n') if line]
+                        templates_list = generated_response.split('",')
+                        templates_list = [template.strip().strip('"') + '"' for template in templates_list if template.strip()]
 
-                        for sentence in parsed_sentences:
-                           self.__templates.append(sentence)
+                        # Fixing the last element (remove the extra quote if it exists)
+                        if templates_list:
+                            templates_list[-1] = templates_list[-1].rstrip('"')
+
+                        # Verify that 'templates_list' is indeed a list
+                        if isinstance(templates_list, list):
+                            self.__templates.extend(templates_list)
+                        else:
+                            # Handle the case where 'templates_list' is not a list
+                            print("Error: generated_response is not a list.")
                         
                       
             else:
