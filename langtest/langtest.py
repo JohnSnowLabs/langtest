@@ -693,12 +693,11 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
-                generate_templates = generate_templates,
+                generate_templates=generate_templates,
             ).fix(
                 training_data=training_data,
                 output_path=save_data_path,
                 append_original=append_original,
-                
             )
 
         else:
