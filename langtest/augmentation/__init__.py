@@ -328,11 +328,15 @@ class TemplaticAugment(BaseAugmentaion):
                 # Define the prompt
               
                  for template in self.__templates:
-                        prompt = f"""You have been given the following template. Use this template to generate 10 similar templates to it. 
-                        {template}
-                        
+                        prompt = f"""Based on the template provided, create 10 new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
+
+                        Template:
+                        "{template}"
+
+                        Expected Python List Output:
+                        ['Template 1', 'Template 2', 'Template 3', ...]  # Replace with actual generated templates
                         """
-                        
+                                                
                         # Generate text using OpenAI
                         response = openai.Completion.create(
                             engine="text-davinci-003",  # Choose the appropriate model
