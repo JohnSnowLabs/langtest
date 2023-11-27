@@ -325,7 +325,7 @@ class TemplaticAugment(BaseAugmentaion):
         if generate_templates:
             if try_import_lib("openai"):
                  import openai
-                 given_template = self.__templates
+                 given_template = self.__templates[:]
                  for template in given_template:
                         prompt = f"""Based on the template provided, create 10 new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
 
@@ -335,36 +335,30 @@ class TemplaticAugment(BaseAugmentaion):
                         Expected Python List Output:
                         ['Template 1', 'Template 2', 'Template 3', ...]  # Replace with actual generated templates
                         """
-                                                
-                        # Generate text using OpenAI
+
                         response = openai.Completion.create(
-                            engine="text-davinci-003",  # Choose the appropriate model
+                            engine="text-davinci-003",
                             prompt=prompt,
                             max_tokens=500,
-                            temperature=0 , 
+                            temperature=0,
                         )
 
-                        generated_response = (response.choices[0].text)
+                        generated_response = response.choices[0].text.strip()
+                        # Process the generated response
+                        if generated_response:
+                            # Assuming the response format is a Python-like list in a string
+                            templates_list = generated_response.strip("[]").split('",')
+                            templates_list = [template.strip().strip('"') for template in templates_list if template.strip()]
 
-                        templates_list = generated_response.split('",')
-                        templates_list = [template.strip().strip('"') + '"' for template in templates_list if template.strip()]
-
-                        # Fixing the last element (remove the extra quote if it exists)
-                        if templates_list:
-                            templates_list[-1] = templates_list[-1].rstrip('"')
-
-                        # Verify that 'templates_list' is indeed a list
-                        if isinstance(templates_list, list):
+                            # Extend the existing templates list
                             self.__templates.extend(templates_list)
                         else:
-                            # Handle the case where 'templates_list' is not a list
-                            print("Error: generated_response is not a list.")
-                        
+                            print("No response or unexpected format.")
+                                                
                       
             else:
                 path="text-davinci-003"
                 raise ValueError(Errors.E044.format(path=path))
-
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
         elif isinstance(self.__templates, str):
