@@ -18,6 +18,8 @@ from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
 from langtest.tasks import TaskManager
+from ..utils.lib_manager import try_import_lib
+from ..errors import Errors
 
 
 class BaseAugmentaion(ABC):
@@ -310,7 +312,7 @@ class TemplaticAugment(BaseAugmentaion):
             Performs the templatic augmentation and exports the results to a specified path.
     """
 
-    def __init__(self, templates: Union[str, List[str]], task: TaskManager) -> None:
+    def __init__(self, templates: Union[str, List[str]], task: TaskManager,  generate_templates = False, ) -> None:
         """This constructor for the TemplaticAugment class.
 
         Args:
@@ -319,6 +321,36 @@ class TemplaticAugment(BaseAugmentaion):
         """
         self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
+
+        if generate_templates:
+            if try_import_lib("openai"):
+                 import openai
+                # Define the prompt
+              
+                 for template in self.__templates:
+                        prompt = f"""You have been given the following template. Use this template to generate 10 similar templates to it. 
+                        {template}
+                        
+                        """
+                        
+                        # Generate text using OpenAI
+                        response = openai.Completion.create(
+                            engine="text-davinci-003",  # Choose the appropriate model
+                            prompt=prompt,
+                            max_tokens=500  # Adjust the number of tokens as needed
+                        )
+
+                        generated_response = (response.choices[0].text)
+
+                        parsed_sentences = [line.split('. ', 1)[1] for line in generated_response.strip().split('\n') if line]
+
+                        for sentence in parsed_sentences:
+                           self.__templates.append(sentence)
+                        
+                      
+            else:
+                path="text-davinci-003"
+                raise ValueError(Errors.E044.format(path=path))
 
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
@@ -333,6 +365,7 @@ class TemplaticAugment(BaseAugmentaion):
         output_path: str,
         max_num: int = None,
         append_original: bool = False,
+      
         *args,
         **kwargs,
     ) -> bool:
@@ -361,6 +394,7 @@ class TemplaticAugment(BaseAugmentaion):
             else []
         )
         self.__search_results = self.search_sample_results(data)
+                
         if not max_num:
             max_num = max(len(i) for i in self.__search_results.values())
 
