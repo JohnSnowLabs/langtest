@@ -59,7 +59,7 @@ class PretrainedModelForQA(ModelAPI):
             ConfigError: If there is an error in the model configuration.
         """
         try:
-            if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-turbo"):
+            if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
                 model = cm.ChatOpenAI(model=path, *args, **kwargs)
                 return cls(hub, model, *args, **kwargs)
             else:
