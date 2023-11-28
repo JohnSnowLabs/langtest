@@ -367,7 +367,7 @@ class TemplaticAugment(BaseAugmentaion):
 
             else:
                 raise RuntimeError(Errors.E084)
-    
+
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
         elif isinstance(self.__templates, str):
