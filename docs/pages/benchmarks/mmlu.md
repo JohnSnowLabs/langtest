@@ -23,10 +23,11 @@ The MMLU dataset is a collection of questions and answers that cover many subjec
 You can see which subsets and splits are available below.
 
 {:.table2}
-| Split              | Details                                                                                                                                                                                                           |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **test**      | Test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 50 samples from each tasks in the test set.                           |
-| **test-tiny** | Truncated version of test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each tasks in the test-tiny set. |
+| Split       | Details                                                                                                                                                                                                           |
+|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **test**    | Test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 50 samples from each task in the test set.                             |
+| **test-tiny** | Truncated version of the test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each task in the test-tiny set. |
+| **clinical**    | Curated version of the MMLU dataset which contains the clinical subsets (college_biology, college_medicine, medical_genetics, human_aging, professional_medicine, nutrition).                                       |
 
 #### Example
 
@@ -40,3 +41,25 @@ In the evaluation process, we start by fetching *original_question* from the dat
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`
+
+<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
+
+### Benchmarks
+
+{:.table3}
+| Models                         | uppercase | lowercase | titlecase	 | add_typo | dyslexia_word_swap | add_abbreviation	 | add_slangs | add_speech_to_text_typo	 | add_ocr_typo | adjective_synonym_swap |
+|:-------------------------------:|:---------:|:---------:|:---------:|:--------:|:-------------------:|:----------------:|:----------:|:-----------------------:|:------------:|:-----------------------:|
+| j2-jumbo-instruct               |    74%    |    79%    |    81%    |    88%   |         79%         |        73%       |    77%     |           89%           |      75%      |           77%           |
+| j2-grande-instruct              |    66%    |    73%    |    72%    |    87%   |         72%         |        72%       |    71%     |           90%           |      69%      |           75%           |
+| gpt-3.5-turbo-instruct          |    91%    |    93%    |    93%    |    94%   |         76%         |        83%       |    75%     |           94%           |      88%      |           79%           |
+| mistralai/Mistral-7B-Instruct-v0.1 |    72%    |    77%    |    76%    |    93%   |         89%         |        87%       |    88%     |           88%           |      80%      |           88%           |
+
+> Minimum pas rate: 75%
+
+**Dataset info:**
+- Split: clinical
+- Records: 992
+- Testcases: 9048
+- Evaluatuion: GPT-3.5-Turbo-Instruct
+
+</div>
