@@ -366,8 +366,8 @@ class TemplaticAugment(BaseAugmentaion):
                         print("No response or unexpected format.")
 
             else:
-                path = "text-davinci-003"
-                raise ValueError(Errors.E044.format(path=path))
+                raise RuntimeError(Errors.E084)
+    
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
         elif isinstance(self.__templates, str):
