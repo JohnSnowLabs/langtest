@@ -225,6 +225,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E081 = ("Provded the task is not supported in the {hub} hub.")
     E082 = ("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
     E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
+    E084 = ("OpenAI not installed. Install using !pip install openai==0.28.1 and set the openai.api_key = 'YOUR KEY' ")
 
 
 class ColumnNameError(Exception):

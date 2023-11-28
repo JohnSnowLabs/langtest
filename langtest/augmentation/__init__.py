@@ -18,6 +18,8 @@ from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
 from langtest.tasks import TaskManager
+from ..utils.lib_manager import try_import_lib
+from ..errors import Errors
 
 
 class BaseAugmentaion(ABC):
@@ -310,7 +312,12 @@ class TemplaticAugment(BaseAugmentaion):
             Performs the templatic augmentation and exports the results to a specified path.
     """
 
-    def __init__(self, templates: Union[str, List[str]], task: TaskManager) -> None:
+    def __init__(
+        self,
+        templates: Union[str, List[str]],
+        task: TaskManager,
+        generate_templates=False,
+    ) -> None:
         """This constructor for the TemplaticAugment class.
 
         Args:
@@ -319,6 +326,47 @@ class TemplaticAugment(BaseAugmentaion):
         """
         self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
+
+        if generate_templates:
+            if try_import_lib("openai"):
+                import openai
+
+                given_template = self.__templates[:]
+                for template in given_template:
+                    prompt = f"""Based on the template provided, create 10 new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
+
+                        Template:
+                        "{template}"
+
+                        Expected Python List Output:
+                        ['Template 1', 'Template 2', 'Template 3', ...]  # Replace with actual generated templates
+                        """
+
+                    response = openai.Completion.create(
+                        engine="text-davinci-003",
+                        prompt=prompt,
+                        max_tokens=500,
+                        temperature=0,
+                    )
+
+                    generated_response = response.choices[0].text.strip()
+                    # Process the generated response
+                    if generated_response:
+                        # Assuming the response format is a Python-like list in a string
+                        templates_list = generated_response.strip("[]").split('",')
+                        templates_list = [
+                            template.strip().strip('"')
+                            for template in templates_list
+                            if template.strip()
+                        ]
+
+                        # Extend the existing templates list
+                        self.__templates.extend(templates_list)
+                    else:
+                        print("No response or unexpected format.")
+
+            else:
+                raise RuntimeError(Errors.E084)
 
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
@@ -361,6 +409,7 @@ class TemplaticAugment(BaseAugmentaion):
             else []
         )
         self.__search_results = self.search_sample_results(data)
+
         if not max_num:
             max_num = max(len(i) for i in self.__search_results.values())
 
