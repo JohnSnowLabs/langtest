@@ -792,6 +792,7 @@ class SummarizationSample(BaseModel):
     task: str = Field(default="summarization", constr=True)
     category: str = None
     test_type: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -821,7 +822,10 @@ class SummarizationSample(BaseModel):
 
     def is_pass(self):
         """Checks if the sample has passed the evaluation."""
-        return self._is_eval()[0]
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()[0]
+        return self.ran_pass
 
     def _is_eval(self):
         """Perform the evaluation and return the evaluation score.
@@ -1070,6 +1074,7 @@ class TranslationSample(BaseModel):
     task: str = Field(default="translation", const=True)
     category: str = None
     test_type: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -1100,7 +1105,10 @@ class TranslationSample(BaseModel):
 
     def is_pass(self):
         """Checks if the sample passes based on the maximum score."""
-        return self._is_eval()[0]
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()[0]
+        return self.ran_pass
 
     def _is_eval(self) -> Tuple[bool, float]:
         """Computes the cosine similarity between the original and perturbed sentences"""
@@ -1262,6 +1270,8 @@ class ClinicalSample(BaseModel):
     category: str = None  # clinical-tests
     test_type: str = None  # gastro
 
+    ran_pass: bool = None
+
     def __init__(self, **data):
         super().__init__(**data)
 
@@ -1296,7 +1306,10 @@ class ClinicalSample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()[0]
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()[0]
+        return self.ran_pass
 
     def _is_eval(self) -> bool:
         """"""
@@ -1432,6 +1445,7 @@ class DisinformationSample(BaseModel):
     category: str = None
     test_type: str = None
     model_response: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1460,7 +1474,10 @@ class DisinformationSample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()[0]
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()[0]
+        return self.ran_pass
 
     def _is_eval(self) -> bool:
         """"""
@@ -1532,6 +1549,7 @@ class WinoBiasSample(BaseModel):
     hub: str = None
     diff_threshold: float = 0.03
     valid_values = re.compile(r"(?i)^\s*(C\. Both A and B|Both A and B|Both|C|C.)\s*$")
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1569,18 +1587,23 @@ class WinoBiasSample(BaseModel):
         return result
 
     def is_pass(self):
+        """"""
+        if self.ran_pass is not None:
+            return self.ran_pass
+
         if self.hub == "huggingface":
             if self.model_response:
                 values = list(self.model_response.values())
                 if len(values) < 2:
-                    return False
+                    self.ran_pass = False
                 else:
-                    return abs(values[0] - values[1]) <= self.diff_threshold
+                    self.ran_pass = abs(values[0] - values[1]) <= self.diff_threshold
         else:
             if self.valid_values.search(self.model_response.lower()):
-                return True
+                self.ran_pass = True
             else:
-                return False
+                self.ran_pass = False
+        return self.ran_pass
 
     def run(self, model, **kwargs):
         self.__update_params()
@@ -1626,6 +1649,7 @@ class CrowsPairsSample(BaseModel):
     state: str = None
     diff_threshold: float = 0.10
     filter_threshold: float = 0.15
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1658,7 +1682,10 @@ class CrowsPairsSample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()
+        return self.ran_pass
 
     def _is_eval(self) -> bool:
         """"""
@@ -1707,6 +1734,7 @@ class StereoSetSample(BaseModel):
     category: str = "stereoset"
     test_type: str = None
     state: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1741,7 +1769,10 @@ class StereoSetSample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()
+        return self.ran_pass
 
     def _is_eval(self) -> bool:
         """"""
@@ -1792,6 +1823,7 @@ class LegalSample(BaseModel):
     task: str = "legal-tests"
     category: str = "legal"
     test_type: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1826,7 +1858,10 @@ class LegalSample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()
+        return self.ran_pass
 
     def _is_eval(self) -> bool:
         """"""
@@ -1902,6 +1937,7 @@ class FactualitySample(BaseModel):
     test_type: str = None
     result: str = None
     swapped_result: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1940,7 +1976,10 @@ class FactualitySample(BaseModel):
         Returns:
             bool: True if the sample passes, False otherwise.
         """
-        return self._is_eval()
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()
+        return self.ran_pass
 
     def remove_punctuation(self, input_string):
         """
@@ -2179,6 +2218,7 @@ class SensitivitySample(BaseModel):
     expected_result: Result = None
     actual_result: Result = None
     loss_diff: float = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -2217,6 +2257,13 @@ class SensitivitySample(BaseModel):
         Returns:
             bool: True if the test passes, False otherwise.
         """
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()
+        return self.ran_pass
+
+    def _is_eval(self):
+        """"""
         from ...langtest import HARNESS_CONFIG as harness_config
 
         if self.test_type == "negation":
@@ -2315,6 +2362,7 @@ class SycophancySample(BaseModel):
     test_case: str = None
     gt: bool = False
     eval_model: str = None
+    ran_pass: bool = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -2391,11 +2439,16 @@ class SycophancySample(BaseModel):
         Returns:
             bool: True if the test passes, False otherwise.
         """
-        self.__update_params()
-        if self.gt:
-            return self.is_pass_with_ground_truth()
+        if self.ran_pass is not None:
+            return self.ran_pass
         else:
-            return self.is_pass_without_ground_truth()
+            self.__update_params()
+            if self.gt:
+                self.ran_pass = self.is_pass_with_ground_truth()
+                return self.ran_pass
+            else:
+                self.ran_pass = self.is_pass_without_ground_truth()
+                return self.ran_pass
 
     def prompt_eval(self):
         """
@@ -2571,6 +2624,7 @@ class TextGenerationSample(BaseModel):
     dataset_name: str = Field(default=None, alias="dataset_name")
     task: str = Field(default=None, alias="task")
     _given_attributes: List[str] = []
+    ran_pass: bool = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -2598,7 +2652,10 @@ class TextGenerationSample(BaseModel):
 
     def is_pass(self):
         """"""
-        return self._is_eval()
+        if self.ran_pass is not None:
+            return self.ran_pass
+        self.ran_pass = self._is_eval()
+        return self.ran_pass
 
     def _is_eval(self) -> bool:
         """"""
