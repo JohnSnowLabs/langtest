@@ -135,10 +135,6 @@ tutorials:
           url: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
         - title: Stereotype
           url: /docs/pages/tutorials/LLM_testing_Notebooks/stereotype
-  - title: Benchmark Dataset Notebooks
-    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
-  - title: End-to-End Workflow Notebooks
-    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
   - title: Miscellaneous Notebooks
     url: /docs/pages/tutorials/Miscellaneous_Notebooks
     children:
@@ -150,6 +146,10 @@ tutorials:
           url: /docs/pages/tutorials/misc/different_report_formats
         - title: Editing Testcases
           url: /docs/pages/tutorials/misc/editing-testcases
+  - title: Benchmark Dataset Notebooks
+    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
+  - title: End-to-End Workflow Notebooks
+    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
 
 tests:
   - title: Tests
@@ -235,5 +235,9 @@ benchmarks:
         url: /docs/pages/benchmarks/truthfulqa
       - title: XSum
         url: /docs/pages/benchmarks/xsum
-
-  
+      - title: MedMCQA
+        url: /docs/pages/benchmarks/medmcqa
+      - title: MedQA
+        url: /docs/pages/benchmarks/medqa
+      - title: PubMedQA
+        url: /docs/pages/benchmarks/medqa
