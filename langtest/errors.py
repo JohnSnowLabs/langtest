@@ -72,6 +72,7 @@ class Warnings(metaclass=ErrorsWithCodes):
     W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
 
 
+
 class Errors(metaclass=ErrorsWithCodes):
     """
     Class for defining error messages and associating them with codes.
