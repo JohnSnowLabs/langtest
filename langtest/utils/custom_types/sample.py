@@ -652,6 +652,7 @@ class QASample(BaseQASample):
                     "ConsumerContracts",
                     "Contracts",
                     "MedMCQATest",
+                    "PubMedQA",
                     "MedMCQAValidation",
                     "MedQA",
                 ] and (
@@ -664,6 +665,7 @@ class QASample(BaseQASample):
                 if "llm" in str(type(self.eval_model)):
                     if self.dataset_name not in [
                         "BoolQ",
+                        "PubMedQA",
                         "TruthfulQA",
                         "Quac",
                         "BBQ",
