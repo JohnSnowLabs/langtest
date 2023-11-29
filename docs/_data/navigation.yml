@@ -240,4 +240,4 @@ benchmarks:
       - title: MedQA
         url: /docs/pages/benchmarks/medqa
       - title: PubMedQA
-        url: /docs/pages/benchmarks/medqa
+        url: /docs/pages/benchmarks/pubmedqa
