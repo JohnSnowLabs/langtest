@@ -1,4 +1,5 @@
 import os
+from IPython.display import display
 from transformers import TrainerCallback, pipeline
 from langtest import Harness
 
@@ -49,7 +50,7 @@ class LangTestCallback(TrainerCallback):
             self.harness._generated_results = None
             self.harness.run()
             if self.print_reports:
-                print(self.harness.report())
+                display(self.harness.report())
 
             if self.save_reports:
                 if not os.path.exists("reports"):
@@ -66,7 +67,8 @@ class LangTestCallback(TrainerCallback):
         if self.run_each_epoch:
             return
 
-        print(self.harness.run().report())
+        if self.print_reports:
+            display(self.harness.run().report())
         if self.save_reports:
             if not os.path.exists("reports"):
                 os.mkdir("reports")
