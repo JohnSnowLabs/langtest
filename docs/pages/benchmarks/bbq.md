@@ -26,7 +26,7 @@ You can see which subsets and splits are available below.
 {:.table2}
 | Split         | Details                                                                                              |
 | --------------| ---------------------------------------------------------------------------------------------------- |
-| **test**      | Testing set from the BBQ dataset, containing 1012 question answers examples.                         |
+| **test**      | Testing set from the BBQ dataset, containing 1012 question and answers examples.                         |
 | **test-tiny** | Truncated version of the test set from the BBQ dataset, containing 50 question and answers examples. |
 
 
