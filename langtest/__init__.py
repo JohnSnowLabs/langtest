@@ -1,7 +1,7 @@
 from .datahandler.datasource import DataFactory
 from .modelhandler.modelhandler import ModelAPI
 from .langtest import Harness
-from .callback import LangTestCallback
+from .utils.lib_manager import try_import_lib
 
 """
 langtest is python library package which can useful for testing of nlp models
@@ -22,4 +22,7 @@ DataFactory is for handling of like csv, json, conll ...
 
 
 """
+if try_import_lib("transformers"):
+    from .callback import LangTestCallback
+
 __all__ = [Harness, ModelAPI, DataFactory, LangTestCallback]
