@@ -38,5 +38,21 @@ In the evaluation process, we start by fetching *original_question* from the dat
 |-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
 | robustness | add_abbreviation | There is most likely going to be fog around:<br><br>A. a marsh<br>B. a tundra<br>C. the plains<br>D. a desert | There is most likely going 2 b fog around:<br><br>A. a marsh<br>B. a tundra<br>C. da plains<br>D. a desert	 | A. a marsh | A. a marsh  | True |
 
-
 > Generated Results for `text-davinci-003` model from `OpenAI`
+
+<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
+
+### Benchmarks
+
+{:.table3}
+| Models                               | Uppercase | Lowercase | Titlecase | Add_Typo | Dyslexia_Word_Swap | Add_Abbreviation | Add_Slangs | Add_Speech_to_Text_Typo | Add_OCR_Typo | Adjective_Synonym_Swap | Adjective_Antonym_Swap |
+|:-------------------------------------:|:---------:|:---------:|:---------:|:--------:|:------------------:|:-----------------:|:----------:|:-----------------------:|:------------:|:-----------------------:|:------------------------:|
+| j2-jumbo-instruct                    |    58%    |    63%    |    60%    |    74%   |         66%        |        58%        |     59%    |           78%           |      51%      |           62%           |            61%           |
+| j2-grande-instruct                   |    53%    |    56%    |    58%    |    79%   |         66%        |        63%        |     64%    |           84%           |      54%      |           65%           |            58%           |
+| text-davinci-003                     |    83%    |    85%    |    85%    |    90%   |         80%        |        81%        |     67%    |           88%           |      85%      |           71%           |            66%           |
+| gpt-3.5-turbo-instruct               |    87%    |    88%    |    85%    |    90%   |         80%        |        79%        |     66%    |           91%           |      79%      |           68%           |            66%           |
+| mistralai/Mistral-7B-Instruct-v0.1   |    55%    |    59%    |    54%    |    88%   |         85%        |        81%        |     76%    |           87%           |      72%      |           78%           |            74%           |
+| HuggingFaceH4/zephyr-7b-beta         |    52%    |    46%    |    53%    |    83%   |         86%        |        76%        |     74%    |           82%           |      63%      |           80%           |            69%           |
+| Intel/neural-chat-7b-v3-1            |    79%    |    88%    |    82%    |    89%   |         86%        |        84%        |     80%    |           71%           |      80%      |           71%           |            76%           |
+
+</div>

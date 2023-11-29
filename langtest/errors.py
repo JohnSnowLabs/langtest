@@ -70,7 +70,7 @@ class Warnings(metaclass=ErrorsWithCodes):
     W010 = ("- Test '{test}': {count} samples removed out of {total_sample}\n")
     W011 = ("{class_name} successfully ran!")
     W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
-
+    W013 = ("Unable to find test_cases.pkl inside {save_dir}. Generating new testcases.")
 
 class Errors(metaclass=ErrorsWithCodes):
     """
