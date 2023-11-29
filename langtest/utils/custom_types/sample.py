@@ -651,8 +651,8 @@ class QASample(BaseQASample):
                     "PrivacyPolicy",
                     "ConsumerContracts",
                     "Contracts",
-                    "MedMCQTest",
-                    "MedMCQValidation",
+                    "MedMCQATest",
+                    "MedMCQAValidation",
                     "MedQA",
                 ] and (
                     self.actual_results.lower().strip()
@@ -672,7 +672,8 @@ class QASample(BaseQASample):
                         "ConsumerContracts",
                         "Contracts",
                         "PrivacyPolicy",
-                        "MedMCQTest",
+                        "MedMCQATest",
+                        "MedMCQAValidation",
                         "MedQA",
                     ]:
                         PROMPT = PromptTemplate(
