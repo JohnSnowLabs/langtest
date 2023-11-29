@@ -205,7 +205,8 @@ setup(
             "data/wikiDataset/*",
             "data/Fiqa/*",
             "data/Narrative-Wedging",
-            "data/MedMCQ/MedMCQ-Test/*"
+            "data/MedMCQA/MedMCQA-Test/*"
+            "data/MedMCQA/MedMCQA-Validation/*"
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

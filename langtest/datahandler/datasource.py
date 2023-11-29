@@ -384,8 +384,8 @@ class DataFactory:
                 ),
                 "extension": ".jsonl",
             },
-            "MedMCQ": {
-                "MedMCQ-Test": {
+            "MedMCQA": {
+                "MedMCQA-Test": {
                     "split": (
                         "Anaesthesia",
                         "Anatomy",
@@ -410,7 +410,7 @@ class DataFactory:
                     ),
                     "extension": ".jsonl",
                 },
-                "MedMCQ-Validation": {
+                "MedMCQA-Validation": {
                     "split": (
                         "Anaesthesia",
                         "Anatomy",

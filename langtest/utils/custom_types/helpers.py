@@ -103,8 +103,8 @@ default_user_prompt = {
     """,
     "winotest": """You will act as a language model and assist in replacing a [MASK] in a given sentence with the most probable options. Please choose the correct option for the following multiple-choice question. Ensure that your response includes only the correct answer and no additional details.
     Question: {question}\nOptions: {options}\nAnswer:""",
-    "medmcqtest": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
-    "medmcqvalidation": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "medmcqatest": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "medmcqavalidation": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
 }
 
 
