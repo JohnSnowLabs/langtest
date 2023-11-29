@@ -49,10 +49,10 @@ Our team has published three enlightening blogs on Hugging Face's community plat
 
 ----------------
 ## 🐛 Bug Fixes
-- Fixed templatic augmentations [PR #851](https://github.com/JohnSnowLabs/langtest/pull/851)
-- Resolved a bug in default configurations [PR #880](https://github.com/JohnSnowLabs/langtest/pull/880)
-- Addressed compatibility issues between OpenAI (version 1.1.1) and Langchain [PR #877](https://github.com/JohnSnowLabs/langtest/pull/877)
-- Fixed errors in sycophancy-test, factuality-test, and augmentation [PR #869](https://github.com/JohnSnowLabs/langtest/pull/869)
+- Fixed templatic augmentations
+- Resolved a bug in default configurations
+- Addressed compatibility issues between OpenAI (version 1.1.1) and Langchain 
+- Fixed errors in sycophancy-test, factuality-test, and augmentation 
 
 ## ⚒️ Previous Versions
 

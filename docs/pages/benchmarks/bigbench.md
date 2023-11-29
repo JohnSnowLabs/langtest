@@ -32,7 +32,7 @@ You can see which subsets and splits are available below.
 {:.table2}
 | Split                                                   | Details                                                                                                                                    |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **test**      | Testing set from the Bigbench/Abstract Narrative Understanding dataset, containing 1000 question answers examples.                         |
+| **test**      | Testing set from the Bigbench/Abstract Narrative Understanding dataset, containing 1000 question and answers examples.                         |
 | **test-tiny** | Truncated version of the test set from the Bigbench/Abstract Narrative Understanding dataset, containing 50 question and answers examples. |
 
 #### Example

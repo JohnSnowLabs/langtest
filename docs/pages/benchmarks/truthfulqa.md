@@ -27,7 +27,7 @@ You can see which subsets and splits are available below.
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **combined**           | Training, test set from the TruthfulQA dataset, containing 817 questions that span 38 categories, including health, law, finance and politics. |
 | **test**      | Testing set from the TruthfulQA dataset, containing 164 question and answer examples.                                                          |
-| **test-tiny** | Truncated version of TruthfulQA dataset which contains 50 question answer examples                                                             |
+| **test-tiny** | Truncated version of TruthfulQA dataset which contains 50 question and answer examples                                                             |
 
 #### Example
 
