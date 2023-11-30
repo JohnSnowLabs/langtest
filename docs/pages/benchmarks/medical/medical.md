@@ -4,7 +4,7 @@ header: true
 seotitle: Medical Benchmark Datasets | LangTest | John Snow Labs
 title: Medical Benchmark Datasets
 key: notebooks
-permalink: /docs/pages/benchmarks/medical/medical/
+permalink: /docs/pages/benchmarks/medical/
 aside:
     toc: true
 sidebar:

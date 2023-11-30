@@ -4,7 +4,7 @@ header: true
 seotitle: Benchmarks | LangTest | John Snow Labs
 title: Available Benchmarks
 key: notebooks
-permalink: /docs/pages/benchmarks/legal/legal/
+permalink: /docs/pages/benchmarks/legal/
 aside:
     toc: true
 sidebar:

@@ -193,7 +193,7 @@ tests:
 
 benchmarks:
   - title: Medical
-    url: /docs/pages/benchmarks/medical/medical
+    url: /docs/pages/benchmarks/medical
     children:
       - title: MedMCQA
         url: /docs/pages/benchmarks/medical/medmcqa
@@ -202,7 +202,7 @@ benchmarks:
       - title: PubMedQA
         url: /docs/pages/benchmarks/medical/pubmedqa
   - title:  Commonsense Scenario
-    url: /docs/pages/benchmarks/commonsense_scenario/commonsense_scenario
+    url: /docs/pages/benchmarks/commonsense_scenario
     children:
       - title: CommonsenseQA
         url: /docs/pages/benchmarks/commonsense_scenario/commonsenseqa
@@ -215,7 +215,7 @@ benchmarks:
       - title: SIQA
         url: /docs/pages/benchmarks/commonsense_scenario/siqa
   - title : Legal
-    url: /docs/pages/benchmarks/legal/legal
+    url: /docs/pages/benchmarks/legal
     children:
       - title: Contracts
         url: /docs/pages/benchmarks/legal/contracts
@@ -228,7 +228,7 @@ benchmarks:
       - title: MultiLexSum
         url: /docs/pages/benchmarks/legal/multilexsum
   - title:  Other Benchmarks
-    url: /docs/pages/benchmarks/other_benchmarks/other_benchmark
+    url: /docs/pages/benchmarks/other_benchmark
     children:
       - title: ASDiv
         url: /docs/pages/benchmarks/other_benchmarks/asdiv
