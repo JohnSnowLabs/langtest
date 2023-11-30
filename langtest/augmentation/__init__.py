@@ -304,6 +304,11 @@ class TemplaticAugment(BaseAugmentaion):
             A string or a list of strings or samples that represents the templates for the augmentation.
         __task:
             The task for which the augmentation is being performed.
+        __generate_templates:
+            if set to True, generates sample templates from the given ones.
+        __show_templates:
+            if set to True, displays the used templates.
+
 
     Methods:
         __init__(self, templates: Union[str, List[str]], task: str):
@@ -317,12 +322,15 @@ class TemplaticAugment(BaseAugmentaion):
         templates: Union[str, List[str]],
         task: TaskManager,
         generate_templates=False,
+        show_templates=False,
     ) -> None:
         """This constructor for the TemplaticAugment class.
 
         Args:
             templates (Union[str, List[str]]): The templates to be used for the augmentation.
             task (str): The task for which the augmentation is being performed.
+            generate_templates (bool, optional): if set to True, generates sample templates from the given ones.
+            show_templates (bool, optional): if set to True, displays the used templates.
         """
         self.__templates: Union[str, List[str], List[Sample]] = templates
         self.__task = task
@@ -367,6 +375,9 @@ class TemplaticAugment(BaseAugmentaion):
 
             else:
                 raise RuntimeError(Errors.E084)
+
+        if show_templates:
+            [print(template) for template in self.__templates]
 
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()

@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: Benchmarks | LangTest | John Snow Labs
-title: Available Benchmarks
+seotitle: Commonsense Scenario Benchmark Datasets | LangTest | John Snow Labs
+title: CommonSense Scenario Benchmark Datasets
 key: notebooks
 permalink: /docs/pages/benchmarks/commonsense_scenario/
 aside:
