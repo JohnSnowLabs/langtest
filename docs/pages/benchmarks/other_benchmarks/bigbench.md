@@ -4,7 +4,7 @@ header: true
 seotitle: BigBench Benchmark | LangTest | John Snow Labs
 title: BigBench
 key: benchmarks-bigbench
-permalink: /docs/pages/benchmarks/bigbench/
+permalink: /docs/pages/benchmarks/other_benchmarks/bigbench/
 aside:
     toc: true
 sidebar:

@@ -4,7 +4,7 @@ header: true
 seotitle: BBQ Benchmark | LangTest | John Snow Labs
 title: BBQ
 key: benchmarks-bbq
-permalink: /docs/pages/benchmarks/bbq/
+permalink: /docs/pages/benchmarks/other_benchmarks/bbq/
 aside:
     toc: true
 sidebar:

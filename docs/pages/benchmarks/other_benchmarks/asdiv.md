@@ -4,7 +4,7 @@ header: true
 seotitle: ASDiv Benchmark | LangTest | John Snow Labs
 title: ASDiv
 key: benchmarks-asdiv
-permalink: /docs/pages/benchmarks/asdiv/
+permalink: /docs/pages/benchmarks/other_benchmarks/asdiv/
 aside:
     toc: true
 sidebar:

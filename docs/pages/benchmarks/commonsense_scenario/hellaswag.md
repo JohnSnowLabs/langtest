@@ -4,7 +4,7 @@ header: true
 seotitle: HellaSwag Benchmark | LangTest | John Snow Labs
 title: HellaSwag
 key: benchmarks-hellaswag
-permalink: /docs/pages/benchmarks/hellaswag/
+permalink: /docs/pages/benchmarks/commonsense_scenario/hellaswag/
 aside:
     toc: true
 sidebar:

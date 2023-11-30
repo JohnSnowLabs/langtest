@@ -4,7 +4,7 @@ header: true
 seotitle: MedQA Benchmark | LangTest | John Snow Labs
 title: MedQA
 key: benchmarks-medqa
-permalink: /docs/pages/benchmarks/medqa/
+permalink: /docs/pages/benchmarks/medical/medqa/
 aside:
     toc: true
 sidebar:
@@ -42,7 +42,7 @@ You can see which subsets and splits are available below.
 > Minimum pas rate: 75%
 
 **Dataset info:**
-- Split: clinical
+- Split: test
 - Records: 1273
 - Testcases: 12626
 - Evaluatuion: GPT-3.5-Turbo-Instruct

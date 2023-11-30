@@ -4,7 +4,7 @@ header: true
 seotitle: TruthfulQA Benchmark | LangTest | John Snow Labs
 title: TruthfulQA
 key: benchmarks-truthfulqa
-permalink: /docs/pages/benchmarks/truthfulqa/
+permalink: /docs/pages/benchmarks/other_benchmarks/truthfulqa/
 aside:
     toc: true
 sidebar:

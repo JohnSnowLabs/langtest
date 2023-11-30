@@ -4,7 +4,7 @@ header: true
 seotitle: MedMCQA Benchmark | LangTest | John Snow Labs
 title: MedMCQA
 key: benchmarks-medmcqa
-permalink: /docs/pages/benchmarks/MedMCQA/
+permalink: /docs/pages/benchmarks/medical/medmcqa/
 aside:
     toc: true
 sidebar:

@@ -4,7 +4,7 @@ header: true
 seotitle: LogiQA Benchmark | LangTest | John Snow Labs
 title: LogiQA
 key: benchmarks-logiqa
-permalink: /docs/pages/benchmarks/logiqa/
+permalink: /docs/pages/benchmarks/other_benchmarks/logiqa/
 aside:
     toc: true
 sidebar:

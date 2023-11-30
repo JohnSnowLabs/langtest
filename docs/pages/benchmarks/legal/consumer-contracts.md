@@ -4,7 +4,7 @@ header: true
 seotitle: Consumer-Contracts Benchmark | LangTest | John Snow Labs
 title: Consumer-Contracts
 key: benchmarks-consumer-contracts
-permalink: /docs/pages/benchmarks/consumer-contracts/
+permalink: /docs/pages/benchmarks/legal/consumer-contracts/
 aside:
     toc: true
 sidebar:

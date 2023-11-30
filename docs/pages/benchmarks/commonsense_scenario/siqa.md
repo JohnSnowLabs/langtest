@@ -4,7 +4,7 @@ header: true
 seotitle: SocialIQA Benchmark | LangTest | John Snow Labs
 title: SocialIQA
 key: benchmarks-socialiqa
-permalink: /docs/pages/benchmarks/siqa/
+permalink: /docs/pages/benchmarks/commonsense_scenario/siqa/
 aside:
     toc: true
 sidebar:

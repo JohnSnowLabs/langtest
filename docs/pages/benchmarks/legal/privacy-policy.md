@@ -4,7 +4,7 @@ header: true
 seotitle: Privacy-Policy Benchmark | LangTest | John Snow Labs
 title: Privacy-Policy
 key: benchmarks-privacy-policy
-permalink: /docs/pages/benchmarks/privacy-policy/
+permalink: /docs/pages/benchmarks/legal/privacy-policy/
 aside:
     toc: true
 sidebar:

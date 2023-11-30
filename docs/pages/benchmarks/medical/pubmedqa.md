@@ -4,7 +4,7 @@ header: true
 seotitle: PubMedQA Benchmark | LangTest | John Snow Labs
 title: PubMedQA
 key: benchmarks-pubmedqa
-permalink: /docs/pages/benchmarks/pubmedqa/
+permalink: /docs/pages/benchmarks/medical/pubmedqa/
 aside:
     toc: true
 sidebar:

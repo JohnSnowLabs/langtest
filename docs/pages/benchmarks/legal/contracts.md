@@ -4,7 +4,7 @@ header: true
 seotitle: Contracts Benchmark | LangTest | John Snow Labs
 title: Contracts
 key: benchmarks-contracts
-permalink: /docs/pages/benchmarks/contracts/
+permalink: /docs/pages/benchmarks/legal/contracts/
 aside:
     toc: true
 sidebar:

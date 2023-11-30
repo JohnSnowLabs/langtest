@@ -4,7 +4,7 @@ header: true
 seotitle: BoolQ Benchmark | LangTest | John Snow Labs
 title: BoolQ
 key: benchmarks-boolq
-permalink: /docs/pages/benchmarks/boolq/
+permalink: /docs/pages/benchmarks/other_benchmarks/boolq/
 aside:
     toc: true
 sidebar:

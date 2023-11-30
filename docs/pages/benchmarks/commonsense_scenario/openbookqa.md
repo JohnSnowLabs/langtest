@@ -4,7 +4,7 @@ header: true
 seotitle: OpenBookQA Benchmark | LangTest | John Snow Labs
 title: OpenBookQA
 key: benchmarks-openbookqa
-permalink: /docs/pages/benchmarks/openbookqa/
+permalink: /docs/pages/benchmarks/commonsense_scenario/openbookqa/
 aside:
     toc: true
 sidebar:

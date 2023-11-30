@@ -4,7 +4,7 @@ header: true
 seotitle: NQ-open Benchmark | LangTest | John Snow Labs
 title: NQ-open
 key: benchmarks-NQ-open
-permalink: /docs/pages/benchmarks/nq-open/
+permalink: /docs/pages/benchmarks/other_benchmarks/nq-open/
 aside:
     toc: true
 sidebar:

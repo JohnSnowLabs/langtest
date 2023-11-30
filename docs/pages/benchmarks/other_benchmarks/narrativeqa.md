@@ -4,7 +4,7 @@ header: true
 seotitle: NarrativeQA Benchmark | LangTest | John Snow Labs
 title: NarrativeQA
 key: benchmarks-narrativeqa
-permalink: /docs/pages/benchmarks/narrativeqa/
+permalink: /docs/pages/benchmarks/other_benchmarks/narrativeqa/
 aside:
     toc: true
 sidebar:

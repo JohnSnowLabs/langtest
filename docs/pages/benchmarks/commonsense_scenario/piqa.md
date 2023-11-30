@@ -4,7 +4,7 @@ header: true
 seotitle: PIQA Benchmark | LangTest | John Snow Labs
 title: PIQA
 key: benchmarks-piqa
-permalink: /docs/pages/benchmarks/piqa/
+permalink: /docs/pages/benchmarks/commonsense_scenario/piqa/
 aside:
     toc: true
 sidebar:

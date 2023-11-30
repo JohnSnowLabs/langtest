@@ -4,7 +4,7 @@ header: true
 seotitle: MMLU Benchmark | LangTest | John Snow Labs
 title: MMLU
 key: benchmarks-mmlu
-permalink: /docs/pages/benchmarks/mmlu/
+permalink: /docs/pages/benchmarks/other_benchmarks/mmlu/
 aside:
     toc: true
 sidebar:

@@ -4,7 +4,7 @@ header: true
 seotitle: CommonsenseQA Benchmark | LangTest | John Snow Labs
 title: CommonsenseQA
 key: benchmarks-commonsenseqa
-permalink: /docs/pages/benchmarks/commonsenseqa/
+permalink: /docs/pages/benchmarks/commonsense_scenario/commonsenseqa/
 aside:
     toc: true
 sidebar:
