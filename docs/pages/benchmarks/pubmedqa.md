@@ -24,5 +24,5 @@ You can see which subsets and splits are available below.
 {:.table2}
 | Split           |Details                                                                                                |
 | ----------------|------------------------------------------------------------------------------------------------------ |
-| **pqa_artificial**       | Truncated version of pqa_artificial subset from the PubMedQA, containing 500 question and answers examples.                         |
-| **pqa_labeled**  | Truncated version of pqa_labeled subset from the PubMedQA, containing 500 question answers examples. |
+| **pqaa**       | Truncated version of pqa_artificial subset from the PubMedQA, containing 500 question and answers examples.                         |
+| **pqal**  | Truncated version of pqa_labeled subset from the PubMedQA, containing 500 question answers examples. |
