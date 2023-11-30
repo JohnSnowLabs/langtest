@@ -226,7 +226,7 @@ benchmarks:
       - title: MultiLexSum
         url: /docs/pages/benchmarks/legal/multilexsum
   - title:  Other Benchmarks
-    url: /docs/pages/benchmarks/other_benchmark
+    url: /docs/pages/benchmarks/other_benchmarks
     children:
       - title: ASDiv
         url: /docs/pages/benchmarks/other_benchmarks/asdiv

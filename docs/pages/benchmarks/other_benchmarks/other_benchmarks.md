@@ -4,7 +4,7 @@ header: true
 seotitle: Other Benchmarks | LangTest | John Snow Labs
 title: Other Benchmarks Dataset
 key: notebooks
-permalink: /docs/pages/benchmarks/other_benchmark/
+permalink: /docs/pages/benchmarks/other_benchmarks/
 aside:
     toc: true
 sidebar:
