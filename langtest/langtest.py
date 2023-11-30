@@ -645,6 +645,8 @@ class Harness:
                                     Defaults to 'add'.
             templates (Optional[Union[str, List[str]]]):
             append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
+            generate_templates (bool, optional): if set to True, generates sample templates from given ones.
+            show_templates (bool, optional): if set to True, displays the used templates.
 
         Returns:
             Harness: The instance of the class calling this method.
