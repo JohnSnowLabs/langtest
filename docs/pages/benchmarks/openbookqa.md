@@ -56,3 +56,5 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | Intel/neural-chat-7b-v3-1            |    79%    |    88%    |    82%    |    89%   |         86%        |        84%        |     80%    |           71%           |      80%      |           71%           |            76%           |
 
 </div>
+
+![MMLU Clinical Benchmark](/assets/images/benchmarks/openbookqa.png)

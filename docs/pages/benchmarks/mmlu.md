@@ -63,3 +63,5 @@ In the evaluation process, we start by fetching *original_question* from the dat
 - Evaluatuion: GPT-3.5-Turbo-Instruct
 
 </div>
+
+![MMLU Clinical Benchmark](/assets/images/benchmarks/mmlu.png)
