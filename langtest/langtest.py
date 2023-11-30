@@ -630,6 +630,7 @@ class Harness:
         templates: Optional[Union[str, List[str]]] = None,
         append_original: bool = False,
         generate_templates: bool = False,
+        show_templates: bool = False,
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -644,6 +645,8 @@ class Harness:
                                     Defaults to 'add'.
             templates (Optional[Union[str, List[str]]]):
             append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
+            generate_templates (bool, optional): if set to True, generates sample templates from given ones.
+            show_templates (bool, optional): if set to True, displays the used templates.
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -694,6 +697,7 @@ class Harness:
                 templates=templates,
                 task=self.task,
                 generate_templates=generate_templates,
+                show_templates=show_templates,
             ).fix(
                 training_data=training_data,
                 output_path=save_data_path,
