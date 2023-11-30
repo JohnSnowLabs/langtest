@@ -1,8 +1,8 @@
 ---
 layout: docs
 header: true
-seotitle: Benchmarks | LangTest | John Snow Labs
-title: Available Benchmarks
+seotitle: Legal Benchmark Datasets | LangTest | John Snow Labs
+title: Legal Benchmark Datasets 
 key: notebooks
 permalink: /docs/pages/benchmarks/legal/
 aside:
