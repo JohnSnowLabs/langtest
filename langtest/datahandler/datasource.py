@@ -376,7 +376,7 @@ class DataFactory:
             "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
-            "MedQA": {"split": ("test",), "extension": ".jsonl"},
+            "MedQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "PubMedQA": {
                 "split": (
                     "pqaa",
