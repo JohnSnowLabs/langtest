@@ -4,7 +4,7 @@ header: true
 seotitle: Benchmarks | LangTest | John Snow Labs
 title: Available Benchmarks
 key: notebooks
-permalink: /docs/pages/benchmarks/commonsense_scenario/commonsense_scenario/
+permalink: /docs/pages/benchmarks/commonsense_scenario/
 aside:
     toc: true
 sidebar:
