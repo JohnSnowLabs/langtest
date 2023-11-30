@@ -318,7 +318,6 @@ class TemplaticAugment(BaseAugmentaion):
         task: TaskManager,
         generate_templates=False,
         show_templates=False,
-
     ) -> None:
         """This constructor for the TemplaticAugment class.
 
@@ -369,9 +368,9 @@ class TemplaticAugment(BaseAugmentaion):
 
             else:
                 raise RuntimeError(Errors.E084)
-        
-  
-        if show_templates: [print(template) for template in self.__templates]
+
+        if show_templates:
+            [print(template) for template in self.__templates]
 
         if isinstance(self.__templates, str) and os.path.exists(self.__templates):
             self.__templates = DataFactory(self.__templates, self.__task).load()
@@ -379,8 +378,6 @@ class TemplaticAugment(BaseAugmentaion):
             self.__templates = [self.str_to_sample(self.__templates)]
         elif isinstance(self.__templates, list) and isinstance(self.__templates[0], str):
             self.__templates = [self.str_to_sample(i) for i in self.__templates]
-
-        
 
     def fix(
         self,

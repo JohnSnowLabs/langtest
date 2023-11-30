@@ -631,7 +631,6 @@ class Harness:
         append_original: bool = False,
         generate_templates: bool = False,
         show_templates: bool = False,
-
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -1155,5 +1154,3 @@ class Harness:
                 repo_id=repo_name,
                 token=token,
             )
-
-        
