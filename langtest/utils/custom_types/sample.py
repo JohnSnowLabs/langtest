@@ -795,7 +795,7 @@ class SummarizationSample(BaseModel):
     task: str = Field(default="summarization", constr=True)
     category: str = None
     test_type: str = None
-    ran_pass: bool = None
+    ran_pass: tuple = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -825,10 +825,7 @@ class SummarizationSample(BaseModel):
 
     def is_pass(self):
         """Checks if the sample has passed the evaluation."""
-        if self.ran_pass is not None:
-            return self.ran_pass
-        self.ran_pass = self._is_eval()[0]
-        return self.ran_pass
+        return self._is_eval()[0]
 
     def _is_eval(self):
         """Perform the evaluation and return the evaluation score.
@@ -836,6 +833,9 @@ class SummarizationSample(BaseModel):
         Returns:
             Tuple[bool, float]: A tuple containing a boolean indicating if the evaluation passed and the evaluation score.
         """
+        if self.ran_pass is not None:
+            return self.ran_pass
+
         from ...langtest import HARNESS_CONFIG as harness_config
         from evaluate import load
 
@@ -850,7 +850,7 @@ class SummarizationSample(BaseModel):
         references = [self.actual_results]
         if metric_name == "rouge":
             results = metric.compute(predictions=predictions, references=references)
-            return (
+            self.ran_pass = (
                 results["rouge2"] >= evaluation.get("threshold", 0.50),
                 results["rouge2"],
             )
@@ -858,7 +858,12 @@ class SummarizationSample(BaseModel):
             results = metric.compute(
                 predictions=predictions, references=references, lang="en"
             )
-            return results["f1"] >= evaluation.get("threshold", 0.50), results["f1"]
+            self.ran_pass = (
+                results["f1"] >= evaluation.get("threshold", 0.50),
+                results["f1"],
+            )
+
+        return self.ran_pass
 
     def transform(self, func, params, prob, perturbations=None, **kwargs):
         """Transforms the original data using the specified function.
@@ -1077,7 +1082,7 @@ class TranslationSample(BaseModel):
     task: str = Field(default="translation", const=True)
     category: str = None
     test_type: str = None
-    ran_pass: bool = None
+    ran_pass: tuple = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -1108,15 +1113,15 @@ class TranslationSample(BaseModel):
 
     def is_pass(self):
         """Checks if the sample passes based on the maximum score."""
-        if self.ran_pass is not None:
-            return self.ran_pass
-        self.ran_pass = self._is_eval()[0]
-        return self.ran_pass
+        return self._is_eval()[0]
 
     def _is_eval(self) -> Tuple[bool, float]:
         """Computes the cosine similarity between the original and perturbed sentences"""
+        if self.ran_pass is not None:
+            return self.ran_pass
+
         if self.test_case == self.actual_results.translation_text:
-            return False, 1
+            self.ran_pass = (False, 1)
         else:
             from ...langtest import HARNESS_CONFIG as harness_config
 
@@ -1149,10 +1154,11 @@ class TranslationSample(BaseModel):
                 vectors3, vectors4
             )
 
-            return (
+            self.ran_pass = (
                 abs(original_similarities - translation_similarities) < 0.1,
                 abs(original_similarities - translation_similarities),
             )
+        return self.ran_pass
 
     def run(self, model, **kwargs):
         """Runs the original and perturbed sentences through the model"""
@@ -1273,7 +1279,7 @@ class ClinicalSample(BaseModel):
     category: str = None  # clinical-tests
     test_type: str = None  # gastro
 
-    ran_pass: bool = None
+    ran_pass: tuple = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1309,13 +1315,12 @@ class ClinicalSample(BaseModel):
 
     def is_pass(self):
         """"""
-        if self.ran_pass is not None:
-            return self.ran_pass
-        self.ran_pass = self._is_eval()[0]
-        return self.ran_pass
+        return self._is_eval()[0]
 
     def _is_eval(self) -> bool:
         """"""
+        if self.ran_pass is not None:
+            return self.ran_pass
 
         from ...langtest import HARNESS_CONFIG as harness_config
 
@@ -1343,13 +1348,14 @@ class ClinicalSample(BaseModel):
         )
 
         if self.clinical_domain == "internal_medicine":
-            return (similarity > 0.8658298254013062, similarity)
+            self.ran_pass = (similarity > 0.8658298254013062, similarity)
 
         elif self.clinical_domain == "gastro":
-            return (similarity > 0.9871000647544861, similarity)
+            self.ran_pass = (similarity > 0.9871000647544861, similarity)
 
         else:
-            return (similarity > 0.961436092853546, similarity)
+            self.ran_pass = (similarity > 0.961436092853546, similarity)
+        return self.ran_pass
 
     def run(self, model, **kwargs):
         """"""
@@ -1448,7 +1454,7 @@ class DisinformationSample(BaseModel):
     category: str = None
     test_type: str = None
     model_response: str = None
-    ran_pass: bool = None
+    ran_pass: tuple = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -1477,13 +1483,13 @@ class DisinformationSample(BaseModel):
 
     def is_pass(self):
         """"""
-        if self.ran_pass is not None:
-            return self.ran_pass
-        self.ran_pass = self._is_eval()[0]
-        return self.ran_pass
+        return self._is_eval()[0]
 
     def _is_eval(self) -> bool:
         """"""
+        if self.ran_pass is not None:
+            return self.ran_pass
+
         from ...langtest import HARNESS_CONFIG as harness_config
 
         evaluation = harness_config.get("evaluation", {"threshold": 0.85})
@@ -1512,7 +1518,9 @@ class DisinformationSample(BaseModel):
             embeddings[0].reshape(1, -1), embeddings[1].reshape(1, -1)
         )
 
-        return (similarity < threshold, similarity)
+        self.ran_pass = (similarity > threshold, similarity)
+
+        return self.ran_pass
 
     def run(self, model, **kwargs):
         """"""
@@ -1961,7 +1969,7 @@ class FactualitySample(BaseModel):
         }
 
         if self.result is not None and self.swapped_result is not None:
-            bool_pass = self._is_eval()
+            bool_pass = self.is_pass()
             result.update(
                 {
                     "result": self.result,
