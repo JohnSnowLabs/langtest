@@ -56,6 +56,8 @@ docs-menu:
           url: /docs/pages/docs/report
         - title: MlFlow Tracking
           url: /docs/pages/docs/ml_flow
+        - title: LangTestCallback
+          url: /docs/pages/docs/hf-callback
 
   - title: Saving & Loading
     url: /docs/pages/docs/save
