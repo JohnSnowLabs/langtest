@@ -28,6 +28,8 @@ We're excited to announce the latest release of LangTest, featuring significant 
 
 - Optimized API Efficiency with Bug Fixes in Model Calls.
 
+</div><div class="h3-box" markdown="1">
+
 ##  🔥 Key Enhancements:
 
 ### 🤗 Hugging Face Callback Integration
@@ -40,14 +42,17 @@ my_callback = LangTestCallback(...)
 trainer = Trainer(..., callbacks=[my_callback])
 ```
 
+{:.table2}
 | Parameter             | Description |
 | --------------------- | ----------- |
 | **task**              | Task for which the model is to be evaluated (text-classification or ner) |
-| **data**              | The data to be used for evaluation. A dictionary providing flexibility and options for data sources. It should include the following keys: <ul><li>data_source (mandatory): The source of the data.</li><li>subset (optional): The subset of the data.</li><li>feature_column (optional): The column containing the features.</li><li>target_column (optional): The column containing the target labels.</li><li>split (optional): The data split to be used.</li><li>source (optional): Set to 'huggingface' when loading Hugging Face dataset.</li></ul> |
+| **data**              | The data to be used for evaluation. A dictionary providing flexibility and options for data sources. It should include the following keys: <br>• data_source (mandatory): The source of the data.<br>• subset (optional): The subset of the data.<br>• feature_column (optional): The column containing the features.<br>• target_column (optional): The column containing the target labels.<br>• split (optional): The data split to be used.<br>• source (optional): Set to 'huggingface' when loading Hugging Face dataset. |
 | **config**            | Configuration for the tests to be performed, specified in the form of a YAML file. |
 | **print_reports**     | A bool value that specifies if the reports should be printed. |
 | **save_reports**      | A bool value that specifies if the reports should be saved. |
 | **run_each_epoch**    | A bool value that specifies if the tests should be run after each epoch or the at the end of training |
+
+</div><div class="h3-box" markdown="1">
 
 ### 🚀 Enhanced Templatic Augmentation with Automated Sample Generation
  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Templatic_Augmentation_Notebook.ipynb)     
@@ -66,6 +71,7 @@ We focused on extracting clinical subsets from the MMLU dataset, creating a spec
 
 #### How the Dataset Looks
 
+{:.table3}
 | category   | test_type | original_question                                   | perturbed_question                                 | expected_result | actual_result | pass |
 |------------|-----------|------------------------------------------------------|----------------------------------------------------|------------------|---------------|------|
 | robustness | uppercase | Fatty acids are transported into the mitochondria bound to:\nA. thiokinase. B. coenzyme A (CoA). C. acetyl-CoA. D. carnitine. | FATTY ACIDS ARE TRANSPORTED INTO THE MITOCHONDRIA BOUND TO: A. THIOKINASE. B. COENZYME A (COA). C. ACETYL-COA. D. CARNITINE. | D. carnitine.                | B. COENZYME A (COA).             | False |
@@ -80,6 +86,7 @@ each with four answer choices and one correct answer. The questions cover variou
 
 #### How the Dataset Looks
 
+{:.table3}
 | category   | test_type | original_question                                                                                 | perturbed_question                                                                            | expected_result | actual_result | pass |
 |------------|-----------|--------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|------------------|----------------|------|
 | robustness | uppercase | There is most likely going to be fog around: A. a marsh B. a tundra C. the plains D. a desert"                                                      | THERE IS MOST LIKELY GOING TO BE FOG AROUND: A. A MARSH B. A TUNDRA C. THE PLAINS D. A DESERT" |A marsh                                                 | A MARSH                                            | True |
@@ -94,6 +101,7 @@ The MedMCQA is a large-scale benchmark dataset of Multiple-Choice Question Answe
 
 #### How the Dataset Looks
 
+{:.table3}
 | category   | test_type | original_question                                   | perturbed_question                                 | expected_result | actual_result | pass |
 |------------|-----------|------------------------------------------------------|----------------------------------------------------|------------------|---------------|------|
 | robustness | uppercase | Most common site of direct hernia\nA. Hesselbach's triangle\nB. Femoral gland\nC. No site predilection\nD. nan | MOST COMMON SITE OF DIRECT HERNIA A. HESSELBACH'S TRIANGLE B. FEMORAL GLAND C. NO SITE PREDILECTION D. NAN | A                | A             | True |
@@ -110,6 +118,7 @@ The MedQA is a benchmark dataset of Multiple choice question answering based on 
 
 #### How the Dataset Looks
 
+{:.table3}
 | original_question                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | perturbed_question                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | expected_result | actual_result | pass |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------------|------|
 | A junior orthopaedic surgery resident is completing a carpal tunnel repair with the department chairman as the attending physician. During the case, the resident inadvertently cuts a flexor tendon.......Which of the following is the correct next action for the resident to take?\nA. Disclose the error to the patient but leave it out of the operative report\nB. Disclose the error to the patient and put it in the operative report\nC. Tell the attending that he cannot fail to disclose this mistake\nD. Report the physician to the ethics committee\nE. Refuse to dictate the operative report | A JUNIOR ORTHOPAEDIC SURGERY RESIDENT IS COMPLETING A CARPAL TUNNEL REPAIR WITH THE DEPARTMENT CHAIRMAN AS THE ATTENDING PHYSICIAN. DURING THE CASE, THE RESIDENT INADVERTENTLY CUTS A FLEXOR TENDON......WHICH OF THE FOLLOWING IS THE CORRECT NEXT ACTION FOR THE RESIDENT TO TAKE? A. DISCLOSE THE ERROR TO THE PATIENT BUT LEAVE IT OUT OF THE OPERATIVE REPORT B. DISCLOSE THE ERROR TO THE PATIENT AND PUT IT IN THE OPERATIVE REPORT C. TELL THE ATTENDING THAT HE CANNOT FAIL TO DISCLOSE THIS MISTAKE D. REPORT THE PHYSICIAN TO THE ETHICS COMMITTEE E. REFUSE TO DICTATE THE OPERATIVE REPORT | B                | C              | False|
@@ -129,6 +138,7 @@ Our team has published the below enlightening blogs on Hugging Face's community 
 
 ## 🚀 New LangTest Blogs:
 
+{:.table2}
 | Blog | Description |
 | --- | --- |
 | LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA (To be Published ) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.| 
