@@ -73,7 +73,7 @@ We focused on extracting clinical subsets from the MMLU dataset, creating a spec
 ![mmlu](https://github.com/JohnSnowLabs/langtest/assets/71117423/ef056c0b-76dd-4dc1-b201-f6d97b880d1f)
 
 
-### OpenBookQA
+#### OpenBookQA
 
 The OpenBookQA dataset is a collection of multiple-choice questions that require complex reasoning and inference based on general knowledge, similar to an “open-book” exam. The questions are designed to test the ability of natural language processing models to answer questions that go beyond memorizing facts and involve understanding concepts and their relations. The dataset contains 500 questions, 
 each with four answer choices and one correct answer. The questions cover various topics in science, such as biology, chemistry, physics, and astronomy.
@@ -88,7 +88,7 @@ each with four answer choices and one correct answer. The questions cover variou
 
 ![openbook1](https://github.com/JohnSnowLabs/langtest/assets/101416953/fcc6a1d3-2b8b-444f-b4fc-4ced0d9ecd60)
 
-## MedMCQA
+#### MedMCQA
 
 The MedMCQA is a large-scale benchmark dataset of Multiple-Choice Question Answering (MCQA) dataset designed to address real-world medical entrance exam questions. 
 
@@ -104,7 +104,7 @@ The MedMCQA is a large-scale benchmark dataset of Multiple-Choice Question Answe
 - Split: Medicine, Anatomy, Forensic_Medicine, Microbiology, Pathology, Anaesthesia, Pediatrics, Physiology, Biochemistry, Gynaecology_Obstetrics, Skin, Surgery, Radiology
 
 
-## MedQA
+#### MedQA
 
 The MedQA is a benchmark dataset of Multiple choice question answering based on the United States Medical License Exams (USMLE). The dataset is collected from the professional medical board exams.
 
