@@ -102,6 +102,12 @@ You can check out the following LangTest articles:
 | [**Streamlining ML Workflows: Integrating MLFlow Tracking with LangTest for Enhanced Model Evaluations**](https://medium.com/john-snow-labs/streamlining-ml-workflows-integrating-mlflow-tracking-with-langtest-for-enhanced-model-evaluations-4ce9863a0ff1) | In this blog post, we dive into the growing need for transparent, systematic, and comprehensive tracking of models. Enter MLFlow and LangTest: two tools that, when combined, create a revolutionary approach to ML development. |
 | [**Testing the Question Answering Capabilities of Large Language Models**](https://medium.com/john-snow-labs/testing-the-question-answering-capabilities-of-large-language-models-1bc424d61740) | In this blog post, we dive into enhancing the QA evaluation capabilities using LangTest library. Explore about different evaluation methods that LangTest offers to address the complexities of evaluating Question Answering (QA) tasks. |
 | [**Evaluating Stereotype Bias with LangTest**](https://medium.com/john-snow-labs/evaluating-stereotype-bias-with-langtest-8286af8f0f22) | In this blog post, we are focusing on using the StereoSet dataset to assess bias related to gender, profession, and race.|
+| [**Unveiling Sentiments: Exploring LSTM-based Sentiment Analysis with PyTorch on the IMDB Dataset**](To be Published) | Explore the robustness of custom models with LangTest Insights.|
+| [**LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA**](To be Published) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.|
+
+
+
+
 
 
 > **Note**
