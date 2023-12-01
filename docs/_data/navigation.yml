@@ -56,6 +56,8 @@ docs-menu:
           url: /docs/pages/docs/report
         - title: MlFlow Tracking
           url: /docs/pages/docs/ml_flow
+        - title: LangTestCallback
+          url: /docs/pages/docs/hf-callback
 
   - title: Saving & Loading
     url: /docs/pages/docs/save
@@ -135,10 +137,6 @@ tutorials:
           url: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
         - title: Stereotype
           url: /docs/pages/tutorials/LLM_testing_Notebooks/stereotype
-  - title: Benchmark Dataset Notebooks
-    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
-  - title: End-to-End Workflow Notebooks
-    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
   - title: Miscellaneous Notebooks
     url: /docs/pages/tutorials/Miscellaneous_Notebooks
     children:
@@ -150,6 +148,10 @@ tutorials:
           url: /docs/pages/tutorials/misc/different_report_formats
         - title: Editing Testcases
           url: /docs/pages/tutorials/misc/editing-testcases
+  - title: Benchmark Dataset Notebooks
+    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
+  - title: End-to-End Workflow Notebooks
+    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
 
 tests:
   - title: Tests
@@ -190,50 +192,63 @@ tests:
     url: /docs/pages/tests/ideology
 
 benchmarks:
-  - title: Benchmarks
-    url: /docs/pages/benchmarks/benchmark
+  - title: Medical
+    url: /docs/pages/benchmarks/medical
+    children:
+      - title: MedMCQA
+        url: /docs/pages/benchmarks/medical/medmcqa
+      - title: MedQA
+        url: /docs/pages/benchmarks/medical/medqa
+      - title: PubMedQA
+        url: /docs/pages/benchmarks/medical/pubmedqa
+  - title:  Commonsense Scenario
+    url: /docs/pages/benchmarks/commonsense_scenario
+    children:
+      - title: CommonsenseQA
+        url: /docs/pages/benchmarks/commonsense_scenario/commonsenseqa
+      - title: HellaSwag
+        url: /docs/pages/benchmarks/commonsense_scenario/hellaswag
+      - title: OpenBookQA
+        url: /docs/pages/benchmarks/commonsense_scenario/openbookqa
+      - title: PIQA
+        url: /docs/pages/benchmarks/commonsense_scenario/piqa
+      - title: SIQA
+        url: /docs/pages/benchmarks/commonsense_scenario/siqa
+  - title : Legal
+    url: /docs/pages/benchmarks/legal
+    children:
+      - title: Contracts
+        url: /docs/pages/benchmarks/legal/contracts
+      - title: Consumer-Contracts
+        url: /docs/pages/benchmarks/legal/consumer-contracts
+      - title: Privacy-Policy
+        url: /docs/pages/benchmarks/legal/privacy-policy
+      - title: FIQA
+        url: /docs/pages/benchmarks/legal/fiqa
+      - title: MultiLexSum
+        url: /docs/pages/benchmarks/legal/multilexsum
+  - title:  Other Benchmarks
+    url: /docs/pages/benchmarks/other_benchmarks
     children:
       - title: ASDiv
-        url: /docs/pages/benchmarks/asdiv
+        url: /docs/pages/benchmarks/other_benchmarks/asdiv
       - title: BBQ
-        url: /docs/pages/benchmarks/bbq
+        url: /docs/pages/benchmarks/other_benchmarks/bbq
       - title: Bigbench
-        url: /docs/pages/benchmarks/bigbench
+        url: /docs/pages/benchmarks/other_benchmarks/bigbench
       - title: BoolQ
-        url: /docs/pages/benchmarks/boolq
-      - title: CommonsenseQA
-        url: /docs/pages/benchmarks/commonsenseqa
-      - title: FIQA
-        url: /docs/pages/benchmarks/fiqa
-      - title: HellaSwag
-        url: /docs/pages/benchmarks/hellaswag
-      - title: Consumer-Contracts
-        url: /docs/pages/benchmarks/consumer-contracts
-      - title: Contracts
-        url: /docs/pages/benchmarks/contracts
-      - title: Privacy-Policy
-        url: /docs/pages/benchmarks/privacy-policy
+        url: /docs/pages/benchmarks/other_benchmarks/boolq
       - title: LogiQA
-        url: /docs/pages/benchmarks/logiqa
+        url: /docs/pages/benchmarks/other_benchmark/logiqa
       - title: MMLU
-        url: /docs/pages/benchmarks/mmlu
-      - title: MultiLexSum
-        url: /docs/pages/benchmarks/multilexsum
+        url: /docs/pages/benchmarks/other_benchmarks/mmlu
       - title: NarrativeQA
-        url: /docs/pages/benchmarks/narrativeqa
+        url: /docs/pages/benchmarks/other_benchmarks/narrativeqa
       - title: NQ-open
-        url: /docs/pages/benchmarks/nq-open
-      - title: OpenBookQA
-        url: /docs/pages/benchmarks/openbookqa
-      - title: PIQA
-        url: /docs/pages/benchmarks/piqa
+        url: /docs/pages/benchmarks/other_benchmarks/nq-open
       - title: Quac
-        url: /docs/pages/benchmarks/quac
-      - title: SIQA
-        url: /docs/pages/benchmarks/siqa
+        url: /docs/pages/benchmarks/other_benchmarks/quac
       - title: TruthfulQA
-        url: /docs/pages/benchmarks/truthfulqa
+        url: /docs/pages/benchmarks/other_benchmarks/truthfulqa
       - title: XSum
-        url: /docs/pages/benchmarks/xsum
-
-  
+        url: /docs/pages/benchmarks/other_benchmarks/xsum

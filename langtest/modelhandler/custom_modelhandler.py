@@ -40,6 +40,9 @@ class PretrainedCustomModel(ABC):
             logger.error(e)
             raise e
 
+    def predict_raw(self, text: str, *args, **kwargs):
+        return self.predict(text, *args, **kwargs)
+
     def __call__(self, text: str) -> None:
         return self.predict(text=text)
 

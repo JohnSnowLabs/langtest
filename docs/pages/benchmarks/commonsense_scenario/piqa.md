@@ -1,0 +1,41 @@
+---
+layout: docs
+header: true
+seotitle: PIQA Benchmark | LangTest | John Snow Labs
+title: PIQA
+key: benchmarks-piqa
+permalink: /docs/pages/benchmarks/commonsense_scenario/piqa/
+aside:
+    toc: true
+sidebar:
+    nav: benchmarks
+show_edit_on_github: true
+nav_key: benchmarks
+modify_date: "2019-05-16"
+---
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/PIQA_dataset.ipynb)
+
+**Source:** [PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/abs/1911.11641)
+
+The PIQA dataset is a collection of multiple-choice questions that test the ability of language models to reason about physical commonsense in natural language. The questions are based on everyday scenarios that involve some physical knowledge, such as cooking, gardening, or cleaning. The test dataset contains 3084 questions, each with a goal, a solution, and two alternative solutions. The correct solution is the one that is most likely to achieve the goal, while the alternatives are either ineffective or harmful. The dataset is designed to challenge the models’ understanding of real-world interactions and causal effects.
+
+You can see which subsets and splits are available below.
+
+{:.table2}
+| Split              | Details                                                                                                                                                  |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **test**      | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.  |
+| **test-tiny** | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
+
+#### Example
+
+In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the QAEvalChainapproach from the LangChain library. Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
+
+{:.table3}
+| category   | test_type    |  original_question                  | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | 	dyslexia_word_swap | hands<br>A. is used to put on shoe <br>B. is used to put on milk jug | hands<br>A. is used too put on shoe <br>B. is used too put on milk jug | A | A  | True |
+
+
+> Generated Results for `text-davinci-003` model from `OpenAI`

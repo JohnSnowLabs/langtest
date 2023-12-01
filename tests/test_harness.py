@@ -131,7 +131,9 @@ class HarnessTestCase(unittest.TestCase):
         self.harness.save(save_dir)
 
         loaded_harness = Harness.load(
-            save_dir=save_dir, task="ner", model="bert-base-cased", hub="huggingface"
+            save_dir=save_dir,
+            task="ner",
+            model={"model": "bert-base-cased", "hub": "huggingface"},
         )
         self.assertEqual(self.harness._config, loaded_harness._config)
         self.assertEqual(self.harness.data, loaded_harness.data)
@@ -154,8 +156,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="bert-base-cased",
-            hub="huggingface",
+            model={"model": "bert-base-cased", "hub": "huggingface"},
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
@@ -178,8 +179,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="aychang/roberta-base-imdb",
-            hub="huggingface",
+            model={"model": "aychang/roberta-base-imdb", "hub": "huggingface"},
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
@@ -236,8 +236,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="text-classification",
-            model="lvwerra/distilbert-imdb",
-            hub="huggingface",
+            model={"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
@@ -262,8 +261,7 @@ class HarnessTestCase(unittest.TestCase):
         loaded_tc_harness = Harness.load(
             save_dir=save_dir,
             task="ner",
-            model="dslim/bert-base-NER",
-            hub="huggingface",
+            model={"model": "dslim/bert-base-NER", "hub": "huggingface"},
         )
         self.assertEqual(tc_harness._config, loaded_tc_harness._config)
         self.assertEqual(tc_harness.data, loaded_tc_harness.data)
