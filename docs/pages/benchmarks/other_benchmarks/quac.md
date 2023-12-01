@@ -4,7 +4,7 @@ header: true
 seotitle: QUAC Benchmark | LangTest | John Snow Labs
 title: QUAC
 key: benchmarks-quac
-permalink: /docs/pages/benchmarks/quac/
+permalink: /docs/pages/benchmarks/other_benchmarks/quac/
 aside:
     toc: true
 sidebar:

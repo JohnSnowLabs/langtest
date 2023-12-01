@@ -4,7 +4,7 @@ header: true
 seotitle: XSum Benchmark | LangTest | John Snow Labs
 title: XSum
 key: benchmarks-xsum
-permalink: /docs/pages/benchmarks/xsum/
+permalink: /docs/pages/benchmarks/other_benchmarks/xsum/
 aside:
     toc: true
 sidebar:

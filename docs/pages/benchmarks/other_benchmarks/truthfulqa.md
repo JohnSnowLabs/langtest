@@ -4,7 +4,7 @@ header: true
 seotitle: TruthfulQA Benchmark | LangTest | John Snow Labs
 title: TruthfulQA
 key: benchmarks-truthfulqa
-permalink: /docs/pages/benchmarks/truthfulqa/
+permalink: /docs/pages/benchmarks/other_benchmarks/truthfulqa/
 aside:
     toc: true
 sidebar:
@@ -27,11 +27,11 @@ You can see which subsets and splits are available below.
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **combined**           | Training, test set from the TruthfulQA dataset, containing 817 questions that span 38 categories, including health, law, finance and politics. |
 | **test**      | Testing set from the TruthfulQA dataset, containing 164 question and answer examples.                                                          |
-| **test-tiny** | Truncated version of TruthfulQA dataset which contains 50 question answer examples                                                             |
+| **test-tiny** | Truncated version of TruthfulQA dataset which contains 50 question and answer examples                                                             |
 
 #### Example
 
-In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the **QAEvalChain** approach from the LangChain library. Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
+In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the QAEvalChainapproach from the LangChain library. Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
 
 
 {:.table3}

@@ -4,7 +4,7 @@ header: true
 seotitle: MultiLexSum Benchmark | LangTest | John Snow Labs
 title: MultiLexSum
 key: benchmarks-multilexsum
-permalink: /docs/pages/benchmarks/multilexsum/
+permalink: /docs/pages/benchmarks/legal/multilexsum/
 aside:
     toc: true
 sidebar:

@@ -4,7 +4,7 @@ header: true
 seotitle: FIQA Benchmark | LangTest | John Snow Labs
 title: FIQA
 key: benchmarks-fiqa
-permalink: /docs/pages/benchmarks/fiqa/
+permalink: /docs/pages/benchmarks/legal/fiqa/
 aside:
     toc: true
 sidebar:
