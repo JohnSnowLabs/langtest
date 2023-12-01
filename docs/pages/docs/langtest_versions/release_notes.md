@@ -120,14 +120,6 @@ The MedQA is a benchmark dataset of Multiple choice question answering based on 
 ![medqa](https://github.com/JohnSnowLabs/langtest/assets/101416953/3e486804-b184-43cd-ab8e-5289987f2db9)
 
 ## 🚀 Community Contributions:
-Our team has published three enlightening blogs on Hugging Face's community platform, focusing on bias detection, model sensitivity, and data augmentation in NLP models:
-
-1. [Detecting and Evaluating Sycophancy Bias: An Analysis of LLM and AI Solutions](https://huggingface.co/blog/Rakshit122/sycophantic-ai)
-2. [Unmasking Language Model Sensitivity in Negation and Toxicity Evaluations](https://huggingface.co/blog/Prikshit7766/llms-sensitivity-testing)
-3. [Elevate Your NLP Models with Automated Data Augmentation for Enhanced Performance](https://huggingface.co/blog/chakravarthik27/boost-nlp-models-with-automated-data-augmentation)
-
-
-## 🚀 Community Contributions:
 
 Our team has published the below enlightening blogs on Hugging Face's community platform:
 
