@@ -104,6 +104,9 @@ You can check out the following LangTest articles:
 | [**Evaluating Stereotype Bias with LangTest**](https://medium.com/john-snow-labs/evaluating-stereotype-bias-with-langtest-8286af8f0f22) | In this blog post, we are focusing on using the StereoSet dataset to assess bias related to gender, profession, and race.|
 | [**Unveiling Sentiments: Exploring LSTM-based Sentiment Analysis with PyTorch on the IMDB Dataset**](To be Published) | Explore the robustness of custom models with LangTest Insights.|
 | [**LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA**](To be Published) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.|
+| [**LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models**](To be Published) | Explore the robustness of Transformers Language Models with LangTest Insights.|
+
+
 
 
 
