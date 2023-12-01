@@ -1,6 +1,7 @@
 import inspect
 from typing import Any, Union
 import langchain.llms as lc
+import langchain.chat_models as cm
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
@@ -58,7 +59,11 @@ class PretrainedModelForQA(ModelAPI):
             ConfigError: If there is an error in the model configuration.
         """
         try:
-            model = getattr(lc, LANGCHAIN_HUBS[hub])
+            if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
+                model = cm.ChatOpenAI(model=path, *args, **kwargs)
+                return cls(hub, model, *args, **kwargs)
+            else:
+                model = getattr(lc, LANGCHAIN_HUBS[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
                 cls.model = model(model=path, *args, **kwargs)

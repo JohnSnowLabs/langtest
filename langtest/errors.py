@@ -70,6 +70,7 @@ class Warnings(metaclass=ErrorsWithCodes):
     W010 = ("- Test '{test}': {count} samples removed out of {total_sample}\n")
     W011 = ("{class_name} successfully ran!")
     W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
+    W013 = ("Unable to find test_cases.pkl inside {save_dir}. Generating new testcases.")
 
 
 class Errors(metaclass=ErrorsWithCodes):
@@ -225,6 +226,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E081 = ("Provded the task is not supported in the {hub} hub.")
     E082 = ("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
     E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
+    E084 = ("OpenAI not installed. Install using !pip install openai==0.28.1 and set the openai.api_key = 'YOUR KEY' ")
 
 
 class ColumnNameError(Exception):

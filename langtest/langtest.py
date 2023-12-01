@@ -12,7 +12,6 @@ import yaml
 
 
 from pkg_resources import resource_filename
-from langtest.modelhandler import ModelAPI
 
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
@@ -25,7 +24,7 @@ from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
 from .errors import Warnings, Errors
 
-GLOBAL_MODEL = None
+EVAL_MODEL = None
 GLOBAL_HUB = None
 HARNESS_CONFIG = None
 
@@ -269,9 +268,9 @@ class Harness:
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)
 
-        global GLOBAL_MODEL, GLOBAL_HUB
+        global EVAL_MODEL, GLOBAL_HUB
         if not isinstance(model, list):
-            GLOBAL_MODEL = self.model
+            EVAL_MODEL = self.model
             GLOBAL_HUB = hub
 
         self._testcases = None
@@ -535,6 +534,7 @@ class Harness:
         Returns:
             pd.DataFrame: Generated dataframe.
         """
+
         if self._generated_results is None:
             logging.warning(Warnings.W000)
             return
@@ -629,6 +629,8 @@ class Harness:
         export_mode: str = "add",
         templates: Optional[Union[str, List[str]]] = None,
         append_original: bool = False,
+        generate_templates: bool = False,
+        show_templates: bool = False,
     ) -> "Harness":
         """Augments the data in the input file located at `input_path` and saves the result to `output_path`.
 
@@ -643,6 +645,8 @@ class Harness:
                                     Defaults to 'add'.
             templates (Optional[Union[str, List[str]]]):
             append_original (bool, optional): If set to True, appends the original data to the augmented data. Defaults to False.
+            generate_templates (bool, optional): if set to True, generates sample templates from given ones.
+            show_templates (bool, optional): if set to True, displays the used templates.
 
         Returns:
             Harness: The instance of the class calling this method.
@@ -692,6 +696,8 @@ class Harness:
             _ = TemplaticAugment(
                 templates=templates,
                 task=self.task,
+                generate_templates=generate_templates,
+                show_templates=show_templates,
             ).fix(
                 training_data=training_data,
                 output_path=save_data_path,
@@ -790,7 +796,7 @@ class Harness:
 
         return testcases_df.fillna("-")
 
-    def save(self, save_dir: str) -> None:
+    def save(self, save_dir: str, include_generated_results: bool = False) -> None:
         """Save the configuration, generated testcases and the `DataFactory` to be reused later.
 
         Args:
@@ -807,6 +813,10 @@ class Harness:
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
 
+        if include_generated_results and self._generated_results:
+            with open(os.path.join(save_dir, "generated_results.pkl"), "wb") as writer:
+                pickle.dump(self._generated_results, writer)
+
         with open(os.path.join(save_dir, "config.yaml"), "w", encoding="utf-8") as yml:
             yml.write(yaml.safe_dump(self._config_copy))
 
@@ -820,9 +830,9 @@ class Harness:
     def load(
         cls,
         save_dir: str,
-        model: Union[str, "ModelAPI"],
         task: str,
-        hub: Optional[str] = None,
+        model: Optional[Union[list, dict]] = None,
+        load_testcases: bool = False,
     ) -> "Harness":
         """Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -831,8 +841,9 @@ class Harness:
                 path to folder containing all the needed files to load an saved `Harness`
             task (str):
                 task for which the model is to be evaluated.
-            model (str | ModelAPI):
-                ModelAPI object or path to the model to be evaluated.
+            model (Union[list, dict], optional): Specifies the model to be evaluated.
+                If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
+                If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
             hub (str, optional):
                 model hub to load from the path. Required if path is passed as 'model'.
 
@@ -840,21 +851,33 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
-        for filename in ["config.yaml", "test_cases.pkl", "data.pkl"]:
+        for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(Errors.E017)
+                raise OSError(Errors.E017.format(filename=filename))
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
 
         harness = Harness(
             task=task,
-            model={"model": model, "hub": hub},
+            model=model,
             data={"data_source": data},
             config=os.path.join(save_dir, "config.yaml"),
         )
-        harness.generate()
-
+        if load_testcases:
+            if os.path.exists(os.path.join(save_dir, "test_cases.pkl")):
+                with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
+                    testcases = pickle.load(reader)
+                harness._testcases = testcases
+            else:
+                logging.warning(Warnings.W013.format(save_dir=save_dir))
+                harness.generate()
+        else:
+            harness.generate()
+        if os.path.exists(os.path.join(save_dir, "generated_results.pkl")):
+            with open(os.path.join(save_dir, "generated_results.pkl"), "rb") as reader:
+                generated_results = pickle.load(reader)
+            harness._generated_results = generated_results
         return harness
 
     def edit_testcases(self, output_path: str, **kwargs):

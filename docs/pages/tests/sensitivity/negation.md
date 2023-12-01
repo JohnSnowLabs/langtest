@@ -20,5 +20,14 @@ The Evaluating Model's Sensitivity to Negation Test focuses on assessing a model
 
 </div><div class="h3-box" markdown="1">
 
+#### Example
+
+{:.table3}
+| original                                           | test_case                                              | expected_result                                                          | actual_result                                                       |   eval_score |   pass |
+|:---------------------------------------------------|:-------------------------------------------------------|:-------------------------------------------------------------------------|:--------------------------------------------------------------------|-------------:|-------:|
+| what is the name of the hat you wear at graduation | what is not the name of the hat you wear at graduation | The hat typically worn at graduation ceremonies is called a mortarboard. | A mortarboard is the name of the hat worn at graduation ceremonies. |    0.0287267 |      False |
+
+
+
 
 </div>
