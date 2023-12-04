@@ -548,8 +548,12 @@ class PretrainedModelForQA(ModelAPI):
         Args:
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
         """
+
+  
         assert isinstance(model, Pipeline), ValueError(
             Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+
+  
         )
 
         self.model = model
@@ -574,6 +578,12 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             'Pipeline':
         """
+
+        if (str(type(path)).split("'")[1].split(".")[0]) == "transformers":
+            model_identifier = path.config.name_or_path
+            AutoTokenizer.from_pretrained(model_identifier)
+            return cls(pipeline(task="text-generation", model=model_identifier, **kwargs))
+
         if "task" in kwargs.keys():
             kwargs.pop("task")
         return cls(pipeline(task="text-generation", model=path, **kwargs))

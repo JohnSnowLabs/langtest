@@ -261,15 +261,6 @@ class Harness:
 
                 self.model = model_dict
 
-        elif (str(type(model)).split("'")[1].split(".")[0]) == "transformers":
-            self.hub = "huggingface"
-            model_identifier = model.config.name_or_path
-            from transformers import AutoTokenizer, pipeline
-
-            AutoTokenizer.from_pretrained(model_identifier)
-
-            self.model = pipeline("text-generation", model=model_identifier)
-
         else:
             self.model = self.task.model(
                 model, hub, **self._config.get("model_parameters", {})
