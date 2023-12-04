@@ -549,11 +549,8 @@ class PretrainedModelForQA(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
         """
 
-  
         assert isinstance(model, Pipeline), ValueError(
             Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
-
-  
         )
 
         self.model = model
