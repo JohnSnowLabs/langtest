@@ -191,14 +191,14 @@ class Harness:
         elif isinstance(model, dict):
             if "model" not in model or "hub" not in model:
                 raise ValueError(Errors.E002)
-        
+
         else:
             raise ValueError(Errors.E003)
 
         if isinstance(model, dict):
-                hub, model = model["hub"], model["model"]
-                self.hub = hub
-                self._actual_model = model
+            hub, model = model["hub"], model["model"]
+            self.hub = hub
+            self._actual_model = model
         else:
             hub = None
 
@@ -261,15 +261,15 @@ class Harness:
 
                 self.model = model_dict
 
-        elif (str(type(model)).split("'")[1].split(".")[0])=="transformers":
-             self.hub = "huggingface"
-             model_identifier = model.config.name_or_path
-             from transformers import AutoTokenizer
-             AutoTokenizer.from_pretrained(model_identifier)
-             self.model = model
-                
+        elif (str(type(model)).split("'")[1].split(".")[0]) == "transformers":
+            self.hub = "huggingface"
+            model_identifier = model.config.name_or_path
+            from transformers import AutoTokenizer
+
+            AutoTokenizer.from_pretrained(model_identifier)
+            self.model = model
+
         else:
-            
             self.model = self.task.model(
                 model, hub, **self._config.get("model_parameters", {})
             )
