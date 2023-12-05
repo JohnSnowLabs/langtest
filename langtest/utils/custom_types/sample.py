@@ -624,6 +624,24 @@ class QASample(BaseQASample):
         else:
             self.__update_params()
             if (
+                self.actual_results.lower().strip()
+                == self.expected_results.lower().strip()
+            ):
+                if "evaluation" in self.config and "metric" in self.config["evaluation"]:
+                    if self.config["evaluation"]["metric"] == "embedding_distance":
+                        distance = self.config["evaluation"].get("distance", "cosine")
+                        if distance == "cosine":
+                            self.distance_result = 1.0
+                        else:
+                            self.distance_result = 0.0
+
+                    elif self.config["evaluation"]["metric"] == "string_distance":
+                        self.distance_result = 0.0
+
+                self.ran_pass = True
+                return True
+
+            if (
                 "evaluation" in self.config
                 and "metric" in self.config["evaluation"]
                 and self.config["evaluation"]["metric"] != "QAEvalChain"
@@ -638,29 +656,6 @@ class QASample(BaseQASample):
                 from langchain.evaluation.qa import QAEvalChain
                 from ...transform.constants import qa_prompt_template
                 from langchain.prompts import PromptTemplate
-
-                if self.dataset_name in [
-                    "BoolQ",
-                    "asdiv",
-                    "LogiQA",
-                    "MMLU",
-                    "OpenBookQA",
-                    "PIQA",
-                    "CommonsenseQA",
-                    "SIQA",
-                    "PrivacyPolicy",
-                    "ConsumerContracts",
-                    "Contracts",
-                    "MedMCQATest",
-                    "PubMedQA",
-                    "MedMCQAValidation",
-                    "MedQA",
-                ] and (
-                    self.actual_results.lower().strip()
-                    == self.expected_results.lower().strip()
-                ):
-                    self.ran_pass = True
-                    return True
 
                 if "llm" in str(type(self.eval_model)):
                     if self.dataset_name not in [
