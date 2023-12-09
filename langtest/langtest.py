@@ -430,6 +430,8 @@ class Harness:
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
+            df_final_report["model_name"] = df_final_report["model_name"].astype(str)
+
             df_final_report["minimum_pass_rate"] = (
                 df_final_report["minimum_pass_rate"].str.rstrip("%").astype("float")
                 / 100.0
