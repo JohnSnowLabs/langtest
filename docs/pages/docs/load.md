@@ -14,7 +14,10 @@ The Harness is able to load the saved test cases, test configuration and test da
 
 ```python
 # Load saved test cases, test configuration, test data  
-harness = Harness.load("path/to/saved_test_folder", model="ner_dl_bert", task='ner', hub="johnsnowlabs")
+harness = Harness.load(save_dir="path/to/saved_test_folder",
+model={"model": "ner_dl_bert", "hub":"johnsnowlabs"},
+task="ner",
+load_testcases=True)
 ```
 
 Once the harness is loaded, the test cases can then be run with any new model by calling `harness.run()`.
