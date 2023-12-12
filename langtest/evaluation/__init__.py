@@ -14,7 +14,7 @@ from llama_index.evaluation.retrieval.base import (
     BaseRetrievalMetric,
     RetrievalEvalResult,
 )
-
+import pandas as pd
 from collections import defaultdict
 
 TESTS = {
@@ -64,13 +64,8 @@ class Evaluator(BaseEvaluator):
 class LangtestRetrieverEvaluator(RetrieverEvaluator):
     """ """
 
-    # retriever: BaseRetriever = Field(..., description="Retriever to evaluate")
-    # metrics: Sequence[BaseRetrievalMetric] = Field(
-    #     ..., description="List of metrics to evaluate"
-    # )
-
-    # class Config:
-    #     arbitrary_types_allowed = True
+    eval_results = defaultdict(list)
+    _service_context = ServiceContext.from_defaults()
 
     def __init__(
         self,
@@ -80,7 +75,6 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
     ) -> None:
         """Init params."""
         super().__init__(metrics=metrics, retriever=retriever, **kwargs)
-        # self.metrics = metrics
         self.retriever = retriever
         # self._config = config or TESTS.keys()
 
@@ -94,30 +88,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         retrieved_nodes = await self.retriever.aretrieve(query)
         return [node.node.node_id for node in retrieved_nodes]
 
-    # async def aevaluate(
-    #     self,
-    #     query: Optional[str] = None,
-    #     expected_ids: List[str] = None,
-    #     mode: RetrievalEvalMode = RetrievalEvalMode.TEXT,
-    #     **kwargs: Any,
-    # ) -> RetrievalEvalResult:
-    #     """Run evaluation with query string, retrieved contexts,"""
-
-    #     retrieved_ids = await self._aget_retrieved_ids(query, mode)
-    #     metric_dict = {}
-    #     for metric in self.metrics:
-    #         eval_result = metric.compute(query, expected_ids, retrieved_ids)
-    #         metric_dict[metric.metric_name] = eval_result
-
-    #     return RetrievalEvalResult(
-    #         query=query,
-    #         expected_ids=expected_ids,
-    #         retrieved_ids=retrieved_ids,
-    #         mode=mode,
-    #         metric_dict=metric_dict,
-    #     )
-
-    async def aaevaluate_dataset(
+    async def aevaluate_dataset(
         self,
         dataset: EmbeddingQAFinetuneDataset,
         workers: int = 2,
@@ -143,12 +114,11 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
                 )
                 response_jobs[test_type].append(test_case_response)
 
-        eval_results = defaultdict(list)
         for test_type, responses in response_jobs.items():
             responses = await asyncio.gather(*responses)
-            eval_results[test_type] = responses
+            self.eval_results[test_type] = responses
 
-        return eval_results
+        return self.eval_results
 
     async def eval_worker(
         self,
@@ -161,3 +131,31 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         semaphore = asyncio.Semaphore(workers)
         async with semaphore:
             return await self.aevaluate(query, expected_ids=expected_ids, mode=mode)
+
+    def display_results(
+        self,
+    ):
+        metric_df = []
+        for test_name, results in self.eval_results.items():
+            metric_dicts = []
+            for eval_result in results:
+                metric_dict = eval_result.metric_vals_dict
+                metric_dicts.append(metric_dict)
+
+            full_df = pd.DataFrame(metric_dicts)
+
+            hit_rate = full_df["hit_rate"].mean()
+            mrr = full_df["mrr"].mean()
+
+            metric_df.append(
+                {
+                    "Embeddings Model": self._service_context.embed_model.model_name,
+                    "Test Name": test_name,
+                    "Hit Rate": hit_rate,
+                    "MRR": mrr,
+                }
+            )
+
+        final_df = pd.DataFrame(metric_df)
+
+        return final_df
