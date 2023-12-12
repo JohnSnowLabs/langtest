@@ -1,17 +1,13 @@
 import asyncio
 from typing import Any, Dict, List, Optional, Sequence
-from llama_index.bridge.pydantic import Field
-from pydantic import BaseModel
 from llama_index import ServiceContext
 from llama_index.finetuning.embeddings.common import EmbeddingQAFinetuneDataset
 from llama_index.prompts.mixin import PromptDictType
 from llama_index.evaluation.base import BaseEvaluator, EvaluationResult
-from llama_index.evaluation import RetrieverEvaluator, BaseRetrievalEvaluator
+from llama_index.evaluation import RetrieverEvaluator
 from llama_index.indices.base_retriever import BaseRetriever
 from llama_index.evaluation.retrieval.base import (
-    BaseRetrievalEvaluator,
     RetrievalEvalMode,
-    BaseRetrievalMetric,
     RetrievalEvalResult,
 )
 import pandas as pd
