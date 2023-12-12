@@ -141,7 +141,7 @@ Our team has published the below enlightening blogs on Hugging Face's community 
 {:.table2}
 | Blog | Description |
 | --- | --- |
-| LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA (To be Published ) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.| 
+| [LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA](https://medium.com/john-snow-labs/langtest-insights-a-deep-dive-into-llm-robustness-on-openbookqa-ab0ddcbd2ab1) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.| 
 | Unveiling Sentiments: Exploring LSTM-based Sentiment Analysis with PyTorch on the IMDB Dataset (To be Published ) | Explore the robustness of custom models with LangTest Insights. |
 | LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models (To be Published ) | Explore the robustness of Transformers Language Models with LangTest Insights. |
 
