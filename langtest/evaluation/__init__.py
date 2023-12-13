@@ -12,13 +12,9 @@ from llama_index.evaluation.retrieval.base import (
 )
 import pandas as pd
 from collections import defaultdict
+from langtest.transform import TestFactory
 
-TESTS = {
-    "uppercase": lambda x: x.upper(),
-    "lowercase": lambda x: x.lower(),
-    "titlecase": lambda x: x.title(),
-    "capitalize": lambda x: x.capitalize(),
-}
+TESTS = TestFactory.test_scenarios().get("robustness")
 
 
 class Evaluator(BaseEvaluator):
@@ -62,6 +58,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
     eval_results = defaultdict(list)
     _service_context = ServiceContext.from_defaults()
+    _config = TESTS.keys()
 
     def __init__(
         self,
