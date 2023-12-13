@@ -70,7 +70,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         super().__init__(metrics=metrics, retriever=retriever, **kwargs)
         self.retriever = retriever
 
-    def configure(self, config: List):
+    def setPerturbations(self, config: List):
         self.config = config
 
     async def _aget_retrieved_ids(
