@@ -162,3 +162,49 @@ class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
+
+class SimplePromptTemplate:
+    """Simple prompt template for formatting messages with variables."""
+
+    def __init__(self, input_variables: list, template: str):
+        """
+        Initialize the SimplePromptTemplate.
+
+        Args:
+            input_variables (list): A list of input variable names.
+            template (str): The template string containing variables.
+        """
+        self.input_variables = input_variables
+        self.template = template
+        self.partial_variables = {}
+
+    def format(self, **kwargs) -> str:
+        """
+        Format the prompt with provided variable values.
+
+        Args:
+            **kwargs: Variable values to substitute into the template.
+
+        Returns:
+            str: The formatted prompt.
+
+        Raises:
+            ValueError: If provided variables do not match expected input variables.
+        """
+        variables = {**self.partial_variables, **kwargs}
+        if set(variables.keys()) != set(self.input_variables):
+            raise ValueError("Provided variables do not match expected input variables.")
+        return self.template.format(**variables)
+
+    def partial(self, **kwargs) -> 'SimplePromptTemplate':
+        """
+        Set partial variable values for the prompt.
+
+        Args:
+            **kwargs: Partial variable values to be set.
+
+        Returns:
+            SimplePromptTemplate: The modified instance with partial variables.
+        """
+        self.partial_variables = {**self.partial_variables, **kwargs}
+        return self
