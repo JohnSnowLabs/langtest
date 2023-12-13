@@ -703,7 +703,6 @@ class QASample(BaseQASample):
                     return True
 
                 if "llm" in str(type(self.eval_model.model)):
-                    print(self.eval_model, "111")
                     if self.dataset_name not in [
                         "BoolQ",
                         "PubMedQA",
@@ -748,7 +747,6 @@ class QASample(BaseQASample):
                             prediction_key="text",
                         )
                     else:
-                        print(self.eval_model.model, "122")
                         eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model)
                         graded_outputs = eval_chain.evaluate(
                             [
@@ -773,7 +771,6 @@ class QASample(BaseQASample):
                     self.ran_pass = result
                     return result
                 else:
-                    print(self.eval_model.model, "133")
                     prediction = self.eval_model(
                         text={
                             "query": self.perturbed_question,
