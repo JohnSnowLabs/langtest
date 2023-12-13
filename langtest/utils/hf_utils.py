@@ -37,9 +37,13 @@ def get_model_n_tokenizer(model_name):
             AutoModelForSeq2SeqLM,
             AutoTokenizer,
         )
-        from huggingface_hub import login
     except ImportError:
         raise ValueError(Errors.E085)
+
+    try:
+        from huggingface_hub import login
+    except ImportError:
+        raise ValueError(Errors.E089)
 
     if "HUGGINGFACEHUB_API_TOKEN" in os.environ:
         login(os.environ["HUGGINGFACEHUB_API_TOKEN"])

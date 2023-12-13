@@ -245,6 +245,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E087 = ("Could not load the {task} model due to missing dependencies.")
     E088 = ("Got device=={device}, "
             "device is required to be within [-1, {cuda_device_count})")
+    E089 = ("Error importing huggingface_hub module")
 
 
 class ColumnNameError(Exception):
