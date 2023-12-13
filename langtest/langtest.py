@@ -164,7 +164,9 @@ class Harness:
                 if hub in self.DEFAULTS_CONFIG[category]:
                     self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
                 else:
-                    self._config = self.configure(self.DEFAULTS_CONFIG[category]["default"])
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[category]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[category], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[category])
         elif self.task in self.DEFAULTS_CONFIG:
@@ -172,7 +174,9 @@ class Harness:
                 if hub in self.DEFAULTS_CONFIG[category]:
                     self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
                 else:
-                    self._config = self.configure(self.DEFAULTS_CONFIG[category]["default"])
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[category]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:

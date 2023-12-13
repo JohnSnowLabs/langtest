@@ -76,13 +76,12 @@ class Warnings(metaclass=ErrorsWithCodes):
             "the error caused by attempting to move the model that was already "
             "loaded on the GPU using the Accelerate module to the same or "
             "another device.")
-    W016 = ("Device has {cuda_device_count} GPUs available. " \
-            "Provide device={{deviceId}} to `from_model_id` to use available " \
-            "GPUs for execution. deviceId is -1 (default) for CPU and " \
+    W016 = ("Device has {cuda_device_count} GPUs available. "
+            "Provide device={{deviceId}} to `from_model_id` to use available "
+            "GPUs for execution. deviceId is -1 (default) for CPU and "
             "can be a positive integer associated with CUDA device id.")
     W017 = ("Unable to extract pipeline return_type. "
             "Received error:\n\n{e}")
-    
 
 
 class Errors(metaclass=ErrorsWithCodes):
@@ -239,14 +238,15 @@ class Errors(metaclass=ErrorsWithCodes):
     E082 = ("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
     E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
     E084 = ("OpenAI not installed. Install using !pip install openai==0.28.1 and set the openai.api_key = 'YOUR KEY' ")
-    E085 =("Could not import the transformers Python package. "
+    E085 = ("Could not import the transformers Python package. "
             "Please install it with `pip install transformers`.")
-    E086 =("Got an invalid task {task}."
+    E086 = ("Got an invalid task {task}."
             "Currently, only {'text2text-generation', 'text-generation', 'summarization'} are supported.")
-    E087 =("Could not load the {task} model due to missing dependencies.")
-    E088 =("Got device=={device}, "
+    E087 = ("Could not load the {task} model due to missing dependencies.")
+    E088 = ("Got device=={device}, "
             "device is required to be within [-1, {cuda_device_count})")
-            
+
+
 class ColumnNameError(Exception):
     """ColumnNameError class is used to raise an exception
     when the column name is not found in the dataset."""

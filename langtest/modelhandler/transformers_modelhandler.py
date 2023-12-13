@@ -13,6 +13,8 @@ from langtest.transform.utils import compare_generations_overlap
 from ..errors import Errors
 from ..utils.custom_types.helpers import SimplePromptTemplate
 from ..utils.hf_utils import HuggingFacePipeline
+
+
 class PretrainedModelForNER(ModelAPI):
     """Transformers pretrained model for NER tasks
 
@@ -552,16 +554,6 @@ class PretrainedModelForQA(ModelAPI):
         self.model = model
 
     @classmethod
-    def load_model(cls, path: str,**kwargs):
-        """Load the model into the `model` attribute.
-
-        Args:
-            path (str): Path to model or model name.
-
-        Returns:
-            tuple: A tuple containing the loaded model and tokenizer.
-        """
-    @classmethod
     def load_model(cls, path: str, **kwargs):
         """Load the model into the `model` attribute.
 
@@ -572,22 +564,20 @@ class PretrainedModelForQA(ModelAPI):
             tuple: A tuple containing the loaded model and tokenizer.
         """
         new_tokens_key = "max_new_tokens"
-        if 'max_tokens' in kwargs:
+        if "max_tokens" in kwargs:
             kwargs[new_tokens_key] = kwargs.pop("max_tokens")
         else:
             kwargs[new_tokens_key] = 64
-        task = kwargs.pop('task', "text-generation")
-        kwargs.pop('temperature', None)
-        device = kwargs.pop('device', -1)
+        task = kwargs.pop("task", "text-generation")
+        kwargs.pop("temperature", None)
+        device = kwargs.pop("device", -1)
 
-    
         if isinstance(path, str):
             model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
         else:
             model = HuggingFacePipeline(pipeline=path)
 
         return cls(model)
-
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Perform predictions on the input text.

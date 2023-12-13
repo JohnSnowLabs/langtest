@@ -13,6 +13,7 @@ import os
 from langtest.transform.utils import compare_generations_overlap
 import logging
 
+
 class PretrainedModelForQA(ModelAPI):
     """A class representing a pretrained model for question answering.
 
@@ -25,12 +26,13 @@ class PretrainedModelForQA(ModelAPI):
         ValueError: If the model is not found online or locally.
         ConfigError: If there is an error in the model configuration.
     """
+
     HUB_PARAM_MAPPING = {
-        'azure-openai': 'max_tokens',
-        'ai21': 'maxTokens',
-        'cohere': 'max_tokens',
-        'openai': 'max_tokens',
-        'huggingface-inference-api': 'max_length',
+        "azure-openai": "max_tokens",
+        "ai21": "maxTokens",
+        "cohere": "max_tokens",
+        "openai": "max_tokens",
+        "huggingface-inference-api": "max_length",
     }
 
     def __init__(self, hub: str, model: Any, *args, **kwargs):
@@ -66,7 +68,7 @@ class PretrainedModelForQA(ModelAPI):
             ConfigError: If there is an error in the model configuration.
         """
         try:
-            kwargs.pop('task', None), kwargs.pop('device', None)
+            kwargs.pop("task", None), kwargs.pop("device", None)
             cls._update_model_parameters(hub, kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
                 model = cm.ChatOpenAI(model=path, *args, **kwargs)
@@ -104,10 +106,10 @@ class PretrainedModelForQA(ModelAPI):
             kwargs (dict): Keyword arguments to be updated.
         """
         if hub == "azure-openai" and "deployment_name" not in kwargs:
-            kwargs["deployment_name"] = 'text-davinci-003'
+            kwargs["deployment_name"] = "text-davinci-003"
             logging.warning(Warnings.W014.format(hub=hub, kwargs=kwargs))
 
-        if 'max_tokens' in kwargs and hub in cls.HUB_PARAM_MAPPING:
+        if "max_tokens" in kwargs and hub in cls.HUB_PARAM_MAPPING:
             new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
             kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 

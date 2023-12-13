@@ -2,14 +2,18 @@ from pkg_resources import resource_filename
 
 
 LLM_DEFAULTS_CONFIG = {
-    "azure-openai": resource_filename("langtest", "data/config/QA_summarization_azure_config.yml"),
-    "huggingface": resource_filename("langtest", "data/config/QA_summarization_huggingface_config.yml"),
+    "azure-openai": resource_filename(
+        "langtest", "data/config/QA_summarization_azure_config.yml"
+    ),
+    "huggingface": resource_filename(
+        "langtest", "data/config/QA_summarization_huggingface_config.yml"
+    ),
     "default": resource_filename("langtest", "data/config/QA_summarization_config.yml"),
 }
 
 DEFAULTS_CONFIG = {
-    "question-answering": LLM_DEFAULTS_CONFIG ,
-    "summarization":  LLM_DEFAULTS_CONFIG ,
+    "question-answering": LLM_DEFAULTS_CONFIG,
+    "summarization": LLM_DEFAULTS_CONFIG,
     "ideology": resource_filename("langtest", "data/config/political_config.yml"),
     "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
     "clinical-tests": resource_filename("langtest", "data/config/clinical_config.yml"),
@@ -20,9 +24,21 @@ DEFAULTS_CONFIG = {
     "disinformation-test": resource_filename("langtest", "disinformation_config.yml"),
     "factuality-test": resource_filename("langtest", "factuality_config.yml"),
     "sycophancy-test": resource_filename("langtest", "data/config/sycophancy_config.yml"),
-    "sensitivity-test": resource_filename("langtest", "data/config/sensitivity_config.yml"),
-    "translation": {"default": resource_filename("langtest", "data/config/translation_transformers_config.yml"),
-                    "johnsnowlabs": resource_filename("langtest", "data/config/translation_johnsnowlabs_config.yml"),},
-    "wino-bias": {"huggingface": resource_filename("langtest", "data/config/wino_huggingface_config.yml"),
-                    "default": resource_filename("langtest", "data/config/wino_llm_config.yml")},
+    "sensitivity-test": resource_filename(
+        "langtest", "data/config/sensitivity_config.yml"
+    ),
+    "translation": {
+        "default": resource_filename(
+            "langtest", "data/config/translation_transformers_config.yml"
+        ),
+        "johnsnowlabs": resource_filename(
+            "langtest", "data/config/translation_johnsnowlabs_config.yml"
+        ),
+    },
+    "wino-bias": {
+        "huggingface": resource_filename(
+            "langtest", "data/config/wino_huggingface_config.yml"
+        ),
+        "default": resource_filename("langtest", "data/config/wino_llm_config.yml"),
+    },
 }

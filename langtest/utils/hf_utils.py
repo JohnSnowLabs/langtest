@@ -40,7 +40,7 @@ def get_model_n_tokenizer(model_name):
         from huggingface_hub import login
     except ImportError:
         raise ValueError(Errors.E085)
-    
+
     if "HUGGINGFACEHUB_API_TOKEN" in os.environ:
         login(os.environ["HUGGINGFACEHUB_API_TOKEN"])
 
@@ -149,8 +149,10 @@ class HuggingFacePipeline:
             self.pipeline = pipeline
         else:
             self.pipeline = self._initialize_pipeline(model_id, task, device, **kwargs)
-            
-    def _initialize_pipeline(self, model_id: str, task: str, device: Optional[int], **kwargs: Any) -> Any:
+
+    def _initialize_pipeline(
+        self, model_id: str, task: str, device: Optional[int], **kwargs: Any
+    ) -> Any:
         try:
             from transformers import (
                 AutoModelForCausalLM,
@@ -174,9 +176,7 @@ class HuggingFacePipeline:
             else:
                 raise ValueError(Errors.E086.format(task=task))
         except ImportError as e:
-            raise ValueError(
-                Errors.E087.format(task=task)
-            ) from e
+            raise ValueError(Errors.E087.format(task=task)) from e
 
         if (
             getattr(model, "is_loaded_in_4bit", False)
@@ -190,11 +190,11 @@ class HuggingFacePipeline:
 
             cuda_device_count = torch.cuda.device_count()
             if device < -1 or (device >= cuda_device_count):
-                raise ValueError(Errors.E088.format(device=device,cuda_device_count=cuda_device_count )
+                raise ValueError(
+                    Errors.E088.format(device=device, cuda_device_count=cuda_device_count)
                 )
             if device < 0 and cuda_device_count > 0:
                 logging.warning(Warnings.W016.format(cuda_device_count=cuda_device_count))
-
 
         return hf_pipeline(
             task=task,
@@ -203,7 +203,6 @@ class HuggingFacePipeline:
             device=device,
             **kwargs,
         )
-
 
     def _generate(self, prompts: List[str]) -> List[str]:
         text_generations: List[str] = []

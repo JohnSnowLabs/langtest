@@ -163,6 +163,7 @@ class Transformation(BaseModel):
     new_span: Span
     ignore: bool = False
 
+
 class SimplePromptTemplate:
     """Simple prompt template for formatting messages with variables."""
 
@@ -196,7 +197,7 @@ class SimplePromptTemplate:
             raise ValueError("Provided variables do not match expected input variables.")
         return self.template.format(**variables)
 
-    def partial(self, **kwargs) -> 'SimplePromptTemplate':
+    def partial(self, **kwargs) -> "SimplePromptTemplate":
         """
         Set partial variable values for the prompt.
 

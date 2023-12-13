@@ -432,8 +432,8 @@ class BaseQASample(BaseModel):
         if options and len(options) > 1:
             input_data["options"] = options
         return input_data
-    
-    def build_prompt(self,input_data, **kwargs):
+
+    def build_prompt(self, input_data, **kwargs):
         """Builds the prompt for the model.
 
         Args:
@@ -453,7 +453,7 @@ class BaseQASample(BaseModel):
         )
         prompt = {"template": prompt_template, "input_variables": list(input_data.keys())}
         return prompt
-    
+
     def run(self, model, **kwargs):
         """Runs the original and perturbed sentences through the model"""
 
@@ -462,19 +462,19 @@ class BaseQASample(BaseModel):
         original_text_input = self.build_input(
             context=self.original_context,
             question=self.original_question,
-            options=self.options
+            options=self.options,
         )
 
         perturbed_text_input = self.build_input(
             context=self.perturbed_context,
             question=self.perturbed_question,
-            options=self.options
+            options=self.options,
         )
 
-        prompt=self.build_prompt(original_text_input,**kwargs)
+        prompt = self.build_prompt(original_text_input, **kwargs)
 
         self.expected_results = model(text=original_text_input, prompt=prompt)
-        
+
         if self.perturbed_context or self.perturbed_question:
             self.actual_results = model(text=perturbed_text_input, prompt=prompt)
         tokens += len(
@@ -532,7 +532,10 @@ class QASample(BaseQASample):
         }
 
         optional_fields = [
-            ("original_context", (self.original_context is None or len(self.original_context) > 1)),
+            (
+                "original_context",
+                (self.original_context is None or len(self.original_context) > 1),
+            ),
             ("perturbed_context", len(self.original_context) > 1),
             ("options", len(self.options) > 1),
         ]
@@ -675,6 +678,7 @@ class QASample(BaseQASample):
                 from langchain.evaluation.qa import QAEvalChain
                 from ...transform.constants import qa_prompt_template
                 from langchain.prompts import PromptTemplate
+
                 if self.dataset_name in [
                     "BoolQ",
                     "asdiv",
@@ -699,7 +703,7 @@ class QASample(BaseQASample):
                     return True
 
                 if "llm" in str(type(self.eval_model.model)):
-                    print(self.eval_model,"111")
+                    print(self.eval_model, "111")
                     if self.dataset_name not in [
                         "BoolQ",
                         "PubMedQA",
@@ -744,7 +748,7 @@ class QASample(BaseQASample):
                             prediction_key="text",
                         )
                     else:
-                        print(self.eval_model.model,"122")
+                        print(self.eval_model.model, "122")
                         eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model)
                         graded_outputs = eval_chain.evaluate(
                             [
@@ -769,7 +773,7 @@ class QASample(BaseQASample):
                     self.ran_pass = result
                     return result
                 else:
-                    print(self.eval_model.model,"133")
+                    print(self.eval_model.model, "133")
                     prediction = self.eval_model(
                         text={
                             "query": self.perturbed_question,
