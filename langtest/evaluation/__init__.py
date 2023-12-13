@@ -70,8 +70,13 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         super().__init__(metrics=metrics, retriever=retriever, **kwargs)
         self.retriever = retriever
 
-    def setPerturbations(self, config: List):
-        self.config = config
+    def setPerturbations(self, *args):
+        self.config = []
+        for arg in args:
+            if isinstance(arg, str) and arg in TESTS.keys():
+                self.config.append(arg)
+            else:
+                raise ValueError("Invalid perturbation type")
 
     async def _aget_retrieved_ids(
         self, query: str, mode: RetrievalEvalMode = RetrievalEvalMode.TEXT
