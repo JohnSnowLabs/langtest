@@ -58,7 +58,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
     eval_results = defaultdict(list)
     _service_context = ServiceContext.from_defaults()
-    _config = TESTS.keys()
+    config = TESTS.keys()
 
     def __init__(
         self,
@@ -71,7 +71,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         self.retriever = retriever
 
     def configure(self, config: List):
-        self._config = config
+        self.config = config
 
     async def _aget_retrieved_ids(
         self, query: str, mode: RetrievalEvalMode = RetrievalEvalMode.TEXT
