@@ -58,7 +58,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
     eval_results = defaultdict(list)
     _service_context = ServiceContext.from_defaults()
-    config = TESTS.keys()
+    config = ["uppercase","lowercase","add_typo"]
 
     def __init__(
         self,
@@ -98,7 +98,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
                 query=query, expected_ids=expected_ids, mode=mode, workers=workers
             )
             response_jobs["original_query"].append(original_response)
-            for test_type in  self._config:
+            for test_type in  self.config:
                 test_case = TESTS[test_type].transform([query])
                 test_case_response = self.eval_worker(
                     query=test_case[0], expected_ids=expected_ids, mode=mode, workers=workers
