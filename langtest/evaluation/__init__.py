@@ -69,9 +69,8 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         """Init params."""
         super().__init__(metrics=metrics, retriever=retriever, **kwargs)
         self.retriever = retriever
-        # self._config = config or TESTS.keys()
 
-    def configure(self, config: dict):
+    def configure(self, config: List):
         self._config = config
 
     async def _aget_retrieved_ids(
@@ -98,12 +97,11 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
             original_response = self.eval_worker(
                 query=query, expected_ids=expected_ids, mode=mode, workers=workers
             )
-            response_jobs["original"].append(original_response)
-            for test_type in list(TESTS.keys()):
-                # test case
-                test_case = TESTS[test_type](query)
+            response_jobs["original_query"].append(original_response)
+            for test_type in  self._config:
+                test_case = TESTS[test_type].transform([query])
                 test_case_response = self.eval_worker(
-                    query=test_case, expected_ids=expected_ids, mode=mode, workers=workers
+                    query=test_case[0], expected_ids=expected_ids, mode=mode, workers=workers
                 )
                 response_jobs[test_type].append(test_case_response)
 
@@ -142,8 +140,8 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
             metric_df.append(
                 {
-                    "Embeddings Model": self._service_context.embed_model.model_name,
-                    "Test Name": test_name,
+                    "Retriever Model": self._service_context.embed_model.model_name,
+                    "Test Type": test_name,
                     "Hit Rate": hit_rate,
                     "MRR": mrr,
                 }
