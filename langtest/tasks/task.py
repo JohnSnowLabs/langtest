@@ -301,6 +301,7 @@ class QuestionAnswering(BaseTask):
     _default_col = {
         "text": ["question"],
         "context": ["context", "passage", "contract"],
+        "options": ["options"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
     }
     sample_class = samples.QASample
@@ -311,12 +312,13 @@ class QuestionAnswering(BaseTask):
         dataset_name: str = "qa",
         question: str = "text",
         context: str = "context",
+        options:str ="options",
         target_column: str = "answer",
     ) -> samples.QASample:
         """Create a sample."""
         keys = list(row_data.keys())
         # auto-detect the default column names from the row_data
-        column_mapper = cls.column_mapping(keys, [question, context, target_column])
+        column_mapper = cls.column_mapping(keys, [question, context, target_column, options])
 
         expected_results = (
             row_data.get(column_mapper[target_column], None)
@@ -329,6 +331,7 @@ class QuestionAnswering(BaseTask):
         return samples.QASample(
             original_question=row_data[column_mapper[question]],
             original_context=row_data.get(column_mapper.get(context, "-"), "-"),
+            options = row_data.get(column_mapper.get(options, "-"), "-"),
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
