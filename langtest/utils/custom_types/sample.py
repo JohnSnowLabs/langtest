@@ -534,10 +534,13 @@ class QASample(BaseQASample):
         optional_fields = [
             (
                 "original_context",
-                (self.original_context is None or len(self.original_context) > 1),
+                self.original_context is None or len(self.original_context) > 1,
             ),
-            ("perturbed_context", len(self.original_context) > 1),
-            ("options", len(self.options) > 1),
+            (
+                "perturbed_context",
+                self.original_context is None or len(self.original_context) > 1,
+            ),
+            ("options", self.options is None or len(self.options) > 1),
         ]
 
         for field, condition in optional_fields:
