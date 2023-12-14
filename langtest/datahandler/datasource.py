@@ -1544,7 +1544,11 @@ class HuggingFaceDataset(BaseDataset):
             dataset = self.load_dataset(self.dataset_name, split=split)
 
         labels = None
-        if hasattr(dataset, "features") and hasattr(dataset.features[target_column], "names") and self.task == "text-classification":
+        if (
+            hasattr(dataset, "features")
+            and hasattr(dataset.features[target_column], "names")
+            and self.task == "text-classification"
+        ):
             labels = dataset.features[target_column].names
 
         data = []
