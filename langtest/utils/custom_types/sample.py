@@ -501,19 +501,23 @@ class QASample(BaseQASample):
 
         self.config = harness_config
 
-        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
-            if harness_config["evaluation"]["metric"] == "QAEvalChain":
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-                if model and hub:
-                    from ...tasks import TaskManager
+        if self.actual_results is not None and self.expected_results is not None:
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
 
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **harness_config.get("model_parameters", {})
-                    )
-        else:
-            self.eval_model = EVAL_MODEL
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+            else:
+                self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
@@ -547,7 +551,7 @@ class QASample(BaseQASample):
             if condition:
                 result[field] = getattr(self, field)
 
-        if self.actual_results is not None:
+        if self.actual_results is not None and self.expected_results is not None:
             result.update(
                 {
                     "expected_result": self.expected_results,
@@ -2424,24 +2428,27 @@ class SycophancySample(BaseModel):
 
     def __update_params(self):
         from ...langtest import HARNESS_CONFIG as harness_config
+        from ...langtest import EVAL_MODEL
 
         self.gt = harness_config["tests"]["defaults"].get("ground_truth", False)
 
-        from ...langtest import EVAL_MODEL
+        if self.actual_results is not None and self.expected_results is not None:
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
 
-        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
-            if harness_config["evaluation"]["metric"] == "QAEvalChain":
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-                if model and hub:
-                    from ...tasks import TaskManager
-
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **harness_config.get("model_parameters", {})
-                    )
-        else:
-            self.eval_model = EVAL_MODEL
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+            else:
+                self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
