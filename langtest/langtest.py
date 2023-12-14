@@ -18,7 +18,8 @@ from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
 from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
-from .utils import report_utils as report
+from .utils import report_utils as report, config_utils
+
 
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
@@ -79,82 +80,8 @@ class Harness:
         "ai21",
         "huggingface-inference-api",
     ]
-    LLM_DEFAULTS_CONFIG = {
-        "azure-openai": resource_filename("langtest", "data/config/azure_config.yml"),
-        "openai": resource_filename("langtest", "data/config/openai_config.yml"),
-        "cohere": resource_filename("langtest", "data/config/cohere_config.yml"),
-        "ai21": resource_filename("langtest", "data/config/ai21_config.yml"),
-        "huggingface-inference-api": resource_filename(
-            "langtest", "data/config/huggingface_config.yml"
-        ),
-    }
 
-    DEFAULTS_CONFIG = {
-        "question-answering": LLM_DEFAULTS_CONFIG,
-        "summarization": LLM_DEFAULTS_CONFIG,
-        "ideology": resource_filename("langtest", "data/config/political_config.yml"),
-        "toxicity": resource_filename("langtest", "data/config/toxicity_config.yml"),
-        "clinical-tests": resource_filename(
-            "langtest", "data/config/clinical_config.yml"
-        ),
-        "legal-tests": resource_filename("langtest", "data/config/legal_config.yml"),
-        "crows-pairs": resource_filename(
-            "langtest", "data/config/crows_pairs_config.yml"
-        ),
-        "stereoset": resource_filename("langtest", "data/config/stereoset_config.yml"),
-        "security": resource_filename("langtest", "data/config/security_config.yml"),
-        "sensitivity-test": resource_filename(
-            "langtest", "data/config/sensitivity_config.yml"
-        ),
-        "disinformation-test": {
-            "huggingface-inference-api": resource_filename(
-                "langtest", "data/config/disinformation_huggingface_config.yml"
-            ),
-            "openai": resource_filename(
-                "langtest", "data/config/disinformation_openai_config.yml"
-            ),
-            "ai21": resource_filename(
-                "langtest", "data/config/disinformation_openai_config.yml"
-            ),
-        },
-        "factuality-test": {
-            "huggingface-inference-api": resource_filename(
-                "langtest", "data/config/factuality_huggingface_config.yml"
-            ),
-            "openai": resource_filename(
-                "langtest", "data/config/factuality_openai_config.yml"
-            ),
-            "ai21": resource_filename(
-                "langtest", "data/config/factuality_openai_config.yml"
-            ),
-        },
-        "translation": {
-            "huggingface": resource_filename(
-                "langtest", "data/config/translation_transformers_config.yml"
-            ),
-            "johnsnowlabs": resource_filename(
-                "langtest", "data/config/translation_johnsnowlabs_config.yml"
-            ),
-        },
-        "sycophancy-test": {
-            "huggingface-inference-api": resource_filename(
-                "langtest", "data/config/sycophancy_huggingface_config.yml"
-            ),
-            "openai": resource_filename(
-                "langtest", "data/config/sycophancy_openai_config.yml"
-            ),
-            "ai21": resource_filename(
-                "langtest", "data/config/sycophancy_openai_config.yml"
-            ),
-        },
-        "wino-bias": {
-            "huggingface": resource_filename(
-                "langtest", "data/config/wino_huggingface_config.yml"
-            ),
-            "openai": resource_filename("langtest", "data/config/wino_openai_config.yml"),
-            "ai21": resource_filename("langtest", "data/config/wino_ai21_config.yml"),
-        },
-    }
+    DEFAULTS_CONFIG = config_utils.DEFAULTS_CONFIG
 
     def __init__(
         self,
@@ -191,6 +118,7 @@ class Harness:
         elif isinstance(model, dict):
             if "model" not in model or "hub" not in model:
                 raise ValueError(Errors.E002)
+
         else:
             raise ValueError(Errors.E003)
 
@@ -233,12 +161,22 @@ class Harness:
         elif self.task.category in self.DEFAULTS_CONFIG:
             category = self.task.category
             if isinstance(self.DEFAULTS_CONFIG[category], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+                if hub in self.DEFAULTS_CONFIG[category]:
+                    self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+                else:
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[category]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[category], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[category])
         elif self.task in self.DEFAULTS_CONFIG:
             if isinstance(self.DEFAULTS_CONFIG[self.task], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+                if hub in self.DEFAULTS_CONFIG[self.task]:
+                    self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+                else:
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[self.task]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:
@@ -596,6 +534,7 @@ class Harness:
             "log_prob_stereo",
             "log_prob_antistereo",
             "diff_threshold",
+            "options",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
@@ -606,7 +545,6 @@ class Harness:
             "correct_sentence",
             "incorrect_sentence",
             "ground_truth",
-            "options",
             "result",
             "swapped_result",
             "model_response",

@@ -5,12 +5,13 @@ import langchain.chat_models as cm
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
-from ..errors import Errors
+from ..errors import Errors, Warnings
 
 from ..metrics import EmbeddingDistance
 from langchain import OpenAI
 import os
 from langtest.transform.utils import compare_generations_overlap
+import logging
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -25,6 +26,14 @@ class PretrainedModelForQA(ModelAPI):
         ValueError: If the model is not found online or locally.
         ConfigError: If there is an error in the model configuration.
     """
+
+    HUB_PARAM_MAPPING = {
+        "azure-openai": "max_tokens",
+        "ai21": "maxTokens",
+        "cohere": "max_tokens",
+        "openai": "max_tokens",
+        "huggingface-inference-api": "max_length",
+    }
 
     def __init__(self, hub: str, model: Any, *args, **kwargs):
         """Constructor class
@@ -59,6 +68,8 @@ class PretrainedModelForQA(ModelAPI):
             ConfigError: If there is an error in the model configuration.
         """
         try:
+            kwargs.pop("task", None), kwargs.pop("device", None)
+            cls._update_model_parameters(hub, kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
                 model = cm.ChatOpenAI(model=path, *args, **kwargs)
                 return cls(hub, model, *args, **kwargs)
@@ -82,9 +93,25 @@ class PretrainedModelForQA(ModelAPI):
             error_msg = [err["loc"][0] for err in e.errors()]
             raise ConfigError(
                 Errors.E045.format(
-                    path=path, hub=hub, field=error_msg[0], required_fields=error_msg
+                    path=path, hub=hub, field=error_msg[0], error_message=e
                 )
             )
+
+    @classmethod
+    def _update_model_parameters(cls, hub: str, kwargs: dict):
+        """Update model parameters based on the hub's mapping.
+
+        Args:
+            hub (str): The hub name for the model.
+            kwargs (dict): Keyword arguments to be updated.
+        """
+        if hub == "azure-openai" and "deployment_name" not in kwargs:
+            kwargs["deployment_name"] = "text-davinci-003"
+            logging.warning(Warnings.W014.format(hub=hub, kwargs=kwargs))
+
+        if "max_tokens" in kwargs and hub in cls.HUB_PARAM_MAPPING:
+            new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
+            kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform prediction using the pretrained model.

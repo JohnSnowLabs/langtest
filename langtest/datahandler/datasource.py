@@ -55,6 +55,7 @@ COLUMN_MAPPER = {
         "text": ["question"],
         "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
+        "options": ["opyions"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
@@ -247,6 +248,7 @@ class DataFactory:
                         QASample(
                             original_question=item["original_question"],
                             original_context=item.get("original_context", "-"),
+                            options=item.get("options", "-"),
                             perturbed_question=item["perturbed_question"],
                             perturbed_context=item.get("perturbed_context", "-"),
                             test_type=item["test_type"],
@@ -365,7 +367,13 @@ class DataFactory:
             "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "CommonsenseQA": {
-                "split": ("test-tiny", "test", "validation-tiny", "validation"),
+                "split": (
+                    "test-tiny",
+                    "test",
+                    "validation-tiny",
+                    "validation",
+                    "sample-test-tiny",
+                ),
                 "extension": ".jsonl",
             },
             "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},

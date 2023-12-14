@@ -2,7 +2,6 @@ from typing import Dict, List, Tuple, Union
 
 import numpy as np
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
-
 from .modelhandler import ModelAPI
 from ..utils.custom_types import (
     NEROutput,
@@ -10,10 +9,10 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-from langtest.utils.lib_manager import try_import_lib
-import importlib
 from langtest.transform.utils import compare_generations_overlap
 from ..errors import Errors
+from ..utils.custom_types.helpers import SimplePromptTemplate
+from ..utils.hf_utils import HuggingFacePipeline
 
 
 class PretrainedModelForNER(ModelAPI):
@@ -548,35 +547,37 @@ class PretrainedModelForQA(ModelAPI):
         Args:
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
         """
-        assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+        assert isinstance(model, HuggingFacePipeline), ValueError(
+            Errors.E079.format(Pipeline=HuggingFacePipeline, type_model=type(model))
         )
 
         self.model = model
-        self._check_langchain_package()
-
-    def _check_langchain_package(self):
-        LIB_NAME = "langchain"
-        if try_import_lib(LIB_NAME):
-            langchain = importlib.import_module(LIB_NAME)
-            self.PromptTemplate = getattr(langchain, "PromptTemplate")
-        else:
-            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
     @classmethod
-    def load_model(cls, path: str, **kwargs) -> "Pipeline":
-        """Load the QA model into the `model` attribute.
+    def load_model(cls, path: str, **kwargs):
+        """Load the model into the `model` attribute.
 
         Args:
-            path (str):
-                path to model or model name
+            path (str): Path to model or model name.
 
         Returns:
-            'Pipeline':
+            tuple: A tuple containing the loaded model and tokenizer.
         """
-        if "task" in kwargs.keys():
-            kwargs.pop("task")
-        return cls(pipeline(task="text-generation", model=path, **kwargs))
+        new_tokens_key = "max_new_tokens"
+        if "max_tokens" in kwargs:
+            kwargs[new_tokens_key] = kwargs.pop("max_tokens")
+        else:
+            kwargs[new_tokens_key] = 64
+        task = kwargs.pop("task", "text-generation")
+        kwargs.pop("temperature", None)
+        device = kwargs.pop("device", -1)
+
+        if isinstance(path, str):
+            model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
+        else:
+            model = HuggingFacePipeline(pipeline=path)
+
+        return cls(model)
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Perform predictions on the input text.
@@ -589,10 +590,11 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             str: Output model for QA tasks
         """
-        prompt_template = self.PromptTemplate(**prompt)
+
+        prompt_template = SimplePromptTemplate(**prompt)
         p = prompt_template.format(**text)
-        prediction = self.model(p, **kwargs)
-        return prediction[0]["generated_text"][len(p) :]
+        output = self.model._generate([p])
+        return output[0]
 
     def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """Alias of the 'predict' method"""
@@ -764,6 +766,26 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
 class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for SycophancyTest
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for legal-tests.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.

@@ -1,7 +1,0 @@
-tests:
-  defaults:
-    min_pass_rate: 1.0
-
-  stereotype:
-    wino-bias:
-      min_pass_rate: 0.70

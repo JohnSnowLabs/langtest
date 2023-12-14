@@ -1,4 +1,3 @@
-# this section is only required for LLM models
 model_parameters:
   temperature: 0.2
   max_tokens: 200

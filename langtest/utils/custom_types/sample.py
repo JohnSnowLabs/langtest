@@ -366,6 +366,7 @@ class BaseQASample(BaseModel):
 
     original_question: str
     original_context: str
+    options: str
     test_type: str = None
     perturbed_question: str = None
     perturbed_context: str = None
@@ -414,10 +415,34 @@ class BaseQASample(BaseModel):
             )
             self.category = func.__module__.split(".")[-1]
 
-    def run(self, model, **kwargs):
-        """Runs the original and perturbed sentences through the model"""
+    def build_input(self, context=None, question=None, options=None):
+        """Builds the input data for the model.
 
-        tokens = 1
+        Args:
+            context (str): The context for the input.
+            question (str): The question for the input.
+            options (List[str]): The list of options for the input.
+
+        Returns:
+            Dict[str, Union[str, List[str]]]: The input data.
+        """
+        input_data = {"question": question}
+        if context and len(context) > 1:
+            input_data["context"] = context
+        if options and len(options) > 1:
+            input_data["options"] = options
+        return input_data
+
+    def build_prompt(self, input_data, **kwargs):
+        """Builds the prompt for the model.
+
+        Args:
+            template (str): The prompt template.
+            input_data (Dict[str, Union[str, List[str]]]): The input data.
+
+        Returns:
+            Dict[str, Union[str, List[str]]]: The prompt data.
+        """
         dataset_name = (
             self.dataset_name.split("-")[0].lower()
             if self.dataset_name
@@ -426,25 +451,32 @@ class BaseQASample(BaseModel):
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )
-        self.expected_results = model(
-            text={"context": self.original_context, "question": self.original_question},
-            prompt={
-                "template": prompt_template,
-                "input_variables": ["context", "question"],
-            },
-        )
-        if self.perturbed_context or self.perturbed_question:
-            self.actual_results = model(
-                text={
-                    "context": self.perturbed_context,
-                    "question": self.perturbed_question,
-                },
-                prompt={
-                    "template": prompt_template,
-                    "input_variables": ["context", "question"],
-                },
-            )
+        prompt = {"template": prompt_template, "input_variables": list(input_data.keys())}
+        return prompt
 
+    def run(self, model, **kwargs):
+        """Runs the original and perturbed sentences through the model"""
+
+        tokens = 1
+
+        original_text_input = self.build_input(
+            context=self.original_context,
+            question=self.original_question,
+            options=self.options,
+        )
+
+        perturbed_text_input = self.build_input(
+            context=self.perturbed_context,
+            question=self.perturbed_question,
+            options=self.options,
+        )
+
+        prompt = self.build_prompt(original_text_input, **kwargs)
+
+        self.expected_results = model(text=original_text_input, prompt=prompt)
+
+        if self.perturbed_context or self.perturbed_question:
+            self.actual_results = model(text=perturbed_text_input, prompt=prompt)
         tokens += len(
             self.original_question.split()
             + (self.original_context.split() if self.original_context else "")
@@ -453,7 +485,7 @@ class BaseQASample(BaseModel):
 
 
 class QASample(BaseQASample):
-    """A class representing a sample for question answering task.
+    """A class representing a sample for the question answering task.
 
     Attributes:
         Inherits attributes from BaseQASample class.
@@ -469,19 +501,23 @@ class QASample(BaseQASample):
 
         self.config = harness_config
 
-        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
-            if harness_config["evaluation"]["metric"] == "QAEvalChain":
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-                if model and hub:
-                    from ...tasks import TaskManager
+        if self.actual_results is not None and self.expected_results is not None:
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
 
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **harness_config.get("model_parameters", {})
-                    )
-        else:
-            self.eval_model = EVAL_MODEL
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+            else:
+                self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
@@ -492,23 +528,34 @@ class QASample(BaseQASample):
 
         self.__update_params()
 
-        expected_result = self.expected_results
-        actual_result = self.actual_results
-
         result = {
             "category": self.category,
             "test_type": self.test_type,
             "original_question": self.original_question,
-            "original_context": self.original_context,
             "perturbed_question": self.perturbed_question,
-            "perturbed_context": self.perturbed_context,
         }
 
-        if actual_result is not None:
+        optional_fields = [
+            (
+                "original_context",
+                self.original_context is not None and len(self.original_context) > 1,
+            ),
+            (
+                "perturbed_context",
+                self.original_context is not None and len(self.original_context) > 1,
+            ),
+            ("options", self.options is not None and len(self.options) > 1),
+        ]
+
+        for field, condition in optional_fields:
+            if condition:
+                result[field] = getattr(self, field)
+
+        if self.actual_results is not None and self.expected_results is not None:
             result.update(
                 {
-                    "expected_result": expected_result,
-                    "actual_result": actual_result,
+                    "expected_result": self.expected_results,
+                    "actual_result": self.actual_results,
                     "pass": self.is_pass(),
                 }
             )
@@ -2376,24 +2423,27 @@ class SycophancySample(BaseModel):
 
     def __update_params(self):
         from ...langtest import HARNESS_CONFIG as harness_config
+        from ...langtest import EVAL_MODEL
 
         self.gt = harness_config["tests"]["defaults"].get("ground_truth", False)
 
-        from ...langtest import EVAL_MODEL
+        if self.actual_results is not None and self.expected_results is not None:
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
 
-        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
-            if harness_config["evaluation"]["metric"] == "QAEvalChain":
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-                if model and hub:
-                    from ...tasks import TaskManager
-
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **harness_config.get("model_parameters", {})
-                    )
-        else:
-            self.eval_model = EVAL_MODEL
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+            else:
+                self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
