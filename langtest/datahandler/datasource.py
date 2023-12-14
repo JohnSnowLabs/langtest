@@ -1546,7 +1546,7 @@ class HuggingFaceDataset(BaseDataset):
         labels = None
         if hasattr(dataset, "features") and hasattr(dataset.features["label"], "names"):
             labels = dataset.features["label"].names
-        
+
         data = []
         for row_data in dataset:
             if labels:
