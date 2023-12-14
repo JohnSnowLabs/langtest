@@ -1150,8 +1150,8 @@ class AccuracyTestFactory(ITests):
             y_true = y_true.apply(lambda x: x[0])
             X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
             y_pred = X_test.apply(model.predict_raw)
-            y_true = y_true.explode()
-            y_pred = y_pred.explode()
+            y_true = y_true.explode().apply(lambda x: x.lower())
+            y_pred = y_pred.explode().apply(lambda x: x.lower())
 
         elif raw_data[0].task == "question-answering":
             if raw_data[0].dataset_name is None:

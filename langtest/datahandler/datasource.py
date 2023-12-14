@@ -1543,8 +1543,14 @@ class HuggingFaceDataset(BaseDataset):
         else:
             dataset = self.load_dataset(self.dataset_name, split=split)
 
+        labels = None
+        if hasattr(dataset, "features") and hasattr(dataset.features["label"], "names"):
+            labels = dataset.features["label"].names
+        
         data = []
         for row_data in dataset:
+            if labels:
+                row_data[target_column] = labels[row_data[target_column]]
             sample = self.task.create_sample(
                 row_data, feature_column=feature_column, target_column=target_column
             )
