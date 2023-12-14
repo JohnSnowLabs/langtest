@@ -386,11 +386,8 @@ class DataFactory:
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
             "MedQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "PubMedQA": {
-                "split": (
-                    "pqaa",
-                    "pqal",
-                ),
-                "extension": ".jsonl",
+                "pqaa": {"split": ("test",), "extension": ".jsonl"},
+                "pqal": {"split": ("test",), "extension": ".jsonl"},
             },
             "MedMCQA": {
                 "MedMCQA-Test": {
