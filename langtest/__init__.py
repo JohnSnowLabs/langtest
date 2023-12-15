@@ -22,7 +22,9 @@ DataFactory is for handling of like csv, json, conll ...
 
 
 """
+
+__all__ = [Harness, ModelAPI, DataFactory]
+
 if try_import_lib("transformers"):
     from .callback import LangTestCallback
-
-__all__ = [Harness, ModelAPI, DataFactory, LangTestCallback]
+    __all__.append(LangTestCallback)
