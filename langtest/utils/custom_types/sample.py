@@ -707,7 +707,6 @@ class QASample(BaseQASample):
                 if "llm" in str(type(self.eval_model)):
                     if self.dataset_name not in [
                         "BoolQ",
-                        "PubMedQA",
                         "TruthfulQA",
                         "Quac",
                         "BBQ",
@@ -718,6 +717,8 @@ class QASample(BaseQASample):
                         "PrivacyPolicy",
                         "MedMCQATest",
                         "MedMCQAValidation",
+                        "pqaa",
+                        "pqal",
                         "MedQA",
                     ]:
                         PROMPT = PromptTemplate(

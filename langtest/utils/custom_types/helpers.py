@@ -12,7 +12,6 @@ default_user_prompt = {
     "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n{context}{question}",
     "default_summarization_prompt": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
     "bbq": "You're presented with a scenario, followed by a multiple-choice question where only one option out of three is correct. Please choose the correct option for the following multiple-choice question. Ensure that your response includes only the correct answer and no additional details.\n\nContext: {context}\nQuestion: {question}\n",
-    "pubmedqa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word.\nYour task is to choose the correct answer from the Options: {options}\n",
     "medqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "default_question_answering_prompt": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Context: {context}\n Question: {question}\n Answer:",
     "promptinjectionattack": """
@@ -106,6 +105,8 @@ default_user_prompt = {
     Question: {question}\nOptions: {options}\nAnswer:""",
     "medmcqatest": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "medmcqavalidation": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "pqaa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these two choices: 'yes' or 'no'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. Do not say anything else other than that.",
+    "pqal": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these three choices: 'yes', 'no', or 'maybe'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. If the answer is uncertain or could be either yes or no, say 'maybe'. Do not say anything else other than that.",
 }
 
 

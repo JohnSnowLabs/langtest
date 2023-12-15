@@ -385,12 +385,12 @@ class DataFactory:
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
             "MedQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "MedicationQA": {"split": ("test"), "extension": ".jsonl"},
+            "LiveQA": {"split": ("test"), "extension": ".jsonl"},
+            "healthsearchqa": {"split": ("test"), "extension": ".jsonl"},
             "PubMedQA": {
-                "split": (
-                    "pqaa",
-                    "pqal",
-                ),
-                "extension": ".jsonl",
+                "pqaa": {"split": ("test",), "extension": ".jsonl"},
+                "pqal": {"split": ("test",), "extension": ".jsonl"},
             },
             "MedMCQA": {
                 "MedMCQA-Test": {

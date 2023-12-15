@@ -140,6 +140,13 @@ def build_dataset(
 
 
 class HuggingFacePipeline:
+    """HuggingFace Pipeline API.
+
+    To use, you should have the ``transformers`` python package installed.
+
+    Only supports `text-generation`, `text2text-generation` and `summarization` for now.
+    """
+
     def __init__(
         self,
         model_id: Optional[str] = None,
@@ -148,6 +155,7 @@ class HuggingFacePipeline:
         pipeline: Optional[Any] = None,
         **kwargs: Any,
     ):
+        """Construct the pipeline object from model_id and task."""
         self.model_id = model_id
         if pipeline:
             self.pipeline = pipeline
@@ -157,6 +165,18 @@ class HuggingFacePipeline:
     def _initialize_pipeline(
         self, model_id: str, task: str, device: Optional[int], **kwargs: Any
     ) -> Any:
+        """
+        Construct the pipeline object from model_id and task.
+
+        Parameters:
+        - model_id (str): The Hugging Face model identifier or path.
+        - task (str): The specific task for which the pipeline is intended.
+        - device (int, optional): The device on which the model should run (-1 for CPU, 0 or greater for GPU).
+        - **kwargs (Any): Additional keyword arguments passed to the pipeline initialization.
+
+        Returns:
+        - Any: The initialized Hugging Face pipeline.
+        """
         try:
             from transformers import (
                 AutoModelForCausalLM,
@@ -209,6 +229,15 @@ class HuggingFacePipeline:
         )
 
     def _generate(self, prompts: List[str]) -> List[str]:
+        """
+        Generate text based on the provided prompts using the initialized pipeline.
+
+        Parameters:
+        - prompts (List[str]): A list of text prompts for text generation.
+
+        Returns:
+        - List[str]: A list of generated texts corresponding to the input prompts.
+        """
         text_generations: List[str] = []
 
         for prompt in prompts:
