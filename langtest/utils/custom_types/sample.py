@@ -701,7 +701,8 @@ class QASample(BaseQASample):
                     "MedMCQATest",
                     "MedMCQAValidation",
                     "pqaa",
-                    "pqal" "MedQA",
+                    "pqal",
+                    "MedQA",
                 ] and (
                     self.actual_results.lower().strip()
                     == self.expected_results.lower().strip()
