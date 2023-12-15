@@ -535,17 +535,25 @@ class PretrainedModelForStereoSet(ModelAPI):
 
 
 class PretrainedModelForQA(ModelAPI):
-    """Transformers pretrained model for QA tasks
+    """
+    A wrapper class for using a Hugging Face pretrained model for Question Answering tasks.
 
-    Args:
-        model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
+    Parameters:
+    - model (HuggingFacePipeline): An instance of the HuggingFacePipeline class for handling the pretrained model.
+
+    Methods:
+    - load_model(cls, path: str, **kwargs): Class method to load the pretrained model from a specified path or configuration.
+    - predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str: Generate a prediction for the given text and prompt.
+    - __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str: Alias of the 'predict' method.
     """
 
     def __init__(self, model, **kwargs):
-        """Constructor method
+        """
+        Initialize the PretrainedModelForQA instance.
 
-        Args:
-            model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
+        Parameters:
+        - model (HuggingFacePipeline): An instance of the HuggingFacePipeline class for handling the pretrained model.
+        - **kwargs: Additional keyword arguments.
         """
         assert isinstance(model, HuggingFacePipeline), ValueError(
             Errors.E079.format(Pipeline=HuggingFacePipeline, type_model=type(model))
@@ -555,13 +563,15 @@ class PretrainedModelForQA(ModelAPI):
 
     @classmethod
     def load_model(cls, path: str, **kwargs):
-        """Load the model into the `model` attribute.
+        """
+        Load a pretrained model from a specified path or configuration.
 
-        Args:
-            path (str): Path to model or model name.
+        Parameters:
+        - path (str): The path or configuration for loading the pretrained model.
+        - **kwargs: Additional keyword arguments.
 
         Returns:
-            tuple: A tuple containing the loaded model and tokenizer.
+        - PretrainedModelForQA: An instance of the PretrainedModelForQA class.
         """
         new_tokens_key = "max_new_tokens"
         if "max_tokens" in kwargs:
@@ -583,15 +593,16 @@ class PretrainedModelForQA(ModelAPI):
         return cls(model)
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
-        """Perform predictions on the input text.
+        """
+        Generate a prediction for the given text and prompt.
 
-        Args:
-            text (str): Input text to perform QA on.
-            kwargs: Additional keyword arguments.
-
+        Parameters:
+        - text (Union[str, dict]): The input text or dictionary containing relevant information.
+        - prompt (dict): The prompt template for generating the question.
+        - **kwargs: Additional keyword arguments.
 
         Returns:
-            str: Output model for QA tasks
+        - str: The generated prediction.
         """
 
         prompt_template = SimplePromptTemplate(**prompt)
@@ -600,7 +611,17 @@ class PretrainedModelForQA(ModelAPI):
         return output[0]
 
     def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
-        """Alias of the 'predict' method"""
+        """
+        Alias of the 'predict' method.
+
+        Parameters:
+        - text (Union[str, dict]): The input text or dictionary containing relevant information.
+        - prompt (dict): The prompt template for generating the question.
+        - **kwargs: Additional keyword arguments.
+
+        Returns:
+        - str: The generated prediction.
+        """
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
