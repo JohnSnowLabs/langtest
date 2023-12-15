@@ -574,6 +574,9 @@ class PretrainedModelForQA(ModelAPI):
 
         if isinstance(path, str):
             model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
+        elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+            path = path.config.name_or_path
+            model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
         else:
             model = HuggingFacePipeline(pipeline=path)
 
