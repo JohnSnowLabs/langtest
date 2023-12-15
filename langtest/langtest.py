@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
-
+import random
 
 from pkg_resources import resource_filename
 
@@ -236,11 +236,13 @@ class Harness:
 
         return self._config
 
-    def generate(self) -> "Harness":
+    def generate(self, seed: int = None) -> "Harness":
         """Generate the testcases to be used when evaluating the model.
 
         The generated testcases are stored in `_testcases` attribute.
         """
+        if seed:
+            random.seed(seed)
         if self._config is None:
             raise RuntimeError(Errors.E005)
         if self._testcases is not None:
@@ -429,6 +431,8 @@ class Harness:
                     )
 
                 df_final_report = pd.concat([df_final_report, df_report])
+
+            df_final_report["model_name"] = df_final_report["model_name"].astype(str)
 
             df_final_report["minimum_pass_rate"] = (
                 df_final_report["minimum_pass_rate"].str.rstrip("%").astype("float")
@@ -796,6 +800,8 @@ class Harness:
             if os.path.exists(os.path.join(save_dir, "test_cases.pkl")):
                 with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
                     testcases = pickle.load(reader)
+                for sample in testcases:
+                    sample.expected_results = None
                 harness._testcases = testcases
             else:
                 logging.warning(Warnings.W013.format(save_dir=save_dir))
