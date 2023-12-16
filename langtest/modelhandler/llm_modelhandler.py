@@ -125,9 +125,13 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             The prediction result.
         """
-        prompt_template = PromptTemplate(**prompt)
-        llmchain = LLMChain(prompt=prompt_template, llm=self.model)
-        return llmchain.run(**text)
+        try:
+            prompt_template = PromptTemplate(**prompt)
+            llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            output = llmchain.run(**text)
+            return output
+        except Exception as e:
+            raise ValueError(Errors.E090.format(error_message=e))
 
     def predict_raw(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform raw prediction using the pretrained model.

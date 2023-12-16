@@ -573,24 +573,27 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
         - PretrainedModelForQA: An instance of the PretrainedModelForQA class.
         """
-        new_tokens_key = "max_new_tokens"
-        if "max_tokens" in kwargs:
-            kwargs[new_tokens_key] = kwargs.pop("max_tokens")
-        else:
-            kwargs[new_tokens_key] = 64
-        task = kwargs.pop("task", "text-generation")
-        kwargs.pop("temperature", None)
-        device = kwargs.pop("device", -1)
+        try:
+            new_tokens_key = "max_new_tokens"
+            if "max_tokens" in kwargs:
+                kwargs[new_tokens_key] = kwargs.pop("max_tokens")
+            else:
+                kwargs[new_tokens_key] = 64
+            task = kwargs.pop("task", "text-generation")
+            kwargs.pop("temperature", None)
+            device = kwargs.pop("device", -1)
 
-        if isinstance(path, str):
-            model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
-        elif "pipelines" not in str(type(path)).split("'")[1].split("."):
-            path = path.config.name_or_path
-            model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
-        else:
-            model = HuggingFacePipeline(pipeline=path)
+            if isinstance(path, str):
+                model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
+            elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                path = path.config.name_or_path
+                model = HuggingFacePipeline(model_id=path, task=task, device=device, **kwargs)
+            else:
+                model = HuggingFacePipeline(pipeline=path)
 
-        return cls(model)
+            return cls(model)
+        except Exception as e:
+            raise ValueError(Errors.E090.format(error_message=e))
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
@@ -604,11 +607,13 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
         - str: The generated prediction.
         """
-
-        prompt_template = SimplePromptTemplate(**prompt)
-        p = prompt_template.format(**text)
-        output = self.model._generate([p])
-        return output[0]
+        try:
+            prompt_template = SimplePromptTemplate(**prompt)
+            p = prompt_template.format(**text)
+            output = self.model._generate([p])
+            return output[0]
+        except Exception as e:
+            raise ValueError(Errors.E090.format(error_message=e))
 
     def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
