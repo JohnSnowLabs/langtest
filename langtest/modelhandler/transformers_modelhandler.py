@@ -9,7 +9,6 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-from langtest.transform.utils import compare_generations_overlap
 from ..errors import Errors
 from ..utils.custom_types.helpers import SimplePromptTemplate
 from ..utils.hf_utils import HuggingFacePipeline
@@ -696,7 +695,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
 class PretrainedModelForSensitivityTest(ModelAPI):
     """A class for handling a pretrained model for sensitivity testing.
 
-    This class wraps a pretrained transformer model for performing sensitivity testing
+    This class wraps a pretrained transformer model for performing sensitivity testing.
 
     Args:
         model (tuple): A tuple containing the model and tokenizer.
@@ -730,7 +729,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             path (str): Path to model or model name.
 
         Returns:
-            tuple: A tuple containing the loaded model and tokenizer.
+            PretrainedModelForSensitivityTest: An instance of the class containing the loaded model and tokenizer.
         """
 
         if isinstance(path, str):
@@ -742,59 +741,56 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         cls.tokenizer = None
         return cls(path)
 
-    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
+    def predict(self, text: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
         Args:
-            text (str): Input text to perform NER on.
-            text_transformed (str): Transformed input text.
-            kwargs: Additional keyword arguments.
+            text (str): Input text to perform sensitivity testing on.
+            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            **kwargs: Additional keyword arguments.
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'loss_diff' (float): Difference in loss between transformed and original text.
-                - 'expected_result' (str): Decoded result from the original text.
-                - 'actual_result' (str): Decoded result from the transformed text.
+                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'result' (str): Decoded result from the model.
 
         """
-        self.model.eval()
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
         ).to(self.model.device)
-        input_encoded_transformed = self.tokenizer(
-            text_transformed, return_tensors="pt", truncation=True, max_length=128
-        ).to(self.model.device)
 
         outputs = self.model(**input_encoded, labels=input_encoded["input_ids"])
-        outputs_transformed = self.model(
-            **input_encoded_transformed, labels=input_encoded_transformed["input_ids"]
-        )
-        expected_result = self.tokenizer.decode(
+
+        result = self.tokenizer.decode(
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
-        actual_result = self.tokenizer.decode(
-            outputs_transformed.logits[0].argmax(dim=-1), skip_special_tokens=True
-        )
+
         if test_name == "negation":
-            loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
+            loss = outputs.loss.item()
+            return {
+                "loss": loss,
+                "result": result,
+            }
 
         elif test_name == "toxicity":
-            count1 = compare_generations_overlap(expected_result)
-            count2 = compare_generations_overlap(actual_result)
-            loss_diff = count2 - count1
+            return {"result": result}
 
-        return {
-            "loss_diff": loss_diff,
-            "expected_result": expected_result,
-            "actual_result": actual_result,
-        }
+    def __call__(self, text: str, test_name: str, **kwargs):
+        """Alias of the 'predict' method.
 
-    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
-        """Alias of the 'predict' method."""
+        Args:
+            text (str): Input text to perform sensitivity testing on.
+            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            **kwargs: Additional keyword arguments.
 
-        return self.predict(
-            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
-        )
+        Returns:
+            dict: A dictionary containing the following keys:
+                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'result' (str): Decoded result from the model.
+
+        """
+
+        return self.predict(text=text, test_name=test_name, **kwargs)
 
 
 class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
