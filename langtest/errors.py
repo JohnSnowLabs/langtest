@@ -247,7 +247,7 @@ class Errors(metaclass=ErrorsWithCodes):
             "device is required to be within [-1, {cuda_device_count})")
     E089 = ("Error importing huggingface_hub module")
     E090 = ("An error occurred during prediction: {error_message}")
-
+    E091 = ("An error occurred during loading model: {error_message}")
 
 class ColumnNameError(Exception):
     """ColumnNameError class is used to raise an exception

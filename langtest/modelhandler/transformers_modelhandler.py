@@ -596,7 +596,7 @@ class PretrainedModelForQA(ModelAPI):
 
             return cls(model)
         except Exception as e:
-            raise ValueError(Errors.E090.format(error_message=e))
+            raise ValueError(Errors.E091.format(error_message=e))
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
