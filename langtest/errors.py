@@ -246,6 +246,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E088 = ("Got device=={device}, "
             "device is required to be within [-1, {cuda_device_count})")
     E089 = ("Error importing huggingface_hub module")
+    E090 = ("An error occurred during prediction: {error_message}")
 
 
 class ColumnNameError(Exception):
