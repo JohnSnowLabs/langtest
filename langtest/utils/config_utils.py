@@ -21,12 +21,17 @@ DEFAULTS_CONFIG = {
     "crows-pairs": resource_filename("langtest", "data/config/crows_pairs_config.yml"),
     "stereoset": resource_filename("langtest", "data/config/stereoset_config.yml"),
     "security": resource_filename("langtest", "data/config/security_config.yml"),
-    "disinformation-test": resource_filename("langtest", "disinformation_config.yml"),
-    "factuality-test": resource_filename("langtest", "factuality_config.yml"),
-    "sycophancy-test": resource_filename("langtest", "data/config/sycophancy_config.yml"),
-    "sensitivity-test": resource_filename(
-        "langtest", "data/config/sensitivity_config.yml"
+    "disinformation-test": resource_filename(
+        "langtest", "data/config/disinformation_config.yml"
     ),
+    "factuality-test": resource_filename("langtest", "data/config/factuality_config.yml"),
+    "sycophancy-test": resource_filename("langtest", "data/config/sycophancy_config.yml"),
+    "sensitivity-test": {
+        "huggingface": resource_filename(
+            "langtest", "data/config/sensitivity_huggingface_config.yml"
+        ),
+        "default": resource_filename("langtest", "data/config/sensitivity_config.yml"),
+    },
     "translation": {
         "default": resource_filename(
             "langtest", "data/config/translation_transformers_config.yml"
