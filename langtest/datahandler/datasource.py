@@ -55,7 +55,7 @@ COLUMN_MAPPER = {
         "text": ["question"],
         "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
-        "options": ["opyions"],
+        "options": ["options"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
@@ -70,7 +70,7 @@ COLUMN_MAPPER = {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
-    "sensitivity-test": {"text": ["text", "question"]},
+    "sensitivity-test": {"text": ["text", "question"], "options": ["options"]},
     "wino-bias": {"text": ["text"], "options": ["options"]},
     "legal-tests": {
         "case": ["case"],
