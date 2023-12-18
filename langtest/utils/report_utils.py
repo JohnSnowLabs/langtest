@@ -113,6 +113,8 @@ def model_report(
 
     report = {}
     for sample in generated_results:
+        if sample.category == "accuracy" and sample.test_type == "general":
+            continue
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
         for test_type, value in summary.items():
@@ -187,6 +189,8 @@ def multi_model_report(
     """
 
     for sample in generated_results[model_name]:
+        if sample.category == "accuracy" and sample.test_type == "general":
+            continue
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
     report = {}
