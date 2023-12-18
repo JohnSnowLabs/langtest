@@ -937,16 +937,21 @@ class FairnessTestFactory(ITests):
                         raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
+
                     y_pred = X_test.apply(
                         lambda sample: model(
-                            text={
-                                "context": sample.original_context,
-                                "question": sample.original_question,
-                            },
-                            prompt={
-                                "template": prompt_template,
-                                "input_variables": ["context", "question"],
-                            },
+                            text=sample.build_input(
+                                context=sample.original_context,
+                                question=sample.original_question,
+                                options=sample.options,
+                            ),
+                            prompt=sample.build_prompt(
+                                input_data=sample.build_input(
+                                    context=sample.original_context,
+                                    question=sample.original_question,
+                                    options=sample.options,
+                                )
+                            ),
                         )
                     )
                     y_pred = y_pred.apply(lambda x: x.strip())
@@ -1167,14 +1172,18 @@ class AccuracyTestFactory(ITests):
             X_test = pd.Series(raw_data)
             y_pred = X_test.apply(
                 lambda sample: model(
-                    text={
-                        "context": sample.original_context,
-                        "question": sample.original_question,
-                    },
-                    prompt={
-                        "template": prompt_template,
-                        "input_variables": ["context", "question"],
-                    },
+                    text=sample.build_input(
+                        context=sample.original_context,
+                        question=sample.original_question,
+                        options=sample.options,
+                    ),
+                    prompt=sample.build_prompt(
+                        input_data=sample.build_input(
+                            context=sample.original_context,
+                            question=sample.original_question,
+                            options=sample.options,
+                        )
+                    ),
                 )
             )
             y_pred = y_pred.apply(lambda x: x.strip())
