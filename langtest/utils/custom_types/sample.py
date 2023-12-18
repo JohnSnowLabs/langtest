@@ -415,63 +415,31 @@ class BaseQASample(BaseModel):
             )
             self.category = func.__module__.split(".")[-1]
 
-    def build_input(self, context=None, question=None, options=None):
-        """Builds the input data for the model.
+    def run(self, model, **kwargs):
+        """Runs the original and perturbed sentences through the model"""
+        from .helpers import build_qa_input, build_qa_prompt
 
-        Args:
-            context (str): The context for the input.
-            question (str): The question for the input.
-            options (List[str]): The list of options for the input.
+        tokens = 1
 
-        Returns:
-            Dict[str, Union[str, List[str]]]: The input data.
-        """
-        input_data = {"question": question}
-        if context and len(context) > 1:
-            input_data["context"] = context
-        if options and len(options) > 1:
-            input_data["options"] = options
-        return input_data
-
-    def build_prompt(self, input_data, **kwargs):
-        """Builds the prompt for the model.
-
-        Args:
-            template (str): The prompt template.
-            input_data (Dict[str, Union[str, List[str]]]): The input data.
-
-        Returns:
-            Dict[str, Union[str, List[str]]]: The prompt data.
-        """
         dataset_name = (
             self.dataset_name.split("-")[0].lower()
             if self.dataset_name
             else "default_question_answering_prompt"
         )
-        prompt_template = kwargs.get(
-            "user_prompt", default_user_prompt.get(dataset_name, "")
-        )
-        prompt = {"template": prompt_template, "input_variables": list(input_data.keys())}
-        return prompt
 
-    def run(self, model, **kwargs):
-        """Runs the original and perturbed sentences through the model"""
-
-        tokens = 1
-
-        original_text_input = self.build_input(
+        original_text_input = build_qa_input(
             context=self.original_context,
             question=self.original_question,
             options=self.options,
         )
 
-        perturbed_text_input = self.build_input(
+        perturbed_text_input = build_qa_input(
             context=self.perturbed_context,
             question=self.perturbed_question,
             options=self.options,
         )
 
-        prompt = self.build_prompt(original_text_input, **kwargs)
+        prompt = build_qa_prompt(original_text_input, dataset_name, **kwargs)
 
         self.expected_results = model(text=original_text_input, prompt=prompt)
 
