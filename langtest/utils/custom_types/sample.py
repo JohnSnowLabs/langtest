@@ -415,63 +415,31 @@ class BaseQASample(BaseModel):
             )
             self.category = func.__module__.split(".")[-1]
 
-    def build_input(self, context=None, question=None, options=None):
-        """Builds the input data for the model.
+    def run(self, model, **kwargs):
+        """Runs the original and perturbed sentences through the model"""
+        from .helpers import build_qa_input, build_qa_prompt
 
-        Args:
-            context (str): The context for the input.
-            question (str): The question for the input.
-            options (List[str]): The list of options for the input.
+        tokens = 1
 
-        Returns:
-            Dict[str, Union[str, List[str]]]: The input data.
-        """
-        input_data = {"question": question}
-        if context and len(context) > 1:
-            input_data["context"] = context
-        if options and len(options) > 1:
-            input_data["options"] = options
-        return input_data
-
-    def build_prompt(self, input_data, **kwargs):
-        """Builds the prompt for the model.
-
-        Args:
-            template (str): The prompt template.
-            input_data (Dict[str, Union[str, List[str]]]): The input data.
-
-        Returns:
-            Dict[str, Union[str, List[str]]]: The prompt data.
-        """
         dataset_name = (
             self.dataset_name.split("-")[0].lower()
             if self.dataset_name
             else "default_question_answering_prompt"
         )
-        prompt_template = kwargs.get(
-            "user_prompt", default_user_prompt.get(dataset_name, "")
-        )
-        prompt = {"template": prompt_template, "input_variables": list(input_data.keys())}
-        return prompt
 
-    def run(self, model, **kwargs):
-        """Runs the original and perturbed sentences through the model"""
-
-        tokens = 1
-
-        original_text_input = self.build_input(
+        original_text_input = build_qa_input(
             context=self.original_context,
             question=self.original_question,
             options=self.options,
         )
 
-        perturbed_text_input = self.build_input(
+        perturbed_text_input = build_qa_input(
             context=self.perturbed_context,
             question=self.perturbed_question,
             options=self.options,
         )
 
-        prompt = self.build_prompt(original_text_input, **kwargs)
+        prompt = build_qa_prompt(original_text_input, dataset_name, **kwargs)
 
         self.expected_results = model(text=original_text_input, prompt=prompt)
 
@@ -2237,6 +2205,7 @@ class SensitivitySample(BaseModel):
 
     Attributes:
         original (str): The original text input.
+        options (str): The options for the input.
         test_case (str): The transformed text input for testing.
         state (str): The state of the sample.
         dataset_name (str): The name of the dataset the sample belongs to.
@@ -2246,6 +2215,11 @@ class SensitivitySample(BaseModel):
         expected_result (Result): The expected result of the sensitivity test.
         actual_result (Result): The actual result obtained from the sensitivity test.
         loss_diff (float): The difference in loss between expected and actual results.
+        ran_pass (bool): Flag indicating if the sensitivity test passed.
+        config (str): Configuration information.
+        hub (str): Hub information.
+        op1 (Dict): Output dictionary for the original text.
+        op2 (Dict): Output dictionary for the transformed text.
 
     Methods:
         to_dict(self) -> Dict[str, Any]:
@@ -2259,10 +2233,10 @@ class SensitivitySample(BaseModel):
 
         transform(self, func: Callable, params: Dict, **kwargs):
             Transform the original text using a specified function.
-
     """
 
-    original: str = None
+    original: str
+    options: str
     test_case: str = None
     state: str = None
     dataset_name: str = None
@@ -2273,9 +2247,20 @@ class SensitivitySample(BaseModel):
     actual_result: Result = None
     loss_diff: float = None
     ran_pass: bool = None
+    config: str = None
+    hub: str = None
+    op1: Dict = None
+    op2: Dict = None
 
     def __init__(self, **data):
         super().__init__(**data)
+
+    def __update_params(self):
+        from ...langtest import GLOBAL_HUB
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        self.config = harness_config
+        self.hub = GLOBAL_HUB
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -2290,6 +2275,14 @@ class SensitivitySample(BaseModel):
             "category": self.category,
             "test_type": self.test_type,
         }
+
+        optional_fields = [
+            ("options", self.options is not None and len(self.options) > 1),
+        ]
+
+        for field, condition in optional_fields:
+            if condition:
+                result[field] = getattr(self, field)
 
         if self.expected_result is not None and self.actual_result is not None:
             bool_pass = self.is_pass()
@@ -2311,13 +2304,57 @@ class SensitivitySample(BaseModel):
         Returns:
             bool: True if the test passes, False otherwise.
         """
+        self.__update_params()
         if self.ran_pass is not None:
             return self.ran_pass
+
+        if self.test_type == "negation":
+            if self.hub == "huggingface":
+                self.loss_diff = self.op1["loss"] - self.op2["loss"]
+            else:
+                embedding_info = {
+                    "openai": {"default_model": "text-embedding-ada-002"},
+                    "huggingface": {
+                        "default_model": "sentence-transformers/all-mpnet-base-v2"
+                    },
+                }
+                embeddings = self.config.get("embeddings", {})
+                hub_name = embeddings.get("hub", "huggingface")
+                module_name = f"langtest.embeddings.{hub_name}"
+                class_name = f"{hub_name.capitalize()}Embeddings"
+                try:
+                    module = importlib.import_module(module_name)
+                    embeddings_class = getattr(module, class_name)
+
+                except (ModuleNotFoundError, AttributeError):
+                    raise ValueError(Errors.E075.format(hub_name=hub_name))
+                model = embeddings_class(
+                    model=embeddings.get(
+                        "model", embedding_info[hub_name]["default_model"]
+                    )
+                )
+                embedding1 = model.get_embedding(self.expected_result.lower().strip())
+                embedding2 = model.get_embedding(self.actual_result.lower().strip())
+                self.loss_diff = 1 - EmbeddingDistance()._cosine_distance(
+                    embedding1, embedding2
+                )
+        elif self.test_type == "toxicity":
+            from ...transform.utils import compare_generations_overlap
+
+            count1 = compare_generations_overlap(self.expected_result)
+            count2 = compare_generations_overlap(self.actual_result)
+            self.loss_diff = count2 - count1
+
         self.ran_pass = self._is_eval()
+
         return self.ran_pass
 
     def _is_eval(self):
-        """"""
+        """Check if the sensitivity test evaluation criteria are met.
+
+        Returns:
+            bool: True if the test evaluation criteria are met, False otherwise.
+        """
         from ...langtest import HARNESS_CONFIG as harness_config
 
         if self.test_type == "negation":
@@ -2340,6 +2377,21 @@ class SensitivitySample(BaseModel):
             else:
                 return True
 
+    def build_input(self, text: str, options: str) -> str:
+        """Builds the input data for the model.
+
+        Args:
+            text (str): The main text or context for the input.
+            options (str): The options for the input.
+
+        Returns:
+            str: The input data.
+        """
+        input_data = text
+        if options and len(options) > 1:
+            input_data += "\n" + options
+        return input_data
+
     def run(self, model, **kwargs):
         """
         Run the sensitivity test using the provided model.
@@ -2351,12 +2403,20 @@ class SensitivitySample(BaseModel):
         Returns:
             bool: True if the test was successful, False otherwise.
         """
-        op = model(
-            text=self.original, text_transformed=self.test_case, test_name=self.test_type
+
+        original_text_input = self.build_input(
+            text=self.original,
+            options=self.options,
         )
-        self.expected_result = op["expected_result"]
-        self.actual_result = op["actual_result"]
-        self.loss_diff = op["loss_diff"]
+        perturbed_text_input = self.build_input(
+            text=self.test_case,
+            options=self.options,
+        )
+
+        self.op1 = model(text=original_text_input, test_name=self.test_type)
+        self.op2 = model(text=perturbed_text_input, test_name=self.test_type)
+        self.expected_result = self.op1["result"]
+        self.actual_result = self.op2["result"]
         return True
 
     def transform(self, func: Callable, params: Dict, **kwargs):

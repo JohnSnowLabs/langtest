@@ -1,5 +1,5 @@
 model_parameters:
-  max_tokens: 77
+  max_tokens: 64
   task: "text-generation"
 tests:
   defaults:
