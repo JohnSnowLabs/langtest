@@ -40,13 +40,7 @@ def get_model_n_tokenizer(model_name):
     except ImportError:
         raise ValueError(Errors.E085)
 
-    try:
-        from huggingface_hub import login
-    except ImportError:
-        raise ValueError(Errors.E089)
-
-    if "HUGGINGFACEHUB_API_TOKEN" in os.environ:
-        login(os.environ["HUGGINGFACEHUB_API_TOKEN"])
+    login_with_token()
 
     try:
         # Try loading the model as AutoModelForCausalLM
@@ -63,6 +57,24 @@ def get_model_n_tokenizer(model_name):
     tokenizer.pad_token = tokenizer.eos_token
     model.eval()
     return model, tokenizer
+
+
+def login_with_token():
+    """
+    Log in to the Hugging Face Hub using the provided API token.
+
+    This function checks if the 'HUGGINGFACEHUB_API_TOKEN' environment variable is set.
+    If the token is found and the 'huggingface_hub' module is installed, it imports the 'login' function
+    and logs in using the provided API token.
+
+    """
+    if "HUGGINGFACEHUB_API_TOKEN" in os.environ:
+        try:
+            from huggingface_hub import login
+
+            login(os.environ["HUGGINGFACEHUB_API_TOKEN"])
+        except ImportError:
+            pass
 
 
 def clean_input(example: str) -> str:
@@ -156,6 +168,7 @@ class HuggingFacePipeline:
         **kwargs: Any,
     ):
         """Construct the pipeline object from model_id and task."""
+        login_with_token()
         self.model_id = model_id
         if pipeline:
             self.pipeline = pipeline
