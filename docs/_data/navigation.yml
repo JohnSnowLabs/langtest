@@ -239,7 +239,7 @@ benchmarks:
       - title: BoolQ
         url: /docs/pages/benchmarks/other_benchmarks/boolq
       - title: LogiQA
-        url: /docs/pages/benchmarks/other_benchmark/logiqa
+        url: /docs/pages/benchmarks/other_benchmarks/logiqa
       - title: MMLU
         url: /docs/pages/benchmarks/other_benchmarks/mmlu
       - title: NarrativeQA
