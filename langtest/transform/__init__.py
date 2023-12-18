@@ -1080,9 +1080,7 @@ class AccuracyTestFactory(ITests):
                 or data_handler_copy[0].task == "summarization"
             ):
                 y_true = (
-                    pd.Series(data_handler_copy)
-                    .apply(lambda x: x.ground_truth)
-                    .explode()
+                    pd.Series(data_handler_copy).apply(lambda x: x.ground_truth).explode()
                 )
 
             y_true = y_true.dropna()
@@ -1223,7 +1221,7 @@ class AccuracyTestFactory(ITests):
             )
 
         supported_tests = cls.available_tests()
-        
+
         async def get_general_samples():
             return samples_to_run
 

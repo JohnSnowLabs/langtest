@@ -43,9 +43,9 @@ class BaseSample(BaseModel):
         Returns the dict version of sample.
         """
         if self.expected_results is not None:
-            expected_result = (self.expected_results.to_str_list())
+            expected_result = self.expected_results.to_str_list()
         elif self.ground_truth is not None:
-            expected_result = (self.ground_truth.to_str_list())
+            expected_result = self.ground_truth.to_str_list()
         actual_result = (
             self.actual_results.to_str_list() if self.actual_results is not None else None
         )
@@ -288,8 +288,16 @@ class NERSample(BaseSample):
 
     def is_pass(self) -> bool:
         """Checks if the sample passes based on the maximum score."""
-        return self.actual_results and self.expected_results and all(
-            [a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity != "O"]
+        return (
+            self.actual_results
+            and self.expected_results
+            and all(
+                [
+                    a == b
+                    for (a, b) in self.get_aligned_span_pairs()
+                    if a and a.entity != "O"
+                ]
+            )
         )
 
 
@@ -314,7 +322,11 @@ class SequenceClassificationSample(BaseSample):
 
     def is_pass(self) -> bool:
         """Checks if the sample passes based on the maximum score."""
-        return self.actual_results and self.expected_results and self.expected_results == self.actual_results
+        return (
+            self.actual_results
+            and self.expected_results
+            and self.expected_results == self.actual_results
+        )
 
 
 class MinScoreSample(BaseSample):
