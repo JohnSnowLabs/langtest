@@ -1056,7 +1056,7 @@ class AccuracyTestFactory(ITests):
         """
         all_samples = []
 
-        if self._data_handler[0].expected_results is None:
+        if self._data_handler[0].ground_truth is None:
             raise RuntimeError(Errors.E052.format(var="accuracy"))
 
         for test_name, params in self.tests.items():
@@ -1064,7 +1064,7 @@ class AccuracyTestFactory(ITests):
 
             if data_handler_copy[0].task == "ner":
                 y_true = pd.Series(data_handler_copy).apply(
-                    lambda x: [y.entity for y in x.expected_results.predictions]
+                    lambda x: [y.entity for y in x.ground_truth.predictions]
                 )
                 y_true = y_true.explode().apply(
                     lambda x: x.split("-")[-1] if isinstance(x, str) else x
@@ -1072,7 +1072,7 @@ class AccuracyTestFactory(ITests):
             elif data_handler_copy[0].task == "text-classification":
                 y_true = (
                     pd.Series(data_handler_copy)
-                    .apply(lambda x: [y.label for y in x.expected_results.predictions])
+                    .apply(lambda x: [y.label for y in x.ground_truth.predictions])
                     .explode()
                 )
             elif (
@@ -1081,7 +1081,7 @@ class AccuracyTestFactory(ITests):
             ):
                 y_true = (
                     pd.Series(data_handler_copy)
-                    .apply(lambda x: x.expected_results)
+                    .apply(lambda x: x.ground_truth)
                     .explode()
                 )
 
@@ -1131,7 +1131,7 @@ class AccuracyTestFactory(ITests):
 
         if isinstance(raw_data[0], NERSample):
             y_true = pd.Series(raw_data).apply(
-                lambda x: [y.entity for y in x.expected_results.predictions]
+                lambda x: [y.entity for y in x.ground_truth.predictions]
             )
             X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
             y_pred = X_test.apply(model.predict_raw)
@@ -1145,7 +1145,7 @@ class AccuracyTestFactory(ITests):
 
         elif isinstance(raw_data[0], SequenceClassificationSample):
             y_true = pd.Series(raw_data).apply(
-                lambda x: [y.label for y in x.expected_results.predictions]
+                lambda x: [y.label for y in x.ground_truth.predictions]
             )
             y_true = y_true.apply(lambda x: x[0])
             X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
@@ -1163,7 +1163,7 @@ class AccuracyTestFactory(ITests):
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
+            y_true = pd.Series(raw_data).apply(lambda x: x.ground_truth)
             X_test = pd.Series(raw_data)
             y_pred = X_test.apply(
                 lambda sample: model(
@@ -1188,7 +1188,7 @@ class AccuracyTestFactory(ITests):
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
+            y_true = pd.Series(raw_data).apply(lambda x: x.ground_truth)
             X_test = pd.Series(raw_data)
             y_pred = X_test.apply(
                 lambda sample: model(
