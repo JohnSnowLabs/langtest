@@ -1094,6 +1094,11 @@ class AccuracyTestFactory(ITests):
                 sample.test_type = test_name
             all_samples.extend(transformed_samples)
 
+        data_copy = [x.copy() for x in self._data_handler]
+        for sample in data_copy:
+            sample.category = "accuracy"
+            sample.test_type = "general"
+        all_samples.extend(data_copy)
         return all_samples
 
     @staticmethod
@@ -1128,13 +1133,25 @@ class AccuracyTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
+        samples_to_run = sample_list["general"]
 
-        if isinstance(raw_data[0], NERSample):
-            y_true = pd.Series(raw_data).apply(
+        for sample in samples_to_run:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+                else:
+                    sample.actual_results = model(sample.original)
+                    sample.state = "done"
+
+        if isinstance(samples_to_run[0], NERSample):
+            y_true = pd.Series(samples_to_run).apply(
                 lambda x: [y.entity for y in x.ground_truth.predictions]
             )
-            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
-            y_pred = X_test.apply(model.predict_raw)
+            y_pred = pd.Series(samples_to_run).apply(
+                lambda x: [y.entity for y in x.actual_results.predictions]
+            )
             valid_indices = y_true.apply(len) == y_pred.apply(len)
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
@@ -1143,28 +1160,28 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.apply(lambda x: x.split("-")[-1])
             y_true = y_true.apply(lambda x: x.split("-")[-1])
 
-        elif isinstance(raw_data[0], SequenceClassificationSample):
-            y_true = pd.Series(raw_data).apply(
-                lambda x: [y.label for y in x.ground_truth.predictions]
+        elif isinstance(samples_to_run[0], SequenceClassificationSample):
+            y_true = pd.Series(samples_to_run).apply(
+                lambda x: [y.label for y in x.ground_truth.predictions][0]
             )
-            y_true = y_true.apply(lambda x: x[0])
-            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
-            y_pred = X_test.apply(model.predict_raw)
+            y_pred = pd.Series(samples_to_run).apply(
+                lambda x: [y.label for y in x.actual_results.predictions][0]
+            )
             y_true = y_true.explode().apply(lambda x: x.lower())
             y_pred = y_pred.explode().apply(lambda x: x.lower())
 
-        elif raw_data[0].task == "question-answering":
-            if raw_data[0].dataset_name is None:
+        elif samples_to_run[0].task == "question-answering":
+            if samples_to_run[0].dataset_name is None:
                 dataset_name = "default_question_answering_prompt"
             else:
-                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+                dataset_name = samples_to_run[0].dataset_name.split("-")[0].lower()
 
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.ground_truth)
-            X_test = pd.Series(raw_data)
+            y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
+            X_test = pd.Series(samples_to_run)
             y_pred = X_test.apply(
                 lambda sample: model(
                     text={
@@ -1179,17 +1196,17 @@ class AccuracyTestFactory(ITests):
             )
             y_pred = y_pred.apply(lambda x: x.strip())
 
-        elif raw_data[0].task == "summarization":
-            if raw_data[0].dataset_name is None:
+        elif samples_to_run[0].task == "summarization":
+            if samples_to_run[0].dataset_name is None:
                 dataset_name = "default_summarization_prompt"
             else:
-                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+                dataset_name = samples_to_run[0].dataset_name.split("-")[0].lower()
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.ground_truth)
-            X_test = pd.Series(raw_data)
+            y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
+            X_test = pd.Series(samples_to_run)
             y_pred = X_test.apply(
                 lambda sample: model(
                     text={"context": sample.original},
@@ -1206,12 +1223,18 @@ class AccuracyTestFactory(ITests):
             )
 
         supported_tests = cls.available_tests()
+        
+        async def get_general_samples():
+            return samples_to_run
 
-        tasks = []
+        tasks = [get_general_samples()]
         for test_name, samples in sample_list.items():
+            if test_name == "general":
+                continue
             tasks.append(
                 supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs)
             )
+        print(tasks)
         return tasks
 
 
