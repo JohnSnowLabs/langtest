@@ -610,7 +610,7 @@ class ConllDataset(BaseDataset):
                     data.append(
                         self.task.get_sample_class(
                             original=original,
-                            expected_results=NEROutput(predictions=ner_labels),
+                            ground_truth=NEROutput(predictions=ner_labels),
                         )
                     )
 
@@ -1217,7 +1217,7 @@ class CSVDataset(BaseDataset):
             cursor += len(token) + 1  # +1 to account for the white space
 
         return NERSample(
-            original=original, expected_results=NEROutput(predictions=ner_labels)
+            original=original, ground_truth=NEROutput(predictions=ner_labels)
         )
 
     def _row_to_seq_classification_sample(self, row: pd.Series) -> Sample:
@@ -1242,7 +1242,7 @@ class CSVDataset(BaseDataset):
 
         return SequenceClassificationSample(
             original=original,
-            expected_results=SequenceClassificationOutput(predictions=[label]),
+            ground_truth=SequenceClassificationOutput(predictions=[label]),
         )
 
     def _row_to_sample_summarization(self, row: pd.Series) -> Sample:
@@ -1265,7 +1265,7 @@ class CSVDataset(BaseDataset):
             summary = row[self.column_map["summary"]]
 
         return SummarizationSample(
-            original=original, expected_results=summary, task="summarization"
+            original=original, ground_truth=summary, task="summarization"
         )
 
     def _row_to_sample_question_answering(self, row: pd.Series) -> QASample:
@@ -1293,7 +1293,7 @@ class CSVDataset(BaseDataset):
         return QASample(
             original_question=question,
             original_context=passage,
-            expected_results=answer,
+            ground_truth=answer,
             task="question-answering",
         )
 

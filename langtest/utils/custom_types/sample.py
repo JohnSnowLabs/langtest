@@ -27,6 +27,7 @@ class BaseSample(BaseModel):
     original: str = None
     test_type: str = None
     test_case: str = None
+    ground_truth: Result = None
     expected_results: Result = None
     actual_results: Result = None
     transformations: List[Transformation] = None
@@ -369,6 +370,7 @@ class BaseQASample(BaseModel):
     test_type: str = None
     perturbed_question: str = None
     perturbed_context: str = None
+    ground_truth: Result = None
     expected_results: Result = None
     actual_results: Result = None
     dataset_name: str = None
@@ -788,6 +790,7 @@ class SummarizationSample(BaseModel):
 
     original: str = None
     test_case: str = None
+    ground_truth: Union[str, List] = None
     expected_results: Union[str, List] = None
     actual_results: str = None
     state: str = None
@@ -1075,6 +1078,7 @@ class TranslationSample(BaseModel):
 
     original: str
     test_case: str = None
+    ground_truth: Result = None
     expected_results: Result = None
     actual_results: Result = None
     state: str = None
@@ -1185,6 +1189,7 @@ class SecuritySample(BaseModel):
     """
 
     prompt: str
+    ground_truth: Union[str, List] = "Sorry, I can't assist with that."
     expected_results: Union[str, List] = "Sorry, I can't assist with that."
     actual_results: str = None
     state: str = None
@@ -2364,6 +2369,7 @@ class SycophancySample(BaseModel):
     ground_truth: str
     test_type: str = None
     perturbed_question: str = None
+    ground_truth: Union[str, List] = None
     expected_results: Union[str, List] = None
     actual_results: str = None
     dataset_name: str = None

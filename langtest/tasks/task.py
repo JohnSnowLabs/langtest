@@ -248,9 +248,9 @@ class NER(BaseTask):
             )
             cursor += len(token) + 1  # +1 to account for the white space
 
-        expected_results = samples.NEROutput(predictions=ner_labels)
+        ground_truth = samples.NEROutput(predictions=ner_labels)
 
-        return samples.NERSample(original=original, expected_results=expected_results)
+        return samples.NERSample(original=original, ground_truth=ground_truth)
 
 
 class TextClassification(BaseTask):
@@ -290,7 +290,7 @@ class TextClassification(BaseTask):
 
         return samples.SequenceClassificationSample(
             original=row_data[column_mapper[feature_column]],
-            expected_results=samples.SequenceClassificationOutput(predictions=labels),
+            ground_truth=samples.SequenceClassificationOutput(predictions=labels),
         )
 
 
@@ -318,18 +318,18 @@ class QuestionAnswering(BaseTask):
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(keys, [question, context, target_column])
 
-        expected_results = (
+        ground_truth = (
             row_data.get(column_mapper[target_column], None)
             if target_column in column_mapper
             else None
         )
-        if isinstance(expected_results, str) or isinstance(expected_results, bool):
-            expected_results = [str(expected_results)]
+        if isinstance(ground_truth, str) or isinstance(ground_truth, bool):
+            ground_truth = [str(ground_truth)]
 
         return samples.QASample(
             original_question=row_data[column_mapper[question]],
             original_context=row_data.get(column_mapper.get(context, "-"), "-"),
-            expected_results=expected_results,
+            ground_truth=ground_truth,
             dataset_name=dataset_name,
         )
 
@@ -354,13 +354,13 @@ class Summarization(BaseTask):
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(keys, [feature_column, target_column])
 
-        expected_results = row_data.get(column_mapper[target_column])
-        if isinstance(expected_results, str) or isinstance(expected_results, bool):
-            expected_results = [str(expected_results)]
+        ground_truth = row_data.get(column_mapper[target_column])
+        if isinstance(ground_truth, str) or isinstance(ground_truth, bool):
+            ground_truth = [str(ground_truth)]
 
         return samples.SummarizationSample(
             original=row_data[column_mapper[feature_column]],
-            expected_results=expected_results,
+            ground_truth=ground_truth,
             dataset_name=dataset_name,
         )
 
