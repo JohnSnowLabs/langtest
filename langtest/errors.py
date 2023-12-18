@@ -249,6 +249,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E090 = ("An error occurred during prediction: {error_message}")
     E091 = ("An error occurred during loading model: {error_message}")
 
+
 class ColumnNameError(Exception):
     """ColumnNameError class is used to raise an exception
     when the column name is not found in the dataset."""
