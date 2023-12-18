@@ -125,7 +125,7 @@ class PretrainedModelForQA(ModelAPI):
             output = llmchain.run(**text)
             return output
         except Exception as e:
-            raise ValueError(Errors.E090.format(error_message=e))
+            raise ValueError(Errors.E089.format(error_message=e))
 
     def predict_raw(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform raw prediction using the pretrained model.
@@ -274,7 +274,7 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
                 "result": result,
             }
         except Exception as e:
-            raise ValueError(Errors.E090.format(error_message=e))
+            raise ValueError(Errors.E089.format(error_message=e))
 
     def __call__(self, text: Union[str, dict], *args, **kwargs):
         """

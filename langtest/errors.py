@@ -245,9 +245,8 @@ class Errors(metaclass=ErrorsWithCodes):
     E087 = ("Could not load the {task} model due to missing dependencies.")
     E088 = ("Got device=={device}, "
             "device is required to be within [-1, {cuda_device_count})")
-    E089 = ("Error importing huggingface_hub module")
-    E090 = ("An error occurred during prediction: {error_message}")
-    E091 = ("An error occurred during loading model: {error_message}")
+    E089 = ("An error occurred during prediction: {error_message}")
+    E090 = ("An error occurred during loading model: {error_message}")
 
 
 class ColumnNameError(Exception):
