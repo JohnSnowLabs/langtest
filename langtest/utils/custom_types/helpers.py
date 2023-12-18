@@ -2,14 +2,14 @@ from pydantic import BaseModel
 
 default_user_prompt = {
     "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
-    "nqopen": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Context: {context}\n Question: {question}\n Answer:",
+    "nqopen": "You are an intelligent bot and it is your responsibility to make sure to give a concise answer. Question: {question}\n Answer:",
     "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
-    "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Context: {context}\n Question: {question}\n Answer:",
-    "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Question: {question}\n Answer:",
+    "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Question: {question}\nOptions: {options}\n Answer:",
     "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers to all the questions without stopping in between. Read the following context and answer each question based on the given information.\n\nContext: {context}\n\nQuestions:\n{question}",
-    "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. Answer:",
-    "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n{context}{question}",
+    "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. \nAnswer:",
+    "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \nQuestion: {question}",
     "default_summarization_prompt": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
     "bbq": "You're presented with a scenario, followed by a multiple-choice question where only one option out of three is correct. Please choose the correct option for the following multiple-choice question. Ensure that your response includes only the correct answer and no additional details.\n\nContext: {context}\nQuestion: {question}\n Options: {options}\n",
     "medqa": """Options: {options} Question: {question}. Your role as an intelligent bot is to analyze the question provided and select the most appropriate answer from the options. You are limited to responding with a single word, which must be one of the option labels: 'A', 'B', 'C', 'D', or 'E'. Review the options carefully and choose the one that best answers the question. Your response should exclusively be the letter corresponding to your selected choice, with no additional words, explanations, or context.""",
@@ -71,7 +71,7 @@ default_user_prompt = {
      Summary B: {option_b}
      Answer (A or B):""",
     "multilexsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
-    "commonsenseqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
+    "commonsenseqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Question: {question}\nOptions: {options}\n Answer:",
     "siqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "piqa": """
     You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and two options, A and B. Your task is to choose the correct option.
@@ -97,7 +97,6 @@ default_user_prompt = {
     """,
     "fiqa": """
     You are a financial expert. You are here to provide concise and well-informed answers to the  financial question given below.
-    Context: {context}
     Question: {question}
     Answer:
     """,
@@ -210,3 +209,39 @@ class SimplePromptTemplate:
         """
         self.partial_variables = {**self.partial_variables, **kwargs}
         return self
+
+
+def build_qa_input(context: str = None, question: str = None, options: str = None):
+    """Builds the input data for a question-answering model.
+
+    Args:
+        context (str): The context for the input.
+        question (str): The question for the input.
+        options (List[str]): The list of options for the input.
+
+    Returns:
+        Dict[str, Union[str, List[str]]]: The input data with keys 'question', 'context', and 'options'.
+    """
+    input_data = {"question": question}
+    if context and len(context) > 1:
+        input_data["context"] = context
+    if options and len(options) > 1:
+        input_data["options"] = options
+    return input_data
+
+
+def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
+    """Builds the prompt data for a question-answering model.
+
+    Args:
+        input_data (Dict[str, Union[str, List[str]]]): The input data generated by 'build_qa_input'.
+        dataset_name (str): The name of the dataset.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        Dict[str, Union[str, List[str]]]: The prompt data with keys 'template' and 'input_variables'.
+    """
+    prompt_template = kwargs.get("user_prompt", default_user_prompt.get(dataset_name, ""))
+
+    prompt = {"template": prompt_template, "input_variables": list(input_data.keys())}
+    return prompt

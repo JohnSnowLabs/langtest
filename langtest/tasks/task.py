@@ -659,20 +659,21 @@ class SensitivityTest(BaseTask):
     """Sensitivity task."""
 
     _name = "sensitivitytest"
-    _default_col = {"text": ["text", "question"]}
+    _default_col = {"text": ["text", "question"], "options": ["opyions"]}
     sample_class = samples.SensitivitySample
 
     def create_sample(
-        cls, row_data: dict, feature_column="text", *args, **kwargs
+        cls, row_data: dict, question="text", options="options", *args, **kwargs
     ) -> samples.SensitivitySample:
         """Create a sample."""
         keys = list(row_data.keys())
 
         # auto-detect the default column names from the row_data
-        column_mapper = cls.column_mapping(keys, [feature_column])
+        column_mapper = cls.column_mapping(keys, [question, options])
 
         return samples.SensitivitySample(
-            original=row_data[column_mapper[feature_column]],
+            original=row_data[column_mapper[question]],
+            options=row_data.get(column_mapper.get(options, "-"), "-"),
             *args,
             **kwargs,
         )

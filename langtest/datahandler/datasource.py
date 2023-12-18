@@ -70,7 +70,7 @@ COLUMN_MAPPER = {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
-    "sensitivity-test": {"text": ["text", "question"]},
+    "sensitivity-test": {"text": ["text", "question"], "options": ["options"]},
     "wino-bias": {"text": ["text"], "options": ["options"]},
     "legal-tests": {
         "case": ["case"],
