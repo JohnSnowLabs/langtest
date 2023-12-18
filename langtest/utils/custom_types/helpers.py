@@ -9,7 +9,7 @@ default_user_prompt = {
     "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
     "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers to all the questions without stopping in between. Read the following context and answer each question based on the given information.\n\nContext: {context}\n\nQuestions:\n{question}",
     "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. \nAnswer:",
-    "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \n{context}{question}",
+    "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \nQuestion: {question}",
     "default_summarization_prompt": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
     "bbq": "You're presented with a scenario, followed by a multiple-choice question where only one option out of three is correct. Please choose the correct option for the following multiple-choice question. Ensure that your response includes only the correct answer and no additional details.\n\nContext: {context}\nQuestion: {question}\n",
     "medqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\n Question: {question}\n Answer:",
@@ -97,7 +97,6 @@ default_user_prompt = {
     """,
     "fiqa": """
     You are a financial expert. You are here to provide concise and well-informed answers to the  financial question given below.
-    Context: {context}
     Question: {question}
     Answer:
     """,
