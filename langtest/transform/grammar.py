@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from langtest.errors import Errors
 from langtest.transform import ITests, TestFactory
 from langtest.modelhandler.modelhandler import ModelAPI
+from ..utils.lib_manager import try_import_lib
 
 
 class GrammarTestFactory(ITests):
@@ -127,7 +128,15 @@ class BaseGrammar(ABC):
 class Paraphrase(BaseGrammar):
     @staticmethod
     def transform(*args, **kwargs):
-        pass
+
+        if try_import_lib("transformers"):
+            from transformers import pipeline
+            pipe = pipeline("text2text-generation", model="humarin/chatgpt_paraphraser_on_T5_base")
+        
+        else:
+            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME="transformers"))
+
+
 
     @staticmethod
     def run():
