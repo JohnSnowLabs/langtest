@@ -7,8 +7,8 @@ from langtest.transform import ITests, TestFactory
 from langtest.modelhandler.modelhandler import ModelAPI
 
 
-class GrammerTestFactory(ITests):
-    alias_name = "grammer"
+class GrammarTestFactory(ITests):
+    alias_name = "grammar"
     supported_tasks = ["text-classification", "text-generation", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
@@ -88,13 +88,13 @@ class GrammerTestFactory(ITests):
         """
         tests = {
             j: i
-            for i in BaseGrammer.__subclasses__()
+            for i in BaseGrammar.__subclasses__()
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
 
 
-class BaseGrammer(ABC):
+class BaseGrammar(ABC):
     @staticmethod
     @abstractmethod
     def transform():
@@ -124,7 +124,7 @@ class BaseGrammer(ABC):
         return await created_task
 
 
-class Paraphrase(BaseGrammer):
+class Paraphrase(BaseGrammar):
     @staticmethod
     def transform(*args, **kwargs):
         pass
