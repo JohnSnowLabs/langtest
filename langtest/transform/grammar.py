@@ -132,7 +132,7 @@ class BaseGrammar(ABC):
 
     @staticmethod
     @abstractmethod
-    def run(sample_list: List[Sample], model: ModelAPI, **kwargs):
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Abstract method that implements the model testing for to check the grammer issues."""
 
         progress_bar = kwargs.get("progress_bar", False)
@@ -169,7 +169,6 @@ class Paraphrase(BaseGrammar):
                 "text2text-generation", model="humarin/chatgpt_paraphraser_on_T5_base"
             )
             for idx, sample in enumerate(sample_list):
-                print(idx)
                 if isinstance(sample, str):
                     test_case = pipe(sample, max_length=11000, num_return_sequences=1)[0][
                         "generated_text"
@@ -181,7 +180,6 @@ class Paraphrase(BaseGrammar):
                     )[0]["generated_text"]
                     sample.test_case = test_case
                     sample.category = "grammar"
-                print(test_case, sample.test_case)
             return sample_list
 
         else:
