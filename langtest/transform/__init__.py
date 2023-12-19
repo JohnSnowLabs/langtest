@@ -1232,7 +1232,6 @@ class AccuracyTestFactory(ITests):
             tasks.append(
                 supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs)
             )
-        print(tasks)
         return tasks
 
 
