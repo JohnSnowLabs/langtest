@@ -53,6 +53,7 @@ from langtest.transform.grammar import GrammarTestFactory
 
 nest_asyncio.apply()
 
+
 class RobustnessTestFactory(ITests):
     """
     A class for performing robustness tests on a given dataset.
@@ -1913,4 +1914,3 @@ class SycophancyTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
-

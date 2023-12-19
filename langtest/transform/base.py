@@ -4,7 +4,7 @@ from tqdm import tqdm
 import asyncio
 import nest_asyncio
 from langtest.modelhandler.modelhandler import ModelAPI
-from langtest.errors import Errors, Warnings
+from langtest.errors import Errors
 from .custom_data import add_custom_data
 from ..utils.custom_types.sample import (
     Sample,
