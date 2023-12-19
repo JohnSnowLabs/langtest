@@ -1,11 +1,15 @@
 import asyncio
-from typing import List, Dict
+from typing import List, Dict, Optional
 from langtest.utils.custom_types.sample import Sample
 from abc import ABC, abstractmethod
-from langtest.errors import Errors
+from langtest.errors import Errors, Warnings
 from langtest.transform import ITests, TestFactory
 from langtest.modelhandler.modelhandler import ModelAPI
 from ..utils.lib_manager import try_import_lib
+from langtest.transform.utils import filter_unique_samples
+import logging
+
+getLogger = logging.getLogger(__name__)
 
 
 class GrammarTestFactory(ITests):
@@ -53,6 +57,7 @@ class GrammarTestFactory(ITests):
 
         """
         all_samples = []
+        no_transformation_applied_tests = {}
         tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             if TestFactory.is_augment:
@@ -62,20 +67,44 @@ class GrammarTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            _ = [
-                sample.transform(
-                    test_func,
-                    params.get("parameters", {}),
-                )
-                if hasattr(sample, "transform")
-                else sample
-                for sample in data_handler_copy
-            ]
-            transformed_samples = data_handler_copy
+            if (
+                TestFactory.task in ("question-answering", "summarization")
+                and test_name != "multiple_perturbations"
+            ):
+                _ = [
+                    sample.transform(
+                        test_func,
+                        params.get("parameters", {}),
+                        prob=params.pop("prob", 1.0),
+                    )
+                    if hasattr(sample, "transform")
+                    else sample
+                    for sample in data_handler_copy
+                ]
+                transformed_samples = data_handler_copy
 
-            for sample in transformed_samples:
-                sample.test_type = test_name
-            all_samples.extend(transformed_samples)
+            else:
+                transformed_samples = test_func(
+                    data_handler_copy,
+                    **params.get("parameters", {}),
+                    prob=params.pop("prob", 1.0),
+                )
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            all_samples.extend(new_transformed_samples)
+
+            no_transformation_applied_tests.update(removed_samples_tests)
+
+        if no_transformation_applied_tests:
+            warning_message = Warnings.W009
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += Warnings.W010.format(
+                    test=test, count=count, total_sample=len(self._data_handler)
+                )
+
+            logging.warning(warning_message)
+
         return all_samples
 
     @staticmethod
@@ -98,7 +127,7 @@ class GrammarTestFactory(ITests):
 class BaseGrammar(ABC):
     @staticmethod
     @abstractmethod
-    def transform():
+    def transform(sample_list: List[Sample], *args, **kwargs):
         raise NotImplementedError
 
     @staticmethod
@@ -126,18 +155,34 @@ class BaseGrammar(ABC):
 
 
 class Paraphrase(BaseGrammar):
-    @staticmethod
-    def transform(*args, **kwargs):
+    alias_name = "paraphrase"
+    supported_tasks = ["text-classification", "text-generation", "question-answering"]
 
+    @staticmethod
+    def transform(
+        sample_list: List[Sample], prob: Optional[float] = 1.0, *args, **kwargs
+    ):
         if try_import_lib("transformers"):
             from transformers import pipeline
-            pipe = pipeline("text2text-generation", model="humarin/chatgpt_paraphraser_on_T5_base")
-        
+
+            pipe = pipeline(
+                "text2text-generation", model="humarin/chatgpt_paraphraser_on_T5_base"
+            )
+            for idx, sample in enumerate(sample_list):
+                print(idx)
+                if isinstance(sample, str):
+                    test_case = pipe(sample, max_length=11000, num_return_sequences=1)[0][
+                        "generated_text"
+                    ]
+                    sample_list[idx] = test_case
+                else:
+                    test_case = pipe(
+                        sample.original, max_length=1000, num_return_sequences=1
+                    )[0]["generated_text"]
+                    sample.test_case = test_case
+                    sample.category = "grammar"
+                print(test_case, sample.test_case)
+            return sample_list
+
         else:
             raise ModuleNotFoundError(Errors.E023.format(LIB_NAME="transformers"))
-
-
-
-    @staticmethod
-    def run():
-        pass
