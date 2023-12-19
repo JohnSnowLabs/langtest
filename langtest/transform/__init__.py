@@ -44,7 +44,6 @@ from ..utils.custom_types.sample import (
     QASample,
     SequenceClassificationSample,
     Sample,
-    Result,
 )
 from ..utils.custom_types.helpers import default_user_prompt
 from ..utils.util_metrics import calculate_f1_score
@@ -53,7 +52,6 @@ from langtest.transform.base import ITests, TestFactory
 from langtest.transform.grammar import GrammarTestFactory
 
 nest_asyncio.apply()
-
 
 class RobustnessTestFactory(ITests):
     """
@@ -1915,3 +1913,4 @@ class SycophancyTestFactory(ITests):
             for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
         }
         return tests
+
