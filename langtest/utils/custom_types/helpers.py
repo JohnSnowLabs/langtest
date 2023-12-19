@@ -6,7 +6,7 @@ default_user_prompt = {
     "xsum": "You are an intelligent Context summarizer. Please read the following context carefully. After understanding its content, create a concise summary, capturing the essential themes and key details. Please ensure that the summary does not end abruptly and remains within the max_tokens word limit. Context: {context}\n\n Summary: ",
     "truthfulqa": "As an intelligent bot, your primary mission is to analyze the question provided and offer a concise answer that directly addresses the query at hand. Question: {question}\n Answer:",
     "mmlu": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Question: {question}\nOptions: {options}\n Answer:",
-    "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\Options: {options}\nQuestion: {question}\n Answer:",
+    "openbookqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. \nQuestion: {question}\nOptions: {options}|\n Answer:",
     "quac": "You are an intelligent bot specialized in question answering. Your goal is to provide accurate and concise answers to all the questions without stopping in between. Read the following context and answer each question based on the given information.\n\nContext: {context}\n\nQuestions:\n{question}",
     "narrativeqa": "Context: {context} \nQuestion: {question}\n I've provided a question and context. Answer the given closed-book question based on the provided context. Only answer with words in the context. \nAnswer:",
     "hellaswag": "You are an AI agent that completes sentences and cannot do anything else. You do not repeat the sentence and only continue for one sentence. Complete the following sentence: \nQuestion: {question}",
@@ -78,9 +78,8 @@ default_user_prompt = {
 
     If it is option A, your response must be exactly "a"; otherwise, it should be "b."
 
-    Context: {context}
-    Options: {options}
     Question: {question}
+    Options: {options}
     Answer:""",
     "consumercontracts": """Context: {context}\nQuestion: {question}\n Based on the provided context and question regarding clauses in terms of service agreements, respond only with 'True' or 'False' without any additional punctuation or wording.""",
     "contracts": """Context: {context}\nQuestion: {question}\n Based on the provided context and question determine if language from a context contains a particular type of content, respond only with 'True' or 'False' without any additional punctuation or wording.""",
