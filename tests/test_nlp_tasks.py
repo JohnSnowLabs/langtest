@@ -168,7 +168,6 @@ class TestNlpTask(unittest.TestCase):
         """
         for task_parameters in self.task_config:
             harness_instance = Harness(**task_parameters)
-            harness_instance.data = harness_instance.data[:20]
             harness_instance.generate()
             test_cases = harness_instance._testcases
             assert isinstance(test_cases, list)
