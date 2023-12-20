@@ -1180,7 +1180,6 @@ class AccuracyTestFactory(ITests):
             y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
             y_pred = pd.Series(samples_to_run).apply(lambda x: x.expected_results.strip())
 
-
         if kwargs["is_default"]:
             y_pred = y_pred.apply(
                 lambda x: "1"
