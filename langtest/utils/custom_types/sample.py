@@ -552,7 +552,7 @@ class QASample(BaseQASample):
         }
 
         embeddings = self.config.get("embeddings", {})
-        hub_name = embeddings.get("hub", "openai")
+        hub_name = embeddings.get("hub", "huggingface")
         evaluations = self.config["evaluation"]
         selected_metric = evaluations.get("distance", "cosine")
         module_name = f"langtest.embeddings.{hub_name}"
@@ -2819,4 +2819,13 @@ Sample = TypeVar(
     DisinformationSample,
     SensitivitySample,
     SycophancySample,
+    QASample,
+    ToxicitySample,
+    TranslationSample,
+    ClinicalSample,
+    SecuritySample,
+    WinoBiasSample,
+    LegalSample,
+    CrowsPairsSample,
+    StereoSetSample,
 )
