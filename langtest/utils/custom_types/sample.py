@@ -528,6 +528,13 @@ class QASample(BaseQASample):
             if "evaluation" in self.config and "metric" in self.config["evaluation"]:
                 if self.config["evaluation"]["metric"] != "QAEvalChain":
                     result.update({"eval_score": self.distance_result})
+        elif expected_result is not None:
+            result.update(
+                {
+                    "expected_result": self.ground_truth,
+                    "actual_result": expected_result,
+                }
+            )
 
         return result
 
@@ -834,6 +841,13 @@ class SummarizationSample(BaseModel):
                     "pass": bool_pass,
                 }
             )
+        elif self.expected_results is not None:
+            result.update(
+                {
+                    "expected_result": self.ground_truth,
+                    "actual_result": self.expected_results,
+                }
+            )
 
         return result
 
@@ -923,10 +937,11 @@ class SummarizationSample(BaseModel):
             text={"context": self.original},
             prompt={"template": prompt_template, "input_variables": ["context"]},
         )
-        self.actual_results = model(
-            text={"context": self.test_case},
-            prompt={"template": prompt_template, "input_variables": ["context"]},
-        )
+        if self.test_case:
+            self.actual_results = model(
+                text={"context": self.test_case},
+                prompt={"template": prompt_template, "input_variables": ["context"]},
+            )
         return True
 
 

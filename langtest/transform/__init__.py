@@ -1133,6 +1133,8 @@ class AccuracyTestFactory(ITests):
         """
         samples_to_run = sample_list["general"]
 
+        progress = kwargs.get("progress_bar", None)
+
         for sample in samples_to_run:
             if sample.state != "done":
                 if hasattr(sample, "run"):
@@ -1142,6 +1144,8 @@ class AccuracyTestFactory(ITests):
                 else:
                     sample.actual_results = model(sample.original)
                     sample.state = "done"
+            if progress:
+                progress.update(1)
 
         if isinstance(samples_to_run[0], NERSample):
             y_true = pd.Series(samples_to_run).apply(
@@ -1169,49 +1173,13 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.explode().apply(lambda x: x.lower())
 
         elif samples_to_run[0].task == "question-answering":
-            if samples_to_run[0].dataset_name is None:
-                dataset_name = "default_question_answering_prompt"
-            else:
-                dataset_name = samples_to_run[0].dataset_name.split("-")[0].lower()
-
-            prompt_template = kwargs.get(
-                "user_prompt", default_user_prompt.get(dataset_name, "")
-            )
-
             y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
-            X_test = pd.Series(samples_to_run)
-            y_pred = X_test.apply(
-                lambda sample: model(
-                    text={
-                        "context": sample.original_context,
-                        "question": sample.original_question,
-                    },
-                    prompt={
-                        "template": prompt_template,
-                        "input_variables": ["context", "question"],
-                    },
-                )
-            )
-            y_pred = y_pred.apply(lambda x: x.strip())
+            y_pred = pd.Series(samples_to_run).apply(lambda x: x.expected_results.strip())
 
         elif samples_to_run[0].task == "summarization":
-            if samples_to_run[0].dataset_name is None:
-                dataset_name = "default_summarization_prompt"
-            else:
-                dataset_name = samples_to_run[0].dataset_name.split("-")[0].lower()
-            prompt_template = kwargs.get(
-                "user_prompt", default_user_prompt.get(dataset_name, "")
-            )
-
             y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
-            X_test = pd.Series(samples_to_run)
-            y_pred = X_test.apply(
-                lambda sample: model(
-                    text={"context": sample.original},
-                    prompt={"template": prompt_template, "input_variables": ["context"]},
-                )
-            )
-            y_pred = y_pred.apply(lambda x: x.strip())
+            y_pred = pd.Series(samples_to_run).apply(lambda x: x.expected_results.strip())
+
 
         if kwargs["is_default"]:
             y_pred = y_pred.apply(
