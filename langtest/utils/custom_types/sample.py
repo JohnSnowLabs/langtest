@@ -402,19 +402,15 @@ class BaseQASample(BaseModel):
 
         if perturbations is None:
             sens = [self.original_question, self.original_context]
-            if self.test_type == "paraphrase":
-                self.perturbed_question = func(
-                    self.original_question, prob, **params, **kwargs
-                )
 
-                self.perturbed_context = self.original_context
-
-            else:
-                self.perturbed_question, self.perturbed_context = func(
-                    sens, prob, **params, **kwargs
-                )
+            self.perturbed_question, self.perturbed_context = func(
+                sens, prob, **params, **kwargs
+            )
 
             self.category = func.__module__.split(".")[-1]
+
+            if self.category == "grammar":
+                self.perturbed_context = self.original_context
 
         else:
             sens = [self.original_question, self.original_context]
