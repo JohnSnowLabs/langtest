@@ -6,7 +6,6 @@ from langtest.utils.custom_types import Sample
 
 class TestNlpTask(unittest.TestCase):
     def setUp(self):
-        super().setUp()
         self.task_config = [
             {
                 "task": "ner",
