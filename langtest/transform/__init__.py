@@ -347,7 +347,7 @@ class RobustnessTestFactory(ITests):
                 {
                     "text": [sample.original for sample in raw_data],
                     "label": [
-                        [i.entity for i in sample.expected_results.predictions]
+                        [i.entity for i in sample.ground_truth.predictions]
                         for sample in raw_data
                     ],
                 }
