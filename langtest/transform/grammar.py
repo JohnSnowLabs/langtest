@@ -169,6 +169,8 @@ class Paraphrase(BaseGrammar):
                 "text2text-generation", model="humarin/chatgpt_paraphraser_on_T5_base"
             )
             for idx, sample in enumerate(sample_list):
+                sample.test_type = "paraphrase"
+                sample.category = "grammar"
                 if isinstance(sample, str):
                     test_case = pipe(sample, max_length=11000, num_return_sequences=1)[0][
                         "generated_text"
@@ -179,7 +181,7 @@ class Paraphrase(BaseGrammar):
                         sample.original, max_length=1000, num_return_sequences=1
                     )[0]["generated_text"]
                     sample.test_case = test_case
-                    sample.category = "grammar"
+  
             return sample_list
 
         else:
