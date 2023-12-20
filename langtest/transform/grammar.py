@@ -181,7 +181,7 @@ class Paraphrase(BaseGrammar):
                         sample.original, max_length=1000, num_return_sequences=1
                     )[0]["generated_text"]
                     sample.test_case = test_case
-  
+
             return sample_list
 
         else:

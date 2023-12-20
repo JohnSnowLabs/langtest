@@ -400,18 +400,16 @@ class BaseQASample(BaseModel):
             None
         """
 
-        
         if perturbations is None:
             sens = [self.original_question, self.original_context]
-            if self.test_type=="paraphrase":
-                 
+            if self.test_type == "paraphrase":
                 self.perturbed_question = func(
                     self.original_question, prob, **params, **kwargs
                 )
-                
+
                 self.perturbed_context = self.original_context
-                      
-            else:     
+
+            else:
                 self.perturbed_question, self.perturbed_context = func(
                     sens, prob, **params, **kwargs
                 )
