@@ -564,12 +564,7 @@ class QASample(BaseQASample):
 
         except (ModuleNotFoundError, AttributeError):
             raise ValueError(Errors.E075.format(hub_name=hub_name))
-
-        if selected_metric not in EmbeddingDistance.available_embedding_distance:
-            raise ValueError(
-                Errors.E076.format(metric="embedding", elected_metric=selected_metric)
-            )
-
+        
         model = embeddings_class(
             model=embeddings.get("model", embedding_info[hub_name]["default_model"])
         )
@@ -577,7 +572,7 @@ class QASample(BaseQASample):
         embedding1 = model.get_embedding(self.expected_results.lower().strip())
         embedding2 = model.get_embedding(self.actual_results.lower().strip())
 
-        distance_function = EmbeddingDistance()[selected_metric]
+        distance_function = EmbeddingDistance().available_embedding_distance(distance=selected_metric)
         self.distance_result = distance_function(embedding1, embedding2)
 
         if evaluations.get("threshold") is not None:
@@ -607,12 +602,7 @@ class QASample(BaseQASample):
         evaluations = self.config["evaluation"]
         selected_metric = evaluations.get("distance", "jaro")
 
-        if selected_metric not in StringDistance.available_string_distance:
-            raise ValueError(
-                Errors.E076.format(metric="string", elected_metric=selected_metric)
-            )
-
-        distance_function = StringDistance()[selected_metric]
+        distance_function = StringDistance().available_string_distance(distance=selected_metric)
         self.distance_result = distance_function(
             self.expected_results.lower().strip(), self.actual_results.lower().strip()
         )
@@ -2828,4 +2818,5 @@ Sample = TypeVar(
     LegalSample,
     CrowsPairsSample,
     StereoSetSample,
+
 )
