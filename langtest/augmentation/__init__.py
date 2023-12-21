@@ -277,7 +277,7 @@ class AugmentRobustness(BaseAugmentaion):
                 {
                     "text": [sample.original for sample in data_handler],
                     "label": [
-                        [i.entity for i in sample.expected_results.predictions]
+                        [i.entity for i in sample.ground_truth.predictions]
                         for sample in data_handler
                     ],
                 }
@@ -449,7 +449,7 @@ class TemplaticAugment(BaseAugmentaion):
         for sample in samples:
             chunk = []
             ent_name = ""
-            for result in sample.expected_results.predictions:
+            for result in sample.ground_truth.predictions:
                 ent = result.entity.split("-")[-1]
                 if ent != "O" and ent_name == "":
                     ent_name = ent
@@ -506,7 +506,7 @@ class TemplaticAugment(BaseAugmentaion):
                     template.original = template.original.replace(
                         "{" + entity + "}", word, 1
                     )
-                    for result in template.expected_results.predictions[cursor:]:
+                    for result in template.ground_truth.predictions[cursor:]:
                         if prediction[0].entity.endswith(result.entity):
                             for each_prediction in prediction:
                                 if isinstance(each_prediction, NERPrediction):
@@ -522,8 +522,8 @@ class TemplaticAugment(BaseAugmentaion):
                             cursor += 1
                 else:
                     continue
-            template.expected_results.predictions = (
-                other_predictions + template.expected_results.predictions[cursor:]
+            template.ground_truth.predictions = (
+                other_predictions + template.ground_truth.predictions[cursor:]
             )
             return template
         else:
@@ -563,7 +563,7 @@ class TemplaticAugment(BaseAugmentaion):
                     )
                 )
                 cursor += len(word) + 1
-            sample.expected_results = NEROutput(predictions=predictions)
+            sample.ground_truth = NEROutput(predictions=predictions)
 
         elif self.__task == "text-classification":
             raise NotImplementedError
