@@ -75,7 +75,7 @@ class Formatter:
 
         """
         formats = {cls.__name__: cls for cls in BaseFormatter.__subclasses__()}
-        class_name = type(sample.expected_results).__name__
+        class_name = type(sample.ground_truth).__name__
         try:
             return getattr(formats[f"{class_name}Formatter"], f"to_{output_format}")(
                 sample, *args, **kwargs
@@ -103,8 +103,8 @@ class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
                 Row formatted as a list of strings.
         """
         if sample.test_case:
-            return [sample.test_case, sample.expected_results.predictions[0].label]
-        return [sample.original, sample.expected_results.predictions[0].label]
+            return [sample.test_case, sample.ground_truth.predictions[0].label]
+        return [sample.original, sample.ground_truth.predictions[0].label]
 
 
 class NEROutputFormatter(BaseFormatter):
@@ -140,7 +140,7 @@ class NEROutputFormatter(BaseFormatter):
 
         for word in words:
             tokens.append(word.group())
-            match = sample.expected_results[word.group()]
+            match = sample.ground_truth[word.group()]
             labels.append(match.entity if match is not None else "O")
 
         if test_case and sample.actual_results:
@@ -190,7 +190,7 @@ class NEROutputFormatter(BaseFormatter):
                         item
                     ):
                         oitem_index = norm_original_items.index(item)
-                        j = sample.expected_results.predictions[oitem_index + temp_len]
+                        j = sample.ground_truth.predictions[oitem_index + temp_len]
                         if temp_id != j.doc_id and jdx == 0:
                             text += f"{j.doc_name}\n\n"
                             temp_id = j.doc_id
@@ -198,13 +198,13 @@ class NEROutputFormatter(BaseFormatter):
                         norm_original_items.pop(oitem_index)
                         temp_len += 1
                     else:
-                        o_item = sample.expected_results.predictions[jdx].span.word
+                        o_item = sample.ground_truth.predictions[jdx].span.word
                         letters_count = len(set(item) - set(o_item))
                         if (
                             len(norm_test_case_items) == len(original.lower().split())
                             or letters_count < 2
                         ):
-                            tl = sample.expected_results.predictions[jdx]
+                            tl = sample.ground_truth.predictions[jdx]
                             text += f"{test_case_items[jdx]} {tl.pos_tag} {tl.chunk_tag} {tl.entity}\n"
                         else:
                             text += f"{test_case_items[jdx]} -X- -X- O\n"
@@ -212,7 +212,7 @@ class NEROutputFormatter(BaseFormatter):
                     text += f"{test_case_items[jdx]} -X- -X- O\n"
 
         else:
-            for j in sample.expected_results.predictions:
+            for j in sample.ground_truth.predictions:
                 if temp_id != j.doc_id:
                     text += f"{j.doc_name}\n\n"
                     temp_id = j.doc_id

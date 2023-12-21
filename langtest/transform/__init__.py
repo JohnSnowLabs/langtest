@@ -898,7 +898,7 @@ class FairnessTestFactory(ITests):
             else:
                 if isinstance(data[0], NERSample):
                     y_true = pd.Series(data).apply(
-                        lambda x: [y.entity for y in x.expected_results.predictions]
+                        lambda x: [y.entity for y in x.ground_truth.predictions]
                     )
                     X_test = pd.Series(data).apply(lambda sample: sample.original)
                     y_pred = X_test.apply(model.predict_raw)
@@ -916,7 +916,7 @@ class FairnessTestFactory(ITests):
 
                 elif isinstance(data[0], SequenceClassificationSample):
                     y_true = pd.Series(data).apply(
-                        lambda x: [y.label for y in x.expected_results.predictions]
+                        lambda x: [y.label for y in x.ground_truth.predictions]
                     )
                     y_true = y_true.apply(lambda x: x[0])
                     X_test = pd.Series(data).apply(lambda sample: sample.original)
@@ -933,9 +933,9 @@ class FairnessTestFactory(ITests):
                         "user_prompt", default_user_prompt.get(dataset_name, "")
                     )
 
-                    if data[0].expected_results is None:
+                    if data[0].ground_truth is None:
                         raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
-                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
+                    y_true = pd.Series(data).apply(lambda x: x.ground_truth)
                     X_test = pd.Series(data)
                     y_pred = X_test.apply(
                         lambda sample: model(
@@ -959,10 +959,10 @@ class FairnessTestFactory(ITests):
                     prompt_template = kwargs.get(
                         "user_prompt", default_user_prompt.get(dataset_name, "")
                     )
-                    if data[0].expected_results is None:
+                    if data[0].ground_truth is None:
                         raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
 
-                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
+                    y_true = pd.Series(data).apply(lambda x: x.ground_truth)
                     X_test = pd.Series(data)
                     y_pred = X_test.apply(
                         lambda sample: model(

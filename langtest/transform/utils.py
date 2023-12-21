@@ -89,7 +89,7 @@ class RepresentationOperation:
         """
         label_representation = defaultdict(int)
         for sample in data:
-            for prediction in sample.expected_results.predictions:
+            for prediction in sample.ground_truth.predictions:
                 if isinstance(prediction, SequenceLabel):
                     label_representation[prediction.label] += 1
                 elif isinstance(prediction, NERPrediction):
@@ -126,7 +126,7 @@ class RepresentationOperation:
 
         for sample in data:
             if sample.task == "ner":
-                words = [x.span.word.lower() for x in sample.expected_results.predictions]
+                words = [x.span.word.lower() for x in sample.ground_truth.predictions]
             elif sample.task == "text-classification":
                 words = set(sample.original.replace(".", "").lower().split())
             elif sample.task == "question-answering":
@@ -170,7 +170,7 @@ class RepresentationOperation:
 
         for sample in data:
             if sample.task == "ner":
-                words = [x.span.word for x in sample.expected_results.predictions]
+                words = [x.span.word for x in sample.ground_truth.predictions]
             elif sample.task == "text-classification":
                 words = sample.original.split()
             elif sample.task == "question-answering":
@@ -211,7 +211,7 @@ class RepresentationOperation:
 
         for sample in data:
             if sample.task == "ner":
-                words = [x.span.word for x in sample.expected_results.predictions]
+                words = [x.span.word for x in sample.ground_truth.predictions]
             elif sample.task == "text-classification":
                 words = sample.original.split()
             elif sample.task == "question-answering":
