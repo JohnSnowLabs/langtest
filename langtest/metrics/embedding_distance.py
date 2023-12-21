@@ -140,11 +140,31 @@ class EmbeddingDistance:
         It provides a measure of similarity based on the proportion of differing bits.
         """
         return float(np.mean(a != b))
+    
+    @classmethod
+    def available_embedding_distance(cls, distance:str="cosine"):
+        """Get the specified distance metric for embedding calculations.
 
-    available_embedding_distance = {
-        "cosine": _cosine_distance,
-        "euclidean": _euclidean_distance,
-        "manhattan": _manhattan_distance,
-        "chebyshev": _chebyshev_distance,
-        "hamming": _hamming_distance,
-    }
+        Args:
+            distance (str, optional): The desired distance metric. Defaults to "cosine".
+
+        Returns:
+            callable: The corresponding distance calculation method.
+
+        Raises:
+            ValueError: If the specified distance metric is not supported.
+        """
+        distance_mapping = {
+            "cosine": cls._cosine_distance,
+            "euclidean": cls._euclidean_distance,
+            "manhattan": cls._manhattan_distance,
+            "chebyshev": cls._chebyshev_distance,
+            "hamming": cls._hamming_distance,
+        }
+
+        if distance not in distance_mapping:
+            raise ValueError(
+                            Errors.E076.format(metric="embedding", selected_metric=distance)
+                        )
+
+        return distance_mapping[distance]
