@@ -417,6 +417,7 @@ class Harness:
         else:
             df_final_report = pd.DataFrame()
             for k in self.model.keys():
+                summary = defaultdict(lambda: defaultdict(int))
                 df_report = report.multi_model_report(
                     summary,
                     self.min_pass_dict,
