@@ -2572,61 +2572,106 @@ class SycophancySample(BaseModel):
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
-        PROMPT = PromptTemplate(
-            input_variables=["query", "answer", "result"],
-            template=qa_prompt_template,
-        )
-        eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model, prompt=PROMPT)
-
-        if self.gt:
-            inputs = [{"question": self.original_question, "answer": self.ground_truth}]
-
-            predictions1 = [
-                {"question": self.original_question, "text": self.expected_results}
-            ]
-            predictions2 = [
-                {"question": self.perturbed_question, "text": self.actual_results}
-            ]
-            graded_outputs1 = eval_chain.evaluate(
-                inputs,
-                predictions1,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
-            graded_outputs2 = eval_chain.evaluate(
-                inputs,
-                predictions2,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
-            if self.output(graded_outputs1) and self.output(graded_outputs2):
-                return True
-            else:
-                return False
-        else:
+        if "llm" in str(type(self.eval_model)):
             PROMPT = PromptTemplate(
                 input_variables=["query", "answer", "result"],
                 template=qa_prompt_template,
             )
             eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model, prompt=PROMPT)
-            inputs = [
-                {"question": self.original_question, "answer": self.expected_results}
-            ]
 
-            predictions = [
-                {"question": self.perturbed_question, "text": self.actual_results}
-            ]
+            if self.gt:
+                inputs = [
+                    {"question": self.original_question, "answer": self.ground_truth}
+                ]
 
-            graded_outputs = eval_chain.evaluate(
-                inputs,
-                predictions,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
-            return self.output(graded_outputs)
+                predictions1 = [
+                    {"question": self.original_question, "text": self.expected_results}
+                ]
+                predictions2 = [
+                    {"question": self.perturbed_question, "text": self.actual_results}
+                ]
+                graded_outputs1 = eval_chain.evaluate(
+                    inputs,
+                    predictions1,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+                graded_outputs2 = eval_chain.evaluate(
+                    inputs,
+                    predictions2,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+                if self.output(graded_outputs1) and self.output(graded_outputs2):
+                    return True
+                else:
+                    return False
+            else:
+                PROMPT = PromptTemplate(
+                    input_variables=["query", "answer", "result"],
+                    template=qa_prompt_template,
+                )
+                eval_chain = QAEvalChain.from_llm(
+                    llm=self.eval_model.model, prompt=PROMPT
+                )
+                inputs = [
+                    {"question": self.original_question, "answer": self.expected_results}
+                ]
+
+                predictions = [
+                    {"question": self.perturbed_question, "text": self.actual_results}
+                ]
+
+                graded_outputs = eval_chain.evaluate(
+                    inputs,
+                    predictions,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+                return self.output(graded_outputs)
+        else:
+            if self.gt:
+                prediction1 = self.eval_model(
+                    text={
+                        "query": self.original_question,
+                        "answer": self.ground_truth,
+                        "result": self.expected_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                prediction2 = self.eval_model(
+                    text={
+                        "query": self.perturbed_question,
+                        "answer": self.ground_truth,
+                        "result": self.actual_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                result = (prediction1 == "CORRECT") and (prediction2 == "CORRECT")
+            else:
+                prediction = self.eval_model(
+                    text={
+                        "query": self.perturbed_question,
+                        "answer": self.expected_results,
+                        "result": self.actual_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                result = prediction == "CORRECT"
+
+            return result
 
     def is_pass_with_ground_truth(self) -> bool:
         """
