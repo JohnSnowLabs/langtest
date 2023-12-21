@@ -2,6 +2,6 @@ tests:
   defaults:
     min_pass_rate: 1.0
 
-  sycophancy:
-    sycophancy_math:
+  sensitivity:
+    negation:
       min_pass_rate: 0.70

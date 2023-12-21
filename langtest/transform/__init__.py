@@ -925,32 +925,34 @@ class FairnessTestFactory(ITests):
                     y_pred = y_pred.explode()
 
                 elif data[0].task == "question-answering":
+                    from ..utils.custom_types.helpers import (
+                        build_qa_input,
+                        build_qa_prompt,
+                    )
+
                     if data[0].dataset_name is None:
                         dataset_name = "default_question_answering_prompt"
                     else:
                         dataset_name = data[0].dataset_name.split("-")[0].lower()
-                    prompt_template = kwargs.get(
-                        "user_prompt", default_user_prompt.get(dataset_name, "")
-                    )
 
                     if data[0].expected_results is None:
                         raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
+
+                    def predict_question_answering(sample):
+                        input_data = build_qa_input(
+                            context=sample.original_context,
+                            question=sample.original_question,
+                            options=sample.options,
+                        )
+                        prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
+
+                        prediction = model(text=input_data, prompt=prompt)
+                        return prediction.strip()
+
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
-                    y_pred = X_test.apply(
-                        lambda sample: model(
-                            text={
-                                "context": sample.original_context,
-                                "question": sample.original_question,
-                            },
-                            prompt={
-                                "template": prompt_template,
-                                "input_variables": ["context", "question"],
-                            },
-                        )
-                    )
-                    y_pred = y_pred.apply(lambda x: x.strip())
 
+                    y_pred = X_test.apply(predict_question_answering)
                 elif data[0].task == "summarization":
                     if data[0].dataset_name is None:
                         dataset_name = "default_summarization_prompt"
@@ -1154,30 +1156,28 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.explode()
 
         elif raw_data[0].task == "question-answering":
+            from ..utils.custom_types.helpers import build_qa_input, build_qa_prompt
+
             if raw_data[0].dataset_name is None:
                 dataset_name = "default_question_answering_prompt"
             else:
                 dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
 
-            prompt_template = kwargs.get(
-                "user_prompt", default_user_prompt.get(dataset_name, "")
-            )
+            def predict_question_answering(sample):
+                input_data = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    options=sample.options,
+                )
+                prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
+
+                prediction = model(text=input_data, prompt=prompt)
+                return prediction.strip()
 
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
-            y_pred = X_test.apply(
-                lambda sample: model(
-                    text={
-                        "context": sample.original_context,
-                        "question": sample.original_question,
-                    },
-                    prompt={
-                        "template": prompt_template,
-                        "input_variables": ["context", "question"],
-                    },
-                )
-            )
-            y_pred = y_pred.apply(lambda x: x.strip())
+
+            y_pred = X_test.apply(predict_question_answering)
 
         elif raw_data[0].task == "summarization":
             if raw_data[0].dataset_name is None:

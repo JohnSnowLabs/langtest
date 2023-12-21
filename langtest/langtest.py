@@ -161,12 +161,22 @@ class Harness:
         elif self.task.category in self.DEFAULTS_CONFIG:
             category = self.task.category
             if isinstance(self.DEFAULTS_CONFIG[category], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+                if hub in self.DEFAULTS_CONFIG[category]:
+                    self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+                else:
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[category]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[category], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[category])
         elif self.task in self.DEFAULTS_CONFIG:
             if isinstance(self.DEFAULTS_CONFIG[self.task], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+                if hub in self.DEFAULTS_CONFIG[self.task]:
+                    self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+                else:
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[self.task]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:
@@ -528,6 +538,7 @@ class Harness:
             "log_prob_stereo",
             "log_prob_antistereo",
             "diff_threshold",
+            "options",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
@@ -538,7 +549,6 @@ class Harness:
             "correct_sentence",
             "incorrect_sentence",
             "ground_truth",
-            "options",
             "result",
             "swapped_result",
             "model_response",

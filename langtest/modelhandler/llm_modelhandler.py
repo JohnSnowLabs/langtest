@@ -5,12 +5,8 @@ import langchain.chat_models as cm
 from langchain import LLMChain, PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
-from ..errors import Errors
-
-from ..metrics import EmbeddingDistance
-from langchain import OpenAI
-import os
-from langtest.transform.utils import compare_generations_overlap
+from ..errors import Errors, Warnings
+import logging
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -25,6 +21,14 @@ class PretrainedModelForQA(ModelAPI):
         ValueError: If the model is not found online or locally.
         ConfigError: If there is an error in the model configuration.
     """
+
+    HUB_PARAM_MAPPING = {
+        "azure-openai": "max_tokens",
+        "ai21": "maxTokens",
+        "cohere": "max_tokens",
+        "openai": "max_tokens",
+        "huggingface-inference-api": "max_length",
+    }
 
     def __init__(self, hub: str, model: Any, *args, **kwargs):
         """Constructor class
@@ -59,6 +63,8 @@ class PretrainedModelForQA(ModelAPI):
             ConfigError: If there is an error in the model configuration.
         """
         try:
+            kwargs.pop("task", None), kwargs.pop("device", None)
+            cls._update_model_parameters(hub, kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
                 model = cm.ChatOpenAI(model=path, *args, **kwargs)
                 return cls(hub, model, *args, **kwargs)
@@ -73,7 +79,6 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(model_id=path, *args, **kwargs)
             elif "repo_id" in default_args:
                 cls.model = model(repo_id=path, model_kwargs=kwargs)
-
             return cls(hub, cls.model, *args, **kwargs)
 
         except ImportError:
@@ -82,9 +87,25 @@ class PretrainedModelForQA(ModelAPI):
             error_msg = [err["loc"][0] for err in e.errors()]
             raise ConfigError(
                 Errors.E045.format(
-                    path=path, hub=hub, field=error_msg[0], required_fields=error_msg
+                    path=path, hub=hub, field=error_msg[0], error_message=e
                 )
             )
+
+    @classmethod
+    def _update_model_parameters(cls, hub: str, kwargs: dict):
+        """Update model parameters based on the hub's mapping.
+
+        Args:
+            hub (str): The hub name for the model.
+            kwargs (dict): Keyword arguments to be updated.
+        """
+        if hub == "azure-openai" and "deployment_name" not in kwargs:
+            kwargs["deployment_name"] = "text-davinci-003"
+            logging.warning(Warnings.W014.format(hub=hub, kwargs=kwargs))
+
+        if "max_tokens" in kwargs and hub in cls.HUB_PARAM_MAPPING:
+            new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
+            kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform prediction using the pretrained model.
@@ -98,9 +119,13 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             The prediction result.
         """
-        prompt_template = PromptTemplate(**prompt)
-        llmchain = LLMChain(prompt=prompt_template, llm=self.model)
-        return llmchain.run(**text)
+        try:
+            prompt_template = PromptTemplate(**prompt)
+            llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            output = llmchain.run(**text)
+            return output
+        except Exception as e:
+            raise ValueError(Errors.E089.format(error_message=e))
 
     def predict_raw(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform raw prediction using the pretrained model.
@@ -216,123 +241,58 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(ModelAPI):
-    """
-    A class for sensitivity testing using a pretrained model and embeddings.
-
-    Args:
-        model (tuple): A tuple containing the pretrained language model and embeddings model.
-
-    Raises:
-        ValueError: If the input 'model' is not a tuple.
-
-    Attributes:
-        model: The pretrained language model.
-        embeddings_model: The embeddings model.
-
-    Methods:
-        load_model(cls, path):
-            Load the pretrained language model and embeddings model from a given path.
-        predict(self, text, text_transformed, **kwargs):
-            Predict the sensitivity of the model to text transformations.
-    """
-
-    def __init__(self, model: str):
+class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
+    def __init__(self, hub: str, model: Any, *args, **kwargs):
         """
         Initialize the PretrainedModelForSensitivityTest.
 
         Args:
-            model (tuple): A tuple containing the pretrained language model and embeddings model.
-
-        Raises:
-            ValueError: If the input 'model' is not a tuple.
+            hub (str): The hub name associated with the pretrained model.
+            model (Any): The pretrained model to be used.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
         """
-        if isinstance(model, str):
-            model = self.load_model(model)
+        super().__init__(hub, model, *args, **kwargs)
 
-        from ..embeddings.openai import OpenaiEmbeddings
-
-        self.model = model
-        self.embeddings_model = OpenaiEmbeddings(model="text-embedding-ada-002")
-
-    @classmethod
-    def load_model(cls, path: str, *args, **kwargs) -> tuple:
-        """
-        Load the pretrained language model and embeddings model from a given path.
+    def predict(self, text: Union[str, dict], *args, **kwargs):
+        """Perform prediction using the pretrained model.
 
         Args:
-            path (str): The path to the model files.
+            text (Union[str, dict]): The input text or dictionary.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
 
         Returns:
-            tuple: A tuple containing the pretrained language model and embeddings model.
-
-        Raises:
-            ValueError: If the 'OPENAI_API_KEY' environment variable is not set.
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
         """
         try:
-            if isinstance(path, str):
-                llm = OpenAI(
-                    model_name=path,
-                    temperature=0,
-                    openai_api_key=os.environ["OPENAI_API_KEY"],
-                )
+            prompt = PromptTemplate(input_variables=["text"], template="{text}")
+            llmchain = LLMChain(prompt=prompt, llm=self.model)
+            result = llmchain.run({"text": text})
+            return {
+                "result": result,
+            }
+        except Exception as e:
+            raise ValueError(Errors.E089.format(error_message=e))
 
-                return cls(llm)
-            return cls(path)
-        except KeyError:
-            raise ValueError(Errors.E032)
-
-    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
-        """
-        Predict the sensitivity of the model to text transformations.
-
-        Args:
-            text (str): The original text.
-            text_transformed (str): The transformed text.
-
-        Returns:
-            dict: A dictionary containing the loss difference, expected result, and actual result.
-                - 'loss_diff' (float): The cosine similarity-based loss difference.
-                - 'expected_result' (str): The model's output for the original text.
-                - 'actual_result' (str): The model's output for the transformed text.
-        """
-
-        expected_result = self.model(text)
-        actual_result = self.model(text_transformed)
-        expected_result_embeddings = self.embeddings_model.get_embedding(expected_result)
-        actual_result_embeddings = self.embeddings_model.get_embedding(actual_result)
-        if test_name == "negation":
-            loss_diff = 1 - EmbeddingDistance()._cosine_distance(
-                expected_result_embeddings, actual_result_embeddings
-            )
-
-        elif test_name == "toxicity":
-            count1 = compare_generations_overlap(expected_result)
-            count2 = compare_generations_overlap(actual_result)
-            loss_diff = count2 - count1
-        return {
-            "loss_diff": loss_diff,
-            "expected_result": expected_result,
-            "actual_result": actual_result,
-        }
-
-    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
+    def __call__(self, text: Union[str, dict], *args, **kwargs):
         """
         Alias of the 'predict' method.
 
         Args:
-            text (str): The original text.
-            text_transformed (str): The transformed text.
+            text (Union[str, dict]): The original text or dictionary.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
 
         Returns:
-            dict: A dictionary containing the loss difference, expected result, and actual result.
-                - 'loss_diff' (float): The cosine similarity-based loss difference.
-                - 'expected_result' (str): The model's output for the original text.
-                - 'actual_result' (str): The model's output for the transformed text.
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
         """
-
         return self.predict(
-            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
+            text=text,
+            *args,
+            **kwargs,
         )
 
 

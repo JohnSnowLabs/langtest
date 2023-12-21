@@ -476,6 +476,7 @@ class RobustnessTestCaseQaAndSummarization(unittest.TestCase):
                 QASample(
                     original_question="What is John Snow Labs?",
                     original_context="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
+                    options="-",
                 )
             ],
             "summarization": [
