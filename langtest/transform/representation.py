@@ -473,10 +473,10 @@ class LabelRepresentation(BaseRepresentation):
         ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
 
         sample_list = []
-        labels = [s.expected_results.predictions for s in data]
-        if isinstance(data[0].expected_results, NEROutput):
+        labels = [s.ground_truth.predictions for s in data]
+        if isinstance(data[0].ground_truth, NEROutput):
             labels = [x.entity.split("-")[-1] for sentence in labels for x in sentence]
-        elif isinstance(data[0].expected_results, SequenceClassificationOutput):
+        elif isinstance(data[0].ground_truth, SequenceClassificationOutput):
             labels = [x.label for sentence in labels for x in sentence]
         labels = set(labels)
 

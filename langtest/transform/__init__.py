@@ -844,7 +844,7 @@ class FairnessTestFactory(ITests):
         """
         all_samples = []
 
-        if self._data_handler[0].expected_results is None:
+        if self._data_handler[0].ground_truth is None:
             raise RuntimeError(Errors.E052.format(var="fairness"))
 
         for test_name, params in self.tests.items():
@@ -1174,11 +1174,11 @@ class AccuracyTestFactory(ITests):
 
         elif samples_to_run[0].task == "question-answering":
             y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
-            y_pred = pd.Series(samples_to_run).apply(lambda x: x.expected_results.strip())
+            y_pred = pd.Series(samples_to_run).apply(lambda x: x.ground_truth.strip())
 
         elif samples_to_run[0].task == "summarization":
             y_true = pd.Series(samples_to_run).apply(lambda x: x.ground_truth)
-            y_pred = pd.Series(samples_to_run).apply(lambda x: x.expected_results.strip())
+            y_pred = pd.Series(samples_to_run).apply(lambda x: x.ground_truth.strip())
 
         if kwargs["is_default"]:
             y_pred = y_pred.apply(
