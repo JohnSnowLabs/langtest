@@ -108,6 +108,16 @@ task_configurations = [
         "task": {"task": "text-generation", "category": "clinical-tests"},
         "model": {"model": "gpt2", "hub": "huggingface"},
         "data": {"data_source": "Clinical", "split": "Medical-files"},
+        "config": {
+            "model_parameters": {
+                "temperature": 0,
+                "max_tokens": 128,
+            },
+            "tests": {
+                "defaults": {"min_pass_rate": 1.0},
+                "clinical": {"demographic-bias": {"min_pass_rate": 0.7}},
+            },
+        },
     },
     {
         "task": {"task": "text-generation", "category": "security"},
