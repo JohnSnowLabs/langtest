@@ -338,27 +338,35 @@ class Harness:
     ) -> "Harness":
         """Run the tests on the model using the generated test cases.
 
+        Args:
+            checkpoint (bool): If True, enable checkpointing to save intermediate results.
+            batch_size (int): Batch size for dividing test cases into batches.
+            save_checkpoints_dir (str): Directory to save checkpoints and intermediate results.
+
         Returns:
-            None: The evaluations are stored in `generated_results` attribute.
+            Harness: The updated Harness object with test results stored in `generated_results` attribute.
+
+        Raises:
+            RuntimeError: Raised if test cases are not provided (None).
         """
         if self._testcases is None:
             raise RuntimeError(Errors.E010)
 
         if not isinstance(self._testcases, dict):
             if checkpoint:
-                self.save(save_checkpoints_dir)
-                batches = divide_into_batches(self._testcases, batch_size)
-                total_batches = len(batches)
                 checkpoint_manager = CheckpointManager(
                     checkpoint_folder=save_checkpoints_dir
                 )
-                checkpoint_manager.save_all_batches(batches)
-                print("Total batches:", total_batches)
+                if self.batches is None:
+                    self.batches = divide_into_batches(self._testcases, batch_size)
+                    checkpoint_manager.save_all_batches(self.batches)
+                    self.save(save_checkpoints_dir)
+                    logging.warning(Warnings.W018.format(total_batches=len(self.batches)))
 
                 if self._generated_results is None:
                     self._generated_results = []
 
-                for i, batch in enumerate(batches, 1):
+                for i, batch in self.batches.items():
                     batch_results = TestFactory.run(
                         batch,
                         self.model,
@@ -381,22 +389,83 @@ class Harness:
                     raw_data=self.data,
                     **self._config.get("model_parameters", {}),
                 )
-
+            if self._checkpoints is not None:
+                self._generated_results.extend(self._checkpoints)
         else:
             self._generated_results = {}
-            for k, v in self.model.items():
-                self._generated_results[k] = TestFactory.run(
-                    self._testcases[k],
-                    v,
-                    is_default=self.is_default,
-                    raw_data=self.data,
-                    **self._config.get("model_parameters", {}),
-                )
-        if self._checkpoints is not None:
-            self._generated_results.extend(self._checkpoints)
+            if checkpoint:
+                if self.batches is None:
+                    self.batches = {}
+                    for k, v in self.model.items():
+                        self.batches[k] = divide_into_batches(
+                            self._testcases[k], batch_size
+                        )
+                        logging.warning(
+                            Warnings.W019.format(
+                                model_name=k, total_batches=len(self.batches)
+                            )
+                        )
+
+                    for k, v in self.batches.items():
+                        k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
+                        checkpoint_manager = CheckpointManager(
+                            checkpoint_folder=k_checkpoint_dir
+                        )
+                        checkpoint_manager.save_all_batches(v)
+
+                    self.save(save_checkpoints_dir)
+
+                for k, v in self.model.items():
+                    k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
+                    checkpoint_manager = CheckpointManager(
+                        checkpoint_folder=k_checkpoint_dir
+                    )
+                    self._generated_results[k] = []
+                    for i, batch in self.batches[k].items():
+                        batch_results = TestFactory.run(
+                            batch,
+                            v,
+                            is_default=self.is_default,
+                            raw_data=self.data,
+                            **self._config.get("model_parameters", {}),
+                        )
+
+                        checkpoint_manager.save_checkpoint(
+                            check_point_extension=f"batch_{i}",
+                            results_so_far=batch_results,
+                        )
+                        self._generated_results[k].extend(batch_results)
+                        checkpoint_manager.update_status(batch_number=i)
+
+            else:
+                for k, v in self.model.items():
+                    self._generated_results[k] = TestFactory.run(
+                        self._testcases[k],
+                        v,
+                        is_default=self.is_default,
+                        raw_data=self.data,
+                        **self._config.get("model_parameters", {}),
+                    )
+            if self._checkpoints is not None:
+                for k, v in self.model.items():
+                    self._generated_results[k].extend(self._checkpoints[k])
         return self
 
-    def load_checkpoints(task, model, save_checkpoints_dir: str):
+    @classmethod
+    def load_checkpoints(cls, task, model, save_checkpoints_dir: str) -> "Harness":
+        """Load checkpoints and other necessary data to recreate a Harness object.
+
+        Args:
+            task: The task for which the model was tested.
+            model: The model or models used for testing.
+            save_checkpoints_dir (str): Directory containing saved checkpoints and data.
+
+        Returns:
+            Harness: A Harness object reconstructed with loaded checkpoints and data.
+
+        Raises:
+            OSError: Raised if necessary files (config.yaml, data.pkl) are missing in the checkpoint directory.
+        """
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_checkpoints_dir, filename)):
                 raise OSError(Errors.E017.format(filename=filename))
@@ -410,11 +479,29 @@ class Harness:
             data={"data_source": data},
             config=os.path.join(save_checkpoints_dir, "config.yaml"),
         )
-
-        checkpoint_manager = CheckpointManager(checkpoint_folder=save_checkpoints_dir)
-        harness._checkpoints = checkpoint_manager.load_checkpoint()
-        harness._testcases = checkpoint_manager.load_remaining_batch()
-
+        if isinstance(model, dict):
+            checkpoint_manager = CheckpointManager(checkpoint_folder=save_checkpoints_dir)
+            harness._checkpoints = checkpoint_manager.load_checkpoint()
+            harness._testcases = checkpoint_manager.load_remaining_batch()
+            harness.batches = checkpoint_manager.load_batches()
+        else:
+            harness._testcases = {}
+            harness._checkpoints = {}
+            harness.batches = {}
+            for model_name in model:
+                model_checkpoint_dir = os.path.join(
+                    save_checkpoints_dir, model_name["model"]
+                )
+                checkpoint_manager = CheckpointManager(
+                    checkpoint_folder=model_checkpoint_dir
+                )
+                harness._checkpoints[
+                    model_name["model"]
+                ] = checkpoint_manager.load_checkpoint()
+                harness._testcases[
+                    model_name["model"]
+                ] = checkpoint_manager.load_remaining_batch()
+                harness.batches[model_name["model"]] = checkpoint_manager.load_batches()
         return harness
 
     def report(
