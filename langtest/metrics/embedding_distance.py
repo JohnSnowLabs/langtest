@@ -140,9 +140,9 @@ class EmbeddingDistance:
         It provides a measure of similarity based on the proportion of differing bits.
         """
         return float(np.mean(a != b))
-    
+
     @classmethod
-    def available_embedding_distance(cls, distance:str="cosine"):
+    def available_embedding_distance(cls, distance: str = "cosine"):
         """Get the specified distance metric for embedding calculations.
 
         Args:
@@ -164,7 +164,7 @@ class EmbeddingDistance:
 
         if distance not in distance_mapping:
             raise ValueError(
-                            Errors.E076.format(metric="embedding", selected_metric=distance)
-                        )
+                Errors.E076.format(metric="embedding", selected_metric=distance)
+            )
 
         return distance_mapping[distance]
