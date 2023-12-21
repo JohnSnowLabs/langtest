@@ -10,10 +10,12 @@ class TestNlpTask(unittest.TestCase):
             {
                 "task": "ner",
                 "model": {"model": "dslim/bert-base-NER", "hub": "huggingface"},
+                "data": {"data_source": "tests/fixtures/test.conll"},
             },
             {
                 "task": "text-classification",
                 "model": {"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
+                "data": {"data_source": "tests/fixtures/text_classification.csv"},
             },
             {
                 "task": "question-answering",
@@ -40,7 +42,7 @@ class TestNlpTask(unittest.TestCase):
             },
             {
                 "task": "summarization",
-                "model": {"model": "google/pegasus-xsum", "hub": "huggingface"},
+                "model": {"model": "facebook/bart-large-cnn", "hub": "huggingface"},
                 "data": {"data_source": "XSum", "split": "test-tiny"},
                 "config": {
                     "model_parameters": {"max_tokens": 64, "task": "summarization"},
