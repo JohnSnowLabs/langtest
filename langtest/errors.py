@@ -230,6 +230,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
     E084 = ("OpenAI not installed. Install using !pip install openai==0.28.1 and set the openai.api_key = 'YOUR KEY' ")
     E091 = ("Unable to extract batch number from file: {file_name}")
+    E092 = ("Error: The specified directory is not valid: {directory}")
 
 
 class ColumnNameError(Exception):

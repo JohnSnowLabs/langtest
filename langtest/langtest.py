@@ -466,6 +466,9 @@ class Harness:
         Raises:
             OSError: Raised if necessary files (config.yaml, data.pkl) are missing in the checkpoint directory.
         """
+        if not os.path.isdir(save_checkpoints_dir):
+            raise OSError(Errors.E092.format(directory=save_checkpoints_dir))
+
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_checkpoints_dir, filename)):
                 raise OSError(Errors.E017.format(filename=filename))
@@ -926,6 +929,9 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
+        if not os.path.isdir(save_dir):
+            raise OSError(Errors.E092.format(directory=save_dir))
+
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(Errors.E017.format(filename=filename))
