@@ -32,7 +32,7 @@ class TestNERDataset:
     sample = NERSample(
         original="I do love KFC",
         test_type="add_context",
-        expected_results=NEROutput(
+        ground_truth=NEROutput(
             predictions=[
                 NERPrediction(entity="O", span=Span(start=10, end=13, word="I")),
                 NERPrediction(entity="O", span=Span(start=10, end=13, word="do")),
@@ -132,7 +132,7 @@ class TestNERDataset:
 
         for sample in samples:
             assert isinstance(sample, NERSample)
-            assert isinstance(sample.expected_results, NEROutput)
+            assert isinstance(sample.ground_truth, NEROutput)
 
     def test_export_data_csv(self):
         """"""
@@ -239,7 +239,7 @@ class TestTextClassificationDataset:
 
         for sample in samples:
             assert isinstance(sample, SequenceClassificationSample)
-            assert isinstance(sample.expected_results, SequenceClassificationOutput)
+            assert isinstance(sample.ground_truth, SequenceClassificationOutput)
 
 
 @pytest.mark.parametrize(

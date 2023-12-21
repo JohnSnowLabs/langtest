@@ -265,7 +265,7 @@ class TestTemplaticAugmentation(unittest.TestCase):
         """Test converting a template to a Sample object"""
         sample = self.generator.str_to_sample("{PERSON} is {AGE} years old")
         self.assertEqual(sample.original, "{PERSON} is {AGE} years old")
-        self.assertEqual(len(sample.expected_results.predictions), 5)
+        self.assertEqual(len(sample.ground_truth.predictions), 5)
 
     def test_add_spaces_around_punctuation(self):
         """Test adding spaces around punctuation"""

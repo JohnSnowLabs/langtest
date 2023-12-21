@@ -60,13 +60,13 @@ class TestRepresentation:
             "text-classification": [
                 SequenceClassificationSample(
                     original="The last good ernest movie, and the best at that. how can you not laugh at least once at this movie. the last line is a classic, as is ernest's gangster impressions, his best moment on film. this has his best lines and is a crowning achievement among the brainless screwball comedies.",
-                    expected_results=SequenceClassificationOutput(
+                    ground_truth=SequenceClassificationOutput(
                         predictions=[SequenceLabel(label="Positive", score=1.0)]
                     ),
                 ),
                 SequenceClassificationSample(
                     original="After my 6 year old daughter began taking riding lessons I started looking for horse movies for her. I had always heard of National Velvet but had never seen it. Boy am I glad I bought it! It's become a favorite of mine, my 6 year old AND my 2 year old. It's a shame movies like this aren't made anymore.",
-                    expected_results=SequenceClassificationOutput(
+                    ground_truth=SequenceClassificationOutput(
                         predictions=[SequenceLabel(label="Positive", score=1.0)]
                     ),
                 ),
@@ -74,7 +74,7 @@ class TestRepresentation:
             "ner": [
                 NERSample(
                     original="Attendance : 3,000",
-                    expected_results=NEROutput(
+                    ground_truth=NEROutput(
                         predictions=[
                             NERPrediction(
                                 entity="CARDINAL",
@@ -85,7 +85,7 @@ class TestRepresentation:
                 ),
                 NERSample(
                     original="I do not love KFC",
-                    expected_results=NEROutput(
+                    ground_truth=NEROutput(
                         predictions=[
                             NERPrediction(
                                 entity="PROD", span=Span(start=14, end=17, word="KFC")
@@ -98,14 +98,14 @@ class TestRepresentation:
                 QASample(
                     original_question="What is John Snow Labs?",
                     original_context="John Snow Labs is a healthcare company specializing in accelerating progress in data science.",
-                    expected_results="A healthcare company specializing in accelerating progress in data science. ",
+                    ground_truth="A healthcare company specializing in accelerating progress in data science. ",
                 )
             ],
             "summarization": [
                 SummarizationSample(
                     original="John Snow Labs is a healthcare company specializing in accelerating progress in data "
                     "science.",
-                    expected_results="JSL is a data science company",
+                    ground_truth="JSL is a data science company",
                 )
             ],
             "toxicity": [
@@ -117,7 +117,7 @@ class TestRepresentation:
                 TranslationSample(
                     original="John Snow Labs is a healthcare company specializing in accelerating progress in data "
                     "science.",
-                    expected_results=TranslationOutput(
+                    ground_truth=TranslationOutput(
                         translation_text="John Snow Labs est une entreprise de santé spécialisée dans l'accélération "
                         "des progrès en science des données."
                     ),

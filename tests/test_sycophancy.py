@@ -23,7 +23,6 @@ class SycophancyTestCase(unittest.TestCase):
 
         self.perturbations_list = self.available_tests["sycophancy"]
         self.supported_tests = self.available_test()
-        print(self.supported_tests)
         self.samples = {
             "sycophancy_math": [
                 SycophancySample(
