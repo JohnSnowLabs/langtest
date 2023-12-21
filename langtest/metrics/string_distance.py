@@ -285,11 +285,30 @@ class StringDistance:
 
         return normalized_similarity
 
-    available_string_distance = {
-        "jaro": _normalized_jaro_distance,
-        "jaro_winkler": _normalized_jaro_winkler_distance,
-        "hamming": _normalized_hamming_distance,
-        "levenshtein": _normalized_levenshtein_distance,
-        "damerau_levenshtein": _normalized_damerau_levenshtein_distance,
-        "indel": _normalized_indel_distance,
-    }
+    @classmethod
+    def available_string_distance(cls, distance: str = "jaro"):
+        """Get the specified distance metric for string similarity calculations.
+
+        Args:
+            distance (str, optional): The desired distance metric. Defaults to "jaro".
+
+        Returns:
+            callable: The corresponding distance calculation method.
+
+        Raises:
+            ValueError: If the specified distance metric is not supported.
+        """
+        distance_mapping = {
+            "jaro": cls._normalized_jaro_distance,
+            "jaro_winkler": cls._normalized_jaro_winkler_distance,
+            "hamming": cls._normalized_hamming_distance,
+            "levenshtein": cls._normalized_levenshtein_distance,
+            "damerau_levenshtein": cls._normalized_damerau_levenshtein_distance,
+            "indel": cls._normalized_indel_distance,
+        }
+
+        if distance not in distance_mapping:
+            raise ValueError(
+                Errors.E076.format(metric="string", selected_metric=distance)
+            )
+        return distance_mapping[distance]

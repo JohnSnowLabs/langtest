@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
-
+import random
 
 from pkg_resources import resource_filename
 
@@ -162,12 +162,22 @@ class Harness:
         elif self.task.category in self.DEFAULTS_CONFIG:
             category = self.task.category
             if isinstance(self.DEFAULTS_CONFIG[category], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+                if hub in self.DEFAULTS_CONFIG[category]:
+                    self._config = self.configure(self.DEFAULTS_CONFIG[category][hub])
+                else:
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[category]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[category], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[category])
         elif self.task in self.DEFAULTS_CONFIG:
             if isinstance(self.DEFAULTS_CONFIG[self.task], dict):
-                self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+                if hub in self.DEFAULTS_CONFIG[self.task]:
+                    self._config = self.configure(self.DEFAULTS_CONFIG[self.task][hub])
+                else:
+                    self._config = self.configure(
+                        self.DEFAULTS_CONFIG[self.task]["default"]
+                    )
             elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:
@@ -239,11 +249,13 @@ class Harness:
 
         return self._config
 
-    def generate(self) -> "Harness":
+    def generate(self, seed: int = None) -> "Harness":
         """Generate the testcases to be used when evaluating the model.
 
         The generated testcases are stored in `_testcases` attribute.
         """
+        if seed:
+            random.seed(seed)
         if self._config is None:
             raise RuntimeError(Errors.E005)
         if self._testcases is not None:
@@ -580,6 +592,8 @@ class Harness:
 
                 df_final_report = pd.concat([df_final_report, df_report])
 
+            df_final_report["model_name"] = df_final_report["model_name"].astype(str)
+
             df_final_report["minimum_pass_rate"] = (
                 df_final_report["minimum_pass_rate"].str.rstrip("%").astype("float")
                 / 100.0
@@ -674,6 +688,7 @@ class Harness:
             "log_prob_stereo",
             "log_prob_antistereo",
             "diff_threshold",
+            "options",
             "expected_result",
             "prompt_toxicity",
             "actual_result",
@@ -684,7 +699,6 @@ class Harness:
             "correct_sentence",
             "incorrect_sentence",
             "ground_truth",
-            "options",
             "result",
             "swapped_result",
             "model_response",
@@ -949,6 +963,8 @@ class Harness:
             if os.path.exists(os.path.join(save_dir, "test_cases.pkl")):
                 with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
                     testcases = pickle.load(reader)
+                for sample in testcases:
+                    sample.expected_results = None
                 harness._testcases = testcases
             else:
                 logging.warning(Warnings.W013.format(save_dir=save_dir))

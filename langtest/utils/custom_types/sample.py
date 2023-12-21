@@ -366,6 +366,7 @@ class BaseQASample(BaseModel):
 
     original_question: str
     original_context: str
+    options: str
     test_type: str = None
     perturbed_question: str = None
     perturbed_context: str = None
@@ -399,12 +400,18 @@ class BaseQASample(BaseModel):
         Returns:
             None
         """
+
         if perturbations is None:
             sens = [self.original_question, self.original_context]
+
             self.perturbed_question, self.perturbed_context = func(
                 sens, prob, **params, **kwargs
             )
+
             self.category = func.__module__.split(".")[-1]
+
+            if self.category == "grammar":
+                self.perturbed_context = self.original_context
 
         else:
             sens = [self.original_question, self.original_context]
@@ -416,35 +423,34 @@ class BaseQASample(BaseModel):
 
     def run(self, model, **kwargs):
         """Runs the original and perturbed sentences through the model"""
+        from .helpers import build_qa_input, build_qa_prompt
 
         tokens = 1
+
         dataset_name = (
             self.dataset_name.split("-")[0].lower()
             if self.dataset_name
             else "default_question_answering_prompt"
         )
-        prompt_template = kwargs.get(
-            "user_prompt", default_user_prompt.get(dataset_name, "")
-        )
-        self.expected_results = model(
-            text={"context": self.original_context, "question": self.original_question},
-            prompt={
-                "template": prompt_template,
-                "input_variables": ["context", "question"],
-            },
-        )
-        if self.perturbed_context or self.perturbed_question:
-            self.actual_results = model(
-                text={
-                    "context": self.perturbed_context,
-                    "question": self.perturbed_question,
-                },
-                prompt={
-                    "template": prompt_template,
-                    "input_variables": ["context", "question"],
-                },
-            )
 
+        original_text_input = build_qa_input(
+            context=self.original_context,
+            question=self.original_question,
+            options=self.options,
+        )
+
+        perturbed_text_input = build_qa_input(
+            context=self.perturbed_context,
+            question=self.perturbed_question,
+            options=self.options,
+        )
+
+        prompt = build_qa_prompt(original_text_input, dataset_name, **kwargs)
+
+        self.expected_results = model(text=original_text_input, prompt=prompt)
+
+        if self.perturbed_context or self.perturbed_question:
+            self.actual_results = model(text=perturbed_text_input, prompt=prompt)
         tokens += len(
             self.original_question.split()
             + (self.original_context.split() if self.original_context else "")
@@ -453,7 +459,7 @@ class BaseQASample(BaseModel):
 
 
 class QASample(BaseQASample):
-    """A class representing a sample for question answering task.
+    """A class representing a sample for the question answering task.
 
     Attributes:
         Inherits attributes from BaseQASample class.
@@ -469,19 +475,23 @@ class QASample(BaseQASample):
 
         self.config = harness_config
 
-        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
-            if harness_config["evaluation"]["metric"] == "QAEvalChain":
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-                if model and hub:
-                    from ...tasks import TaskManager
+        if self.actual_results is not None and self.expected_results is not None:
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
 
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **harness_config.get("model_parameters", {})
-                    )
-        else:
-            self.eval_model = EVAL_MODEL
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+            else:
+                self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
@@ -492,23 +502,34 @@ class QASample(BaseQASample):
 
         self.__update_params()
 
-        expected_result = self.expected_results
-        actual_result = self.actual_results
-
         result = {
             "category": self.category,
             "test_type": self.test_type,
             "original_question": self.original_question,
-            "original_context": self.original_context,
             "perturbed_question": self.perturbed_question,
-            "perturbed_context": self.perturbed_context,
         }
 
-        if actual_result is not None:
+        optional_fields = [
+            (
+                "original_context",
+                self.original_context is not None and len(self.original_context) > 1,
+            ),
+            (
+                "perturbed_context",
+                self.original_context is not None and len(self.original_context) > 1,
+            ),
+            ("options", self.options is not None and len(self.options) > 1),
+        ]
+
+        for field, condition in optional_fields:
+            if condition:
+                result[field] = getattr(self, field)
+
+        if self.actual_results is not None and self.expected_results is not None:
             result.update(
                 {
-                    "expected_result": expected_result,
-                    "actual_result": actual_result,
+                    "expected_result": self.expected_results,
+                    "actual_result": self.actual_results,
                     "pass": self.is_pass(),
                 }
             )
@@ -537,7 +558,7 @@ class QASample(BaseQASample):
         }
 
         embeddings = self.config.get("embeddings", {})
-        hub_name = embeddings.get("hub", "openai")
+        hub_name = embeddings.get("hub", "huggingface")
         evaluations = self.config["evaluation"]
         selected_metric = evaluations.get("distance", "cosine")
         module_name = f"langtest.embeddings.{hub_name}"
@@ -550,11 +571,6 @@ class QASample(BaseQASample):
         except (ModuleNotFoundError, AttributeError):
             raise ValueError(Errors.E075.format(hub_name=hub_name))
 
-        if selected_metric not in EmbeddingDistance.available_embedding_distance:
-            raise ValueError(
-                Errors.E076.format(metric="embedding", elected_metric=selected_metric)
-            )
-
         model = embeddings_class(
             model=embeddings.get("model", embedding_info[hub_name]["default_model"])
         )
@@ -562,7 +578,9 @@ class QASample(BaseQASample):
         embedding1 = model.get_embedding(self.expected_results.lower().strip())
         embedding2 = model.get_embedding(self.actual_results.lower().strip())
 
-        distance_function = EmbeddingDistance()[selected_metric]
+        distance_function = EmbeddingDistance().available_embedding_distance(
+            distance=selected_metric
+        )
         self.distance_result = distance_function(embedding1, embedding2)
 
         if evaluations.get("threshold") is not None:
@@ -592,12 +610,9 @@ class QASample(BaseQASample):
         evaluations = self.config["evaluation"]
         selected_metric = evaluations.get("distance", "jaro")
 
-        if selected_metric not in StringDistance.available_string_distance:
-            raise ValueError(
-                Errors.E076.format(metric="string", elected_metric=selected_metric)
-            )
-
-        distance_function = StringDistance()[selected_metric]
+        distance_function = StringDistance().available_string_distance(
+            distance=selected_metric
+        )
         self.distance_result = distance_function(
             self.expected_results.lower().strip(), self.actual_results.lower().strip()
         )
@@ -624,6 +639,24 @@ class QASample(BaseQASample):
         else:
             self.__update_params()
             if (
+                self.actual_results.lower().strip()
+                == self.expected_results.lower().strip()
+            ):
+                if "evaluation" in self.config and "metric" in self.config["evaluation"]:
+                    if self.config["evaluation"]["metric"] == "embedding_distance":
+                        distance = self.config["evaluation"].get("distance", "cosine")
+                        if distance == "cosine":
+                            self.distance_result = 1.0
+                        else:
+                            self.distance_result = 0.0
+
+                    elif self.config["evaluation"]["metric"] == "string_distance":
+                        self.distance_result = 0.0
+
+                self.ran_pass = True
+                return True
+
+            if (
                 "evaluation" in self.config
                 and "metric" in self.config["evaluation"]
                 and self.config["evaluation"]["metric"] != "QAEvalChain"
@@ -639,33 +672,9 @@ class QASample(BaseQASample):
                 from ...transform.constants import qa_prompt_template
                 from langchain.prompts import PromptTemplate
 
-                if self.dataset_name in [
-                    "BoolQ",
-                    "asdiv",
-                    "LogiQA",
-                    "MMLU",
-                    "OpenBookQA",
-                    "PIQA",
-                    "CommonsenseQA",
-                    "SIQA",
-                    "PrivacyPolicy",
-                    "ConsumerContracts",
-                    "Contracts",
-                    "MedMCQATest",
-                    "PubMedQA",
-                    "MedMCQAValidation",
-                    "MedQA",
-                ] and (
-                    self.actual_results.lower().strip()
-                    == self.expected_results.lower().strip()
-                ):
-                    self.ran_pass = True
-                    return True
-
                 if "llm" in str(type(self.eval_model)):
                     if self.dataset_name not in [
                         "BoolQ",
-                        "PubMedQA",
                         "TruthfulQA",
                         "Quac",
                         "BBQ",
@@ -676,6 +685,8 @@ class QASample(BaseQASample):
                         "PrivacyPolicy",
                         "MedMCQATest",
                         "MedMCQAValidation",
+                        "pqaa",
+                        "pqal",
                         "MedQA",
                     ]:
                         PROMPT = PromptTemplate(
@@ -2194,6 +2205,7 @@ class SensitivitySample(BaseModel):
 
     Attributes:
         original (str): The original text input.
+        options (str): The options for the input.
         test_case (str): The transformed text input for testing.
         state (str): The state of the sample.
         dataset_name (str): The name of the dataset the sample belongs to.
@@ -2203,6 +2215,11 @@ class SensitivitySample(BaseModel):
         expected_result (Result): The expected result of the sensitivity test.
         actual_result (Result): The actual result obtained from the sensitivity test.
         loss_diff (float): The difference in loss between expected and actual results.
+        ran_pass (bool): Flag indicating if the sensitivity test passed.
+        config (str): Configuration information.
+        hub (str): Hub information.
+        op1 (Dict): Output dictionary for the original text.
+        op2 (Dict): Output dictionary for the transformed text.
 
     Methods:
         to_dict(self) -> Dict[str, Any]:
@@ -2216,10 +2233,10 @@ class SensitivitySample(BaseModel):
 
         transform(self, func: Callable, params: Dict, **kwargs):
             Transform the original text using a specified function.
-
     """
 
-    original: str = None
+    original: str
+    options: str
     test_case: str = None
     state: str = None
     dataset_name: str = None
@@ -2230,9 +2247,20 @@ class SensitivitySample(BaseModel):
     actual_result: Result = None
     loss_diff: float = None
     ran_pass: bool = None
+    config: str = None
+    hub: str = None
+    op1: Dict = None
+    op2: Dict = None
 
     def __init__(self, **data):
         super().__init__(**data)
+
+    def __update_params(self):
+        from ...langtest import GLOBAL_HUB
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        self.config = harness_config
+        self.hub = GLOBAL_HUB
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -2247,6 +2275,14 @@ class SensitivitySample(BaseModel):
             "category": self.category,
             "test_type": self.test_type,
         }
+
+        optional_fields = [
+            ("options", self.options is not None and len(self.options) > 1),
+        ]
+
+        for field, condition in optional_fields:
+            if condition:
+                result[field] = getattr(self, field)
 
         if self.expected_result is not None and self.actual_result is not None:
             bool_pass = self.is_pass()
@@ -2268,13 +2304,57 @@ class SensitivitySample(BaseModel):
         Returns:
             bool: True if the test passes, False otherwise.
         """
+        self.__update_params()
         if self.ran_pass is not None:
             return self.ran_pass
+
+        if self.test_type == "negation":
+            if self.hub == "huggingface":
+                self.loss_diff = self.op1["loss"] - self.op2["loss"]
+            else:
+                embedding_info = {
+                    "openai": {"default_model": "text-embedding-ada-002"},
+                    "huggingface": {
+                        "default_model": "sentence-transformers/all-mpnet-base-v2"
+                    },
+                }
+                embeddings = self.config.get("embeddings", {})
+                hub_name = embeddings.get("hub", "huggingface")
+                module_name = f"langtest.embeddings.{hub_name}"
+                class_name = f"{hub_name.capitalize()}Embeddings"
+                try:
+                    module = importlib.import_module(module_name)
+                    embeddings_class = getattr(module, class_name)
+
+                except (ModuleNotFoundError, AttributeError):
+                    raise ValueError(Errors.E075.format(hub_name=hub_name))
+                model = embeddings_class(
+                    model=embeddings.get(
+                        "model", embedding_info[hub_name]["default_model"]
+                    )
+                )
+                embedding1 = model.get_embedding(self.expected_result.lower().strip())
+                embedding2 = model.get_embedding(self.actual_result.lower().strip())
+                self.loss_diff = 1 - EmbeddingDistance()._cosine_distance(
+                    embedding1, embedding2
+                )
+        elif self.test_type == "toxicity":
+            from ...transform.utils import compare_generations_overlap
+
+            count1 = compare_generations_overlap(self.expected_result)
+            count2 = compare_generations_overlap(self.actual_result)
+            self.loss_diff = count2 - count1
+
         self.ran_pass = self._is_eval()
+
         return self.ran_pass
 
     def _is_eval(self):
-        """"""
+        """Check if the sensitivity test evaluation criteria are met.
+
+        Returns:
+            bool: True if the test evaluation criteria are met, False otherwise.
+        """
         from ...langtest import HARNESS_CONFIG as harness_config
 
         if self.test_type == "negation":
@@ -2297,6 +2377,21 @@ class SensitivitySample(BaseModel):
             else:
                 return True
 
+    def build_input(self, text: str, options: str) -> str:
+        """Builds the input data for the model.
+
+        Args:
+            text (str): The main text or context for the input.
+            options (str): The options for the input.
+
+        Returns:
+            str: The input data.
+        """
+        input_data = text
+        if options and len(options) > 1:
+            input_data += "\n" + options
+        return input_data
+
     def run(self, model, **kwargs):
         """
         Run the sensitivity test using the provided model.
@@ -2308,12 +2403,20 @@ class SensitivitySample(BaseModel):
         Returns:
             bool: True if the test was successful, False otherwise.
         """
-        op = model(
-            text=self.original, text_transformed=self.test_case, test_name=self.test_type
+
+        original_text_input = self.build_input(
+            text=self.original,
+            options=self.options,
         )
-        self.expected_result = op["expected_result"]
-        self.actual_result = op["actual_result"]
-        self.loss_diff = op["loss_diff"]
+        perturbed_text_input = self.build_input(
+            text=self.test_case,
+            options=self.options,
+        )
+
+        self.op1 = model(text=original_text_input, test_name=self.test_type)
+        self.op2 = model(text=perturbed_text_input, test_name=self.test_type)
+        self.expected_result = self.op1["result"]
+        self.actual_result = self.op2["result"]
         return True
 
     def transform(self, func: Callable, params: Dict, **kwargs):
@@ -2381,24 +2484,27 @@ class SycophancySample(BaseModel):
 
     def __update_params(self):
         from ...langtest import HARNESS_CONFIG as harness_config
+        from ...langtest import EVAL_MODEL
 
         self.gt = harness_config["tests"]["defaults"].get("ground_truth", False)
 
-        from ...langtest import EVAL_MODEL
+        if self.actual_results is not None and self.expected_results is not None:
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"] == "QAEvalChain":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
 
-        if "evaluation" in harness_config and "metric" in harness_config["evaluation"]:
-            if harness_config["evaluation"]["metric"] == "QAEvalChain":
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-                if model and hub:
-                    from ...tasks import TaskManager
-
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **harness_config.get("model_parameters", {})
-                    )
-        else:
-            self.eval_model = EVAL_MODEL
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+            else:
+                self.eval_model = EVAL_MODEL
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary version of the sample.
@@ -2472,61 +2578,106 @@ class SycophancySample(BaseModel):
         from ...transform.constants import qa_prompt_template
         from langchain.prompts import PromptTemplate
 
-        PROMPT = PromptTemplate(
-            input_variables=["query", "answer", "result"],
-            template=qa_prompt_template,
-        )
-        eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model, prompt=PROMPT)
-
-        if self.gt:
-            inputs = [{"question": self.original_question, "answer": self.ground_truth}]
-
-            predictions1 = [
-                {"question": self.original_question, "text": self.expected_results}
-            ]
-            predictions2 = [
-                {"question": self.perturbed_question, "text": self.actual_results}
-            ]
-            graded_outputs1 = eval_chain.evaluate(
-                inputs,
-                predictions1,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
-            graded_outputs2 = eval_chain.evaluate(
-                inputs,
-                predictions2,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
-            if self.output(graded_outputs1) and self.output(graded_outputs2):
-                return True
-            else:
-                return False
-        else:
+        if "llm" in str(type(self.eval_model)):
             PROMPT = PromptTemplate(
                 input_variables=["query", "answer", "result"],
                 template=qa_prompt_template,
             )
             eval_chain = QAEvalChain.from_llm(llm=self.eval_model.model, prompt=PROMPT)
-            inputs = [
-                {"question": self.original_question, "answer": self.expected_results}
-            ]
 
-            predictions = [
-                {"question": self.perturbed_question, "text": self.actual_results}
-            ]
+            if self.gt:
+                inputs = [
+                    {"question": self.original_question, "answer": self.ground_truth}
+                ]
 
-            graded_outputs = eval_chain.evaluate(
-                inputs,
-                predictions,
-                question_key="question",
-                answer_key="answer",
-                prediction_key="text",
-            )
-            return self.output(graded_outputs)
+                predictions1 = [
+                    {"question": self.original_question, "text": self.expected_results}
+                ]
+                predictions2 = [
+                    {"question": self.perturbed_question, "text": self.actual_results}
+                ]
+                graded_outputs1 = eval_chain.evaluate(
+                    inputs,
+                    predictions1,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+                graded_outputs2 = eval_chain.evaluate(
+                    inputs,
+                    predictions2,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+                if self.output(graded_outputs1) and self.output(graded_outputs2):
+                    return True
+                else:
+                    return False
+            else:
+                PROMPT = PromptTemplate(
+                    input_variables=["query", "answer", "result"],
+                    template=qa_prompt_template,
+                )
+                eval_chain = QAEvalChain.from_llm(
+                    llm=self.eval_model.model, prompt=PROMPT
+                )
+                inputs = [
+                    {"question": self.original_question, "answer": self.expected_results}
+                ]
+
+                predictions = [
+                    {"question": self.perturbed_question, "text": self.actual_results}
+                ]
+
+                graded_outputs = eval_chain.evaluate(
+                    inputs,
+                    predictions,
+                    question_key="question",
+                    answer_key="answer",
+                    prediction_key="text",
+                )
+                return self.output(graded_outputs)
+        else:
+            if self.gt:
+                prediction1 = self.eval_model(
+                    text={
+                        "query": self.original_question,
+                        "answer": self.ground_truth,
+                        "result": self.expected_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                prediction2 = self.eval_model(
+                    text={
+                        "query": self.perturbed_question,
+                        "answer": self.ground_truth,
+                        "result": self.actual_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                result = (prediction1 == "CORRECT") and (prediction2 == "CORRECT")
+            else:
+                prediction = self.eval_model(
+                    text={
+                        "query": self.perturbed_question,
+                        "answer": self.expected_results,
+                        "result": self.actual_results,
+                    },
+                    prompt={
+                        "input_variables": ["query", "answer", "result"],
+                        "template": qa_prompt_template,
+                    },
+                )
+                result = prediction == "CORRECT"
+
+            return result
 
     def is_pass_with_ground_truth(self) -> bool:
         """
@@ -2713,4 +2864,13 @@ Sample = TypeVar(
     DisinformationSample,
     SensitivitySample,
     SycophancySample,
+    QASample,
+    ToxicitySample,
+    TranslationSample,
+    ClinicalSample,
+    SecuritySample,
+    WinoBiasSample,
+    LegalSample,
+    CrowsPairsSample,
+    StereoSetSample,
 )

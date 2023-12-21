@@ -71,6 +71,17 @@ class Warnings(metaclass=ErrorsWithCodes):
     W011 = ("{class_name} successfully ran!")
     W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
     W013 = ("Unable to find test_cases.pkl inside {save_dir}. Generating new testcases.")
+    W014 = ("Model parameters have been modified: hub={hub}, kwargs={kwargs}")
+    W015 = ("Setting the `device` argument to None from {device} to avoid "
+            "the error caused by attempting to move the model that was already "
+            "loaded on the GPU using the Accelerate module to the same or "
+            "another device.")
+    W016 = ("Device has {cuda_device_count} GPUs available. "
+            "Provide device={{deviceId}} to `from_model_id` to use available "
+            "GPUs for execution. deviceId is -1 (default) for CPU and "
+            "can be a positive integer associated with CUDA device id.")
+    W017 = ("Unable to extract pipeline return_type. "
+            "Received error:\n\n{e}")
     W018 = ("Total number of batches: {total_batches}")
     W019 = ("model: {model_name}\nTotal number of batches: {total_batches}")
 
@@ -169,7 +180,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E042 = ("Provided model hub is not supported. Please choose one of the supported model hubs: {supported_hubs}")
     E043 = ("Provided task is not supported. Please choose one of the supported tasks: {l}")
     E044 = ("Model '{path}' is not found online or local. Please install langchain by pip install langchain")
-    E045 = ("Please update model_parameters section in config.yml file for '{path}' model in '{hub}'.\nmodel_parameters:\n\t{field}: value\n\n{required_fields} is/are required field(s), please provide them in config.yml")
+    E045 = ("Please update model_parameters section in config.yml file for '{path}' model in '{hub}'.\n""model_parameters:\n\t{field}: value\n\n""Error message: {error_message}")
     E046 = ('The test type "{sub_test}" is not supported for the task "{task}". "{sub_test}" only supports {supported}.')
     E047 = ("The test category {test_category} does not exist. Available categories are: {available_categories}.")
     E048 = ("Invalid test configuration! Tests can be [1] dictionary of test name and corresponding parameters.")
@@ -229,6 +240,15 @@ class Errors(metaclass=ErrorsWithCodes):
     E082 = ("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
     E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
     E084 = ("OpenAI not installed. Install using !pip install openai==0.28.1 and set the openai.api_key = 'YOUR KEY' ")
+    E085 = ("Could not import the transformers Python package. "
+            "Please install it with `pip install transformers`.")
+    E086 = ("Got an invalid task {task}."
+            "Currently, only {'text2text-generation', 'text-generation', 'summarization'} are supported.")
+    E087 = ("Could not load the {task} model due to missing dependencies.")
+    E088 = ("Got device=={device}, "
+            "device is required to be within [-1, {cuda_device_count})")
+    E089 = ("An error occurred during prediction: {error_message}")
+    E090 = ("An error occurred during loading model: {error_message}")
     E091 = ("Unable to extract batch number from file: {file_name}")
     E092 = ("Error: The specified directory is not valid: {directory}")
 
