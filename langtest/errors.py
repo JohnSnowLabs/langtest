@@ -71,6 +71,8 @@ class Warnings(metaclass=ErrorsWithCodes):
     W011 = ("{class_name} successfully ran!")
     W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
     W013 = ("Unable to find test_cases.pkl inside {save_dir}. Generating new testcases.")
+    W018 = ("Total number of batches: {total_batches}")
+    W019 = ("model: {model_name}\nTotal number of batches: {total_batches}")
 
 
 class Errors(metaclass=ErrorsWithCodes):
@@ -227,12 +229,14 @@ class Errors(metaclass=ErrorsWithCodes):
     E082 = ("Either subset: {subset} or split: {split} is not valid for {dataset_name}. Available subsets and their corresponding splits: {available_subset_splits}")
     E083 = ("split: {split} is not valid for {dataset_name}. Available splits: {available_splits}")
     E084 = ("OpenAI not installed. Install using !pip install openai==0.28.1 and set the openai.api_key = 'YOUR KEY' ")
+    E091 = ("Unable to extract batch number from file: {file_name}")
 
 
 class ColumnNameError(Exception):
-    """ColumnNameError class is used to raise an exception
-    when the column name is not found in the dataset."""
-
+    """
+    ColumnNameError class is used to raise an exception
+    when the column name is not found in the dataset.
+    """
     def __init__(
         self,
         supported_columns,
