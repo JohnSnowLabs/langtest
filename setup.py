@@ -209,6 +209,9 @@ setup(
             "data/MedMCQA/MedMCQA-Validation/*",
             "data/MedQA/*",
             "data/PubMedQA/*",
+            "data/healthsearchqa/*",
+            "data/LiveQA/*",
+            "data/MedicationQA/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
