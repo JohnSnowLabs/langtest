@@ -201,6 +201,8 @@ benchmarks:
         url: /docs/pages/benchmarks/medical/medqa
       - title: PubMedQA
         url: /docs/pages/benchmarks/medical/pubmedqa
+      - title: LiveQA
+        url: /docs/pages/benchmarks/medical/LiveQA
   - title:  Commonsense Scenario
     url: /docs/pages/benchmarks/commonsense_scenario
     children:
