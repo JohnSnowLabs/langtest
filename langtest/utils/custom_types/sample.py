@@ -549,11 +549,11 @@ class QASample(BaseQASample):
             if "evaluation" in self.config and "metric" in self.config["evaluation"]:
                 if self.config["evaluation"]["metric"] != "QAEvalChain":
                     result.update({"eval_score": self.distance_result})
-        elif expected_result is not None:
+        elif self.expected_results is not None:
             result.update(
                 {
                     "expected_result": self.ground_truth,
-                    "actual_result": expected_result,
+                    "actual_result": self.expected_results,
                 }
             )
 
