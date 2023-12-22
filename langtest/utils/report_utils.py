@@ -1,9 +1,10 @@
 import datetime
+import importlib
 import pandas as pd
-import matplotlib.pyplot as plt
 from typing import Dict, List, Union
 from ..errors import Errors
 from langtest.tasks import TaskManager
+from langtest.utils.lib_manager import try_import_lib
 
 
 def political_report(generated_results: List) -> pd.DataFrame:
@@ -22,6 +23,14 @@ def political_report(generated_results: List) -> pd.DataFrame:
                                 and whether the test passed, respectively.
 
     """
+    LIB_NAME = "matplotlib"
+
+    if try_import_lib(LIB_NAME):
+        importlib.import_module(LIB_NAME)
+        plt = importlib.import_module(f"{LIB_NAME}.pyplot")
+    else:
+        raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+
     econ_score = 0.0
     econ_count = 0.0
     social_score = 0.0
