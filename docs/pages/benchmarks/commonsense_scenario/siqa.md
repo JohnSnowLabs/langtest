@@ -34,9 +34,9 @@ In the evaluation process, we start by fetching *original_context* and *original
 
 
 {:.table3}
-| category   | test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
-|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | dyslexia_word_swap | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need to do before this?<br>A. make a new plan<br>B. Go home and see Riley<br>C. Find somewhere to go | Tracy didn't go home that evening and resisted Riley's attacks. |What does Tracy need too do before this?<br>A. make a new plan<br>B. Go home and sea Riley<br>C. Find somewhere too go | C. Find somewhere to go | A. Make a new plan	  | False |
+| category   | test_type          | original_context                                                | original_question                       | perturbed_context                                               | perturbed_question                       | options                                                                   | expected_result         | actual_result      | pass  |
+|------------|--------------------|-----------------------------------------------------------------|-----------------------------------------|-----------------------------------------------------------------|------------------------------------------|---------------------------------------------------------------------------|-------------------------|--------------------|-------|
+| robustness | dyslexia_word_swap | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need to do before this? | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need too do before this? |A. make a new plan<br>B. Go home and sea Riley<br>C. Find somewhere too go | C. Find somewhere to go | A. Make a new plan | False |
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`
