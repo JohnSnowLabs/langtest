@@ -189,8 +189,6 @@ files = [
 ]
 
 [package.dependencies]
-importlib-metadata = {version = "*", markers = "python_version < \"3.9\""}
-importlib-resources = {version = "*", markers = "python_version < \"3.9\""}
 Mako = "*"
 SQLAlchemy = ">=1.3.0"
 typing-extensions = ">=4"
@@ -393,10 +391,7 @@ files = [
 ]
 
 [package.dependencies]
-numpy = [
-    {version = ">=1.15.0", markers = "python_version < \"3.9\""},
-    {version = ">=1.19.0", markers = "python_version >= \"3.9\""},
-]
+numpy = {version = ">=1.19.0", markers = "python_version >= \"3.9\""}
 
 [[package]]
 name = "boto3"
@@ -4716,5 +4711,5 @@ transformers = ["accelerate", "datasets", "torch", "transformers"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.8.1,<4.0"
-content-hash = "70222ca09528d060e47a5afa4e4507ab831c28b71605c1fcff876b8a31f9045c"
+python-versions = ">=3.9,<4.0"
+content-hash = "64ef2df34ca55f57e8480e8c1b1591d5e496f72ee09581af8788cb40c177014f"
