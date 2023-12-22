@@ -62,3 +62,70 @@ class HuggingFaceTestCase(unittest.TestCase):
         with self.assertRaises(AssertionError):
             task = TaskManager(self.tasks[1])
             task.model(model_path=self.models[0], model_hub="huggingface")
+
+
+class TestTransformersModels(unittest.TestCase):
+    """
+    Test loading Hugging Face models.
+
+    This class tests the loading of Hugging Face models using the `ModelAPI` class.
+    It asserts that the loaded model is an instance of `ModelAPI`.
+    """
+
+    def setUp(self):
+        from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
+        # Define the model identifier
+        self.model_id = "gpt2"
+
+        # Load tokenizer and model using transformers library
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
+        self.gpt2_model = AutoModelForCausalLM.from_pretrained(self.model_id)
+
+        # Create a text-generation pipeline for reference
+        self.pipe = pipeline(
+            "text-generation",
+            model=self.model_id,
+            tokenizer=self.tokenizer,
+            max_new_tokens=20,
+        )
+
+        # Initialize TaskManager for question-answering task
+        self.task = TaskManager("question-answering")
+
+    def _assert_result_conditions(self, model, result):
+        """
+        Assert conditions for the model result.
+        """
+        self.assertIsInstance(model, ModelAPI)
+        self.assertIsInstance(result, str, "Expected string result")
+
+    def _test_loading_and_prediction(self, model_path):
+        """
+        Test loading a model and making a prediction.
+        """
+        # Test loading model
+        model = self.task.model(model_path=model_path, model_hub="huggingface")
+
+        # Test model prediction with specific input variables
+        result = model.predict(
+            prompt={
+                "template": "Generate a {adjective} sentence about {noun}.",
+                "input_variables": ["adjective", "noun"],
+            },
+            text={"adjective": "beautiful", "noun": "cats"},
+        )
+        # Assert conditions for the result
+        self._assert_result_conditions(model, result)
+
+    def test_load_and_predict_gpt2_model(self):
+        """Test loading and predicting with GPT-2 model."""
+        self._test_loading_and_prediction(self.model_id)
+
+    def test_load_and_predict_pipeline_model(self):
+        """Test loading and predicting with a pipeline model."""
+        self._test_loading_and_prediction(self.pipe)
+
+    def test_load_and_predict_preloaded_model(self):
+        """Test loading and predicting with a pre-loaded model instance."""
+        self._test_loading_and_prediction(self.gpt2_model)

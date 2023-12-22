@@ -138,6 +138,7 @@ class GenderRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -171,6 +172,7 @@ class GenderRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -311,6 +313,7 @@ class EthnicityRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -368,6 +371,7 @@ class EthnicityRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -645,6 +649,7 @@ class ReligionRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -715,6 +720,7 @@ class ReligionRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -849,6 +855,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
@@ -904,6 +911,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     sample = MinScoreQASample(
                         original_question=key,
                         original_context="-",
+                        options="-",
                         perturbed_question="-",
                         perturbed_context="-",
                         category="representation",
