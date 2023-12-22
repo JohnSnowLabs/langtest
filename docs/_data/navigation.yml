@@ -81,6 +81,12 @@ docs-menu:
         - title: String Distance
           url: /docs/pages/docs/string_distance
 
+  - title: RAG
+    url: /docs/pages/docs/rag
+    children:
+        - title: RAG 
+          url: /docs/pages/docs/rag
+    
   - title: Contribute to LangTest
     url: /docs/pages/docs/contribute
     children:
@@ -112,6 +118,8 @@ tutorials:
           url: /docs/pages/tutorials/test_specific_notebooks/stereotype
         - title: Stereoset 
           url: /docs/pages/tutorials/test_specific_notebooks/stereoset
+        - title: Grammar 
+          url: /docs/pages/tutorials/test_specific_notebooks/grammar
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_testing_Notebooks
     children:
@@ -148,6 +156,8 @@ tutorials:
           url: /docs/pages/tutorials/misc/different_report_formats
         - title: Editing Testcases
           url: /docs/pages/tutorials/misc/editing-testcases
+  - title: RAG Tutorials
+    url: /docs/pages/tutorials/rag
   - title: Benchmark Dataset Notebooks
     url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
   - title: End-to-End Workflow Notebooks
@@ -168,6 +178,8 @@ tests:
     url: /docs/pages/tests/representation
   - title: Robustness
     url: /docs/pages/tests/robustness
+  - title: Grammar
+    url: /docs/pages/tests/grammar
   - title: Toxicity
     url: /docs/pages/tests/toxicity
   - title: Clinical
@@ -190,6 +202,8 @@ tests:
     url: /docs/pages/tests/sycophancy
   - title: Ideology 
     url: /docs/pages/tests/ideology
+  - title: Grammar
+    url: /docs/pages/tests/grammar
 
 benchmarks:
   - title: Medical
@@ -201,6 +215,12 @@ benchmarks:
         url: /docs/pages/benchmarks/medical/medqa
       - title: PubMedQA
         url: /docs/pages/benchmarks/medical/pubmedqa
+      - title: LiveQA
+        url: /docs/pages/benchmarks/medical/LiveQA
+      - title: HealthSearchQA
+        url: /docs/pages/benchmarks/medical/HealthSearchQA
+      - title: MedicationQA
+        url: /docs/pages/benchmarks/medical/MedicationQA
   - title:  Commonsense Scenario
     url: /docs/pages/benchmarks/commonsense_scenario
     children:
