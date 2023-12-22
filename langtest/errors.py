@@ -82,6 +82,8 @@ class Warnings(metaclass=ErrorsWithCodes):
             "can be a positive integer associated with CUDA device id.")
     W017 = ("Unable to extract pipeline return_type. "
             "Received error:\n\n{e}")
+    W018 = ("Total number of batches: {total_batches}")
+    W019 = ("model: {model_name}\nTotal number of batches: {total_batches}")
 
 
 class Errors(metaclass=ErrorsWithCodes):
@@ -247,12 +249,15 @@ class Errors(metaclass=ErrorsWithCodes):
             "device is required to be within [-1, {cuda_device_count})")
     E089 = ("An error occurred during prediction: {error_message}")
     E090 = ("An error occurred during loading model: {error_message}")
+    E091 = ("Unable to extract batch number from file: {file_name}")
+    E092 = ("Error: The specified directory is not valid: {directory}")
 
 
 class ColumnNameError(Exception):
-    """ColumnNameError class is used to raise an exception
-    when the column name is not found in the dataset."""
-
+    """
+    ColumnNameError class is used to raise an exception
+    when the column name is not found in the dataset.
+    """
     def __init__(
         self,
         supported_columns,
