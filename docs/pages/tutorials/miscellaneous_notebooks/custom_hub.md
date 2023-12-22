@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: Tutorials | Custom Hub | LangTest | John Snow Labs
 title: Custom Hub
-key: tutorials-custom-hub
-permalink: /docs/pages/tutorials/misc/custom_hub
+key: miscellaneous_notebooks
+permalink: /docs/pages/tutorials/miscellaneous_notebooks/custom_hub
 sidebar:
     nav: tutorials
 aside:

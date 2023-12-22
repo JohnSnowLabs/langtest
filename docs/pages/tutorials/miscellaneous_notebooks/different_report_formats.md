@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: Tutorials | Reports | LangTest | John Snow Labs
 title: Different Report Formats
-key: tutorials-different-report-formats
-permalink: /docs/pages/tutorials/misc/different_report_formats
+key: miscellaneous_notebooks
+permalink: /docs/pages/tutorials/miscellaneous_notebooks/different_report_formats
 sidebar:
     nav: tutorials
 aside:

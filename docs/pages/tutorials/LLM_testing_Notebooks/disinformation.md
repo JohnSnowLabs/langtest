@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Disinformation Test | John Snow Labs
 title: Disinformation Notebook
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/disinformation
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/disinformation
 sidebar:
     nav: tutorials
 aside:

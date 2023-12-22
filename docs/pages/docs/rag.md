@@ -21,7 +21,8 @@ The evaluation process employs a dual approach by assessing the system with both
 from langtest.evaluation import LangtestRetrieverEvaluator
 
 retriever_evaluator = LangtestRetrieverEvaluator.from_metric_names(
-    ["mrr", "hit_rate"], retriever=retriever
+    ["mrr", "hit_rate"], 
+    retriever=retriever
 )
      
 retriever_evaluator.setPerturbations("add_typo","dyslexia_word_swap", "add_ocr_typo") 

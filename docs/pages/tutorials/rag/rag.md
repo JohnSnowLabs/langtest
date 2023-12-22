@@ -4,7 +4,7 @@ header: true
 seotitle: Tutorials | RAG | LangTest | John Snow Labs
 title: RAG
 key: docs-rag
-permalink: /docs/pages/tutorials/RAG/
+permalink: /docs/pages/tutorials/rag/
 sidebar:
     nav: tutorials
 aside:

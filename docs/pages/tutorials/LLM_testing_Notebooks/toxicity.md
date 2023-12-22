@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Toxicity Test | John Snow Labs
 title: Toxicity Notebook
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/toxicity
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/toxicity
 sidebar:
     nav: tutorials
 aside:

@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: Tutorials | Editing Testcases | LangTest | John Snow Labs
 title: Editing Testcases
-key: tutorials-editing-testcases
-permalink: /docs/pages/tutorials/misc/editing-testcases
+key: miscellaneous_notebooks
+permalink: /docs/pages/tutorials/miscellaneous_notebooks/editing_testcases
 sidebar:
     nav: tutorials
 aside:

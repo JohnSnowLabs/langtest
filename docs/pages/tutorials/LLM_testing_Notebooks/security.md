@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Security Test | John Snow Labs
 title: Security
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/Security
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/Security
 sidebar:
     nav: tutorials
 aside:
