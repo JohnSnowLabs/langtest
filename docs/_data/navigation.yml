@@ -118,6 +118,8 @@ tutorials:
           url: /docs/pages/tutorials/test_specific_notebooks/stereotype
         - title: Stereoset 
           url: /docs/pages/tutorials/test_specific_notebooks/stereoset
+        - title: Grammar 
+          url: /docs/pages/tutorials/test_specific_notebooks/grammar
   - title: LLM Testing Notebooks
     url: /docs/pages/tutorials/LLM_testing_Notebooks
     children:
@@ -178,6 +180,8 @@ tests:
     url: /docs/pages/tests/representation
   - title: Robustness
     url: /docs/pages/tests/robustness
+  - title: Grammar
+    url: /docs/pages/tests/grammar
   - title: Toxicity
     url: /docs/pages/tests/toxicity
   - title: Clinical
@@ -200,6 +204,8 @@ tests:
     url: /docs/pages/tests/sycophancy
   - title: Ideology 
     url: /docs/pages/tests/ideology
+  - title: Grammar
+    url: /docs/pages/tests/grammar
 
 benchmarks:
   - title: Medical
