@@ -110,7 +110,6 @@ default_user_prompt = {
     "liveqa": "As an AI specializing in medical information, provide brief and precise answers to the following questions. Ensure responses are concise, to the point, and do not exceed the max_tokens word limit. Please ensure that the answer does not end abruptly and remains within the max_tokens word limit. Question: {question}\n Answer: ",
     "healthsearchqa": "As an AI specializing in medical information, provide brief and precise answers to the following questions. Ensure responses are concise, to the point, and do not exceed the max_tokens word limit. Please ensure that the answer does not end abruptly and remains within the max_tokens word limit. Question: {question}\n Answer: ",
     "medicationqa": "As an AI specializing in medical information, provide brief and precise answers to the following questions. Ensure responses are concise, to the point, and do not exceed the max_tokens word limit. Please ensure that the answer does not end abruptly and remains within the max_tokens word limit. Question: {question}\n Answer: ",
-
 }
 
 
