@@ -156,8 +156,6 @@ tutorials:
           url: /docs/pages/tutorials/misc/editing-testcases
   - title: RAG Tutorials
     url: /docs/pages/tutorials/rag
-  - title: End-to-End Workflow Notebooks
-    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
   - title: Benchmark Dataset Notebooks
     url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
   - title: End-to-End Workflow Notebooks
