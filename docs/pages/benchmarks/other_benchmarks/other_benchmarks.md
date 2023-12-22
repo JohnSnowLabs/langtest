@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: Other Benchmarks | LangTest | John Snow Labs
 title: Other Benchmarks Dataset
-key: notebooks
+key: benchmarks-other_benchmarks
 permalink: /docs/pages/benchmarks/other_benchmarks/
 aside:
     toc: true

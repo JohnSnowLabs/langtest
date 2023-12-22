@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: HealthSearchQA Benchmark | LangTest | John Snow Labs
 title: HealthSearchQA
-key: benchmarks-HealthSearchQA
-permalink: /docs/pages/benchmarks/medical/HealthSearchQA/
+key: benchmarks-healthsearchqa
+permalink: /docs/pages/benchmarks/medical/healthsearchqa/
 aside:
     toc: true
 sidebar:

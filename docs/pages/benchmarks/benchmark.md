@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: Benchmarks | LangTest | John Snow Labs
 title: Available Benchmarks
-key: notebooks
+key: benchmark
 permalink: /docs/pages/benchmarks/benchmark
 aside:
     toc: true

@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: MedicationQA Benchmark | LangTest | John Snow Labs
 title: MedicationQA
-key: benchmarks-MedicationQA
-permalink: /docs/pages/benchmarks/medical/MedicationQA/
+key: benchmarks-medicationqa
+permalink: /docs/pages/benchmarks/medical/medicationqa/
 aside:
     toc: true
 sidebar:

@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: Medical Benchmark Datasets | LangTest | John Snow Labs
 title: Medical Benchmark Datasets
-key: notebooks
+key: benchmarks-medical
 permalink: /docs/pages/benchmarks/medical/
 aside:
     toc: true

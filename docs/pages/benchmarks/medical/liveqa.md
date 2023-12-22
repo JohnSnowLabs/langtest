@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: LiveQA Benchmark | LangTest | John Snow Labs
 title: LiveQA
-key: benchmarks-LiveQA
-permalink: /docs/pages/benchmarks/medical/LiveQA/
+key: benchmarks-liveqa
+permalink: /docs/pages/benchmarks/medical/liveqa/
 aside:
     toc: true
 sidebar:
