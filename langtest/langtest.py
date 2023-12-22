@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
-
+import random
 
 from pkg_resources import resource_filename
 
@@ -23,6 +23,7 @@ from .utils import report_utils as report, config_utils
 
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
+from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
 from .errors import Warnings, Errors
 
 EVAL_MODEL = None
@@ -212,6 +213,8 @@ class Harness:
             GLOBAL_HUB = hub
 
         self._testcases = None
+        self.batches = None
+        self._checkpoints = None
         self._generated_results = None
         self.accuracy_results = None
         self.min_pass_dict = None
@@ -246,11 +249,13 @@ class Harness:
 
         return self._config
 
-    def generate(self) -> "Harness":
+    def generate(self, seed: int = None) -> "Harness":
         """Generate the testcases to be used when evaluating the model.
 
         The generated testcases are stored in `_testcases` attribute.
         """
+        if seed:
+            random.seed(seed)
         if self._config is None:
             raise RuntimeError(Errors.E005)
         if self._testcases is not None:
@@ -337,35 +342,182 @@ class Harness:
         )
         return self
 
-    def run(self) -> "Harness":
-        """Run the tests on the model using the generated testcases.
+    def run(
+        self,
+        checkpoint: bool = False,
+        batch_size=500,
+        save_checkpoints_dir: str = "checkpoints",
+    ) -> "Harness":
+        """Run the tests on the model using the generated test cases.
+
+        Args:
+            checkpoint (bool): If True, enable checkpointing to save intermediate results.
+            batch_size (int): Batch size for dividing test cases into batches.
+            save_checkpoints_dir (str): Directory to save checkpoints and intermediate results.
 
         Returns:
-            None: The evaluations are stored in `generated_results` attribute.
+            Harness: The updated Harness object with test results stored in `generated_results` attribute.
+
+        Raises:
+            RuntimeError: Raised if test cases are not provided (None).
         """
         if self._testcases is None:
             raise RuntimeError(Errors.E010)
-        if not isinstance(self._testcases, dict):
-            self._generated_results = TestFactory.run(
-                self._testcases,
-                self.model,
-                is_default=self.is_default,
-                raw_data=self.data,
-                **self._config.get("model_parameters", {}),
-            )
 
-        else:
-            self._generated_results = {}
-            for k, v in self.model.items():
-                self._generated_results[k] = TestFactory.run(
-                    self._testcases[k],
-                    v,
+        if not isinstance(self._testcases, dict):
+            if checkpoint:
+                checkpoint_manager = CheckpointManager(
+                    checkpoint_folder=save_checkpoints_dir
+                )
+                if self.batches is None:
+                    self.batches = divide_into_batches(self._testcases, batch_size)
+                    checkpoint_manager.save_all_batches(self.batches)
+                    self.save(save_checkpoints_dir)
+                    logging.warning(Warnings.W018.format(total_batches=len(self.batches)))
+
+                if self._generated_results is None:
+                    self._generated_results = []
+
+                for i, batch in self.batches.items():
+                    batch_results = TestFactory.run(
+                        batch,
+                        self.model,
+                        is_default=self.is_default,
+                        raw_data=self.data,
+                        **self._config.get("model_parameters", {}),
+                    )
+
+                    checkpoint_manager.save_checkpoint(
+                        check_point_extension=f"batch_{i}", results_so_far=batch_results
+                    )
+                    self._generated_results.extend(batch_results)
+                    checkpoint_manager.update_status(batch_number=i)
+
+            else:
+                self._generated_results = TestFactory.run(
+                    self._testcases,
+                    self.model,
                     is_default=self.is_default,
                     raw_data=self.data,
                     **self._config.get("model_parameters", {}),
                 )
+            if self._checkpoints is not None:
+                self._generated_results.extend(self._checkpoints)
+        else:
+            self._generated_results = {}
+            if checkpoint:
+                if self.batches is None:
+                    self.batches = {}
+                    for k, v in self.model.items():
+                        self.batches[k] = divide_into_batches(
+                            self._testcases[k], batch_size
+                        )
+                        logging.warning(
+                            Warnings.W019.format(
+                                model_name=k, total_batches=len(self.batches)
+                            )
+                        )
 
+                    for k, v in self.batches.items():
+                        k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
+                        checkpoint_manager = CheckpointManager(
+                            checkpoint_folder=k_checkpoint_dir
+                        )
+                        checkpoint_manager.save_all_batches(v)
+
+                    self.save(save_checkpoints_dir)
+
+                for k, v in self.model.items():
+                    k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
+                    checkpoint_manager = CheckpointManager(
+                        checkpoint_folder=k_checkpoint_dir
+                    )
+                    self._generated_results[k] = []
+                    for i, batch in self.batches[k].items():
+                        batch_results = TestFactory.run(
+                            batch,
+                            v,
+                            is_default=self.is_default,
+                            raw_data=self.data,
+                            **self._config.get("model_parameters", {}),
+                        )
+
+                        checkpoint_manager.save_checkpoint(
+                            check_point_extension=f"batch_{i}",
+                            results_so_far=batch_results,
+                        )
+                        self._generated_results[k].extend(batch_results)
+                        checkpoint_manager.update_status(batch_number=i)
+
+            else:
+                for k, v in self.model.items():
+                    self._generated_results[k] = TestFactory.run(
+                        self._testcases[k],
+                        v,
+                        is_default=self.is_default,
+                        raw_data=self.data,
+                        **self._config.get("model_parameters", {}),
+                    )
+            if self._checkpoints is not None:
+                for k, v in self.model.items():
+                    self._generated_results[k].extend(self._checkpoints[k])
         return self
+
+    @classmethod
+    def load_checkpoints(cls, task, model, save_checkpoints_dir: str) -> "Harness":
+        """Load checkpoints and other necessary data to recreate a Harness object.
+
+        Args:
+            task: The task for which the model was tested.
+            model: The model or models used for testing.
+            save_checkpoints_dir (str): Directory containing saved checkpoints and data.
+
+        Returns:
+            Harness: A Harness object reconstructed with loaded checkpoints and data.
+
+        Raises:
+            OSError: Raised if necessary files (config.yaml, data.pkl) are missing in the checkpoint directory.
+        """
+        if not os.path.isdir(save_checkpoints_dir):
+            raise OSError(Errors.E092.format(directory=save_checkpoints_dir))
+
+        for filename in ["config.yaml", "data.pkl"]:
+            if not os.path.exists(os.path.join(save_checkpoints_dir, filename)):
+                raise OSError(Errors.E017.format(filename=filename))
+
+        with open(os.path.join(save_checkpoints_dir, "data.pkl"), "rb") as reader:
+            data = pickle.load(reader)
+
+        harness = Harness(
+            task=task,
+            model=model,
+            data={"data_source": data},
+            config=os.path.join(save_checkpoints_dir, "config.yaml"),
+        )
+        if isinstance(model, dict):
+            checkpoint_manager = CheckpointManager(checkpoint_folder=save_checkpoints_dir)
+            harness._checkpoints = checkpoint_manager.load_checkpoint()
+            harness._testcases = checkpoint_manager.load_remaining_batch()
+            harness.batches = checkpoint_manager.load_batches()
+        else:
+            harness._testcases = {}
+            harness._checkpoints = {}
+            harness.batches = {}
+            for model_name in model:
+                model_checkpoint_dir = os.path.join(
+                    save_checkpoints_dir, model_name["model"]
+                )
+                checkpoint_manager = CheckpointManager(
+                    checkpoint_folder=model_checkpoint_dir
+                )
+                harness._checkpoints[
+                    model_name["model"]
+                ] = checkpoint_manager.load_checkpoint()
+                harness._testcases[
+                    model_name["model"]
+                ] = checkpoint_manager.load_remaining_batch()
+                harness.batches[model_name["model"]] = checkpoint_manager.load_batches()
+        return harness
 
     def report(
         self,
@@ -425,6 +577,7 @@ class Harness:
         else:
             df_final_report = pd.DataFrame()
             for k in self.model.keys():
+                summary = defaultdict(lambda: defaultdict(int))
                 df_report = report.multi_model_report(
                     summary,
                     self.min_pass_dict,
@@ -439,6 +592,8 @@ class Harness:
                     )
 
                 df_final_report = pd.concat([df_final_report, df_report])
+
+            df_final_report["model_name"] = df_final_report["model_name"].astype(str)
 
             df_final_report["minimum_pass_rate"] = (
                 df_final_report["minimum_pass_rate"].str.rstrip("%").astype("float")
@@ -789,6 +944,9 @@ class Harness:
             Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
+        if not os.path.isdir(save_dir):
+            raise OSError(Errors.E092.format(directory=save_dir))
+
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
                 raise OSError(Errors.E017.format(filename=filename))
@@ -806,6 +964,8 @@ class Harness:
             if os.path.exists(os.path.join(save_dir, "test_cases.pkl")):
                 with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
                     testcases = pickle.load(reader)
+                for sample in testcases:
+                    sample.expected_results = None
                 harness._testcases = testcases
             else:
                 logging.warning(Warnings.W013.format(save_dir=save_dir))

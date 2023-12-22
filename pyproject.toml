@@ -56,7 +56,6 @@ nest-asyncio = "^1.5.0"
 openai = { version = "0.28.1", optional = true }
 jsonlines = "^3.1.0"
 torch = { version = "^2.0.0", optional = true }
-typing-extensions = "<4.6.0"
 pandas = "^2.0.3"
 pyyaml = "^6.0"
 tqdm = "^4.65.0"
@@ -70,6 +69,7 @@ datasets = {version = ">=2.14.0", optional = true}
 matplotlib = {version = "^3.7.2", optional = true}
 tenacity = {version = "^8.2.2", optional = true}
 langchain = {version = "0.0.326", optional = true}
+typing-extensions = "<4.6.0"
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]

@@ -400,12 +400,18 @@ class BaseQASample(BaseModel):
         Returns:
             None
         """
+
         if perturbations is None:
             sens = [self.original_question, self.original_context]
+
             self.perturbed_question, self.perturbed_context = func(
                 sens, prob, **params, **kwargs
             )
+
             self.category = func.__module__.split(".")[-1]
+
+            if self.category == "grammar":
+                self.perturbed_context = self.original_context
 
         else:
             sens = [self.original_question, self.original_context]
