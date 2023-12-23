@@ -607,10 +607,8 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
-            if "max_tokens" in kwargs:
-                kwargs[new_tokens_key] = kwargs.pop("max_tokens")
-            else:
-                kwargs[new_tokens_key] = 64
+            kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
+
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
             task = kwargs.pop("task", None)
