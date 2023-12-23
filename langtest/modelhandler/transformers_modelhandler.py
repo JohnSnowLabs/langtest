@@ -583,7 +583,7 @@ class PretrainedModelForQA(ModelAPI):
                     model_id=path, task=task, device=device, **kwargs
                 )
                 logging.warning(Warnings.W020.format(task=task))
-                return cls(model)  # Return the successfully initialized model
+                return model  # Return the successfully initialized model
             except Exception as e:
                 print(f"Failed to initialize model with task '{task}': {e}")
 
@@ -629,18 +629,19 @@ class PretrainedModelForQA(ModelAPI):
                         model_id=path, task=task, device=device, **kwargs
                     )
                 else:
-                    return cls(HuggingFacePipeline(pipeline=path))
+                    model = HuggingFacePipeline(pipeline=path)
                 return cls(model)
             else:
                 if isinstance(path, str):
-                    return cls._try_initialize_model(path, device, tasks, **kwargs)
+                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
 
                 elif "pipelines" not in str(type(path)).split("'")[1].split("."):
                     path = path.config.name_or_path
-                    return cls._try_initialize_model(path, device, tasks, **kwargs)
+                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
                 else:
-                    # If path is a pipeline, initialize it directly
-                    return cls(HuggingFacePipeline(pipeline=path))
+                    model = HuggingFacePipeline(pipeline=path)
+
+                return cls(model)
 
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
