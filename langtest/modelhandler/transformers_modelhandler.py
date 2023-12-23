@@ -561,7 +561,7 @@ class PretrainedModelForQA(ModelAPI):
         self.model = model
 
     @classmethod
-    def _try_initialize_model(cls, path, device, tasks):
+    def _try_initialize_model(cls, path, device, tasks, **kwargs):
         """
         Attempt to initialize the model with a list of tasks until one succeeds.
 
@@ -579,7 +579,9 @@ class PretrainedModelForQA(ModelAPI):
         """
         for task in tasks:
             try:
-                model = HuggingFacePipeline(model_id=path, task=task, device=device)
+                model = HuggingFacePipeline(
+                    model_id=path, task=task, device=device, **kwargs
+                )
                 return cls(model)  # Return the successfully initialized model
             except Exception as e:
                 print(f"Failed to initialize model with task '{task}': {e}")
@@ -607,7 +609,6 @@ class PretrainedModelForQA(ModelAPI):
             kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
-
             tasks = [
                 "text-generation",
                 "text2text-generation",
@@ -615,11 +616,11 @@ class PretrainedModelForQA(ModelAPI):
             ]  # Add more tasks if needed
 
             if isinstance(path, str):
-                return cls._try_initialize_model(path, device, tasks)
+                return cls._try_initialize_model(path, device, tasks, **kwargs)
 
             elif "pipelines" not in str(type(path)).split("'")[1].split("."):
                 path = path.config.name_or_path
-                return cls._try_initialize_model(path, device, tasks)
+                return cls._try_initialize_model(path, device, tasks, **kwargs)
 
             else:
                 # If path is a pipeline, initialize it directly
