@@ -608,11 +608,15 @@ class PretrainedModelForQA(ModelAPI):
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
 
-            tasks = ["text-generation", "text2text-generation"]  # Add more tasks if needed
+            tasks = ["text-generation", "text2text-generation", "summarization"]  # Add more tasks if needed
 
-            if isinstance(path, str) or "pipelines" not in str(type(path)).split("'")[1].split("."):
-                # Use a helper function to try initializing the model with different tasks
+            if isinstance(path, str): 
                 return cls._try_initialize_model(path, device, tasks)
+            
+            elif  "pipelines" not in str(type(path)).split("'")[1].split("."):
+                  path = path.config.name_or_path
+                  return cls._try_initialize_model(path, device, tasks)
+            
             else:
                 # If path is a pipeline, initialize it directly
                 model = HuggingFacePipeline(pipeline=path)
