@@ -559,7 +559,7 @@ class PretrainedModelForQA(ModelAPI):
         )
 
         self.model = model
-    
+
     @classmethod
     def _try_initialize_model(cls, path, device, tasks):
         """
@@ -579,15 +579,15 @@ class PretrainedModelForQA(ModelAPI):
         """
         for task in tasks:
             try:
-                model = HuggingFacePipeline(
-                    model_id=path, task=task, device=device
-                )
+                model = HuggingFacePipeline(model_id=path, task=task, device=device)
                 return cls(model)  # Return the successfully initialized model
             except Exception as e:
                 print(f"Failed to initialize model with task '{task}': {e}")
 
         # If no task succeeded, raise an error
-        raise ValueError(Errors.E090.format(error_message=f"All tasks failed for model {path}"))
+        raise ValueError(
+            Errors.E090.format(error_message=f"All tasks failed for model {path}")
+        )
 
     @classmethod
     def load_model(cls, path: str, **kwargs):
@@ -608,15 +608,19 @@ class PretrainedModelForQA(ModelAPI):
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
 
-            tasks = ["text-generation", "text2text-generation", "summarization"]  # Add more tasks if needed
+            tasks = [
+                "text-generation",
+                "text2text-generation",
+                "summarization",
+            ]  # Add more tasks if needed
 
-            if isinstance(path, str): 
+            if isinstance(path, str):
                 return cls._try_initialize_model(path, device, tasks)
-            
-            elif  "pipelines" not in str(type(path)).split("'")[1].split("."):
-                  path = path.config.name_or_path
-                  return cls._try_initialize_model(path, device, tasks)
-            
+
+            elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                path = path.config.name_or_path
+                return cls._try_initialize_model(path, device, tasks)
+
             else:
                 # If path is a pipeline, initialize it directly
                 model = HuggingFacePipeline(pipeline=path)
