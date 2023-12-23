@@ -1,5 +1,5 @@
 from typing import Dict, List, Tuple, Union
-
+import logging
 import numpy as np
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 from .modelhandler import ModelAPI
@@ -9,7 +9,7 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-from ..errors import Errors
+from ..errors import Errors, Warnings
 from ..utils.custom_types.helpers import SimplePromptTemplate
 from ..utils.hf_utils import HuggingFacePipeline
 
@@ -582,6 +582,7 @@ class PretrainedModelForQA(ModelAPI):
                 model = HuggingFacePipeline(
                     model_id=path, task=task, device=device, **kwargs
                 )
+                logging.warning(Warnings.W020.format(task=task))
                 return cls(model)  # Return the successfully initialized model
             except Exception as e:
                 print(f"Failed to initialize model with task '{task}': {e}")
@@ -609,23 +610,34 @@ class PretrainedModelForQA(ModelAPI):
             kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
+            task = kwargs.pop("task", None)
             tasks = [
                 "text-generation",
                 "text2text-generation",
                 "summarization",
             ]  # Add more tasks if needed
 
-            if isinstance(path, str):
-                return cls._try_initialize_model(path, device, tasks, **kwargs)
-
-            elif "pipelines" not in str(type(path)).split("'")[1].split("."):
-                path = path.config.name_or_path
-                return cls._try_initialize_model(path, device, tasks, **kwargs)
-
+            if task:
+                if isinstance(path, str):
+                    model = HuggingFacePipeline(
+                        model_id=path, task=task, device=device, **kwargs
+                    )
+                elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                    path = path.config.name_or_path
+                    model = HuggingFacePipeline(
+                        model_id=path, task=task, device=device, **kwargs
+                    )
             else:
-                # If path is a pipeline, initialize it directly
-                model = HuggingFacePipeline(pipeline=path)
-                return cls(model)
+                if isinstance(path, str):
+                    return cls._try_initialize_model(path, device, tasks, **kwargs)
+
+                elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                    path = path.config.name_or_path
+                    return cls._try_initialize_model(path, device, tasks, **kwargs)
+                else:
+                    # If path is a pipeline, initialize it directly
+                    model = HuggingFacePipeline(pipeline=path)
+                    return cls(model)
 
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
