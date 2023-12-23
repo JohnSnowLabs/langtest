@@ -561,7 +561,7 @@ class PretrainedModelForQA(ModelAPI):
         self.model = model
     
     @classmethod
-    def _try_initialize_model(cls, path, device, tasks, **kwargs):
+    def _try_initialize_model(cls, path, device, tasks):
         """
         Attempt to initialize the model with a list of tasks until one succeeds.
 
@@ -580,7 +580,7 @@ class PretrainedModelForQA(ModelAPI):
         for task in tasks:
             try:
                 model = HuggingFacePipeline(
-                    model_id=path, task=task, device=device, **kwargs
+                    model_id=path, task=task, device=device
                 )
                 return cls(model)  # Return the successfully initialized model
             except Exception as e:
@@ -612,7 +612,7 @@ class PretrainedModelForQA(ModelAPI):
 
             if isinstance(path, str) or "pipelines" not in str(type(path)).split("'")[1].split("."):
                 # Use a helper function to try initializing the model with different tasks
-                return cls._try_initialize_model(path, device, tasks, **kwargs)
+                return cls._try_initialize_model(path, device, tasks)
             else:
                 # If path is a pipeline, initialize it directly
                 model = HuggingFacePipeline(pipeline=path)
