@@ -607,7 +607,10 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
-            kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
+            if "max_tokens" in kwargs:
+                kwargs[new_tokens_key] = kwargs.pop("max_tokens")
+            else:
+                kwargs[new_tokens_key] = 64
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
             task = kwargs.pop("task", None)
@@ -627,6 +630,9 @@ class PretrainedModelForQA(ModelAPI):
                     model = HuggingFacePipeline(
                         model_id=path, task=task, device=device, **kwargs
                     )
+                else:
+                    return cls(HuggingFacePipeline(pipeline=path))
+                return cls(model)
             else:
                 if isinstance(path, str):
                     return cls._try_initialize_model(path, device, tasks, **kwargs)
@@ -636,8 +642,7 @@ class PretrainedModelForQA(ModelAPI):
                     return cls._try_initialize_model(path, device, tasks, **kwargs)
                 else:
                     # If path is a pipeline, initialize it directly
-                    model = HuggingFacePipeline(pipeline=path)
-                    return cls(model)
+                    return cls(HuggingFacePipeline(pipeline=path))
 
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
