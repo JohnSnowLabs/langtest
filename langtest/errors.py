@@ -84,6 +84,7 @@ class Warnings(metaclass=ErrorsWithCodes):
             "Received error:\n\n{e}")
     W018 = ("Total number of batches: {total_batches}")
     W019 = ("model: {model_name}\nTotal number of batches: {total_batches}")
+    W020 = ("You have not specified the task in the model parameter in the config file. Loading the model with task: {task}")
 
 
 class Errors(metaclass=ErrorsWithCodes):

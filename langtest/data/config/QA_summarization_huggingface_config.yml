@@ -1,6 +1,5 @@
 model_parameters:
   max_tokens: 64
-  task: "text-generation"
 tests:
   defaults:
     min_pass_rate: 0.65

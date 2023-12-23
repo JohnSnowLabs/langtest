@@ -1,5 +1,5 @@
 from typing import Dict, List, Tuple, Union
-
+import logging
 import numpy as np
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 from .modelhandler import ModelAPI
@@ -9,7 +9,7 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-from ..errors import Errors
+from ..errors import Errors, Warnings
 from ..utils.custom_types.helpers import SimplePromptTemplate
 from ..utils.hf_utils import HuggingFacePipeline
 
@@ -561,6 +561,38 @@ class PretrainedModelForQA(ModelAPI):
         self.model = model
 
     @classmethod
+    def _try_initialize_model(cls, path, device, tasks, **kwargs):
+        """
+        Attempt to initialize the model with a list of tasks until one succeeds.
+
+        Parameters:
+        - path (str): The model path or configuration.
+        - device (int): The device to load the model onto.
+        - tasks (list): A list of tasks to try initializing the model with.
+        - **kwargs: Additional keyword arguments.
+
+        Returns:
+        - An initialized model.
+
+        Raises:
+        - ValueError: If all initialization attempts fail.
+        """
+        for task in tasks:
+            try:
+                model = HuggingFacePipeline(
+                    model_id=path, task=task, device=device, **kwargs
+                )
+                logging.warning(Warnings.W020.format(task=task))
+                return model  # Return the successfully initialized model
+            except Exception as e:
+                print(f"Failed to initialize model with task '{task}': {e}")
+
+        # If no task succeeded, raise an error
+        raise ValueError(
+            Errors.E090.format(error_message=f"All tasks failed for model {path}")
+        )
+
+    @classmethod
     def load_model(cls, path: str, **kwargs):
         """
         Load a pretrained model from a specified path or configuration.
@@ -573,28 +605,44 @@ class PretrainedModelForQA(ModelAPI):
         - PretrainedModelForQA: An instance of the PretrainedModelForQA class.
         """
         try:
+            # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
-            if "max_tokens" in kwargs:
-                kwargs[new_tokens_key] = kwargs.pop("max_tokens")
-            else:
-                kwargs[new_tokens_key] = 64
-            task = kwargs.pop("task", "text-generation")
+            kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
+
             kwargs.pop("temperature", None)
             device = kwargs.pop("device", -1)
+            task = kwargs.pop("task", None)
+            tasks = [
+                "text-generation",
+                "text2text-generation",
+                "summarization",
+            ]  # Add more tasks if needed
 
-            if isinstance(path, str):
-                model = HuggingFacePipeline(
-                    model_id=path, task=task, device=device, **kwargs
-                )
-            elif "pipelines" not in str(type(path)).split("'")[1].split("."):
-                path = path.config.name_or_path
-                model = HuggingFacePipeline(
-                    model_id=path, task=task, device=device, **kwargs
-                )
+            if task:
+                if isinstance(path, str):
+                    model = HuggingFacePipeline(
+                        model_id=path, task=task, device=device, **kwargs
+                    )
+                elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                    path = path.config.name_or_path
+                    model = HuggingFacePipeline(
+                        model_id=path, task=task, device=device, **kwargs
+                    )
+                else:
+                    model = HuggingFacePipeline(pipeline=path)
+                return cls(model)
             else:
-                model = HuggingFacePipeline(pipeline=path)
+                if isinstance(path, str):
+                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
 
-            return cls(model)
+                elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                    path = path.config.name_or_path
+                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+                else:
+                    model = HuggingFacePipeline(pipeline=path)
+
+                return cls(model)
+
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
 
