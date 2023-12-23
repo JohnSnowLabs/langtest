@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Sycophancy Test | John Snow Labs
 title: Sycophancy Notebook
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/sycophancy
 sidebar:
     nav: tutorials
 aside:

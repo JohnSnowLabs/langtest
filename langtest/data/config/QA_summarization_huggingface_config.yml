@@ -1,0 +1,10 @@
+model_parameters:
+  max_tokens: 64
+tests:
+  defaults:
+    min_pass_rate: 0.65
+  robustness:
+    uppercase:
+      min_pass_rate: 0.75
+    dyslexia_word_swap:
+      min_pass_rate: 0.75

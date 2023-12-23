@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Robustness Test | John Snow Labs
 title: Robustness Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/robustness
 sidebar:
     nav: tutorials

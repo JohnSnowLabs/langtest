@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Legal Test | John Snow Labs
 title: Legal Notebook
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/legal_tests
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/legal_tests
 sidebar:
     nav: tutorials
 aside:

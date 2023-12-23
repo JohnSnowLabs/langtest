@@ -35,9 +35,9 @@ In the evaluation process, we start by fetching *original_question* from the dat
 
 
 {:.table3}
-| category   | test_type    |  original_question                  |  perturbed_question                     | expected_result                | actual_result                  | pass   |
-|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | add_speech_to_text_typo | Find the degree for the given field extension Q(sqrt(2), sqrt(3), sqrt(18)) over Q.<br>A. 0<br>B. 4<br>C. 2<br>D. 6 | Find the degree for the given field extension Kew(sqrt(2), sqrt(3), sqrt(18)) over Q.<br>A. 0<br>B. 4<br>C. 2<br>D. 6 | B. 4 | B. 4  | True |
+| category   | test_type    |  original_question                  |  perturbed_question                     |  options      | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|---------------|-------------------------------|-------------------------------|-------|
+| robustness | add_speech_to_text_typo | Find the degree for the given field extension Q(sqrt(2), sqrt(3), sqrt(18)) over Q. | Find the degree for the given field extension Kew(sqrt(2), sqrt(3), sqrt(18)) over Q.|<br>A. 0<br>B. 4<br>C. 2<br>D. 6 | B. 4 | B. 4  | True |
 
 
 > Generated Results for `text-davinci-003` model from `OpenAI`

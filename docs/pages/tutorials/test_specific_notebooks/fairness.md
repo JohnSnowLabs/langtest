@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Fairness Test | John Snow Labs
 title: Fairness Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/fairness
 sidebar:
     nav: tutorials

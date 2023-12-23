@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: Legal Benchmark Datasets | LangTest | John Snow Labs
 title: Legal Benchmark Datasets 
-key: notebooks
+key: benchmarks-legal
 permalink: /docs/pages/benchmarks/legal/
 aside:
     toc: true

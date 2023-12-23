@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Clinical Test | John Snow Labs
 title: Clinical Notebook
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/clinical
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/clinical
 sidebar:
     nav: tutorials
 aside:

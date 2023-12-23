@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Stereotype Test | John Snow Labs
 title: Stereotype Notebooks
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/stereotype
 sidebar:
     nav: tutorials

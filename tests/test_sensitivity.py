@@ -27,6 +27,7 @@ class SensitivityTestCase(unittest.TestCase):
             "sensitivity-test": [
                 SensitivitySample(
                     original="she is going to school?",
+                    options="-",
                 )
             ]
         }

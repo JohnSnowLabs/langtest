@@ -1,8 +1,7 @@
 from typing import Dict, List, Tuple, Union
-
+import logging
 import numpy as np
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
-
 from .modelhandler import ModelAPI
 from ..utils.custom_types import (
     NEROutput,
@@ -10,10 +9,9 @@ from ..utils.custom_types import (
     SequenceClassificationOutput,
     TranslationOutput,
 )
-from langtest.utils.lib_manager import try_import_lib
-import importlib
-from langtest.transform.utils import compare_generations_overlap
-from ..errors import Errors
+from ..errors import Errors, Warnings
+from ..utils.custom_types.helpers import SimplePromptTemplate
+from ..utils.hf_utils import HuggingFacePipeline
 
 
 class PretrainedModelForNER(ModelAPI):
@@ -536,66 +534,150 @@ class PretrainedModelForStereoSet(ModelAPI):
 
 
 class PretrainedModelForQA(ModelAPI):
-    """Transformers pretrained model for QA tasks
+    """
+    A wrapper class for using a Hugging Face pretrained model for Question Answering tasks.
 
-    Args:
-        model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
+    Parameters:
+    - model (HuggingFacePipeline): An instance of the HuggingFacePipeline class for handling the pretrained model.
+
+    Methods:
+    - load_model(cls, path: str, **kwargs): Class method to load the pretrained model from a specified path or configuration.
+    - predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str: Generate a prediction for the given text and prompt.
+    - __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str: Alias of the 'predict' method.
     """
 
     def __init__(self, model, **kwargs):
-        """Constructor method
-
-        Args:
-            model (transformers.pipeline.Pipeline): Pretrained HuggingFace QA pipeline for predictions.
         """
-        assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+        Initialize the PretrainedModelForQA instance.
+
+        Parameters:
+        - model (HuggingFacePipeline): An instance of the HuggingFacePipeline class for handling the pretrained model.
+        - **kwargs: Additional keyword arguments.
+        """
+        assert isinstance(model, HuggingFacePipeline), ValueError(
+            Errors.E079.format(Pipeline=HuggingFacePipeline, type_model=type(model))
         )
 
         self.model = model
-        self._check_langchain_package()
-
-    def _check_langchain_package(self):
-        LIB_NAME = "langchain"
-        if try_import_lib(LIB_NAME):
-            langchain = importlib.import_module(LIB_NAME)
-            self.PromptTemplate = getattr(langchain, "PromptTemplate")
-        else:
-            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
     @classmethod
-    def load_model(cls, path: str, **kwargs) -> "Pipeline":
-        """Load the QA model into the `model` attribute.
+    def _try_initialize_model(cls, path, device, tasks, **kwargs):
+        """
+        Attempt to initialize the model with a list of tasks until one succeeds.
 
-        Args:
-            path (str):
-                path to model or model name
+        Parameters:
+        - path (str): The model path or configuration.
+        - device (int): The device to load the model onto.
+        - tasks (list): A list of tasks to try initializing the model with.
+        - **kwargs: Additional keyword arguments.
 
         Returns:
-            'Pipeline':
+        - An initialized model.
+
+        Raises:
+        - ValueError: If all initialization attempts fail.
         """
-        if "task" in kwargs.keys():
-            kwargs.pop("task")
-        return cls(pipeline(task="text-generation", model=path, **kwargs))
+        for task in tasks:
+            try:
+                model = HuggingFacePipeline(
+                    model_id=path, task=task, device=device, **kwargs
+                )
+                logging.warning(Warnings.W020.format(task=task))
+                return model  # Return the successfully initialized model
+            except Exception as e:
+                print(f"Failed to initialize model with task '{task}': {e}")
+
+        # If no task succeeded, raise an error
+        raise ValueError(
+            Errors.E090.format(error_message=f"All tasks failed for model {path}")
+        )
+
+    @classmethod
+    def load_model(cls, path: str, **kwargs):
+        """
+        Load a pretrained model from a specified path or configuration.
+
+        Parameters:
+        - path (str): The path or configuration for loading the pretrained model.
+        - **kwargs: Additional keyword arguments.
+
+        Returns:
+        - PretrainedModelForQA: An instance of the PretrainedModelForQA class.
+        """
+        try:
+            # Setup and pop specific kwargs
+            new_tokens_key = "max_new_tokens"
+            kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
+
+            kwargs.pop("temperature", None)
+            device = kwargs.pop("device", -1)
+            task = kwargs.pop("task", None)
+            tasks = [
+                "text-generation",
+                "text2text-generation",
+                "summarization",
+            ]  # Add more tasks if needed
+
+            if task:
+                if isinstance(path, str):
+                    model = HuggingFacePipeline(
+                        model_id=path, task=task, device=device, **kwargs
+                    )
+                elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                    path = path.config.name_or_path
+                    model = HuggingFacePipeline(
+                        model_id=path, task=task, device=device, **kwargs
+                    )
+                else:
+                    model = HuggingFacePipeline(pipeline=path)
+                return cls(model)
+            else:
+                if isinstance(path, str):
+                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+
+                elif "pipelines" not in str(type(path)).split("'")[1].split("."):
+                    path = path.config.name_or_path
+                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+                else:
+                    model = HuggingFacePipeline(pipeline=path)
+
+                return cls(model)
+
+        except Exception as e:
+            raise ValueError(Errors.E090.format(error_message=e))
 
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
-        """Perform predictions on the input text.
+        """
+        Generate a prediction for the given text and prompt.
 
-        Args:
-            text (str): Input text to perform QA on.
-            kwargs: Additional keyword arguments.
-
+        Parameters:
+        - text (Union[str, dict]): The input text or dictionary containing relevant information.
+        - prompt (dict): The prompt template for generating the question.
+        - **kwargs: Additional keyword arguments.
 
         Returns:
-            str: Output model for QA tasks
+        - str: The generated prediction.
         """
-        prompt_template = self.PromptTemplate(**prompt)
-        p = prompt_template.format(**text)
-        prediction = self.model(p, **kwargs)
-        return prediction[0]["generated_text"][len(p) :]
+        try:
+            prompt_template = SimplePromptTemplate(**prompt)
+            p = prompt_template.format(**text)
+            output = self.model._generate([p])
+            return output[0]
+        except Exception as e:
+            raise ValueError(Errors.E089.format(error_message=e))
 
     def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
-        """Alias of the 'predict' method"""
+        """
+        Alias of the 'predict' method.
+
+        Parameters:
+        - text (Union[str, dict]): The input text or dictionary containing relevant information.
+        - prompt (dict): The prompt template for generating the question.
+        - **kwargs: Additional keyword arguments.
+
+        Returns:
+        - str: The generated prediction.
+        """
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
@@ -661,7 +743,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
 class PretrainedModelForSensitivityTest(ModelAPI):
     """A class for handling a pretrained model for sensitivity testing.
 
-    This class wraps a pretrained transformer model for performing sensitivity testing
+    This class wraps a pretrained transformer model for performing sensitivity testing.
 
     Args:
         model (tuple): A tuple containing the model and tokenizer.
@@ -695,7 +777,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             path (str): Path to model or model name.
 
         Returns:
-            tuple: A tuple containing the loaded model and tokenizer.
+            PretrainedModelForSensitivityTest: An instance of the class containing the loaded model and tokenizer.
         """
 
         if isinstance(path, str):
@@ -707,63 +789,80 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         cls.tokenizer = None
         return cls(path)
 
-    def predict(self, text: str, text_transformed: str, test_name: str, **kwargs):
+    def predict(self, text: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
         Args:
-            text (str): Input text to perform NER on.
-            text_transformed (str): Transformed input text.
-            kwargs: Additional keyword arguments.
+            text (str): Input text to perform sensitivity testing on.
+            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            **kwargs: Additional keyword arguments.
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'loss_diff' (float): Difference in loss between transformed and original text.
-                - 'expected_result' (str): Decoded result from the original text.
-                - 'actual_result' (str): Decoded result from the transformed text.
+                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'result' (str): Decoded result from the model.
 
         """
-        self.model.eval()
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
         ).to(self.model.device)
-        input_encoded_transformed = self.tokenizer(
-            text_transformed, return_tensors="pt", truncation=True, max_length=128
-        ).to(self.model.device)
 
         outputs = self.model(**input_encoded, labels=input_encoded["input_ids"])
-        outputs_transformed = self.model(
-            **input_encoded_transformed, labels=input_encoded_transformed["input_ids"]
-        )
-        expected_result = self.tokenizer.decode(
+
+        result = self.tokenizer.decode(
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
-        actual_result = self.tokenizer.decode(
-            outputs_transformed.logits[0].argmax(dim=-1), skip_special_tokens=True
-        )
+
         if test_name == "negation":
-            loss_diff = outputs_transformed.loss.item() - outputs.loss.item()
+            loss = outputs.loss.item()
+            return {
+                "loss": loss,
+                "result": result,
+            }
 
         elif test_name == "toxicity":
-            count1 = compare_generations_overlap(expected_result)
-            count2 = compare_generations_overlap(actual_result)
-            loss_diff = count2 - count1
+            return {"result": result}
 
-        return {
-            "loss_diff": loss_diff,
-            "expected_result": expected_result,
-            "actual_result": actual_result,
-        }
+    def __call__(self, text: str, test_name: str, **kwargs):
+        """Alias of the 'predict' method.
 
-    def __call__(self, text: str, text_transformed: str, test_name: str, **kwargs):
-        """Alias of the 'predict' method."""
+        Args:
+            text (str): Input text to perform sensitivity testing on.
+            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            **kwargs: Additional keyword arguments.
 
-        return self.predict(
-            text=text, text_transformed=text_transformed, test_name=test_name, **kwargs
-        )
+        Returns:
+            dict: A dictionary containing the following keys:
+                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'result' (str): Decoded result from the model.
+
+        """
+
+        return self.predict(text=text, test_name=test_name, **kwargs)
 
 
 class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for SycophancyTest
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for legal-tests.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.

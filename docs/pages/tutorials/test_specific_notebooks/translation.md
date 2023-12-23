@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Translation Test | John Snow Labs
 title: Translation Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/translation
 sidebar:
     nav: tutorials

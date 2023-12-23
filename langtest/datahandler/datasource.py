@@ -55,6 +55,7 @@ COLUMN_MAPPER = {
         "text": ["question"],
         "context": ["context", "passage", "contract"],
         "answer": ["answer", "answer_and_def_correct_predictions"],
+        "options": ["options"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
     "toxicity": {"text": ["text"]},
@@ -69,7 +70,7 @@ COLUMN_MAPPER = {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
-    "sensitivity-test": {"text": ["text", "question"]},
+    "sensitivity-test": {"text": ["text", "question"], "options": ["options"]},
     "wino-bias": {"text": ["text"], "options": ["options"]},
     "legal-tests": {
         "case": ["case"],
@@ -247,6 +248,7 @@ class DataFactory:
                         QASample(
                             original_question=item["original_question"],
                             original_context=item.get("original_context", "-"),
+                            options=item.get("options", "-"),
                             perturbed_question=item["perturbed_question"],
                             perturbed_context=item.get("perturbed_context", "-"),
                             test_type=item["test_type"],
@@ -365,7 +367,13 @@ class DataFactory:
             "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
             "CommonsenseQA": {
-                "split": ("test-tiny", "test", "validation-tiny", "validation"),
+                "split": (
+                    "test-tiny",
+                    "test",
+                    "validation-tiny",
+                    "validation",
+                    "sample-test-tiny",
+                ),
                 "extension": ".jsonl",
             },
             "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
@@ -377,12 +385,12 @@ class DataFactory:
             "StereoSet": {"split": ("test",), "extension": ".jsonl"},
             "Fiqa": {"split": ("test",), "extension": ".jsonl"},
             "MedQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "MedicationQA": {"split": ("test",), "extension": ".jsonl"},
+            "LiveQA": {"split": ("test",), "extension": ".jsonl"},
+            "healthsearchqa": {"split": ("test",), "extension": ".jsonl"},
             "PubMedQA": {
-                "split": (
-                    "pqaa",
-                    "pqal",
-                ),
-                "extension": ".jsonl",
+                "pqaa": {"split": ("test",), "extension": ".jsonl"},
+                "pqal": {"split": ("test",), "extension": ".jsonl"},
             },
             "MedMCQA": {
                 "MedMCQA-Test": {

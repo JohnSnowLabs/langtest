@@ -103,8 +103,8 @@ You can check out the following LangTest articles:
 | [**Testing the Question Answering Capabilities of Large Language Models**](https://medium.com/john-snow-labs/testing-the-question-answering-capabilities-of-large-language-models-1bc424d61740) | In this blog post, we dive into enhancing the QA evaluation capabilities using LangTest library. Explore about different evaluation methods that LangTest offers to address the complexities of evaluating Question Answering (QA) tasks. |
 | [**Evaluating Stereotype Bias with LangTest**](https://medium.com/john-snow-labs/evaluating-stereotype-bias-with-langtest-8286af8f0f22) | In this blog post, we are focusing on using the StereoSet dataset to assess bias related to gender, profession, and race.|
 | [**Unveiling Sentiments: Exploring LSTM-based Sentiment Analysis with PyTorch on the IMDB Dataset**](To be Published) | Explore the robustness of custom models with LangTest Insights.|
-| [**LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA**](To be Published) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.|
-| [**LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models**](To be Published) | Explore the robustness of Transformers Language Models with LangTest Insights.|
+| [**LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA**](https://medium.com/john-snow-labs/langtest-insights-a-deep-dive-into-llm-robustness-on-openbookqa-ab0ddcbd2ab1) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.|
+| [**LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models**](https://medium.com/john-snow-labs/langtest-a-secret-weapon-for-improving-the-robustness-of-your-transformers-language-models-9693d64256cc) | Explore the robustness of Transformers Language Models with LangTest Insights.|
 
 
 

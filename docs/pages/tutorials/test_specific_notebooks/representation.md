@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Representation Test | John Snow Labs
 title: Representation Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/representation
 sidebar:
     nav: tutorials
