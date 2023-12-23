@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Factuality Test | John Snow Labs
 title: Factuality
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/factuality
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/factuality
 sidebar:
     nav: tutorials
 aside:

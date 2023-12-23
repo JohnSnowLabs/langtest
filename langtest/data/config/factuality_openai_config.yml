@@ -1,7 +1,0 @@
-tests:
-  defaults:
-    min_pass_rate: 0.80
-
-  factuality:
-    order_bias:
-      min_pass_rate: 0.70

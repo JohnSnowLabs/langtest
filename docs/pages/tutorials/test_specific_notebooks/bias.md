@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Bias Test | John Snow Labs
 title: Bias Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/bias
 sidebar:
     nav: tutorials

@@ -32,11 +32,10 @@ You can see which subsets and splits are available below.
 
 In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the QAEvalChainapproach from the LangChain library. Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
 
-
 {:.table3}
-| category   | test_type    | original_question                  | perturbed_question                     | expected_result                | actual_result                  | pass   |
-|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
-| robustness | add_abbreviation | There is most likely going to be fog around:<br><br>A. a marsh<br>B. a tundra<br>C. the plains<br>D. a desert | There is most likely going 2 b fog around:<br><br>A. a marsh<br>B. a tundra<br>C. da plains<br>D. a desert	 | A. a marsh | A. a marsh  | True |
+| category   | test_type        | original_question                            | perturbed_question                        |   options                                                  | expected_result                | actual_result                  | pass   |
+|------------|------------------|----------------------------------------------|-------------------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| robustness | add_abbreviation | There is most likely going to be fog around: | There is most likely going 2 b fog around:| A. a marsh<br>B. a tundra<br>C. da plains<br>D. a desert   | A. a marsh | A. a marsh  | True |
 
 > Generated Results for `text-davinci-003` model from `OpenAI`
 
@@ -45,7 +44,7 @@ In the evaluation process, we start by fetching *original_question* from the dat
 ### Benchmarks
 
 {:.table3}
-| Model                               | uppercase	 | lowercase	 | titlecase | add_typo | dyslexia_word_swap | add_abbreviation | add_slangs | add_speech_to_text_typo | add_ocr_typo | adjective_synonym_swap	 | adjective_antonym_swap |
+| Model                               | uppercase  | lowercase  | titlecase | add_typo | dyslexia_word_swap | add_abbreviation | add_slangs | add_speech_to_text_typo | add_ocr_typo | adjective_synonym_swap  | adjective_antonym_swap |
 |--------------------------------------|:---------:|:---------:|:---------:|:-------:|:-------------------:|:----------------:|:----------:|:------------------------:|:------------:|:-----------------------:|:------------------------:|
 | j2-jumbo-instruct                   |    58%    |    63%    |    60%    |   74%   |         66%         |       58%        |     59%    |           78%            |      51%      |           62%           |           61%            |
 | j2-grande-instruct                  |    53%    |    56%    |    58%    |   79%   |         66%         |       63%        |     64%    |           84%            |      54%      |           65%           |           58%            |
@@ -56,8 +55,8 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | Intel/neural-chat-7b-v3-1           |    79%    |    88%    |    82%    |   89%   |         86%         |       84%        |     80%    |           86%            |      73%      |           80%           |           71%            |
 | gpt-4-1106-preview                   |    94%    |    93%    |    94%    |   94%   |         90%         |       87%        |     72%    |           93%            |      92%      |           75%           |           64%            |
 
-
 **Dataset info:**
+
 - Split: test
 - Records: 500
 - Testcases: 4813

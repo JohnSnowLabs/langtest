@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Accuracy Test | John Snow Labs
 title: Accuracy Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/accuracy
 sidebar:
     nav: tutorials

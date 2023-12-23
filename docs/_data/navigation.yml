@@ -81,6 +81,12 @@ docs-menu:
         - title: String Distance
           url: /docs/pages/docs/string_distance
 
+  - title: RAG
+    url: /docs/pages/docs/rag
+    children:
+        - title: RAG 
+          url: /docs/pages/docs/rag
+    
   - title: Contribute to LangTest
     url: /docs/pages/docs/contribute
     children:
@@ -112,46 +118,52 @@ tutorials:
           url: /docs/pages/tutorials/test_specific_notebooks/stereotype
         - title: Stereoset 
           url: /docs/pages/tutorials/test_specific_notebooks/stereoset
+        - title: Grammar 
+          url: /docs/pages/tutorials/test_specific_notebooks/grammar
   - title: LLM Testing Notebooks
-    url: /docs/pages/tutorials/LLM_testing_Notebooks
+    url: /docs/pages/tutorials/llm_testing_notebooks
     children:
         - title: Question-Answering and Summarization
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/QA_Sum
+          url: /docs/pages/tutorials/llm_testing_notebooks/QA_Sum
         - title: Toxicity
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/toxicity
+          url: /docs/pages/tutorials/llm_testing_notebooks/toxicity
         - title: Clinical
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/clinical
+          url: /docs/pages/tutorials/llm_testing_notebooks/clinical
         - title: Ideology
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/ideology
+          url: /docs/pages/tutorials/llm_testing_notebooks/ideology
         - title: Disinformation
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/disinformation
+          url: /docs/pages/tutorials/llm_testing_notebooks/disinformation
         - title: Factuality
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/factuality
+          url: /docs/pages/tutorials/llm_testing_notebooks/factuality
         - title: Legal-Tests
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/legal_tests
+          url: /docs/pages/tutorials/llm_testing_notebooks/legal_tests
         - title: Security
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/security
+          url: /docs/pages/tutorials/llm_testing_notebooks/security
         - title: Sensitivity
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/sensitivity
+          url: /docs/pages/tutorials/llm_testing_notebooks/sensitivity
         - title: Sycophancy
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/sycophancy
+          url: /docs/pages/tutorials/llm_testing_notebooks/sycophancy
         - title: Stereotype
-          url: /docs/pages/tutorials/LLM_testing_Notebooks/stereotype
+          url: /docs/pages/tutorials/llm_testing_notebooks/stereotype
   - title: Miscellaneous Notebooks
-    url: /docs/pages/tutorials/Miscellaneous_Notebooks
+    url: /docs/pages/tutorials/miscellaneous_notebooks
     children:
         - title: Comparing Models
-          url: /docs/pages/tutorials/misc/comparing_models
+          url: /docs/pages/tutorials/miscellaneous_notebooks/comparing_models
         - title: Custom Hub
-          url: /docs/pages/tutorials/misc/custom_hub
+          url: /docs/pages/tutorials/miscellaneous_notebooks/custom_hub
         - title: Different Report Formats
-          url: /docs/pages/tutorials/misc/different_report_formats
+          url: /docs/pages/tutorials/miscellaneous_notebooks/different_report_formats
         - title: Editing Testcases
-          url: /docs/pages/tutorials/misc/editing-testcases
+          url: /docs/pages/tutorials/miscellaneous_notebooks/editing_testcases
+        - title: Evaluation Metrics
+          url: /docs/pages/tutorials/miscellaneous_notebooks/evaluation_metrics
+  - title: RAG Tutorials
+    url: /docs/pages/tutorials/rag
   - title: Benchmark Dataset Notebooks
-    url: /docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks
+    url: /docs/pages/tutorials/benchmark_dataset_notebooks
   - title: End-to-End Workflow Notebooks
-    url: /docs/pages/tutorials/End_to_End_workflow_Notebooks
+    url: /docs/pages/tutorials/end_to_end_workflow_notebooks
 
 tests:
   - title: Tests
@@ -168,6 +180,8 @@ tests:
     url: /docs/pages/tests/representation
   - title: Robustness
     url: /docs/pages/tests/robustness
+  - title: Grammar
+    url: /docs/pages/tests/grammar
   - title: Toxicity
     url: /docs/pages/tests/toxicity
   - title: Clinical
@@ -190,6 +204,8 @@ tests:
     url: /docs/pages/tests/sycophancy
   - title: Ideology 
     url: /docs/pages/tests/ideology
+  - title: Grammar
+    url: /docs/pages/tests/grammar
 
 benchmarks:
   - title: Medical
@@ -201,6 +217,12 @@ benchmarks:
         url: /docs/pages/benchmarks/medical/medqa
       - title: PubMedQA
         url: /docs/pages/benchmarks/medical/pubmedqa
+      - title: LiveQA
+        url: /docs/pages/benchmarks/medical/liveqa
+      - title: HealthSearchQA
+        url: /docs/pages/benchmarks/medical/healthsearchqa
+      - title: MedicationQA
+        url: /docs/pages/benchmarks/medical/medicationqa
   - title:  Commonsense Scenario
     url: /docs/pages/benchmarks/commonsense_scenario
     children:

@@ -244,4 +244,14 @@ The Factuality Test is designed to evaluate the ability of language models (LLMs
 | -------------------------------- |
 | [Factuality](factuality)         | [Order Bias](factuality#order_bias)                                                                             | `question-answering`                                                                   |                                                               
 
+
+## Grammar Test
+
+The Grammar Test assesses language models' proficiency in intelligently identifying and correcting intentional grammatical errors, ensuring refined language understanding and enhancing overall processing quality.
+
+{:.table-model-big}
+| Test Category                    | Test Name                                                                                                       | Suppoted Tasks                                                                      |
+| -------------------------------- |
+| [Grammar](grammar)         | [Paraphrase](grammar#paraphrase)                                                                             | `text-classification`, `question-answering`                                                                   |                                                               
+
 </div></div>
