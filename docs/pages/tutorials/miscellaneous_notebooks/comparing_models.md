@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: Tutorials | Model Comparison | LangTest | John Snow Labs
 title: Comparing Models
-key: tutorials-comparing-models
-permalink: /docs/pages/tutorials/misc/comparing_models
+key: miscellaneous_notebooks
+permalink: /docs/pages/tutorials/miscellaneous_notebooks/comparing_models
 sidebar:
     nav: tutorials
 aside:

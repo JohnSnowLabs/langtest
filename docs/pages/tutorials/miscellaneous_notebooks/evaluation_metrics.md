@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: Tutorials |  Evaluation Metrics | LangTest | John Snow Labs
 title: Evaluation Metrics
-key: tutorials-evaluation-metrics
-permalink: /docs/pages/tutorials/misc/evaluation-metrics
+key: miscellaneous_notebooks
+permalink: /docs/pages/tutorials/miscellaneous_notebooks/evaluation_metrics
 sidebar:
     nav: tutorials
 aside:

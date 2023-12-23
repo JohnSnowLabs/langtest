@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: Commonsense Scenario Benchmark Datasets | LangTest | John Snow Labs
 title: CommonSense Scenario Benchmark Datasets
-key: notebooks
+key: benchmarks-commonsense_scenario
 permalink: /docs/pages/benchmarks/commonsense_scenario/
 aside:
     toc: true

@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials |  Sensitivity Test | John Snow Labs
 title: Sensitivity
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/sensitivity
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/sensitivity
 sidebar:
     nav: tutorials
 aside:

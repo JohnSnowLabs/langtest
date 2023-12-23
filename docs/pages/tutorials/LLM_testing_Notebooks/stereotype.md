@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Stereotype | John Snow Labs
 title: Stereotype
-key: LLM_testing_Notebooks
-permalink: /docs/pages/tutorials/LLM_testing_Notebooks/stereotype
+key: llm_testing_notebooks
+permalink: /docs/pages/tutorials/llm_testing_notebooks/stereotype
 sidebar:
     nav: tutorials
 aside:

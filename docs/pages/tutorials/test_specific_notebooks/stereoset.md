@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: NLP Tutorials | Stereoset Test | John Snow Labs
 title: Stereoset Notebook
-key: test_specific
+key: test_specific_notebooks
 permalink: /docs/pages/tutorials/test_specific_notebooks/stereoset
 sidebar:
     nav: tutorials

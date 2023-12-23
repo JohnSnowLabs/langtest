@@ -3,8 +3,8 @@ layout: docs
 header: true
 seotitle: Tutorials | End-to-End Workflow | LangTest | John Snow Labs
 title: End-to-End Workflow Notebooks
-key: docs-test_specific_notebooks
-permalink: /docs/pages/tutorials/End_to_End_workflow_Notebooks
+key: docs-end_to_end_workflow_notebooks
+permalink: /docs/pages/tutorials/end_to_end_workflow_notebooks/
 sidebar:
     nav: tutorials
 aside:
