@@ -22,7 +22,6 @@ task_configurations = [
         "config": {
             "model_parameters": {
                 "max_tokens": 20,
-                "task": "text2text-generation",
             },
             "evaluation": {
                 "metric": "embedding_distance",
@@ -45,7 +44,6 @@ task_configurations = [
         "config": {
             "model_parameters": {
                 "max_tokens": 20,
-                "task": "text2text-generation",
             },
             "evaluation": {
                 "metric": "string_distance",
@@ -68,7 +66,6 @@ task_configurations = [
         "config": {
             "model_parameters": {
                 "max_tokens": 20,
-                "task": "text2text-generation",
             },
             "tests": {
                 "defaults": {"min_pass_rate": 0.65},
@@ -84,7 +81,7 @@ task_configurations = [
         "model": {"model": "t5-base", "hub": "huggingface"},
         "data": {"data_source": "XSum", "split": "test-tiny"},
         "config": {
-            "model_parameters": {"max_tokens": 128, "task": "text2text-generation"},
+            "model_parameters": {"max_tokens": 128},
             "tests": {
                 "defaults": {"min_pass_rate": 0.65},
                 "robustness": {
@@ -140,7 +137,6 @@ task_configurations = [
         "config": {
             "model_parameters": {
                 "max_tokens": 20,
-                "task": "text2text-generation",
             },
             "tests": {
                 "defaults": {
@@ -211,7 +207,6 @@ task_configurations = [
         "config": {
             "model_parameters": {
                 "max_tokens": 20,
-                "task": "text2text-generation",
             },
             "tests": {
                 "defaults": {
@@ -230,7 +225,6 @@ task_configurations = [
         "config": {
             "model_parameters": {
                 "max_tokens": 20,
-                "task": "text2text-generation",
             },
             "tests": {
                 "defaults": {
