@@ -10,146 +10,133 @@ modify_date: 2023-10-17
 
 <div class="h3-box" markdown="1">
 
-## 1.9.0
+## 1.10.0
 
 ## 📢 Highlights
 
-**LangTest 1.9.0 Release by John Snow Labs 🚀**
+🌟 **LangTest 1.10.0 Release by John Snow Labs**
 
-We're excited to announce the latest release of LangTest, featuring significant enhancements that bolster its versatility and user-friendliness. This update introduces the seamless integration of Hugging Face Callback, empowering users to effortlessly utilize this renowned platform. Another addition is our Enhanced Templatic Augmentation with Automated Sample Generation. We also expanded LangTest's utility in language testing by conducting comprehensive benchmarks across various models and datasets, offering deep insights into performance metrics. Moreover, the inclusion of additional Clinical Datasets like MedQA, PubMedQA, and MedMCQ broadens our scope to cater to diverse testing needs. Coupled with insightful blog posts and numerous bug fixes, this release further cements LangTest as a robust and comprehensive tool for language testing and evaluation.
+We're thrilled to announce the latest release of LangTest, introducing remarkable features that elevate its capabilities and user-friendliness. This update brings a host of enhancements:
 
--  Integration of Hugging Face's callback class in LangTest facilitates seamless incorporation of an automatic testing callback into transformers' training loop for flexible and customizable model training experiences.
+- **Evaluating RAG with LlamaIndex and Langtest**: LangTest seamlessly integrates LlamaIndex for constructing a RAG and employs LangtestRetrieverEvaluator, measuring retriever precision (Hit Rate) and accuracy (MRR) with both standard and perturbed queries, ensuring robust real-world performance assessment.
 
-- Enhanced Templatic Augmentation with Automated Sample Generation: A key addition in this release is our innovative feature that auto-generates sample templates for templatic augmentation. By setting generate_templates to True, users can effortlessly create structured templates, which can then be reviewed and customized with the show_templates option. 
+- **Grammar Testing for NLP Model Evaluation:** This approach entails creating test cases through the paraphrasing of original sentences. The purpose is to evaluate a language model's proficiency in understanding and interpreting the nuanced meaning of the text, enhancing our understanding of its contextual comprehension capabilities.
 
-- In our Model Benchmarking initiative, we conducted extensive tests on various models across diverse datasets (MMLU-Clinical, OpenBookQA, MedMCQA, MedQA), revealing insights into their performance and limitations, enhancing our understanding of the landscape for robustness testing.
 
-- Enhancement: Implemented functionality to save model responses (actual and expected results) for original and perturbed questions from the language model (llm) in a pickle file. This enables efficient reuse of model outputs on the same dataset, allowing for subsequent evaluation without the need to rerun the model each time.
+- **Saving and Loading the Checkpoints:** LangTest now supports the seamless saving and loading of checkpoints, providing users with the ability to manage task progress, recover from interruptions, and ensure data integrity.
 
-- Optimized API Efficiency with Bug Fixes in Model Calls.
+- **Extended Support for Medical Datasets:** LangTest adds support for additional medical datasets, including LiveQA, MedicationQA, and HealthSearchQA. These datasets enable a comprehensive evaluation of language models in diverse medical scenarios, covering consumer health, medication-related queries, and closed-domain question-answering tasks.
+
+
+- **Direct Integration with Hugging Face Models:**  Users can effortlessly pass any Hugging Face model object into the LangTest harness and run a variety of tasks. This feature streamlines the process of evaluating and comparing different models, making it easier for users to leverage LangTest's comprehensive suite of tools with the wide array of models available on Hugging Face.
+
 
 </div><div class="h3-box" markdown="1">
 
 ##  🔥 Key Enhancements:
 
-### 🤗 Hugging Face Callback Integration
- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/HF_Callback_NER.ipynb)     
-We introduced the callback class for utilization in transformers model training. Callbacks in transformers are entities that can tailor the training loop's behavior within the PyTorch or Keras Trainer. These callbacks have the ability to examine the training loop state, make decisions (such as early stopping), or execute actions (including logging, saving, or evaluation). LangTest effectively leverages this capability by incorporating an automatic testing callback. This class is both flexible and adaptable, seamlessly integrating with any transformers model for a customized experience.
+### 🚀Implementing and Evaluating RAG with LlamaIndex and Langtest
+ [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/JohnSnowLabs/langtest/blob/main/demo/tutorials/RAG/RAG_OpenAI.ipynb)   
 
-Create a callback instance with one line and then use it in the callbacks of trainer:
-```python
-my_callback = LangTestCallback(...)
-trainer = Trainer(..., callbacks=[my_callback])
+LangTest seamlessly integrates LlamaIndex, focusing on two main aspects: constructing the RAG with LlamaIndex and evaluating its performance. The integration involves utilizing LlamaIndex's generate_question_context_pairs module to create relevant question and context pairs, forming the foundation for retrieval and response evaluation in the RAG system.
+
+To assess the retriever's effectiveness, LangTest introduces LangtestRetrieverEvaluator, employing key metrics such as Hit Rate and Mean Reciprocal Rank (MRR). Hit Rate gauges the precision by assessing the percentage of queries with the correct answer in the top-k retrieved documents. MRR evaluates the accuracy by considering the rank of the highest-placed relevant document across all queries. This comprehensive evaluation, using both standard and perturbed queries generated through LangTest, ensures a thorough understanding of the retriever's robustness and adaptability under various conditions, reflecting its real-world performance.
+
+```
+from langtest.evaluation import LangtestRetrieverEvaluator
+
+retriever_evaluator = LangtestRetrieverEvaluator.from_metric_names(
+    ["mrr", "hit_rate"], retriever=retriever
+)
+     
+retriever_evaluator.setPerturbations("add_typo","dyslexia_word_swap", "add_ocr_typo") 
+
+# Evaluate
+eval_results = await retriever_evaluator.aevaluate_dataset(qa_dataset)
+
+retriever_evaluator.display_results()
+
 ```
 
-{:.table2}
-| Parameter             | Description |
-| --------------------- | ----------- |
-| **task**              | Task for which the model is to be evaluated (text-classification or ner) |
-| **data**              | The data to be used for evaluation. A dictionary providing flexibility and options for data sources. It should include the following keys: <br>• data_source (mandatory): The source of the data.<br>• subset (optional): The subset of the data.<br>• feature_column (optional): The column containing the features.<br>• target_column (optional): The column containing the target labels.<br>• split (optional): The data split to be used.<br>• source (optional): Set to 'huggingface' when loading Hugging Face dataset. |
-| **config**            | Configuration for the tests to be performed, specified in the form of a YAML file. |
-| **print_reports**     | A bool value that specifies if the reports should be printed. |
-| **save_reports**      | A bool value that specifies if the reports should be saved. |
-| **run_each_epoch**    | A bool value that specifies if the tests should be run after each epoch or the at the end of training |
+### 📚Grammar Testing in Evaluating and Enhancing NLP Models
+ [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Grammar_Demo.ipynb)   
 
-</div><div class="h3-box" markdown="1">
-
-### 🚀 Enhanced Templatic Augmentation with Automated Sample Generation
- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Templatic_Augmentation_Notebook.ipynb)     
-
-Users can now enable the automatic generation of sample templates by setting generate_templates to True. This feature utilizes the advanced capabilities of LLMs to create structured templates that can be used for templatic augmentation.To ensure quality and relevance, users can review the generated templates by setting show_templates to True. 
-
-![image](https://github.com/JohnSnowLabs/langtest/assets/71844877/1ca52964-7ad2-4778-a76e-642c425b1c13)
-
-###  🚀 Benchmarking Different Models
-
-In our Model Benchmarking initiative, we conducted comprehensive tests on a range of models across diverse datasets. This rigorous evaluation provided valuable insights into the performance of these models, pinpointing areas where even large language models exhibit limitations. By scrutinizing their strengths and weaknesses, we gained a deeper understanding of the landscape
-
-#### MMLU-Clinical
-
-We focused on extracting clinical subsets from the MMLU dataset, creating a specialized MMLU-clinical dataset. This curated dataset specifically targets clinical domains, offering a more focused evaluation of language understanding models. It includes questions and answers related to clinical topics, enhancing the assessment of models' abilities in medical contexts. Each sample presents a question with four choices, one of which is the correct answer. This curated dataset is valuable for evaluating models' reasoning, fact recall, and knowledge application in clinical scenarios.
-
-#### How the Dataset Looks
+Grammar Testing is a key feature in LangTest's suite of evaluation strategies, emphasizing the assessment of a language model's proficiency in contextual understanding and nuance interpretation. By creating test cases that paraphrase original sentences, the goal is to gauge the model's ability to comprehend and interpret text, thereby enriching insights into its contextual mastery.
 
 {:.table3}
-| category   | test_type | original_question                                   | perturbed_question                                 | expected_result | actual_result | pass |
-|------------|-----------|------------------------------------------------------|----------------------------------------------------|------------------|---------------|------|
-| robustness | uppercase | Fatty acids are transported into the mitochondria bound to:\nA. thiokinase. B. coenzyme A (CoA). C. acetyl-CoA. D. carnitine. | FATTY ACIDS ARE TRANSPORTED INTO THE MITOCHONDRIA BOUND TO: A. THIOKINASE. B. COENZYME A (COA). C. ACETYL-COA. D. CARNITINE. | D. carnitine.                | B. COENZYME A (COA).             | False |
+| Category | Test Type  | Original                                                                                                                                                    | Test Case                                                                                                                         | Expected Result | Actual Result | Pass  |
+|----------|------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|------------------|---------------|-------|
+| grammar  | paraphrase | This program was on for a brief period when I was a kid, I remember watching it whilst eating fish and chips.<br /><br />Riding on the back of the Tron hype this series was much in the style of streethawk, manimal and the like, except more computery. There was a geeky kid who's computer somehow created this guy - automan. He'd go around solving crimes and the lot.<br /><br />All I really remember was his fancy car and the little flashy cursor thing that used to draw the car and help him out generally.<br /><br />When I mention it to anyone they can remember very little too. Was it real or maybe a dream? | I remember watching a show from my youth that had a Tron theme, with a nerdy kid driving around with a little flashy cursor and solving everyday problems. Was it a genuine story or a mere dream come true? | NEGATIVE         | POSITIVE      | false |
 
-![mmlu](https://github.com/JohnSnowLabs/langtest/assets/71117423/ef056c0b-76dd-4dc1-b201-f6d97b880d1f)
+### 🔥 Saving and Loading the Checkpoints
+ [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Saving_Checkpoints.ipynb)     
+Introducing a robust checkpointing system in LangTest! The `run` method in the `Harness` class now supports checkpointing, allowing users to save intermediate results, manage batch processing, and specify a directory for storing checkpoints and results. This feature ensures data integrity, providing a mechanism for recovering progress in case of interruptions or task failures.
+```
+harness.run(checkpoint=True, batch_size=20,save_checkpoints_dir="imdb-checkpoint")
+```
+The `load_checkpoints` method facilitates the direct loading of saved checkpoints and data, providing a convenient mechanism to resume testing tasks from the point where they were previously interrupted, even in the event of runtime failures or errors.
+```
+harness = Harness.load_checkpoints(save_checkpoints_dir="imdb-checkpoint",
+                                   task="text-classification",
+                                   model = {"model": "lvwerra/distilbert-imdb" , "hub":"huggingface"}, )
+```
 
+### 🏥 Added Support for More Medical Datasets
 
-#### OpenBookQA
+#### LiveQA
+The LiveQA'17 medical task focuses on consumer health question answering. It consists of constructed medical question-answer pairs for training and testing, with additional annotations. LangTest now supports LiveQA for comprehensive medical evaluation.
 
-The OpenBookQA dataset is a collection of multiple-choice questions that require complex reasoning and inference based on general knowledge, similar to an “open-book” exam. The questions are designed to test the ability of natural language processing models to answer questions that go beyond memorizing facts and involve understanding concepts and their relations. The dataset contains 500 questions, 
-each with four answer choices and one correct answer. The questions cover various topics in science, such as biology, chemistry, physics, and astronomy.
-
-#### How the Dataset Looks
-
-{:.table3}
-| category   | test_type | original_question                                                                                 | perturbed_question                                                                            | expected_result | actual_result | pass |
-|------------|-----------|--------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|------------------|----------------|------|
-| robustness | uppercase | There is most likely going to be fog around: A. a marsh B. a tundra C. the plains D. a desert"                                                      | THERE IS MOST LIKELY GOING TO BE FOG AROUND: A. A MARSH B. A TUNDRA C. THE PLAINS D. A DESERT" |A marsh                                                 | A MARSH                                            | True |
-
-
-
-![openbook1](https://github.com/JohnSnowLabs/langtest/assets/101416953/fcc6a1d3-2b8b-444f-b4fc-4ced0d9ecd60)
-
-#### MedMCQA
-
-The MedMCQA is a large-scale benchmark dataset of Multiple-Choice Question Answering (MCQA) dataset designed to address real-world medical entrance exam questions. 
-
-#### How the Dataset Looks
+##### How the dataset looks:
 
 {:.table3}
-| category   | test_type | original_question                                   | perturbed_question                                 | expected_result | actual_result | pass |
-|------------|-----------|------------------------------------------------------|----------------------------------------------------|------------------|---------------|------|
-| robustness | uppercase | Most common site of direct hernia\nA. Hesselbach's triangle\nB. Femoral gland\nC. No site predilection\nD. nan | MOST COMMON SITE OF DIRECT HERNIA A. HESSELBACH'S TRIANGLE B. FEMORAL GLAND C. NO SITE PREDILECTION D. NAN | A                | A             | True |
+| category   | test_type | original_question                                   | perturbed_question                                      | expected_result                                                | actual_result                                              | eval_score | pass |
+|------------|-----------|------------------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------|------------------------------------------------------------|------------|------|
+| robustness | uppercase | Do amphetamine salts 20mg tablets contain gluten?    | DO AMPHETAMINE SALTS 20MG TABLETS CONTAIN GLUTEN?           | No, amphetamine salts 20mg tablets do not contain gluten.       | No, Amphetamine Salts 20mg Tablets do not contain gluten.    | 1.0        | true |
 
-![medmcq](https://github.com/JohnSnowLabs/langtest/assets/101416953/b155fc64-308b-4a80-bc78-68afe37e3933)
-**Dataset info:**
-- subset: MedMCQA-Test
-- Split: Medicine, Anatomy, Forensic_Medicine, Microbiology, Pathology, Anaesthesia, Pediatrics, Physiology, Biochemistry, Gynaecology_Obstetrics, Skin, Surgery, Radiology
+#### MedicationQA
+The MedicationQA dataset consists of commonly asked consumer questions about medications. It includes annotations corresponding to drug focus and interactions. LangTest now integrates MedicationQA for thorough evaluation of models in medication-related scenarios.
 
-
-#### MedQA
-
-The MedQA is a benchmark dataset of Multiple choice question answering based on the United States Medical License Exams (USMLE). The dataset is collected from the professional medical board exams.
-
-#### How the Dataset Looks
+##### How the dataset looks:
 
 {:.table3}
-| original_question                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | perturbed_question                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | expected_result | actual_result | pass |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------------|------|
-| A junior orthopaedic surgery resident is completing a carpal tunnel repair with the department chairman as the attending physician. During the case, the resident inadvertently cuts a flexor tendon.......Which of the following is the correct next action for the resident to take?\nA. Disclose the error to the patient but leave it out of the operative report\nB. Disclose the error to the patient and put it in the operative report\nC. Tell the attending that he cannot fail to disclose this mistake\nD. Report the physician to the ethics committee\nE. Refuse to dictate the operative report | A JUNIOR ORTHOPAEDIC SURGERY RESIDENT IS COMPLETING A CARPAL TUNNEL REPAIR WITH THE DEPARTMENT CHAIRMAN AS THE ATTENDING PHYSICIAN. DURING THE CASE, THE RESIDENT INADVERTENTLY CUTS A FLEXOR TENDON......WHICH OF THE FOLLOWING IS THE CORRECT NEXT ACTION FOR THE RESIDENT TO TAKE? A. DISCLOSE THE ERROR TO THE PATIENT BUT LEAVE IT OUT OF THE OPERATIVE REPORT B. DISCLOSE THE ERROR TO THE PATIENT AND PUT IT IN THE OPERATIVE REPORT C. TELL THE ATTENDING THAT HE CANNOT FAIL TO DISCLOSE THIS MISTAKE D. REPORT THE PHYSICIAN TO THE ETHICS COMMITTEE E. REFUSE TO DICTATE THE OPERATIVE REPORT | B                | C              | False|
+| category   | test_type | original_question                                  | perturbed_question                                     | expected_result                                                                                                                                     | actual_result                                                                                                                                                                    | eval_score          | pass |
+|------------|-----------|-----------------------------------------------------|--------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|------|
+| robustness | uppercase | how does rivatigmine and otc sleep medicine interact | HOW DOES RIVATIGMINE AND OTC SLEEP MEDICINE INTERACT     | Rivastigmine is a cholinesterase inhibitor and OTC (over-the-counter) sleep medicine is a sedative. There is a risk of excessive sedation when taking both of these medications together. Patients should consult their doctor before taking both of these medications together. | Rivastigmine and OTC sleep medicines may interact. Rivastigmine can increase the effects of sedatives, including OTC sleep medicines, resulting in increased drowsiness. It's important to talk to your doctor before taking OTC sleep medicines while taking Rivastigmine. | 0.9365371414708803 | true |
+
+
+#### HealthSearchQA
+HealthSearchQA, a new free-response dataset of medical questions sought online, with six existing open-question answering datasets covering professional medical exams, research, and consumer queries. The HealthsearchQA dataset consists of 3375 frequently-asked consumer questions and was curated using seed medical diagnoses and their related symptoms.
+
+##### How the dataset looks:
+
+{:.table3}
+| category   | test_type | original_question                       | perturbed_question                          | expected_result                                                                                                                | actual_result                                                                                                              | eval_score          | pass |
+|------------|-----------|------------------------------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|---------------------|------|
+| robustness | uppercase | Are dental abscesses serious?            | ARE DENTAL ABSCESSES SERIOUS?               | Yes, dental abscesses are serious and can lead to infection and damage to the surrounding tissue if left untreated. Treatment typically involves antibiotics and/or draining the abscess. If left untreated, the infection can spread to other parts of the body. | Dental abscesses can be serious and require prompt medical attention. Left untreated, they can cause swelling, spreading infections, and damage to the surrounding teeth and bone. | 0.9457038739103363 | true |
 
 
 
+### 🚀Direct Integration with Hugging Face Models
 
-![medqa](https://github.com/JohnSnowLabs/langtest/assets/101416953/3e486804-b184-43cd-ab8e-5289987f2db9)
+Users can effortlessly pass any Hugging Face model object into the LangTest harness and run a variety of tasks. This feature streamlines the process of evaluating and comparing different models, making it easier for users to leverage LangTest's comprehensive suite of tools with the wide array of models available on Hugging Face.
 
-## 🚀 Community Contributions:
+![image](https://github.com/JohnSnowLabs/langtest/assets/71844877/adef09b7-e33d-42ec-86f3-a96dea85387e)
 
-Our team has published the below enlightening blogs on Hugging Face's community platform:
-
-- [Streamlining ML Workflows: Integrating MLFlow Tracking with LangTest for Enhanced Model Evaluations](https://huggingface.co/blog/arshaan-nazir/streamlining-ml-workflows-langtest)
-
-- [Evaluating Large Language Models on Gender-Occupational Stereotypes Using the Wino Bias Test](https://huggingface.co/blog/Rakshit122/gender-occupational-stereotypes)
 
 ## 🚀 New LangTest Blogs:
 
 {:.table2}
 | Blog | Description |
 | --- | --- |
-| [LangTest Insights: A Deep Dive into LLM Robustness on OpenBookQA](https://medium.com/john-snow-labs/langtest-insights-a-deep-dive-into-llm-robustness-on-openbookqa-ab0ddcbd2ab1) | Explore the robustness of Language Models (LLMs) on the OpenBookQA dataset with LangTest Insights.| 
-| Unveiling Sentiments: Exploring LSTM-based Sentiment Analysis with PyTorch on the IMDB Dataset (To be Published ) | Explore the robustness of custom models with LangTest Insights. |
-| LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models (To be Published ) | Explore the robustness of Transformers Language Models with LangTest Insights. |
-
+| [LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models](https://www.johnsnowlabs.com/langtest-a-secret-weapon-for-improving-the-robustness-of-your-transformers-language-models/) | Explore the robustness of Transformers Language Models with LangTest Insights. |
+| Testing the Robustness of LSTM-Based Sentiment Analysis Models (To be Published ) | Explore the robustness of custom models with LangTest Insights. |
 
 ## 🐛 Bug Fixes
 
-* fixed LangTestCallback 
-* Add predict_raw method to PretrainedCustomModel
+- Fixed LangTestCallback errors
+- Fixed QA, Default Config, and Transformer Model for QA
+- Fixed multi-model evaluation
+- Fixed datasets format
 
 ## ⚒️ Previous Versions
 
