@@ -54,7 +54,7 @@ COLUMN_MAPPER = {
     "question-answering": {
         "text": ["question"],
         "context": ["context", "passage", "contract"],
-        "answer": ["answer", "answer_and_def_correct_predictions"],
+        "answer": ["answer", "answer_and_def_correct_predictions", "ground_truth"],
         "options": ["options"],
     },
     "summarization": {"text": ["text", "document"], "summary": ["summary"]},
@@ -1098,10 +1098,10 @@ class CSVDataset(BaseDataset):
 
         Args:
             dataset (pd.DataFrame):
-                The input dataset containing the passage, question, and corresponding answers.
+                The input dataset containing the context, question, and corresponding answers.
             feature_column (dict, optional):
-                Dictionary of column names in the dataset containing the input passage and question data.
-                Default is {"passage": "passage", "question": "question"}.
+                Dictionary of column names in the dataset containing the input context and question data.
+                Default is {"context": "context", "question": "question"}.
             target_column (str, optional):
                 Name of the column in the dataset containing the target answers for question-answering.
                 Default is "answer".
@@ -1109,15 +1109,17 @@ class CSVDataset(BaseDataset):
         Returns:
             List[QASample]:
                 Loaded split as a list of QASample objects for question-answering task, where each
-                QASample object contains an original question, original context (passage), and the task name.
+                QASample object contains an original question, original context (context), and the task name.
         """
         if type(self._file_path) == dict:
             feature_column = self._file_path.get(
-                "feature_column", {"passage": "passage", "question": "question"}
+                "feature_column",
+                {"context": "context", "question": "question", "options": "options"},
             )
             target_column = self._file_path.get("target_column", "answer")
 
-            passage_column = feature_column.get("passage", None)
+            context_column = feature_column.get("context", None)
+            options_column = feature_column.get("options", None)
             question_column = feature_column.get("question")
 
             dataset_columns = set(dataset.columns)
@@ -1135,14 +1137,23 @@ class CSVDataset(BaseDataset):
             else:
                 dataset.rename(columns={target_column: "answer"}, inplace=True)
 
-            if passage_column:
-                if passage_column not in dataset_columns:
-                    logging.warning(Warnings.W007.format(passage_column=passage_column))
-                    dataset["passage"] = "-"
+            if context_column:
+                if context_column not in dataset_columns:
+                    logging.warning(Warnings.W007.format(feature_column=context_column))
+                    dataset["context"] = "-"
                 else:
-                    dataset.rename(columns={passage_column: "passage"}, inplace=True)
+                    dataset.rename(columns={context_column: "context"}, inplace=True)
             else:
-                dataset["passage"] = "-"
+                dataset["context"] = "-"
+
+            if options_column:
+                if options_column not in dataset_columns:
+                    logging.warning(Warnings.W007.format(feature_column=options_column))
+                    dataset["options"] = "-"
+                else:
+                    dataset.rename(columns={options_column: "options"}, inplace=True)
+            else:
+                dataset["options"] = "-"
 
             if question_column in dataset.columns:
                 dataset.rename(columns={question_column: "question"}, inplace=True)
@@ -1291,17 +1302,20 @@ class CSVDataset(BaseDataset):
 
         if type(self._file_path) == dict:
             question = row.loc["question"]
-            passage = row.loc["passage"]
+            context = row.loc["context"]
             answer = row.loc["answer"]
+            options = row.loc["options"]
         else:
             question = row[self.column_map["text"]]
-            passage = row[self.column_map["context"]]
+            context = row[self.column_map["context"]]
             answer = row[self.column_map["answer"]]
+            options = row[self.column_map["options"]]
 
         return QASample(
             original_question=question,
-            original_context=passage,
+            original_context=context,
             expected_results=answer,
+            options=options,
             task="question-answering",
         )
 
