@@ -64,7 +64,7 @@ class Warnings(metaclass=ErrorsWithCodes):
     )
     W005 = ("Skipping row {idx} due to invalid data: {row_data} - Exception: {e}")
     W006 = ("target_column '{target_column}' not found in the dataset.")
-    W007 = ("'feature_column' '{passage_column}' not found in the dataset.")
+    W007 = ("'feature_column' '{feature_column}' not found in the dataset.")
     W008 = ("Invalid or Missing label entries in the sentence: {sent}")
     W009 = ("Removing samples where no transformation has been applied:\n")
     W010 = ("- Test '{test}': {count} samples removed out of {total_sample}\n")
