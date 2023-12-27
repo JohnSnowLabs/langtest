@@ -694,3 +694,192 @@ class MinROUGEcore(BaseAccuracy):
             if progress:
                 progress.update(1)
         return sample_list
+
+
+class LLMEval(BaseAccuracy):
+    """Subclass of BaseAccuracy that implements the minimum precision score.
+
+    Attributes:
+        alias_name (str): The name for config.
+
+    Methods:
+        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+    """
+
+    alias_name = ["llm_eval"]
+
+    supported_tasks = ["question-answering"]
+
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
+
+        Args:
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
+
+        Returns:
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+        """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
+        from ..langtest import EVAL_MODEL
+        from ..langtest import HARNESS_CONFIG as harness_config
+
+        model = params.get("model", None)
+        hub = params.get("hub", None)
+        if model and hub:
+            from ..tasks import TaskManager
+
+            load_eval_model = TaskManager("question-answering")
+            cls.eval_model = load_eval_model.model(
+                model, hub, **harness_config.get("model_parameters", {})
+            )
+
+        else:
+            cls.eval_model = EVAL_MODEL
+
+        min_score = params["min_score"]
+
+        sample = MinScoreSample(
+            category="accuracy",
+            test_type=test,
+            expected_results=MinScoreOutput(min_score=min_score),
+        )
+
+        return [sample]
+
+    @staticmethod
+    async def run(sample_list: List[MinScoreSample], *args, **kwargs):
+        X_test = kwargs.get("X_test")
+
+        progress = kwargs.get("progress_bar", False)
+        from ..utils.custom_types.helpers import is_pass_llm_eval
+
+        eval_model = LLMEval.eval_model
+
+        def eval(sample):
+            result = is_pass_llm_eval(
+                eval_model=eval_model,
+                dataset_name=sample.dataset_name,
+                original_question=sample.original_question,
+                answer="\n".join(map(str, sample.expected_results)),
+                perturbed_question=sample.original_question,
+                prediction=sample.actual_results,
+            )
+            if result:
+                sample.distance_result = 1
+            else:
+                sample.distance_result = 0
+
+            return sample.distance_result
+
+        results = X_test.apply(eval)
+        total_samples = len(results)
+        passed_samples = sum(results)
+        accuracy = passed_samples / max(total_samples, 1)
+
+        for sample in sample_list:
+            sample.actual_results = MinScoreOutput(min_score=accuracy)
+            sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
+
+
+class StringDistance(BaseAccuracy):
+    """Subclass of BaseAccuracy that implements the minimum precision score.
+
+    Attributes:
+        alias_name (str): The name for config.
+
+    Methods:
+        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+    """
+
+    alias_name = [
+        "jaro",
+        "jaro_winkler",
+        "hamming",
+        "levenshtein",
+        "damerau_levenshtein",
+        "indel",
+    ]
+    supported_tasks = ["question-answering"]
+
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
+        """Computes the minimum F1 score for the given data.
+
+        Args:
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+            params (Dict): parameters for tests configuration
+
+        Returns:
+            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+        """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+        min_score = params["min_score"]
+
+        sample = MinScoreSample(
+            category="accuracy",
+            test_type=test,
+            expected_results=MinScoreOutput(min_score=min_score),
+            threshold=params.get("threshold"),
+        )
+
+        return [sample]
+
+    @staticmethod
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """Computes the minimum F1 score for the given data.
+
+        Args:
+            sample_list (List[MinScoreSample]): List of samples to be transformed.
+            y_true (List[Any]): True values
+            y_pred (List[Any]): Predicted values
+
+        """
+        progress = kwargs.get("progress_bar", False)
+        from ..utils.custom_types.helpers import is_pass_string_distance
+
+        def eval(test, threshold=None):
+            results = []
+            for true_list, pred_list in zip(y_true, y_pred):
+                _, result = is_pass_string_distance(
+                    answer="\n".join(map(str, true_list)),
+                    prediction=pred_list[0],
+                    selected_distance=test,
+                    threshold=threshold,
+                )
+
+                if results:
+                    results.append(1)
+                else:
+                    results.append(0)
+
+            total_samples = len(results)
+            passed_samples = sum(results)
+            accuracy = passed_samples / max(total_samples, 1)
+            return accuracy
+
+        for sample in sample_list:
+            sample.actual_results = MinScoreOutput(
+                min_score=eval(sample.test_type, threshold=sample.threshold)
+            )
+            sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
