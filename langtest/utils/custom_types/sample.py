@@ -382,7 +382,7 @@ class BaseQASample(BaseModel):
     distance_result: float = None
     eval_model: Union[str, tuple] = None
     ran_pass: bool = None
-    metric_function_name: str = None
+    metric_name: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -477,7 +477,9 @@ class QASample(BaseQASample):
         from ...langtest import EVAL_MODEL
 
         self.config = harness_config
-        self.metric_function_name = f'is_pass_{self.config.get("evaluation", {}).get("metric", "llm_eval").lower()}'
+        self.metric_name = (
+            self.config.get("evaluation", {}).get("metric", "llm_eval").lower()
+        )
 
         if self.actual_results is not None and self.expected_results is not None:
             if (
@@ -560,24 +562,24 @@ class QASample(BaseQASample):
                 metric_module = importlib.import_module(
                     "langtest.utils.custom_types.helpers"
                 )
-                metric_function = getattr(metric_module, self.metric_function_name)
+                metric_function = getattr(metric_module, f"is_pass_{self.metric_name}")
             except (ImportError, AttributeError):
                 raise ValueError(
-                    f"Metric function '{self.metric_function_name}' not found."
+                    f"Metric '{self.metric_name}' not found."
                 )
 
-            if self.metric_function_name == "is_pass_string_distance":
+            if self.metric_name == "string_distance":
                 selected_distance = self.config["evaluation"].get("distance", "jaro")
                 threshold = self.config["evaluation"].get("threshold")
 
-            elif self.metric_function_name == "is_pass_embedding_distance":
+            elif self.metric_name == "embedding_distance":
                 selected_distance = self.config["evaluation"].get("distance", "cosine")
                 threshold = self.config["evaluation"].get("threshold")
 
-            if self.metric_function_name in [
-                "is_pass_string_distance",
-                "is_pass_embedding_distance",
-            ]:
+            if self.metric_name in (
+                "string_distance",
+                "embedding_distance",
+            ):
                 self.distance_result, result = metric_function(
                     answer=self.expected_results,
                     prediction=self.actual_results,
@@ -586,7 +588,7 @@ class QASample(BaseQASample):
                 )
                 self.ran_pass = result
                 return result
-            elif self.metric_function_name == "is_pass_llm_eval":
+            elif self.metric_name == "llm_eval":
                 result = metric_function(
                     eval_model=self.eval_model,
                     dataset_name=self.dataset_name,
@@ -599,9 +601,7 @@ class QASample(BaseQASample):
                 self.ran_pass = result
                 return result
             else:
-                raise ValueError(
-                    f"Metric function '{self.metric_function_name}' not found."
-                )
+                raise ValueError(f"Metric '{self.metric_name}' not found.")
 
 
 class MinScoreQASample(QASample):
