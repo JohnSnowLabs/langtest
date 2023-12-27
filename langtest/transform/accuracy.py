@@ -697,13 +697,20 @@ class MinROUGEcore(BaseAccuracy):
 
 
 class LLMEval(BaseAccuracy):
-    """Subclass of BaseAccuracy that implements the minimum precision score.
+    """
+    Evaluation class for Language Model performance on question-answering tasks using the Language Model Metric (LLM).
 
     Attributes:
-        alias_name (str): The name for config.
+        alias_name (List[str]): Alias names for the evaluation class, should include "llm_eval".
+        supported_tasks (List[str]): Supported tasks for evaluation, includes "question-answering".
 
     Methods:
-        transform(y_true, y_pred) -> Any: Creates accuracy test results.
+        transform(cls, test: str, y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+            Transforms evaluation parameters and initializes the evaluation model.
+
+        run(cls, sample_list: List[MinScoreSample], *args, **kwargs) -> List[MinScoreSample]:
+            Runs the evaluation on a list of samples using the Language Model Metric (LLM).
+
     """
 
     alias_name = ["llm_eval"]
@@ -714,15 +721,20 @@ class LLMEval(BaseAccuracy):
     def transform(
         cls, test: str, y_true: List[Any], params: Dict
     ) -> List[MinScoreSample]:
-        """Computes the minimum F1 score for the given data.
+        """
+        Transforms evaluation parameters and initializes the evaluation model.
 
         Args:
-            y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
-            params (Dict): parameters for tests configuration
+            test (str): The alias name for the evaluation class.
+            y_true (List[Any]): List of true labels (not used in this method).
+            params (Dict): Additional parameters for evaluation, including 'model', 'hub', and 'min_score'.
 
         Returns:
-            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: List containing a MinScoreSample instance with evaluation information.
+
+        Raises:
+            AssertionError: If the 'test' parameter is not in the alias_name list.
+
         """
         assert (
             test in cls.alias_name
@@ -756,6 +768,18 @@ class LLMEval(BaseAccuracy):
 
     @staticmethod
     async def run(sample_list: List[MinScoreSample], *args, **kwargs):
+        """
+        Runs the evaluation on a list of samples using the Language Model Metric (LLM).
+
+        Args:
+            sample_list (List[MinScoreSample]): List of MinScoreSample instances containing evaluation information.
+            *args: Additional positional arguments (not used in this method).
+            **kwargs: Additional keyword arguments including 'X_test', 'progress_bar', etc.
+
+        Returns:
+            List[MinScoreSample]: List containing updated MinScoreSample instances after evaluation.
+
+        """
         X_test = kwargs.get("X_test")
 
         progress = kwargs.get("progress_bar", False)
@@ -786,99 +810,6 @@ class LLMEval(BaseAccuracy):
 
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=accuracy)
-            sample.state = "done"
-            if progress:
-                progress.update(1)
-        return sample_list
-
-
-class StringDistance(BaseAccuracy):
-    """Subclass of BaseAccuracy that implements the minimum precision score.
-
-    Attributes:
-        alias_name (str): The name for config.
-
-    Methods:
-        transform(y_true, y_pred) -> Any: Creates accuracy test results.
-    """
-
-    alias_name = [
-        "jaro",
-        "jaro_winkler",
-        "hamming",
-        "levenshtein",
-        "damerau_levenshtein",
-        "indel",
-    ]
-    supported_tasks = ["question-answering"]
-
-    @classmethod
-    def transform(
-        cls, test: str, y_true: List[Any], params: Dict
-    ) -> List[MinScoreSample]:
-        """Computes the minimum F1 score for the given data.
-
-        Args:
-            y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
-            params (Dict): parameters for tests configuration
-
-        Returns:
-            List[MinScoreSample]: The transformed data based on the minimum F1 score.
-        """
-        assert (
-            test in cls.alias_name
-        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
-        min_score = params["min_score"]
-
-        sample = MinScoreSample(
-            category="accuracy",
-            test_type=test,
-            expected_results=MinScoreOutput(min_score=min_score),
-            threshold=params.get("threshold"),
-        )
-
-        return [sample]
-
-    @staticmethod
-    async def run(
-        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
-    ):
-        """Computes the minimum F1 score for the given data.
-
-        Args:
-            sample_list (List[MinScoreSample]): List of samples to be transformed.
-            y_true (List[Any]): True values
-            y_pred (List[Any]): Predicted values
-
-        """
-        progress = kwargs.get("progress_bar", False)
-        from ..utils.custom_types.helpers import is_pass_string_distance
-
-        def eval(test, threshold=None):
-            results = []
-            for true_list, pred_list in zip(y_true, y_pred):
-                _, result = is_pass_string_distance(
-                    answer="\n".join(map(str, true_list)),
-                    prediction=pred_list[0],
-                    selected_distance=test,
-                    threshold=threshold,
-                )
-
-                if results:
-                    results.append(1)
-                else:
-                    results.append(0)
-
-            total_samples = len(results)
-            passed_samples = sum(results)
-            accuracy = passed_samples / max(total_samples, 1)
-            return accuracy
-
-        for sample in sample_list:
-            sample.actual_results = MinScoreOutput(
-                min_score=eval(sample.test_type, threshold=sample.threshold)
-            )
             sample.state = "done"
             if progress:
                 progress.update(1)

@@ -276,12 +276,37 @@ def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
 
 
 def prepare_input_predictions(original_question, answer, perturbed_question, prediction):
+    """
+    Prepares inputs and predictions in the required format for language model evaluation.
+
+    Args:
+        original_question (str): Original question.
+        answer (str): Ground truth answer.
+        perturbed_question (str): Perturbed/question with modifications.
+        prediction (str): Model's prediction for the perturbed question.
+
+    Returns:
+        Tuple[List[Dict[str, str]], List[Dict[str, str]]]: Input and prediction lists.
+
+    """
     inputs = [{"question": original_question, "answer": answer}]
     predictions = [{"question": perturbed_question, "text": prediction}]
     return inputs, predictions
 
 
 def prepare_input_prompt(perturbed_question, answer, prediction):
+    """
+    Prepares text and prompt for prompt-based evaluation.
+
+    Args:
+        perturbed_question (str): Perturbed/question with modifications.
+        answer (str): Ground truth answer.
+        prediction (str): Model's prediction for the perturbed question.
+
+    Returns:
+        Tuple[Dict[str, str], Dict[str, Union[List[str], str]]]: Text and prompt.
+
+    """
     from ...transform.constants import qa_prompt_template as template
 
     text = {"query": perturbed_question, "answer": answer, "result": prediction}
@@ -295,10 +320,25 @@ def prepare_input_prompt(perturbed_question, answer, prediction):
 def is_pass_llm_eval(
     eval_model, dataset_name, original_question, answer, perturbed_question, prediction
 ):
+    """
+    Determines whether the model's prediction passes the Language Model Metric (LLM) evaluation.
+
+    Args:
+        eval_model: Language model for evaluation.
+        dataset_name (str): Name of the dataset being evaluated.
+        original_question (str): Original question.
+        answer (str): Ground truth answer.
+        perturbed_question (str): Perturbed/question with modifications.
+        prediction (str): Model's prediction for the perturbed question.
+
+    Returns:
+        bool: True if the model's prediction passes the LLM evaluation, False otherwise.
+
+    """
     if prediction.lower().strip() == answer.lower().strip():
         return True
 
-    if "llm" in str(type(eval_model)):
+    elif "llm" in str(type(eval_model)):
         inputs, predictions = prepare_input_predictions(
             original_question, answer, perturbed_question, prediction
         )
@@ -311,6 +351,19 @@ def is_pass_llm_eval(
 
 
 def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
+    """
+    Evaluates model predictions using the Language Model Metric (LLM) with prompt-based evaluation.
+
+    Args:
+        eval_model: Language model for evaluation.
+        dataset_name (str): Name of the dataset being evaluated.
+        inputs (List[Dict[str, str]]): List of input dictionaries.
+        predictions (List[Dict[str, str]]): List of prediction dictionaries.
+
+    Returns:
+        bool: True if the model's prediction passes the LLM evaluation, False otherwise.
+
+    """
     from langchain.evaluation.qa import QAEvalChain
     from langchain.prompts import PromptTemplate
     from ...transform.constants import qa_prompt_template as template
@@ -355,6 +408,18 @@ def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
 
 
 def transformer_prompt_eval(eval_model, text, prompt):
+    """
+    Evaluates model predictions using prompt-based evaluation with a transformer-based model.
+
+    Args:
+        eval_model: Transformer-based language model for evaluation.
+        text (Dict[str, str]): Input text dictionary.
+        prompt (Dict[str, Union[List[str], str]]): Prompt dictionary.
+
+    Returns:
+        bool: True if the model's prediction passes the evaluation, False otherwise.
+
+    """
     prediction = eval_model(text=text, prompt=prompt)
     result = prediction == "CORRECT"
     return result
