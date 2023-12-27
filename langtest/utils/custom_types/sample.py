@@ -564,9 +564,7 @@ class QASample(BaseQASample):
                 )
                 metric_function = getattr(metric_module, f"is_pass_{self.metric_name}")
             except (ImportError, AttributeError):
-                raise ValueError(
-                    f"Metric '{self.metric_name}' not found."
-                )
+                raise ValueError(f"Metric '{self.metric_name}' not found.")
 
             if self.metric_name == "string_distance":
                 selected_distance = self.config["evaluation"].get("distance", "jaro")
