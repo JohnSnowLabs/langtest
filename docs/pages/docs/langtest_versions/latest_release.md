@@ -129,7 +129,7 @@ Users can effortlessly pass any Hugging Face model object into the LangTest harn
 | Blog | Description |
 | --- | --- |
 | [LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models](https://www.johnsnowlabs.com/langtest-a-secret-weapon-for-improving-the-robustness-of-your-transformers-language-models/) | Explore the robustness of Transformers Language Models with LangTest Insights. |
-| Testing the Robustness of LSTM-Based Sentiment Analysis Models (To be Published ) | Explore the robustness of custom models with LangTest Insights. |
+| [Testing the Robustness of LSTM-Based Sentiment Analysis Models] (https://medium.com/john-snow-labs/testing-the-robustness-of-lstm-based-sentiment-analysis-models-67ed84e42997) | Explore the robustness of custom models with LangTest Insights. |
 
 ## 🐛 Bug Fixes
 
