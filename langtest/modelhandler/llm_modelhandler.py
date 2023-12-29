@@ -63,7 +63,9 @@ class PretrainedModelForQA(ModelAPI):
             ConfigError: If there is an error in the model configuration.
         """
         try:
-            kwargs.pop("task", None), kwargs.pop("device", None)
+            kwargs.pop("task", None), kwargs.pop("device", None), kwargs.pop(
+                "server_prompt", None
+            ), kwargs.pop("stream", None)
             cls._update_model_parameters(hub, kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
                 model = cm.ChatOpenAI(model=path, *args, **kwargs)

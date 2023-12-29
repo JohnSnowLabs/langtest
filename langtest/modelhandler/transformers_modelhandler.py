@@ -609,7 +609,9 @@ class PretrainedModelForQA(ModelAPI):
             new_tokens_key = "max_new_tokens"
             kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
 
-            kwargs.pop("temperature", None)
+            kwargs.pop("temperature", None), kwargs.pop(
+                "server_prompt", None
+            ), kwargs.pop("stream", None)
             device = kwargs.pop("device", -1)
             task = kwargs.pop("task", None)
             tasks = [
