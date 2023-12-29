@@ -445,12 +445,18 @@ class BaseQASample(BaseModel):
             options=self.options,
         )
 
+        server_prompt = kwargs.get("server_prompt", " ")
+
         prompt = build_qa_prompt(original_text_input, dataset_name, **kwargs)
 
-        self.expected_results = model(text=original_text_input, prompt=prompt)
+        self.expected_results = model(
+            text=original_text_input, prompt=prompt, server_prompt=server_prompt
+        )
 
         if self.perturbed_context or self.perturbed_question:
-            self.actual_results = model(text=perturbed_text_input, prompt=prompt)
+            self.actual_results = model(
+                text=perturbed_text_input, prompt=prompt, server_prompt=server_prompt
+            )
 
         self.state == "done"
 

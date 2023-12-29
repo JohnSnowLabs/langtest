@@ -50,6 +50,9 @@ class BaseTask(ABC):
         if "user_prompt" in kwargs:
             cls.user_prompt = kwargs.get("user_prompt")
             kwargs.pop("user_prompt")
+        if "server_prompt" in kwargs:
+            cls.server_prompt = kwargs.get("server_prompt")
+            kwargs.pop("server_prompt")
         try:
             if model_hub in LANGCHAIN_HUBS:
                 # LLM models
