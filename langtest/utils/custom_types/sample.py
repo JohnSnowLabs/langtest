@@ -474,14 +474,15 @@ class QASample(BaseQASample):
 
     def __update_params(self):
         from ...langtest import HARNESS_CONFIG as harness_config
-        from ...langtest import EVAL_MODEL
 
         self.config = harness_config
         self.metric_name = (
             self.config.get("evaluation", {}).get("metric", "llm_eval").lower()
         )
 
-        if self.actual_results is not None and self.expected_results is not None:
+        if self.state == "done":
+            from ...langtest import EVAL_MODEL
+
             if (
                 "evaluation" in harness_config
                 and "metric" in harness_config["evaluation"]

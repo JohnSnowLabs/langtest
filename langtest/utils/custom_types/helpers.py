@@ -393,7 +393,6 @@ def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
 
         else:
             eval_chain = QAEvalChain.from_llm(llm=eval_model.model)
-
         graded_outputs = eval_chain.evaluate(
             inputs,
             predictions,
