@@ -9,9 +9,25 @@ from ..utils.custom_types.helpers import SimplePromptTemplate
 
 
 def chat_completion_api(text, url, **kwargs):
-    headers = {"Content-Type": "application/json"}
+    """
+    Send a user text message to a chat completion API and receive the model's response.
 
-    server_prompt = {"role": "assistant", "content": kwargs.get("server_prompt", "")}
+    Args:
+        text (str): The user's input text.
+        url (str): The API endpoint URL.
+        **kwargs: Additional keyword arguments.
+
+    Keyword Args:
+        server_prompt (str, optional): The server prompt for the chat. Defaults to a space.
+        temperature (float, optional): The temperature parameter for controlling randomness. Defaults to 0.7.
+        max_tokens (int, optional): The maximum number of tokens to generate. Defaults to -1 (no limit).
+        stream (bool, optional): Whether to use streaming for long conversations. Defaults to False.
+
+    Returns:
+        dict or None: The JSON response from the API if successful, otherwise None.
+    """
+    headers = {"Content-Type": "application/json"}
+    server_prompt = {"role": "assistant", "content": kwargs.get("server_prompt", " ")}
     user_text = {"role": "user", "content": text}
 
     data = {
