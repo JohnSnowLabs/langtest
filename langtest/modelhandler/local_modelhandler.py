@@ -64,7 +64,7 @@ class PretrainedModel(ABC):
             raise e
 
     def predict_raw(self, text: str, prompt, *args, **kwargs):
-        return self.predict(text, *args, **kwargs)
+        return self.predict(text, prompt, *args, **kwargs)
 
     def __call__(self, text: str, prompt) -> None:
         return self.predict(
