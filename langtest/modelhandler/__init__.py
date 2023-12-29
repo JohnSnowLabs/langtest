@@ -1,13 +1,14 @@
 import importlib
 from .modelhandler import ModelAPI
 import langtest.modelhandler.custom_modelhandler
+import langtest.modelhandler.local_modelhandler
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
     "huggingfacehub": "huggingface-inference-api",
 }
 
-INSTALLED_HUBS = ["custom"]
+INSTALLED_HUBS = ["custom", "local"]
 
 libraries = [
     ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
