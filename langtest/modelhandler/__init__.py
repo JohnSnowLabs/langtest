@@ -5,6 +5,9 @@ import langtest.modelhandler.custom_modelhandler
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
     "huggingfacehub": "huggingface-inference-api",
+    "sparknlp": "johnsnowlabs",
+    "pyspark": "johnsnowlabs",
+    "transformers": "huggingface",
 }
 
 INSTALLED_HUBS = ["custom"]
@@ -22,8 +25,10 @@ libraries = [
 for library_name, import_statement in libraries:
     if importlib.util.find_spec(library_name):
         importlib.import_module(import_statement)
-        if library_name in ("transformers"):
-            INSTALLED_HUBS.append("huggingface")
+        # if library_name in ("transformers"):
+        #     INSTALLED_HUBS.append("huggingface")
+        if library_name in RENAME_HUBS:
+            INSTALLED_HUBS.append(RENAME_HUBS[library_name])
         else:
             INSTALLED_HUBS.append(library_name)
 
