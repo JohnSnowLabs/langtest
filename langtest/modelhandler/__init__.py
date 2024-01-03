@@ -11,6 +11,9 @@ INSTALLED_HUBS = ["custom"]
 
 libraries = [
     ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
+    ("sparknlp", "langtest.modelhandler.jsl_modelhandler"),
+    ("pyspark", "langtest.modelhandler.jsl_modelhandler"),
+    ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
     ("transformers", "langtest.modelhandler.transformers_modelhandler"),
     ("spacy", "langtest.modelhandler.spacy_modelhandler"),
     ("langchain", "langtest.modelhandler.llm_modelhandler"),
