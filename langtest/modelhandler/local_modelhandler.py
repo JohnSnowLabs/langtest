@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 from ..utils.custom_types.helpers import SimplePromptTemplate
 
 
-def chat_completion_api(text, url, **kwargs):
+def chat_completion_api(text, url, server_prompt, **kwargs):
     """
     Send a user text message to a chat completion API and receive the model's response.
 
@@ -27,7 +27,7 @@ def chat_completion_api(text, url, **kwargs):
         dict or None: The JSON response from the API if successful, otherwise None.
     """
     headers = {"Content-Type": "application/json"}
-    server_prompt = {"role": "assistant", "content": kwargs.get("server_prompt", " ")}
+    server_prompt = {"role": "assistant", "content": server_prompt}
     user_text = {"role": "user", "content": text}
 
     data = {
@@ -67,25 +67,24 @@ class PretrainedModel(ABC):
     def load_model(cls, path: Any, **kwargs) -> "Any":
         return cls(path, **kwargs)
 
-    def predict(self, text: str, prompt, *args, **kwargs):
+    def predict(self, text: str, prompt, server_prompt, *args, **kwargs):
         try:
             prompt_template = SimplePromptTemplate(**prompt)
             p = prompt_template.format(**text)
             op = chat_completion_api(
-                text=p, url=self.model, prompt=prompt, *args, **self.kwargs
+                text=p, url=self.model, server_prompt=server_prompt, *args, **self.kwargs
             )
             return op["choices"][0]["message"]["content"]
         except Exception as e:
             logger.error(e)
             raise e
 
-    def predict_raw(self, text: str, prompt, *args, **kwargs):
-        return self.predict(text, prompt, *args, **kwargs)
+    def predict_raw(self, text: str, prompt, server_prompt, *args, **kwargs):
+        return self.predict(text, prompt, server_prompt, *args, **kwargs)
 
-    def __call__(self, text: str, prompt) -> None:
+    def __call__(self, text: str, prompt, server_prompt, *args, **kwargs) -> None:
         return self.predict(
-            prompt=prompt,
-            text=text,
+            prompt=prompt, text=text, server_prompt=server_prompt, *args, **kwargs
         )
 
 
