@@ -655,7 +655,7 @@ class PretrainedModelForQA(ModelAPI):
             raise ValueError(Errors.E090.format(error_message=e))
 
     @lru_cache(maxsize=1024000)
-    def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
+    def predict(self, text: str, **kwargs) -> str:
         """
         Generate a prediction for the given text and prompt.
 
@@ -668,9 +668,7 @@ class PretrainedModelForQA(ModelAPI):
         - str: The generated prediction.
         """
         try:
-            prompt_template = SimplePromptTemplate(**prompt)
-            p = prompt_template.format(**text)
-            output = self.model._generate([p])
+            output = self.model._generate([text])
             return output[0]
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
@@ -687,7 +685,9 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
         - str: The generated prediction.
         """
-        return self.predict(text=text, prompt=prompt, **kwargs)
+        prompt_template = SimplePromptTemplate(**prompt)
+        text = prompt_template.format(**text)
+        return self.predict(text=text, **kwargs)
 
 
 class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
