@@ -45,7 +45,7 @@ class PretrainedModelForNER(ModelAPI):
         except OSError:
             raise ValueError(Errors.E041.format(path=path))
 
-    @lru_cache(maxsize=1024000)
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
@@ -135,7 +135,7 @@ class PretrainedModelForTextClassification(ModelAPI):
         except OSError:
             raise ValueError(Errors.E041.format(path=path))
 
-    @lru_cache(maxsize=1024000)
+    @lru_cache(maxsize=102400)
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
     ) -> SequenceClassificationOutput:
@@ -210,7 +210,7 @@ class PretrainedModelForTranslation(ModelAPI):
         except OSError:
             raise ValueError(Errors.E041.format(path=path))
 
-    @lru_cache(maxsize=1024000)
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> str:
         """Perform translation predictions on the input text.
 

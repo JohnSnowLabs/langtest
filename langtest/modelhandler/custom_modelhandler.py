@@ -36,7 +36,7 @@ class PretrainedCustomModel(ABC):
         return cls(path)
 
     @abstractmethod
-    @lru_cache(maxsize=1024000)
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs):
         try:
             return self.model.predict(text, *args, **kwargs)
@@ -66,7 +66,7 @@ class PretrainedModelForTextClassification(PretrainedCustomModel, ModelAPI):
         SequenceClassificationOutput: A class containing the predicted class label and score.
     """
 
-    @lru_cache(maxsize=1024000)
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> SequenceClassificationOutput:
         try:
             out = self.model.predict(text, *args, **kwargs)
@@ -97,7 +97,7 @@ class PretrainedModelForQA(PretrainedCustomModel, ModelAPI):
         If an error occurs during prediction.
     """
 
-    @lru_cache(maxsize=1024000)
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs):
         try:
             out = self.model.predict(text, *args, **kwargs)
