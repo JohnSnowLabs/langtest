@@ -8,6 +8,7 @@ from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 from ..errors import Errors, Warnings
 import logging
 from functools import lru_cache
+from langtest.utils.custom_types.helpers import HashableDict
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -157,6 +158,10 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             The prediction result.
         """
+
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
         return self.predict(text, prompt, *args, **kwargs)
 
 
@@ -294,6 +299,8 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
             dict: A dictionary containing the prediction result.
                 - 'result': The prediction result.
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
         return self.predict(
             text=text,
             *args,

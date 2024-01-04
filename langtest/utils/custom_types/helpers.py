@@ -249,3 +249,11 @@ def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
 
     prompt = {"template": prompt_template, "input_variables": list(input_data.keys())}
     return prompt
+
+
+class HashableDict(dict):
+    """A hashable dictionary."""
+
+    def __hash__(self):
+        """"""
+        return hash(frozenset(self.items()))
