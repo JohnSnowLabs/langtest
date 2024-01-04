@@ -3,6 +3,7 @@ from .modelhandler import ModelAPI
 from abc import ABC
 import logging
 import requests
+from functools import lru_cache
 
 logger = logging.getLogger(__name__)
 from ..utils.custom_types.helpers import SimplePromptTemplate
@@ -62,17 +63,21 @@ class PretrainedModel(ABC):
     def __init__(self, model: Any, **kwargs) -> None:
         self.model = model
         self.kwargs = kwargs
+        self.predict.cache_clear()
 
     @classmethod
     def load_model(cls, path: Any, **kwargs) -> "Any":
         return cls(path, **kwargs)
 
-    def predict(self, text: str, prompt, server_prompt, *args, **kwargs):
+    @lru_cache(maxsize=1024000)
+    def predict(self, text: str, server_prompt, *args, **kwargs):
         try:
-            prompt_template = SimplePromptTemplate(**prompt)
-            p = prompt_template.format(**text)
             op = chat_completion_api(
-                text=p, url=self.model, server_prompt=server_prompt, *args, **self.kwargs
+                text=text,
+                url=self.model,
+                server_prompt=server_prompt,
+                *args,
+                **self.kwargs,
             )
             return op["choices"][0]["message"]["content"]
         except Exception as e:
@@ -80,12 +85,14 @@ class PretrainedModel(ABC):
             raise e
 
     def predict_raw(self, text: str, prompt, server_prompt, *args, **kwargs):
-        return self.predict(text, prompt, server_prompt, *args, **kwargs)
+        prompt_template = SimplePromptTemplate(**prompt)
+        p = prompt_template.format(**text)
+        return self.predict(text=p, server_prompt=server_prompt, *args, **kwargs)
 
     def __call__(self, text: str, prompt, server_prompt, *args, **kwargs) -> None:
-        return self.predict(
-            prompt=prompt, text=text, server_prompt=server_prompt, *args, **kwargs
-        )
+        prompt_template = SimplePromptTemplate(**prompt)
+        p = prompt_template.format(**text)
+        return self.predict(text=p, server_prompt=server_prompt, *args, **kwargs)
 
 
 class PretrainedModelForQA(PretrainedModel, ModelAPI):

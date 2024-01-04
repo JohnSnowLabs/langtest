@@ -9,6 +9,7 @@ RENAME_HUBS = {
     "huggingfacehub": "huggingface-inference-api",
     "transformers": "huggingface",
     "jsl": "johnsnowlabs",
+    "lmstudio": "lm-studio",
 }
 
 if try_import_lib("langchain"):
