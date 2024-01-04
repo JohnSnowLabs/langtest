@@ -150,7 +150,7 @@ class PretrainedModelForNER(ModelAPI):
             return cls(pipeline(model=path, task="ner", ignore_labels=[]))
         return cls(path)
 
-    @lru_cache(maxsize=1024)
+    @lru_cache(maxsize=1024000)
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
@@ -238,6 +238,7 @@ class PretrainedModelForTextClassification(ModelAPI):
             return cls(pipeline(model=path, task="text-classification"))
         return cls(path)
 
+    @lru_cache(maxsize=1024000)
     def predict(
         self,
         text: str,
@@ -326,6 +327,7 @@ class PretrainedModelForTranslation(ModelAPI):
         else:
             return cls(pipeline(model=path, src_lang="en", tgt_lang=tgt_lang))
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
 
@@ -381,6 +383,7 @@ class PretrainedModelForWinoBias(ModelAPI):
 
         return cls(path)
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -460,6 +463,7 @@ class PretrainedModelForCrowsPairs(ModelAPI):
 
         return cls(path)
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -513,6 +517,7 @@ class PretrainedModelForStereoSet(ModelAPI):
             return cls(models)
         return cls(path)
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -649,6 +654,7 @@ class PretrainedModelForQA(ModelAPI):
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
         Generate a prediction for the given text and prompt.
@@ -792,6 +798,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         cls.tokenizer = None
         return cls(path)
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 

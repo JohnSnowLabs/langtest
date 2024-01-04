@@ -39,7 +39,7 @@ class ModelAPI(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    @lru_cache(maxsize=128)
+    @lru_cache(maxsize=1024000)
     def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform predictions on input text."""
         raise NotImplementedError()

@@ -110,7 +110,7 @@ class PretrainedModelForQA(ModelAPI):
             new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
             kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 
-    @lru_cache(maxsize=1024)
+    @lru_cache(maxsize=1024000)
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
@@ -258,6 +258,7 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
         """
         super().__init__(hub, model, *args, **kwargs)
 
+    @lru_cache(maxsize=1024000)
     def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform prediction using the pretrained model.
 
