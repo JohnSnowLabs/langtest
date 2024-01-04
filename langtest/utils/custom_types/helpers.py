@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from collections.abc import Hashable
 
 default_user_prompt = {
     "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
@@ -252,8 +253,23 @@ def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
 
 
 class HashableDict(dict):
-    """A hashable dictionary."""
+    """A hashable dictionary with support for nested dictionaries and lists."""
 
     def __hash__(self):
-        """"""
-        return hash(frozenset(self.items()))
+        items = []
+        for key, value in self.items():
+            if isinstance(value, list):
+                items.append(
+                    (
+                        key,
+                        tuple(
+                            HashableDict(item) if isinstance(item, dict) else item
+                            for item in value
+                        ),
+                    )
+                )
+            elif isinstance(value, dict):
+                items.append((key, HashableDict(value)))
+            elif isinstance(value, Hashable):
+                items.append((key, value))
+        return hash(frozenset(items))
