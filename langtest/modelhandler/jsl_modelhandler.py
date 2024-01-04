@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 from typing import Any, List, Union, Dict, Tuple
-
+from functools import lru_cache
 from langtest.utils.custom_types.output import TranslationOutput
 
 from ..modelhandler import ModelAPI
@@ -166,6 +166,8 @@ class PretrainedJSLModel(ABC):
 
         else:
             raise ValueError(Errors.E038.format(model_type=type(model)))
+        
+        self.predict.cache_clear()
 
     @classmethod
     def load_model(cls, path) -> "NLUPipeline":
@@ -190,6 +192,7 @@ class PretrainedJSLModel(ABC):
         return cls(path)
 
     @abstractmethod
+    @lru_cache(maxsize=128)
     def predict(self, text: str, *args, **kwargs) -> Any:
         """Perform predictions with SparkNLP LightPipeline on the input text.
 

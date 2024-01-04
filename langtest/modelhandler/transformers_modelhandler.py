@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple, Union
 import logging
 import numpy as np
+from functools import lru_cache
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 from .modelhandler import ModelAPI
 from ..utils.custom_types import (
@@ -32,6 +33,7 @@ class PretrainedModelForNER(ModelAPI):
         )
 
         self.model = model
+        self.predict.cache_clear()
 
     @staticmethod
     def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
@@ -148,6 +150,7 @@ class PretrainedModelForNER(ModelAPI):
             return cls(pipeline(model=path, task="ner", ignore_labels=[]))
         return cls(path)
 
+    @lru_cache(maxsize=1024)
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
