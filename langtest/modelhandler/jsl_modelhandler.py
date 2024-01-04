@@ -166,7 +166,7 @@ class PretrainedJSLModel(ABC):
 
         else:
             raise ValueError(Errors.E038.format(model_type=type(model)))
-        
+
         self.predict.cache_clear()
 
     @classmethod

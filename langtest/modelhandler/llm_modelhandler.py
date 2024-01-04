@@ -45,7 +45,7 @@ class PretrainedModelForQA(ModelAPI):
         self.kwargs = kwargs
         if isinstance(model, str):
             self.model = self.load_model(hub, model, *args, **kwargs).model
-        
+
         self.predict.cache_clear()
 
     @classmethod
