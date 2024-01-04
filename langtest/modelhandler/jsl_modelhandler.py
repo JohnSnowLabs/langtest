@@ -343,6 +343,7 @@ class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
 
         return entity_groups
 
+    @lru_cache(maxsize=1024)
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
 
@@ -428,6 +429,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
                 return True
         return False
 
+    @lru_cache(maxsize=1024)
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
     ) -> SequenceClassificationOutput:
@@ -506,6 +508,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
                 return True
         return False
 
+    @lru_cache(maxsize=1024)
     def predict(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
 
