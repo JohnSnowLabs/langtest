@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import importlib
 from ...errors import Errors
+from collections.abc import Hashable
 
 default_user_prompt = {
     "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
@@ -516,3 +517,26 @@ def is_pass_string_distance(answer, prediction, selected_distance, threshold=Non
     comparison_function = default_threshold[selected_distance]["comparison"]
 
     return distance_result, comparison_function(distance_result, threshold)
+
+
+class HashableDict(dict):
+    """A hashable dictionary with support for nested dictionaries and lists."""
+
+    def __hash__(self):
+        items = []
+        for key, value in self.items():
+            if isinstance(value, list):
+                items.append(
+                    (
+                        key,
+                        tuple(
+                            HashableDict(item) if isinstance(item, dict) else item
+                            for item in value
+                        ),
+                    )
+                )
+            elif isinstance(value, dict):
+                items.append((key, HashableDict(value)))
+            elif isinstance(value, Hashable):
+                items.append((key, value))
+        return hash(frozenset(items))

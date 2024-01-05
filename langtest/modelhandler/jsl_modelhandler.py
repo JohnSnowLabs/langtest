@@ -1,7 +1,7 @@
 import os
 from abc import ABC, abstractmethod
 from typing import Any, List, Union, Dict, Tuple
-
+from functools import lru_cache
 from langtest.utils.custom_types.output import TranslationOutput
 
 from ..modelhandler import ModelAPI
@@ -167,6 +167,8 @@ class PretrainedJSLModel(ABC):
         else:
             raise ValueError(Errors.E038.format(model_type=type(model)))
 
+        self.predict.cache_clear()
+
     @classmethod
     def load_model(cls, path) -> "NLUPipeline":
         """Load the NER model into the `model` attribute.
@@ -190,6 +192,7 @@ class PretrainedJSLModel(ABC):
         return cls(path)
 
     @abstractmethod
+    @lru_cache(maxsize=128)
     def predict(self, text: str, *args, **kwargs) -> Any:
         """Perform predictions with SparkNLP LightPipeline on the input text.
 
@@ -340,6 +343,7 @@ class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
 
         return entity_groups
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
 
@@ -425,6 +429,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
                 return True
         return False
 
+    @lru_cache(maxsize=102400)
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
     ) -> SequenceClassificationOutput:
@@ -503,6 +508,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
                 return True
         return False
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> TranslationOutput:
         """Perform predictions with SparkNLP LightPipeline on the input text.
 

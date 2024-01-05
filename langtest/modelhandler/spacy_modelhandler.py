@@ -2,6 +2,7 @@ from typing import List
 
 import spacy
 from spacy.tokens import Doc
+from functools import lru_cache
 
 from .modelhandler import ModelAPI
 from ..utils.custom_types import NEROutput, NERPrediction, SequenceClassificationOutput
@@ -30,6 +31,7 @@ class PretrainedModelForNER(ModelAPI):
         )
 
         self.model = model
+        self.predict.cache_clear()
 
     @classmethod
     def load_model(cls, path: str):
@@ -43,6 +45,7 @@ class PretrainedModelForNER(ModelAPI):
         except OSError:
             raise ValueError(Errors.E041.format(path=path))
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
@@ -132,6 +135,7 @@ class PretrainedModelForTextClassification(ModelAPI):
         except OSError:
             raise ValueError(Errors.E041.format(path=path))
 
+    @lru_cache(maxsize=102400)
     def predict(
         self, text: str, return_all_scores: bool = False, *args, **kwargs
     ) -> SequenceClassificationOutput:
@@ -206,6 +210,7 @@ class PretrainedModelForTranslation(ModelAPI):
         except OSError:
             raise ValueError(Errors.E041.format(path=path))
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> str:
         """Perform translation predictions on the input text.
 
