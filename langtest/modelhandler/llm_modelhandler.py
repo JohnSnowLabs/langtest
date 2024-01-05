@@ -66,7 +66,7 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
-        exclude_args = ["task", "device", "server_prompt", "stream"]
+        exclude_args = ["task", "device", "stream"]
 
         filtered_kwargs = kwargs.copy()
 

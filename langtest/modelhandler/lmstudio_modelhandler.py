@@ -1,15 +1,15 @@
-from typing import Any
+from typing import Any, Union
 from .modelhandler import ModelAPI
 from abc import ABC
-import logging
-import requests
 from functools import lru_cache
-
-logger = logging.getLogger(__name__)
+import importlib
+from ..errors import Errors
+from langtest.utils.lib_manager import try_import_lib
 from ..utils.custom_types.helpers import SimplePromptTemplate
+from langtest.utils.custom_types.helpers import HashableDict
 
 
-def chat_completion_api(text, url, server_prompt, **kwargs):
+def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
     """
     Send a user text message to a chat completion API and receive the model's response.
 
@@ -27,24 +27,29 @@ def chat_completion_api(text, url, server_prompt, **kwargs):
     Returns:
         dict or None: The JSON response from the API if successful, otherwise None.
     """
+    LIB_NAME = "requests"
+    if try_import_lib(LIB_NAME):
+        requests = importlib.import_module(LIB_NAME)
+    else:
+        raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+
     headers = {"Content-Type": "application/json"}
     server_prompt = {"role": "assistant", "content": server_prompt}
     user_text = {"role": "user", "content": text}
 
     data = {
         "messages": [server_prompt, user_text],
-        "temperature": kwargs.get("temperature", 0.7),
+        "temperature": kwargs.get("temperature", 0.2),
         "max_tokens": kwargs.get("max_tokens", -1),
         "stream": kwargs.get("stream", False),
     }
 
-    response = requests.post(url, headers=headers, json=data)
-
-    if response.status_code == 200:
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
         return response.json()
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
-        return None
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(Errors.E093.format(e=str(e)))
 
 
 class PretrainedModel(ABC):
@@ -56,24 +61,59 @@ class PretrainedModel(ABC):
 
     Methods:
         load_model(cls, model: Any) -> "Any": Loads the pretrained model.
-        predict(self, text: str, *args, **kwargs): Predicts the output for the given input text.
-        __call__(self, text: str) -> None: Calls the predict method for the given input text.
+        predict(self, text: str, *args, **kwargs) -> str: Predicts the output for the given input text.
+        __call__(self, text: str) -> str: Calls the predict method for the given input text.
     """
 
     def __init__(self, model: Any, **kwargs) -> None:
+        """
+        Initialize the PretrainedModel.
+
+        Args:
+            model (Any): The pretrained model to be used.
+            **kwargs: Additional keyword arguments.
+        """
         self.model = model
         self.kwargs = kwargs
         self.predict.cache_clear()
 
     @classmethod
-    def load_model(cls, path: Any, **kwargs) -> "Any":
-        return cls(path, **kwargs)
+    def load_model(cls, path: str, *args, **kwargs) -> "Any":
+        """
+        Load the pretrained model.
 
-    @lru_cache(maxsize=1024000)
-    def predict(self, text: str, server_prompt, *args, **kwargs):
+        Args:
+            path (str): The path to the pretrained model.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Any: The loaded pretrained model.
+        """
+        return cls(model=path, **kwargs)
+
+    @lru_cache(maxsize=102400)
+    def predict(
+        self, text: Union[str, dict], prompt: dict, server_prompt, *args, **kwargs
+    ):
+        """
+        Predicts the output for the given input text.
+
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            prompt (dict): The prompt for the prediction.
+            server_prompt (str): The server prompt for the chat.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            str: The predicted output.
+        """
         try:
+            prompt_template = SimplePromptTemplate(**prompt)
+            p = prompt_template.format(**text)
             op = chat_completion_api(
-                text=text,
+                text=p,
                 url=self.model,
                 server_prompt=server_prompt,
                 *args,
@@ -81,18 +121,51 @@ class PretrainedModel(ABC):
             )
             return op["choices"][0]["message"]["content"]
         except Exception as e:
-            logger.error(e)
-            raise e
+            raise ValueError(Errors.E089.format(error_message=e))
 
-    def predict_raw(self, text: str, prompt, server_prompt, *args, **kwargs):
-        prompt_template = SimplePromptTemplate(**prompt)
-        p = prompt_template.format(**text)
-        return self.predict(text=p, server_prompt=server_prompt, *args, **kwargs)
+    def predict_raw(
+        self, text: Union[str, dict], prompt: dict, server_prompt: str, *args, **kwargs
+    ):
+        """
+        Predicts the output for the given input text without caching.
 
-    def __call__(self, text: str, prompt, server_prompt, *args, **kwargs) -> None:
-        prompt_template = SimplePromptTemplate(**prompt)
-        p = prompt_template.format(**text)
-        return self.predict(text=p, server_prompt=server_prompt, *args, **kwargs)
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            prompt (dict): The prompt for the prediction.
+            server_prompt (str): The server prompt for the chat.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            str: The predicted output.
+        """
+
+        return self.predict(
+            text=text, prompt=prompt, server_prompt=server_prompt, *args, **kwargs
+        )
+
+    def __call__(
+        self, text: Union[str, dict], prompt: dict, server_prompt: str, *args, **kwargs
+    ):
+        """
+        Calls the predict method for the given input text.
+
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            prompt (dict): The prompt for the prediction.
+            server_prompt (str): The server prompt for the chat.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            str: The predicted output.
+        """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
+        return self.predict(
+            text=text, prompt=prompt, server_prompt=server_prompt, *args, **kwargs
+        )
 
 
 class PretrainedModelForQA(PretrainedModel, ModelAPI):
@@ -110,6 +183,175 @@ class PretrainedModelForQA(PretrainedModel, ModelAPI):
     ------
     Exception
         If an error occurs during prediction.
+    """
+
+    pass
+
+
+class PretrainedModelForSummarization(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for summarization.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForToxicity(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for toxicity detection.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForSecurity(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForClinicalTests(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForDisinformationTest(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for disinformation test.
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForPolitical(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for security detection.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForSensitivityTest(PretrainedModel, ModelAPI):
+    def __init__(self, model: Any, *args, **kwargs):
+        """
+        Initialize the PretrainedModelForSensitivityTest.
+
+        Args:
+            model (Any): The pretrained model to be used.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+        """
+        super().__init__(model, *args, **kwargs)
+
+    @lru_cache(maxsize=102400)
+    def predict(self, text: str, server_prompt: str, *args, **kwargs):
+        """
+        Perform prediction using the pretrained model.
+
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            server_prompt (str): The server prompt for the chat.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
+        """
+        try:
+            op = chat_completion_api(
+                text=text,
+                url=self.model,
+                server_prompt=server_prompt,
+                *args,
+                **self.kwargs,
+            )
+            return {
+                "result": op["choices"][0]["message"]["content"],
+            }
+
+        except Exception as e:
+            raise ValueError(Errors.E089.format(error_message=e))
+
+    def __call__(self, text: str, server_prompt: str, *args, **kwargs):
+        """
+        Alias of the 'predict' method.
+
+        Args:
+            text (Union[str, dict]): The original text or dictionary.
+            server_prompt (str): The server prompt for the chat.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
+        """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+
+        return self.predict(
+            text=text,
+            server_prompt=server_prompt,
+            *args,
+            **kwargs,
+        )
+
+
+class PretrainedModelForWinoBias(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for wino-bias detection.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForLegal(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for legal-tests.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForFactualityTest(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for factuality detection.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+    """
+
+    pass
+
+
+class PretrainedModelForSycophancyTest(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for sycophancy test.
+
+    This class inherits from PretrainedModel and provides functionality
+    specific to sycophancy task.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
     """
 
     pass

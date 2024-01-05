@@ -252,6 +252,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E090 = ("An error occurred during loading model: {error_message}")
     E091 = ("Unable to extract batch number from file: {file_name}")
     E092 = ("Error: The specified directory is not valid: {directory}")
+    E093 = ("Failed to make API request: {e}")
 
 
 class ColumnNameError(Exception):
