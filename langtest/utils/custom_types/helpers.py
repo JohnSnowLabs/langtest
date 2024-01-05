@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from collections.abc import Hashable
 import importlib
 from ...errors import Errors
 
@@ -273,6 +274,29 @@ def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
     prompt = {"template": prompt_template, "input_variables": list(input_variables)}
 
     return prompt
+
+
+class HashableDict(dict):
+    """A hashable dictionary with support for nested dictionaries and lists."""
+
+    def __hash__(self):
+        items = []
+        for key, value in self.items():
+            if isinstance(value, list):
+                items.append(
+                    (
+                        key,
+                        tuple(
+                            HashableDict(item) if isinstance(item, dict) else item
+                            for item in value
+                        ),
+                    )
+                )
+            elif isinstance(value, dict):
+                items.append((key, HashableDict(value)))
+            elif isinstance(value, Hashable):
+                items.append((key, value))
+        return hash(frozenset(items))
 
 
 def prepare_input_predictions(original_question, answer, perturbed_question, prediction):

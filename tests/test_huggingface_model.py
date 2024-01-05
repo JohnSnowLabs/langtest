@@ -1,6 +1,7 @@
 import unittest
 from langtest.modelhandler import ModelAPI
 from langtest.tasks import TaskManager
+from langtest.utils.custom_types.helpers import HashableDict
 
 
 class HuggingFaceTestCase(unittest.TestCase):
@@ -109,11 +110,13 @@ class TestTransformersModels(unittest.TestCase):
 
         # Test model prediction with specific input variables
         result = model.predict(
-            prompt={
-                "template": "Generate a {adjective} sentence about {noun}.",
-                "input_variables": ["adjective", "noun"],
-            },
-            text={"adjective": "beautiful", "noun": "cats"},
+            prompt=HashableDict(
+                **{
+                    "template": "Generate a {adjective} sentence about {noun}.",
+                    "input_variables": ["adjective", "noun"],
+                }
+            ),
+            text=HashableDict(**{"adjective": "beautiful", "noun": "cats"}),
         )
         # Assert conditions for the result
         self._assert_result_conditions(model, result)
