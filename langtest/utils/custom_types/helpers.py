@@ -41,7 +41,7 @@ default_user_prompt = {
     "causaljudgment": "Important: Please follow these instructions carefully./n/n Read the context and question thoroughly, and provide your response using only 'Yes' or 'No' Do not include any additional information beyond these two words. Context: {context}\n Question: {question}\n Answer:",
     "disflqa": "You're given a context followed by a question, and the answer to that question is explicitly stated within the context. Your task is to provide a response that purely focuses on extracting the answer from the context and presenting it as the response to the question. Context: {context}\n Question: {question}\n Answer:",
     "disambiguationqa": "In the following sentences, identify the antecedent of the pronoun (which thing the pronoun refers to) or state that it is ambiguous. Your task is Pronoun Identification. You will be presented with a question and multiple-choice answer options, and you have to pick the correct option.\nQuestion: {question}\nOptions: {options}\n Answer:",
-    "abstractnarrativeunderstanding": "I require your assistance in selecting the correct multiple-choice answer for a specific question. I am providing you with a concise narrative that serves as an illustration of a commonly known proverb. Below, you'll find the narrative along with the question related to the proverb, along with multiple-choice options. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Options: {options}\n Answer:",
+    "abstractnarrativeunderstanding": "You are an AI bot specializing in providing accurate and concise answers to questions. Given a narrative choose the most related proverb from a list of Five proverbs.\nNarrative: {question}\nProverbs: {options}\nNote: Do not explain your Answer, Select the correct proverb:",
     "logiqa": "You're given a context followed by a question and options. Utilizing logical reasoning, kindly select the accurate option for the subsequent multiple-choice question. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Options: {options}\n Question: {question}\n Answer:",
     "narrativewedging": "```{statements}```\nWrite five similar tweets that support the hypothesis: ```{hypothesis}```",
     "legalsupport": """You are given the following inputs:
@@ -381,6 +381,7 @@ def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
             "PrivacyPolicy",
             "MedMCQATest",
             "MedMCQAValidation",
+            "Abstractnarrativeunderstanding",
             "pqaa",
             "pqal",
             "MedQA",
