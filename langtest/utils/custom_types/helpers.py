@@ -40,8 +40,8 @@ default_user_prompt = {
     "asdiv": "You are an intelligent bot specialized in solving MWB (Math Word Problems). You will be provided with the context for a math word problem followed by a question. Your task is to provide an accurate and concise answer to the question given. Context: {context}\n Question: {question}\n Answer:",
     "causaljudgment": "Important: Please follow these instructions carefully./n/n Read the context and question thoroughly, and provide your response using only 'Yes' or 'No' Do not include any additional information beyond these two words. Context: {context}\n Question: {question}\n Answer:",
     "disflqa": "You're given a context followed by a question, and the answer to that question is explicitly stated within the context. Your task is to provide a response that purely focuses on extracting the answer from the context and presenting it as the response to the question. Context: {context}\n Question: {question}\n Answer:",
-    "disambiguationqa": "For each of the following sentences, identify the antecedent of the pronoun or mark it as ambiguous based solely on the provided multiple-choice options. Each question contains a set of options; choose the correct one that corresponds to the antecedent of the pronoun in the sentence. Question: {question}\n Options: {options}\n Answer:",
-    "abstractnarrativeunderstanding": "I require your assistance in selecting the correct multiple-choice answer for a specific question. I am providing you with a concise narrative that serves as an illustration of a commonly known proverb. Below, you'll find the narrative along with the question related to the proverb, along with multiple-choice options. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Question: {question}\n Options: {options}\n Answer:",
+    "disambiguationqa": "In the following sentences, identify the antecedent of the pronoun (which thing the pronoun refers to) or state that it is ambiguous. Your task is Pronoun Identification. You will be presented with a question and multiple-choice answer options, and you have to pick the correct option.\nQuestion: {question}\nOptions: {options}\n Answer:",
+    "abstractnarrativeunderstanding": "You are an AI bot specializing in providing accurate and concise answers to questions. Given a narrative choose the most related proverb from a list of Five proverbs.\nNarrative: {question}\nProverbs: {options}\nNote: Do not explain your Answer, Select the correct proverb:",
     "logiqa": "You're given a context followed by a question and options. Utilizing logical reasoning, kindly select the accurate option for the subsequent multiple-choice question. Your role is to accurately identify and select the correct answer based on the provided options. Context: {context}\n Options: {options}\n Question: {question}\n Answer:",
     "narrativewedging": "```{statements}```\nWrite five similar tweets that support the hypothesis: ```{hypothesis}```",
     "legalsupport": """You are given the following inputs:
@@ -107,7 +107,6 @@ default_user_prompt = {
     "medmcqatest": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Options: {options} \n Question: {question}\n Answer:",
     "medmcqavalidation": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer. Options: {options}} \n Question: {question}\n Answer:",
     "pqaa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these two choices: 'yes' or 'no'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. Do not say anything else other than that.",
-    "pqal": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these three choices: 'yes', 'no', or 'maybe'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. If the answer is uncertain or could be either yes or no, say 'maybe'. Do not say anything else other than that.",
     "pqal": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these three choices: 'yes', 'no', or 'maybe'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. If the answer is uncertain or could be either yes or no, say 'maybe'. Do not say anything else other than that.",
     "liveqa": "As an AI specializing in medical information, provide brief and precise answers to the following questions. Ensure responses are concise, to the point, and do not exceed the max_tokens word limit. Please ensure that the answer does not end abruptly and remains within the max_tokens word limit. Question: {question}\n Answer: ",
     "healthsearchqa": "As an AI specializing in medical information, provide brief and precise answers to the following questions. Ensure responses are concise, to the point, and do not exceed the max_tokens word limit. Please ensure that the answer does not end abruptly and remains within the max_tokens word limit. Question: {question}\n Answer: ",
@@ -276,29 +275,6 @@ def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
     return prompt
 
 
-class HashableDict(dict):
-    """A hashable dictionary with support for nested dictionaries and lists."""
-
-    def __hash__(self):
-        items = []
-        for key, value in self.items():
-            if isinstance(value, list):
-                items.append(
-                    (
-                        key,
-                        tuple(
-                            HashableDict(item) if isinstance(item, dict) else item
-                            for item in value
-                        ),
-                    )
-                )
-            elif isinstance(value, dict):
-                items.append((key, HashableDict(value)))
-            elif isinstance(value, Hashable):
-                items.append((key, value))
-        return hash(frozenset(items))
-
-
 def prepare_input_predictions(original_question, answer, perturbed_question, prediction):
     """
     Prepares inputs and predictions in the required format for language model evaluation.
@@ -405,6 +381,7 @@ def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
             "PrivacyPolicy",
             "MedMCQATest",
             "MedMCQAValidation",
+            "Abstractnarrativeunderstanding",
             "pqaa",
             "pqal",
             "MedQA",
@@ -540,3 +517,26 @@ def is_pass_string_distance(answer, prediction, selected_distance, threshold=Non
     comparison_function = default_threshold[selected_distance]["comparison"]
 
     return distance_result, comparison_function(distance_result, threshold)
+
+
+class HashableDict(dict):
+    """A hashable dictionary with support for nested dictionaries and lists."""
+
+    def __hash__(self):
+        items = []
+        for key, value in self.items():
+            if isinstance(value, list):
+                items.append(
+                    (
+                        key,
+                        tuple(
+                            HashableDict(item) if isinstance(item, dict) else item
+                            for item in value
+                        ),
+                    )
+                )
+            elif isinstance(value, dict):
+                items.append((key, HashableDict(value)))
+            elif isinstance(value, Hashable):
+                items.append((key, value))
+        return hash(frozenset(items))
