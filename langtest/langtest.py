@@ -461,7 +461,7 @@ class Harness:
             if self._checkpoints is not None:
                 for k, v in self.model.items():
                     self._generated_results[k].extend(self._checkpoints[k])
-        
+
         # clear cache
         if isinstance(self.model, dict):
             for k, v in self.model.items():
