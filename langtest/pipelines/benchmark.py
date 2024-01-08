@@ -47,7 +47,6 @@ class LLMBenchmarkPipeline(FlowSpec):
             self.data = self.data[self.task]
             self.next(self.setup, foreach="data")
         elif isinstance(self.data, list):
-            self.data = self.data
             self.next(self.setup, foreach="data")
         else:
             self.next(self.setup)
