@@ -21,9 +21,11 @@ DEFAULT_CONFIG = {
     },
 }
 
-BENCHMARK_DATASETS = [
-    "BoolQ",
-    "NQ-open",
-    "LogiQA",
-    "OpenBookQA",
-]
+BENCHMARK_DATASETS = {
+    "question-answering": [
+        {"data_source": "BoolQ", "split": "test-tiny"},
+        {"data_source": "NQ-open", "split": "test"},
+        {"data_source": "OpenBookQA", "split": "test"},
+        {"data_source": "HellaSwag", "split": "test"},
+    ]
+}
