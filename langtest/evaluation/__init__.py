@@ -95,7 +95,6 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
     """
 
     eval_results = defaultdict(list)
-    _service_context = global_service_context or ServiceContext.from_defaults()
     config = ["uppercase", "lowercase", "add_typo"]
 
     def __init__(
@@ -186,7 +185,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
             metric_df.append(
                 {
-                    "Retriever Model": self._service_context.embed_model.model_name,
+                    "Retriever Model": global_service_context.embed_model.model_name,
                     "Test Type": test_name,
                     "Hit Rate": hit_rate,
                     "MRR": mrr,
