@@ -93,8 +93,8 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
     - eval_worker(query, expected_ids, mode, workers): Worker function for handling individual evaluation tasks.
     - display_results(): Compiles and displays the results of the evaluation in a structured format.
     """
-
     eval_results = defaultdict(list)
+    # service_context = global_service_context
     config = ["uppercase", "lowercase", "add_typo"]
 
     def __init__(
@@ -106,6 +106,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         """Init params."""
         super().__init__(metrics=metrics, retriever=retriever, **kwargs)
         self.retriever = retriever
+
 
     def setPerturbations(self, *args):
         self.config = []
@@ -172,6 +173,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         self,
     ):
         metric_df = []
+        from llama_index import global_service_context
         for test_name, results in self.eval_results.items():
             metric_dicts = []
             for eval_result in results:
