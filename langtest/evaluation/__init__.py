@@ -1,6 +1,6 @@
 import asyncio
 from typing import Any, Dict, List, Optional, Sequence
-from llama_index import ServiceContext, global_service_context
+from llama_index import ServiceContext
 from llama_index.finetuning.embeddings.common import EmbeddingQAFinetuneDataset
 from llama_index.prompts.mixin import PromptDictType
 from llama_index.evaluation.base import BaseEvaluator, EvaluationResult
