@@ -923,7 +923,6 @@ class AccuracyTestFactory(ITests):
                 prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
 
                 prediction = model(text=input_data, prompt=prompt).strip()
-                sample.actual_results = prediction
                 return prediction
 
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)

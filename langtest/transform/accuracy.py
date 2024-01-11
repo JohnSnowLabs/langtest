@@ -767,14 +767,19 @@ class LLMEval(BaseAccuracy):
         return [sample]
 
     @staticmethod
-    async def run(sample_list: List[MinScoreSample], *args, **kwargs):
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
         """
         Runs the evaluation on a list of samples using the Language Model Metric (LLM).
 
         Args:
             sample_list (List[MinScoreSample]): List of MinScoreSample instances containing evaluation information.
-            *args: Additional positional arguments (not used in this method).
-            **kwargs: Additional keyword arguments including 'X_test', 'progress_bar', etc.
+            y_true (List[Any]): List of true values for the model's predictions.
+            y_pred (List[Any]): List of predicted values by the model.
+            X_test (Optional): Additional keyword argument representing the test data.
+            progress_bar (Optional): Additional keyword argument indicating whether to display a progress bar.
+            **kwargs: Additional keyword arguments.
 
         Returns:
             List[MinScoreSample]: List containing updated MinScoreSample instances after evaluation.
@@ -787,29 +792,28 @@ class LLMEval(BaseAccuracy):
 
         eval_model = LLMEval.eval_model
 
-        def eval(sample):
-            result = is_pass_llm_eval(
-                eval_model=eval_model,
-                dataset_name=sample.dataset_name,
-                original_question=sample.original_question,
-                answer="\n".join(map(str, sample.expected_results)),
-                perturbed_question=sample.original_question,
-                prediction=sample.actual_results,
-            )
-            if result:
-                sample.distance_result = 1
-            else:
-                sample.distance_result = 0
-
-            return sample.distance_result
-
-        results = X_test.apply(eval)
-        total_samples = len(results)
-        passed_samples = sum(results)
-        accuracy = passed_samples / max(total_samples, 1)
+        def eval():
+            results = []
+            for true_list, pred_list, sample in zip(y_true, y_pred, X_test):
+                result = is_pass_llm_eval(
+                    eval_model=eval_model,
+                    dataset_name=sample.dataset_name,
+                    original_question=sample.original_question,
+                    answer="\n".join(map(str, true_list)),
+                    perturbed_question=sample.original_question,
+                    prediction=pred_list,
+                )
+                if result:
+                    results.append(1)
+                else:
+                    results.append(0)
+            total_samples = len(results)
+            passed_samples = sum(results)
+            accuracy = passed_samples / max(total_samples, 1)
+            return accuracy
 
         for sample in sample_list:
-            sample.actual_results = MinScoreOutput(min_score=accuracy)
+            sample.actual_results = MinScoreOutput(min_score=eval())
             sample.state = "done"
             if progress:
                 progress.update(1)
