@@ -777,6 +777,7 @@ class AccuracyTestFactory(ITests):
     """
 
     alias_name = "accuracy"
+    model_result = None
 
     def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
         self.supported_tests = self.available_tests()
@@ -881,13 +882,23 @@ class AccuracyTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
+        raw_data_copy = [x.copy() for x in raw_data]
 
-        if isinstance(raw_data[0], NERSample):
-            y_true = pd.Series(raw_data).apply(
+        if isinstance(raw_data_copy[0], NERSample):
+
+            def predict_ner(sample):
+                prediction = model.predict(sample.original)
+                sample.actual_results = prediction
+                return prediction
+
+            X_test = pd.Series(raw_data_copy)
+            X_test.apply(predict_ner)
+            y_true = pd.Series(raw_data_copy).apply(
                 lambda x: [y.entity for y in x.expected_results.predictions]
             )
-            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
-            y_pred = X_test.apply(model.predict_raw)
+            y_pred = pd.Series(raw_data_copy).apply(
+                lambda x: [y.entity for y in x.actual_results.predictions]
+            )
             valid_indices = y_true.apply(len) == y_pred.apply(len)
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
@@ -896,23 +907,35 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.apply(lambda x: x.split("-")[-1])
             y_true = y_true.apply(lambda x: x.split("-")[-1])
 
-        elif isinstance(raw_data[0], SequenceClassificationSample):
-            y_true = pd.Series(raw_data).apply(
+        elif isinstance(raw_data_copy[0], SequenceClassificationSample):
+
+            def predict_text_classification(sample):
+                prediction = model.predict(sample.original)
+                sample.actual_results = prediction
+                return prediction
+
+            X_test = pd.Series(raw_data_copy)
+            X_test.apply(predict_text_classification)
+
+            y_true = pd.Series(raw_data_copy).apply(
                 lambda x: [y.label for y in x.expected_results.predictions]
             )
+            y_pred = pd.Series(raw_data_copy).apply(
+                lambda x: [y.label for y in x.actual_results.predictions]
+            )
             y_true = y_true.apply(lambda x: x[0])
-            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
-            y_pred = X_test.apply(model.predict_raw)
+            y_pred = y_pred.apply(lambda x: x[0])
+
             y_true = y_true.explode()
             y_pred = y_pred.explode()
 
-        elif raw_data[0].task == "question-answering":
+        elif raw_data_copy[0].task == "question-answering":
             from ..utils.custom_types.helpers import build_qa_input, build_qa_prompt
 
-            if raw_data[0].dataset_name is None:
+            if raw_data_copy[0].dataset_name is None:
                 dataset_name = "default_question_answering_prompt"
             else:
-                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+                dataset_name = raw_data_copy[0].dataset_name.split("-")[0].lower()
 
             def predict_question_answering(sample):
                 input_data = build_qa_input(
@@ -923,31 +946,34 @@ class AccuracyTestFactory(ITests):
                 prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
 
                 prediction = model(text=input_data, prompt=prompt).strip()
+                sample.actual_results = prediction
                 return prediction
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
-            X_test = pd.Series(raw_data)
+            y_true = pd.Series(raw_data_copy).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data_copy)
 
             y_pred = X_test.apply(predict_question_answering)
 
-        elif raw_data[0].task == "summarization":
-            if raw_data[0].dataset_name is None:
+        elif raw_data_copy[0].task == "summarization":
+            if raw_data_copy[0].dataset_name is None:
                 dataset_name = "default_summarization_prompt"
             else:
-                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+                dataset_name = raw_data_copy[0].dataset_name.split("-")[0].lower()
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
-            X_test = pd.Series(raw_data)
-            y_pred = X_test.apply(
-                lambda sample: model(
+            def predict_summarization(sample):
+                prediction = model(
                     text={"context": sample.original},
                     prompt={"template": prompt_template, "input_variables": ["context"]},
-                )
-            )
-            y_pred = y_pred.apply(lambda x: x.strip())
+                ).strip()
+                sample.actual_results = prediction
+                return prediction
+
+            y_true = pd.Series(raw_data_copy).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data_copy)
+            y_pred = X_test.apply(predict_summarization)
 
         if kwargs["is_default"]:
             y_pred = y_pred.apply(
@@ -959,6 +985,10 @@ class AccuracyTestFactory(ITests):
         supported_tests = cls.available_tests()
 
         tasks = []
+
+        from ..utils.custom_types.helpers import prepare_model_response
+
+        cls.model_result = prepare_model_response(raw_data_copy)
 
         for test_name, samples in sample_list.items():
             tasks.append(

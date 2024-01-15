@@ -541,3 +541,16 @@ class HashableDict(dict):
             elif isinstance(value, Hashable):
                 items.append((key, value))
         return hash(frozenset(items))
+
+
+def prepare_model_response(data):
+    if data[0].task == "text-classification":
+        for sample in data:
+            sample.actual_results = sample.actual_results.predictions[0]
+            sample.expected_results = sample.expected_results.predictions[0]
+    elif data[0].task == "ner":
+        for sample in data:
+            sample.actual_results = sample.actual_results.predictions
+            sample.expected_results = sample.expected_results.predictions
+
+    return data

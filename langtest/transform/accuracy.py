@@ -794,14 +794,14 @@ class LLMEval(BaseAccuracy):
 
         def eval():
             results = []
-            for true_list, pred_list, sample in zip(y_true, y_pred, X_test):
+            for true_list, pred, sample in zip(y_true, y_pred, X_test):
                 result = is_pass_llm_eval(
                     eval_model=eval_model,
                     dataset_name=sample.dataset_name,
                     original_question=sample.original_question,
                     answer="\n".join(map(str, true_list)),
                     perturbed_question=sample.original_question,
-                    prediction=pred_list,
+                    prediction=pred,
                 )
                 if result:
                     results.append(1)
