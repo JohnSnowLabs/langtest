@@ -470,6 +470,39 @@ class Harness:
             self.model.predict.cache_clear()
         return self
 
+    def model_response(self, category: str = None):
+        supported_category = "accuracy"
+
+        if category not in supported_category:
+            raise ValueError(f"Category: {category} is not supported")
+
+        class_name = f"{category.title()}TestFactory"
+        module = importlib.import_module("langtest.transform")
+        testfactory_class = getattr(module, class_name)
+        model_response = testfactory_class.model_result
+
+        if model_response is None:
+            logging.warning(
+                "Model results are not available. You need to run the model first."
+            )
+        else:
+            data = [sample.copy() for sample in model_response]
+            data_dict = [{key: value for key, value in x.__dict__.items()} for x in data]
+            data_df = pd.DataFrame(data_dict)
+            data_df = data_df.reset_index(drop=True)
+
+            column_order = [
+                "original",
+                "original_question",
+                "original_context",
+                "expected_results",
+                "actual_results",
+            ]
+            columns = [c for c in column_order if c in data_df.columns]
+            data_df = data_df[columns]
+
+            return data_df.fillna("-")
+
     @classmethod
     def load_checkpoints(cls, task, model, save_checkpoints_dir: str) -> "Harness":
         """Load checkpoints and other necessary data to recreate a Harness object.
