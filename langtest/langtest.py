@@ -473,8 +473,15 @@ class Harness:
     def model_response(self, category: str = None):
         supported_category = "accuracy"
 
+        if category is None:
+            raise ValueError(Errors.E093)
+
         if category not in supported_category:
-            raise ValueError(f"Category: {category} is not supported")
+            raise ValueError(
+                Errors.E094.format(
+                    category=category, supported_category=supported_category
+                )
+            )
 
         class_name = f"{category.title()}TestFactory"
         module = importlib.import_module("langtest.transform")
@@ -482,9 +489,8 @@ class Harness:
         model_response = testfactory_class.model_result
 
         if model_response is None:
-            logging.warning(
-                "Model results are not available. You need to run the model first."
-            )
+            logging.warning(Warnings.W021)
+
         else:
             data = [sample.copy() for sample in model_response]
             data_dict = [{key: value for key, value in x.__dict__.items()} for x in data]

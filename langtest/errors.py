@@ -85,6 +85,7 @@ class Warnings(metaclass=ErrorsWithCodes):
     W018 = ("Total number of batches: {total_batches}")
     W019 = ("model: {model_name}\nTotal number of batches: {total_batches}")
     W020 = ("You have not specified the task in the model parameter in the config file. Loading the model with task: {task}")
+    W021 = ("Model results are not available. Please run `Harness.run()` before calling `.model_response()`.")
 
 
 class Errors(metaclass=ErrorsWithCodes):
@@ -252,6 +253,8 @@ class Errors(metaclass=ErrorsWithCodes):
     E090 = ("An error occurred during loading model: {error_message}")
     E091 = ("Unable to extract batch number from file: {file_name}")
     E092 = ("Error: The specified directory is not valid: {directory}")
+    E093 = ("Category cannot be None. Please provide a valid category.")
+    E094 = ("Unsupported category: '{category}'. Supported categories: {supported_category}")
 
 
 class ColumnNameError(Exception):
