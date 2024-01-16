@@ -922,8 +922,8 @@ class AccuracyTestFactory(ITests):
                 )
                 prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
 
-                prediction = model(text=input_data, prompt=prompt)
-                return prediction.strip()
+                prediction = model(text=input_data, prompt=prompt).strip()
+                return prediction
 
             y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
             X_test = pd.Series(raw_data)
@@ -959,9 +959,12 @@ class AccuracyTestFactory(ITests):
         supported_tests = cls.available_tests()
 
         tasks = []
+
         for test_name, samples in sample_list.items():
             tasks.append(
-                supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs)
+                supported_tests[test_name].async_run(
+                    samples, y_true, y_pred, X_test=X_test, **kwargs
+                )
             )
         return tasks
 

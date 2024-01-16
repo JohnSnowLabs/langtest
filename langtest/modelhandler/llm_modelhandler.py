@@ -7,6 +7,8 @@ from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 from ..errors import Errors, Warnings
 import logging
+from functools import lru_cache
+from langtest.utils.custom_types.helpers import HashableDict
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -44,6 +46,8 @@ class PretrainedModelForQA(ModelAPI):
         self.kwargs = kwargs
         if isinstance(model, str):
             self.model = self.load_model(hub, model, *args, **kwargs).model
+
+        self.predict.cache_clear()
 
     @classmethod
     def load_model(cls, hub: str, path: str, *args, **kwargs) -> "PretrainedModelForQA":
@@ -107,6 +111,7 @@ class PretrainedModelForQA(ModelAPI):
             new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
             kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
@@ -153,6 +158,10 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             The prediction result.
         """
+
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
         return self.predict(text, prompt, *args, **kwargs)
 
 
@@ -254,6 +263,7 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
         """
         super().__init__(hub, model, *args, **kwargs)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform prediction using the pretrained model.
 
@@ -289,6 +299,8 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
             dict: A dictionary containing the prediction result.
                 - 'result': The prediction result.
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
         return self.predict(
             text=text,
             *args,

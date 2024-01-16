@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple, Union
 import logging
 import numpy as np
+from functools import lru_cache
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 from .modelhandler import ModelAPI
 from ..utils.custom_types import (
@@ -10,7 +11,7 @@ from ..utils.custom_types import (
     TranslationOutput,
 )
 from ..errors import Errors, Warnings
-from ..utils.custom_types.helpers import SimplePromptTemplate
+from ..utils.custom_types.helpers import SimplePromptTemplate, HashableDict
 from ..utils.hf_utils import HuggingFacePipeline
 
 
@@ -32,6 +33,7 @@ class PretrainedModelForNER(ModelAPI):
         )
 
         self.model = model
+        self.predict.cache_clear()
 
     @staticmethod
     def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
@@ -148,6 +150,7 @@ class PretrainedModelForNER(ModelAPI):
             return cls(pipeline(model=path, task="ner", ignore_labels=[]))
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
@@ -235,6 +238,7 @@ class PretrainedModelForTextClassification(ModelAPI):
             return cls(pipeline(model=path, task="text-classification"))
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(
         self,
         text: str,
@@ -323,6 +327,7 @@ class PretrainedModelForTranslation(ModelAPI):
         else:
             return cls(pipeline(model=path, src_lang="en", tgt_lang=tgt_lang))
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
 
@@ -378,6 +383,7 @@ class PretrainedModelForWinoBias(ModelAPI):
 
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -457,6 +463,7 @@ class PretrainedModelForCrowsPairs(ModelAPI):
 
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -510,6 +517,7 @@ class PretrainedModelForStereoSet(ModelAPI):
             return cls(models)
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -646,6 +654,7 @@ class PretrainedModelForQA(ModelAPI):
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
         Generate a prediction for the given text and prompt.
@@ -660,8 +669,8 @@ class PretrainedModelForQA(ModelAPI):
         """
         try:
             prompt_template = SimplePromptTemplate(**prompt)
-            p = prompt_template.format(**text)
-            output = self.model._generate([p])
+            text = prompt_template.format(**text)
+            output = self.model._generate([text])
             return output[0]
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
@@ -678,6 +687,9 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
         - str: The generated prediction.
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
@@ -789,6 +801,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         cls.tokenizer = None
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, test_name: str, **kwargs):
         """Perform predictions on the input text.
 

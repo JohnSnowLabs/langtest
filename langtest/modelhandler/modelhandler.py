@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Union
-
+from functools import lru_cache
 from langtest.utils.lib_manager import try_import_lib
 
 RENAME_HUBS = {
@@ -39,6 +39,7 @@ class ModelAPI(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform predictions on input text."""
         raise NotImplementedError()

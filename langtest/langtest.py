@@ -461,6 +461,13 @@ class Harness:
             if self._checkpoints is not None:
                 for k, v in self.model.items():
                     self._generated_results[k].extend(self._checkpoints[k])
+
+        # clear cache
+        if isinstance(self.model, dict):
+            for k, v in self.model.items():
+                v.predict.cache_clear()
+        else:
+            self.model.predict.cache_clear()
         return self
 
     @classmethod
@@ -926,6 +933,7 @@ class Harness:
         task: str,
         model: Optional[Union[list, dict]] = None,
         load_testcases: bool = False,
+        load_model_response: bool = False,
     ) -> "Harness":
         """Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -972,7 +980,9 @@ class Harness:
                 harness.generate()
         else:
             harness.generate()
-        if os.path.exists(os.path.join(save_dir, "generated_results.pkl")):
+        if load_model_response and os.path.exists(
+            os.path.join(save_dir, "generated_results.pkl")
+        ):
             with open(os.path.join(save_dir, "generated_results.pkl"), "rb") as reader:
                 generated_results = pickle.load(reader)
             harness._generated_results = generated_results
