@@ -1,7 +1,7 @@
 from pydantic import BaseModel
+from collections.abc import Hashable
 import importlib
 from ...errors import Errors
-from collections.abc import Hashable
 
 default_user_prompt = {
     "boolq": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with a single word. The words you are capable of saying are True and False. If you think the answer to the question is True, then say 'True'. If it is False, then say 'False'. Do not say anything else other than that.",
@@ -394,7 +394,6 @@ def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
 
         else:
             eval_chain = QAEvalChain.from_llm(llm=eval_model.model)
-
         graded_outputs = eval_chain.evaluate(
             inputs,
             predictions,

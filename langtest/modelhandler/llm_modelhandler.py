@@ -66,24 +66,30 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
+        exclude_args = ["task", "device", "stream"]
+
+        filtered_kwargs = kwargs.copy()
+
+        for arg in exclude_args:
+            filtered_kwargs.pop(arg, None)
+
         try:
-            kwargs.pop("task", None), kwargs.pop("device", None)
-            cls._update_model_parameters(hub, kwargs)
+            cls._update_model_parameters(hub, filtered_kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
-                model = cm.ChatOpenAI(model=path, *args, **kwargs)
-                return cls(hub, model, *args, **kwargs)
+                model = cm.ChatOpenAI(model=path, *args, **filtered_kwargs)
+                return cls(hub, model, *args, **filtered_kwargs)
             else:
                 model = getattr(lc, LANGCHAIN_HUBS[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
-                cls.model = model(model=path, *args, **kwargs)
+                cls.model = model(model=path, *args, **filtered_kwargs)
             elif "model_name" in default_args:
-                cls.model = model(model_name=path, *args, **kwargs)
+                cls.model = model(model_name=path, *args, **filtered_kwargs)
             elif "model_id" in default_args:
-                cls.model = model(model_id=path, *args, **kwargs)
+                cls.model = model(model_id=path, *args, **filtered_kwargs)
             elif "repo_id" in default_args:
-                cls.model = model(repo_id=path, model_kwargs=kwargs)
-            return cls(hub, cls.model, *args, **kwargs)
+                cls.model = model(repo_id=path, model_kwargs=filtered_kwargs)
+            return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ImportError:
             raise ValueError(Errors.E044.format(path=path))

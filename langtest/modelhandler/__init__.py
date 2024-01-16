@@ -1,6 +1,7 @@
 import importlib
 from .modelhandler import ModelAPI
 import langtest.modelhandler.custom_modelhandler
+import langtest.modelhandler.lmstudio_modelhandler
 
 RENAME_HUBS = {
     "azureopenai": "azure-openai",
@@ -10,7 +11,7 @@ RENAME_HUBS = {
     "transformers": "huggingface",
 }
 
-INSTALLED_HUBS = ["custom"]
+INSTALLED_HUBS = ["custom", "lm-studio"]
 
 libraries = [
     ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
@@ -29,6 +30,7 @@ for library_name, import_statement in libraries:
             INSTALLED_HUBS.append(RENAME_HUBS[library_name])
         else:
             INSTALLED_HUBS.append(library_name)
+
 
 if "langchain" in INSTALLED_HUBS:
     import langchain
