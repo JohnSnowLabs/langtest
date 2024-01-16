@@ -1,6 +1,6 @@
 import asyncio
 from typing import Any, Dict, List, Optional, Sequence
-from llama_index import ServiceContext, global_service_context
+from llama_index import ServiceContext
 from llama_index.finetuning.embeddings.common import EmbeddingQAFinetuneDataset
 from llama_index.prompts.mixin import PromptDictType
 from llama_index.evaluation.base import BaseEvaluator, EvaluationResult
@@ -95,7 +95,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
     """
 
     eval_results = defaultdict(list)
-    _service_context = global_service_context or ServiceContext.from_defaults()
+    # service_context = global_service_context
     config = ["uppercase", "lowercase", "add_typo"]
 
     def __init__(
@@ -173,6 +173,8 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         self,
     ):
         metric_df = []
+        from llama_index import global_service_context
+
         for test_name, results in self.eval_results.items():
             metric_dicts = []
             for eval_result in results:
@@ -186,7 +188,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
             metric_df.append(
                 {
-                    "Retriever Model": self._service_context.embed_model.model_name,
+                    "Retriever Model": global_service_context.embed_model.model_name,
                     "Test Type": test_name,
                     "Hit Rate": hit_rate,
                     "MRR": mrr,

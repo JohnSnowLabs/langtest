@@ -615,11 +615,15 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
-            kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
 
-            kwargs.pop("temperature", None)
-            device = kwargs.pop("device", -1)
-            task = kwargs.pop("task", None)
+            filtered_kwargs = kwargs.copy()
+
+            filtered_kwargs[new_tokens_key] = filtered_kwargs.pop("max_tokens", 64)
+
+            filtered_kwargs.pop("temperature", None)
+            filtered_kwargs.pop("stream", None)
+            device = filtered_kwargs.pop("device", -1)
+            task = filtered_kwargs.pop("task", None)
             tasks = [
                 "text-generation",
                 "text2text-generation",
@@ -629,23 +633,27 @@ class PretrainedModelForQA(ModelAPI):
             if task:
                 if isinstance(path, str):
                     model = HuggingFacePipeline(
-                        model_id=path, task=task, device=device, **kwargs
+                        model_id=path, task=task, device=device, **filtered_kwargs
                     )
                 elif "pipelines" not in str(type(path)).split("'")[1].split("."):
                     path = path.config.name_or_path
                     model = HuggingFacePipeline(
-                        model_id=path, task=task, device=device, **kwargs
+                        model_id=path, task=task, device=device, **filtered_kwargs
                     )
                 else:
                     model = HuggingFacePipeline(pipeline=path)
                 return cls(model)
             else:
                 if isinstance(path, str):
-                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+                    model = cls._try_initialize_model(
+                        path, device, tasks, **filtered_kwargs
+                    )
 
                 elif "pipelines" not in str(type(path)).split("'")[1].split("."):
                     path = path.config.name_or_path
-                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+                    model = cls._try_initialize_model(
+                        path, device, tasks, **filtered_kwargs
+                    )
                 else:
                     model = HuggingFacePipeline(pipeline=path)
 

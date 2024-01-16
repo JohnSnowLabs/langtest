@@ -445,12 +445,18 @@ class BaseQASample(BaseModel):
             options=self.options,
         )
 
+        server_prompt = kwargs.get("server_prompt", " ")
+
         prompt = build_qa_prompt(original_text_input, dataset_name, **kwargs)
 
-        self.expected_results = model(text=original_text_input, prompt=prompt)
+        self.expected_results = model(
+            text=original_text_input, prompt=prompt, server_prompt=server_prompt
+        )
 
         if self.perturbed_context or self.perturbed_question:
-            self.actual_results = model(text=perturbed_text_input, prompt=prompt)
+            self.actual_results = model(
+                text=perturbed_text_input, prompt=prompt, server_prompt=server_prompt
+            )
 
         self.state == "done"
 
@@ -474,14 +480,15 @@ class QASample(BaseQASample):
 
     def __update_params(self):
         from ...langtest import HARNESS_CONFIG as harness_config
-        from ...langtest import EVAL_MODEL
 
         self.config = harness_config
         self.metric_name = (
             self.config.get("evaluation", {}).get("metric", "llm_eval").lower()
         )
 
-        if self.actual_results is not None and self.expected_results is not None:
+        if self.state == "done":
+            from ...langtest import EVAL_MODEL
+
             if (
                 "evaluation" in harness_config
                 and "metric" in harness_config["evaluation"]
@@ -834,9 +841,11 @@ class ToxicitySample(BaseModel):
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "{context}")
         )
+        server_prompt = kwargs.get("server_prompt", " ")
         self.completion = model(
             text={"context": self.prompt},
             prompt={"template": prompt_template, "input_variables": ["context"]},
+            server_prompt=server_prompt,
         )
         return True
 
@@ -1090,6 +1099,7 @@ class SecuritySample(BaseModel):
             "user_prompt",
             default_user_prompt.get(dataset_name, "{promt}\n"),
         )
+        server_prompt = kwargs.get("server_prompt", " ")
 
         self.actual_results = model(
             text={"prompt": self.prompt},
@@ -1097,6 +1107,7 @@ class SecuritySample(BaseModel):
                 "template": prompt_template,
                 "input_variables": ["prompt"],
             },
+            server_prompt=server_prompt,
         )
 
         self.actual_results = self.actual_results.replace("\n", "").strip()
@@ -1219,6 +1230,7 @@ class ClinicalSample(BaseModel):
             "user_prompt",
             default_user_prompt.get(dataset_name, "{patient_info}\n{diagnosis}\n"),
         )
+        server_prompt = kwargs.get("server_prompt", " ")
 
         self.treatment_plan_A = model(
             text={"patient_info": self.patient_info_A, "diagnosis": self.diagnosis},
@@ -1226,6 +1238,7 @@ class ClinicalSample(BaseModel):
                 "template": prompt_template,
                 "input_variables": ["patient_info", "diagnosis"],
             },
+            server_prompt=server_prompt,
         )
         self.treatment_plan_B = model(
             text={"patient_info": self.patient_info_B, "diagnosis": self.diagnosis},
@@ -1233,6 +1246,7 @@ class ClinicalSample(BaseModel):
                 "template": prompt_template,
                 "input_variables": ["patient_info", "diagnosis"],
             },
+            server_prompt=server_prompt,
         )
 
         return True
@@ -1285,12 +1299,15 @@ class LLMAnswerSample(BaseModel):
             "user_prompt", default_user_prompt["political_compass"]
         )
 
+        server_prompt = kwargs.get("server_prompt", " ")
+
         self.answer = model(
             text={"question": self.question},
             prompt={
                 "template": prompt_template,
                 "input_variables": ["question"],
             },
+            server_prompt=server_prompt,
         )
 
         return True
@@ -1384,6 +1401,7 @@ class DisinformationSample(BaseModel):
             "user_prompt",
             default_user_prompt.get(dataset_name, ""),
         )
+        server_prompt = kwargs.get("server_prompt", " ")
 
         self.model_response = model(
             text={"statements": self.statements, "hypothesis": self.hypothesis},
@@ -1391,6 +1409,7 @@ class DisinformationSample(BaseModel):
                 "template": prompt_template,
                 "input_variables": ["statements", "hypothesis"],
             },
+            server_prompt=server_prompt,
         )
         return True
 
@@ -1482,6 +1501,7 @@ class WinoBiasSample(BaseModel):
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
+            server_prompt = kwargs.get("server_prompt", " ")
 
             self.model_response = model(
                 text={"question": self.masked_text, "options": self.options},
@@ -1489,6 +1509,7 @@ class WinoBiasSample(BaseModel):
                     "template": prompt_template,
                     "input_variables": ["question", "options"],
                 },
+                server_prompt=server_prompt,
             )
             return True
 
@@ -1743,6 +1764,7 @@ class LegalSample(BaseModel):
                 "{case}\n{legal_claim}\n{legal_conclusion_A}\n{legal_conclusion_B}\n",
             ),
         )
+        server_prompt = kwargs.get("server_prompt", " ")
 
         self.model_conclusion = model(
             text={
@@ -1760,6 +1782,7 @@ class LegalSample(BaseModel):
                     "legal_conclusion_B",
                 ],
             },
+            server_prompt=server_prompt,
         )
 
         self.model_conclusion = (
@@ -2018,6 +2041,9 @@ class FactualitySample(BaseModel):
             "user_prompt",
             default_user_prompt.get(dataset_name, ""),
         )
+
+        server_prompt = kwargs.get("server_prompt", " ")
+
         self.result = model(
             text={
                 "article_sentence": self.article_sent,
@@ -2028,6 +2054,7 @@ class FactualitySample(BaseModel):
                 "template": prompt_template,
                 "input_variables": ["article_sentence", "option_a", "option_b"],
             },
+            server_prompt=server_prompt,
         )
         self.swapped_result = model(
             text={
@@ -2039,6 +2066,7 @@ class FactualitySample(BaseModel):
                 "template": prompt_template,
                 "input_variables": ["article_sentence", "option_a", "option_b"],
             },
+            server_prompt=server_prompt,
         )
         return True
 
@@ -2257,8 +2285,17 @@ class SensitivitySample(BaseModel):
             options=self.options,
         )
 
-        self.op1 = model(text=original_text_input, test_name=self.test_type)
-        self.op2 = model(text=perturbed_text_input, test_name=self.test_type)
+        server_prompt = kwargs.get("server_prompt", " ")
+        self.op1 = model(
+            text=original_text_input,
+            test_name=self.test_type,
+            server_prompt=server_prompt,
+        )
+        self.op2 = model(
+            text=perturbed_text_input,
+            test_name=self.test_type,
+            server_prompt=server_prompt,
+        )
         self.expected_result = self.op1["result"]
         self.actual_result = self.op2["result"]
         return True
@@ -2596,12 +2633,15 @@ class SycophancySample(BaseModel):
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )
 
+        server_prompt = kwargs.get("server_prompt", " ")
+
         self.expected_results = model(
             text={"question": self.original_question},
             prompt={
                 "template": prompt_template,
                 "input_variables": ["question"],
             },
+            server_prompt=server_prompt,
         )
         if self.perturbed_question:
             self.actual_results = model(
@@ -2612,6 +2652,7 @@ class SycophancySample(BaseModel):
                     "template": prompt_template,
                     "input_variables": ["question"],
                 },
+                server_prompt=server_prompt,
             )
 
         return True

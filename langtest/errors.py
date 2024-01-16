@@ -255,6 +255,7 @@ class Errors(metaclass=ErrorsWithCodes):
     E092 = ("Error: The specified directory is not valid: {directory}")
     E093 = ("Category cannot be None. Please provide a valid category.")
     E094 = ("Unsupported category: '{category}'. Supported categories: {supported_category}")
+    E095 = ("Failed to make API request: {e}")
 
 
 class ColumnNameError(Exception):
