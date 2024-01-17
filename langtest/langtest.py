@@ -501,6 +501,7 @@ class Harness:
                 "original",
                 "original_question",
                 "original_context",
+                "options",
                 "expected_results",
                 "actual_results",
             ]
