@@ -24,7 +24,7 @@ class BasePipeline:
 
 
 class EmbeddingPipeline(BasePipeline):
-    def __init__(self, embed_model, dataset=None, config=None):
+    def __init__(self, embed_model, dataset=None, config=None, hub="huggingface"):
         super().__init__()
         self.embed_model = embed_model
         self.dataset = dataset or f"{package_path}/data/Retrieval_Datasets/qa_dataset.pkl"
@@ -32,6 +32,7 @@ class EmbeddingPipeline(BasePipeline):
         self.documents = None
         self.nodes = None
         self.llm = None
+        self.hub = hub
         self.node_parser = None
         self.qa_dataset = None
 
@@ -48,8 +49,13 @@ class EmbeddingPipeline(BasePipeline):
             else:
                 documents = SimpleDirectoryReader(self.dataset).load_data()
 
-                # Define an LLM
-                llm = OpenAI(model="gpt-3.5-turbo")
+                try:
+                    # Define an LLM
+                    llm = OpenAI(model="gpt-3.5-turbo")
+    
+                except Exception as e:
+                    print(f"An error occurred: {e}. Kindly add your key to environment using python -m langtest config set 'OPENAI_API_KEY'= KEY ")
+
 
                 # Build index with a chunk_size of 512
                 node_parser = SimpleNodeParser.from_defaults(chunk_size=512)
@@ -76,9 +82,18 @@ class EmbeddingPipeline(BasePipeline):
 
 
     def load_model(self):
-        em = HuggingFaceEmbedding(self.embed_model, max_length=512)
-        servicecontext = ServiceContext.from_defaults(embed_model=em)
-        set_global_service_context(servicecontext)
-        vector_index = VectorStoreIndex(self.nodes, servicecontext = servicecontext)
-        self.query_engine = vector_index.as_query_engine()
+        if self.hub=="huggingface":
+            em = HuggingFaceEmbedding(self.embed_model, max_length=512)
+            servicecontext = ServiceContext.from_defaults(embed_model=em)
+            set_global_service_context(servicecontext)
+            vector_index = VectorStoreIndex(self.nodes, servicecontext = servicecontext)
+            self.query_engine = vector_index.as_query_engine()
+        else:
+            vector_index = VectorStoreIndex(self.nodes)
+            self.query_engine = vector_index.as_query_engine()
+
+          
+            
+
+   
 
