@@ -174,8 +174,7 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
     def display_results(
         self,
     ):
-        from llama_index import global_service_context
-
+        """Display results."""
         metric_df = []
         from llama_index import global_service_context
 

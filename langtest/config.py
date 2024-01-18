@@ -51,7 +51,7 @@ def read_config(option, section="Default"):
         config = configparser.ConfigParser()
         config.read(config_path)
         return config.get(section, option, fallback="None")
-    except:
+    except Exception:
         return "You have not set any config yet"
 
 
