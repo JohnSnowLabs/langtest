@@ -30,7 +30,9 @@ def get_env(args):
     print(read_config(args))
 
 
-config_path = os.path.dirname(os.path.abspath(__file__)) + "/config.ini"
+config_path = os.path.expanduser("~/.langtest/")
+os.makedirs(config_path, exist_ok=True)
+config_path = os.path.join(config_path, "config.ini")
 
 
 def read_config(option, section="Default"):
@@ -45,9 +47,12 @@ def read_config(option, section="Default"):
         str: The value of the option, or None if not found.
     """
 
-    config = configparser.ConfigParser()
-    config.read(config_path)
-    return config.get(section, option, fallback=None)
+    try:
+        config = configparser.ConfigParser()
+        config.read(config_path)
+        return config.get(section, option, fallback="None")
+    except:
+        return "You have not set any config yet"
 
 
 def write_config(option, value, section="Default"):
