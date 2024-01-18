@@ -6,6 +6,7 @@ from .modelhandler import ModelAPI
 from abc import ABC, abstractmethod
 import logging
 from ..errors import Errors
+from functools import lru_cache
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +29,14 @@ class PretrainedCustomModel(ABC):
         if not hasattr(self.model, "predict"):
             raise ValueError(Errors.E037)
 
+        self.predict.cache_clear()
+
     @classmethod
     def load_model(cls, path: Any) -> "Any":
         return cls(path)
 
     @abstractmethod
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs):
         try:
             return self.model.predict(text, *args, **kwargs)
@@ -62,6 +66,7 @@ class PretrainedModelForTextClassification(PretrainedCustomModel, ModelAPI):
         SequenceClassificationOutput: A class containing the predicted class label and score.
     """
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> SequenceClassificationOutput:
         try:
             out = self.model.predict(text, *args, **kwargs)
@@ -92,6 +97,7 @@ class PretrainedModelForQA(PretrainedCustomModel, ModelAPI):
         If an error occurs during prediction.
     """
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs):
         try:
             out = self.model.predict(text, *args, **kwargs)

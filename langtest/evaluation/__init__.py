@@ -95,7 +95,6 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
     """
 
     eval_results = defaultdict(list)
-    # _service_context = global_service_context or ServiceContext.from_defaults()
     config = ["uppercase", "lowercase", "add_typo"]
 
     def __init__(
@@ -178,6 +177,8 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         from llama_index import global_service_context
 
         metric_df = []
+        from llama_index import global_service_context
+
         for test_name, results in self.eval_results.items():
             metric_dicts = []
             for eval_result in results:

@@ -7,6 +7,8 @@ from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 from ..errors import Errors, Warnings
 import logging
+from functools import lru_cache
+from langtest.utils.custom_types.helpers import HashableDict
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -45,6 +47,8 @@ class PretrainedModelForQA(ModelAPI):
         if isinstance(model, str):
             self.model = self.load_model(hub, model, *args, **kwargs).model
 
+        self.predict.cache_clear()
+
     @classmethod
     def load_model(cls, hub: str, path: str, *args, **kwargs) -> "PretrainedModelForQA":
         """Load the pretrained model.
@@ -62,24 +66,30 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
+        exclude_args = ["task", "device", "stream"]
+
+        filtered_kwargs = kwargs.copy()
+
+        for arg in exclude_args:
+            filtered_kwargs.pop(arg, None)
+
         try:
-            kwargs.pop("task", None), kwargs.pop("device", None)
-            cls._update_model_parameters(hub, kwargs)
+            cls._update_model_parameters(hub, filtered_kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
-                model = cm.ChatOpenAI(model=path, *args, **kwargs)
-                return cls(hub, model, *args, **kwargs)
+                model = cm.ChatOpenAI(model=path, *args, **filtered_kwargs)
+                return cls(hub, model, *args, **filtered_kwargs)
             else:
                 model = getattr(lc, LANGCHAIN_HUBS[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
-                cls.model = model(model=path, *args, **kwargs)
+                cls.model = model(model=path, *args, **filtered_kwargs)
             elif "model_name" in default_args:
-                cls.model = model(model_name=path, *args, **kwargs)
+                cls.model = model(model_name=path, *args, **filtered_kwargs)
             elif "model_id" in default_args:
-                cls.model = model(model_id=path, *args, **kwargs)
+                cls.model = model(model_id=path, *args, **filtered_kwargs)
             elif "repo_id" in default_args:
-                cls.model = model(repo_id=path, model_kwargs=kwargs)
-            return cls(hub, cls.model, *args, **kwargs)
+                cls.model = model(repo_id=path, model_kwargs=filtered_kwargs)
+            return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ImportError:
             raise ValueError(Errors.E044.format(path=path))
@@ -107,6 +117,7 @@ class PretrainedModelForQA(ModelAPI):
             new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
             kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
@@ -153,6 +164,10 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             The prediction result.
         """
+
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
         return self.predict(text, prompt, *args, **kwargs)
 
 
@@ -254,6 +269,7 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
         """
         super().__init__(hub, model, *args, **kwargs)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], *args, **kwargs):
         """Perform prediction using the pretrained model.
 
@@ -289,6 +305,8 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
             dict: A dictionary containing the prediction result.
                 - 'result': The prediction result.
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
         return self.predict(
             text=text,
             *args,

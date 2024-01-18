@@ -50,6 +50,9 @@ class BaseTask(ABC):
         if "user_prompt" in kwargs:
             cls.user_prompt = kwargs.get("user_prompt")
             kwargs.pop("user_prompt")
+        if "server_prompt" in kwargs:
+            cls.server_prompt = kwargs.get("server_prompt")
+            kwargs.pop("server_prompt")
         try:
             if model_hub in LANGCHAIN_HUBS:
                 # LLM models
@@ -302,14 +305,14 @@ class QuestionAnswering(BaseTask):
         "text": ["question"],
         "context": ["context", "passage", "contract"],
         "options": ["options"],
-        "answer": ["answer", "answer_and_def_correct_predictions"],
+        "answer": ["answer", "answer_and_def_correct_predictions", "ground_truth"],
     }
     sample_class = samples.QASample
 
     def create_sample(
         cls,
         row_data: dict,
-        dataset_name: str = "qa",
+        dataset_name: str = "default_question_answering_prompt",
         question: str = "text",
         context: str = "context",
         options: str = "options",
@@ -330,10 +333,15 @@ class QuestionAnswering(BaseTask):
         if isinstance(expected_results, str) or isinstance(expected_results, bool):
             expected_results = [str(expected_results)]
 
+        options_value = row_data.get(column_mapper.get(options, "-"), "-")
+
+        if isinstance(options_value, list):
+            options_value = "\n".join(map(str, options_value))
+
         return samples.QASample(
             original_question=row_data[column_mapper[question]],
             original_context=row_data.get(column_mapper.get(context, "-"), "-"),
-            options=row_data.get(column_mapper.get(options, "-"), "-"),
+            options=options_value,
             expected_results=expected_results,
             dataset_name=dataset_name,
         )
