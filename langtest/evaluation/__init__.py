@@ -131,6 +131,8 @@ class LangtestRetrieverEvaluator(RetrieverEvaluator):
         **kwargs: Any,
     ) -> Dict[str, List[RetrievalEvalResult]]:
         """Evaluate dataset."""
+        import random
+        random.seed(42)
         response_jobs = defaultdict(list)
         mode = RetrievalEvalMode.from_str(dataset.mode)
         for query_id, query in dataset.queries.items():

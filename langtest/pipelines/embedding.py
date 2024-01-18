@@ -34,7 +34,7 @@ def benchmark():
 @click.option("--hub", "-h", type=str, required=False)
 def embeddings(model, dataset, config, hub):
     """Benchmark embeddings."""
-    print(f"Initializing Embedding Model Evaluation with {model}, {dataset}, {config}.")
+    print(f"Initializing Embedding Model Evaluation with {model}")
     _ = EmbeddingPipeline(model, dataset, config, hub)
 
 
@@ -119,7 +119,7 @@ class EmbeddingPipeline(BasePipeline):
 
     def load_model(self):
         if self.hub:
-            em = HuggingFaceEmbedding(self.embed_model, max_length=512)
+            em = HuggingFaceEmbedding(self.embed_model)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
             vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
@@ -135,6 +135,7 @@ class EmbeddingPipeline(BasePipeline):
         self.evaluator_config()
 
     def evaluator_config(self):
+      
         self.retriever_evaluator_HF = LangtestRetrieverEvaluator.from_metric_names(
             ["mrr", "hit_rate"], retriever=self.retriever
         )
@@ -162,5 +163,5 @@ class EmbeddingPipeline(BasePipeline):
             return df
 
         result = asyncio.run(eval_results())
-        print(result)
-        return result
+        print(result.to_string())
+        return result.to_string()
