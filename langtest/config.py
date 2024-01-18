@@ -6,6 +6,7 @@ from langtest import cli
 
 @cli.group("config")
 def config():
+    """Manage langtest configurations."""
     pass
 
 

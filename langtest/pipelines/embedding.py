@@ -1,6 +1,9 @@
 import os
 import pickle
-from langtest import Harness
+import click
+import asyncio
+from langtest import cli
+from langtest.config import read_config
 from llama_index.readers import SimpleDirectoryReader
 from llama_index.node_parser import SimpleNodeParser
 from llama_index.llms import OpenAI
@@ -9,9 +12,30 @@ from llama_index.embeddings import HuggingFaceEmbedding
 from llama_index.indices import VectorStoreIndex
 from llama_index.service_context import ServiceContext, set_global_service_context
 from langtest.evaluation import LangtestRetrieverEvaluator
+from pkg_resources import resource_filename
+
+default_qa_pkl = resource_filename("langtest", "data/Retrieval_Datasets/qa_dataset.pkl")
+
+# set environment variables
+os.environ["OPENAI_API_KEY"] = read_config("openai_api_key")
 
 
-package_path = os.path.abspath(__package__)
+@cli.group("benchmark")
+def benchmark():
+    """Benchmark NLP and LLM models on various datasets
+    with different tests using Langtest CLI."""
+    pass
+
+
+@benchmark.command("embeddings")
+@click.option("--model", "-m", type=str, required=True)
+@click.option("--dataset", "-d", type=str, required=False)
+@click.option("--config", "-c", type=str, required=False)
+@click.option("--hub", "-h", type=str, required=False)
+def embeddings(model, dataset, config, hub):
+    """Benchmark embeddings."""
+    print(f"Initializing Embedding Model Evaluation with {model}, {dataset}, {config}.")
+    _ = EmbeddingPipeline(model, dataset, config, hub)
 
 
 class BasePipeline:
@@ -29,7 +53,7 @@ class EmbeddingPipeline(BasePipeline):
     def __init__(self, embed_model, dataset=None, config=None, hub=None):
         super().__init__()
         self.embed_model = embed_model
-        self.dataset = dataset or f"{package_path}/data/Retrieval_Datasets/qa_dataset.pkl"
+        self.dataset = dataset if dataset else default_qa_pkl
         self.config = config
         self.documents = None
         self.nodes = None
@@ -44,6 +68,7 @@ class EmbeddingPipeline(BasePipeline):
         self.load_data()
 
     def load_data(self):
+        print(self.dataset)
         if isinstance(self.dataset, str):
             if self.dataset.endswith(".pkl"):
                 with open(self.dataset, "rb") as file:
@@ -100,6 +125,8 @@ class EmbeddingPipeline(BasePipeline):
             vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
 
         else:
+            servicecontext = ServiceContext.from_defaults()
+            set_global_service_context(servicecontext)
             vector_index = VectorStoreIndex(self.nodes)
 
         self.query_engine = vector_index.as_query_engine()
@@ -123,10 +150,17 @@ class EmbeddingPipeline(BasePipeline):
             "adjective_synonym_swap",
         )
 
+        print("Ready to run evaluation")
         self.run_evaluator()
 
-    async def run_evaluator(self):
-        eval_results = await self.retriever_evaluator_HF.aevaluate_dataset(
-            self.qa_dataset
-        )
-        print(self.retriever_evaluator_HF.display_results())
+    def run_evaluator(self):
+        print("Running evaluation")
+
+        async def eval_results():
+            _ = await self.retriever_evaluator_HF.aevaluate_dataset(self.qa_dataset)
+            df = self.retriever_evaluator_HF.display_results()
+            return df
+
+        result = asyncio.run(eval_results())
+        print(result)
+        return result

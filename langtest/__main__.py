@@ -1,7 +1,9 @@
 import click
 from langtest import Harness
 from langtest.config import cli
+from langtest.pipelines.embedding import benchmark
 
+click.CommandCollection(sources=[cli, benchmark], help="LangTest CLI")
 harness = None
 
 
