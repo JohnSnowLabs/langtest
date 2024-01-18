@@ -42,7 +42,6 @@ class EmbeddingPipeline(BasePipeline):
         self.query_engine = None
 
         self.load_data()
-       
 
     def load_data(self):
         if isinstance(self.dataset, str):
@@ -60,10 +59,11 @@ class EmbeddingPipeline(BasePipeline):
                 try:
                     # Define an LLM
                     llm = OpenAI(model="gpt-3.5-turbo")
-    
-                except Exception as e:
-                    print(f"An error occurred: {e}. Kindly add your key to environment using python -m langtest config set 'OPENAI_API_KEY'= KEY ")
 
+                except Exception as e:
+                    print(
+                        f"An error occurred: {e}. Kindly add your key to environment using python -m langtest config set 'OPENAI_API_KEY'= KEY "
+                    )
 
                 # Build index with a chunk_size of 512
                 node_parser = SimpleNodeParser.from_defaults(chunk_size=512)
@@ -80,52 +80,53 @@ class EmbeddingPipeline(BasePipeline):
                 self.qa_dataset = qa_dataset
 
                 with open(self.dataset, "wb") as file:
-                    pickle.dump({
-                        "documents": self.documents,
-                        "nodes": self.nodes,
-                        "llm": self.llm,
-                        "node_parser": self.node_parser,
-                        "qa_dataset": self.qa_dataset,
-                    }, file)
-        self.load_model()        
+                    pickle.dump(
+                        {
+                            "documents": self.documents,
+                            "nodes": self.nodes,
+                            "llm": self.llm,
+                            "node_parser": self.node_parser,
+                            "qa_dataset": self.qa_dataset,
+                        },
+                        file,
+                    )
+        self.load_model()
 
     def load_model(self):
         if self.hub:
             em = HuggingFaceEmbedding(self.embed_model, max_length=512)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
-            vector_index = VectorStoreIndex(self.nodes, servicecontext = servicecontext)
-           
+            vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
+
         else:
             vector_index = VectorStoreIndex(self.nodes)
-        
+
         self.query_engine = vector_index.as_query_engine()
         self.retriever = vector_index.as_retriever(similarity_top_k=3)
 
         self.evaluator_config()
 
     def evaluator_config(self):
+        self.retriever_evaluator_HF = LangtestRetrieverEvaluator.from_metric_names(
+            ["mrr", "hit_rate"], retriever=self.retriever
+        )
 
+        self.retriever_evaluator_HF.setPerturbations(
+            "add_typo",
+            "dyslexia_word_swap",
+            "add_ocr_typo",
+            "add_contraction",
+            "add_abbreviation",
+            "add_speech_to_text_typo",
+            "add_slangs",
+            "adjective_synonym_swap",
+        )
 
-            self.retriever_evaluator_HF = LangtestRetrieverEvaluator.from_metric_names(
-                ["mrr", "hit_rate"], retriever=self.retriever
-            )
+        self.run_evaluator()
 
-            self.retriever_evaluator_HF.setPerturbations("add_typo","dyslexia_word_swap", "add_ocr_typo","add_contraction","add_abbreviation",'add_speech_to_text_typo','add_slangs','adjective_synonym_swap')
-
-            self.run_evaluator()
-    
     async def run_evaluator(self):
-
-        eval_results = await self.retriever_evaluator_HF.aevaluate_dataset(self.qa_dataset)
+        eval_results = await self.retriever_evaluator_HF.aevaluate_dataset(
+            self.qa_dataset
+        )
         print(self.retriever_evaluator_HF.display_results())
-
-
-    
-    
-
-          
-            
-
-   
-
