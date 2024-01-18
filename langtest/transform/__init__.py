@@ -696,8 +696,10 @@ class FairnessTestFactory(ITests):
                             options=sample.options,
                         )
                         prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
-
-                        prediction = model(text=input_data, prompt=prompt)
+                        server_prompt = kwargs.get("server_prompt", " ")
+                        prediction = model(
+                            text=input_data, prompt=prompt, server_prompt=server_prompt
+                        ).strip()
                         return prediction.strip()
 
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
@@ -944,8 +946,10 @@ class AccuracyTestFactory(ITests):
                     options=sample.options,
                 )
                 prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
-
-                prediction = model(text=input_data, prompt=prompt).strip()
+                server_prompt = kwargs.get("server_prompt", " ")
+                prediction = model(
+                    text=input_data, prompt=prompt, server_prompt=server_prompt
+                ).strip()
                 sample.actual_results = prediction
                 return prediction
 
