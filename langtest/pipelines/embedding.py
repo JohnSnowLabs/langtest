@@ -8,6 +8,7 @@ from llama_index.evaluation import generate_question_context_pairs
 from llama_index.embeddings import HuggingFaceEmbedding
 from llama_index.indices import VectorStoreIndex
 from llama_index.service_context import ServiceContext, set_global_service_context
+from langtest.evaluation import LangtestRetrieverEvaluator
 
 package_path = os.path.abspath(__package__)
 
@@ -35,6 +36,12 @@ class EmbeddingPipeline(BasePipeline):
         self.hub = hub
         self.node_parser = None
         self.qa_dataset = None
+        self.retriever_evaluator_HF = None
+        self.retriever = None
+        self.query_engine = None
+
+        self.load_data()
+       
 
     def load_data(self):
         if isinstance(self.dataset, str):
@@ -79,7 +86,7 @@ class EmbeddingPipeline(BasePipeline):
                         "node_parser": self.node_parser,
                         "qa_dataset": self.qa_dataset,
                     }, file)
-
+        self.load_model()        
 
     def load_model(self):
         if self.hub=="huggingface":
@@ -87,10 +94,34 @@ class EmbeddingPipeline(BasePipeline):
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
             vector_index = VectorStoreIndex(self.nodes, servicecontext = servicecontext)
-            self.query_engine = vector_index.as_query_engine()
+           
         else:
             vector_index = VectorStoreIndex(self.nodes)
-            self.query_engine = vector_index.as_query_engine()
+        
+        self.query_engine = vector_index.as_query_engine()
+        self.retriever = vector_index.as_retriever(similarity_top_k=3)
+
+        self.evaluator_config()
+
+    def evaluator_config(self):
+
+
+            self.retriever_evaluator_HF = LangtestRetrieverEvaluator.from_metric_names(
+                ["mrr", "hit_rate"], retriever=self.retriever
+            )
+
+            self.retriever_evaluator_HF.setPerturbations("add_typo","dyslexia_word_swap", "add_ocr_typo","add_contraction","add_abbreviation",'add_speech_to_text_typo','add_slangs','adjective_synonym_swap')
+
+            self.run_evaluator()
+    
+    async def run_evaluator(self):
+
+        eval_results = await self.retriever_evaluator_HF.aevaluate_dataset(self.qa_dataset)
+        print(self.retriever_evaluator_HF.display_results())
+
+
+    
+    
 
           
             
