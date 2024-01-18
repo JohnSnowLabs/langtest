@@ -135,7 +135,6 @@ class EmbeddingPipeline(BasePipeline):
         self.evaluator_config()
 
     def evaluator_config(self):
-      
         self.retriever_evaluator_HF = LangtestRetrieverEvaluator.from_metric_names(
             ["mrr", "hit_rate"], retriever=self.retriever
         )
