@@ -27,7 +27,7 @@ class EmbeddingPipeline(BasePipeline):
     def __init__(self, embed_model, dataset=None, config=None):
         super().__init__()
         self.embed_model = embed_model
-        self.dataset = dataset or f"{package_path}/data/Retrieval Datasets/qa_dataset.pkl"
+        self.dataset = dataset or f"{package_path}/data/Retrieval_Datasets/qa_dataset.pkl"
         self.config = config
         self.documents = None
         self.nodes = None
