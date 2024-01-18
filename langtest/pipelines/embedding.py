@@ -10,6 +10,7 @@ from llama_index.indices import VectorStoreIndex
 from llama_index.service_context import ServiceContext, set_global_service_context
 from langtest.evaluation import LangtestRetrieverEvaluator
 
+
 package_path = os.path.abspath(__package__)
 
 
@@ -25,7 +26,7 @@ class BasePipeline:
 
 
 class EmbeddingPipeline(BasePipeline):
-    def __init__(self, embed_model, dataset=None, config=None, hub="huggingface"):
+    def __init__(self, embed_model, dataset=None, config=None, hub=None):
         super().__init__()
         self.embed_model = embed_model
         self.dataset = dataset or f"{package_path}/data/Retrieval_Datasets/qa_dataset.pkl"
@@ -89,7 +90,7 @@ class EmbeddingPipeline(BasePipeline):
         self.load_model()        
 
     def load_model(self):
-        if self.hub=="huggingface":
+        if self.hub:
             em = HuggingFaceEmbedding(self.embed_model, max_length=512)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
