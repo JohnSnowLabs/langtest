@@ -28,14 +28,19 @@ def benchmark():
 
 
 @benchmark.command("embeddings")
-@click.option("--model", "-m", type=str, required=True)
+@click.option(
+    "--model", "-m", type=str, required=True, help="Comma-separated list of models"
+)
 @click.option("--dataset", "-d", type=str, required=False)
 @click.option("--config", "-c", type=str, required=False)
 @click.option("--hub", "-h", type=str, required=False)
 def embeddings(model, dataset, config, hub):
     """Benchmark embeddings."""
-    print(f"Initializing Embedding Model Evaluation with {model}")
-    _ = EmbeddingPipeline(model, dataset, config, hub)
+    models = [m.strip() for m in model.split(",")]
+
+    for m in models:
+        print(f"Initializing Embedding Model Evaluation with {m}")
+        _ = EmbeddingPipeline(m, dataset, config, hub)
 
 
 class BasePipeline:
