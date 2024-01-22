@@ -91,11 +91,11 @@ def run(task, model, hub, batch_size, checkpoints):
         )
 
     # check if checkpoints exist and load them
-    if os.path.exists("./langtest/checkpoints"):
+    if os.path.exists(checkpoints_dir):
         harness = Harness.load_checkpoints(
             task,
             model={"model": model, "hub": hub},
-            save_checkpoints_dir="./langtest/checkpoints",
+            save_checkpoints_dir=checkpoints_dir,
         )
     # check if harness.json exists and load it
     elif model and hub:
@@ -118,7 +118,7 @@ def run(task, model, hub, batch_size, checkpoints):
         harness.run(
             batch_size=batch_size,
             checkpoints=checkpoints,
-            save_checkpoints_dir="./langtest/checkpoints",
+            save_checkpoints_dir=checkpoints_dir,
         )
 
         # save harness
