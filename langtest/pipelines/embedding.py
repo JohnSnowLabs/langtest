@@ -128,7 +128,7 @@ class EmbeddingPipeline(BasePipeline):
 
     def load_model(self):
         if self.hub:
-            em = HuggingFaceEmbedding(self.embed_model)
+            em = HuggingFaceEmbedding(self.embed_model, trust_remote_code=True)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
             vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
