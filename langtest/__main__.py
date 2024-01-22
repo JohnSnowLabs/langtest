@@ -31,7 +31,7 @@ def init(task, model, hub, dataset, config, output):
         dataset=dataset,
         config=config,
     )
-    with open(f"./harness.json", "w") as f:
+    with open("./harness.json", "w") as f:
         f.write(
             json.dumps(
                 {
