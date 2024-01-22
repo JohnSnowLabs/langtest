@@ -73,6 +73,8 @@ def write_config(option, value, section="Default"):
     with open(config_path, "w") as configfile:
         config.write(configfile)
 
+    # add to environment
+    os.environ[option] = value
     print(f"Set {option} to {value}")
 
 
