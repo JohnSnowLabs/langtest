@@ -49,7 +49,7 @@ def init(task, model, hub, dataset, config, output):
 
 @cli.command("generate")
 def generate():
-    """Generate a new langtest project."""
+    """Generate the testcases ."""
     print("Generating new langtest project.")
     if os.path.exists("./harness.json"):
         params = json.load(open("./harness.json", "r"))
@@ -76,7 +76,7 @@ def generate():
 @click.option("--batch_size", "-b", type=int, required=False, default=500)
 @click.option("--checkpoints", "-c", type=bool, required=False, default=True)
 def run(task, model, hub, batch_size, checkpoints):
-    """Generate a new langtest project."""
+    """Run the testcases."""
     harness = None
     params = None
     if os.path.exists("./harness.json"):
@@ -127,7 +127,7 @@ def run(task, model, hub, batch_size, checkpoints):
 
 @cli.command("report")
 def report():
-    """Generate a new langtest project."""
+    """Generate the report."""
     if os.path.exists("./harness.json"):
         params = json.load(open("./harness.json", "r"))
         harness = Harness.load(
