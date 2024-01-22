@@ -13,6 +13,7 @@ try:
     from llama_index.llms import OpenAI
     from llama_index.evaluation import generate_question_context_pairs
     from llama_index.embeddings import HuggingFaceEmbedding
+    from llama_index.embeddings.openai import OpenAIEmbedding
     from llama_index.indices import VectorStoreIndex
     from llama_index.service_context import ServiceContext, set_global_service_context
 except ImportError as e:
@@ -127,8 +128,14 @@ class EmbeddingPipeline(BasePipeline):
         self.load_model()
 
     def load_model(self):
-        if self.hub == "huggingface":
+        if self.hub=="huggingface":
             em = HuggingFaceEmbedding(self.embed_model, trust_remote_code=True)
+            servicecontext = ServiceContext.from_defaults(embed_model=em)
+            set_global_service_context(servicecontext)
+            vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
+        
+        elif self.hub=="openai":
+            em = OpenAIEmbedding(self.embed_model)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
             vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
