@@ -49,7 +49,7 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(Errors.E093.format(e=str(e)))
+        raise RuntimeError(Errors.E095.format(e=str(e)))
 
 
 class PretrainedModel(ABC):
