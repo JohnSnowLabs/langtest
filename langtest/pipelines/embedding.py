@@ -127,7 +127,7 @@ class EmbeddingPipeline(BasePipeline):
         self.load_model()
 
     def load_model(self):
-        if self.hub:
+        if self.hub == "huggingface":
             em = HuggingFaceEmbedding(self.embed_model, trust_remote_code=True)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
