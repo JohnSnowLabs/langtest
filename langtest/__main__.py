@@ -130,24 +130,24 @@ def report():
     """Generate the report."""
     if os.path.exists("./harness.json"):
         params = json.load(open("./harness.json", "r"))
-        harness = Harness.load(
-            save_dir=params["save_dir"],
-            task=params["task"],
-            model=params["model"],
-        )
     else:
         sys.exit(
             "No harness.json found in current directory. Please run `langtest init` first."
         )
 
+    harness = Harness.load(
+        save_dir=params["save_dir"],
+        task=params["task"],
+        model=params["model"],
+    )
     # generated results and report
     generated_results = harness.generated_results()
     report = harness.report()
 
     # print and save
     print(report)
-    report.to_csv("./langtest/report.csv", index=False)
-    generated_results.to_csv("./langtest/generated_results.csv", index=False)
+    report.to_csv(f"{params['save_dir']}/report.csv", index=False)
+    generated_results.to_csv(f"{params['save_dir']}/generated_results.csv", index=False)
 
 
 if __name__ == "__main__":
