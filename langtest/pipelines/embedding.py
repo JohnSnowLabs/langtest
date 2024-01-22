@@ -128,13 +128,13 @@ class EmbeddingPipeline(BasePipeline):
         self.load_model()
 
     def load_model(self):
-        if self.hub=="huggingface":
+        if self.hub == "huggingface":
             em = HuggingFaceEmbedding(self.embed_model, trust_remote_code=True)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
             vector_index = VectorStoreIndex(self.nodes, servicecontext=servicecontext)
-        
-        elif self.hub=="openai":
+
+        elif self.hub == "openai":
             em = OpenAIEmbedding(self.embed_model)
             servicecontext = ServiceContext.from_defaults(embed_model=em)
             set_global_service_context(servicecontext)
