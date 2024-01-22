@@ -3,7 +3,6 @@ import pickle
 import click
 import asyncio
 from langtest import cli
-from langtest.utils.lib_manager import try_import_lib
 from langtest.evaluation import LangtestRetrieverEvaluator
 from pkg_resources import resource_filename
 
