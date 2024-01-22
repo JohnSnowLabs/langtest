@@ -3,16 +3,21 @@ import pickle
 import click
 import asyncio
 from langtest import cli
-from langtest.config import read_config
-from llama_index.readers import SimpleDirectoryReader
-from llama_index.node_parser import SimpleNodeParser
-from llama_index.llms import OpenAI
-from llama_index.evaluation import generate_question_context_pairs
-from llama_index.embeddings import HuggingFaceEmbedding
-from llama_index.indices import VectorStoreIndex
-from llama_index.service_context import ServiceContext, set_global_service_context
+from langtest.utils.lib_manager import try_import_lib
 from langtest.evaluation import LangtestRetrieverEvaluator
 from pkg_resources import resource_filename
+
+try:
+    from langtest.config import read_config
+    from llama_index.readers import SimpleDirectoryReader
+    from llama_index.node_parser import SimpleNodeParser
+    from llama_index.llms import OpenAI
+    from llama_index.evaluation import generate_question_context_pairs
+    from llama_index.embeddings import HuggingFaceEmbedding
+    from llama_index.indices import VectorStoreIndex
+    from llama_index.service_context import ServiceContext, set_global_service_context
+except ImportError as e:
+    print(e, "please install llama_index using `pip install llama-index`")
 
 default_qa_pkl = resource_filename("langtest", "data/Retrieval_Datasets/qa_dataset.pkl")
 
