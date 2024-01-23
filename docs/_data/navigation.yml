@@ -274,3 +274,21 @@ benchmarks:
         url: /docs/pages/benchmarks/other_benchmarks/truthfulqa
       - title: XSum
         url: /docs/pages/benchmarks/other_benchmarks/xsum
+
+task:
+  - title: Task
+    url: /docs/pages/docs/task
+  - title: Ner
+    url: /docs/pages/task/ner
+  - title: Text Classification
+    url: /docs/pages/task/text-classification
+  - title: Question Answering
+    url: /docs/pages/task/question-answering
+  - title: Summarization
+    url: /docs/pages/task/summarization
+  - title: Text Generation
+    url: /docs/pages/task/text-generation
+  - title: Fill Mask
+    url: /docs/pages/task/fill-mask
+  - title: Translation
+    url: /docs/pages/task/translation
