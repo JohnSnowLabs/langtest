@@ -18,7 +18,7 @@ click.CommandCollection(sources=[cli, benchmark], help="LangTest CLI")
 @click.option("--output", "-o", type=str, required=False, default="./langtest")
 def init(task, model, hub, dataset, config, output):
     """Initialize a new langtest project."""
-    print(f"Initializing new langtest project with {task}, {model}, {dataset}, {config}.")
+    print("Initializing new langtest project...")
 
     # get abspath for output
     output = os.path.abspath(output)
@@ -49,7 +49,7 @@ def init(task, model, hub, dataset, config, output):
 @cli.command("generate")
 def generate():
     """Generate the testcases."""
-    print("Generating the testcases.")
+    print("Generating the testcases...")
     if os.path.exists("./harness.json"):
         params = json.load(open("./harness.json", "r"))
         harness = Harness(
@@ -99,7 +99,7 @@ def run(task, model, hub, batch_size, checkpoint):
     elif model and hub:
         # different model, hub, or task
         harness = Harness.load(
-            save_dir="./langtest",
+            save_dir=params["save_dir"],
             task=task,
             model={"model": model, "hub": hub},
         )
