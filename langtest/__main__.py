@@ -7,15 +7,14 @@ from langtest.config import cli
 from langtest.pipelines.embedding import benchmark
 
 click.CommandCollection(sources=[cli, benchmark], help="LangTest CLI")
-harness = None
 
 
 @cli.command("init")
 @click.option("--task", "-t", type=str, required=True)
 @click.option("--model", "-m", type=str, required=True)
 @click.option("--hub", "-h", type=str, required=True)
-@click.option("--dataset", "-d", type=str, required=True)
-@click.option("--config", "-c", type=str, required=True)
+@click.option("--dataset", "-d", type=str, required=False)
+@click.option("--config", "-c", type=str, required=False)
 @click.option("--output", "-o", type=str, required=False, default="./langtest")
 def init(task, model, hub, dataset, config, output):
     """Initialize a new langtest project."""
@@ -25,10 +24,10 @@ def init(task, model, hub, dataset, config, output):
     output = os.path.abspath(output)
     # do required directories in cwd for project
     os.makedirs(output, exist_ok=True)
-    harness = Harness(
+    _ = Harness(
         task=task,
         model={"model": model, "hub": hub},
-        dataset=dataset,
+        data={"data_source": dataset},
         config=config,
     )
     with open("./harness.json", "w") as f:
@@ -37,26 +36,27 @@ def init(task, model, hub, dataset, config, output):
                 {
                     "task": task,
                     "model": {"model": model, "hub": hub},
-                    "dataset": dataset,
+                    "data": {"data_source": dataset},
                     "config": config,
                     "save_dir": os.path.abspath(output),
                 }
             )
         )
 
-    harness.save(output)
+    # harness.save(output)
 
 
 @cli.command("generate")
 def generate():
-    """Generate the testcases ."""
-    print("Generating new langtest project.")
+    """Generate the testcases."""
+    print("Generating the testcases.")
     if os.path.exists("./harness.json"):
         params = json.load(open("./harness.json", "r"))
-        harness = Harness.load(
-            save_dir=params["save_dir"],
+        harness = Harness(
             task=params["task"],
             model=params["model"],
+            data=params["data"],
+            config=params["config"],
         )
         # generate testcases
         harness.generate()
@@ -70,20 +70,18 @@ def generate():
 
 
 @cli.command("run")
-@click.option("--task", "-t", type=str, required=True)
-@click.option("--model", "-m", type=str, required=True)
-@click.option("--hub", "-h", type=str, required=True)
+@click.option("--task", "-t", type=str, required=False)
+@click.option("--model", "-m", type=str, required=False)
+@click.option("--hub", "-h", type=str, required=False)
 @click.option("--batch_size", "-b", type=int, required=False, default=500)
-@click.option("--checkpoints", "-c", type=bool, required=False, default=True)
-def run(task, model, hub, batch_size, checkpoints):
+@click.option("--checkpoint", "-c", type=bool, required=False, default=True)
+def run(task, model, hub, batch_size, checkpoint):
     """Run the testcases."""
     harness = None
     params = None
     if os.path.exists("./harness.json"):
         params = json.load(open("./harness.json", "r"))
         checkpoints_dir = params["save_dir"] + "/checkpoints"
-        if not os.path.exists(checkpoints_dir):
-            os.makedirs(checkpoints_dir, exist_ok=True)
 
     else:
         sys.exit(
@@ -117,10 +115,14 @@ def run(task, model, hub, batch_size, checkpoints):
     if harness is not None:
         harness.run(
             batch_size=batch_size,
-            checkpoints=checkpoints,
+            checkpoint=checkpoint,
             save_checkpoints_dir=checkpoints_dir,
         )
 
+        generated_results = harness.generated_results()
+        generated_results.to_csv(
+            f"{params['save_dir']}/generated_results.csv", index=False
+        )
         # save harness
         harness.save(params["save_dir"], include_generated_results=True)
 
@@ -135,19 +137,18 @@ def report():
             "No harness.json found in current directory. Please run `langtest init` first."
         )
 
-    harness = Harness.load(
-        save_dir=params["save_dir"],
+    harness = Harness.load_checkpoints(
         task=params["task"],
         model=params["model"],
+        save_checkpoints_dir=f"{params['save_dir']}/checkpoints",
     )
+    harness.run()
     # generated results and report
-    generated_results = harness.generated_results()
     report = harness.report()
 
     # print and save
     print(report)
     report.to_csv(f"{params['save_dir']}/report.csv", index=False)
-    generated_results.to_csv(f"{params['save_dir']}/generated_results.csv", index=False)
 
 
 if __name__ == "__main__":
