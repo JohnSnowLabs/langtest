@@ -73,14 +73,6 @@ docs-menu:
         - title: Generating Augmentations
           url: /docs/pages/docs/generate_augmentation
 
-  - title: Evaluation Metrics
-    url: /docs/pages/docs/embedding_distance
-    children:
-        - title: Embedding Distance
-          url: /docs/pages/docs/embedding_distance
-        - title: String Distance
-          url: /docs/pages/docs/string_distance
-
   - title: RAG
     url: /docs/pages/docs/rag
     children:
