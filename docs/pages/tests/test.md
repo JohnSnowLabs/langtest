@@ -20,8 +20,6 @@ The tables presented below offer a comprehensive overview of diverse categories 
 
 ## Accuracy Tests
 
-Accuracy testing is vital for evaluating a machine learning model's performance. It gauges the model's ability to predict outcomes on an unseen test dataset by comparing predicted and ground truth. Several tests, including labelwise metrics (precision, recall, F1 score) and overall metrics (micro F1, macro F1, weighted F1), support this assessment.
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -39,8 +37,6 @@ Accuracy testing is vital for evaluating a machine learning model's performance.
 | [Accuracy](accuracy)             | [Min RougeLsum Score](accuracy#min-rougelsum-score)                                                             | `question-answering`, `summarization`                                               |
 
 ## Bias Tests
-
-The primary goal of model bias tests is to assess how well a model aligns its predictions with actual outcomes. Model bias, the systematic skewing of results, can lead to negative consequences such as perpetuating stereotypes or discrimination. In this context, the objective is to explore how replacing documents with different genders, ethnicities, religions, or countries impacts the model's predictions compared to the original training set.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -72,8 +68,6 @@ The primary goal of model bias tests is to assess how well a model aligns its pr
 
 ## Fairness Tests
 
-The core objective of fairness testing is to evaluate a machine learning model's performance without bias, especially in contexts with implications for specific groups. This testing ensures that the model does not favor or discriminate against any group, aiming for unbiased results across all groups. Various tests, including those focused on attributes like gender, support this evaluation.
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -90,8 +84,6 @@ The core objective of fairness testing is to evaluate a machine learning model's
 
 ## Representation Tests
 
-The goal of representation testing is to assess whether a dataset accurately represents a specific population or if biases within it could adversely affect the results of any analysis.
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -107,8 +99,6 @@ The goal of representation testing is to assess whether a dataset accurately rep
 | [Representation](representation) | [Min Religion Name Representation Proportion](representation#min-religion-name-representation-proportion)       | `ner`, `text-classification`, `question-answering`, `summarization`                 |
 
 ## Robustness Tests
-
-The primary goal of model robustness tests is to evaluate the model's ability to sustain consistent output when exposed to perturbations in the data it predicts. In tasks like Named Entity Recognition (NER), the focus is on assessing how variations in input data, such as documents with typos or fully uppercased sentences, impact the model's prediction performance compared to documents similar to those in the original training set.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -138,8 +128,6 @@ The primary goal of model robustness tests is to evaluate the model's ability to
 
 ## Toxicity Tests
 
-The primary goal of toxicity tests is to assess the ideological toxicity score of a given text, specifically targeting demeaning speech based on political, philosophical, or social beliefs. This includes evaluating instances of hate speech rooted in individual ideologies, such as feminism, left-wing politics, or right-wing politics
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -152,8 +140,6 @@ The primary goal of toxicity tests is to assess the ideological toxicity score o
 
 ## Sensitivity Tests
 
-The primary objective of the sensitivity test is to assess the model's responsiveness when introducing negation and toxic words, gauging its level of sensitivity in these scenarios.
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -161,8 +147,6 @@ The primary objective of the sensitivity test is to assess the model's responsiv
 | [Sensitivity](sensitivity)       | [Toxicity](sensitivity#toxicity)                                                                                | `question-answering`                                                                  |
 
 ## Sycophancy Tests
-
-The primary goal of addressing sycophancy in language models is to mitigate undesirable behaviors where models tailor their responses to align with a human user's view, even when that view is not objectively correct.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -172,8 +156,6 @@ The primary goal of addressing sycophancy in language models is to mitigate unde
 
 ## Stereotype Tests
 
-The primary goal of stereotype tests is to evaluate how well models perform when confronted with common gender stereotypes, occupational stereotypes, or other prevailing biases. In these assessments, models are scrutinized for their propensity to perpetuate or challenge stereotypical associations, shedding light on their capacity to navigate and counteract biases in their predictions.
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -181,8 +163,6 @@ The primary goal of stereotype tests is to evaluate how well models perform when
 | [Stereotype](stereotype)       | [common-stereotypes](stereotype#common-stereotypes)                                                            | `fill-mask`                                                                       |
 
 ## StereoSet Tests
-
-The primary goal of StereoSet is to provide a comprehensive dataset and method for assessing bias in Language Models (LLMs). Utilizing pairs of sentences, StereoSet contrasts one sentence that embodies a stereotypic perspective with another that presents an anti-stereotypic view. This approach facilitates a nuanced evaluation of LLMs, shedding light on their sensitivity to and reinforcement or mitigation of stereotypical biases.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -192,16 +172,12 @@ The primary goal of StereoSet is to provide a comprehensive dataset and method f
 
 ## Ideology Tests
 
-The Idology Test is a tool assessing political beliefs on a two-dimensional grid, surpassing the traditional left-right spectrum. The Political Compass aims for a nuanced understanding, avoiding oversimplification and capturing the full range of political opinions and beliefs.
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
 | [Ideology](ideology)           | [Political Compass](ideology#political_compass)                                                                        | `ideology`|
 
 ## Legal Tests
-
-The primary goal of the Legal Test is to assess a model's capacity to reason about the strength of support provided by a given case summary. This evaluation aims to gauge the model's proficiency in legal reasoning and comprehension.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -210,7 +186,6 @@ The primary goal of the Legal Test is to assess a model's capacity to reason abo
 
 ## Clinical Test
 
-The Clinical Test evaluates the model for potential demographic bias in suggesting treatment plans for two patients with identical diagnoses. This assessment aims to uncover and address any disparities in the model's recommendations based on demographic factors.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -219,16 +194,12 @@ The Clinical Test evaluates the model for potential demographic bias in suggesti
 
 ## Security Test
 
-The Security Test, featuring the Prompt Injection Attack, is designed to assess prompt injection vulnerabilities in Language Models (LLMs). This test specifically evaluates the model's resilience against adversarial attacks, gauging its ability to handle sensitive information appropriately and ensuring robust security measures
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
 | [Security](security)             | [prompt_injection_attack](security#prompt_injection_attack)                                                     | `text-generation`                                                                          |
 
 ## Disinformation Test
-
-The Disinformation Test aims to evaluate the model's capacity to generate disinformation. By presenting the model with disinformation prompts, the experiment assesses whether the model produces content that aligns with the given input, providing insights into its susceptibility to generating misleading or inaccurate information.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -238,8 +209,6 @@ The Disinformation Test aims to evaluate the model's capacity to generate disinf
 
 ## Factuality Test
 
-The Factuality Test is designed to evaluate the ability of language models (LLMs) to determine the factuality of statements within summaries. This test is particularly relevant for assessing the accuracy of LLM-generated summaries and understanding potential biases that might affect their judgments. 
-
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
@@ -247,8 +216,6 @@ The Factuality Test is designed to evaluate the ability of language models (LLMs
 
 
 ## Grammar Test
-
-The Grammar Test assesses language models' proficiency in intelligently identifying and correcting intentional grammatical errors, ensuring refined language understanding and enhancing overall processing quality.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
