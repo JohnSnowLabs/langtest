@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from collections.abc import Hashable
 import importlib
+from typing import List, Tuple
 from ...errors import Errors
 
 default_user_prompt = {
@@ -275,7 +276,9 @@ def build_qa_prompt(input_data: dict, dataset_name: str = None, **kwargs):
     return prompt
 
 
-def prepare_input_predictions(original_question, answer, perturbed_question, prediction):
+def prepare_llm_evaluation_data(
+    original_question: str, answer: str, perturbed_question: str, prediction: str
+) -> Tuple[List[dict], List[dict]]:
     """
     Prepares inputs and predictions in the required format for language model evaluation.
 
@@ -286,7 +289,7 @@ def prepare_input_predictions(original_question, answer, perturbed_question, pre
         prediction (str): Model's prediction for the perturbed question.
 
     Returns:
-        Tuple[List[Dict[str, str]], List[Dict[str, str]]]: Input and prediction lists.
+        Tuple[List[dict], List[dict]]: Input and prediction lists.
 
     """
     inputs = [{"question": original_question, "answer": answer}]
@@ -294,31 +297,13 @@ def prepare_input_predictions(original_question, answer, perturbed_question, pre
     return inputs, predictions
 
 
-def prepare_input_prompt(perturbed_question, answer, prediction):
-    """
-    Prepares text and prompt for prompt-based evaluation.
-
-    Args:
-        perturbed_question (str): Perturbed/question with modifications.
-        answer (str): Ground truth answer.
-        prediction (str): Model's prediction for the perturbed question.
-
-    Returns:
-        Tuple[Dict[str, str], Dict[str, Union[List[str], str]]]: Text and prompt.
-
-    """
-    from ...transform.constants import qa_prompt_template as template
-
-    text = {"query": perturbed_question, "answer": answer, "result": prediction}
-    prompt = {
-        "input_variables": ["query", "answer", "result"],
-        "template": template,
-    }
-    return text, prompt
-
-
 def is_pass_llm_eval(
-    eval_model, dataset_name, original_question, answer, perturbed_question, prediction
+    eval_model,
+    dataset_name: str,
+    original_question: str,
+    answer: str,
+    perturbed_question: str,
+    prediction: str,
 ):
     """
     Determines whether the model's prediction passes the Language Model Metric (LLM) evaluation.
@@ -335,30 +320,32 @@ def is_pass_llm_eval(
         bool: True if the model's prediction passes the LLM evaluation, False otherwise.
 
     """
+
     if prediction.lower().strip() == answer.lower().strip():
         return True
 
-    elif "llm" in str(type(eval_model)):
-        inputs, predictions = prepare_input_predictions(
-            original_question, answer, perturbed_question, prediction
-        )
+    inputs, predictions = prepare_llm_evaluation_data(
+        original_question, answer, perturbed_question, prediction
+    )
+    if "llm" in str(type(eval_model)):
         result = llm_prompt_eval(eval_model, dataset_name, inputs, predictions)
     else:
-        text, prompt = prepare_input_prompt(perturbed_question, answer, prediction)
-        result = transformer_prompt_eval(eval_model, text, prompt)
+        result = transformer_prompt_eval(eval_model, inputs, predictions)
 
     return result
 
 
-def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
+def llm_prompt_eval(
+    eval_model, dataset_name: str, inputs: List[dict], predictions: List[dict]
+) -> bool:
     """
     Evaluates model predictions using the Language Model Metric (LLM) with prompt-based evaluation.
 
     Args:
         eval_model: Language model for evaluation.
         dataset_name (str): Name of the dataset being evaluated.
-        inputs (List[Dict[str, str]]): List of input dictionaries.
-        predictions (List[Dict[str, str]]): List of prediction dictionaries.
+        inputs (List[dict]): List of input dictionaries.
+        predictions (List[dict]): List of prediction dictionaries.
 
     Returns:
         bool: True if the model's prediction passes the LLM evaluation, False otherwise.
@@ -407,25 +394,37 @@ def llm_prompt_eval(eval_model, dataset_name, inputs, predictions) -> bool:
         return result
 
 
-def transformer_prompt_eval(eval_model, text, prompt):
+def transformer_prompt_eval(
+    eval_model, inputs: List[dict], predictions: List[dict]
+) -> bool:
     """
-    Evaluates model predictions using prompt-based evaluation with a transformer-based model.
+    Evaluates model predictions using a transformer-based language model.
 
     Args:
-        eval_model: Transformer-based language model for evaluation.
-        text (Dict[str, str]): Input text dictionary.
-        prompt (Dict[str, Union[List[str], str]]): Prompt dictionary.
+        eval_model: Transformer model for evaluation.
+        inputs (List[dict]): List of input dictionaries.
+        predictions (List[dict]): List of prediction dictionaries.
 
     Returns:
-        bool: True if the model's prediction passes the evaluation, False otherwise.
-
+        bool: True if the model's prediction is correct, False otherwise.
     """
-    prediction = eval_model(text=text, prompt=prompt)
-    result = prediction == "CORRECT"
+    from ...metrics.llm_eval import LlmEval
+
+    eval_chain = LlmEval(llm=eval_model)
+    graded_outputs = eval_chain.evaluate(
+        inputs,
+        predictions,
+        question_key="question",
+        answer_key="answer",
+        prediction_key="result",
+    )
+    result = list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
     return result
 
 
-def is_pass_embedding_distance(answer, prediction, selected_distance, threshold=None):
+def is_pass_embedding_distance(
+    answer: str, prediction: str, selected_distance: str, threshold: float = None
+):
     """Check if the sample passes based on embedding distance."""
 
     if prediction.lower().strip() == answer.lower().strip():
@@ -485,7 +484,9 @@ def is_pass_embedding_distance(answer, prediction, selected_distance, threshold=
     return distance_result, comparison_function(distance_result, threshold)
 
 
-def is_pass_string_distance(answer, prediction, selected_distance, threshold=None):
+def is_pass_string_distance(
+    answer: str, prediction: str, selected_distance: str, threshold: float = None
+):
     """Check if the sample passes based on string distance."""
 
     if prediction.lower().strip() == answer.lower().strip():
