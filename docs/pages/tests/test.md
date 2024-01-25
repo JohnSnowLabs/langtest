@@ -20,7 +20,7 @@ The tables presented below offer a comprehensive overview of diverse categories 
 
 ## Accuracy Tests
 
-Accuracy testing is vital for evaluating a machine learning model's performance. It gauges the model's ability to predict outcomes on an unseen test dataset by comparing predicted and actual outputs. Several tests, including labelwise metrics (precision, recall, F1 score) and overall metrics (micro F1, macro F1, weighted F1), support this assessment.
+Accuracy testing is vital for evaluating a machine learning model's performance. It gauges the model's ability to predict outcomes on an unseen test dataset by comparing predicted and ground truth. Several tests, including labelwise metrics (precision, recall, F1 score) and overall metrics (micro F1, macro F1, weighted F1), support this assessment.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -108,7 +108,7 @@ The goal of representation testing is to assess whether a dataset accurately rep
 
 ## Robustness Tests
 
-The primary goal of model robustness tests is to evaluate the model's ability to maintain consistent levels of accuracy, precision, and recall when subjected to perturbations in the data it predicts. In tasks like Named Entity Recognition (NER), the focus is on assessing how variations in input data, such as documents with typos or fully uppercased sentences, impact the model's prediction performance compared to documents similar to those in the original training set.
+The primary goal of model robustness tests is to evaluate the model's ability to sustain consistent output when exposed to perturbations in the data it predicts. In tasks like Named Entity Recognition (NER), the focus is on assessing how variations in input data, such as documents with typos or fully uppercased sentences, impact the model's prediction performance compared to documents similar to those in the original training set.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -182,7 +182,7 @@ The primary goal of stereotype tests is to evaluate how well models perform when
 
 ## StereoSet Tests
 
-The primary goal of StereoSet is to provide a comprehensive dataset and method for assessing bias in Language Models (LLMs). Utilizing pairs of sentences, StereoSet contrasts one sentence that embodies a stereotypic perspective with another that presents an anti-stereotypic view. This approach facilitates a nuanced evaluation of LLMs, shedding light on their sensitivity to and reinforcement or mitigation of stereotypical biases."
+The primary goal of StereoSet is to provide a comprehensive dataset and method for assessing bias in Language Models (LLMs). Utilizing pairs of sentences, StereoSet contrasts one sentence that embodies a stereotypic perspective with another that presents an anti-stereotypic view. This approach facilitates a nuanced evaluation of LLMs, shedding light on their sensitivity to and reinforcement or mitigation of stereotypical biases.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -192,7 +192,7 @@ The primary goal of StereoSet is to provide a comprehensive dataset and method f
 
 ## Ideology Tests
 
-The Idology Test is a popular tool assessing political beliefs on a two-dimensional grid, surpassing the traditional left-right spectrum. The Political Compass aims for a nuanced understanding, avoiding oversimplification and capturing the full range of political opinions and beliefs.
+The Idology Test is a tool assessing political beliefs on a two-dimensional grid, surpassing the traditional left-right spectrum. The Political Compass aims for a nuanced understanding, avoiding oversimplification and capturing the full range of political opinions and beliefs.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -201,7 +201,7 @@ The Idology Test is a popular tool assessing political beliefs on a two-dimensio
 
 ## Legal Tests
 
-The primary goal of the Legal benchmark Test is to assess a model's capacity to reason about the strength of support provided by a given case summary. This evaluation aims to gauge the model's proficiency in legal reasoning and comprehension.
+The primary goal of the Legal Test is to assess a model's capacity to reason about the strength of support provided by a given case summary. This evaluation aims to gauge the model's proficiency in legal reasoning and comprehension.
 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
@@ -234,6 +234,7 @@ The Disinformation Test aims to evaluate the model's capacity to generate disinf
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
 | [Disinformation](disinformation) | [Narrative Wedging](disinformation#narrative_wedging)                                                           | `text-generation`                                                               |
+
 
 ## Factuality Test
 
