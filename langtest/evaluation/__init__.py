@@ -19,7 +19,6 @@ if try_import_lib("llama_index"):
 
     TESTS = TestFactory.test_scenarios().get("robustness")
 
-
     class Evaluator(BaseEvaluator):
         """
         Evaluator class to evaluate language models. It uses service contexts and test configurations
@@ -76,7 +75,6 @@ if try_import_lib("llama_index"):
             print("Reference: ", reference)
             print("kwargs: ", kwargs)
             return EvaluationResult(0.0, 0.0, 0.0, 0.0, 0.0)
-
 
     class LangtestRetrieverEvaluator(RetrieverEvaluator):
 
