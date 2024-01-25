@@ -32,6 +32,7 @@ However, alongside their remarkable capabilities, there are inherent challenges 
 | [**Robustness**](/docs/pages/tests/test#robustness-tests)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
 | [**Bias**](/docs/pages/tests/test#bias-tests)                |  BoolQ (split: bias)                               |
 | [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
+| [**Fairness**](/docs/pages/tests/test#fairness-tests)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets     |
 | [**Representation**](/docs/pages/tests/test#representation-tests)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
 | [**Factuality**](/docs/pages/tests/test#factuality-test)          | Factual-Summary-Pairs                             |
 | [**Ideology**](/docs/pages/tests/test#ideology-tests)            | Curated list                                     |

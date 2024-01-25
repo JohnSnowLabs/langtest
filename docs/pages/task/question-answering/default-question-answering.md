@@ -60,7 +60,7 @@ The primary goal of fairness testing is to assess the performance of a NLP model
 - We categorize the input data into three groups: "male," "female," and "unknown."
 - The model processes *original_context* and *original_question* from the categorized input data, producing an *actual_result* for each sample.
 - The *expected_result* in fairness is the ground truth that we get from the dataset.
-- In the evaluation process, we compare the *expected_result* and *actual_result* based on the tests within the bias category.
+- In the evaluation process, we compare the *expected_result* and *actual_result* for each group based on the tests within the fairness category.
 
 ## Representation
 
@@ -69,7 +69,7 @@ The goal of representation testing is to assess whether a dataset accurately rep
 **How it works:**
 
 - From the dataset, it extracts the *original_question* and *original_context*.
-- Subsequently, it employs a classifier or dictionary to calculate representation_proportion and representation_count based on the applied test.
+- Subsequently, it employs a classifier or dictionary is used to determine representation proportion and representation count based on the applied test. This includes calculating gender names, ethnicity names, religion names, or country names according to the applied test criteria. Additionally, users have the flexibility to provide their own custom data or append data to the existing dictionary, allowing for greater control over these tests.
 
 
 </div>
