@@ -139,26 +139,6 @@ class Harness:
             self.data = self.__multi_datasets_loading(task, hub, model, data)
         else:
             self.data = self.__single_dataset_loading(task, hub, model, data)
-        # if data is None and (self.task, model, hub) in self.DEFAULTS_DATASET:
-        #     data_path = os.path.join(
-        #         "data", self.DEFAULTS_DATASET[(self.task, model, hub)]
-        #     )
-        #     data = {"data_source": resource_filename("langtest", data_path)}
-        #     self.data = DataFactory(data, task=self.task).load()
-        #     if model == "textcat_imdb":
-        #         model = resource_filename("langtest", "data/textcat_imdb")
-        #     self.is_default = True
-        #     logging.info(Warnings.W002.format(info=(self.task, model, hub)))
-        # elif data is None and self.task.category == "ideology":
-        #     self.data = []
-        # elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-        #     raise ValueError(Errors.E004)
-
-        # if isinstance(data, dict):
-        #     if isinstance(data.get("data_source"), list):
-        #         self.data = data.get("data_source")
-        #     else:
-        #         self.data = DataFactory(data, task=self.task).load()
 
         # config loading
         if config is not None:
