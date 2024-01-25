@@ -1,3 +1,4 @@
+import click
 from .datahandler.datasource import DataFactory
 from .modelhandler.modelhandler import ModelAPI
 from .langtest import Harness
@@ -29,3 +30,8 @@ if try_import_lib("transformers"):
     from .callback import LangTestCallback
 
     __all__.append(LangTestCallback)
+
+
+@click.group()
+def cli():
+    pass
