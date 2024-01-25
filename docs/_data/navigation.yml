@@ -44,6 +44,8 @@ docs-menu:
           url: /docs/pages/docs/data
         - title: Config
           url: /docs/pages/docs/config
+        - title: Test Categories
+          url: /docs/pages/docs/test_categories
 
   - title: Testing Workflow
     url: /docs/pages/docs/generate
