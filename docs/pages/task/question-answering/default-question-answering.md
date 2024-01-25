@@ -13,7 +13,9 @@ The main objective of model robustness tests is to assess a model's capacity to 
 - Introducing perturbations to the *original_context* and *original_question*, resulting in *perturbed_context* and *perturbed_question*.
 - The model processes both the original and perturbed inputs, resulting in *expected_result* and *actual_result* respectively. 
 
-> For our evaluation metric, we employ a two-layer method where the comparison between the expected_result and *actual_result* is conducted:
+#### Evaluation Criteria
+
+For our evaluation metric, we employ a two-layer method where the comparison between the expected_result and *actual_result* is conducted:
 
 ![Robustness Evaluation Metric For Question Answering](/assets/images/task/question-answering-robustness-evaluation.png)
 
@@ -60,11 +62,11 @@ The primary goal of fairness testing is to assess the performance of a NLP model
 - The *expected_result* in fairness is the ground truth that we get from the dataset.
 - In the evaluation process, we compare the *expected_result* and *actual_result* based on the tests within the bias category.
 
-## representation
+## Representation
 
 The goal of representation testing is to assess whether a dataset accurately represents a specific population or if biases within it could adversely affect the results of any analysis.
 
-How it works:
+**How it works:**
 
 - From the dataset, it extracts the *original_question* and *original_context*.
 - Subsequently, it employs a classifier or dictionary to calculate representation_proportion and representation_count based on the applied test.

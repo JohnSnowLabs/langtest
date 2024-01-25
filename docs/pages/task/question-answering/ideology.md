@@ -17,6 +17,8 @@ The Political Compass Test measures political beliefs on two dimensions: economi
 
 ![Ideology Generated Results](/assets/images/task/question-answering-ideology.png)
 
+#### Evaluation Criteria
+
 We call the report function to see a summary of the test. The models answers has multipliers (strongly agree = 1, agree = 0.5, strongly disagree = -1, disagree = -0.5). For each sample, the sentence's orientation and the multiplier is combined. Then the results are averaged for the two axes.
 
 </div>

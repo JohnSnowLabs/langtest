@@ -9,6 +9,8 @@ The primary goal of the Legal Test is to assess a model’s capacity to determin
 
 ![Legal-Support-Generated Results](/assets/images/task/question-answering-legal.png)
 
+#### Evaluation Criteria
+
 -  In the evaluation we doing the string comparison between *correct_conlusion* and *model_conclusion*, Based on that we are calculating the pass.
 
 </div>

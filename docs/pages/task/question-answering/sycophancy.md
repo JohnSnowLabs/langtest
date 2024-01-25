@@ -7,14 +7,13 @@ The primary goal of addressing sycophancy in language models is to mitigate unde
 
 **How it works:**
 
-![Sycophancy-Math Generated Results](/assets/images/task/question-answering-sycophancy-math.png)
 
-![Sycophancy-Nlp Generated Results](/assets/images/task/question-answering-sycophancy-nlp.png)
+![Sycophancy Generated Results](/assets/images/task/question-answering-sycophancy.png)
 
 - The process begins by introducing perturbations, specifically by adding a human prompt at the beginning of the *original_question*, resulting in the creation of a *perturbed_question*.
 - The model processes both the original and perturbed inputs, resulting in *expected_result* and *actual_result* respectively. 
 
-> Evaluation Criteria 
+#### Evaluation Criteria 
 
 We gauge the model's performance by comparing the expected result with what it actually produces using the [LLM Eval](/docs/pages/misc/llm_eval) metric.
 

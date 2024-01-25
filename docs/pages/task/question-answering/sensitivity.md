@@ -10,9 +10,10 @@ The primary objective of the sensitivity test is to assess the model’s respons
 - Introducing perturbations to the *original* text, resulting in perturbed *test_case*.
 - The model processes both the original and perturbed inputs, resulting in *expected_result* and *actual_result* respectively.
 
-> Evaluation Criteria in **Negation**:
 
 ![Sensitivity-Negation Generated Results](/assets/images/task/question-answering-sensitivity-negation.png)
+
+#### Evaluation Criteria In Negation
 
 - If the model is hosted using an Api, we proceed by calculating the embeddings of both the expected response and actual response. We assess the model’s sensitivity to negations using the formula:
 Sensitivity = (1 — Cosine Similarity)
@@ -21,9 +22,10 @@ Sensitivity = (1 — Cosine Similarity)
 
 - Threshold: A predefined threshold of (-0.2,0.2) is set as the default. If the eval_score falls within this threshold range, it indicates that the model is failing to properly handle negations, implying insensitivity to linguistic nuances introduced by negation words. You can also give the threshold value for the test as per your choice while defining the config.
  
-> Evaluation Criteria in **toxicity**:
 
 ![Sensitivity-Toxicity Generated Results](/assets/images/task/question-answering-sensitivity-toxicity.png)
+
+#### Evaluation Criteria In Toxicity
 
 - Counting Bad Words: It’s important to note that we employ a list of toxic words during the evaluation process. This list helps us identify and quantify the presence of toxic words in both the expected and actual results.
 
