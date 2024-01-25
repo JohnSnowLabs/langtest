@@ -4,9 +4,12 @@ import json
 import sys
 from langtest import Harness
 from langtest.config import cli
-from langtest.pipelines.embedding import benchmark
+from langtest.utils.lib_manager import try_import_lib
 
-click.CommandCollection(sources=[cli, benchmark], help="LangTest CLI")
+if try_import_lib("llama_index"):
+    from langtest.pipelines.embedding import benchmark
+
+    click.CommandCollection(sources=[cli, benchmark], help="LangTest CLI")
 
 
 @cli.command("init")

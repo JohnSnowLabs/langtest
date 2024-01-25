@@ -3,11 +3,11 @@ import pickle
 import click
 import asyncio
 from langtest import cli
-from langtest.evaluation import LangtestRetrieverEvaluator
 from pkg_resources import resource_filename
+from langtest.config import read_config
 
 try:
-    from langtest.config import read_config
+    from langtest.evaluation import LangtestRetrieverEvaluator
     from llama_index.readers import SimpleDirectoryReader
     from llama_index.node_parser import SimpleNodeParser
     from llama_index.llms import OpenAI
