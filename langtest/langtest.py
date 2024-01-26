@@ -1303,7 +1303,7 @@ class Harness:
             )
 
     def __multi_datasets_loading(self, task, hub, model, data):
-        """Loads the data from the given source. """
+        """Loads the data from the given source."""
         loaded_data = []
         for dataset in data:
             processed_data = self.__single_dataset_loading(task, hub, model, dataset)
@@ -1313,7 +1313,7 @@ class Harness:
         return loaded_data
 
     def __single_dataset_loading(self, task, hub, model, data):
-        """Loads the data from the given source.  """
+        """Loads the data from the given source."""
         # Loading default datasets
         o_data = []
         if data is None and (self.task, model, hub) in self.DEFAULTS_DATASET:
