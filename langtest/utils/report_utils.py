@@ -406,5 +406,13 @@ def multi_dataset_report(
             }
 
         df_report = pd.concat([df_report, pd.DataFrame.from_dict(report, orient="index")])
+
+    df_report["pass_rate"] = df_report["pass_rate"].apply(
+        lambda x: "{:.0f}%".format(x * 100)
+    )
+    df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
+        lambda x: "{:.0f}%".format(x * 100)
+    )
+
     df_report.set_index(["dataset_name", "category", "test_type"], inplace=True)
     return df_report
