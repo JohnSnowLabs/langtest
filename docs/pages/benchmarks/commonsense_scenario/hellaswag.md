@@ -39,4 +39,4 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | robustness | 	add_slangs  | A huge crowd is in the stands in an arena. A man throws a javelin. Photographers take pictures in the background. several men | A humongous crowd is in the stands in an arena. A bloke throws a javelin. Photographers take pictures in the background. several men | and women cheer as the javelin sails through the air. <br><br>The javelin lands with a thud, and the crowd erupts in applause. | and women cheer as the javelin sails through the air. <br><br>The javelin lands with a thud in the center of the field, and the crowd erupts in applause.  | True |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

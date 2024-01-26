@@ -38,4 +38,4 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | robustness | 	dyslexia_word_swap | hands              | hands               | A. is used too put on shoe <br>B. is used too put on milk jug | A               | A                | True  |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

@@ -40,4 +40,4 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | robustness | add_abbreviation | A revolving door is convenient for two direction travel, but it also serves as a security measure at a what?<br>A. bank<br>B. library<br>C. department store<br>D. mall<br>E. new york	 | A revolving door is convenient 4 two direction travel, but it also serves as a security measure at a wat?<br>A. bank<br>B. library<br>C. department store<br>D. mall<br>E. new york | A. bank	 | A. bank  |True
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

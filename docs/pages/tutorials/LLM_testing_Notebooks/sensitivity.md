@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Sensitivity notebook, the evaluation focuses on the `text-davinci-003` model using the Sensitivity Test. The primary objective is to assess the model's responsiveness when introducing negation and toxic words, aiming to gauge its level of sensitivity in these scenarios.
+In the Sensitivity notebook, the evaluation focuses on the `gpt-3.5-turbo-instruct` model using the Sensitivity Test. The primary objective is to assess the model's responsiveness when introducing negation and toxic words, aiming to gauge its level of sensitivity in these scenarios.
 
 ## Open in Collab
 

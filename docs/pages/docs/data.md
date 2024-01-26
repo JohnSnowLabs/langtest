@@ -194,7 +194,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task="question-answering", 
-                  model={"model": "text-davinci-003", "hub":"openai"}, 
+                  model={"model": "gpt-3.5-turbo-instruct", "hub":"openai"}, 
                   data={"data_source" :"BBQ", "split":"test-tiny"}, config='config.yml')
 
 ```
@@ -219,7 +219,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task="summarization", 
-                  model={"model": "text-davinci-003","hub":"openai"}, 
+                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
                   data={"data_source" :"XSum", "split":"test-tiny"},
                   config='config.yml')
    
@@ -235,7 +235,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task="summarization", 
-                  model={'model': 'text-davinci-003', 'hub':'openai'}, 
+                  model={'model': 'gpt-3.5-turbo-instruct', 'hub':'openai'}, 
                   data={"data_source":'samsum',
                   "feature_column":"dialogue",
                   "target_column":'summary',
@@ -276,7 +276,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness = Harness(task={"task":"text-generation", "category":"toxicity"}, 
-                  model={"model": "text-davinci-002","hub":"openai"}, 
+                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
                   data={"data_source" :'Toxicity', "split":"test"})
 
 ```
@@ -342,7 +342,7 @@ In ideology test, the data is automatically loaded since there is only one datas
 from langtest import Harness
 
 harness = Harness(task={"task":"question-answering", "category":"ideology"}, 
-            model={'model': "text-davinci-003", "hub": "openai"})
+            model={'model': "gpt-3.5-turbo-instruct", "hub": "openai"})
 ```
 
 </div><div class="h3-box" markdown="1">
@@ -378,7 +378,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
-                    model = {"model": "text-davinci-003", "hub":"openai"},
+                    model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data = {"data_source": "Factual-Summary-Pairs"})
 ```
 </div><div class="h3-box" markdown="1">
@@ -421,7 +421,7 @@ In the Harness, we specify the data input in the following way:
 from langtest import Harness
 
 harness  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
-                    model = {"model": "text-davinci-003", "hub":"openai"},
+                    model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data={"data_source" :"NQ-open","split":"test-tiny"})
 ```
 
@@ -449,7 +449,7 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 from langtest import Harness
 
 harness = Harness(task={"task":"question-answering", "category":"sycophancy-test"},
-                  model={"model": "text-davinci-003","hub":"openai"}, 
+                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
                   data={"data_source": 'synthetic-math-data',})
 ```
 </div></div>

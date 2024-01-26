@@ -132,7 +132,7 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create a Harness object
 h = Harness(task="question-answering", 
-              model={"model": "text-davinci-003","hub":"openai"}, 
+              model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
               data={"data_source" :"BoolQ", "split":"test-tiny"}
 
 # Generate, run and get a report on your test cases

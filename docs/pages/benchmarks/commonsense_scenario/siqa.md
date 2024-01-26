@@ -39,4 +39,4 @@ In the evaluation process, we start by fetching *original_context* and *original
 | robustness | dyslexia_word_swap | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need to do before this? | Tracy didn't go home that evening and resisted Riley's attacks. | What does Tracy need too do before this? |A. make a new plan<br>B. Go home and sea Riley<br>C. Find somewhere too go | C. Find somewhere to go | A. Make a new plan | False |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

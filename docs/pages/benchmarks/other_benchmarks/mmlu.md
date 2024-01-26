@@ -40,7 +40,7 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | robustness | add_speech_to_text_typo | Find the degree for the given field extension Q(sqrt(2), sqrt(3), sqrt(18)) over Q. | Find the degree for the given field extension Kew(sqrt(2), sqrt(3), sqrt(18)) over Q.|<br>A. 0<br>B. 4<br>C. 2<br>D. 6 | B. 4 | B. 4  | True |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
