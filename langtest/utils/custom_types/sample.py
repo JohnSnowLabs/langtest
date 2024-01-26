@@ -532,6 +532,10 @@ class QASample(BaseQASample):
                 self.original_context is not None and len(self.original_context) > 1,
             ),
             ("options", self.options is not None and len(self.options) > 1),
+            (
+                "dataset_name",
+                self.dataset_name is not None and len(self.dataset_name) > 1,
+            ),
         ]
 
         for field, condition in optional_fields:

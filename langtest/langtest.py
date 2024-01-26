@@ -585,6 +585,17 @@ class Harness:
             self.df_report = report.political_report(self._generated_results)
             return self.df_report
 
+        elif self.is_multi_dataset:
+            self.df_report = report.multi_dataset_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
+            )
+
+            report.save_format(format, save_dir, self.df_report)
+            return self.df_report
+
         elif not isinstance(self._generated_results, dict):
             self.df_report = report.model_report(
                 summary,
@@ -687,6 +698,7 @@ class Harness:
 
         column_order = [
             "model_name",
+            "dataset_name",
             "category",
             "test_type",
             "original",
@@ -883,6 +895,7 @@ class Harness:
 
         column_order = [
             "model_name",
+            "dataset_name",
             "category",
             "test_type",
             "original",
@@ -1295,7 +1308,7 @@ class Harness:
             processed_data = self.__single_dataset_loading(task, hub, model, dataset)
             # loaded_data[dataset["data_source"]] = processed_data
             loaded_data.extend(processed_data)
-
+        self.is_multi_dataset = True
         return loaded_data
 
     def __single_dataset_loading(self, task, hub, model, data):
@@ -1321,4 +1334,5 @@ class Harness:
             else:
                 o_data = DataFactory(data, task=self.task).load()
 
+        self.is_multi_dataset = False
         return o_data
