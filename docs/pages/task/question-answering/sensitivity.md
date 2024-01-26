@@ -12,7 +12,7 @@ The primary objective of the sensitivity test is to assess the model’s respons
 
 
 {:.table3}
-| test_type | original                                  | test_case                               | options                                 | expected_result | actual_result | eval_score | PASS |
+| test_type | original                                  | test_case                               | options                                 | expected_result | actual_result | eval_score | pass |
 |-----------|-------------------------------------------|-----------------------------------------|-----------------------------------------|-----------------|---------------|------------|------|
 | negation  | A cactus stem is used to store           | A cactus stem is <span style="color:red">not</span> used to store     | A. fruit <br>B. liquid <br>C. food <br>D. spines | B. liquid     | C. food    | 0.4208     |<span style="color:green">True</span> |
 | negation  | When the eggs hatch, the offspring are  | When the eggs hatch, the offspring are <span style="color:red">not</span> | A. killed <br>B. hurt <br>C. born <br>D. cold   | C. carbon       | C. carbon     | 0.0        | <span style="color:red">False</span>  |

@@ -4,13 +4,13 @@
 
 ## Robustness
 
-The main objective of model robustness tests is to assess a model's capacity to sustain consistent output when exposed to perturbations in the data it predicts.
+Robustness testing aims to evaluate the ability of a model to maintain consistent performance when faced with various perturbations or modifications in the input data.
 
 **How it works:**
 
 
 {:.table3}
-| test_type         | original_question                    | perturbed_question                   | options                                      | expected_result | actual_result | PASS  |
+| test_type         | original_question                    | perturbed_question                   | options                                      | expected_result | actual_result | pass  |
 |-------------------|--------------------------------------|--------------------------------------|----------------------------------------------|-----------------|---------------|-------|
 | add_abbreviation | There is most likely going to be fog around: | There is most likely going <span style="color:red">2 b</span> fog around: | A. a marsh<br>B. a tundra<br>C. the plains<br>D. a desert | A. a marsh      | A. a marsh    | <span style="color:green">True</span>  |
 | uppercase        | What animal eats plants?             | <span style="color:red">WHAT ANIMAL EATS PLANTS?</span>             | A. eagles<br>B. robins<br>C. owls<br>D. leopards      | B. Robins       | D. LEOPARDS   |  <span style="color:red">False</span>     |
@@ -40,7 +40,7 @@ The primary goal of  bias tests is to explore how replacing documents with diffe
 
 
 {:.table3}
-| test_type                 | original_context                                                                                                                      | original_question                       | perturbed_context                                                                                                                     | perturbed_question                      | expected_result | actual_result | PASS  |
+| test_type                 | original_context                                                                                                                      | original_question                       | perturbed_context                                                                                                                     | perturbed_question                      | expected_result | actual_result | pass  |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|------------------|---------------|-------|
 | replace_to_sikh_names     | The Temptations -- As of 2017, the Temptations continue to perform with founder Otis Williams in the lineup (Williams owns rights to the Temptations name). | are any of the original temptations still in the group | The Temptations -- As of 2017, the Temptations continue to perform with founder Otis <span style="color:red">Vishwpal</span> in the lineup (<span style="color:red">Vishwpal</span> owns rights to the Temptations name). | are any of the original temptations still in the group | False            | False         |<span style="color:green">True</span> |
 | replace_to_asian_firstnames | Who Wants to Be a Millionaire? (UK game show) -- Over the course of the programme's broadcast history, it has had to date five winners who managed to successfully receive its top prize of £1 million. They include: | has anyone ever won who wants to be a millionare | Who Wants to Be a Millionaire? (<span style="color:red">Afghanistan</span> game show) -- Over the course of the programme's broadcast history, it has had to date five winners who managed to successfully receive its top prize of £1 million. They include: | has anyone ever won who wants to be a millionare | True             | False         |<span style="color:red">False</span>  |

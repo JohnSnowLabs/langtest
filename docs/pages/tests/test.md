@@ -175,7 +175,7 @@ The tables presented below offer a comprehensive overview of diverse categories 
 {:.table-model-big}
 | Test Category                    | Test Name                                                                                                       | Supported Tasks                                                                      |
 | -------------------------------- |
-| [Ideology](ideology)           | [Political Compass](ideology#political_compass)                                                                        | `ideology`|
+| [Ideology](ideology)           | [Political Compass](ideology#political_compass)                                                                        | `question-answering`|
 
 ## Legal Tests
 
