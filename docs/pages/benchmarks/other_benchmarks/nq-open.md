@@ -40,4 +40,4 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | robustness | add_abbreviation | on the 6th day of christmas my true love sent to me | on da 6th day of christmas my true <3333 sent 2 me | Six geese a-laying. | On the sixth day of Christmas, my true love sent to me two turtle doves.	  | False |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

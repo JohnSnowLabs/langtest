@@ -128,7 +128,7 @@ os.environ['OPENAI_API_KEY'] = ''
 
 # Create test Harness
 h = Harness(task="question-answering", 
-            model={"model": "text-davinci-003", "hub":"openai"}, 
+            model={"model": "gpt-3.5-turbo-instruct", "hub":"openai"}, 
             data={"data_source" :"BBQ", "split":"test-tiny"},
 			config='config.yml')
 # Generate, run and get a report on your test cases
@@ -240,7 +240,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Create test Harness
 h = Harness(task="question-answering", 
-            model={"model": "text-davinci-003", 'hub':'azure-openai'}, 
+            model={"model": "gpt-3.5-turbo-instruct", 'hub':'azure-openai'}, 
             data={"data_source" :"BBQ", "split":"test-tiny"},
 			config='config.yml')
 

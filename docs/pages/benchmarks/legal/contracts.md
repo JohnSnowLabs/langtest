@@ -38,4 +38,4 @@ In the evaluation process, we start by fetching *original_context* and *original
 | robustness | add_abbreviation | In the event that a user's credentials are compromised, the Company shall promptly notify the affected user and require them to reset their password. The Company shall also take reasonable steps to prevent unauthorized access to the user's account and to prevent future compromises of user credentials. | Does the clause discuss compromised user credentials? | In da event that a user's credentials r compromised, tdaCompany shall promptly notify thdaffected user and require them 2 reset their password. Thedampany shall also take reasonable steps t2prevent unauthorized access to2he user's account and to 2event future compromises of user credentials. |Does da clause discuss compromised user credentials? | True	 | True  | True |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

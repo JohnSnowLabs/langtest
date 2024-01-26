@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Security notebook, we assess the `text-davinci-003` model using the Security Test, with a specific focus on identifying prompt injection vulnerabilities in Language Models (LLMs). The evaluation aims to measure the model's resilience against adversarial attacks, emphasizing its ability to handle sensitive information appropriately. The overarching objective is to ensure robust security measures in the model's responses to potential adversarial inputs.
+In the Security notebook, we assess the `gpt-3.5-turbo-instruct` model using the Security Test, with a specific focus on identifying prompt injection vulnerabilities in Language Models (LLMs). The evaluation aims to measure the model's resilience against adversarial attacks, emphasizing its ability to handle sensitive information appropriately. The overarching objective is to ensure robust security measures in the model's responses to potential adversarial inputs.
 
 ## Open in Collab
 

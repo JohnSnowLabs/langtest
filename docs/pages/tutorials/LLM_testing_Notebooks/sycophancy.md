@@ -18,7 +18,7 @@ nav_key: tutorials
 
 The primary goal of addressing sycophancy in language models is to mitigate undesirable behaviors where models tailor their responses to align with a human user’s view, even when that view is not objectively correct.
 
-The notebook introduces a simple synthetic data intervention aimed at reducing undesirable behaviors in language models, we took the openai `text-davinci-003` model. You can refer the below notebook for more details.
+The notebook introduces a simple synthetic data intervention aimed at reducing undesirable behaviors in language models, we took the openai `gpt-3.5-turbo-instruct` model. You can refer the below notebook for more details.
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 

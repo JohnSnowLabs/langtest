@@ -152,7 +152,7 @@ os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
 h = Harness(task="question-answering", 
-            model={"model": "text-davinci-003","hub":"openai"}, 
+            model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
             data={"data_source" :"BBQ", "split":"test-tiny"})
 
 # Generate, run and get a report on your test cases
@@ -186,7 +186,7 @@ os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
 h = Harness(task="summarization", 
-            model={"model": "text-davinci-003","hub":"openai"}, 
+            model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
             data={"data_source" :"XSum", "split":"test-tiny"})
 
 # Generate, run and get a report on your test cases
@@ -219,7 +219,7 @@ os.environ['OPENAI_API_KEY'] = "<ADD OPEN-AI-KEY>"
 
 # Create a Harness object
 h = Harness(task={"task":"text-generation", "category":"toxicity"}, 
-            model={"model": "text-davinci-002","hub":"openai"}, 
+            model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
             data={"data_source" :'Toxicity', "split":"test"})
 
 # Generate, run and get a report on your test cases
@@ -306,7 +306,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task={"task":"text-generation", "category":"clinical-tests"}, 
-            model={"model": "text-davinci-003", "hub": "openai"},
+            model={"model": "gpt-3.5-turbo-instruct", "hub": "openai"},
             data = {"data_source": "Clinical", "split":"Medical-files"})
 
 # Generate, run and get a report on your test cases
@@ -337,7 +337,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task={"task":"text-generation", "category":"security"}, 
-            model={'model': "text-davinci-003", "hub": "openai"},
+            model={'model': "gpt-3.5-turbo-instruct", "hub": "openai"},
             data={'data_source':'Prompt-Injection-Attack'})
 
 # Generate, run and get a report on your test cases
@@ -397,7 +397,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task={"task":"question-answering", "category":"ideology"}, 
-            model={'model': "text-davinci-003", "hub": "openai"})
+            model={'model': "gpt-3.5-turbo-instruct", "hub": "openai"})
 
 # Generate, run and get a report on your test cases
 h.generate().run().report()
@@ -425,7 +425,7 @@ from langtest import Harness
 
 # Create a Harness object
 h  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
-              model = {"model": "text-davinci-003", "hub":"openai"},
+              model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
               data = {"data_source": "Factual-Summary-Pairs", "split":"test"})
 
               
@@ -456,7 +456,7 @@ from langtest import Harness
 
 # Create a Harness object
 h  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
-              model = {"model": "text-davinci-003", "hub":"openai"},
+              model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
               data={"data_source" :"NQ-open","split":"test-tiny"})
 
 # Generate, run and get a report on your test cases
@@ -510,7 +510,7 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 
 # Create a Harness object
 h=  Harness(task={"task":"question-answering", "category":"wino-bias"},
-            model={"model": "text-davinci-003","hub":"openai"},
+            model={"model": "gpt-3.5-turbo-instruct","hub":"openai"},
             data ={"data_source":"Wino-test", "split":"test"})
 
 # Generate, run and get a report on your test cases
@@ -540,7 +540,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task={"task":"question-answering", "category":"legal-tests"}, 
-            model={"model" : "text-davinci-002", "hub":"openai"}, 
+            model={"model" : "gpt-3.5-turbo-instruct", "hub":"openai"}, 
             data = {"data_source":"Legal-Support"})
 
 # Generate, run and get a report on your test cases
@@ -569,7 +569,7 @@ from langtest import Harness
 
 # Create a Harness object
 h = Harness(task={"task":"question-answering", "category":"sycophancy-test"},
-            model={"model": "text-davinci-003","hub":"openai"}, 
+            model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
             data={"data_source": 'synthetic-math-data',})
 
 # Generate, run and get a report on your test cases

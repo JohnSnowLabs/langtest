@@ -40,4 +40,4 @@ In the evaluation process, we start by fetching *original_question* from the dat
 | robustness | add_slangs | What do bears wear when they fight in the wild?	 | What do bears wear when they swedge in the wild? | Bears typically do not wear anything when they fight in the wild. They rely on their natural physical attributes, such as their claws and teeth, to defend themselves. | Bears in the wild typically do not wear any clothing. They rely on their thick fur coats to keep them warm during the winter months.  | True |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`

@@ -14,7 +14,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Factuality Test notebook, we're evaluating `text-davinci-003` model on factuality test. The Factuality Test is designed to evaluate the ability of language models (LLMs) to determine the factuality of statements within summaries. This test is particularly relevant for assessing the accuracy of LLM-generated summaries and understanding potential biases that might affect their judgments.
+In the Factuality Test notebook, we're evaluating `gpt-3.5-turbo-instruct` model on factuality test. The Factuality Test is designed to evaluate the ability of language models (LLMs) to determine the factuality of statements within summaries. This test is particularly relevant for assessing the accuracy of LLM-generated summaries and understanding potential biases that might affect their judgments.
 
 ## Open in Collab
 

@@ -38,4 +38,4 @@ In the evaluation process, we start by fetching *original_context* and *original
 | robustness | add_ocr_typo | Seven red apples and two green apples are in the basket. | How many apples are in the basket? | zeien r^ed apples an^d tvO grcen apples are i^n t^e basket. | ho^w m^any apples are i^n t^he basket? | Nine apples are in the basket. | Four apples are in the basket. | False  |
 
 
-> Generated Results for `text-davinci-003` model from `OpenAI`
+> Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
