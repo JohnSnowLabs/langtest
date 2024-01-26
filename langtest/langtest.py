@@ -591,6 +591,7 @@ class Harness:
                 self.min_pass_dict,
                 self.default_min_pass_dict,
                 self._generated_results,
+                self._actual_model if isinstance(self._actual_model, str) else "",
             )
 
             report.save_format(format, save_dir, self.df_report)

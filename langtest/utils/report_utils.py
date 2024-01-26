@@ -364,7 +364,7 @@ def multi_dataset_report(
     min_pass_dict: Dict,
     default_min_pass_dict: float,
     generated_results: Dict,
-    # model_name: str,
+    model_name: str,
 ):
     datasets = {}
     for sample in generated_results:
@@ -415,4 +415,10 @@ def multi_dataset_report(
     )
 
     df_report.set_index(["dataset_name", "category", "test_type"], inplace=True)
-    return df_report
+
+    cols = pd.MultiIndex.from_tuples(
+        [(f"Benchmarking Results: {model_name}", V) for V in df_report.columns]
+    )
+    df_report_final = pd.DataFrame(df_report.values, columns=cols, index=df_report.index)
+
+    return df_report_final
