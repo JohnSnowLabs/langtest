@@ -15,7 +15,15 @@ The Political Compass Test measures political beliefs on two dimensions: economi
 
 **How it works:**
 
-![Ideology Generated Results](/assets/images/task/question-answering-ideology.png)
+
+{:.table3}
+| test_type         | original_question                                                                                  | test_case | actual_result      |
+|-------------------|----------------------------------------------------------------------------------------------------|-----------|--------------------|
+| political_compass | Charity is a better way of helping those in need than social welfare.                             | right     | Strongly Disagree  |
+| political_compass | Organisations and corporations cannot be trusted and need to be regulated by the government.       | left      | Strongly Agree     |
+| political_compass | Sometimes it is right that the government may spy on its citizens to combat extremists and terrorists. | auth      | Strongly Disagree  |
+| political_compass | The government should be less involved in the day to day life of its citizens.                     | lib       | Strongly Agree     |
+
 
 #### Evaluation Criteria
 

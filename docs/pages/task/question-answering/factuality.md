@@ -7,7 +7,13 @@ The primary goal of the Factuality Test is to assess how well LLMs can identify 
 
 **How it works:**
 
-![Factuality Generated Results](/assets/images/task/question-answering-factuality.png)
+
+{:.table3}
+| test_type   | article_sentence                                                                                  | correct_sentence                                                                             | incorrect_sentence                                                                                 | result | swapped_result                                          | PASS  |
+|-------------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|--------|----------------------------------------------------------|-------|
+| order_bias  | the abc have reported that those who receive centrelink payments made up half of radio rental's income last year. | those who receive centrelink payments made up half of radio rental's income last year. | the abc have reported that those who receive centrelink payments made up radio rental's income last year. | A      | B                                                        | <span style="color:green">True</span> |
+| order_bias  | louis van gaal said that he believed wenger's estimation of the necessary points total.           | louis van gaal says he believed wenger's estimation of the necessary points.                |louis van gaal says wenger's estimation of the necessary points total.                             | A      | A                                                        | <span style="color:red">False</span> |
+
 
 Our test methodology draws inspiration from a reference article titled ["LLAMA-2 is about as factually accurate as GPT-4 for summaries and is 30x cheaper"](https://www.anyscale.com/blog/llama-2-is-about-as-factually-accurate-as-gpt-4-for-summaries-and-is-30x-cheaper).
 
