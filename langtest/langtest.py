@@ -1315,7 +1315,7 @@ class Harness:
     def __single_dataset_loading(self, task, hub, model, data):
         """Loads the data from the given source.  """
         # Loading default datasets
-        o_data = None
+        o_data = []
         if data is None and (self.task, model, hub) in self.DEFAULTS_DATASET:
             data_path = os.path.join(
                 "data", self.DEFAULTS_DATASET[(self.task, model, hub)]
@@ -1327,7 +1327,7 @@ class Harness:
             self.is_default = True
             logging.info(Warnings.W002.format(info=(self.task, model, hub)))
         elif data is None and self.task.category == "ideology":
-            self.data = []
+            o_data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
             raise ValueError(Errors.E004)
 
