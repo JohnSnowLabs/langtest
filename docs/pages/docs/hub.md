@@ -17,7 +17,7 @@ The `Harness` `hub` parameter accepts different hubs depending on the selected t
 | Hub  | Source | Supported Tasks |
 | - | - | - |
 |**johnsnowlabs** | [John Snow Labs](https://www.johnsnowlabs.com/) | `ner`, `text-classification`, `translation`
-|**huggingface** | [Hugging Face](https://huggingface.co/) | `ner`, `text-classification`, `translation`, `fill-mask`, `question-answering`, `summarization` 
+|**huggingface** | [Hugging Face](https://huggingface.co/) | `ner`, `text-classification`, `translation`, `fill-mask`, `question-answering`, `summarization`, ``text-generation`
 |**huggingface-inference-api** | [Hugging Face Inference API](https://huggingface.co/inference-api) | `question-answering`, `summarization` ,  `fill-mask`, `text-generation`
 |**spacy** | [SpaCy](https://spacy.io/) | `ner`, `text-classification`, `translation`
 |**openai** | [OpenAI](https://openai.com/) | `question-answering`, `summarization`, `fill-mask`, `text-generation`

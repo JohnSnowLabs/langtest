@@ -9,7 +9,38 @@ header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-The `Harness` `model` parameter accepts either a pretrained model or pipeline from a given hub, a custom pipeline object, or a path to a locally saved model.
+
+
+**model**: `Union[dict, list]`
+
+Specifies the model to be evaluated. This parameter can be provided as either a dictionary or a list of dictionaries. Each dictionary should contain the following keys:
+
+- model (mandatory): PipelineModel or path to a saved model or pretrained pipeline/model from hub.
+
+- hub (mandatory): Hub (library) to use in back-end for loading model from public models hub or from path
+
+#### Supported Hubs
+
+example:-
+
+- model: `dict`
+
+```python
+model= {"model" : "bert-base-uncased", "hub":"huggingface" }
+```
+
+- model: `list`
+
+```python
+model = [
+    {"model": "ner.dl", "hub": "johnsnowlabs"},
+    {"model": "en_core_web_sm", "hub": "spacy"},
+]
+```
+
+To get more information about the supported hub, click [here](/docs/pages/docs/hub).
+
+</div><div class="h3-box" markdown="1">
 
 ### John Snow Labs
 

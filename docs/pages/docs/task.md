@@ -9,7 +9,10 @@ header: true
 ---
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-The `Harness` `task` parameter accepts different tasks.
+
+Task for which the model is to be evaluated
+
+**task**: `Union[str, dict]`
 
 ### Supported Tasks
 
@@ -27,5 +30,21 @@ The `Harness` `task` parameter accepts different tasks.
 
 </div><div class="h3-box" markdown="1">
 
+
+example:-
+
+- **task**: `str`
+
+
+```python
+  task = "ner"
+```
+
+- **task**: `dict`
+
+
+```python
+  task={"task":"fill-mask", "category":"wino-bias"}
+```
 
 </div></div>
