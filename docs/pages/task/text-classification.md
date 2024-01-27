@@ -21,9 +21,7 @@ modify_date: "2019-05-16"
 
 Text classification is a common task in natural language processing (NLP) where text is categorized into different labels or classes. Many major companies utilize text classification for various practical purposes, integrating it into their production systems. Among the most popular applications is sentiment analysis, which assigns labels like 🙂 positive, 🙁 negative, or 😐 neutral to text sequences.
 
-</div>
-
-<div class="h3-box" markdown="1">
+</div><div class="h3-box" markdown="1">
 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
@@ -37,6 +35,18 @@ Text classification is a common task in natural language processing (NLP) where 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data).
 
+</div><div class="h3-box" markdown="1">
+
+#### Task Specification
+
+When specifying the task for Named Entity Recognition (NER), use the following format:
+
+
+**task**: `str`
+
+```python
+task = "ner"
+```
 
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}

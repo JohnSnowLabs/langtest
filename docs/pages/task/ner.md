@@ -23,9 +23,7 @@ Named Entity Recognition (NER) is a natural language processing (NLP) technique 
 The primary goal of Named Entity Recognition is to locate and label these named entities in a given text. By categorizing them into predefined classes, NER algorithms make it possible to extract structured information from text, turning it into a more usable format for various applications like information retrieval, text mining, question answering, sentiment analysis, and more.
 
 
-</div>
-
-<div class="h3-box" markdown="1">
+</div><div class="h3-box" markdown="1">
 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
@@ -38,6 +36,20 @@ The primary goal of Named Entity Recognition is to locate and label these named 
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data).
+
+</div><div class="h3-box" markdown="1">
+
+#### Task Specification
+
+When specifying the task for Named Entity Recognition (NER), use the following format:
+
+
+**task**: `str`
+
+```python
+task = "ner"
+```
+
 
 {% for file in site.static_files %}
     {% if file.path contains parent_path %}

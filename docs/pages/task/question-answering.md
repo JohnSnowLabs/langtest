@@ -22,9 +22,7 @@ Question Answering (QA) models excel in extracting answers from a provided text 
 
 However, alongside their remarkable capabilities, there are inherent challenges in evaluating the performance of LLMs in the context of QA. To evaluate Language Models (LLMs) for the Question Answering (QA) task, LangTest provides the following test categories:
 
-</div>
-
-<div class="h3-box" markdown="1">
+</div><div class="h3-box" markdown="1">
 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
@@ -43,6 +41,28 @@ However, alongside their remarkable capabilities, there are inherent challenges 
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data).
+
+</div><div class="h3-box" markdown="1">
+
+#### Task Specification
+
+When specifying the task for Named Entity Recognition (NER), use the following format:
+
+**task**: `Union[str, dict]`
+
+
+For  accuracy, bias, fairness, and robustness we specify the task as a string
+
+```python
+task = "question-answering"
+```
+
+If you want to access some sub-task from `question-answering`, then you need to give the task as a dictionary.
+
+```python
+task = {"task" : "question-answering", "category":"sycophancy-test" }
+```
+
 
 {% assign parent_path = "pages/task/question-answering" %}
 
