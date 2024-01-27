@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Bigbench_dataset.ipynb)
 
 **Source:** [Beyond the Imitation Game: Quantifying and extrapolating the capabilities of language models](https://arxiv.org/abs/2206.04615)
@@ -26,6 +28,8 @@ BigBench is a large-scale benchmark for measuring the performance of language mo
 
 
 You can see which subsets and splits are available below.
+
+</div><div class="h3-box" markdown="1">
 
 ### Abstract-narrative-understanding
 
@@ -48,6 +52,8 @@ In the evaluation process, we start by fetching *original_context* and *original
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
 
+</div><div class="h3-box" markdown="1">
+
 ### DisambiguationQA
 
 {:.table2}
@@ -68,6 +74,8 @@ In the evaluation process, we start by fetching *original_question* from the dat
 
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
+
+</div><div class="h3-box" markdown="1">
 
 ### DisflQA
 
@@ -91,6 +99,7 @@ In the evaluation process, we start by fetching *original_context* and *original
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
 
 
+</div><div class="h3-box" markdown="1">
 
 ### Causal-judgment
 
@@ -113,3 +122,5 @@ In the evaluation process, we start by fetching *original_context* and *original
 
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
+
+</div>

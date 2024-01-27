@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)
 
 **Source:** [Given a question and a clause from a privacy policy, determine if the clause contains enough information to answer the question.](https://github.com/HazyResearch/legalbench/tree/main/tasks/privacy_policy_qa)
@@ -39,3 +41,5 @@ In the evaluation process, we start by fetching *original_context* and *original
 
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
+
+</div>

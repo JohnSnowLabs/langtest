@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/BoolQ_dataset.ipynb)
 
 **Source:** [BoolQ: Exploring the Surprising Difficulty of Natural Yes/No Questions](https://aclanthology.org/N19-1300/)
@@ -43,3 +45,5 @@ In the evaluation process, we start by fetching *original_context* and *original
 | robustness | add_abbreviation | 20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar to the current one, is being released. The European Central Bank will, in due time, announce when banknotes from the first series lose legal tender status.                                                                                                                                                                                                                                                                                                                       | is the first series 20 euro note still legal tender                                    | 20 euro note -- Until now there has been only one complete series of euro notes; however a new series, similar 2 da current one, is being released. TdaEuropean Central Bank will, in due time, announce when banknotes from thdast series lose legal tender status.                                                                                                                                                                                                                                                                                                   | is da 1st series 20 euro note still legal tender                                    | False             | False           | True   |
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
+
+</div>

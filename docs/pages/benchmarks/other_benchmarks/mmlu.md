@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/mmlu_dataset.ipynb)
 
 **Source:** [MMLU: Measuring Massive Multitask Language Understanding](https://arxiv.org/abs/2009.03300)
@@ -42,26 +44,4 @@ In the evaluation process, we start by fetching *original_question* from the dat
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
 
-<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
-
-### Benchmarks
-
-{:.table3}
-| Models                         | uppercase | lowercase | titlecase	 | add_typo | dyslexia_word_swap | add_abbreviation	 | add_slangs | add_speech_to_text_typo	 | add_ocr_typo | adjective_synonym_swap |
-|:-------------------------------:|:---------:|:---------:|:---------:|:--------:|:-------------------:|:----------------:|:----------:|:-----------------------:|:------------:|:-----------------------:|
-| j2-jumbo-instruct               |    74%    |    79%    |    81%    |    88%   |         79%         |        73%       |    77%     |           89%           |      75%      |           77%           |
-| j2-grande-instruct              |    66%    |    73%    |    72%    |    87%   |         72%         |        72%       |    71%     |           90%           |      69%      |           75%           |
-| gpt-3.5-turbo-instruct          |    91%    |    93%    |    93%    |    94%   |         76%         |        83%       |    75%     |           94%           |      88%      |           79%           |
-| mistralai/Mistral-7B-Instruct-v0.1 |    72%    |    77%    |    76%    |    93%   |         89%         |        87%       |    88%     |           88%           |      80%      |           88%           |
-
-> Minimum pas rate: 75%
-
-**Dataset info:**
-- Split: clinical
-- Records: 992
-- Testcases: 9048
-- Evaluatuion: GPT-3.5-Turbo-Instruct
-
 </div>
-
-![MMLU Clinical Benchmark](/assets/images/benchmarks/mmlu.png)

@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb)
 
 **Source:** [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883)
@@ -29,3 +31,5 @@ You can see which subsets and splits are available below.
 | ------------------------- | --------------------------------------------------------------------------------------- |
 | **test**      | Testing set from the MultiLexSum dataset, containing 868 document and summary examples. |
 | **test-tiny** | Truncated version of XSum dataset which contains 50 document and summary examples.      |
+
+</div>

@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/ASDiv_dataset.ipynb)
 
 **Source:** [A Diverse Corpus for Evaluating and Developing English Math Word Problem Solvers](https://arxiv.org/abs/2106.15772)
@@ -25,7 +27,7 @@ You can see which subsets and splits are available below.
 {:.table2}
 | Split           |Details                                                                                                |
 | ----------------|------------------------------------------------------------------------------------------------------ |
-| **test**       | Testing set from the ASDiv dataset, containing 1000 question and answers andexamples.                         |
+| **test**       | Testing set from the ASDiv dataset, containing 2305 question and answers andexamples.                         |
 | **test-tiny**  | Truncated version of the test set from the ASDiv dataset, containing 50 question and answers examples. |
 
 #### Example
@@ -39,3 +41,5 @@ In the evaluation process, we start by fetching *original_context* and *original
 
 
 > Generated Results for `gpt-3.5-turbo-instruct` model from `OpenAI`
+
+</div>
