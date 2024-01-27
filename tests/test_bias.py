@@ -1,3 +1,4 @@
+import unittest
 from langtest.utils.custom_types import SequenceClassificationSample, Transformation, Span
 from langtest.transform.bias import (
     GenderPronounBias,
@@ -7,7 +8,7 @@ from langtest.transform.bias import (
 )
 
 
-class TestBias:
+class TestBias(unittest.TestCase):
     """
     Test suite for bias transformation functions.
 
