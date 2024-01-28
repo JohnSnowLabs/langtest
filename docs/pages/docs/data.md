@@ -10,6 +10,8 @@ modify_date: "2019-05-16"
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
+**data**: `dict`
+
 The provided code initializes an instance of the Harness class. It accepts a data parameter, which can be specified as a `dictionary` with the following attributes.
 
 ```python
@@ -34,25 +36,29 @@ The provided code initializes an instance of the Harness class. It accepts a dat
 | **split**(optional)          | Denotes which split of the dataset should be used.                   |
 | **source**(optional)         | Set to ‘huggingface’ when loading Hugging Face dataset.              |
 
-Supported `data_source` formats are task-dependent. The following table provides an overview of the compatible data sources for each specific task.
+</div><div class="h3-box" markdown="1">
+
+#### Supported File formats
+
+The following table provides an overview of the compatible data sources for each specific task.
 
 {:.table2}
 | Task                    | Supported Data Inputs                                    |
 | ----------------------- | -------------------------------------------------------- |
-| **ner**                 | CoNLL, CSV and HuggingFace Datasets                      |
-| **text-classification** | CSV and HuggingFace Datsets                              |
-| **question-answering**  | Select list of benchmark datasets or HuggingFace Datsets |
-| **summarization**       | Select list of benchmark datasets or HuggingFace Datsets |
-| **toxicity**            | Select list of benchmark datasets                        |
-| **clinical-tests**      | Select list of curated datasets                          |
-| **disinformation-test** | Select list of curated datasets                          |
-| **political**           | Select list of curated datasets                          |
-| **factuality test**     | Select list of curated datasets                          |
-| **sensitivity test**    | Select list of curated datasets                          |
+| [**ner**](/docs/pages/task/ner)  | CoNLL, CSV and HuggingFace Datasets                      |
+| [**text-classification**](/docs/pages/task/text-classification) | CSV and HuggingFace Datsets                              |
+| [**question-answering**](/docs/pages/task/question-answering)  | benchmark datasets, curated datasets, CSV, HuggingFace Datsets |
+| [**summarization**](/docs/pages/task/summarization)      |benchmark datasets, CSV, HuggingFace Datsets |
+| [**fill-mask**](/docs/pages/task/fill-mask)    | curated datasets                         |
+| [**translation**](/docs/pages/task/translation)            |curated datasets                    |
+| [**text-generation**](/docs/pages/task/text-generation)       | curated datasets                          |
+
+
+> Note: **data_source** formats are `task` and `category` dependent.
 
 </div><div class="h3-box" markdown="1">
 
-### NER
+## NER
 
 There are three options for datasets to test NER models: **`CoNLL`**, **`CSV`** and **HuggingFace** datasets. Here are some details of what these may look like:
 
@@ -116,7 +122,7 @@ harness = Harness(task="ner",
 
 </div><div class="h3-box" markdown="1">
 
-### Text Classification
+## Text Classification
 
 There are 2 options for datasets to test Text Classification models: **`CSV`** datasets or loading **`HuggingFace Datasets`** containing the name, subset, split, feature_column and target_column for loading the HF datasets. Here are some details of what these may look like:
 
@@ -176,12 +182,30 @@ harness = Harness(task="text-classification",
 
 </div><div class="h3-box" markdown="1">
 
-### Question Answering
+## Question Answering
 
-To test Question Answering models, the user is meant to select a benchmark dataset. You can see the benchmarks page for all available benchmarks:
-[Benchmarks](/docs/pages/benchmarks/benchmark)
+Question Answering task contains various test-categories, and by default, the question answering task supports robustness, accuracy, fairness, representation, and bias for the benchmark dataset. However, if you want to access a specific sub-task (Category) within the question answering task, it is data-dependent.
 
-You can access the tutorial notebooks to get a quick start on your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
+Supported test categories and their corresponding supported data inputs are outlined below:
+
+> Note: For bias we only support **data_source**:`BoolQ` and **split**:`bias`
+
+{:.table2}
+| Supported Test Categories                     | Supported Data                                           |
+|-----------------------------------------------|----------------------------------------------------------|
+| **[Robustness](/docs/pages/task/question-answering#robustness), [Accuracy](/docs/pages/task/question-answering#accuracy), [Fairness](/docs/pages/task/question-answering#fairness), [Representation](/docs/pages/task/question-answering#representation)** | Benchmark datasets, CSV, HuggingFace Datasets       |
+| **[Bias](/docs/pages/task/question-answering#bias)**                                      | BoolQ (split: bias)                                      |
+| **[Factuality](/docs/pages/task/question-answering#factuality)**                                | Factual-Summary-Pairs                                    |
+| **[Ideology](/docs/pages/task/question-answering#ideology)**                                  | Curated list                                             |
+| **[Legal](/docs/pages/task/question-answering#legal)**                                     | Legal-Support                                            |
+| **[Sensitivity](/docs/pages/task/question-answering#sensitivity)**                               | NQ-Open, OpenBookQA, wikiDataset                         |
+| **[Stereoset](/docs/pages/task/question-answering#stereoset)**                                 | StereoSet                                                |
+| **[Sycophancy](/docs/pages/task/question-answering#sycophancy)**                                | synthetic-math-data, synthetic-nlp-data                  |
+
+</div><div class="h3-box" markdown="1">
+
+For the default Question Answering task, the user is meant to select a benchmark dataset. You can see the benchmarks page for all available benchmarks:
+[Benchmarks](/docs/pages/benchmarks/benchmark). You can access the tutorial notebooks to get a quick start on your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
 
 </div><div class="h3-box" markdown="1">
 
@@ -199,125 +223,7 @@ harness = Harness(task="question-answering",
 
 ```
 
-</div><div class="h3-box" markdown="1">
 
-### Summarization
-
-To test Summarization models, the user is meant to select a benchmark dataset from the available ones:
-[Benchmarks](/docs/pages/benchmarks/benchmark)
-
-You can access the tutorial notebooks to get a quick start with your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
-
-</div><div class="h3-box" markdown="1">
-
-#### Passing a Summarization Dataset to the Harness
-
-In the Harness, we specify the data input in the following way:
-
-```python
-# Import Harness from the LangTest library
-from langtest import Harness
-
-harness = Harness(task="summarization", 
-                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
-                  data={"data_source" :"XSum", "split":"test-tiny"},
-                  config='config.yml')
-   
-
-```
-
-#### Passing a Hugging Face Dataset for Summarization to the Harness
-
-In the Harness, we specify the data input in the following way:
-
-```python
-# Import Harness from the LangTest library
-from langtest import Harness
-
-harness = Harness(task="summarization", 
-                  model={'model': 'gpt-3.5-turbo-instruct', 'hub':'openai'}, 
-                  data={"data_source":'samsum',
-                  "feature_column":"dialogue",
-                  "target_column":'summary',
-                  "split":"test",
-                  "source": "huggingface"
-                  })
-```
-</div><div class="h3-box" markdown="1">
-
-### Toxicity
-
-This test checks the toxicity of the completion., the user is meant to select a benchmark dataset from the following list:
-
-#### Benchmark Datasets
-
-{:.table2}
-| Dataset                | Source                                                                     | Description                                                                   |
-| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| **toxicity-test-tiny** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples. |
-
-</div><div class="h3-box" markdown="1">
-
-#### Toxicity Benchmarks: Use Cases and Evaluations
-
-{:.table2}
-| Dataset                   | Use Case                                                                                                                                                                                                                                 | Notebook                                                                                                                                                                                                             |
-| ------------------------- |
-| **Real Toxicity Prompts** | Evaluate your model's accuracy in recognizing and handling toxic language with the Real Toxicity Prompts dataset. It contains real-world prompts from online platforms, ensuring robustness in NLP models to maintain safe environments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/OpenAI_QA_Testing_Notebook.ipynb) |
-
-</div><div class="h3-box" markdown="1">
-
-#### Passing a Toxicity Dataset to the Harness
-
-In the Harness, we specify the data input in the following way:
-
-```python
-# Import Harness from the LangTest library
-from langtest import Harness
-
-harness = Harness(task={"task":"text-generation", "category":"toxicity"}, 
-                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
-                  data={"data_source" :'Toxicity', "split":"test"})
-
-```
-
-</div><div class="h3-box" markdown="1">
-
-### Disinformation Test
-
-This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
-
-#### Datasets
-
-{:.table2}
-| Dataset               | Source                                                                                                                                            | Description                                                |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **Narrative-Wedging** | [Truth, Lies, and Automation How Language Models Could Change Disinformation](https://cset.georgetown.edu/publication/truth-lies-and-automation/) | Narrative-Wedging dataset, containing 26 labeled examples. |
-
-</div><div class="h3-box" markdown="1">
-
-#### Disinformation Test Dataset: Use Cases and Evaluations
-
-{:.table2}
-| Dataset               | Use Case                                                                                                                                                  | Notebook                                                                                                                                                                                                      |
-| --------------------- |
-| **Narrative-Wedging** | Assess the model’s capability to generate disinformation targeting specific groups, often based on demographic characteristics such as race and religion. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb) |
-
-</div><div class="h3-box" markdown="1">
-
-#### Passing a Disinformation Dataset to the Harness
-
-In the Harness, we specify the data input in the following way:
-
-```python
-# Import Harness from the LangTest library
-from langtest import Harness
-
-harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
-                    model={"model": "j2-jumbo-instruct", "hub":"ai21"},
-                    data = {"data_source": "Narrative-Wedging"})
-
-```
 </div><div class="h3-box" markdown="1">
 
 ### Ideology Test
@@ -452,4 +358,136 @@ harness = Harness(task={"task":"question-answering", "category":"sycophancy-test
                   model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
                   data={"data_source": 'synthetic-math-data',})
 ```
-</div></div>
+</div><div class="h3-box" markdown="1">
+
+## Summarization
+
+To test Summarization models, the user is meant to select a benchmark dataset from the available ones:
+[Benchmarks](/docs/pages/benchmarks/benchmark). You can access the tutorial notebooks to get a quick start with your preferred dataset here: [Dataset Notebooks](/docs/pages/tutorials/Benchmark_Dataset_Notebook_Notebooks)
+
+> Note: For bias we only support **data_source**:`BoolQ` and **split**:`bias`
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Summarization Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task="summarization", 
+                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
+                  data={"data_source" :"XSum", "split":"test-tiny"},
+                  config='config.yml')
+   
+
+```
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Hugging Face Dataset for Summarization to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task="summarization", 
+                  model={'model': 'gpt-3.5-turbo-instruct', 'hub':'openai'}, 
+                  data={"data_source":'samsum',
+                  "feature_column":"dialogue",
+                  "target_column":'summary',
+                  "split":"test",
+                  "source": "huggingface"
+                  })
+```
+</div><div class="h3-box" markdown="1">
+
+## Text-generation
+
+Text Generation task contains various test-categories. Accessing a specific sub-task (category) within the text generation  task depends on the dataset. Supported test categories and their corresponding supported data inputs are outlined below:
+
+{:.table2}
+| Supported Test Category | Supported Data                                  |
+|-------------------------|-------------------------------------------------|
+| [**Clinical**](/docs/pages/task/text-generation#clinical)                |  Medical-files, Gastroenterology-files, Oromaxillofacial-files                           |
+| [**Disinformation**](/docs/pages/task/text-generation#disinformation)      | Narrative-Wedging |
+| [**Security**](/docs/pages/task/text-generation#security)            | Prompt-Injection-Attack |
+| [**Toxicity**](/docs/pages/task/text-generation#toxicity)          | Real Toxicity Prompts |
+
+### Toxicity
+
+This test checks the toxicity of the completion., the user is meant to select a benchmark dataset from the following list:
+
+#### Benchmark Datasets
+
+{:.table2}
+| Dataset                | Source                                                                     | Description                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **Toxicity** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples. |
+
+</div><div class="h3-box" markdown="1">
+
+#### Toxicity Benchmarks: Use Cases and Evaluations
+
+{:.table2}
+| Dataset                   | Use Case                                                                                                                                                                                                                                 | Notebook                                                                                                                                                                                                             |
+| ------------------------- |
+| **Toxicity** | Evaluate your model's accuracy in recognizing and handling toxic language with the Real Toxicity Prompts dataset. It contains real-world prompts from online platforms, ensuring robustness in NLP models to maintain safe environments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Toxicity_NB.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Toxicity Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(task={"task":"text-generation", "category":"toxicity"}, 
+                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
+                  data={"data_source" :'Toxicity', "split":"test"})
+
+```
+
+</div><div class="h3-box" markdown="1">
+
+### Disinformation Test
+
+This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset               | Source                                                                                                                                            | Description                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Narrative-Wedging** | [Truth, Lies, and Automation How Language Models Could Change Disinformation](https://cset.georgetown.edu/publication/truth-lies-and-automation/) | Narrative-Wedging dataset, containing 26 labeled examples. |
+
+</div><div class="h3-box" markdown="1">
+
+#### Disinformation Test Dataset: Use Cases and Evaluations
+
+{:.table2}
+| Dataset               | Use Case                                                                                                                                                  | Notebook                                                                                                                                                                                                      |
+| --------------------- |
+| **Narrative-Wedging** | Assess the model’s capability to generate disinformation targeting specific groups, often based on demographic characteristics such as race and religion. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Disinformation Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
+                    model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+                    data = {"data_source": "Narrative-Wedging"})
+
+```
+</div>
