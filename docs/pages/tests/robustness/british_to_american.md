@@ -31,7 +31,7 @@ british_to_american:
 {:.table2}
 |Original|Test Case|
 |-|
-|The technician analyzed your samples.|The technician analyzed your samples.|
-|What colour is this?|What color is this?|
+|The technician analysed your samples.|The technician <span style="color:red">analyzed</span> your samples.|
+|What colour is this?|What <span style="color:red">color</span> is this?|
 
 </div>

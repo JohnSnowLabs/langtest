@@ -37,7 +37,7 @@ multiple_perturbations:
 {:.table2}
 |Original|Test Case|
 |-|
-|I live in London, United Kingdom since 2019 .|I L1Ve I^N London, United Kingdom Slnce 2019 .|
-|I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them.|I Can'T Movc T^O T^Ie Usa Hccause Thev Liave An Average Of 1000 Tornadoes A Ycar, A^Nd I'M Terrified Of Th^M.|
+|I live in London, United Kingdom since 2019 .|I <span style="color:red">L1Ve I^N</span> London, United Kingdom <span style="color:red">Slnce</span> 2019 .|
+|I can't move to the USA because they have an average of 1000 tornadoes a year, and I'm terrified of them.|I <span style="color:red">Can'T Movc T^O T^Ie</span> Usa Hccause Thev Liave An Average Of 1000 Tornadoes A Ycar, A^Nd I'M Terrified Of Th^M.</span>|
 
 </div>

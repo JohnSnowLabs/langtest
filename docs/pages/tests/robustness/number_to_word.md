@@ -31,7 +31,7 @@ number_to_word:
 {:.table2}
 |Original|Test Case|
 |-|
-|I live in London, United Kingdom since 2019 | I live in London, United Kingdom since two thousand and nineteen|
-|I can't move to the USA because they have an average of 100 tornadoes a year, and I'm terrified of them|I can't move to the USA because they have an average of one hundred tornadoes a year, and I'm terrified of them|
+|I live in London, United Kingdom since 2019 | I live in London, United Kingdom since <span style="color:red">two thousand and nineteen</span>|
+|I can't move to the USA because they have an average of 100 tornadoes a year, and I'm terrified of them|I can't move to the USA because they have an average of <span style="color:red">one hundred</span> tornadoes a year, and I'm terrified of them|
 
 </div>

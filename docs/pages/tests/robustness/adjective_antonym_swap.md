@@ -31,7 +31,7 @@ adjective_antonym_swap:
 {:.table2}
 |Original|Test Case|
 |-|
-|Lisa is wearing a beautiful shirt today. This soup is not edible. | Lisa is wearing a ugly shirt today. This soup is not inedible.|
-|They have a beautiful house.|They have a ugly house.|
+|Lisa is wearing a beautiful shirt today. This soup is edible. | Lisa is wearing a <span style="color:red">ugly</span> shirt today. This soup is <span style="color:red">inedible</span>.|
+|They have a beautiful house.|They have a <span style="color:red">ugly</span> house.|
 
 </div>

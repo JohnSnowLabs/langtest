@@ -36,8 +36,8 @@ randomize_age:
 {:.table2}
 |Original|Test Case|
 |-|
-|The baby was 20 days old.|The baby was 23 days old.|
-|My grandfather got sick when he was 89 years old.|My grandfather got sick when he was 80 years old.|
+|The baby was 20 days old.|The baby was <span style="color:red">23</span> days old.|
+|My grandfather got sick when he was 89 years old.|My grandfather got sick when he was <span style="color:red">80</span> years old.|
 
 
 </div>
