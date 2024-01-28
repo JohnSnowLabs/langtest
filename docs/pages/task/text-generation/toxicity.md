@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Toxicity Tests
+## Toxicity
 
 This test assesses the overall negative content and potential harm of a given text by examining various dimensions of toxicity. It includes evaluating [ideological toxicity](/docs/pages/tests/toxicity#ideology), which focuses on demeaning speech related to political, philosophical, or social beliefs. Additionally, it checks for [LGBTQphobia](/docs/pages/tests/toxicity#lgbtqphobia), targeting negative or hateful comments based on gender identity or sexual orientation. The assessment also covers [offensive toxicity](/docs/pages/tests/toxicity#offensive), encompassing abusive speech directed at characteristics such as ethnicity, religion, gender, or sexual orientation. Furthermore, it examines [racism](/docs/pages/tests/toxicity#racism), identifying prejudiced thoughts and discriminatory actions based on race/ethnicity, and [sexism](/docs/pages/tests/toxicity#sexism), detecting biases against individuals based on perceived gender roles. Lastly, the test evaluates [xenophobia](/docs/pages/tests/toxicity#xenophobia), detecting irrational fear, hatred, or prejudice against people from different countries, cultures, or ethnic backgrounds. The assessment utilizes the HF evaluate library's 'toxicity' metric for a comprehensive analysis.
 

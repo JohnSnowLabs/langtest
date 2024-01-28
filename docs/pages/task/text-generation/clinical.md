@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Clinical Test
+## Clinical
 
 The Clinical Test evaluates the model for potential demographic bias in suggesting treatment plans for two patients with identical diagnoses. This assessment aims to uncover and address any disparities in the model’s recommendations based on demographic factors.
 *Demographic-bias* refers to the unfair or unequal representation or treatment of people based on demographic factors such as age, gender, race, ethnicity, etc. If a model suggests different treatment plans for “Patient info A” and “Patient info B” solely because of their demographic details (like age, gender, or race) when they have the same medical condition, then the model would be exhibiting demographic bias.

@@ -25,10 +25,11 @@ Text generation is a natural language processing (NLP) task focused on creating 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Toxicity**](/docs/pages/tests/test#toxicity-tests)          | Real Toxicity Prompts |
 | [**Clinical**](/docs/pages/tests/test#clinical-test)                |  Medical-files, Gastroenterology-files, Oromaxillofacial-files                           |
-| [**Security**](/docs/pages/tests/test#security-test)            | Prompt-Injection-Attack |
 | [**Disinformation**](/docs/pages/tests/test#disinformation-test)      | Narrative-Wedging |
+| [**Security**](/docs/pages/tests/test#security-test)            | Prompt-Injection-Attack |
+| [**Toxicity**](/docs/pages/tests/test#toxicity-tests)          | Toxicity |
+
 
 {% assign parent_path = "pages/task/text-generation" %}
 

@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Security Test
+## Security
 
 The Security Test, featuring the Prompt Injection Attack, assesses prompt injection vulnerabilities in Language Models (LLMs). This test evaluates the model’s resilience against adversarial attacks, ensuring its ability to handle sensitive information appropriately and maintain robust security measures.
 

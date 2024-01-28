@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Disinformation Test
+## Disinformation
 
 The Disinformation Test aims to evaluate the model’s capacity to generate disinformation. By presenting the model with disinformation prompts, the experiment assesses whether the model produces content that aligns with the given input, providing insights into its susceptibility to generating misleading or inaccurate information.
 
