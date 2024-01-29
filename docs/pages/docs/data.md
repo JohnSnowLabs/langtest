@@ -233,9 +233,9 @@ This test evaluates the model's political orientation. There is one default data
 #### Datasets
 
 {:.table2}
-| Dataset                        | Source                                                                                  | Description                                                      |
-| ------------------------------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Ideology Compass Questions** | [3 Axis Political Compass Test](https://github.com/SapplyValues/SapplyValues.github.io) | Political Compass questions, containing 40 questions for 2 axes. |
+| Dataset                        | Source                                                                                  | Description                                                      |Notebook        |   
+| ------------------------------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |----------------|
+| **Ideology Compass Questions** | [3 Axis Political Compass Test](https://github.com/SapplyValues/SapplyValues.github.io) | Political Compass questions, containing 40 questions for 2 axes. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Political_Demo.ipynb) |
 
 </div><div class="h3-box" markdown="1">
 
@@ -260,20 +260,12 @@ The Factuality Test is designed to evaluate the ability of LLMs to determine the
 #### Datasets
 
 {:.table2}
-| Dataset                   | Source                                                                                                                                                                                             | Description                                             |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Factual-Summary-Pairs** | [LLAMA-2 is about as factually accurate as GPT-4 for summaries and is 30x cheaper](https://www.anyscale.com/blog/llama-2-is-about-as-factually-accurate-as-gpt-4-for-summaries-and-is-30x-cheaper) | Factual-Summary-Pairs, containing 371 labeled examples. |
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |   
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
+| **Factual-Summary-Pairs** | [LLAMA-2 is about as factually accurate as GPT-4 for summaries and is 30x cheaper](https://www.anyscale.com/blog/llama-2-is-about-as-factually-accurate-as-gpt-4-for-summaries-and-is-30x-cheaper) | Factual-Summary-Pairs, containing 371 labeled examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) |
 
 </div><div class="h3-box" markdown="1">
 
-#### Factuality Test Dataset: Use Cases and Evaluations
-
-{:.table2}
-| Dataset                   | Use Case                                                                                                                                                                                                                              | Notebook                                                                                                                                                                                                  |
-| ------------------------- |
-| **Factual-Summary-Pairs** | The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb) |
-
-</div><div class="h3-box" markdown="1">
 
 #### Passing a Factuality Test Dataset to the Harness
 
@@ -286,6 +278,34 @@ from langtest import Harness
 harness  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
                     model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data = {"data_source": "Factual-Summary-Pairs"})
+```
+</div><div class="h3-box" markdown="1">
+
+### Legal Test
+
+The Legal test assesses LLMs' ability to discern the level of support provided by various case summaries for a given legal claim.
+
+#### Datasets
+
+{:.table2}
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
+| **legal-support** | [legal Support Scenario](https://github.com/stanford-crfm/helm/blob/main/src/helm/benchmark/scenarios/legal_support_scenario.py) | The legal-support dataset includes 100 labeled examples designed to evaluate models' performance in discerning the level of support provided by different case summaries for a given legal claim. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Legal_Support.ipynb) |
+
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Legal Test Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness  =  Harness(task={"task":"question-answering", "category":"legal-test"}, 
+                    model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
+                    data = {"data_source": "legal-support"})
 ```
 </div><div class="h3-box" markdown="1">
 
@@ -330,6 +350,37 @@ harness  =  Harness(task={"task":"question-answering", "category":"sensitivity-t
                     model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data={"data_source" :"NQ-open","split":"test-tiny"})
 ```
+### Stereoset
+
+StereoSet test is designed to evaluate the ability of LLMs to measure stereotypical biases in four domains: gender, profession, race, and religion. The dataset consists of pairs of sentences, with one sentence being more stereotypical and the other being anti-stereotypical.
+
+#### Datasets
+
+{:.table2}
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
+| **StereoSet** | [StereoSet: Measuring stereotypical bias in pretrained language models](https://paperswithcode.com/dataset/stereoset) | StereoSet dataset contains 4229 samples. This dataset uses pairs of sentences, where one of them is more stereotypic and the other one is anti-stereotypic. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/StereoSet_Notebook.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Stereoset Math Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+import os
+os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
+
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(
+    task={"task":"question-answering", "category":"stereoset"},
+    model={"model": "bert-base-uncased","hub":"huggingface"},
+    data ={"data_source":"StereoSet"})
+```
+</div><div class="h3-box" markdown="1">
+
 
 ### Sycophancy Test
 
@@ -359,6 +410,7 @@ harness = Harness(task={"task":"question-answering", "category":"sycophancy-test
                   data={"data_source": 'synthetic-math-data',})
 ```
 </div><div class="h3-box" markdown="1">
+
 
 ## Summarization
 
@@ -417,25 +469,110 @@ Text Generation task contains various test-categories. Accessing a specific sub-
 | [**Security**](/docs/pages/task/text-generation#security)            | Prompt-Injection-Attack |
 | [**Toxicity**](/docs/pages/task/text-generation#toxicity)          | Real Toxicity Prompts |
 
+</div><div class="h3-box" markdown="1">
+
+### Clinical Test
+
+Clinical test assesses LLMs' capability to detect demographic bias, which involves unfair treatment based on factors like age, gender, or race, regardless of patients' medical conditions.
+
+#### Datasets
+
+{:.table2}
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |   
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
+| **Medical-files** | curated dataset | Medical-files, containing 49 labeled examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb) |
+| **Gastroenterology-files** | curated dataset | Gastroenterology-files, containing 49 labeled examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb) |
+| **Oromaxillofacial-files** | curated dataset | Oromaxillofacial-files, containing 49 labeled examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Clinical Test Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+model = {"model": "gpt-3.5-turbo-instruct", "hub": "openai"}
+
+data = {"data_source": "Clinical", "split":"Medical-files"}
+
+task={"task": "text-generation", "category": "clinical-tests"},
+
+harness = Harness(task=task, model=model, data=data)
+```
+</div><div class="h3-box" markdown="1">
+
+### Disinformation Test
+
+This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
+
+#### Datasets
+
+{:.table2}
+| Dataset               | Source                                                                                                                                            | Notebook    |Description                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------ |
+| **Narrative-Wedging** | [Truth, Lies, and Automation How Language Models Could Change Disinformation](https://cset.georgetown.edu/publication/truth-lies-and-automation/) | Narrative-Wedging dataset, containing 26 labeled examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Disinformation Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
+                    model={"model": "j2-jumbo-instruct", "hub":"ai21"},
+                    data = {"data_source": "Narrative-Wedging"})
+
+```
+</div><div class="h3-box" markdown="1">
+
+### Security
+
+The Security Test assesses LLMs' capability to identify and mitigate prompt injection vulnerabilities, which involve malicious prompts attempting to extract personal information or launch attacks on databases. 
+
+#### Datasets
+
+{:.table2}
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |   
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
+| **Prompt-Injection-Attack** | curated dataset |Prompt-Injection-Attack, containing 17 examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Prompt_Injections_Tests.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+
+#### Passing a Security Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+model={'model': "gpt-3.5-turbo-instruct", "hub": "openai"}
+
+data = {"data_source": "Prompt-Injection-Attack", "split":"test"}
+
+task={"task": "text-generation", "category": "security"}
+
+harness = Harness(task=task, model=model, data=data)
+```
+</div><div class="h3-box" markdown="1">
+
 ### Toxicity
 
 This test checks the toxicity of the completion., the user is meant to select a benchmark dataset from the following list:
 
-#### Benchmark Datasets
+#### Datasets
 
 {:.table2}
-| Dataset                | Source                                                                     | Description                                                                   |
-| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| **Toxicity** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples. |
-
-</div><div class="h3-box" markdown="1">
-
-#### Toxicity Benchmarks: Use Cases and Evaluations
-
-{:.table2}
-| Dataset                   | Use Case                                                                                                                                                                                                                                 | Notebook                                                                                                                                                                                                             |
-| ------------------------- |
-| **Toxicity** | Evaluate your model's accuracy in recognizing and handling toxic language with the Real Toxicity Prompts dataset. It contains real-world prompts from online platforms, ensuring robustness in NLP models to maintain safe environments. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Toxicity_NB.ipynb) |
+| Dataset                | Source                                                                     | Description                                                                   |  Notebook  |
+| ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------|
+| **Toxicity** | [Real Toxicity Prompts](https://aclanthology.org/2020.findings-emnlp.301/) | Truncated set from the Real Toxicity Prompts Dataset, containing 80 examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Toxicity_NB.ipynb)|
 
 </div><div class="h3-box" markdown="1">
 
@@ -455,39 +592,28 @@ harness = Harness(task={"task":"text-generation", "category":"toxicity"},
 
 </div><div class="h3-box" markdown="1">
 
-### Disinformation Test
 
-This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
+## Translation
+
 
 #### Datasets
 
 {:.table2}
-| Dataset               | Source                                                                                                                                            | Description                                                |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **Narrative-Wedging** | [Truth, Lies, and Automation How Language Models Could Change Disinformation](https://cset.georgetown.edu/publication/truth-lies-and-automation/) | Narrative-Wedging dataset, containing 26 labeled examples. |
+| Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |   
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
+| **Translation** | [Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual Transfer and Beyond](https://paperswithcode.com/dataset/tatoeba) | Translation, containing 4400 examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Translation_Notebook.ipynb) |
 
-</div><div class="h3-box" markdown="1">
-
-#### Disinformation Test Dataset: Use Cases and Evaluations
-
-{:.table2}
-| Dataset               | Use Case                                                                                                                                                  | Notebook                                                                                                                                                                                                      |
-| --------------------- |
-| **Narrative-Wedging** | Assess the model’s capability to generate disinformation targeting specific groups, often based on demographic characteristics such as race and religion. | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Disinformation_Test.ipynb) |
-
-</div><div class="h3-box" markdown="1">
-
-#### Passing a Disinformation Dataset to the Harness
+#### Passing a Translation Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
 
 ```python
+
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
-                    model={"model": "j2-jumbo-instruct", "hub":"ai21"},
-                    data = {"data_source": "Narrative-Wedging"})
-
+harness = Harness(task="translation",
+                  model={"model":'t5-base', "hub": "huggingface"},
+                  data={"data_source": "Translation"})
 ```
-</div>
+</div><div class="h3-box" markdown="1">
