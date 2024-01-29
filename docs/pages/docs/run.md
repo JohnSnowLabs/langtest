@@ -31,8 +31,16 @@ There are two ways to run the tests
     - `batch_size`: This parameter specifies the number of test cases processed per batch.
     - `save_checkpoints_dir`: Use this option to define the directory where checkpoints and intermediate results will be saved.
 
-    By utilizing the checkpointing mechanism, users can save test results periodically, enabling seamless resumption from the last checkpoint in case of errors, crashes, or rate-limiting issues during execution.
+    If the kernel restarts or if an API failure occurs, users can resume the execution from the last saved checkpoint, preventing the loss of already processed model responses.
 
+    ```python 
+    h = Harness.load_checkpoints(
+        save_checkpoints_dir="checkpoints",
+        task="text-classification",
+        model={"model": "lvwerra/distilbert-imdb", "hub": "huggingface"},
+    )
+    h.run(checkpoint=True, batch_size=500, save_checkpoints_dir="checkpoints")         
+    ```
 
 Once the tests have been run using the `run()` method, the results can be accessed using the `.generated_results()` method. 
 
