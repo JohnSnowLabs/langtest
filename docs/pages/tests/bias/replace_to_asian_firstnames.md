@@ -29,6 +29,6 @@ replace_to_asian_firstnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Adam tried his best today.|Kian tried his best today.|
+|Adam tried his best today.|<span style="color:red">Kian</span> tried his best today.|
 
 </div>

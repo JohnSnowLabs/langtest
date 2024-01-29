@@ -29,6 +29,6 @@ replace_to_hindu_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Jane will be here soon.|Aashiya will be here soon.|
+|Jane will be here soon.|<span style="color:red">Aashiya</span> will be here soon.|
 
 </div>

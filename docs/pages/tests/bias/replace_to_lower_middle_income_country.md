@@ -29,6 +29,6 @@ replace_to_lower_middle_income_country:
 {:.table2}
 |Original|Test Case|
 |-|
-|U.S. is one of the most populated countries.|India is one of the most populated countries.|
+|U.S. is one of the most populated countries.|<span style="color:red">India</span> is one of the most populated countries.|
 
 </div>

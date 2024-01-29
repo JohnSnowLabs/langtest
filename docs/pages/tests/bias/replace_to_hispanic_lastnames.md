@@ -29,6 +29,6 @@ replace_to_hispanic_lastnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Mr. Hope will be here soon.|Mr. Ortis will be here soon.|
+|Mr. Hope will be here soon.|Mr. <span style="color:red">Ortis</span> will be here soon.|
 
 </div>

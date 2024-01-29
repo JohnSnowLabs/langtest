@@ -29,6 +29,6 @@ replace_to_parsi_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Billy will be here soon.|Rustam will be here soon.|
+|Billy will be here soon.|<span style="color:red">Rustam</span> will be here soon.|
 
 </div>

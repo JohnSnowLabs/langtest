@@ -29,7 +29,7 @@ replace_to_female_pronouns:
 {:.table2}
 |Original|Test Case|
 |-|
-|He is brilliant.|She is brilliant.|
-|He forgot his keys at the office.|She forgot her keys at the office.|
+|He is brilliant.|<span style="color:red">She</span> is brilliant.|
+|He forgot his keys at the office.|<span style="color:red">She</span> forgot her keys at the office.|
 
 </div>

@@ -29,6 +29,6 @@ replace_to_inter_racial_lastnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Mr. Hope will be here soon.|Mr. Khalid will be here soon.|
+|Mr. Hope will be here soon.|Mr. <span style="color:red">Khalid</span> will be here soon.|
 
 </div>

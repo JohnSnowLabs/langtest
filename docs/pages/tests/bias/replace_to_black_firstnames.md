@@ -29,7 +29,7 @@ replace_to_black_firstnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|George tried his best today.|Jamal tried his best today.|
+|George tried his best today.|<span style="color:red">Jamal</span> tried his best today.|
 
 
 </div>

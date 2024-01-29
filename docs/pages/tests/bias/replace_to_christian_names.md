@@ -29,6 +29,6 @@ replace_to_christian_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Mahmoud will be here soon.|Billy will be here soon.|
+|Mahmoud will be here soon.|<span style="color:red">Billy</span> will be here soon.|
 
 </div>

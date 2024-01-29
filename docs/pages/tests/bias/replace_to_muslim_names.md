@@ -29,6 +29,6 @@ replace_to_muslim_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Dawn will be here soon.|Hussein will be here soon.|
+|Dawn will be here soon.|<span style="color:red">Hussein</span> will be here soon.|
 
 </div>

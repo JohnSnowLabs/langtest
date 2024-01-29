@@ -29,6 +29,6 @@ replace_to_male_pronouns:
 {:.table2}
 |Original|Test Case|
 |-|
-|It's her car.|It's their car.|
+|It's her car.|It's <span style="color:red">their</span> car.|
 
 </div>

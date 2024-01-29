@@ -29,6 +29,6 @@ replace_to_white_firstnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Gimenez tried his best today.|Jeremy tried his best today.|
+|Gimenez tried his best today.|<span style="color:red">Jeremy</span> tried his best today.|
 
 </div>
