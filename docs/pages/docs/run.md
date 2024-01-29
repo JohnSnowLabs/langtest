@@ -11,10 +11,28 @@ header: true
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
 The `run()` method is called after the `generate()` method and is used to run all the specified tests. It returns a pass/fail flag for each test.
+There are two ways to run the tests
 
-```python 
-h.run()
-```
+- Running All Test Cases at Once
+
+    ```python 
+    h.run()
+    ```
+
+- Checkpointing Mechanism for Large Test Sets
+
+    ```python 
+    h.run(checkpoint=True, batch_size=500, save_checkpoints_dir="checkpoints")
+    ```
+
+    To handle large test sets effectively, you can enable checkpointing. Here's what each parameter signifies:
+
+    - `checkpoint`: Enable this option to activate the checkpointing mechanism.
+    - `batch_size`: This parameter specifies the number of test cases processed per batch.
+    - `save_checkpoints_dir`: Use this option to define the directory where checkpoints and intermediate results will be saved.
+
+    By utilizing the checkpointing mechanism, users can save test results periodically, enabling seamless resumption from the last checkpoint in case of errors, crashes, or rate-limiting issues during execution.
+
 
 Once the tests have been run using the `run()` method, the results can be accessed using the `.generated_results()` method. 
 
@@ -32,4 +50,4 @@ A generated results dataframe looks like this:
 |robustness| lowercase | I live in Berlin | i live in berlin | Berlin: LOC | | False |
 |robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | Berlin: LOC | BERLIN: LOC | True |
 
-</div></div>
+</div>

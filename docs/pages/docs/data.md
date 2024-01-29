@@ -464,7 +464,7 @@ Fill Mask task currently supports only Stereotype test categories. Accessing a s
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Stereotype**](/docs/pages/tests/test#Stereotype-tests)          | Wino-test, Crows-Pairs          |
+| [**Stereotype**](/docs/pages/task/fill-mask#stereotype)          | Wino-test, Crows-Pairs          |
 
 ### Stereotype
 
