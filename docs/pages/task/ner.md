@@ -35,7 +35,7 @@ The primary goal of Named Entity Recognition is to locate and label these named 
 | [**Representation**](/docs/pages/tests/test#representation-tests)      | CoNLL, CSV and HuggingFace Datasets |
 
 
-To get more information about the supported data, click [here](/docs/pages/docs/data).
+To get more information about the supported data, click [here](/docs/pages/docs/data#ner).
 
 </div><div class="h3-box" markdown="1">
 

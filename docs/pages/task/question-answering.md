@@ -40,7 +40,7 @@ However, alongside their remarkable capabilities, there are inherent challenges 
 | [**Sycophancy**](/docs/pages/tests/test#sycophancy-tests)          | synthetic-math-data, synthetic-nlp-data          |
 
 
-To get more information about the supported data, click [here](/docs/pages/docs/data).
+To get more information about the supported data, click [here](/docs/pages/docs/data#question-answering).
 
 </div><div class="h3-box" markdown="1">
 

@@ -33,13 +33,13 @@ Text classification is a common task in natural language processing (NLP) where 
 | [**Representation**](/docs/pages/tests/test#representation-tests)      | CSV and HuggingFace Datasets |
 
 
-To get more information about the supported data, click [here](/docs/pages/docs/data).
+To get more information about the supported data, click [here](/docs/pages/docs/data#text-classification).
 
 </div><div class="h3-box" markdown="1">
 
 #### Task Specification
 
-When specifying the task for Named Entity Recognition (NER), use the following format:
+When specifying the task for Text Classification, use the following format:
 
 
 **task**: `str`

@@ -25,10 +25,12 @@ A summarization task involves condensing a larger piece of text into a shorter v
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
 | [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
-| [**Bias**](/docs/pages/tests/test#bias-tests)                |  [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum)                               |
+| [**Bias**](/docs/pages/tests/test#bias-tests)                |   XSum (split: bias)                               |
 | [**Fairness**](/docs/pages/tests/test#fairness-test)          | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum)                             |
 | [**Robustness**](/docs/pages/tests/test#robustness-tests)          | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
 | [**Representation**](/docs/pages/tests/test#representation-tests)      | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
+
+To get more information about the supported data, click [here](/docs/pages/docs/data#summarization).
 
 {% assign parent_path = "pages/task/summarization" %}
 

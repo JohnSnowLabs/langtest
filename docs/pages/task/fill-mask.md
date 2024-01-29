@@ -28,7 +28,7 @@ The fill mask task is a key component in natural language processing, where mode
 | [**Stereotype**](/docs/pages/tests/test#Stereotype-tests)          | Wino-test, Crows-Pairs          |
 
 
-To get more information about the supported data, click [here](/docs/pages/docs/data).
+To get more information about the supported data, click [here](/docs/pages/docs/data#fill-mask).
 
 {% assign parent_path = "pages/task/fill-mask" %}
 

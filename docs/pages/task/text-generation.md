@@ -30,6 +30,7 @@ Text generation is a natural language processing (NLP) task focused on creating 
 | [**Security**](/docs/pages/tests/test#security-test)            | Prompt-Injection-Attack |
 | [**Toxicity**](/docs/pages/tests/test#toxicity-tests)          | Toxicity |
 
+To get more information about the supported data, click [here](/docs/pages/docs/data#text-generation).
 
 {% assign parent_path = "pages/task/text-generation" %}
 

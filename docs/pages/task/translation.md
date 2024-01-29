@@ -30,7 +30,7 @@ Translation is the process of converting a sequence of text from one language in
 | [**Robustness**](/docs/pages/tests/test#robustness-tests)          | Translation |
 
 
-To get more information about the supported data, click [here](/docs/pages/docs/data).
+To get more information about the supported data, click [here](/docs/pages/docs/data#translation).
 
 </div><div class="h3-box" markdown="1">
 
