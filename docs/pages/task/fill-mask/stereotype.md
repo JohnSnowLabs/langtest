@@ -1,7 +1,7 @@
 
 <div class="h3-box" markdown="1">
 
-## Stereotype tests
+## Stereotype
 
 Stereotype tests play a crucial role in assessing the performance of models when it comes to [common gender stereotypes](https://langtest.org/docs/pages/tests/stereotype#crows-pairs) and [occupational biases](https://langtest.org/docs/pages/tests/stereotype#wino-bias-huggingface). These assessments look at how good models are at dealing with stereotypes, checking if they either keep reinforcing typical ideas or not. By examining models like this, we learn about how well they can handle and reduce biases. This gives us a useful understanding of how accurate they are and what impact they might have on society.
 

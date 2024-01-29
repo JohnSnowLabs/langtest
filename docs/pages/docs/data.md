@@ -457,9 +457,62 @@ harness = Harness(task="summarization",
 ```
 </div><div class="h3-box" markdown="1">
 
+## Fill Mask 
+
+Fill Mask task currently supports only Stereotype test categories. Accessing a specific test within the Stereotype category depends on the dataset. The supported test categories and their corresponding data inputs are outlined below:
+
+{:.table2}
+| Supported Test Category | Supported Data                                  |
+|-------------------------|-------------------------------------------------|
+| [**Stereotype**](/docs/pages/tests/test#Stereotype-tests)          | Wino-test, Crows-Pairs          |
+
+### Stereotype
+
+Stereotype tests play a crucial role in assessing the performance of models when it comes to common gender stereotypes and occupational biases. 
+
+{:.table2}
+| Test Name       | Supported Dataset    | Notebook                                                                                                                                                                                                  |
+| --------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| wino-bias | Wino-test | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Wino_Bias.ipynb) |
+| crows-pairs  | Crows-Pairs  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Crows_Pairs_Notebook.ipynb) |
+
+</div><div class="h3-box" markdown="1">
+#### Passing a Wino Bias Dataset to the Harness
+
+In the Harness, we specify the data input in the following way:
+
+```python
+
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(
+                  task={"task": "fill-mask", "category": "wino-bias"}, 
+                  model={"model" : "bert-base-uncased", "hub":"huggingface" } ,
+                  data ={"data_source":"Wino-test"}
+                  )
+```
+
+</div><div class="h3-box" markdown="1">
+#### Passing a Crows Pairs Dataset to the Harness
+
+```python
+
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(
+               task={"task": "fill-mask", "category": "crows-pairs"},
+               model={"model" : "bert-base-uncased", "hub":"huggingface" } ,
+               data = {"data_source":"Crows-Pairs"}
+               )
+```
+</div><div class="h3-box" markdown="1">
+
+
 ## Text-generation
 
-Text Generation task contains various test-categories. Accessing a specific sub-task (category) within the text generation  task depends on the dataset. Supported test categories and their corresponding supported data inputs are outlined below:
+Text Generation task contains various test-categories. Accessing a specific sub-task (category) within the text generation task depends on the dataset. Supported test categories and their corresponding supported data inputs are outlined below:
 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
@@ -592,7 +645,6 @@ harness = Harness(task={"task":"text-generation", "category":"toxicity"},
 
 </div><div class="h3-box" markdown="1">
 
-
 ## Translation
 
 
@@ -602,6 +654,8 @@ harness = Harness(task={"task":"text-generation", "category":"toxicity"},
 | Dataset                   | Source                                                                                                                                                                                             | Description                                             | Notebook        |   
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |-------------|
 | **Translation** | [Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual Transfer and Beyond](https://paperswithcode.com/dataset/tatoeba) | Translation, containing 4400 examples. |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/task-specific-notebooks/Translation_Notebook.ipynb) |
+
+</div><div class="h3-box" markdown="1">
 
 #### Passing a Translation Dataset to the Harness
 
