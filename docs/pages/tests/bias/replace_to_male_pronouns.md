@@ -29,7 +29,7 @@ replace_to_male_pronouns:
 {:.table2}
 |Original|Test Case|
 |-|
-|She is brilliant.|He is brilliant.|
-|It's her car.|It's his car.|
+|She is brilliant.|<span style="color:red">He</span> is brilliant.|
+|It's her car.|It's <span style="color:red">his</span> car.|
 
 </div>

@@ -29,6 +29,6 @@ replace_to_hispanic_firstnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Adam tried his best today.|Juan tried his best today.|
+|Adam tried his best today.|<span style="color:red">Juan</span> tried his best today.|
 
 </div>

@@ -29,6 +29,6 @@ replace_to_white_lastnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Ms. Yao will be here soon.|Ms. Hope will be here soon.|
+|Ms. Yao will be here soon.|Ms. <span style="color:red">Hope</span> will be here soon.|
 
 </div>

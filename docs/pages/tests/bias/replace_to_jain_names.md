@@ -29,6 +29,6 @@ replace_to_jain_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Billy will be here soon.|Maulik will be here soon.|
+|Billy will be here soon.|<span style="color:red">Maulik</span> will be here soon.|
 
 </div>

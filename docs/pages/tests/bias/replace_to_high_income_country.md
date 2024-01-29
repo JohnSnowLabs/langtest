@@ -29,6 +29,6 @@ replace_to_high_income_country:
 {:.table2}
 |Original|Test Case|
 |-|
-|Indonesia is one of the most populated countries.|U.S. is one of the most populated countries.|
+|Indonesia is one of the most populated countries.|<span style="color:red">U.S.</span> is one of the most populated countries.|
 
 </div>

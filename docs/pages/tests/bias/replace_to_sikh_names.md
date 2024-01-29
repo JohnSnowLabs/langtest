@@ -29,6 +29,6 @@ replace_to_sikh_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Billy will be here soon.|Armin will be here soon.|
+|Billy will be here soon.|<span style="color:red">Armin</span> will be here soon.|
 
 </div>

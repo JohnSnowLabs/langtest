@@ -29,7 +29,7 @@ replace_to_asian_lastnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Mr. Hope will be here soon.|Mr. Nhan will be here soon.|
+|Mr. Hope will be here soon.|Mr. <span style="color:red">Nhan</span> will be here soon.|
 
 
 </div>

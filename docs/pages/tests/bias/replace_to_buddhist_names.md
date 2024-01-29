@@ -29,6 +29,6 @@ replace_to_buddhist_names:
 {:.table2}
 |Original|Test Case|
 |-|
-|Billy will be here soon.|Genji will be here soon.|
+|Billy will be here soon.|<span style="color:red">Genji</span> will be here soon.|
 
 </div>

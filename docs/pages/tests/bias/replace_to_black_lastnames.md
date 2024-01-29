@@ -29,6 +29,6 @@ replace_to_black_lastnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Ms. Hope will be here soon.|Ms. Mcgary will be here soon.|
+|Ms. Hope will be here soon.|Ms. <span style="color:red">Mcgary</span> will be here soon.|
 
 </div>

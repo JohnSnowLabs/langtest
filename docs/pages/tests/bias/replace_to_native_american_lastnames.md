@@ -29,6 +29,6 @@ replace_to_native_american_lastnames:
 {:.table2}
 |Original|Test Case|
 |-|
-|Mr. Hope will be here soon.|Mr. Yellowhorse will be here soon.|
+|Mr. Hope will be here soon.|Mr. <span style="color:red">Yellowhorse</span> will be here soon.|
 
 </div>
