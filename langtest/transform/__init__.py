@@ -1201,12 +1201,12 @@ class ClinicalTestFactory(ITests):
 
     alias_name = "clinical"
     supported_tasks = [
-        "clinical-tests",
+        "clinical",
         "text-generation",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the clinical tests"""
+        """Initializes the ClinicalTestFactory"""
 
         self.data_handler = data_handler
         self.tests = tests
@@ -1280,7 +1280,7 @@ class DisinformationTestFactory(ITests):
 
     alias_name = "disinformation"
     supported_tasks = [
-        "disinformation-test",
+        "disinformation",
         "text-generation",
     ]
 
@@ -1321,7 +1321,7 @@ class DisinformationTestFactory(ITests):
 
 
 class IdeologyTestFactory(ITests):
-    """Factory class for the clinical tests"""
+    """Factory class for the ideology tests"""
 
     alias_name = "ideology"
     supported_tasks = ["question_answering", "summarization"]
@@ -1703,10 +1703,10 @@ class StereoSetTestFactory(ITests):
 
 
 class LegalTestFactory(ITests):
-    """Factory class for the legal tests"""
+    """Factory class for the legal"""
 
     alias_name = "legal"
-    supported_tasks = ["legal-tests", "question-answering"]
+    supported_tasks = ["legal", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the legal tests"""
@@ -1782,7 +1782,7 @@ class FactualityTestFactory(ITests):
     """Factory class for factuality test"""
 
     alias_name = "factuality"
-    supported_tasks = ["factuality-test", "question-answering"]
+    supported_tasks = ["factuality", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the factuality-test"""
