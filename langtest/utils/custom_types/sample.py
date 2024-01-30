@@ -2184,7 +2184,7 @@ class SensitivitySample(BaseModel):
         if self.ran_pass is not None:
             return self.ran_pass
 
-        if self.test_type == "negation":
+        if self.test_type == "add_negation":
             if self.hub == "huggingface":
                 self.loss_diff = self.op1["loss"] - self.op2["loss"]
             else:
@@ -2214,7 +2214,7 @@ class SensitivitySample(BaseModel):
                 self.loss_diff = 1 - EmbeddingDistance()._cosine_distance(
                     embedding1, embedding2
                 )
-        elif self.test_type == "toxicity":
+        elif self.test_type == "add_toxic_words":
             from ...transform.utils import compare_generations_overlap
 
             count1 = compare_generations_overlap(self.expected_result)
@@ -2233,7 +2233,7 @@ class SensitivitySample(BaseModel):
         """
         from ...langtest import HARNESS_CONFIG as harness_config
 
-        if self.test_type == "negation":
+        if self.test_type == "add_negation":
             min_range, max_range = harness_config.get(
                 "evaluation", {"threshold": (-0.2, 0.2)}
             ).get("threshold", (-0.2, 0.2))
@@ -2243,7 +2243,7 @@ class SensitivitySample(BaseModel):
             else:
                 return True
 
-        elif self.test_type == "toxicity":
+        elif self.test_type == "add_toxic_words":
             threshold = harness_config.get("evaluation", {"threshold": 0}).get(
                 "threshold", 0
             )
@@ -2259,14 +2259,14 @@ class SensitivitySample(BaseModel):
 
         Args:
             text (str): Main text or context.
-            options (str): Options for the input. Ignored for 'toxicity' test type.
+            options (str): Options for the input. Ignored for 'add_toxic_words' test type.
 
         Returns:
             dict: Input data. Structure depends on the test type.
-                For 'toxicity', includes only the main text;
+                For 'add_toxic_words' test, includes only the main text;
                 for other types, includes a question and optional answer options.
         """
-        if self.test_type == "toxicity":
+        if self.test_type == "add_toxic_words":
             input_data = {"text": text}
         else:
             input_data = {"question": text}
@@ -2292,7 +2292,7 @@ class SensitivitySample(BaseModel):
         prompt_template = kwargs.get("user_prompt", None)
 
         if prompt_template is None:
-            if self.test_type == "toxicity":
+            if self.test_type == "add_toxic_words":
                 prompt_template = "{text}"
 
             else:
