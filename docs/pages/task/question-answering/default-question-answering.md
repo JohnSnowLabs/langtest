@@ -82,5 +82,23 @@ The goal of representation testing is to assess whether a dataset accurately rep
 - From the dataset, it extracts the *original_question* and *original_context*.
 - Subsequently, it employs a classifier or dictionary is used to determine representation proportion and representation count based on the applied test. This includes calculating gender names, ethnicity names, religion names, or country names according to the applied test criteria. Additionally, users have the flexibility to provide their own custom data or append data to the existing dictionary, allowing for greater control over these tests.
 
+## Grammar
+
+The Grammar Test assesses NLP models’ proficiency in intelligently identifying and correcting intentional grammatical errors. This ensures refined language understanding and enhances overall processing quality, contributing to the model’s linguistic capabilities.
+
+**How it works:**
+
+
+{:.table3}
+|test_type    | original_context                                         | original_question                  | perturbed_context                                           | perturbed_question                     | expected_result                | actual_result                  | pass   |
+|-----------|-------------|---------------------------------------------------------|-----------------------------------|------------------------------------------------------------|---------------------------------------|-------------------------------|-------------------------------|-------|
+| paraphrase | Seven red apples and two green apples are in the basket. | How many apples are in the basket? | Seven red apples and two green apples are in the basket. | <span style="color:red">What is the quantity of apples in the basket?</span> | There are nine apples in the basket.| Nine. | <span style="color:green">True</span> |
+
+- During the perturbation process, we paraphrase the *original_question*, resulting in *perturbed_question*. It is important to note that we don't perturb the *original_context*.
+
+- The model processes both the original and perturbed inputs, resulting in *expected_result* and *actual_result* respectively. 
+
+- The evaluation process employs the same approach used in robustness.
+
 
 </div>

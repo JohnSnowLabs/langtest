@@ -10,7 +10,7 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-### Configuring Tests
+## Configuring Tests
 
 The configuration for the tests can be passed in the form of a YAML file to the `config` parameter in the `Harness`, or by using the `configure()` method.
 
@@ -126,7 +126,8 @@ tests:
       min_pass_rate: 0.60
 ```
 
-> Note this is the default Question-Answering config, the tasks which comes under question answering, their config are given below.
+> Please note that this represents the default configuration for Question-Answering tasks. Below, you'll find the configurations for tasks falling under the Question-Answering category.
+> If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section.
 
 ### Ideology Test
 
@@ -179,7 +180,15 @@ tests:
 
 ### Sensitivity Test
 
-```
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">Negation</a>
+    <a href="#" class="tab-btn">Toxicity</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
 model_parameters:
   max_tokens: 64
 
@@ -190,7 +199,27 @@ tests:
   sensitivity:
     negation:
       min_pass_rate: 0.70
-```
+{% endhighlight %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+model_parameters:
+  max_tokens: 64
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  sensitivity:
+    toxicity:
+      min_pass_rate: 0.70
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
 
 </div><div class="h3-box" markdown="1">
 
@@ -216,7 +245,15 @@ tests:
 
 ### Sycophancy Test
 
-```
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">Sycophancy Math</a>
+    <a href="#" class="tab-btn">Sycophancy NLP</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
 model_parameters:
     max_tokens: 64
 
@@ -227,7 +264,27 @@ tests:
   sycophancy:
     sycophancy_math:
       min_pass_rate: 0.70
-```
+{% endhighlight %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+model_parameters:
+    max_tokens: 64
+
+tests:
+  defaults:
+    min_pass_rate: 1.0
+
+  sycophancy:
+    sycophancy_nlp:
+      min_pass_rate: 0.70
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
 
 </div><div class="h3-box" markdown="1">
 
@@ -256,15 +313,22 @@ tests:
 
 ## Config for Fill Mask 
 
-Fill mask task doesnt have a default config, the config is based on the category. 
+The fill mask task doesn't come with a preset configuration; rather, the configuration varies depending on the category. Take a look below to see the configurations for different categories.
 
 ### Stereotype
 
-Stereotype tests play a crucial role in assessing the performance of models when it comes to common gender stereotypes and occupational biases. We have two test categories namely, wino-bias and CrowS-Pairs 
+<div id="one_liner_text_tab" class="tabs-wrapper h3-box">
+  <div class="tabs-header">
+    <a href="#" class="tab-btn">Wino-Bias</a>
+    <a href="#" class="tab-btn">CrowS-Pairs</a>
+  </div>
+  <div class="tabs-body">
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+model_parameters:
+    max_tokens: 64
 
-#### Wino-Bias
-
-```
 tests:
   defaults:
     min_pass_rate: 1.0
@@ -273,13 +337,16 @@ tests:
     wino-bias:
       min_pass_rate: 0.70
       diff_threshold: 0.03
-```
 
-</div><div class="h3-box" markdown="1">
+{% endhighlight %}
+      </div>
+    </div>
+    <div class="tabs-item">
+      <div class="highlight-box">
+        {% highlight python %}
+model_parameters:
+    max_tokens: 64
 
-#### CrowS-Pairs
-
-```
 tests:
   defaults:
     min_pass_rate: 1.0
@@ -289,14 +356,18 @@ tests:
       min_pass_rate: 0.70
       diff_threshold: 0.10
       filter_threshold: 0.15
-```
+{% endhighlight %}
+      </div>
+    </div>
+  </div>
+</div>
 
 </div><div class="h3-box" markdown="1">
 
 
 ## Config for Text-generation
 
-Text-generation task doesnt have a default config, the config is based on the category. 
+The Text-generation task doesn't come with a preset configuration; rather, the configuration varies depending on the category. Take a look below to see the configurations for different categories.
 
 ### Clinical Test
 
@@ -387,7 +458,5 @@ tests:
 
 </div><div class="h3-box" markdown="1">
 
-Note: If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section.
-</div><div class="h3-box" markdown="1">
 
 </div></div>
