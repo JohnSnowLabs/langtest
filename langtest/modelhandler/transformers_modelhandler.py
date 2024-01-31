@@ -810,7 +810,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         return cls(path)
 
     @lru_cache(maxsize=102400)
-    def predict(self, text: str, test_name: str, **kwargs):
+    def predict(self, text: str, prompt, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
         Args:
@@ -824,6 +824,10 @@ class PretrainedModelForSensitivityTest(ModelAPI):
                 - 'result' (str): Decoded result from the model.
 
         """
+        prompt_template = SimplePromptTemplate(**prompt)
+        text = prompt_template.format(**text)
+        print(text)
+
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
         ).to(self.model.device)
@@ -844,7 +848,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         elif test_name == "toxicity":
             return {"result": result}
 
-    def __call__(self, text: str, test_name: str, **kwargs):
+    def __call__(self, text: str, prompt: dict, test_name: str, **kwargs):
         """Alias of the 'predict' method.
 
         Args:
@@ -858,8 +862,11 @@ class PretrainedModelForSensitivityTest(ModelAPI):
                 - 'result' (str): Decoded result from the model.
 
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
 
-        return self.predict(text=text, test_name=test_name, **kwargs)
+        return self.predict(text=text, prompt=prompt, test_name=test_name, **kwargs)
 
 
 class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):

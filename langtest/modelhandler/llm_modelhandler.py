@@ -270,7 +270,7 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
         super().__init__(hub, model, *args, **kwargs)
 
     @lru_cache(maxsize=102400)
-    def predict(self, text: Union[str, dict], *args, **kwargs):
+    def predict(self, text: Union[str, dict], prompt, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
         Args:
@@ -283,35 +283,14 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
                 - 'result': The prediction result.
         """
         try:
-            prompt = PromptTemplate(input_variables=["text"], template="{text}")
-            llmchain = LLMChain(prompt=prompt, llm=self.model)
-            result = llmchain.run({"text": text})
+            prompt_template = PromptTemplate(**prompt)
+            llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            result = llmchain.run(**text)
             return {
                 "result": result,
             }
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
-
-    def __call__(self, text: Union[str, dict], *args, **kwargs):
-        """
-        Alias of the 'predict' method.
-
-        Args:
-            text (Union[str, dict]): The original text or dictionary.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            dict: A dictionary containing the prediction result.
-                - 'result': The prediction result.
-        """
-        if isinstance(text, dict):
-            text = HashableDict(**text)
-        return self.predict(
-            text=text,
-            *args,
-            **kwargs,
-        )
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
