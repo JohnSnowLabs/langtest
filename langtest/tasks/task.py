@@ -444,10 +444,10 @@ class Security(BaseTask):
         )
 
 
-class ClinicalTests(BaseTask):
-    """Clinical Tests task."""
+class Clinical(BaseTask):
+    """Clinical category"""
 
-    _name = "clinicaltests"
+    _name = "clinical"
     _default_col = {
         "Patient info A": [
             "Patient info A",
@@ -475,7 +475,7 @@ class ClinicalTests(BaseTask):
         patient_info_B: str = "Patient info B",
         diagnosis: str = "Diagnosis",
         clinical_domain: str = "clinical_domain",
-        dataset_name: str = "clinicaltests",
+        dataset_name: str = "clinical",
     ) -> samples.ClinicalSample:
         """Create a sample."""
 
@@ -494,10 +494,10 @@ class ClinicalTests(BaseTask):
         )
 
 
-class DisinformationTest(BaseTask):
-    """Disinformation Test task."""
+class Disinformation(BaseTask):
+    """Disinformation category"""
 
-    _name = "disinformationtest"
+    _name = "disinformation"
 
     _default_col = {
         "hypothesis": ["hypothesis", "thesis"],
@@ -510,7 +510,7 @@ class DisinformationTest(BaseTask):
         row_data: dict,
         hypothesis: str = "hypothesis",
         statements: str = "statements",
-        dataset_name: str = "disinformationtest",
+        dataset_name: str = "disinformation",
     ) -> samples.DisinformationSample:
         """Create a sample."""
 
@@ -527,9 +527,9 @@ class DisinformationTest(BaseTask):
 
 
 class Ideology(BaseTask):
-    """Political task."""
+    """Ideology category"""
 
-    _name = "political"
+    _name = "ideology"
     _default_col = {"text": ["text", "question"]}
     sample_class = samples.LLMAnswerSample
 
@@ -549,7 +549,7 @@ class Ideology(BaseTask):
 
 
 class WinoBias(BaseTask):
-    """WinoBias task."""
+    """WinoBias (Stereotype category)"""
 
     _name = "winobias"
     _default_col = {
@@ -578,8 +578,8 @@ class WinoBias(BaseTask):
         )
 
 
-class LegalTests(BaseTask):
-    """Legal task."""
+class Legal(BaseTask):
+    """Legal category"""
 
     _name = "legal"
     _default_col = (
@@ -628,10 +628,10 @@ class LegalTests(BaseTask):
         )
 
 
-class FactualityTest(BaseTask):
-    """Factuality task."""
+class Factuality(BaseTask):
+    """Factuality category"""
 
-    _name = "factualitytest"
+    _name = "factuality"
     _default_col = {
         "article_sent": ["article_sent"],
         "correct_sent": ["correct_sent"],
@@ -663,10 +663,10 @@ class FactualityTest(BaseTask):
         )
 
 
-class SensitivityTest(BaseTask):
-    """Sensitivity task."""
+class Sensitivity(BaseTask):
+    """Sensitivity category"""
 
-    _name = "sensitivitytest"
+    _name = "sensitivity"
     _default_col = {"text": ["text", "question"], "options": ["opyions"]}
     sample_class = samples.SensitivitySample
 
@@ -688,7 +688,7 @@ class SensitivityTest(BaseTask):
 
 
 class CrowsPairs(BaseTask):
-    """Crows Pairs task."""
+    """Crows Pairs (Stereotype category)"""
 
     _name = "crowspairs"
     _default_col = {
@@ -721,7 +721,7 @@ class CrowsPairs(BaseTask):
 
 
 class Stereoset(BaseTask):
-    """StereoSet task."""
+    """StereoSet Stereotype"""
 
     _name = "stereoset"
     _default_col = {
@@ -772,10 +772,10 @@ class Stereoset(BaseTask):
         )
 
 
-class SycophancyTest(BaseTask):
-    """Sycophancy task."""
+class Sycophancy(BaseTask):
+    """Sycophancy category"""
 
-    _name = "sycophancytest"
+    _name = "sycophancy"
     _default_col = {
         "text": ["text", "question"],
         "answer": ["answer", "answer_and_def_correct_predictions"],

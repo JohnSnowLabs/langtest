@@ -218,8 +218,8 @@ class PretrainedModelForSecurity(PretrainedModel, ModelAPI):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModel, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForClinical(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for clinical.
 
     Inherits:
         PretrainedModel: The base class for pretrained models.
@@ -228,8 +228,8 @@ class PretrainedModelForClinicalTests(PretrainedModel, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModel, ModelAPI):
-    """A class representing a pretrained model for disinformation test.
+class PretrainedModelForDisinformation(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for disinformation.
     Inherits:
         PretrainedModel: The base class for pretrained models.
     """
@@ -237,8 +237,8 @@ class PretrainedModelForDisinformationTest(PretrainedModel, ModelAPI):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModel, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForIdeology(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for ideology.
 
     Inherits:
         PretrainedModel: The base class for pretrained models.
@@ -247,10 +247,10 @@ class PretrainedModelForPolitical(PretrainedModel, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(PretrainedModel, ModelAPI):
+class PretrainedModelForSensitivity(PretrainedModel, ModelAPI):
     def __init__(self, model: Any, *args, **kwargs):
         """
-        Initialize the PretrainedModelForSensitivityTest.
+        Initialize the PretrainedModelForSensitivity.
 
         Args:
             model (Any): The pretrained model to be used.
@@ -260,7 +260,9 @@ class PretrainedModelForSensitivityTest(PretrainedModel, ModelAPI):
         super().__init__(model, *args, **kwargs)
 
     @lru_cache(maxsize=102400)
-    def predict(self, text: str, server_prompt: str, *args, **kwargs):
+    def predict(
+        self, text: Union[str, dict], prompt: dict, server_prompt: str, *args, **kwargs
+    ):
         """
         Perform prediction using the pretrained model.
 
@@ -275,8 +277,10 @@ class PretrainedModelForSensitivityTest(PretrainedModel, ModelAPI):
                 - 'result': The prediction result.
         """
         try:
+            prompt_template = SimplePromptTemplate(**prompt)
+            p = prompt_template.format(**text)
             op = chat_completion_api(
-                text=text,
+                text=p,
                 url=self.model,
                 server_prompt=server_prompt,
                 *args,
@@ -288,30 +292,6 @@ class PretrainedModelForSensitivityTest(PretrainedModel, ModelAPI):
 
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
-
-    def __call__(self, text: str, server_prompt: str, *args, **kwargs):
-        """
-        Alias of the 'predict' method.
-
-        Args:
-            text (Union[str, dict]): The original text or dictionary.
-            server_prompt (str): The server prompt for the chat.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            dict: A dictionary containing the prediction result.
-                - 'result': The prediction result.
-        """
-        if isinstance(text, dict):
-            text = HashableDict(**text)
-
-        return self.predict(
-            text=text,
-            server_prompt=server_prompt,
-            *args,
-            **kwargs,
-        )
 
 
 class PretrainedModelForWinoBias(PretrainedModel, ModelAPI):
@@ -325,7 +305,7 @@ class PretrainedModelForWinoBias(PretrainedModel, ModelAPI):
 
 
 class PretrainedModelForLegal(PretrainedModel, ModelAPI):
-    """A class representing a pretrained model for legal-tests.
+    """A class representing a pretrained model for legal.
 
     Inherits:
         PretrainedModel: The base class for pretrained models.
@@ -334,7 +314,7 @@ class PretrainedModelForLegal(PretrainedModel, ModelAPI):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModel, ModelAPI):
+class PretrainedModelForFactuality(PretrainedModel, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -344,8 +324,8 @@ class PretrainedModelForFactualityTest(PretrainedModel, ModelAPI):
     pass
 
 
-class PretrainedModelForSycophancyTest(PretrainedModel, ModelAPI):
-    """A class representing a pretrained model for sycophancy test.
+class PretrainedModelForSycophancy(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for sycophancy.
 
     This class inherits from PretrainedModel and provides functionality
     specific to sycophancy task.

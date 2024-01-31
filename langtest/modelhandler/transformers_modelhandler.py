@@ -712,7 +712,7 @@ class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
-    """Transformers pretrained model for summarization tasks
+    """Transformers pretrained model for toxicity.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
@@ -722,7 +722,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
-    """Transformers pretrained model for summarization tasks
+    """Transformers pretrained model for security.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
@@ -731,8 +731,8 @@ class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
-    """Transformers pretrained model for summarization tasks
+class PretrainedModelForIdeology(PretrainedModelForQA, ModelAPI):
+    """Transformers pretrained model for ideology.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
@@ -741,8 +741,8 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for disinformation test.
+class PretrainedModelForDisinformation(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for disinformation.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
     """
@@ -750,7 +750,7 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForFactuality(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -760,7 +760,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(ModelAPI):
+class PretrainedModelForSensitivity(ModelAPI):
     """A class for handling a pretrained model for sensitivity testing.
 
     This class wraps a pretrained transformer model for performing sensitivity testing.
@@ -778,7 +778,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
     """
 
     def __init__(self, model, *args, **kwargs):
-        """Initialize a PretrainedModelForSensitivityTest instance.
+        """Initialize a PretrainedModelForSensitivity instance.
 
         Args:
             model (tuple): A tuple containing the model and tokenizer.
@@ -797,7 +797,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             path (str): Path to model or model name.
 
         Returns:
-            PretrainedModelForSensitivityTest: An instance of the class containing the loaded model and tokenizer.
+            PretrainedModelForSensitivity: An instance of the class containing the loaded model and tokenizer.
         """
 
         if isinstance(path, str):
@@ -815,12 +815,12 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
         Args:
             text (str): Input text to perform sensitivity testing on.
-            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            test_name (str): Name of the sensitivity test (e.g., "add_negation", "add_toxic_words").
             **kwargs: Additional keyword arguments.
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'loss' (float): Difference in loss between transformed and original text (for "add_negation" test).
                 - 'result' (str): Decoded result from the model.
 
         """
@@ -838,14 +838,14 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
 
-        if test_name == "negation":
+        if test_name == "add_negation":
             loss = outputs.loss.item()
             return {
                 "loss": loss,
                 "result": result,
             }
 
-        elif test_name == "toxicity":
+        elif test_name == "add_toxic_words":
             return {"result": result}
 
     def __call__(self, text: str, prompt: dict, test_name: str, **kwargs):
@@ -853,12 +853,12 @@ class PretrainedModelForSensitivityTest(ModelAPI):
 
         Args:
             text (str): Input text to perform sensitivity testing on.
-            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            test_name (str): Name of the sensitivity test (e.g., "add_negation", "add_toxic_words").
             **kwargs: Additional keyword arguments.
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'loss' (float): Difference in loss between transformed and original text (for "add_negation" test).
                 - 'result' (str): Decoded result from the model.
 
         """
@@ -869,8 +869,8 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         return self.predict(text=text, prompt=prompt, test_name=test_name, **kwargs)
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for SycophancyTest
+class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for Sycophancy.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -879,8 +879,8 @@ class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForClinical(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for clinical.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -890,7 +890,7 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for legal-tests.
+    """A class representing a pretrained model for legal.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.

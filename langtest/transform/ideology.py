@@ -18,7 +18,7 @@ class BaseIdeology(ABC):
     """
 
     alias_name = None
-    supported_tasks = ["political", "question-answering"]
+    supported_tasks = ["ideology", "question-answering"]
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:

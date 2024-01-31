@@ -24,7 +24,7 @@ class SensitivityTestCase(unittest.TestCase):
         self.perturbations_list = self.available_tests["sensitivity"]
         self.supported_tests = self.available_test()
         self.samples = {
-            "sensitivity-test": [
+            "sensitivity": [
                 SensitivitySample(
                     original="she is going to school?",
                     options="-",
@@ -58,7 +58,7 @@ class SensitivityTestCase(unittest.TestCase):
                 sample = self.samples[task][-1]
                 test_func = self.supported_tests[test].transform
 
-                if test != "toxicity":
+                if test != "add_toxic_words":
                     sample.transform(test_func, {})
 
                 else:
