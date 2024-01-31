@@ -22,6 +22,8 @@ modify_date: "2024-01-31"
         <option value="text-classification">Text Classification</option>
         <option value="question-answering">Question Answering</option>
         <option value="summarization">Summarization</option>
+        <option value="text-generation">Text-Generation</option>
+        <option value="fill-mask">Fill-Mask</option>
     </select>
 </div>
 
