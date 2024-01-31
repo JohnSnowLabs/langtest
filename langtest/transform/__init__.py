@@ -1785,7 +1785,7 @@ class FactualityTestFactory(ITests):
     supported_tasks = ["factuality", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the factuality-test"""
+        """Initializes the FactualityTestFactory"""
         self.data_handler = data_handler
         self.tests = tests
         self.kwargs = kwargs
