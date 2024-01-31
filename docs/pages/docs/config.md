@@ -10,7 +10,7 @@ header: true
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
-### Configuring Tests
+## Configuring Tests
 
 The configuration for the tests can be passed in the form of a YAML file to the `config` parameter in the `Harness`, or by using the `configure()` method.
 
@@ -126,7 +126,7 @@ tests:
       min_pass_rate: 0.60
 ```
 
-> Note this is the default Question-Answering config, the tasks which comes under question answering, their config are given below.
+> Please note that this represents the default configuration for Question-Answering tasks. Below, you'll find the configurations for tasks falling under the Question-Answering category.
 > If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section.
 
 ### Ideology Test
@@ -313,7 +313,7 @@ tests:
 
 ## Config for Fill Mask 
 
-Fill mask task doesnt have a default config, the config is based on the category. 
+The fill mask task doesn't come with a preset configuration; rather, the configuration varies depending on the category. Take a look below to see the configurations for different categories.
 
 ### Stereotype
 
@@ -367,7 +367,7 @@ tests:
 
 ## Config for Text-generation
 
-Text-generation task doesnt have a default config, the config is based on the category. 
+The Text-generation task doesn't come with a preset configuration; rather, the configuration varies depending on the category. Take a look below to see the configurations for different categories.
 
 ### Clinical Test
 
