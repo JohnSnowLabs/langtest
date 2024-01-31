@@ -699,7 +699,6 @@ class Harness:
 
         column_order = [
             "model_name",
-            "dataset_name",
             "category",
             "test_type",
             "original",
@@ -753,6 +752,8 @@ class Harness:
             "perturbed_result",
             "pass",
         ]
+        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
+            column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
 
@@ -896,7 +897,6 @@ class Harness:
 
         column_order = [
             "model_name",
-            "dataset_name",
             "category",
             "test_type",
             "original",
@@ -929,6 +929,8 @@ class Harness:
             "options",
             "expected_result",
         ]
+        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
+            column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df = testcases_df[columns]
 
