@@ -32,6 +32,7 @@ However, alongside their remarkable capabilities, there are inherent challenges 
 | [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
 | [**Fairness**](/docs/pages/tests/test#fairness-tests)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets     |
 | [**Representation**](/docs/pages/tests/test#representation-tests)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
+| [**Grammar**](/docs/pages/tests/test#grammar-tests)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
 | [**Factuality**](/docs/pages/tests/test#factuality-test)          | Factual-Summary-Pairs                             |
 | [**Ideology**](/docs/pages/tests/test#ideology-tests)            | Curated list                                     |
 | [**Legal**](/docs/pages/tests/test#legal-tests)               | Legal-Support                                    |
