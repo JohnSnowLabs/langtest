@@ -6,5 +6,5 @@ tests:
     min_pass_rate: 1.0
 
   sensitivity:
-    negation:
+    add_negation:
       min_pass_rate: 0.70

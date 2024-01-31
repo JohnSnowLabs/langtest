@@ -1121,7 +1121,7 @@ class SecuritySample(BaseModel):
 
 class ClinicalSample(BaseModel):
     """
-    A class Representing a sample for clinical-tests task.
+    A class Representing a sample for clinical task.
 
     Attributes:
         patient_info_A (str): The information of patient A.
@@ -1144,10 +1144,10 @@ class ClinicalSample(BaseModel):
     treatment_plan_B: str = None
 
     state: str = None
-    dataset_name: str = None  # MedicalFiles
-    task: str = None  # toxicity
-    category: str = None  # clinical-tests
-    test_type: str = None  # gastro
+    dataset_name: str = None
+    task: str = None
+    category: str = None
+    test_type: str = None
 
     ran_pass: tuple = None
 
@@ -1258,7 +1258,7 @@ class ClinicalSample(BaseModel):
 
 class LLMAnswerSample(BaseModel):
     """
-    A class Representing a sample for clinical-tests task.
+    A class Representing a sample for clinical.
 
     Attributes:
         question (str): Question to be asked to the model
@@ -1687,7 +1687,7 @@ class StereoSetSample(BaseModel):
 
 class LegalSample(BaseModel):
     """
-    A class Representing a sample for legal-tests task.
+    A class Representing a sample for legal task.
 
     Attributes:
         case (str): Description of the case.
@@ -1711,7 +1711,7 @@ class LegalSample(BaseModel):
     model_conclusion: str = None
     state: str = None
     dataset_name: str = None
-    task: str = "legal-tests"
+    task: str = "legal"
     category: str = "legal"
     test_type: str = None
     ran_pass: bool = None
@@ -2085,7 +2085,7 @@ class SensitivitySample(BaseModel):
         test_case (str): The transformed text input for testing.
         state (str): The state of the sample.
         dataset_name (str): The name of the dataset the sample belongs to.
-        task (str): The type of task, default is "sensitivity-test".
+        task (str): The type of task, default is "sensitivity".
         category (str): The category or module name associated with the sample.
         test_type (str): The type of test being performed.
         expected_result (Result): The expected result of the sensitivity test.
@@ -2184,7 +2184,7 @@ class SensitivitySample(BaseModel):
         if self.ran_pass is not None:
             return self.ran_pass
 
-        if self.test_type == "negation":
+        if self.test_type == "add_negation":
             if self.hub == "huggingface":
                 self.loss_diff = self.op1["loss"] - self.op2["loss"]
             else:
@@ -2214,7 +2214,7 @@ class SensitivitySample(BaseModel):
                 self.loss_diff = 1 - EmbeddingDistance()._cosine_distance(
                     embedding1, embedding2
                 )
-        elif self.test_type == "toxicity":
+        elif self.test_type == "add_toxic_words":
             from ...transform.utils import compare_generations_overlap
 
             count1 = compare_generations_overlap(self.expected_result)
@@ -2233,7 +2233,7 @@ class SensitivitySample(BaseModel):
         """
         from ...langtest import HARNESS_CONFIG as harness_config
 
-        if self.test_type == "negation":
+        if self.test_type == "add_negation":
             min_range, max_range = harness_config.get(
                 "evaluation", {"threshold": (-0.2, 0.2)}
             ).get("threshold", (-0.2, 0.2))
@@ -2243,7 +2243,7 @@ class SensitivitySample(BaseModel):
             else:
                 return True
 
-        elif self.test_type == "toxicity":
+        elif self.test_type == "add_toxic_words":
             threshold = harness_config.get("evaluation", {"threshold": 0}).get(
                 "threshold", 0
             )
@@ -2259,14 +2259,14 @@ class SensitivitySample(BaseModel):
 
         Args:
             text (str): Main text or context.
-            options (str): Options for the input. Ignored for 'toxicity' test type.
+            options (str): Options for the input. Ignored for 'add_toxic_words' test type.
 
         Returns:
             dict: Input data. Structure depends on the test type.
-                For 'toxicity', includes only the main text;
+                For 'add_toxic_words' test, includes only the main text;
                 for other types, includes a question and optional answer options.
         """
-        if self.test_type == "toxicity":
+        if self.test_type == "add_toxic_words":
             input_data = {"text": text}
         else:
             input_data = {"question": text}
@@ -2292,7 +2292,7 @@ class SensitivitySample(BaseModel):
         prompt_template = kwargs.get("user_prompt", None)
 
         if prompt_template is None:
-            if self.test_type == "toxicity":
+            if self.test_type == "add_toxic_words":
                 prompt_template = "{text}"
 
             else:
@@ -2361,7 +2361,7 @@ class SensitivitySample(BaseModel):
 
 
 class SycophancySample(BaseModel):
-    """A helper object for extending Sycophancy-test functionality.
+    """A helper object for extending Sycophancy test functionality.
 
     This class represents a sample used for conducting Sycophancy tests. It provides attributes to store
     information about the original and perturbed prompts, questions, ground truth, test type, and more.
@@ -2398,7 +2398,7 @@ class SycophancySample(BaseModel):
     dataset_name: str = None
     category: str = None
     state: str = None
-    task: str = Field(default="sycophancy-test", const=True)
+    task: str = Field(default="sycophancy", const=True)
     test_case: str = None
     gt: bool = False
     eval_model: str = None

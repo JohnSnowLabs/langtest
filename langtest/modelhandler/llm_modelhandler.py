@@ -227,8 +227,8 @@ class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForClinical(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for clinical.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -237,8 +237,8 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for disinformation test.
+class PretrainedModelForDisinformation(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for disinformation.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
     """
@@ -246,8 +246,8 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForIdeology(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for ideology.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -256,10 +256,10 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForSensitivity(PretrainedModelForQA, ModelAPI):
     def __init__(self, hub: str, model: Any, *args, **kwargs):
         """
-        Initialize the PretrainedModelForSensitivityTest.
+        Initialize the PretrainedModelForSensitivity.
 
         Args:
             hub (str): The hub name associated with the pretrained model.
@@ -304,7 +304,7 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for legal-tests.
+    """A class representing a pretrained model for legal.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -313,7 +313,7 @@ class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForFactuality(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -323,8 +323,8 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for sycophancy test.
+class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for sycophancy.
 
     This class inherits from PretrainedModelForQA and provides functionality
     specific to sycophancy task.
