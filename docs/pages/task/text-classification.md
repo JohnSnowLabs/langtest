@@ -31,6 +31,7 @@ Text classification is a common task in natural language processing (NLP) where 
 | [**Fairness**](/docs/pages/tests/test#fairness-test)          | CSV and HuggingFace Datasets                             |
 | [**Robustness**](/docs/pages/tests/test#robustness-tests)          | CSV and HuggingFace Datasets |
 | [**Representation**](/docs/pages/tests/test#representation-tests)      | CSV and HuggingFace Datasets |
+| [**Grammar**](/docs/pages/tests/test#grammar-tests)      | CSV and HuggingFace Datasets |
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data#text-classification).

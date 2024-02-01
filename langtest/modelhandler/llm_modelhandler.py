@@ -227,8 +227,8 @@ class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForClinical(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for clinical.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -237,8 +237,8 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for disinformation test.
+class PretrainedModelForDisinformation(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for disinformation.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
     """
@@ -246,8 +246,8 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForIdeology(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for ideology.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -256,10 +256,10 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForSensitivity(PretrainedModelForQA, ModelAPI):
     def __init__(self, hub: str, model: Any, *args, **kwargs):
         """
-        Initialize the PretrainedModelForSensitivityTest.
+        Initialize the PretrainedModelForSensitivity.
 
         Args:
             hub (str): The hub name associated with the pretrained model.
@@ -270,7 +270,7 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
         super().__init__(hub, model, *args, **kwargs)
 
     @lru_cache(maxsize=102400)
-    def predict(self, text: Union[str, dict], *args, **kwargs):
+    def predict(self, text: Union[str, dict], prompt, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
         Args:
@@ -283,35 +283,14 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
                 - 'result': The prediction result.
         """
         try:
-            prompt = PromptTemplate(input_variables=["text"], template="{text}")
-            llmchain = LLMChain(prompt=prompt, llm=self.model)
-            result = llmchain.run({"text": text})
+            prompt_template = PromptTemplate(**prompt)
+            llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            result = llmchain.run(**text)
             return {
                 "result": result,
             }
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
-
-    def __call__(self, text: Union[str, dict], *args, **kwargs):
-        """
-        Alias of the 'predict' method.
-
-        Args:
-            text (Union[str, dict]): The original text or dictionary.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            dict: A dictionary containing the prediction result.
-                - 'result': The prediction result.
-        """
-        if isinstance(text, dict):
-            text = HashableDict(**text)
-        return self.predict(
-            text=text,
-            *args,
-            **kwargs,
-        )
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
@@ -325,7 +304,7 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for legal-tests.
+    """A class representing a pretrained model for legal.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -334,7 +313,7 @@ class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForFactuality(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -344,8 +323,8 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for sycophancy test.
+class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for sycophancy.
 
     This class inherits from PretrainedModelForQA and provides functionality
     specific to sycophancy task.

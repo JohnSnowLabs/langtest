@@ -61,25 +61,25 @@ COLUMN_MAPPER = {
     "toxicity": {"text": ["text"]},
     "translation": {"text": ["text", "original", "sourcestring"]},
     "security": {"text": ["text", "prompt"]},
-    "clinical-tests": {
+    "clinical": {
         "Patient info A": ["Patient info A"],
         "Patient info B": ["Patient info B"],
         "Diagnosis": ["Diagnosis"],
     },
-    "disinformation-test": {
+    "disinformation": {
         "hypothesis": ["hypothesis", "thesis"],
         "statements": ["statements", "headlines"],
     },
-    "sensitivity-test": {"text": ["text", "question"], "options": ["options"]},
+    "sensitivity": {"text": ["text", "question"], "options": ["options"]},
     "wino-bias": {"text": ["text"], "options": ["options"]},
-    "legal-tests": {
+    "legal": {
         "case": ["case"],
         "legal-claim": ["legal-claim"],
         "legal_conclusion_a": ["legal_conclusion_a"],
         "legal_conclusion_b": ["legal_conclusion_b"],
         "correct_choice": ["correct_choice"],
     },
-    "factuality-test": {
+    "factuality": {
         "article_sent": ["article_sent"],
         "correct_sent": ["correct_sent"],
         "incorrect_sent": ["incorrect_sent"],
@@ -1385,12 +1385,12 @@ class JSONLDataset(BaseDataset):
         "toxicity",
         "translation",
         "security",
-        "clinical-tests",
-        "disinformation-test",
-        "sensitivity-test",
+        "clinical",
+        "disinformation",
+        "sensitivity",
         "wino-bias",
-        "legal-tests",
-        "factuality-test",
+        "legal",
+        "factuality",
         "stereoset",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
@@ -1595,7 +1595,7 @@ class HuggingFaceDataset(BaseDataset):
 class SynteticDataset(BaseDataset):
     """Example dataset class that loads data using the Hugging Face dataset library and also generates synthetic math data."""
 
-    supported_tasks = ["sycophancy-test"]
+    supported_tasks = ["sycophancy"]
 
     def __init__(self, dataset: dict, task: TaskManager):
         """
