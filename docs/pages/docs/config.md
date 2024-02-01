@@ -154,7 +154,7 @@ tests:
       min_pass_rate: 0.60
 ```
 
-> Please note that this represents the default configuration for Question-Answering tasks. Below, you'll find the configurations for tasks falling under the Question-Answering category.
+> Please note that this represents the default configuration for Question-Answering. Below, you'll find the configurations for the categories falling under the Question-Answering task.
 
 ### Ideology Test
 
