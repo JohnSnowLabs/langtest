@@ -14,7 +14,7 @@ With just one line of code, you can generate and run over 50 different test type
 
 ## NER
 
-Try out the LangTest library on the following default model-dataset combinations for NER. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://langtest.org/docs/pages/docs/harness)).
+Try out the LangTest library on the following default model-dataset combinations for NER. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](/docs/pages/docs/harness)).
 
 <div id="one_liner_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -72,7 +72,7 @@ h.generate().run().report()
 
 ## Text Classification
 
-Try out the LangTest library on the following default model-dataset combinations for Text Classification. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions** (check [Test Harness docs](https://langtest.org/docs/pages/docs/harness)).
+Try out the LangTest library on the following default model-dataset combinations for Text Classification. **To run tests on any model other than those displayed in the code snippets here, make sure to provide a dataset that matches your model's label predictions**(check [Test Harness docs](/docs/pages/docs/harness))
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -162,7 +162,7 @@ h.generate().run().report()
 
 Question Answering task contains various test-categories, and by default, the question answering task supports robustness, accuracy, fairness, representation, and bias for the benchmark dataset. However, if you want to access a specific sub-task (Category) within the question answering task, it is data-dependent.
 
-Try out the LangTest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](https://langtest.org/docs/pages/docs/data).
+Try out the LangTest library on the following default model-dataset combinations for Question Answering. To get a list of valid dataset options, please navigate to the [Data Input docs](/docs/pages/docs/data#question-answering).
 
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
@@ -396,7 +396,7 @@ h.generate().run().report()
 
 ## Summarization
 
-Try out the LangTest library on the following default model-dataset combinations for Summarization. To get a list of valid dataset options, please navigate to the [Data Input docs](https://langtest.org/docs/pages/docs/data).
+Try out the LangTest library on the following default model-dataset combinations for Summarization. To get a list of valid dataset options, please navigate to the [Data Input docs](/docs/pages/docs/data#summarization).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -429,7 +429,7 @@ h.generate().run().report()
 
 ## Fill Mask
 
-Fill Mask task currently supports only Stereotype test categories. Accessing a specific test within the Stereotype category depends on the dataset. 
+Fill Mask task currently supports only Stereotype test categories. Accessing a specific test within the Stereotype category depends on the dataset. To get a list of valid dataset options, please navigate to the [Data Input docs](/docs/pages/docs/data#fill-mask).
 
 ### Wino Bias
 
@@ -486,7 +486,7 @@ h.generate().run().report()
 
 ## Text-generation
 
-Text Generation task contains various test-categories. Accessing a specific sub-task (category) within the text generation task depends on the dataset.
+Text Generation task contains various test-categories. Accessing a specific sub-task (category) within the text generation task depends on the dataset. To get a list of valid dataset options, please navigate to the [Data Input docs](/docs/pages/docs/data#text-generation).
 
 ### Clinical
 
@@ -577,7 +577,7 @@ h.generate().run().report()
 
 ### Toxicity
 
-Try out the LangTest library on the following default model-dataset combinations for Toxicity. To get a list of valid dataset options, please navigate to the [Data Input docs](https://langtest.org/docs/pages/docs/data).
+Try out the LangTest library on the following default model-dataset combinations for Toxicity.
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-header">
@@ -611,7 +611,7 @@ h.generate().run().report()
 
 ## Translation
 
-Try out the LangTest library on the following default model-dataset combinations for translation.
+Try out the LangTest library on the following default model-dataset combinations for translation. To get a list of valid dataset options, please navigate to the [Data Input docs](/docs/pages/docs/data#translation).
 
 <div id="one_liner_text_tab" class="tabs-wrapper h3-box">
   <div class="tabs-body">
