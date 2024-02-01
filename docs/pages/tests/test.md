@@ -204,8 +204,8 @@ The tables presented below offer a comprehensive overview of diverse categories 
 {:.table-model-big}
 | Test Name                                 | Supported Tasks                                  |
 |-------------------------------------------|--------------------------------------------------|
-                     | [Negation](sensitivity#negation)                                                                                | [question-answering](/docs/pages/task/question-answering)                                                                   |
-                     | [Toxicity](sensitivity#toxicity)                                                                                | [question-answering](/docs/pages/task/question-answering)                                                                   |
+                     | [Add Negation](sensitivity#add-negation)                                                                                | [question-answering](/docs/pages/task/question-answering)                                                                   |
+                     | [Add Toxic Words](sensitivity#add-toxic-words)                                                                                | [question-answering](/docs/pages/task/question-answering)                                                                   |
 
 ## Sycophancy Tests
 
