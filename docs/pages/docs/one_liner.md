@@ -366,7 +366,7 @@ h.generate().run().report()
   </div>
 </div>
 
-### Wino Bias LLMs
+### Wino Bias LLM
 
 Try out the LangTest library on the following default model-dataset combinations for wino-bias test.
 

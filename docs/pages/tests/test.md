@@ -220,8 +220,8 @@ The tables presented below offer a comprehensive overview of diverse categories 
 {:.table-model-big}
 | Test Name                                 | Supported Tasks                                  |
 |-------------------------------------------|--------------------------------------------------|
-                         | [gender-occupational-stereotype](stereotype#gender-occupational-stereotype)                                      | [fill-mask](/docs/pages/task/fill-mask)                                                                            |
-                     | [common-stereotypes](stereotype#common-stereotypes)                                                            | [fill-mask](/docs/pages/task/fill-mask)                                                                          |
+                         | [wino Bias](stereotype#wino-bias-huggingface)                                      | [fill-mask](/docs/pages/task/fill-mask) , [question-answering](/docs/pages/task/question-answering)                                                                            |
+                     | [CrowS Pairs](stereotype#crows-pairs)                                                            | [fill-mask](/docs/pages/task/fill-mask)                                                                          |
 
 ## StereoSet Tests
 
