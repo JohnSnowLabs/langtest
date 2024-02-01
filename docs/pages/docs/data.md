@@ -193,7 +193,7 @@ Supported test categories and their corresponding supported data inputs are outl
 {:.table2}
 | Supported Test Categories                     | Supported Data                                           |
 |-----------------------------------------------|----------------------------------------------------------|
-| **[Robustness](/docs/pages/task/question-answering#robustness), [Accuracy](/docs/pages/task/question-answering#accuracy), [Fairness](/docs/pages/task/question-answering#fairness), [Representation](/docs/pages/task/question-answering#representation)** | Benchmark datasets, CSV, HuggingFace Datasets       |
+| **[Robustness](/docs/pages/task/question-answering#robustness), [Accuracy](/docs/pages/task/question-answering#accuracy), [Fairness](/docs/pages/task/question-answering#fairness), [Representation](/docs/pages/task/question-answering#representation), [Grammar](/docs/pages/task/question-answering#grammar)** | Benchmark datasets, CSV, HuggingFace Datasets       |
 | **[Bias](/docs/pages/task/question-answering#bias)**                                      | BoolQ (split: bias)                                      |
 | **[Factuality](/docs/pages/task/question-answering#factuality)**                                | Factual-Summary-Pairs                                    |
 | **[Ideology](/docs/pages/task/question-answering#ideology)**                                  | Curated list                                             |
@@ -226,7 +226,7 @@ harness = Harness(task="question-answering",
 
 </div><div class="h3-box" markdown="1">
 
-### Ideology Test
+### Ideology
 
 This test evaluates the model's political orientation. There is one default dataset used for this test.
 
@@ -253,7 +253,7 @@ harness = Harness(task={"task":"question-answering", "category":"ideology"},
 
 </div><div class="h3-box" markdown="1">
 
-### Factuality Test
+### Factuality
 
 The Factuality Test is designed to evaluate the ability of LLMs to determine the factuality of statements within summaries, particularly focusing on the accuracy of LLM-generated summaries and potential biases in their judgments. Users should choose a benchmark dataset from the provided list.
 
@@ -275,13 +275,13 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness  =  Harness(task={"task":"question-answering", "category":"factuality-test"}, 
+harness  =  Harness(task={"task":"question-answering", "category":"factuality"}, 
                     model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data = {"data_source": "Factual-Summary-Pairs"})
 ```
 </div><div class="h3-box" markdown="1">
 
-### Legal Test
+### Legal
 
 The Legal test assesses LLMs' ability to discern the level of support provided by various case summaries for a given legal claim.
 
@@ -295,7 +295,7 @@ The Legal test assesses LLMs' ability to discern the level of support provided b
 
 </div><div class="h3-box" markdown="1">
 
-#### Passing a Legal Test Dataset to the Harness
+#### Passing a Legal Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
 
@@ -303,40 +303,25 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness  =  Harness(task={"task":"question-answering", "category":"legal-test"}, 
+harness  =  Harness(task={"task":"question-answering", "category":"legal"}, 
                     model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data = {"data_source": "legal-support"})
 ```
 </div><div class="h3-box" markdown="1">
 
-### Sensitivity Test
+### Sensitivity
 
 The Sensitivity Test comprises two distinct evaluations: one focusing on assessing a model's responsiveness to toxicity, particularly when toxic words are introduced into the input text, and the other aimed at gauging its sensitivity to negations, especially when negations are inserted after verbs like "is," "was," "are," and "were". Users should choose a benchmark dataset from the provided list.
-
-#### Datasets
-
-{:.table2}
-| Dataset                   | Source                                                                                               | Description                                                                                                |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **NQ-open**               | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training & development set from the NaturalQuestions dataset, containing 3,569 labeled examples            |
-| **NQ-open-test**          | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Development set from the NaturalQuestions dataset, containing 1,769 labeled examples                       |
-| **NQ-open-test-tiny**     | [Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026/) | Training, development & test set from the NaturalQuestions dataset, containing 50 labeled examples         |
-| **OpenBookQA-test**       | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                          | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions |
-| **OpenBookQA-test-tiny**  | [OpenBookQA Dataset](https://allenai.org/data/open-book-qa)                                          | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.     |
-| **wikiDataset-test**      | [wikiDataset](https://huggingface.co/datasets/wikitext)                                              | Testing set from the wikiDataset, containing 1000 sentences                                                |
-| **wikiDataset-test-tiny** | [wikiDataset](https://huggingface.co/datasets/wikitext)                                              | Truncated version of the test set from the wikiDataset, containing 50 sentences.                           |
-
-</div><div class="h3-box" markdown="1">
 
 #### Test and Dataset Compatibility
 
 {:.table2}
 
-| Test Name | Supported Dataset                                                               | Notebook                                                                                                                                                                                                   |
-| --------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| toxicity  | wikiDataset-test, wikiDataset-test-tiny                                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
-| negation  | NQ-open-test, NQ-open, NQ-open-test-tiny, OpenBookQA-test, OpenBookQA-test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
-
+| Test Name | Supported Dataset                                                               |       split         | Notebook                                                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| toxicity  | [wikiDataset](https://huggingface.co/datasets/wikitext)                              |  test, test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
+| negation  | [NQ-open](https://aclanthology.org/Q19-1026/) | test, test-tiny, combined  | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
+| negation  | [OpenBookQA](https://arxiv.org/abs/1809.02789) | test, test-tiny | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb) |
 
 #### Passing a Sensitivity Test Dataset to the Harness
 
@@ -346,7 +331,7 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness  =  Harness(task={"task":"question-answering", "category":"sensitivity-test"}, 
+harness  =  Harness(task={"task":"question-answering", "category":"sensitivity"}, 
                     model = {"model": "gpt-3.5-turbo-instruct", "hub":"openai"},
                     data={"data_source" :"NQ-open","split":"test-tiny"})
 ```
@@ -382,7 +367,7 @@ harness = Harness(
 </div><div class="h3-box" markdown="1">
 
 
-### Sycophancy Test
+### Sycophancy
 
 Sycophancy is an undesirable behavior where models tailor their responses to align with a human user's view even when that view is not objectively correct. In this notebook, we propose a simple synthetic data intervention to reduce this behavior in language models.
 
@@ -405,7 +390,7 @@ os.environ["OPENAI_API_KEY"] = "<YOUR_API_KEY>"
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness = Harness(task={"task":"question-answering", "category":"sycophancy-test"},
+harness = Harness(task={"task":"question-answering", "category":"sycophancy"},
                   model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
                   data={"data_source": 'synthetic-math-data',})
 ```
@@ -524,7 +509,7 @@ Text Generation task contains various test-categories. Accessing a specific sub-
 
 </div><div class="h3-box" markdown="1">
 
-### Clinical Test
+### Clinical
 
 Clinical test assesses LLMs' capability to detect demographic bias, which involves unfair treatment based on factors like age, gender, or race, regardless of patients' medical conditions.
 
@@ -539,7 +524,7 @@ Clinical test assesses LLMs' capability to detect demographic bias, which involv
 
 </div><div class="h3-box" markdown="1">
 
-#### Passing a Clinical Test Dataset to the Harness
+#### Passing a Clinical Dataset to the Harness
 
 In the Harness, we specify the data input in the following way:
 
@@ -551,13 +536,13 @@ model = {"model": "gpt-3.5-turbo-instruct", "hub": "openai"}
 
 data = {"data_source": "Clinical", "split":"Medical-files"}
 
-task={"task": "text-generation", "category": "clinical-tests"},
+task = {"task": "text-generation", "category": "clinical"},
 
 harness = Harness(task=task, model=model, data=data)
 ```
 </div><div class="h3-box" markdown="1">
 
-### Disinformation Test
+### Disinformation
 
 This test evaluates the model's disinformation generation capability. Users should choose a benchmark dataset from the provided list.
 
@@ -578,7 +563,7 @@ In the Harness, we specify the data input in the following way:
 # Import Harness from the LangTest library
 from langtest import Harness
 
-harness  =  Harness(task={"task":"text-generation", "category":"disinformation-test"}, 
+harness  =  Harness(task={"task":"text-generation", "category":"disinformation"}, 
                     model={"model": "j2-jumbo-instruct", "hub":"ai21"},
                     data = {"data_source": "Narrative-Wedging"})
 
