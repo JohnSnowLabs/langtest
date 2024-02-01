@@ -119,6 +119,14 @@ When configuring Language Model (LLMs), certain parameters play a crucial role i
 
 - **Max Tokens (or Max Length):** Specifies the maximum number of tokens (words or subwords) in the generated text. This parameter helps control the length of the output.
 
+- **User prompt:** Users can provide a prompt that serves as a starting point  for the generated text. The prompt influences the content, style, and coherence of the generated text by guiding the model's understanding and focus.
+
+- **Deployment Name**: With Azure OpenAI, you set up your own deployments of the common GPT-3 and Codex models. When calling the API, you need to specify the deployment you want to use. (Only applicable to Azure OpenAI Hub)
+
+- **Stream**: Enables real-time partial response transmission during API interactions. (Only applicable to LM-Studio Hub)
+
+- **Server Prompt**: Instructions or guidelines for the model to follow during the conversation. (Only applicable to LM-Studio Hub)
+
 #### Model Parameter Variation Across Different Hubs
 
 Different language model hubs may use slightly different parameter names or have variations in their default values. Here's a comparison across some popular hubs:
@@ -126,13 +134,9 @@ Different language model hubs may use slightly different parameter names or have
 {:.table2}
 | Hub Name                    | Parameter Name | 
 |-----------------------------|----------------|
-| Azure OpenAI                | `temperature`, `max_tokens`, `deployment_name` |
-| AI21                        | `temperature`, `maxTokens`  |
-| Cohere                      | `temperature`, `max_tokens` |
-| OpenAI                      | `temperature`, `max_tokens` |
-| Hugging Face Inference API  | `max_length`   |
-
-> If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section. It's essential to consider these variations when deploying or fine-tuning models across different hubs to ensure consistent behavior and performance.
+| AI21, Cohere, OpenAI, Hugging Face Inference API        | `temperature`, `max_tokens`, `user_promt`  |
+| Azure OpenAI                | `temperature`, `max_tokens`, `user_promt`, `deployment_name` |
+| LM-Studio                | `temperature`, `max_tokens`, `user_promt`, `stream`, `server_promt` |
 
 ```
 model_parameters:
