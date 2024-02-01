@@ -110,6 +110,30 @@ tests:
 
 ## Config for Question Answering
 
+
+#### Understanding Model Parameters
+
+When configuring Language Model (LLMs), certain parameters play a crucial role in determining the output quality and behavior of the model. Among these parameters, two are particularly important:
+
+- **Temperature:** Controls the randomness of the generated text. Lower values result in more deterministic outputs, while higher values lead to more diverse but potentially less coherent text.
+
+- **Max Tokens (or Max Length):** Specifies the maximum number of tokens (words or subwords) in the generated text. This parameter helps control the length of the output.
+
+#### Model Parameter Variation Across Different Hubs
+
+Different language model hubs may use slightly different parameter names or have variations in their default values. Here's a comparison across some popular hubs:
+
+{:.table2}
+| Hub Name                    | Parameter Name | 
+|-----------------------------|----------------|
+| Azure OpenAI                | `temperature`, `max_tokens`, `deployment_name` |
+| AI21                        | `temperature`, `maxTokens`  |
+| Cohere                      | `temperature`, `max_tokens` |
+| OpenAI                      | `temperature`, `max_tokens` |
+| Hugging Face Inference API  | `max_length`   |
+
+> If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section. It's essential to consider these variations when deploying or fine-tuning models across different hubs to ensure consistent behavior and performance.
+
 ```
 model_parameters:
   temperature: 0.2
@@ -127,7 +151,6 @@ tests:
 ```
 
 > Please note that this represents the default configuration for Question-Answering tasks. Below, you'll find the configurations for tasks falling under the Question-Answering category.
-> If you are using Azure OpenAI, please ensure that you modify the Config file by adding the `deployment_name` parameter under the `model_parameters` section.
 
 ### Ideology Test
 
