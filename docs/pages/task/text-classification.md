@@ -26,12 +26,12 @@ Text classification is a common task in natural language processing (NLP) where 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | CSV and HuggingFace Datasets |
-| [**Bias**](/docs/pages/tests/test#bias-tests)                |  CSV and HuggingFace Datasets                               |
-| [**Fairness**](/docs/pages/tests/test#fairness-test)          | CSV and HuggingFace Datasets                             |
-| [**Robustness**](/docs/pages/tests/test#robustness-tests)          | CSV and HuggingFace Datasets |
-| [**Representation**](/docs/pages/tests/test#representation-tests)      | CSV and HuggingFace Datasets |
-| [**Grammar**](/docs/pages/tests/test#grammar-tests)      | CSV and HuggingFace Datasets |
+| [**Accuracy**](/docs/pages/tests/accuracy)            | CSV and HuggingFace Datasets |
+| [**Bias**](/docs/pages/tests/bias)                |  CSV and HuggingFace Datasets                               |
+| [**Fairness**](/docs/pages/tests/fairness)          | CSV and HuggingFace Datasets                             |
+| [**Robustness**](/docs/pages/tests/robustness)          | CSV and HuggingFace Datasets |
+| [**Representation**](/docs/pages/tests/representation)      | CSV and HuggingFace Datasets |
+| [**Grammar**](/docs/pages/tests/grammar)      | CSV and HuggingFace Datasets |
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data#text-classification).

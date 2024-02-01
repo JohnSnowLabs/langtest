@@ -24,13 +24,26 @@ A summarization task involves condensing a larger piece of text into a shorter v
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
-| [**Bias**](/docs/pages/tests/test#bias-tests)                |   XSum (split: bias)                               |
-| [**Fairness**](/docs/pages/tests/test#fairness-test)          | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum)                             |
-| [**Robustness**](/docs/pages/tests/test#robustness-tests)          | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
-| [**Representation**](/docs/pages/tests/test#representation-tests)      | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
+| [**Accuracy**](/docs/pages/tests/accuracy)            | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
+| [**Bias**](/docs/pages/tests/bias)                |   XSum (split: bias)                               |
+| [**Fairness**](/docs/pages/tests/fairness)          | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum)                             |
+| [**Robustness**](/docs/pages/tests/robustness)          | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
+| [**Representation**](/docs/pages/tests/representation)      | [XSum](/docs/pages/benchmarks/other_benchmarks/xsum), [MultiLexSum](/docs/pages/benchmarks/legal/multilexsum) |
 
 To get more information about the supported data, click [here](/docs/pages/docs/data#summarization).
+
+</div><div class="h3-box" markdown="1">
+
+#### Task Specification
+
+When specifying the task for Summarization, use the following format:
+
+
+**task**: `str`
+
+```python
+task = "summarization"
+```
 
 {% assign parent_path = "pages/task/summarization" %}
 

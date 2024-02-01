@@ -27,7 +27,7 @@ Translation is the process of converting a sequence of text from one language in
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Robustness**](/docs/pages/tests/test#robustness-tests)          | Translation |
+| [**Robustness**](/docs/pages/tests/robustness)          | Translation |
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data#translation).

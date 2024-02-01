@@ -29,23 +29,4 @@ Task for which the model is to be evaluated
 | [text-generation](/docs/pages/task/text-generation)     | Text Generation           | Large Language Models available through the different [hubs](/docs/pages/docs/hub)          |
 
 
-</div><div class="h3-box" markdown="1">
-
-
-example:-
-
-- task: `str`
-
-
-```python
-  task = "ner"
-```
-
-- task: `dict`
-
-
-```python
-  task={"task":"fill-mask", "category":"wino-bias"}
-```
-
-</div>
+</div><div class="h3-box" markdown="1"></div>

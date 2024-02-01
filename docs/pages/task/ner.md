@@ -28,11 +28,11 @@ The primary goal of Named Entity Recognition is to locate and label these named 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | CoNLL, CSV and HuggingFace Datasets |
-| [**Bias**](/docs/pages/tests/test#bias-tests)                |  CoNLL, CSV and HuggingFace Datasets                               |
-| [**Fairness**](/docs/pages/tests/test#fairness-test)          | CoNLL, CSV and HuggingFace Datasets                             |
-| [**Robustness**](/docs/pages/tests/test#robustness-tests)          | CoNLL, CSV and HuggingFace Datasets |
-| [**Representation**](/docs/pages/tests/test#representation-tests)      | CoNLL, CSV and HuggingFace Datasets |
+| [**Accuracy**](/docs/pages/tests/accuracy)            | CoNLL, CSV and HuggingFace Datasets |
+| [**Bias**](/docs/pages/tests/bias)                |  CoNLL, CSV and HuggingFace Datasets                               |
+| [**Fairness**](/docs/pages/tests/fairness)          | CoNLL, CSV and HuggingFace Datasets                             |
+| [**Robustness**](/docs/pages/tests/robustness)          | CoNLL, CSV and HuggingFace Datasets |
+| [**Representation**](/docs/pages/tests/representation)      | CoNLL, CSV and HuggingFace Datasets |
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data#ner).

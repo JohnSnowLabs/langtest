@@ -27,18 +27,18 @@ However, alongside their remarkable capabilities, there are inherent challenges 
 {:.table2}
 | Supported Test Category | Supported Data                                  |
 |-------------------------|-------------------------------------------------|
-| [**Robustness**](/docs/pages/tests/test#robustness-tests)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
-| [**Bias**](/docs/pages/tests/test#bias-tests)                |  BoolQ (split: bias)                               |
-| [**Accuracy**](/docs/pages/tests/test#accuracy-tests)            | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
-| [**Fairness**](/docs/pages/tests/test#fairness-tests)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets     |
-| [**Representation**](/docs/pages/tests/test#representation-tests)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
-| [**Grammar**](/docs/pages/tests/test#grammar-tests)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
-| [**Factuality**](/docs/pages/tests/test#factuality-test)          | Factual-Summary-Pairs                             |
-| [**Ideology**](/docs/pages/tests/test#ideology-tests)            | Curated list                                     |
-| [**Legal**](/docs/pages/tests/test#legal-tests)               | Legal-Support                                    |
-| [**Sensitivity**](/docs/pages/tests/test#sensitivity-tests)         | NQ-Open, OpenBookQA, wikiDataset                  |
-| [**Stereoset**](/docs/pages/tests/test#stereoset-tests)           | StereoSet                                        |
-| [**Sycophancy**](/docs/pages/tests/test#sycophancy-tests)          | synthetic-math-data, synthetic-nlp-data          |
+| [**Robustness**](/docs/pages/tests/robustness)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
+| [**Bias**](/docs/pages/tests/bias)                |  BoolQ (split: bias)                               |
+| [**Accuracy**](/docs/pages/tests/accuracy)            | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
+| [**Fairness**](/docs/pages/tests/fairness)          | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets     |
+| [**Representation**](/docs/pages/tests/representation)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
+| [**Grammar**](/docs/pages/tests/grammar)      | [Benchmark datasets](/docs/pages/benchmarks/benchmark), CSV, and HuggingFace Datasets |
+| [**Factuality**](/docs/pages/tests/factuality)          | Factual-Summary-Pairs                             |
+| [**Ideology**](/docs/pages/tests/ideology)            | Curated list                                     |
+| [**Legal**](/docs/pages/tests/legal)               | Legal-Support                                    |
+| [**Sensitivity**](/docs/pages/tests/sensitivity)         | NQ-Open, OpenBookQA, wikiDataset                  |
+| [**Stereoset**](/docs/pages/tests/stereoset)           | StereoSet                                        |
+| [**Sycophancy**](/docs/pages/tests/sycophancy)          | synthetic-math-data, synthetic-nlp-data          |
 
 
 To get more information about the supported data, click [here](/docs/pages/docs/data#question-answering).
@@ -47,7 +47,7 @@ To get more information about the supported data, click [here](/docs/pages/docs/
 
 #### Task Specification
 
-When specifying the task for Named Entity Recognition (NER), use the following format:
+When specifying the task for Question Answering, use the following format:
 
 **task**: `Union[str, dict]`
 
@@ -61,7 +61,7 @@ task = "question-answering"
 If you want to access some sub-task from `question-answering`, then you need to give the task as a dictionary.
 
 ```python
-task = {"task" : "question-answering", "category":"sycophancy-test" }
+task = {"task" : "question-answering", "category" : "sycophancy-test" }
 ```
 
 
