@@ -8,7 +8,7 @@ This test checks the data regarding the sample counts of religions.
 **alias_name:** `min_religion_name_representation_count`
 
 <i class="fa fa-info-circle"></i>
-<em>This data was curated using [Kidpaw](https://www.kidpaw.com/). Please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/utils.py) to fit your use-case.</em>
+<em>This data was curated using [Kidpaw](https://www.kidpaw.com/). Please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/constants.py) to fit your use-case.</em>
 
 #### Config
 ```yaml
