@@ -67,7 +67,7 @@ class GrammarTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            if TestFactory.task in ("question-answering"):
+            if str(TestFactory.task) in ("question-answering"):
                 _ = [
                     sample.transform(
                         test_func,
