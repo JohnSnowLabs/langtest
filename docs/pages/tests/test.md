@@ -32,34 +32,64 @@ modify_date: "2024-01-31"
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const taskSelector = document.getElementById('task-selector');
-        const mainContent = document.querySelector('.main-docs'); 
+        const mainContent = document.querySelector('.main-docs');
 
-        const savedFilter = localStorage.getItem('selectedTaskFilter');
-        if (savedFilter) {
-            taskSelector.value = savedFilter;
-            filterTests(savedFilter);
+        // Retrieve the saved filter and timestamp from localStorage
+        const savedFilterData = localStorage.getItem('selectedTaskFilterData');
+        const savedFilterDataObj = savedFilterData ? JSON.parse(savedFilterData) : null;
+        const currentTime = new Date().getTime();
+
+        if (savedFilterDataObj && (currentTime - savedFilterDataObj.timestamp) <= 30000) {
+            // Apply the saved filter if it's within the 30-second timeframe
+            taskSelector.value = savedFilterDataObj.filter;
+            filterTests(savedFilterDataObj.filter);
+        } else {
+            // Default to 'All Tasks' and clear any saved filter if expired or not set
+            taskSelector.value = 'all';
+            document.getElementById('combined-table-container').innerHTML = '';
+            mainContent.style.display = 'block';
+            localStorage.removeItem('selectedTaskFilterData');
         }
 
         taskSelector.addEventListener('change', function() {
-            filterTests(this.value);
-            localStorage.setItem('selectedTaskFilter', this.value);
+            // Save the selected filter along with the current timestamp
+            const filterData = JSON.stringify({
+                filter: this.value,
+                timestamp: new Date().getTime()
+            });
+            localStorage.setItem('selectedTaskFilterData', filterData);
+
+            if (this.value !== 'all') {
+                filterTests(this.value);
+            } else {
+                // Reset to the default 'All Tasks' view without any filtering
+                document.getElementById('combined-table-container').innerHTML = '';
+                mainContent.style.display = 'block';
+            }
         });
 
         function filterTests(task) {
-            var combinedTableHtml = '';
-            mainContent.style.display = task === 'all' ? 'block' : 'none'; 
-            if (task !== 'all') {
-                var allRows = document.querySelectorAll('.table-model-big tr');
-                combinedTableHtml = '<table class="table-model-big">';
+            document.getElementById('combined-table-container').innerHTML = ''; 
+            mainContent.style.display = 'none'; 
 
-                allRows.forEach(function(row) {
-                    if (row.cells[1] && row.cells[1].innerHTML.includes('/docs/pages/task/' + task)) {
-                        combinedTableHtml += '<tr>' + row.innerHTML + '</tr>';
+            var combinedTableHtml = '<table class="table-model-big"><thead><tr><th>Test Name</th><th>Description</th><th>Test Category</th></tr></thead><tbody>';
+            var allRows = document.querySelectorAll('.table-model-big tr');
+
+            allRows.forEach(function(row) {
+                if (row.cells[1] && row.cells[1].innerHTML.includes('/docs/pages/task/' + task)) {
+                    let category = 'General'; 
+                    const link = row.querySelector('a');
+                    if (link && link.getAttribute('href')) {
+                        const parts = link.getAttribute('href').split('/');
+                        const lastPart = parts[parts.length - 1];
+                        category = lastPart.split('#')[0];
+                        category = `<a href="/docs/pages/tests/${category}">${category}</a>`; 
                     }
-                });
+                    combinedTableHtml += `<tr>${row.innerHTML}<td>${category}</td></tr>`;
+                }
+            });
 
-                combinedTableHtml += '</table>';
-            }
+            combinedTableHtml += '</tbody></table>';
             document.getElementById('combined-table-container').innerHTML = combinedTableHtml;
         }
     });
@@ -70,6 +100,8 @@ modify_date: "2024-01-31"
         margin-bottom: 20px;
     }
 </style>
+
+
 
 
 
@@ -95,7 +127,7 @@ The tables presented below offer a comprehensive overview of diverse categories 
 | [Min Rouge2 Score](accuracy#min-rouge2-score) | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)       |
 | [Min RougeL Score](accuracy#min-rougel-score) | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)       |
 | [Min RougeLsum Score](accuracy#min-rougelsum-score) | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)   |
-| [LLM Eval](accuracy#llm-eval) | [question-answering](/docs/pages/task/question-answering)    |
+
 
 ## Bias Tests
 
