@@ -308,4 +308,53 @@ h.generate().run().report()
 
 </div>
 
+<div class="h3-box" markdown="1">
+
+### LM Studio
+
+#### Pretrained Models
+
+```bash
+!pip install langtest requests
+```
+
+```python
+from langtest import Harness
+
+# Create test Harness
+h = Harness(task="question-answering", 
+            model={"model": "http://localhost:1234/v1/chat/completions", "hub": "lm-studio"},
+            data={"data_source" :"BoolQ", "split":"test-tiny"},
+            config='config.yml')
+			
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div>
+
+<div class="h3-box" markdown="1">
+
+### Custom
+
+#### Custom model
+```bash
+!pip install "langtest"
+```
+
+```python
+from langtest import Harness
+
+# Create test Harness
+harness = Harness(task="text-classification",
+                  model={'model': model, "hub": "custom"}, 
+                  data={'data_source': 'test.csv'},
+                  config='config.yml')	
+
+# Generate, run and get a report on your test cases
+h.generate().run().report()
+```
+
+</div>
+
 </div></div>

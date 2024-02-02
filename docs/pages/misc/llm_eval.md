@@ -23,7 +23,7 @@ How it operates in LangTest for robustness testing:
 To configure string distance metrics, you can use a YAML configuration file. The configuration structure includes:
 
 - `model_parameters` specifying model-related parameters.
-- `evaluation` setting the evaluation `metric`, `distance`, and `threshold`.
+- `evaluation` setting the evaluation `metric`, `model`, and `hub`.
 - `tests` defining different test scenarios and their `min_pass_rate`.
 
 Here's an example of the configuration structure:
