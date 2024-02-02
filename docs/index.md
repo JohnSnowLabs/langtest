@@ -1,7 +1,7 @@
 ---
 layout: landing
 title: 'LangTest <span>Deliver Safe & Effective Language Models</span>'
-excerpt: <br> 50+ Test Types for Comparing LLM & NLP Models on Accuracy, Bias, Fairness, Robustness & More
+excerpt: <br> 60+ Test Types for Comparing LLM & NLP Models on Accuracy, Bias, Fairness, Robustness & More
 permalink: /
 header: true
 article_header:
@@ -26,7 +26,7 @@ data:
        - title: Simple
          image: 
             src: assets/images/home/powerfull_one.svg
-         excerpt: Generate & run over 50 test types on the most popular NLP frameworks & tasks with 1 line of code
+         excerpt: Generate & run over 60 test types on the most popular NLP frameworks & tasks with 1 line of code
        - title: Comprehensive
          image: 
             src: assets/images/home/elegant_python.svg
@@ -112,7 +112,7 @@ data:
    - title: In a Few Lines of Code
      oneline: yes
 
-   - title: 50+ Out-Of-The-Box Test Types
+   - title: 60+ Out-Of-The-Box Test Types
      outbox: yes
 
    - title: Auto-Generate Test Cases

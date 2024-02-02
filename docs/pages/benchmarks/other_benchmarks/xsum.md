@@ -14,6 +14,8 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
+
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/XSum_dataset.ipynb)
 
 **Source:** [Don’t Give Me the Details, Just the Summary! Topic-Aware Convolutional Neural Networks for Extreme Summarization](https://aclanthology.org/D18-1206/)
@@ -30,3 +32,4 @@ You can see which subsets and splits are available below.
 | **test-tiny** | Truncated version of the test set from the Xsum dataset, containing 50 labeled examples                       |
 | **bias**      | Manually annotated bias version of the Xsum dataset, containing 382 labeled examples                          |
 
+</div>

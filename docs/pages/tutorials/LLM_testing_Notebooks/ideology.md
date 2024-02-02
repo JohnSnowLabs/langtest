@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Political Demo notebook, we're evaluating `text-davinci-003` model on Ideology test in capturing nuanced political beliefs beyond the traditional left-right spectrum.
+In the Political Demo notebook, we're evaluating `gpt-3.5-turbo-instruct` model on Ideology test in capturing nuanced political beliefs beyond the traditional left-right spectrum.
 
 ## Open in Collab
 

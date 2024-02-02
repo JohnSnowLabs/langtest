@@ -16,12 +16,10 @@ modify_date: "2019-05-16"
 
 
 <div class="main-docs" markdown="1">
-<div class="h3-box" markdown="1">
 
 LangTest provides support for a variety of benchmark datasets in the medical field which are listed below in the table, allowing you to assess the performance of your models on medical queries.
 
-</div>
-</div>
+</div><div class="h3-box" markdown="1">
 
 
 {:.table2}
@@ -33,3 +31,5 @@ LangTest provides support for a variety of benchmark datasets in the medical fie
 | [**LiveQA**](liveqa)              | question-answering | `robustness`        | [Overview of the Medical Question Answering Task at TREC 2017 LiveQA](https://trec.nist.gov/pubs/trec26/papers/Overview-QA.pdf)| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Medical_Datasets.ipynb)             | 
 | [**MedicationQA**](medicationqa)              | question-answering | `robustness`        | [Bridging the Gap Between Consumers' Medication Questions and Trusted Answers](https://pubmed.ncbi.nlm.nih.gov/31437878/)| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Medical_Datasets.ipynb)             | 
 | [**HealthSearchQA**](healthsearchqa)              | question-answering | `robustness`        | [Large Language Models Encode Clinical Knowledge](https://paperswithcode.com/paper/large-language-models-encode-clinical)| [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Medical_Datasets.ipynb)             | 
+
+</div>

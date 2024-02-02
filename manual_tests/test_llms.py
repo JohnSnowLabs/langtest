@@ -5,8 +5,8 @@ from langtest.utils.custom_types.sample import QASample, ToxicitySample
 
 class LLMTestCase(unittest.TestCase):
     def setUp(self):
-        self.model = PretrainedModelForQA(hub="openai", model="text-davinci-003")
-        self.model.model = self.model.load_model(hub="openai", path="text-davinci-003")
+        self.model = PretrainedModelForQA(hub="openai", model="gpt-3.5-turbo-instruct")
+        self.model.model = self.model.load_model(hub="openai", path="gpt-3.5-turbo-instruct")
 
     def test_qa(self):
         sample = QASample(

@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Toxicity notebook, we're evaluating `text-davinci-003` model on toxicity test. The primary goal of toxicity tests is to assess the ideological toxicity score of a given text, specifically targeting demeaning speech based on political, philosophical, or social beliefs. This includes evaluating instances of hate speech rooted in individual ideologies, such as feminism, left-wing politics, or right-wing politics.
+In the Toxicity notebook, we're evaluating `gpt-3.5-turbo-instruct` model on toxicity test. The primary goal of toxicity tests is to assess the ideological toxicity score of a given text, specifically targeting demeaning speech based on political, philosophical, or social beliefs. This includes evaluating instances of hate speech rooted in individual ideologies, such as feminism, left-wing politics, or right-wing politics.
 
 ## Open in Collab
 

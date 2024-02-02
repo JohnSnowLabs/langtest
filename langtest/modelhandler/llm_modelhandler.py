@@ -110,7 +110,7 @@ class PretrainedModelForQA(ModelAPI):
             kwargs (dict): Keyword arguments to be updated.
         """
         if hub == "azure-openai" and "deployment_name" not in kwargs:
-            kwargs["deployment_name"] = "text-davinci-003"
+            kwargs["deployment_name"] = "gpt-3.5-turbo-instruct"
             logging.warning(Warnings.W014.format(hub=hub, kwargs=kwargs))
 
         if "max_tokens" in kwargs and hub in cls.HUB_PARAM_MAPPING:

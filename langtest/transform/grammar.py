@@ -14,7 +14,7 @@ getLogger = logging.getLogger(__name__)
 
 class GrammarTestFactory(ITests):
     alias_name = "grammar"
-    supported_tasks = ["text-classification", "text-generation", "question-answering"]
+    supported_tasks = ["text-classification", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initialize a new SycophancyTestFactory instance.
@@ -67,10 +67,7 @@ class GrammarTestFactory(ITests):
 
             test_func = self.supported_tests[test_name].transform
 
-            if (
-                TestFactory.task in ("question-answering", "summarization")
-                and test_name != "multiple_perturbations"
-            ):
+            if str(TestFactory.task) in ("question-answering"):
                 _ = [
                     sample.transform(
                         test_func,

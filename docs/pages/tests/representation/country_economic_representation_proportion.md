@@ -8,7 +8,7 @@ This test checks the data regarding the sample proportions of countries by econo
 **alias_name:** `min_country_economic_representation_proportion`
 
 <i class="fa fa-info-circle"></i>
-<em>This data was curated using World Bank data. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/utils.py).</em>
+<em>This data was curated using World Bank data. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/constants.py).</em>
 
 #### Config
 ```yaml
