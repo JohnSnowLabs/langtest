@@ -127,6 +127,7 @@ The tables presented below offer a comprehensive overview of diverse categories 
 | [Min Rouge2 Score](accuracy#min-rouge2-score) | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)       |
 | [Min RougeL Score](accuracy#min-rougel-score) | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)       |
 | [Min RougeLsum Score](accuracy#min-rougelsum-score) | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)   |
+| [LLM Eval](accuracy#llm-eval) | [question-answering](/docs/pages/task/question-answering) |
 
 
 ## Bias Tests

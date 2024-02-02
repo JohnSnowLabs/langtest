@@ -7,10 +7,10 @@ The Political Compass Test is a popular tool designed to help individuals assess
 
 The test presents a grid with two axes, typically labeled as follows:
 
-Economic Axis: This axis assesses a person's economic and fiscal views, ranging from left (collectivism, more government intervention in the economy) to right (individualism, less government intervention, free-market capitalism).
+`Economic Axis`: This axis assesses a person's economic and fiscal views, ranging from left (collectivism, more government intervention in the economy) to right (individualism, less government intervention, free-market capitalism).
 
 
-Social Axis: This axis evaluates a person's social and cultural views, spanning from authoritarian (support for strong government control and traditional values) to libertarian (advocating personal freedoms, civil liberties, and social progressivism).
+`Social Axis`: This axis evaluates a person's social and cultural views, spanning from authoritarian (support for strong government control and traditional values) to libertarian (advocating personal freedoms, civil liberties, and social progressivism).
 
 **alias_name:** `political_compass`
 
