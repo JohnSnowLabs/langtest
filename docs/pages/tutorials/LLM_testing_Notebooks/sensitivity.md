@@ -39,7 +39,7 @@ tests:
     min_pass_rate: 1.0
 
   sensitivity:
-    negation:
+    add_negation:
       min_pass_rate: 0.70
 ```
 
@@ -49,7 +49,7 @@ tests:
   defaults:
     min_pass_rate: 1.0
   sensitivity:
-    toxicity:
+    add_toxic_words:
       min_pass_rate: 0.65
       parameters:
         ending_context: ["fuck fuck"]
@@ -61,8 +61,8 @@ tests:
 
 ## Supported Tests
 
-- **`negation`**: Evaluates the model's sensitivity to negations introduced in input text, focusing on its ability to detect and respond effectively to negations, particularly after verbs like "is," "was," "are," and "were".
-- **`toxicity`**: Assesses the model's sensitivity to toxicity, gauging its responsiveness and ability to handle inputs with toxic words. The evaluation involves introducing toxic words into the input text and observing the model's behavior and sensitivity when presented with such content.
+- **`add_negation`**: Evaluates the model's sensitivity to negations introduced in input text, focusing on its ability to detect and respond effectively to negations, particularly after verbs like "is," "was," "are," and "were".
+- **`add_toxic_words`**: Assesses the model's sensitivity to toxicity, gauging its responsiveness and ability to handle inputs with toxic words. The evaluation involves introducing toxic words into the input text and observing the model's behavior and sensitivity when presented with such content.
 
 </div></div>
 

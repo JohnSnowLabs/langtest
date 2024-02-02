@@ -139,6 +139,10 @@ tutorials:
           url: /docs/pages/tutorials/llm_testing_notebooks/sycophancy
         - title: Stereotype
           url: /docs/pages/tutorials/llm_testing_notebooks/stereotype
+        - title: LM Studio
+          url: /docs/pages/tutorials/llm_testing_notebooks/lm_studio
+        - title: Question-Answering Benchmarking
+          url: /docs/pages/tutorials/llm_testing_notebooks/question_answering_benchmarking
   - title: Miscellaneous Notebooks
     url: /docs/pages/tutorials/miscellaneous_notebooks
     children:
