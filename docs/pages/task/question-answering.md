@@ -61,7 +61,7 @@ task = "question-answering"
 If you want to access some sub-task from `question-answering`, then you need to give the task as a dictionary.
 
 ```python
-task = {"task" : "question-answering", "category" : "sycophancy-test" }
+task = {"task" : "question-answering", "category" : "sycophancy" }
 ```
 
 
