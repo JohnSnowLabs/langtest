@@ -519,6 +519,8 @@ class MinGenderLLMEval(BaseFairness):
             cls.eval_model = load_eval_model.model(
                 model, hub, **harness_config.get("model_parameters", {})
             )
+        else:
+            cls.eval_model = EVAL_MODEL
 
         if isinstance(params["min_score"], dict):
             min_scores = params["min_score"]
@@ -652,6 +654,8 @@ class MaxGenderLLMEval(BaseFairness):
             cls.eval_model = load_eval_model.model(
                 model, hub, **harness_config.get("model_parameters", {})
             )
+        else:
+            cls.eval_model = EVAL_MODEL
 
         if isinstance(params["max_score"], dict):
             max_scores = params["max_score"]
