@@ -286,10 +286,7 @@ class TestSummarizationDataset:
 
     def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
-        if isinstance(dataset, HuggingFaceDataset):
-            raw_data = dataset.load_raw_data(split="test[:30]")
-        else:
-            raw_data = dataset.load_raw_data()
+        raw_data = dataset.load_raw_data()
 
         for sample in raw_data:
             assert isinstance(sample[feature_col], str)
@@ -297,11 +294,14 @@ class TestSummarizationDataset:
 
     def test_load_data(self, dataset, feature_col, target_col):
         """"""
-
-        samples = dataset.load_data()
+        if isinstance(dataset, HuggingFaceDataset):
+            samples = dataset.load_data()
+        else:
+            samples = dataset.load_data(
+                feature_column=feature_col, target_column=target_col
+            )
 
         assert isinstance(samples, list)
-
         for sample in samples:
             assert isinstance(sample, SummarizationSample)
 

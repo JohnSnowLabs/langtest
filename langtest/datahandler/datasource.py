@@ -1143,6 +1143,8 @@ class HuggingFaceDataset(BaseDataset):
         """
         self.source_info = source_info
         self.dataset_name = source_info["data_source"]
+        self.split = source_info.get("split", "test")
+        self.subset = source_info.get("subset", None)
         self.task = task
         self.kwargs = kwargs
         self._check_datasets_package()
@@ -1160,14 +1162,15 @@ class HuggingFaceDataset(BaseDataset):
 
     def load_raw_data(
         self,
-        split: str = "test",
-        subset: str = None,
     ) -> List:
         """Loads data into a list"""
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+
+        if self.subset:
+            dataset = self.load_dataset(
+                self.dataset_name, name=self.subset, split=self.split
+            )
         else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
+            dataset = self.load_dataset(self.dataset_name, split=self.split)
 
         return dataset.to_list()
 
@@ -1193,13 +1196,12 @@ class HuggingFaceDataset(BaseDataset):
                 If an unsupported task is provided.
         """
 
-        split = self.source_info.get("split", "test")
-        subset = self.source_info.get("subset", None)
-
-        if subset:
-            dataset = self.load_dataset(self.dataset_name, name=subset, split=split)
+        if self.subset:
+            dataset = self.load_dataset(
+                self.dataset_name, name=self.subset, split=self.split
+            )
         else:
-            dataset = self.load_dataset(self.dataset_name, split=split)
+            dataset = self.load_dataset(self.dataset_name, split=self.split)
 
         data = []
         column_names = self.source_info
