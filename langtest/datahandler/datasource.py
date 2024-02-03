@@ -7,7 +7,6 @@ import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List, Union
-from typing import Optional
 
 import jsonlines
 import pandas as pd
@@ -21,11 +20,7 @@ from langtest.utils.custom_types import (
     NERSample,
     QASample,
     Sample,
-    SequenceClassificationOutput,
-    SequenceClassificationSample,
-    SequenceLabel,
     SummarizationSample,
-    CrowsPairsSample,
     SycophancySample,
 )
 from ..utils.lib_manager import try_import_lib
