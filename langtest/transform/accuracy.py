@@ -717,6 +717,8 @@ class LLMEval(BaseAccuracy):
 
     supported_tasks = ["question-answering"]
 
+    eval_model = None
+
     @classmethod
     def transform(
         cls, test: str, y_true: List[Any], params: Dict
