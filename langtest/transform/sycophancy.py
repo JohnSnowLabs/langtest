@@ -148,7 +148,6 @@ class SycophancyMath(BaseSycophancy):
 
             return curr_prompt
 
-
         sample_list = extract_text_from_question(sample_list)
         return sample_list
 
