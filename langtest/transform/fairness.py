@@ -78,10 +78,10 @@ class MinGenderF1Score(BaseFairness):
     """Subclass of BaseFairness that implements the minimum F1 score.
 
     Attributes:
-        alias_name (str): The name "min_f1" identifying the minimum F1 score.
+        alias_name (str): The name "min_gender_f1_score" identifying the minimum F1 score.
 
     Methods:
-        transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
+        transform(test: str, data: List[Sample], params: Dict) -> List[MinScoreSample]:
             Transforms the input data into an output based on the minimum F1 score.
     """
 
@@ -91,12 +91,14 @@ class MinGenderF1Score(BaseFairness):
     def transform(
         cls, test: str, data: List[Sample], params: Dict
     ) -> List[MinScoreSample]:
-        """Computes the minimum F1 score for the given data.
+        """
+        Computes the minimum F1 score for the given data.
 
         Args:
-            test (str): name of the test
+            test (str): The test alias name.
             data (List[Sample]): The input data to be transformed.
-            params (Dict): parameters for tests configuration.
+            params (Dict): Parameters for tests configuration.
+
         Returns:
             List[MinScoreSample]: The transformed data based on the minimum F1 score.
         """
@@ -129,21 +131,23 @@ class MinGenderF1Score(BaseFairness):
 
     @staticmethod
     async def run(
-        sample_list: List[MinScoreSample], gendered_data, **kwargs
+        sample_list: List[MinScoreSample], grouped_label, **kwargs
     ) -> List[MinScoreSample]:
-        """Computes the minimum F1 score for the given data.
+        """
+        Computes the minimum F1 score for the given data.
 
         Args:
-            sample_list (List[MinScoreSample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for the computation.
+            sample_list (List[MinScoreSample]): The input data samples.
+            grouped_label: A dictionary containing grouped labels where each key corresponds to a test case
+                and the value is a tuple containing true labels and predicted labels.
+            **kwargs: Additional keyword arguments.
 
         Returns:
-            List[MinScoreSample]: The transformed samples.
-
+            List[MinScoreSample]: The evaluated data samples.
         """
         progress = kwargs.get("progress_bar", False)
         for sample in sample_list:
-            data = gendered_data[sample.test_case]
+            data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
                 macro_f1_score = calculate_f1_score(
                     data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
@@ -163,10 +167,10 @@ class MaxGenderF1Score(BaseFairness):
     """Subclass of BaseFairness that implements the maximum F1 score.
 
     Attributes:
-        alias_name (str): The name to be used in config.
+        alias_name (str): The name "max_gender_f1_score" identifying the maximum F1 score.
 
     Methods:
-        transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+        transform(test: str, data: List[Sample], params: Dict) -> List[MaxScoreSample]:
             Transforms the input data into an output based on the maximum F1 score.
     """
 
@@ -176,12 +180,14 @@ class MaxGenderF1Score(BaseFairness):
     def transform(
         cls, test: str, data: List[Sample], params: Dict
     ) -> List[MaxScoreSample]:
-        """Computes the maximum F1 score for the given data.
+        """
+        Computes the maximum F1 score for the given data.
 
         Args:
-            test (str): name of the test.
+            test (str): The test alias name.
             data (List[Sample]): The input data to be transformed.
-            params (Dict): parameters for tests configuration
+            params (Dict): Parameters for tests configuration.
+
         Returns:
             List[MaxScoreSample]: The transformed data based on the maximum F1 score.
         """
@@ -212,23 +218,24 @@ class MaxGenderF1Score(BaseFairness):
 
     @staticmethod
     async def run(
-        sample_list: List[MaxScoreSample], gendered_data, **kwargs
+        sample_list: List[MaxScoreSample], grouped_label, **kwargs
     ) -> List[MaxScoreSample]:
-        """Computes the maximum F1 score for the given data.
+        """
+        Computes the maximum F1 score for the given data.
 
         Args:
-            sample_list (List[MaxScoreSample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for the computation.
-
+            sample_list (List[MaxScoreSample]): The input data samples.
+            grouped_label: A dictionary containing grouped labels where each key corresponds to a test case
+                and the value is a tuple containing true labels and predicted labels.
+            **kwargs: Additional keyword arguments.
 
         Returns:
-            List[MaxScoreSample]: The transformed samples.
-
+            List[MaxScoreSample]: The evaluated data samples.
         """
         progress = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
-            data = gendered_data[sample.test_case]
+            data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
                 macro_f1_score = calculate_f1_score(
                     data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
@@ -245,14 +252,19 @@ class MaxGenderF1Score(BaseFairness):
 
 
 class MinGenderRougeScore(BaseFairness):
-    """Subclass of BaseFairness that implements the minimum F1 score.
+    """
+    Subclass of BaseFairness that implements the minimum Rouge score.
 
     Attributes:
-        alias_name (str): The name "min_f1" identifying the minimum F1 score.
+        alias_name (List[str]): Alias names for the evaluation method.
+        supported_tasks (List[str]): Supported tasks for this evaluation method.
 
     Methods:
-        transform(data: List[Sample], params: Dict) -> List[MinScoreSample]:
-            Transforms the input data into an output based on the minimum F1 score.
+        transform(test: str, data: List[Sample], params: Dict) -> List[MinScoreSample]:
+            Transforms the input data into an output based on the minimum Rouge score.
+        run(sample_list: List[MinScoreSample], grouped_label, **kwargs) -> List[MinScoreSample]:
+            Computes the minimum Rouge score for the given data.
+
     """
 
     alias_name = [
@@ -267,14 +279,16 @@ class MinGenderRougeScore(BaseFairness):
     def transform(
         cls, test: str, data: List[Sample], params: Dict
     ) -> List[MinScoreSample]:
-        """Computes the min rouge score for the given data.
+        """
+        Transforms the data for evaluation based on the minimum Rouge score.
 
         Args:
-            test (str): name of the test.
+            test (str): The test alias name.
             data (List[Sample]): The input data to be transformed.
-            params (Dict): parameters for tests configuration
+            params (Dict): Parameters for tests configuration.
+
         Returns:
-            List[MinScoreSample]: The transformed data based on the minimum F1 score.
+            List[MinScoreSample]: The transformed data samples based on the minimum Rouge score.
         """
         assert (
             test in cls.alias_name
@@ -304,17 +318,19 @@ class MinGenderRougeScore(BaseFairness):
 
     @staticmethod
     async def run(
-        sample_list: List[MinScoreSample], gendered_data, **kwargs
+        sample_list: List[MinScoreSample], grouped_label, **kwargs
     ) -> List[MinScoreSample]:
-        """Computes the minimum F1 score for the given data.
+        """
+        Computes the minimum Rouge score for the given data.
 
         Args:
-            sample_list (List[MinScoreSample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for the computation.
+            sample_list (List[MinScoreSample]): The input data samples.
+            grouped_label: A dictionary containing grouped labels where each key corresponds to a test case
+                and the value is a tuple containing true labels and predicted labels.
+            **kwargs: Additional keyword arguments.
 
         Returns:
-            List[MinScoreSample]: The transformed samples.
-
+            List[MinScoreSample]: The evaluated data samples.
         """
         import evaluate
 
@@ -322,7 +338,7 @@ class MinGenderRougeScore(BaseFairness):
         task = kwargs.get("task", None)
 
         for sample in sample_list:
-            data = gendered_data[sample.test_case]
+            data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
                 if task == "question-answering" or task == "summarization":
                     em = evaluate.load("rouge")
@@ -345,14 +361,19 @@ class MinGenderRougeScore(BaseFairness):
 
 
 class MaxGenderRougeScore(BaseFairness):
-    """Subclass of BaseFairness that implements the rouge score.
+    """
+    Subclass of BaseFairness that implements the Rouge score.
 
     Attributes:
-        alias_name (str): The name to be used in config.
+        alias_name (List[str]): Alias names for the evaluation method.
+        supported_tasks (List[str]): Supported tasks for this evaluation method.
 
     Methods:
-        transform(data: List[Sample], params: Dict) -> List[MaxScoreSample]:
-            Transforms the input data into an output based on the rouge score.
+        transform(test: str, data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+            Transforms the input data into an output based on the Rouge score.
+        run(sample_list: List[MaxScoreSample], grouped_label, **kwargs) -> List[MaxScoreSample]:
+            Computes the maximum Rouge score for the given data.
+
     """
 
     alias_name = [
@@ -367,14 +388,16 @@ class MaxGenderRougeScore(BaseFairness):
     def transform(
         cls, test: str, data: List[Sample], params: Dict
     ) -> List[MaxScoreSample]:
-        """Computes the rouge score for the given data.
+        """
+        Transforms the data for evaluation based on the Rouge score.
 
         Args:
-            test (str): name of the test.
+            test (str): The test alias name.
             data (List[Sample]): The input data to be transformed.
-            params (Dict): parameters for tests configuration
+            params (Dict): Parameters for tests configuration.
+
         Returns:
-            List[MaxScoreSample]: The transformed data based on the rouge score.
+            List[MaxScoreSample]: The transformed data samples based on the Rouge score.
         """
         assert (
             test in cls.alias_name
@@ -404,17 +427,19 @@ class MaxGenderRougeScore(BaseFairness):
 
     @staticmethod
     async def run(
-        sample_list: List[MaxScoreSample], gendered_data, **kwargs
+        sample_list: List[MaxScoreSample], grouped_label, **kwargs
     ) -> List[MaxScoreSample]:
-        """Computes the maximum rouge score for the given data.
+        """
+        Computes the maximum Rouge score for the given data.
 
         Args:
-            sample_list (List[MaxScoreSample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for the computation.
+            sample_list (List[MaxScoreSample]): The input data samples.
+            grouped_label: A dictionary containing grouped labels where each key corresponds to a test case
+                and the value is a tuple containing true labels and predicted labels.
+            **kwargs: Additional keyword arguments.
 
         Returns:
-            List[MaxScoreSample]: The transformed samples.
-
+            List[MaxScoreSample]: The evaluated data samples.
         """
         import evaluate
 
@@ -422,7 +447,7 @@ class MaxGenderRougeScore(BaseFairness):
         task = kwargs.get("task", None)
 
         for sample in sample_list:
-            data = gendered_data[sample.test_case]
+            data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
                 if task == "question-answering" or task == "summarization":
                     em = evaluate.load("rouge")
@@ -437,6 +462,270 @@ class MaxGenderRougeScore(BaseFairness):
                 rouge_score = 1
 
             sample.actual_results = MaxScoreOutput(max_score=rouge_score)
+            sample.state = "done"
+
+            if progress:
+                progress.update(1)
+        return sample_list
+
+
+class MinGenderLLMEval(BaseFairness):
+    """
+    Class for evaluating fairness based on minimum gender performance in question-answering tasks using a Language Model.
+
+    Attributes:
+        alias_name (List[str]): Alias names for the evaluation method.
+        supported_tasks (List[str]): Supported tasks for this evaluation method.
+
+    Methods:
+        transform(cls, test: str, data: List[Sample], params: Dict) -> List[MaxScoreSample]: Transforms data for evaluation.
+        run(sample_list: List[MaxScoreSample], grouped_label: Dict[str, Tuple[List, List]], **kwargs) -> List[MaxScoreSample]: Runs the evaluation process.
+
+    """
+
+    alias_name = ["min_gender_llm_eval"]
+    supported_tasks = ["question-answering"]
+    eval_model = None
+
+    @classmethod
+    def transform(
+        cls, test: str, data: List[Sample], params: Dict
+    ) -> List[MaxScoreSample]:
+        """
+        Transforms the data for evaluation.
+
+        Args:
+            test (str): The test alias name.
+            data (List[Sample]): The data to be transformed.
+            params (Dict): Parameters for transformation.
+
+        Returns:
+            List[MaxScoreSample]: The transformed data samples.
+
+        """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
+        from ..langtest import EVAL_MODEL
+        from ..langtest import HARNESS_CONFIG as harness_config
+
+        model = params.get("model", None)
+        hub = params.get("hub", None)
+        if model and hub:
+            from ..tasks import TaskManager
+
+            load_eval_model = TaskManager("question-answering")
+            cls.eval_model = load_eval_model.model(
+                model, hub, **harness_config.get("model_parameters", {})
+            )
+
+        if isinstance(params["min_score"], dict):
+            min_scores = params["min_score"]
+        elif isinstance(params["min_score"], float):
+            min_scores = {
+                "male": params["min_score"],
+                "female": params["min_score"],
+                "unknown": params["min_score"],
+            }
+
+        samples = []
+        for key, val in min_scores.items():
+            sample = MinScoreSample(
+                original=None,
+                category="fairness",
+                test_type=test,
+                test_case=key,
+                expected_results=MinScoreOutput(min_score=val),
+            )
+
+            samples.append(sample)
+        return samples
+
+    @staticmethod
+    async def run(
+        sample_list: List[MaxScoreSample], grouped_label, **kwargs
+    ) -> List[MaxScoreSample]:
+        """
+        Runs the evaluation process using Language Model.
+
+        Args:
+            sample_list: The input data samples.
+            grouped_label: A dictionary containing grouped labels where each key corresponds to a test case
+                and the value is a tuple containing true labels and predicted labels.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            The evaluated data samples.
+        """
+
+        grouped_data = kwargs.get("grouped_data")
+        from ..utils.custom_types.helpers import is_pass_llm_eval
+
+        eval_model = MinGenderLLMEval.eval_model
+        progress = kwargs.get("progress_bar", False)
+
+        def eval():
+            results = []
+            for true_list, pred, sample in zip(data[0], data[1], X_test):
+                result = is_pass_llm_eval(
+                    eval_model=eval_model,
+                    dataset_name=sample.dataset_name,
+                    original_question=sample.original_question,
+                    answer="\n".join(map(str, true_list)),
+                    perturbed_question=sample.original_question,
+                    prediction=pred,
+                )
+                if result:
+                    results.append(1)
+                else:
+                    results.append(0)
+            total_samples = len(results)
+            passed_samples = sum(results)
+            accuracy = passed_samples / max(total_samples, 1)
+            return accuracy
+
+        for sample in sample_list:
+            data = grouped_label[sample.test_case]
+            X_test = grouped_data[sample.test_case]
+            if len(data[0]) > 0:
+                eval_score = eval()
+            else:
+                eval_score = 1
+
+            sample.actual_results = MinScoreOutput(min_score=eval_score)
+            sample.state = "done"
+
+            if progress:
+                progress.update(1)
+        return sample_list
+
+
+class MaxGenderLLMEval(BaseFairness):
+    """
+    Class for evaluating fairness based on maximum gender performance in question-answering tasks using Language Model.
+
+    Attributes:
+        alias_name (List[str]): Alias names for the evaluation method.
+        supported_tasks (List[str]): Supported tasks for this evaluation method.
+
+    Methods:
+        transform(cls, test: str, data: List[Sample], params: Dict) -> List[MaxScoreSample]:
+            Transforms data for evaluation.
+        run(sample_list: List[MaxScoreSample], grouped_label, **kwargs) -> List[MaxScoreSample]:
+            Runs the evaluation process.
+
+    """
+
+    alias_name = ["max_gender_llm_eval"]
+    supported_tasks = ["question-answering"]
+    eval_model = None
+
+    @classmethod
+    def transform(
+        cls, test: str, data: List[Sample], params: Dict
+    ) -> List[MaxScoreSample]:
+        """
+        Transforms the data for evaluation.
+
+        Args:
+            test (str): The test alias name.
+            data (List[Sample]): The data to be transformed.
+            params (Dict): Parameters for transformation.
+
+        Returns:
+            List[MaxScoreSample]: The transformed data samples based on the maximum score.
+        """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
+        from ..langtest import EVAL_MODEL
+        from ..langtest import HARNESS_CONFIG as harness_config
+
+        model = params.get("model", None)
+        hub = params.get("hub", None)
+        if model and hub:
+            from ..tasks import TaskManager
+
+            load_eval_model = TaskManager("question-answering")
+            cls.eval_model = load_eval_model.model(
+                model, hub, **harness_config.get("model_parameters", {})
+            )
+
+        if isinstance(params["max_score"], dict):
+            max_scores = params["max_score"]
+        elif isinstance(params["max_score"], float):
+            max_scores = {
+                "male": params["max_score"],
+                "female": params["max_score"],
+                "unknown": params["max_score"],
+            }
+
+        samples = []
+        for key, val in max_scores.items():
+            sample = MaxScoreSample(
+                original=None,
+                category="fairness",
+                test_type=test,
+                test_case=key,
+                expected_results=MaxScoreOutput(max_score=val),
+            )
+
+            samples.append(sample)
+        return samples
+
+    @staticmethod
+    async def run(
+        sample_list: List[MaxScoreSample], grouped_label, **kwargs
+    ) -> List[MaxScoreSample]:
+        """
+        Runs the evaluation process using Language Model.
+
+        Args:
+            sample_list (List[MaxScoreSample]): The input data samples.
+            grouped_label: A dictionary containing grouped labels where each key corresponds to a test case
+                and the value is a tuple containing true labels and predicted labels.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[MaxScoreSample]: The evaluated data samples.
+        """
+        grouped_data = kwargs.get("grouped_data")
+        from ..utils.custom_types.helpers import is_pass_llm_eval
+
+        eval_model = MaxGenderLLMEval.eval_model
+        progress = kwargs.get("progress_bar", False)
+
+        def eval():
+            results = []
+            for true_list, pred, sample in zip(data[0], data[1], X_test):
+                result = is_pass_llm_eval(
+                    eval_model=eval_model,
+                    dataset_name=sample.dataset_name,
+                    original_question=sample.original_question,
+                    answer="\n".join(map(str, true_list)),
+                    perturbed_question=sample.original_question,
+                    prediction=pred,
+                )
+                if result:
+                    results.append(1)
+                else:
+                    results.append(0)
+            total_samples = len(results)
+            passed_samples = sum(results)
+            accuracy = passed_samples / max(total_samples, 1)
+            return accuracy
+
+        for sample in sample_list:
+            data = grouped_label[sample.test_case]
+            X_test = grouped_data[sample.test_case]
+            if len(data[0]) > 0:
+                eval_score = eval()
+            else:
+                eval_score = 1
+
+            sample.actual_results = MaxScoreOutput(max_score=eval_score)
             sample.state = "done"
 
             if progress:
