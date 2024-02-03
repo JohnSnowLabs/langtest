@@ -155,7 +155,7 @@ class DataFactory:
 
         if "data_source" not in file_path:
             raise ValueError(Errors.E025)
-        self._custom_label = file_path
+        self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
 
         if isinstance(self._file_path, str):
