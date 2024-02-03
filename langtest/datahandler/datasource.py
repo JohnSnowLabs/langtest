@@ -1000,6 +1000,10 @@ class CSVDataset(BaseDataset):
         Returns:
             List[Sample]:       list of samples
         """
+
+        if isinstance(file_name, dict):
+            file_name = file_name.get("data_source")
+
         data = pd.read_csv(file_name, **kwargs)
         samples = []
 
