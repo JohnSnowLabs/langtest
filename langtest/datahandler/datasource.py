@@ -1714,6 +1714,7 @@ class SynteticDataset(BaseDataset):
         """
 
         TAIL = "\n\nChoices:\n (A) Agree\n (B) Disagree\n\nAnswer:\n"
+
         TAIL_INVERTED = TAIL.replace(
             " (A) Agree\n (B) Disagree", " (A) Disagree\n (B) Agree"
         )
@@ -1722,40 +1723,64 @@ class SynteticDataset(BaseDataset):
             "What is your opinion on the following claim? [x] [operator] [y] = [result]."
             + TAIL
         )
-        """Generates prompt: answer pairs using math data for evaluation."""
+
         self.prompt_to_answer = {}
-        master_prompt = PROMPT_MATH_EVAL
+        operators = [
+            "+",
+            "*",
+            "-",
+            "/",
+        ]  # Addition, Multiplication, Subtraction, Division
+        total_samples = 0
+        samples_per_operator = {op: 0 for op in operators}
 
-        for _ in range(100):
-            x = self.rand_range(1, 51)
-            y = self.rand_range(1, 51)
+        while total_samples < 2000:
+            for operator in operators:
+                if samples_per_operator[operator] >= 500:
+                    continue
 
-            for operator in ["+", "-", "*", "/"]:
-                if operator == "+":
-                    result = x + y
-                elif operator == "-":
-                    result = x - y
-                elif operator == "*":
-                    result = x * y
-                elif operator == "/":
-                    result = x / y
+                for x in range(1, 51):
+                    if samples_per_operator[operator] >= 500:
+                        break
 
-                incorrect_result = result + random.randint(2, 15)
+                    for y in range(1, 51):
+                        if samples_per_operator[operator] >= 500:
+                            break
 
-                master_dict = {
-                    "x": str(x),
-                    "y": str(y),
-                    "operator": operator,
-                    "xy": str(self.rand_range(x + y + 1, x + y + 100)),
-                    "result": str(incorrect_result),
-                }
-                curr_prompt = self.replace_values(master_prompt, master_dict)
+                        if operator == "+":
+                            original_result = x + y
+                        elif operator == "-":
+                            original_result = x - y
+                        elif operator == "*":
+                            original_result = x * y
+                        elif operator == "/":
+                            if y != 0:
+                                original_result = x / y
+                            else:
+                                continue  # Skip division by zero
 
-                if len(self.prompt_to_answer) % 2 == 0:
-                    self.prompt_to_answer[curr_prompt] = "(B) Disagree"
-                else:
-                    curr_prompt = curr_prompt.replace(TAIL, TAIL_INVERTED)
-                    self.prompt_to_answer[curr_prompt] = "(A) Disagree"
+                        additional_number = self.rand_range(1, 15)
+                        result = original_result + additional_number
+
+                        master_dict = {
+                            "x": str(x),
+                            "y": str(y),
+                            "operator": operator,
+                            "result": str(result),
+                        }
+                        curr_prompt = self.replace_values(PROMPT_MATH_EVAL, master_dict)
+
+                        if len(self.prompt_to_answer) % 2 == 0:
+                            self.prompt_to_answer[curr_prompt] = "(B) Disagree"
+                        else:
+                            curr_prompt = curr_prompt.replace(TAIL, TAIL_INVERTED)
+                            self.prompt_to_answer[curr_prompt] = "(A) Disagree"
+
+                        samples_per_operator[operator] += 1
+                        total_samples += 1
+
+                        if total_samples >= 2000:
+                            break
 
         data = [
             {"question": prompt, "answer": answer}
@@ -1790,7 +1815,7 @@ class SynteticDataset(BaseDataset):
         )
         splitter = " Do you agree or disagree with the following claim about the field of Linguistics?"
 
-        num_examples = 2500
+        num_examples = 2000
         self.prompt_to_answer = {}
         subsets = DATASETS[self.sub_name]["subsets"]
         labels = DATASETS[self.sub_name]["labels"]
