@@ -4,7 +4,9 @@ from typing import List
 
 from langtest.modelhandler import ModelAPI
 from ..utils.custom_types import Sample
+
 toxicity_metric = None
+
 
 class BaseToxicity(ABC):
     """Abstract base class to extend for toxicity completion"""
@@ -69,11 +71,15 @@ class GeneralToxicity(BaseToxicity):
 
         global toxicity_metric
         if toxicity_metric is None:
-            toxicity_metric = pipeline("text-classification", model="unitary/unbiased-toxic-roberta")
+            toxicity_metric = pipeline(
+                "text-classification", model="unitary/unbiased-toxic-roberta"
+            )
 
         for sample in sample_list:
             predictions = toxicity_metric(sample.prompt, top_k=None)
-            toxicity_score = next((x["score"] for x in predictions if x["label"] == "toxicity"), 0)
+            toxicity_score = next(
+                (x["score"] for x in predictions if x["label"] == "toxicity"), 0
+            )
             sample.prompt_toxicity = toxicity_score
             sample.test_type = "general_toxicity"
             sample.category = "toxicity"
@@ -95,7 +101,9 @@ class GeneralToxicity(BaseToxicity):
 
         global toxicity_metric
         if toxicity_metric is None:
-            toxicity_metric = pipeline("text-classification", model="unitary/unbiased-toxic-roberta")
+            toxicity_metric = pipeline(
+                "text-classification", model="unitary/unbiased-toxic-roberta"
+            )
 
         for sample in sample_list:
             if sample.state != "done":
@@ -103,13 +111,18 @@ class GeneralToxicity(BaseToxicity):
                     sample_status = sample.run(model, *args, **kwargs)
                     if sample_status:
                         predictions = toxicity_metric(sample.completion, top_k=None)
-                        toxicity_score = next((x["score"] for x in predictions if x["label"] == "toxicity"), 0)
+                        toxicity_score = next(
+                            (x["score"] for x in predictions if x["label"] == "toxicity"),
+                            0,
+                        )
                         sample.completion_toxicity = toxicity_score
                         sample.state = "done"
                 else:
                     sample.completion = model(sample.prompt)
                     predictions = toxicity_metric(sample.completion, top_k=None)
-                    toxicity_score = next((x["score"] for x in predictions if x["label"] == "toxicity"), 0)
+                    toxicity_score = next(
+                        (x["score"] for x in predictions if x["label"] == "toxicity"), 0
+                    )
                     sample.completion_toxicity = toxicity_score
                     sample.state = "done"
 
@@ -121,7 +134,14 @@ class GeneralToxicity(BaseToxicity):
 class ToxicityTypes(BaseToxicity):
     """Class for toxicity types"""
 
-    alias_name = ["obscene", "insult", "threat", "identity_attack", "psychiatric_or_mental_illness", "homosexual_gay_or_lesbian"]
+    alias_name = [
+        "obscene",
+        "insult",
+        "threat",
+        "identity_attack",
+        "psychiatric_or_mental_illness",
+        "homosexual_gay_or_lesbian",
+    ]
 
     @staticmethod
     def transform(sample_list: List[Sample], test_name) -> List[Sample]:
@@ -135,7 +155,9 @@ class ToxicityTypes(BaseToxicity):
         """
         from transformers import pipeline
 
-        toxicity_types = pipeline("text-classification", model="unitary/unbiased-toxic-roberta")
+        toxicity_types = pipeline(
+            "text-classification", model="unitary/unbiased-toxic-roberta"
+        )
         for sample in sample_list:
             score = {
                 x["label"]: x["score"] for x in toxicity_types(sample.prompt, top_k=None)
@@ -159,7 +181,9 @@ class ToxicityTypes(BaseToxicity):
         progress = kwargs.get("progress_bar", False)
         from transformers import pipeline
 
-        toxicity_types = pipeline("text-classification", model="unitary/unbiased-toxic-roberta")
+        toxicity_types = pipeline(
+            "text-classification", model="unitary/unbiased-toxic-roberta"
+        )
 
         for sample in sample_list:
             if sample.state != "done":
@@ -168,16 +192,16 @@ class ToxicityTypes(BaseToxicity):
                     if sample_status:
                         predictions = toxicity_types(sample.completion, top_k=None)
                         for pred in predictions:
-                            if pred['label'] == sample.test_type:
-                                sample.completion_toxicity = pred['score']
+                            if pred["label"] == sample.test_type:
+                                sample.completion_toxicity = pred["score"]
                                 break
                         sample.state = "done"
                 else:
                     sample.completion = model(sample.prompt)
                     predictions = toxicity_types(sample.completion, top_k=None)
                     for pred in predictions:
-                        if pred['label'] == sample.test_type:
-                            sample.completion_toxicity = pred['score']
+                        if pred["label"] == sample.test_type:
+                            sample.completion_toxicity = pred["score"]
                             break
                     sample.state = "done"
 
