@@ -116,7 +116,7 @@ class PromptToxicity(BaseToxicity):
 class ToxicityTypes(BaseToxicity):
     """Class for toxicity types"""
 
-    alias_name = ["lgbtqphobia", "ideology", "racism", "xenophobia", "sexism"]
+    alias_name = ["obscene", "insult", "threat", "identity_attack", "psychiatric_or_mental_illness", "homosexual_gay_or_lesbian"]
 
     @staticmethod
     def transform(sample_list: List[Sample], test_name) -> List[Sample]:
@@ -130,7 +130,7 @@ class ToxicityTypes(BaseToxicity):
         """
         from transformers import pipeline
 
-        toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
+        toxicity_types = pipeline("text-classification", model="unitary/unbiased-toxic-roberta")
         for sample in sample_list:
             score = {
                 x["label"]: x["score"] for x in toxicity_types(sample.prompt, top_k=None)
@@ -155,7 +155,7 @@ class ToxicityTypes(BaseToxicity):
 
         progress = kwargs.get("progress_bar", False)
 
-        toxicity_types = pipeline(model="dougtrajano/toxicity-type-detection")
+        toxicity_types = pipeline("text-classification", model="unitary/unbiased-toxic-roberta")
 
         for sample in sample_list:
             if sample.state != "done":
