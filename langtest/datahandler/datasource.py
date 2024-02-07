@@ -377,7 +377,16 @@ class DataFactory:
                 "extension": ".jsonl",
             },
             "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "PIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
+            "PIQA": {
+                "split": (
+                    "test-tiny",
+                    "test",
+                    "validation-tiny",
+                    "validation",
+                    "sample-test-tiny",
+                ),
+                "extension": ".jsonl",
+            },
             "Consumer-Contracts": {"split": ("test",), "extension": ".jsonl"},
             "Contracts": {"split": ("test",), "extension": ".jsonl"},
             "Privacy-Policy": {"split": ("test",), "extension": ".jsonl"},
