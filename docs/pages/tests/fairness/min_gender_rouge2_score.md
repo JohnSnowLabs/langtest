@@ -3,7 +3,7 @@
 
 ## Min Gender Rouge2 Score
 
-This test evaluates the model for each gender seperately. The rouge2 score for each gender is calculated and test is passed if they are higher than config.
+This test evaluates the model for each gender seperately. The rouge2 score for each gender is calculated and the test passes if the scores are higher than the configured min score.
 
 **alias_name:** `min_gender_rouge2_score`
 

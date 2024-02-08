@@ -3,7 +3,7 @@
 
 ## Max Gender F1 Score
 
-This test evaluates the model for each gender seperately. The f1 score for each gender is calculated and test is passed if they are smaller than config.
+This test evaluates the model for each gender seperately. The f1 score for each gender is calculated and the test is passed if the score is less than the configured max score.
 
 **alias_name:** `min_gender_f1_score`
 

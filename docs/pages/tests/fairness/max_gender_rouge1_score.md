@@ -3,7 +3,7 @@
 
 ## Max Gender Rouge1 Score
 
-This test evaluates the model for each gender seperately. The rouge1 score for each gender is calculated and test is passed if they are higher than config.
+This test evaluates the model for each gender seperately. The rouge1 score for each gender is calculated and the test is passed if the score is less than the configured max score.
 
 **alias_name:** `max_gender_rouge1_score`
 

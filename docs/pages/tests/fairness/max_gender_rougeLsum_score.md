@@ -3,7 +3,7 @@
 
 ## Max Gender RougeLsum Score
 
-This test evaluates the model for each gender seperately. The rougeLsum score for each gender is calculated and test is passed if they are higher than config.
+This test evaluates the model for each gender seperately. The rougeLsum score for each gender is calculated and the test is passed if the score is less than the configured max score.
 
 **alias_name:** `max_gender_rougeLsum_score`
 
