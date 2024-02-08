@@ -455,7 +455,22 @@ class Harness:
         return self
 
     def model_response(self, category: str = None):
-        supported_category = "accuracy"
+        """
+        Retrieves the model response for a specific category.
+
+        Args:
+            category (str): The category for which the model response is requested. It should be one of the supported categories:
+                "accuracy" or "fairness".
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the model response data with columns including 'gender', 'original',
+                'original_question', 'original_context', 'options', 'expected_results', and 'actual_results'.
+                If the model response is empty or None, returns an empty DataFrame.
+
+        Raises:
+            ValueError: If the category is None or not one of the supported categories.
+        """
+        supported_category = ("accuracy", "fairness")
 
         if category is None:
             raise ValueError(Errors.E093)
@@ -482,6 +497,7 @@ class Harness:
             data_df = data_df.reset_index(drop=True)
 
             column_order = [
+                "gender",
                 "original",
                 "original_question",
                 "original_context",
@@ -489,6 +505,7 @@ class Harness:
                 "expected_results",
                 "actual_results",
             ]
+
             columns = [c for c in column_order if c in data_df.columns]
             data_df = data_df[columns]
 

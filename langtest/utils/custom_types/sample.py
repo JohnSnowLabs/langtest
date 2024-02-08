@@ -115,6 +115,7 @@ class BaseSample(BaseModel):
 
 
 class NERSample(BaseSample):
+    gender: str = None
     """Helper object for named entity recognition tasks"""
 
     # TODO: remove _realigned_spans, but for now it ensures that we don't realign spans multiple times
@@ -307,6 +308,7 @@ class SequenceClassificationSample(BaseSample):
 
     """
 
+    gender: str = None
     task: str = Field(default="text-classification", constr=True)
 
     def __init__(self, **data):
@@ -383,6 +385,7 @@ class BaseQASample(BaseModel):
     eval_model: Union[str, tuple] = None
     ran_pass: bool = None
     metric_name: str = None
+    gender: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -662,6 +665,7 @@ class SummarizationSample(BaseModel):
     category: str = None
     test_type: str = None
     ran_pass: tuple = None
+    gender: str = None
 
     def __init__(self, **data):
         """Constructor method"""

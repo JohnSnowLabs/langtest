@@ -563,6 +563,7 @@ class FairnessTestFactory(ITests):
     """
 
     alias_name = "fairness"
+    model_result = None
 
     def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
         self.supported_tests = self.available_tests()
@@ -641,18 +642,29 @@ class FairnessTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
-
-        grouped_data = cls.get_gendered_data(raw_data)
+        raw_data_copy = [x.copy() for x in raw_data]
+        grouped_label = {}
+        grouped_data = cls.get_gendered_data(raw_data_copy)
         for gender, data in grouped_data.items():
             if len(data) == 0:
-                grouped_data[gender] = [[], []]
+                grouped_label[gender] = [[], []]
             else:
                 if isinstance(data[0], NERSample):
+
+                    def predict_ner(sample):
+                        prediction = model.predict(sample.original)
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
+
+                    X_test = pd.Series(data)
+                    X_test.apply(predict_ner)
                     y_true = pd.Series(data).apply(
                         lambda x: [y.entity for y in x.expected_results.predictions]
                     )
-                    X_test = pd.Series(data).apply(lambda sample: sample.original)
-                    y_pred = X_test.apply(model.predict_raw)
+                    y_pred = pd.Series(data).apply(
+                        lambda x: [y.entity for y in x.actual_results.predictions]
+                    )
                     valid_indices = y_true.apply(len) == y_pred.apply(len)
                     y_true = y_true[valid_indices]
                     y_pred = y_pred[valid_indices]
@@ -666,12 +678,25 @@ class FairnessTestFactory(ITests):
                     )
 
                 elif isinstance(data[0], SequenceClassificationSample):
+
+                    def predict_text_classification(sample):
+                        prediction = model.predict(sample.original)
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
+
+                    X_test = pd.Series(data)
+                    X_test.apply(predict_text_classification)
+
                     y_true = pd.Series(data).apply(
                         lambda x: [y.label for y in x.expected_results.predictions]
                     )
+                    y_pred = pd.Series(data).apply(
+                        lambda x: [y.label for y in x.actual_results.predictions]
+                    )
                     y_true = y_true.apply(lambda x: x[0])
-                    X_test = pd.Series(data).apply(lambda sample: sample.original)
-                    y_pred = X_test.apply(model.predict_raw)
+                    y_pred = y_pred.apply(lambda x: x[0])
+
                     y_true = y_true.explode()
                     y_pred = y_pred.explode()
 
@@ -700,7 +725,9 @@ class FairnessTestFactory(ITests):
                         prediction = model(
                             text=input_data, prompt=prompt, server_prompt=server_prompt
                         ).strip()
-                        return prediction.strip()
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
 
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
@@ -717,18 +744,21 @@ class FairnessTestFactory(ITests):
                     if data[0].expected_results is None:
                         raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
 
-                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
-                    X_test = pd.Series(data)
-                    y_pred = X_test.apply(
-                        lambda sample: model(
+                    def predict_summarization(sample):
+                        prediction = model(
                             text={"context": sample.original},
                             prompt={
                                 "template": prompt_template,
                                 "input_variables": ["context"],
                             },
-                        )
-                    )
-                    y_pred = y_pred.apply(lambda x: x.strip())
+                        ).strip()
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
+
+                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
+                    X_test = pd.Series(data)
+                    y_pred = X_test.apply(predict_summarization)
 
                 if kwargs["is_default"]:
                     y_pred = y_pred.apply(
@@ -737,15 +767,19 @@ class FairnessTestFactory(ITests):
                         else ("0" if x in ["neg", "LABEL_0", "NEG"] else x)
                     )
 
-                grouped_data[gender] = [y_true, y_pred]
+                grouped_label[gender] = [y_true, y_pred]
 
         supported_tests = cls.available_tests()
+        from ..utils.custom_types.helpers import prepare_model_response
 
+        cls.model_result = prepare_model_response(raw_data_copy)
         kwargs["task"] = raw_data[0].task
         tasks = []
         for test_name, samples in sample_list.items():
             tasks.append(
-                supported_tests[test_name].async_run(samples, grouped_data, **kwargs)
+                supported_tests[test_name].async_run(
+                    samples, grouped_label, grouped_data=grouped_data, **kwargs
+                )
             )
         return tasks
 
