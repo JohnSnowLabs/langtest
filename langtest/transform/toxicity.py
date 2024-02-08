@@ -139,7 +139,6 @@ class ToxicityTypes(BaseToxicity):
         "insult",
         "threat",
         "identity_attack",
-        "psychiatric_or_mental_illness",
         "homosexual_gay_or_lesbian",
     ]
 
