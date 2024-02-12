@@ -227,12 +227,12 @@ The tables presented below offer a comprehensive overview of diverse categories 
 {:.table-model-big}
 | Test Name                                 | Supported Tasks                                  |
 |-------------------------------------------|--------------------------------------------------|
-                         | [Offensive](toxicity#Offensive)                                                                                 | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [ideology](toxicity#ideology)                                                                                   | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [lgbtqphobia](toxicity#lgbtqphobia)                                                                             | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [racism](toxicity#racism)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [sexism](toxicity#sexism)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [xenophobia](toxicity#xenophobia)                                                                               | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [general_toxicity](toxicity#general_toxicity)                                                                                 | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [identity_attack](toxicity#identity_attack)                                                                                   | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [insult](toxicity#insult)                                                                             | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [homosexual_gay_or_lesbian](toxicity#lgbtqphobia)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [threat](toxicity#threat)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [obscene](toxicity#obscene)                                                                               | [text-generation](/docs/pages/task/text-generation)                                                                           |
 
 ## Sensitivity Tests
 
