@@ -27,8 +27,10 @@ You can see which subsets and splits are available below.
 {:.table2}
 | Split              | Details                                                                                                                                                  |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **test**      | Testing set from the PIQA dataset, containing 3084 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.  |
-| **test-tiny** | Truncated version of PIQA dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
+| **test**      | Testing set from the PIQA dataset, containing 1500 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it.  |
+| **test-tiny** | Truncated version of PIQA test dataset which contains 50 questions. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
+| **validation**      | Validation set from the PIQA dataset, containing 1500 question and answer examples.  |
+| **validation-tiny** | Truncated version of PIQA validation dataset which contains 50 question and answer examples. |
 
 #### Example
 
