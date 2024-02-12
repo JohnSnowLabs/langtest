@@ -154,6 +154,24 @@ Feel free to ask questions on the [Q&A](https://github.com/JohnSnowLabs/langtest
 
 As contributors and maintainers to this project, you are expected to abide by LangTest's code of conduct. More information can be found at: [Contributor Code of Conduct](https://github.com/JohnSnowLabs/langtest/blob/release/1.8.0/CODE_OF_CONDUCT.md)
 
+
+## Citation
+
+We have published a [paper](https://www.sciencedirect.com/science/article/pii/S2665963824000071) that you can cite for
+the LangTest library:
+
+```bibtex
+@article{nazir2024langtest,
+  title={LangTest: A comprehensive evaluation library for custom LLM and NLP models},
+  author={Nazir, Arshaan and Chakravarthy, Thadaka Kalyan and Cecchini, David Amore and Khajuria, Rakshit and Sharma, Prikshit and Mirik, Ali Tarik and Kocaman, Veysel and Talby, David},
+  journal={Software Impacts},
+  pages={100619},
+  year={2024},
+  publisher={Elsevier}
+}
+```
+
+
 ## Contributors
 
 We would like to acknowledge all contributors of this open-source community project. 
