@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/RakshitKhajuria/test/assets/71117423/4e759227-de04-4ba6-8f41-bf33b948d614" alt="johnsnowlabs_logo" width="360" style="text-align:center;">
+  <img src="docs/assets/images/langtest/langtest_logo.png" alt="johnsnowlabs_logo" width="420" style="text-align:center;">
 </p>
 
 <div align="center">
@@ -35,7 +35,7 @@
         <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg">
     </a>
 
-![screenshot](https://raw.githubusercontent.com/JohnSnowLabs/langtest/gh-pages/docs/assets/images/langtest/langtest_flow_graphic.jpeg)
+![Langtest Workflow](docs/assets/images/langtest/langtest_flow_graphic.jpeg)
 
 <p align="center">
   <a href="https://langtest.org/">Project's Website</a> •
