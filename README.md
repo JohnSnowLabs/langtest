@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/images/langtest/langtest_logo.png" alt="johnsnowlabs_logo" width="420" style="text-align:center;">
+  <img src="docs/assets/images/langtest/langtest_logo.png" alt="johnsnowlabs_logo" width="360" style="text-align:center;">
 </p>
 
 <div align="center">
