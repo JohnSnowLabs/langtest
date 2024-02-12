@@ -163,7 +163,7 @@ the LangTest library:
 ```bibtex
 @article{nazir2024langtest,
   title={LangTest: A comprehensive evaluation library for custom LLM and NLP models},
-  author={Nazir, Arshaan and Chakravarthy, Thadaka Kalyan and Cecchini, David Amore and Khajuria, Rakshit and Sharma, Prikshit and Mirik, Ali Tarik and Kocaman, Veysel and Talby, David},
+  author={Arshaan Nazir, Thadaka Kalyan Chakravarthy, David Amore Cecchini, Rakshit Khajuria, Prikshit Sharma, Ali Tarik Mirik, Veysel Kocaman and David Talby},
   journal={Software Impacts},
   pages={100619},
   year={2024},
