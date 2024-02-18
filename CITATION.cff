@@ -2,6 +2,27 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
 - family-names: "John Snow Labs"
+
 title: "LangTest"
-date-released: 2022-11-18
+version: 1.10.0
 url: "https://github.com/JohnSnowLabs/langtest"
+
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Arshaan Nazir"
+  - family-names: "Thadaka Kalyan Chakravarthy"
+  - family-names: "David Amore Cecchini"
+  - family-names: "Thadaka Kalyan Chakravarthy"
+  - family-names: "Rakshit Khajuria"
+  - family-names: "Prikshit Sharma"
+  - family-names: "Ali Tarik Mirik"
+  - family-names: "Veysel Kocaman"
+  - family-names: "David Talby"
+
+  doi: "https://doi.org/10.1016/j.simpa.2024.100619"
+  journal: "Software Impacts"
+  title: "LangTest: A comprehensive evaluation library for custom LLM and NLP models"
+  issue: 100619
+  volume: 19
+  year: 2024
