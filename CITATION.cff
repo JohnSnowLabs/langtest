@@ -5,8 +5,15 @@ authors:
 
 title: "LangTest"
 version: 1.10.0
-url: "https://github.com/JohnSnowLabs/langtest"
-
+url: "https://www.langtest.org"
+repository-code: "https://github.com/JohnSnowLabs/langtest"
+keywords:
+  - LLM
+  - NLP
+  - Evaluation
+  - Harness
+  - Robustness
+  - Bias
 preferred-citation:
   type: article
   authors:
