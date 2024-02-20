@@ -171,10 +171,12 @@ The tables presented below offer a comprehensive overview of diverse categories 
                         | [Min Gender Rouge2 Score](fairness#min-gender-rouge2-score)                                                     | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
                         | [Min Gender RougeL Score](fairness#min-gender-rougeL-score)                                                     | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
                         | [Min Gender RougeLSum Score](fairness#min-gender-rougeLsum-score)                                               | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
+                        | [Min Gender LLM Eval](fairness#min-gender-llm-eval)                                               | [question-answering](/docs/pages/task/question-answering)                                                                          |
                         | [Max Gender Rouge1 Score](fairness#max-gender-rouge1-score)                                                     | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
                         | [Max Gender Rouge2 Score](fairness#max-gender-rouge2-score)                                                     | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
                         | [Max Gender RougeL Score](fairness#max-gender-rougeL-score)                                                     | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
                         | [Max Gender RougeLSum Score](fairness#max-gender-rougeLsum-score)                                               | [question-answering](/docs/pages/task/question-answering) , [summarization](/docs/pages/task/summarization)                                              |
+                        | [Max Gender LLM Eval](fairness#max-gender-llm-eval)                                               | [question-answering](/docs/pages/task/question-answering)                                                                           |
 
 ## Representation Tests
 
@@ -225,12 +227,12 @@ The tables presented below offer a comprehensive overview of diverse categories 
 {:.table-model-big}
 | Test Name                                 | Supported Tasks                                  |
 |-------------------------------------------|--------------------------------------------------|
-                         | [Offensive](toxicity#Offensive)                                                                                 | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [ideology](toxicity#ideology)                                                                                   | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [lgbtqphobia](toxicity#lgbtqphobia)                                                                             | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [racism](toxicity#racism)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [sexism](toxicity#sexism)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
-                         | [xenophobia](toxicity#xenophobia)                                                                               | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [general_toxicity](toxicity#general_toxicity)                                                                                 | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [identity_attack](toxicity#identity_attack)                                                                                   | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [insult](toxicity#insult)                                                                             | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [homosexual_gay_or_lesbian](toxicity#lgbtqphobia)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [threat](toxicity#threat)                                                                                       | [text-generation](/docs/pages/task/text-generation)                                                                           |
+                         | [obscene](toxicity#obscene)                                                                               | [text-generation](/docs/pages/task/text-generation)                                                                           |
 
 ## Sensitivity Tests
 

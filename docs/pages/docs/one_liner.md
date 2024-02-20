@@ -587,7 +587,7 @@ Try out the LangTest library on the following default model-dataset combinations
     <div class="tabs-item">
       <div class="highlight-box">
         {% highlight python %}
-!pip install "langtest[evaluate,openai,transformers]"
+!pip install "langtest[openai,transformers]"
 
 from langtest import Harness
 

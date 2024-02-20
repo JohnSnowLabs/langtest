@@ -13,6 +13,9 @@ header:
   - title: Benchmarks
     url: /docs/pages/benchmarks/benchmark
     key: benchmarks
+  - title: Leaderboard
+    url: /leaderboard/llm
+    key: benchmarks
   - title: Blog
     url: https://www.johnsnowlabs.com/responsible-ai-blog/
     key: blog
