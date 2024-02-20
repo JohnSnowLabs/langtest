@@ -16,7 +16,7 @@ nav_key: tutorials
 
 ## Overview
 
-In the Stereotype notebook, we're evaluating `text-davinci-003` model on Stereotype Test, the primary goal of stereotype tests is to evaluate how well models perform when confronted with common gender stereotypes, occupational stereotypes, or other prevailing biases. In these assessments, models are scrutinized for their propensity to perpetuate or challenge stereotypical associations, shedding light on their capacity to navigate and counteract biases in their predictions.
+In the Stereotype notebook, we're evaluating `gpt-3.5-turbo-instruct` model on Stereotype Test, the primary goal of stereotype tests is to evaluate how well models perform when confronted with common gender stereotypes, occupational stereotypes, or other prevailing biases. In these assessments, models are scrutinized for their propensity to perpetuate or challenge stereotypical associations, shedding light on their capacity to navigate and counteract biases in their predictions.
 
 ## Open in Collab
 

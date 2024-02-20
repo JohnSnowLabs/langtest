@@ -694,3 +694,129 @@ class MinROUGEcore(BaseAccuracy):
             if progress:
                 progress.update(1)
         return sample_list
+
+
+class LLMEval(BaseAccuracy):
+    """
+    Evaluation class for Language Model performance on question-answering tasks using the Language Model Metric (LLM).
+
+    Attributes:
+        alias_name (List[str]): Alias names for the evaluation class, should include "llm_eval".
+        supported_tasks (List[str]): Supported tasks for evaluation, includes "question-answering".
+
+    Methods:
+        transform(cls, test: str, y_true: List[Any], params: Dict) -> List[MinScoreSample]:
+            Transforms evaluation parameters and initializes the evaluation model.
+
+        run(cls, sample_list: List[MinScoreSample], *args, **kwargs) -> List[MinScoreSample]:
+            Runs the evaluation on a list of samples using the Language Model Metric (LLM).
+
+    """
+
+    alias_name = ["llm_eval"]
+
+    supported_tasks = ["question-answering"]
+
+    eval_model = None
+
+    @classmethod
+    def transform(
+        cls, test: str, y_true: List[Any], params: Dict
+    ) -> List[MinScoreSample]:
+        """
+        Transforms evaluation parameters and initializes the evaluation model.
+
+        Args:
+            test (str): The alias name for the evaluation class.
+            y_true (List[Any]): List of true labels (not used in this method).
+            params (Dict): Additional parameters for evaluation, including 'model', 'hub', and 'min_score'.
+
+        Returns:
+            List[MinScoreSample]: List containing a MinScoreSample instance with evaluation information.
+
+        Raises:
+            AssertionError: If the 'test' parameter is not in the alias_name list.
+
+        """
+        assert (
+            test in cls.alias_name
+        ), f"Parameter 'test' should be in: {cls.alias_name}, got '{test}'"
+
+        from ..langtest import EVAL_MODEL
+        from ..langtest import HARNESS_CONFIG as harness_config
+
+        model = params.get("model", None)
+        hub = params.get("hub", None)
+        if model and hub:
+            from ..tasks import TaskManager
+
+            load_eval_model = TaskManager("question-answering")
+            cls.eval_model = load_eval_model.model(
+                model, hub, **harness_config.get("model_parameters", {})
+            )
+
+        else:
+            cls.eval_model = EVAL_MODEL
+
+        min_score = params["min_score"]
+
+        sample = MinScoreSample(
+            category="accuracy",
+            test_type=test,
+            expected_results=MinScoreOutput(min_score=min_score),
+        )
+
+        return [sample]
+
+    @staticmethod
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        """
+        Runs the evaluation on a list of samples using the Language Model Metric (LLM).
+
+        Args:
+            sample_list (List[MinScoreSample]): List of MinScoreSample instances containing evaluation information.
+            y_true (List[Any]): List of true values for the model's predictions.
+            y_pred (List[Any]): List of predicted values by the model.
+            X_test (Optional): Additional keyword argument representing the test data.
+            progress_bar (Optional): Additional keyword argument indicating whether to display a progress bar.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            List[MinScoreSample]: List containing updated MinScoreSample instances after evaluation.
+
+        """
+        X_test = kwargs.get("X_test")
+
+        progress = kwargs.get("progress_bar", False)
+        from ..utils.custom_types.helpers import is_pass_llm_eval
+
+        eval_model = LLMEval.eval_model
+
+        def eval():
+            results = []
+            for true_list, pred, sample in zip(y_true, y_pred, X_test):
+                result = is_pass_llm_eval(
+                    eval_model=eval_model,
+                    dataset_name=sample.dataset_name,
+                    original_question=sample.original_question,
+                    answer="\n".join(map(str, true_list)),
+                    perturbed_question=sample.original_question,
+                    prediction=pred,
+                )
+                if result:
+                    results.append(1)
+                else:
+                    results.append(0)
+            total_samples = len(results)
+            passed_samples = sum(results)
+            accuracy = passed_samples / max(total_samples, 1)
+            return accuracy
+
+        for sample in sample_list:
+            sample.actual_results = MinScoreOutput(min_score=eval())
+            sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list

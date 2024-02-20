@@ -31,7 +31,7 @@ titlecase:
 {:.table2}
 |Original|Test Case|
 |-|
-|The quick brown fox jumps over the lazy dog.|The Quick Brown Fox Jumps Over the Lazy Dog.|
-|I LIKE TO SHOUT.|I Like To Shout.|
+|The quick brown fox jumps over the lazy dog.|<span style="color:red">T</span>he <span style="color:red">Q</span>uick <span style="color:red">B</span>rown <span style="color:red">F</span>ox <span style="color:red">J</span>umps <span style="color:red">O</span>ver <span style="color:red">T</span>he <span style="color:red">L</span>azy <span style="color:red">D</span>og.|
+|I LIKE TO SHOUT.|<span style="color:red">I</span> <span style="color:red">L</span>ike <span style="color:red">T</span>o <span style="color:red">S</span>hout.|
 
 </div>

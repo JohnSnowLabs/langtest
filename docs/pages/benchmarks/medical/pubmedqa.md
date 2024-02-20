@@ -14,6 +14,7 @@ nav_key: benchmarks
 modify_date: "2019-05-16"
 ---
 
+<div class="h3-box" markdown="1">
 
 **Source:** [PubMedQA: A Dataset for Biomedical Research Question Answering](https://arxiv.org/abs/1909.06146)
 
@@ -26,3 +27,5 @@ You can see which subsets and splits are available below.
 | ----------------|------------------------------------------------------------------------------------------------------ |
 | **pqaa**       | Truncated version of pqa_artificial subset from the PubMedQA, containing 500 question and answers examples.                         |
 | **pqal**  | Truncated version of pqa_labeled subset from the PubMedQA, containing 500 question answers examples. |
+
+</div>

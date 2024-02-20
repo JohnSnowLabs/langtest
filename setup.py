@@ -18,7 +18,7 @@ REQUIRED_PKGS = [
     "numpy",
     "pandas",
     "matplotlib",
-    "transformers<=4.28.1",
+    "transformers<=4.35",
     "torch",
     "sentencepiece",
     "pydantic",

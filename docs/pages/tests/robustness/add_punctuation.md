@@ -31,8 +31,7 @@ add_punctuation:
 {:.table2}
 |Original|Test Case|
 |-|
-|The quick brown fox jumps over the lazy dog|The quick brown fox jumps over the lazy dog.|
-|Good morning|Good morning!|
-|I like football|I like football.|
+|The quick brown fox jumps over the lazy dog|The quick brown fox jumps over the lazy dog<span style="color:red">.</span>|
+|Good morning|Good morning<span style="color:red">!</span>|
 
 </div>

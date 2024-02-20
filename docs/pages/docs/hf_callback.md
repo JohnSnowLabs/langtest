@@ -24,9 +24,11 @@ trainer = Trainer(
     callbacks=[my_callback]
 )
 ```
+</div><div class="h3-box" markdown="1">
 
 LangTestCallback takes the following parameters:
 
+{:.table2}
 | Parameter          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **task**           | Task for which the model is to be evaluated (text-classification or ner)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -37,4 +39,4 @@ LangTestCallback takes the following parameters:
 | **run_each_epoch** | A bool value that specifies if the tests should be run after each epoch or the at the end of training                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 
-</div></div>
+</div>

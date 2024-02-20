@@ -1,7 +1,9 @@
 import os
-from IPython.display import display
+import importlib
 from transformers import TrainerCallback, pipeline
 from langtest import Harness
+from langtest.utils.lib_manager import try_import_lib
+from langtest.errors import Errors
 
 
 class LangTestCallback(TrainerCallback):
@@ -23,6 +25,13 @@ class LangTestCallback(TrainerCallback):
         self.run_each_epoch = run_each_epoch
         self.epoch_number = 0
         self.harness = None
+
+        LIB_NAME = "IPython"
+        if try_import_lib(LIB_NAME):
+            IPython = importlib.import_module(LIB_NAME)
+            self.display = getattr(IPython.display, "display")
+        else:
+            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
     def on_init_end(self, args, state, control, **kwargs):
         model = kwargs["model"]
@@ -50,7 +59,7 @@ class LangTestCallback(TrainerCallback):
             self.harness._generated_results = None
             self.harness.run()
             if self.print_reports:
-                display(self.harness.report())
+                self.display(self.harness.report())
 
             if self.save_reports:
                 if not os.path.exists("reports"):
@@ -68,7 +77,7 @@ class LangTestCallback(TrainerCallback):
             return
 
         if self.print_reports:
-            display(self.harness.run().report())
+            self.display(self.harness.run().report())
         if self.save_reports:
             if not os.path.exists("reports"):
                 os.mkdir("reports")

@@ -31,7 +31,7 @@ dyslexia_word_swap:
 {:.table2}
 |Original|Test Case|
 |-|
-|Please, you should be careful and must wear a mask.|Please, you should be careful and must where a mask.|
-|Biden hails your relationship with Australia just days after new partnership drew ire from France.|Biden hails you're relationship with Australia just days after new partnership drew ire from France.|
+|Please, you should be careful and must wear a mask.|Please, you should be careful and must <span style="color:red">where</span> a mask.|
+|Biden hails your relationship with Australia just days after new partnership drew ire from France.|Biden hails <span style="color:red">you're</span> relationship with Australia just days after new partnership drew ire from France.|
 
 </div>

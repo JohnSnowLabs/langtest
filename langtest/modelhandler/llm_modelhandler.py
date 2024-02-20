@@ -7,6 +7,8 @@ from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 from ..errors import Errors, Warnings
 import logging
+from functools import lru_cache
+from langtest.utils.custom_types.helpers import HashableDict
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -45,6 +47,8 @@ class PretrainedModelForQA(ModelAPI):
         if isinstance(model, str):
             self.model = self.load_model(hub, model, *args, **kwargs).model
 
+        self.predict.cache_clear()
+
     @classmethod
     def load_model(cls, hub: str, path: str, *args, **kwargs) -> "PretrainedModelForQA":
         """Load the pretrained model.
@@ -62,24 +66,30 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
+        exclude_args = ["task", "device", "stream"]
+
+        filtered_kwargs = kwargs.copy()
+
+        for arg in exclude_args:
+            filtered_kwargs.pop(arg, None)
+
         try:
-            kwargs.pop("task", None), kwargs.pop("device", None)
-            cls._update_model_parameters(hub, kwargs)
+            cls._update_model_parameters(hub, filtered_kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
-                model = cm.ChatOpenAI(model=path, *args, **kwargs)
-                return cls(hub, model, *args, **kwargs)
+                model = cm.ChatOpenAI(model=path, *args, **filtered_kwargs)
+                return cls(hub, model, *args, **filtered_kwargs)
             else:
                 model = getattr(lc, LANGCHAIN_HUBS[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
-                cls.model = model(model=path, *args, **kwargs)
+                cls.model = model(model=path, *args, **filtered_kwargs)
             elif "model_name" in default_args:
-                cls.model = model(model_name=path, *args, **kwargs)
+                cls.model = model(model_name=path, *args, **filtered_kwargs)
             elif "model_id" in default_args:
-                cls.model = model(model_id=path, *args, **kwargs)
+                cls.model = model(model_id=path, *args, **filtered_kwargs)
             elif "repo_id" in default_args:
-                cls.model = model(repo_id=path, model_kwargs=kwargs)
-            return cls(hub, cls.model, *args, **kwargs)
+                cls.model = model(repo_id=path, model_kwargs=filtered_kwargs)
+            return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ImportError:
             raise ValueError(Errors.E044.format(path=path))
@@ -100,13 +110,14 @@ class PretrainedModelForQA(ModelAPI):
             kwargs (dict): Keyword arguments to be updated.
         """
         if hub == "azure-openai" and "deployment_name" not in kwargs:
-            kwargs["deployment_name"] = "text-davinci-003"
+            kwargs["deployment_name"] = "gpt-3.5-turbo-instruct"
             logging.warning(Warnings.W014.format(hub=hub, kwargs=kwargs))
 
         if "max_tokens" in kwargs and hub in cls.HUB_PARAM_MAPPING:
             new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
             kwargs[new_tokens_key] = kwargs.pop("max_tokens")
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
@@ -153,6 +164,10 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
             The prediction result.
         """
+
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
         return self.predict(text, prompt, *args, **kwargs)
 
 
@@ -212,8 +227,8 @@ class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForClinical(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for clinical.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -222,8 +237,8 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for disinformation test.
+class PretrainedModelForDisinformation(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for disinformation.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
     """
@@ -231,8 +246,8 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForIdeology(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for ideology.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -241,10 +256,10 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForSensitivity(PretrainedModelForQA, ModelAPI):
     def __init__(self, hub: str, model: Any, *args, **kwargs):
         """
-        Initialize the PretrainedModelForSensitivityTest.
+        Initialize the PretrainedModelForSensitivity.
 
         Args:
             hub (str): The hub name associated with the pretrained model.
@@ -254,7 +269,8 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
         """
         super().__init__(hub, model, *args, **kwargs)
 
-    def predict(self, text: Union[str, dict], *args, **kwargs):
+    @lru_cache(maxsize=102400)
+    def predict(self, text: Union[str, dict], prompt, *args, **kwargs):
         """Perform prediction using the pretrained model.
 
         Args:
@@ -267,33 +283,14 @@ class PretrainedModelForSensitivityTest(PretrainedModelForQA, ModelAPI):
                 - 'result': The prediction result.
         """
         try:
-            prompt = PromptTemplate(input_variables=["text"], template="{text}")
-            llmchain = LLMChain(prompt=prompt, llm=self.model)
-            result = llmchain.run({"text": text})
+            prompt_template = PromptTemplate(**prompt)
+            llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            result = llmchain.run(**text)
             return {
                 "result": result,
             }
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
-
-    def __call__(self, text: Union[str, dict], *args, **kwargs):
-        """
-        Alias of the 'predict' method.
-
-        Args:
-            text (Union[str, dict]): The original text or dictionary.
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            dict: A dictionary containing the prediction result.
-                - 'result': The prediction result.
-        """
-        return self.predict(
-            text=text,
-            *args,
-            **kwargs,
-        )
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
@@ -307,7 +304,7 @@ class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for legal-tests.
+    """A class representing a pretrained model for legal.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -316,7 +313,7 @@ class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForFactuality(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -326,8 +323,8 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for sycophancy test.
+class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for sycophancy.
 
     This class inherits from PretrainedModelForQA and provides functionality
     specific to sycophancy task.

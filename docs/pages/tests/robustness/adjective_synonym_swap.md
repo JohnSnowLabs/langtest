@@ -31,7 +31,7 @@ adjective_synonym_swap:
 {:.table2}
 |Original|Test Case|
 |-|
-|Lisa is wearing a beautiful shirt today. This soup is not edible. | Lisa is wearing a pretty shirt today. This soup is not consumable.|
-|They have a beautiful house.|They have a alluring house.|
+|Lisa is wearing a beautiful shirt today. This soup is not edible. | Lisa is wearing a <span style="color:red">pretty</span> shirt today. This soup is <span style="color:red">consumable.</span>|
+|They have a beautiful house.|They have a <span style="color:red">alluring</span> house.|
 
 </div>

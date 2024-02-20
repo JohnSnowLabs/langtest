@@ -34,7 +34,7 @@ swap_entities:
 {:.table2}
 |Original|Test Case|
 |-|
-|I love Paris.|I love Istanbul.|
-|Jack is sick today.|Adam is sick today.|
+|I love Paris.|I love <span style="color:red">Istanbul.</span>|
+|Jack is sick today.|<span style="color:red">Adam</span> is sick today.|
 
 </div>

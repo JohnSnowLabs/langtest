@@ -16,14 +16,14 @@ nav_key: tutorials
 
 ## Overview
 
-In the Clinical Test notebook, we're evaluating `text-davinci-003` model on clinical test. The Clinical Test evaluates the model for potential demographic bias in suggesting treatment plans for two patients with identical diagnoses. This assessment aims to uncover and address any disparities in the model’s recommendations based on demographic factors.
+In the Clinical Test notebook, we're evaluating `gpt-3.5-turbo-instruct` model on clinical test. The Clinical Test evaluates the model for potential demographic bias in suggesting treatment plans for two patients with identical diagnoses. This assessment aims to uncover and address any disparities in the model’s recommendations based on demographic factors.
 
 ## Open in Collab
 
 {:.table2}
 | Category               | Hub       | Task               | Dataset Used | Open In Colab                                                                                                                                                                          |
 |------------------------|-----------|--------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Clinical**           | OpenAI    | Text-Generation   | Clinical     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical_Tests.ipynb) |
+| **Clinical**           | OpenAI    | Text-Generation   | Clinical     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Clinical.ipynb) |
 
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">

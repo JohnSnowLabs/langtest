@@ -20,8 +20,7 @@ modify_date: "2019-05-16"
 
 LangTest provides support for a variety of benchmark datasets in the legal domain which are listed below in the table, allowing you to assess the performance of your models on legal queries.
 
-</div>
-</div>
+</div><div class="h3-box" markdown="1">
 
 
 {:.table2}
@@ -32,3 +31,5 @@ LangTest provides support for a variety of benchmark datasets in the legal domai
 | [**Privacy-Policy**](privacy-policy)              | question-answering | `robustness`, `accuracy`, `fairness`        | [Given a question and a clause from a privacy policy, determine if the clause contains enough information to answer the question.](https://github.com/HazyResearch/legalbench/tree/main/tasks/privacy_policy_qa)                                                                                                         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/LegalQA_Datasets.ipynb)               |
 | [**FIQA**](fiqa)                          | question-answering | `robustness`, `accuracy`, `fairness`        | [FIQA (Financial Opinion Mining and Question Answering)](https://huggingface.co/datasets/explodinggradients/fiqa)                                                    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/Fiqa_dataset.ipynb)                |
 | [**MultiLexSum**](multilexsum)            | summarization      | `robustness`, `accuracy`, `fairness`        | [Multi-LexSum: Real-World Summaries of Civil Rights Lawsuits at Multiple Granularities](https://arxiv.org/abs/2206.10883)                              | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/dataset-notebooks/MultiLexSum_dataset.ipynb)            |
+
+</div>

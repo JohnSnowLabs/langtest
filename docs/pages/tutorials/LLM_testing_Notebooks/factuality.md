@@ -14,14 +14,14 @@ nav_key: tutorials
 
 ## Overview
 
-In the Factuality Test notebook, we're evaluating `text-davinci-003` model on factuality test. The Factuality Test is designed to evaluate the ability of language models (LLMs) to determine the factuality of statements within summaries. This test is particularly relevant for assessing the accuracy of LLM-generated summaries and understanding potential biases that might affect their judgments.
+In the Factuality Test notebook, we're evaluating `gpt-3.5-turbo-instruct` model on factuality test. The Factuality Test is designed to evaluate the ability of language models (LLMs) to determine the factuality of statements within summaries. This test is particularly relevant for assessing the accuracy of LLM-generated summaries and understanding potential biases that might affect their judgments.
 
 ## Open in Collab
 
 {:.table2}
 | Category               | Hub                           | Task                              | Dataset Used | Open In Colab                                                                                                                                                                                                                                    
 | ----------------------------------- |
-|  **Factuality**                          | 	OpenAI                    | Question-Answering                              | Factual-Summary-Pairs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality_Test.ipynb)                                    
+|  **Factuality**                          | 	OpenAI                    | Question-Answering                              | Factual-Summary-Pairs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Factuality.ipynb)                                    
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 

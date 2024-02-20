@@ -38,8 +38,8 @@ add_context:
 {:.table2}
 |Original|Test Case|
 |-|
-|The quick brown fox jumps over the lazy dog.|The quick brown fox jumps over the lazy dog, bye.|
-|I love playing football.|Hello, I love playing football.|
+|The quick brown fox jumps over the lazy dog.|The quick brown fox jumps over the lazy dog, <span style="color:red">bye.</span>|
+|I love playing football.|<span style="color:red">Hello,</span> I love playing football.|
 
 
 </div>

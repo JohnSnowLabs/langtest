@@ -16,14 +16,14 @@ nav_key: tutorials
 
 ## Overview
 
-In the Security notebook, we assess the `text-davinci-003` model using the Security Test, with a specific focus on identifying prompt injection vulnerabilities in Language Models (LLMs). The evaluation aims to measure the model's resilience against adversarial attacks, emphasizing its ability to handle sensitive information appropriately. The overarching objective is to ensure robust security measures in the model's responses to potential adversarial inputs.
+In the Security notebook, we assess the `gpt-3.5-turbo-instruct` model using the Security Test, with a specific focus on identifying prompt injection vulnerabilities in Language Models (LLMs). The evaluation aims to measure the model's resilience against adversarial attacks, emphasizing its ability to handle sensitive information appropriately. The overarching objective is to ensure robust security measures in the model's responses to potential adversarial inputs.
 
 ## Open in Collab
 
 {:.table2}
 | Category               | Hub                           | Task                              |Dataset Used| Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
-|  **Disinformation**                          | 	OpenAI                    | Text-Generation                               | Prompt-Injection-Attack | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Prompt_Injections_Tests.ipynb)                                    |
+|  **Disinformation**                          | 	OpenAI                    | Text-Generation                               | Prompt-Injection-Attack | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Prompt_Injections.ipynb)                                    |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 

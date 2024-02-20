@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple, Union
 import logging
 import numpy as np
+from functools import lru_cache
 from transformers import Pipeline, pipeline, AutoModelForCausalLM, AutoTokenizer
 from .modelhandler import ModelAPI
 from ..utils.custom_types import (
@@ -10,7 +11,7 @@ from ..utils.custom_types import (
     TranslationOutput,
 )
 from ..errors import Errors, Warnings
-from ..utils.custom_types.helpers import SimplePromptTemplate
+from ..utils.custom_types.helpers import SimplePromptTemplate, HashableDict
 from ..utils.hf_utils import HuggingFacePipeline
 
 
@@ -32,6 +33,7 @@ class PretrainedModelForNER(ModelAPI):
         )
 
         self.model = model
+        self.predict.cache_clear()
 
     @staticmethod
     def _aggregate_words(predictions: List[Dict]) -> List[Dict]:
@@ -148,6 +150,7 @@ class PretrainedModelForNER(ModelAPI):
             return cls(pipeline(model=path, task="ner", ignore_labels=[]))
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> NEROutput:
         """Perform predictions on the input text.
 
@@ -235,6 +238,7 @@ class PretrainedModelForTextClassification(ModelAPI):
             return cls(pipeline(model=path, task="text-classification"))
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(
         self,
         text: str,
@@ -323,6 +327,7 @@ class PretrainedModelForTranslation(ModelAPI):
         else:
             return cls(pipeline(model=path, src_lang="en", tgt_lang=tgt_lang))
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> TranslationOutput:
         """Perform predictions on the input text.
 
@@ -378,6 +383,7 @@ class PretrainedModelForWinoBias(ModelAPI):
 
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -457,6 +463,7 @@ class PretrainedModelForCrowsPairs(ModelAPI):
 
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -510,6 +517,7 @@ class PretrainedModelForStereoSet(ModelAPI):
             return cls(models)
         return cls(path)
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> Dict:
         """Perform predictions on the input text.
 
@@ -607,11 +615,15 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
-            kwargs[new_tokens_key] = kwargs.pop("max_tokens", 64)
 
-            kwargs.pop("temperature", None)
-            device = kwargs.pop("device", -1)
-            task = kwargs.pop("task", None)
+            filtered_kwargs = kwargs.copy()
+
+            filtered_kwargs[new_tokens_key] = filtered_kwargs.pop("max_tokens", 64)
+
+            filtered_kwargs.pop("temperature", None)
+            filtered_kwargs.pop("stream", None)
+            device = filtered_kwargs.pop("device", -1)
+            task = filtered_kwargs.pop("task", None)
             tasks = [
                 "text-generation",
                 "text2text-generation",
@@ -621,23 +633,27 @@ class PretrainedModelForQA(ModelAPI):
             if task:
                 if isinstance(path, str):
                     model = HuggingFacePipeline(
-                        model_id=path, task=task, device=device, **kwargs
+                        model_id=path, task=task, device=device, **filtered_kwargs
                     )
                 elif "pipelines" not in str(type(path)).split("'")[1].split("."):
                     path = path.config.name_or_path
                     model = HuggingFacePipeline(
-                        model_id=path, task=task, device=device, **kwargs
+                        model_id=path, task=task, device=device, **filtered_kwargs
                     )
                 else:
                     model = HuggingFacePipeline(pipeline=path)
                 return cls(model)
             else:
                 if isinstance(path, str):
-                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+                    model = cls._try_initialize_model(
+                        path, device, tasks, **filtered_kwargs
+                    )
 
                 elif "pipelines" not in str(type(path)).split("'")[1].split("."):
                     path = path.config.name_or_path
-                    model = cls._try_initialize_model(path, device, tasks, **kwargs)
+                    model = cls._try_initialize_model(
+                        path, device, tasks, **filtered_kwargs
+                    )
                 else:
                     model = HuggingFacePipeline(pipeline=path)
 
@@ -646,6 +662,7 @@ class PretrainedModelForQA(ModelAPI):
         except Exception as e:
             raise ValueError(Errors.E090.format(error_message=e))
 
+    @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
         Generate a prediction for the given text and prompt.
@@ -660,8 +677,8 @@ class PretrainedModelForQA(ModelAPI):
         """
         try:
             prompt_template = SimplePromptTemplate(**prompt)
-            p = prompt_template.format(**text)
-            output = self.model._generate([p])
+            text = prompt_template.format(**text)
+            output = self.model._generate([text])
             return output[0]
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
@@ -678,6 +695,9 @@ class PretrainedModelForQA(ModelAPI):
         Returns:
         - str: The generated prediction.
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
         return self.predict(text=text, prompt=prompt, **kwargs)
 
 
@@ -692,7 +712,7 @@ class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
-    """Transformers pretrained model for summarization tasks
+    """Transformers pretrained model for toxicity.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
@@ -702,7 +722,7 @@ class PretrainedModelForToxicity(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
-    """Transformers pretrained model for summarization tasks
+    """Transformers pretrained model for security.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
@@ -711,8 +731,8 @@ class PretrainedModelForSecurity(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
-    """Transformers pretrained model for summarization tasks
+class PretrainedModelForIdeology(PretrainedModelForQA, ModelAPI):
+    """Transformers pretrained model for ideology.
 
     Args:
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace summarization pipeline for predictions.
@@ -721,8 +741,8 @@ class PretrainedModelForPolitical(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for disinformation test.
+class PretrainedModelForDisinformation(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for disinformation.
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
     """
@@ -730,7 +750,7 @@ class PretrainedModelForDisinformationTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
+class PretrainedModelForFactuality(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for factuality detection.
 
     Inherits:
@@ -740,7 +760,7 @@ class PretrainedModelForFactualityTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForSensitivityTest(ModelAPI):
+class PretrainedModelForSensitivity(ModelAPI):
     """A class for handling a pretrained model for sensitivity testing.
 
     This class wraps a pretrained transformer model for performing sensitivity testing.
@@ -758,7 +778,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
     """
 
     def __init__(self, model, *args, **kwargs):
-        """Initialize a PretrainedModelForSensitivityTest instance.
+        """Initialize a PretrainedModelForSensitivity instance.
 
         Args:
             model (tuple): A tuple containing the model and tokenizer.
@@ -777,7 +797,7 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             path (str): Path to model or model name.
 
         Returns:
-            PretrainedModelForSensitivityTest: An instance of the class containing the loaded model and tokenizer.
+            PretrainedModelForSensitivity: An instance of the class containing the loaded model and tokenizer.
         """
 
         if isinstance(path, str):
@@ -789,20 +809,25 @@ class PretrainedModelForSensitivityTest(ModelAPI):
         cls.tokenizer = None
         return cls(path)
 
-    def predict(self, text: str, test_name: str, **kwargs):
+    @lru_cache(maxsize=102400)
+    def predict(self, text: str, prompt, test_name: str, **kwargs):
         """Perform predictions on the input text.
 
         Args:
             text (str): Input text to perform sensitivity testing on.
-            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            test_name (str): Name of the sensitivity test (e.g., "add_negation", "add_toxic_words").
             **kwargs: Additional keyword arguments.
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'loss' (float): Difference in loss between transformed and original text (for "add_negation" test).
                 - 'result' (str): Decoded result from the model.
 
         """
+        prompt_template = SimplePromptTemplate(**prompt)
+        text = prompt_template.format(**text)
+        print(text)
+
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128
         ).to(self.model.device)
@@ -813,36 +838,39 @@ class PretrainedModelForSensitivityTest(ModelAPI):
             outputs.logits[0].argmax(dim=-1), skip_special_tokens=True
         )
 
-        if test_name == "negation":
+        if test_name == "add_negation":
             loss = outputs.loss.item()
             return {
                 "loss": loss,
                 "result": result,
             }
 
-        elif test_name == "toxicity":
+        elif test_name == "add_toxic_words":
             return {"result": result}
 
-    def __call__(self, text: str, test_name: str, **kwargs):
+    def __call__(self, text: str, prompt: dict, test_name: str, **kwargs):
         """Alias of the 'predict' method.
 
         Args:
             text (str): Input text to perform sensitivity testing on.
-            test_name (str): Name of the sensitivity test (e.g., "negation", "toxicity").
+            test_name (str): Name of the sensitivity test (e.g., "add_negation", "add_toxic_words").
             **kwargs: Additional keyword arguments.
 
         Returns:
             dict: A dictionary containing the following keys:
-                - 'loss' (float): Difference in loss between transformed and original text (for "negation" test).
+                - 'loss' (float): Difference in loss between transformed and original text (for "add_negation" test).
                 - 'result' (str): Decoded result from the model.
 
         """
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        prompt = HashableDict(**prompt)
 
-        return self.predict(text=text, test_name=test_name, **kwargs)
+        return self.predict(text=text, prompt=prompt, test_name=test_name, **kwargs)
 
 
-class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for SycophancyTest
+class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for Sycophancy.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -851,8 +879,8 @@ class PretrainedModelForSycophancyTest(PretrainedModelForQA, ModelAPI):
     pass
 
 
-class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for security detection.
+class PretrainedModelForClinical(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for clinical.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.
@@ -862,7 +890,7 @@ class PretrainedModelForClinicalTests(PretrainedModelForQA, ModelAPI):
 
 
 class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
-    """A class representing a pretrained model for legal-tests.
+    """A class representing a pretrained model for legal.
 
     Inherits:
         PretrainedModelForQA: The base class for pretrained models.

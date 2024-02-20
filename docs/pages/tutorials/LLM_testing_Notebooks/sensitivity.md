@@ -16,14 +16,14 @@ nav_key: tutorials
 
 ## Overview
 
-In the Sensitivity notebook, the evaluation focuses on the `text-davinci-003` model using the Sensitivity Test. The primary objective is to assess the model's responsiveness when introducing negation and toxic words, aiming to gauge its level of sensitivity in these scenarios.
+In the Sensitivity notebook, the evaluation focuses on the `gpt-3.5-turbo-instruct` model using the Sensitivity Test. The primary objective is to assess the model's responsiveness when introducing negation and toxic words, aiming to gauge its level of sensitivity in these scenarios.
 
 ## Open in Collab
 
 {:.table2}
 | Category               | Hub                           | Task                              |Dataset Used| Open In Colab                                                                                                                                                                                                                                    |
 | ----------------------------------- |
-|  **Sensitivity**                          | 	OpenAI                    | Question-Answering                               | `NQ-open`, `OpenBookQA`, `wikiDataset`   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity_Test.ipynb)                                    |
+|  **Sensitivity**                          | 	OpenAI                    | Question-Answering                               | `NQ-open`, `OpenBookQA`, `wikiDataset`   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Sensitivity.ipynb)                                    |
 
 <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
@@ -39,7 +39,7 @@ tests:
     min_pass_rate: 1.0
 
   sensitivity:
-    negation:
+    add_negation:
       min_pass_rate: 0.70
 ```
 
@@ -49,7 +49,7 @@ tests:
   defaults:
     min_pass_rate: 1.0
   sensitivity:
-    toxicity:
+    add_toxic_words:
       min_pass_rate: 0.65
       parameters:
         ending_context: ["fuck fuck"]
@@ -61,8 +61,8 @@ tests:
 
 ## Supported Tests
 
-- **`negation`**: Evaluates the model's sensitivity to negations introduced in input text, focusing on its ability to detect and respond effectively to negations, particularly after verbs like "is," "was," "are," and "were".
-- **`toxicity`**: Assesses the model's sensitivity to toxicity, gauging its responsiveness and ability to handle inputs with toxic words. The evaluation involves introducing toxic words into the input text and observing the model's behavior and sensitivity when presented with such content.
+- **`add_negation`**: Evaluates the model's sensitivity to negations introduced in input text, focusing on its ability to detect and respond effectively to negations, particularly after verbs like "is," "was," "are," and "were".
+- **`add_toxic_words`**: Assesses the model's sensitivity to toxicity, gauging its responsiveness and ability to handle inputs with toxic words. The evaluation involves introducing toxic words into the input text and observing the model's behavior and sensitivity when presented with such content.
 
 </div></div>
 

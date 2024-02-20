@@ -43,7 +43,7 @@ Create your test harness in 3 lines of code :test_tube:
 # Import and create a Harness object
 from langtest import Harness
 
-harness = Harness(task="clinical-tests",model={"model": "text-davinci-003", "hub": "openai"},data = {"data_source": "Gastroenterology-files"})
+harness = Harness(task="clinical-tests",model={"model": "gpt-3.5-turbo-instruct", "hub": "openai"},data = {"data_source": "Gastroenterology-files"})
 
 # Generate test cases, run them and view a report
 h.generate().run().report()
