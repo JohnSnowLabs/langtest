@@ -8,7 +8,7 @@ This test checks the data regarding the sample counts of countries by economic l
 **alias_name:** `min_country_economic_representation_count`
 
 <i class="fa fa-info-circle"></i>
-<em>This data was curated using World Bank data. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/utils.py).</em>
+<em>This data was curated using World Bank data. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/constants.py).</em>
 
 #### Config
 ```yaml

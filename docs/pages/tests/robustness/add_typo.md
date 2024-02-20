@@ -34,7 +34,7 @@ add_typo:
 {:.table2}
 |Original|Test Case|
 |-|
-|The quick brown fox jumps over the lazy dog.|The wuick brown fox jumps over the fazy dog.|
-|Good morning|Good morninh|
+|The quick brown fox jumps over the lazy dog.|The <span style="color:red">wuick</span> brown fox jumps over the <span style="color:red">fazy</span> dog.|
+|Good morning|Good <span style="color:red">morninh</span>|
 
 </div>

@@ -29,7 +29,7 @@ add_abbreviation:
 {:.table2}
 |Original|Test Case|
 |-|
-|Amazing food! Great service!|Amzn food! Gr8 service!|
-|Make sure you've gone online to download one of the vouchers - it's definitely not worth paying full price for!|Make sure u've gone onl 2 d/l one of da vouchers - it's dfntly not worth paying full price 4!|
+|Amazing food! Great service!|<span style="color:red">Amzn food! Gr8</span> service!|
+|Make sure you've gone online to download one of the vouchers - it's definitely not worth paying full price for!|Make sure <span style="color:red">u've</span> gone <span style="color:red">onl 2 d/l</span> one of <span style="color:red">da</span> vouchers - it's <span style="color:red">dfntly</span> not worth paying full price <span style="color:red">4</span>!|
 
 </div>

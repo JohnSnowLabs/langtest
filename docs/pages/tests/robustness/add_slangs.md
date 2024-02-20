@@ -31,7 +31,7 @@ add_slangs:
 {:.table2}
 |Original|Test Case|
 |-|
-|It was totally excellent but useless bet.|It was totes grand but cruddy flutter.|
-|Obviously, money are a great stimulus but people might go to crazy about it.|Obvs, spondulicks are a nang stimulus but peeps might go to radio rental about it.|
+|It was totally excellent but useless bet.|It was <span style="color:red">totes</span> <span style="color:red">grand</span> but <span style="color:red">cruddy</span> <span style="color:red">flutter</span>.|
+|Obviously, money are a great stimulus but people might go crazy about it.|<span style="color:red">Obvs, spondulicks</span> are a <span style="color:red">nang</span> stimulus but peeps might go <span style="color:red">rental</span> about it.|
 
 </div>

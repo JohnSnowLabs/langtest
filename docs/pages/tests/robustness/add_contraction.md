@@ -32,7 +32,7 @@ add_contraction:
 {:.table2}
 |Original|Test Case|
 |-|
-|He is not a great chess player.|He isn't a great chess player.|
-|I will wash the car this afternoon.|I'll wash the car this afternoon.|
+|He is not a great chess player.|He <span style="color:red">isn't</span> a great chess player.|
+|I will wash the car this afternoon.|<span style="color:red">I'll</span> wash the car this afternoon.|
 
 </div>

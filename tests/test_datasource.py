@@ -81,25 +81,28 @@ class TestNERDataset:
         [
             (
                 HuggingFaceDataset(
-                    source_info={"data_source": "wikiann"}, task=TaskManager("ner")
+                    source_info={
+                        "data_source": "wikiann",
+                        "subset": "fo",
+                        "feature_column": "tokens",
+                        "target_column": "ner_tags",
+                        "split": "test",
+                    },
+                    task=TaskManager("ner"),
                 ),
-                {
-                    "subset": "fo",
-                    "feature_column": "tokens",
-                    "target_column": "ner_tags",
-                    "split": "test",
-                },
+                {},
             ),
             (
                 HuggingFaceDataset(
-                    source_info={"data_source": "Prikshit7766/12"},
+                    source_info={
+                        "data_source": "Prikshit7766/sample-ner",
+                        "feature_column": "tokens",
+                        "target_column": "ner_tags",
+                        "split": "test",
+                    },
                     task=TaskManager("ner"),
                 ),
-                {
-                    "feature_column": "tokens",
-                    "target_column": "ner_tags",
-                    "split": "test",
-                },
+                {},
             ),
             (
                 CSVDataset(file_path="tests/fixtures/tner.csv", task=TaskManager("ner")),
@@ -209,7 +212,12 @@ class TestNERDataset:
         ),
         (
             HuggingFaceDataset(
-                source_info={"data_source": "dbrd"},
+                source_info={
+                    "data_source": "dbrd",
+                    "feature_column": "text",
+                    "target_column": "label",
+                    "split": "test[:30]",
+                },
                 task=TaskManager("text-classification"),
             ),
             "text",
@@ -230,10 +238,8 @@ class TestTextClassificationDataset:
 
     def test_load_data(self, dataset, feature_col, target_col):
         """"""
-        if isinstance(dataset, HuggingFaceDataset):
-            samples = dataset.load_data(split="test[:30]")
-        else:
-            samples = dataset.load_data()
+
+        samples = dataset.load_data()
 
         assert isinstance(samples, list)
 
@@ -247,7 +253,12 @@ class TestTextClassificationDataset:
     [
         (
             HuggingFaceDataset(
-                source_info={"data_source": "JulesBelveze/tldr_news"},
+                source_info={
+                    "data_source": "JulesBelveze/tldr_news",
+                    "feature_column": "content",
+                    "target_column": "headline",
+                    "split": "test[:30]",
+                },
                 task=TaskManager("summarization"),
             ),
             "content",
@@ -275,10 +286,7 @@ class TestSummarizationDataset:
 
     def test_load_raw_data(self, dataset, feature_col, target_col):
         """"""
-        if isinstance(dataset, HuggingFaceDataset):
-            raw_data = dataset.load_raw_data(split="test[:30]")
-        else:
-            raw_data = dataset.load_raw_data()
+        raw_data = dataset.load_raw_data()
 
         for sample in raw_data:
             assert isinstance(sample[feature_col], str)
@@ -287,16 +295,13 @@ class TestSummarizationDataset:
     def test_load_data(self, dataset, feature_col, target_col):
         """"""
         if isinstance(dataset, HuggingFaceDataset):
-            samples = dataset.load_data(
-                feature_column=feature_col, target_column=target_col, split="test[:30]"
-            )
+            samples = dataset.load_data()
         else:
             samples = dataset.load_data(
                 feature_column=feature_col, target_column=target_col
             )
 
         assert isinstance(samples, list)
-
         for sample in samples:
             assert isinstance(sample, SummarizationSample)
 
@@ -411,9 +416,7 @@ class TestSynteticData:
 
     def test_load_data(self, dataset_config):
         """Test the load_data method"""
-        dataset = SynteticDataset(
-            dataset=dataset_config, task=TaskManager("sycophancy-test")
-        )
+        dataset = SynteticDataset(dataset=dataset_config, task=TaskManager("sycophancy"))
         samples = dataset.load_data()
         assert isinstance(samples, list)
         for sample in samples:
@@ -421,9 +424,7 @@ class TestSynteticData:
 
     def test_load_raw_data(self, dataset_config):
         """Test the load_raw_data method"""
-        dataset = SynteticDataset(
-            dataset=dataset_config, task=TaskManager("sycophancy-test")
-        )
+        dataset = SynteticDataset(dataset=dataset_config, task=TaskManager("sycophancy"))
         raw_data = dataset.load_raw_data()
         assert len(raw_data) > 0
         assert isinstance(raw_data, list)
@@ -436,9 +437,7 @@ class TestSynteticData:
                 ground_truth="(B) Disagree",
             )
         ]
-        dataset = SynteticDataset(
-            dataset=dataset_config, task=TaskManager("sycophancy-test")
-        )
+        dataset = SynteticDataset(dataset=dataset_config, task=TaskManager("sycophancy"))
         dataset.export_data(data=sample, output_path="/tmp/exported_sample.csv")
         df = pd.read_csv("/tmp/exported_sample.csv")
         assert len(df) == len(sample)

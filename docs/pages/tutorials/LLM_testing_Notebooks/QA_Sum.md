@@ -37,7 +37,7 @@ tests:
 
 ## OpenAi Question-Answering & Summarization
 
-In this notebook we are testing OpenAI `text-davinci-003` Model For Question Answering and Summarization task.
+In this notebook we are testing OpenAI `gpt-3.5-turbo-instruct` Model For Question Answering and Summarization task.
 
 
 ### Open in Collab
@@ -107,7 +107,7 @@ In this notebook we are testing Hugging Face Hub `facebook/opt-1.3b` Model For Q
 
 ## Azure-OpenAI Question-Answering & Summarization
 
-In this notebook we are testing Azure-OpenAI `text-davinci-003` Model For Question Answering and Summarization task.
+In this notebook we are testing Azure-OpenAI `gpt-3.5-turbo-instruct` Model For Question Answering and Summarization task.
 
 
 ### Open in Collab

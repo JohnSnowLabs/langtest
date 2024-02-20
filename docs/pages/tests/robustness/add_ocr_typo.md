@@ -31,7 +31,7 @@ add_ocr_typo:
 {:.table2}
 |Original|Test Case|
 |-|
-|This organization's art can win tough acts.|Tbis organization's a^rt c^an w^in tougb acts.|
-|Anyone can join our community garden.|Anyone c^an j0in o^ur communitv gardcn.|
+|This organization's art can win tough acts.|<span style="color:red">Tbis</span> organization's <span style="color:red">a^rt c^an w^in tougb</span> acts.|
+|Anyone can join our community garden.|Anyone <span style="color:red">c^an j0in o^ur communitv gardcn</span>.|
 
 </div>

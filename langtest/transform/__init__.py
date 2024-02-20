@@ -563,6 +563,7 @@ class FairnessTestFactory(ITests):
     """
 
     alias_name = "fairness"
+    model_result = None
 
     def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
         self.supported_tests = self.available_tests()
@@ -641,18 +642,29 @@ class FairnessTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
-
-        grouped_data = cls.get_gendered_data(raw_data)
+        raw_data_copy = [x.copy() for x in raw_data]
+        grouped_label = {}
+        grouped_data = cls.get_gendered_data(raw_data_copy)
         for gender, data in grouped_data.items():
             if len(data) == 0:
-                grouped_data[gender] = [[], []]
+                grouped_label[gender] = [[], []]
             else:
                 if isinstance(data[0], NERSample):
+
+                    def predict_ner(sample):
+                        prediction = model.predict(sample.original)
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
+
+                    X_test = pd.Series(data)
+                    X_test.apply(predict_ner)
                     y_true = pd.Series(data).apply(
                         lambda x: [y.entity for y in x.expected_results.predictions]
                     )
-                    X_test = pd.Series(data).apply(lambda sample: sample.original)
-                    y_pred = X_test.apply(model.predict_raw)
+                    y_pred = pd.Series(data).apply(
+                        lambda x: [y.entity for y in x.actual_results.predictions]
+                    )
                     valid_indices = y_true.apply(len) == y_pred.apply(len)
                     y_true = y_true[valid_indices]
                     y_pred = y_pred[valid_indices]
@@ -666,12 +678,25 @@ class FairnessTestFactory(ITests):
                     )
 
                 elif isinstance(data[0], SequenceClassificationSample):
+
+                    def predict_text_classification(sample):
+                        prediction = model.predict(sample.original)
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
+
+                    X_test = pd.Series(data)
+                    X_test.apply(predict_text_classification)
+
                     y_true = pd.Series(data).apply(
                         lambda x: [y.label for y in x.expected_results.predictions]
                     )
+                    y_pred = pd.Series(data).apply(
+                        lambda x: [y.label for y in x.actual_results.predictions]
+                    )
                     y_true = y_true.apply(lambda x: x[0])
-                    X_test = pd.Series(data).apply(lambda sample: sample.original)
-                    y_pred = X_test.apply(model.predict_raw)
+                    y_pred = y_pred.apply(lambda x: x[0])
+
                     y_true = y_true.explode()
                     y_pred = y_pred.explode()
 
@@ -696,9 +721,13 @@ class FairnessTestFactory(ITests):
                             options=sample.options,
                         )
                         prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
-
-                        prediction = model(text=input_data, prompt=prompt)
-                        return prediction.strip()
+                        server_prompt = kwargs.get("server_prompt", " ")
+                        prediction = model(
+                            text=input_data, prompt=prompt, server_prompt=server_prompt
+                        ).strip()
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
 
                     y_true = pd.Series(data).apply(lambda x: x.expected_results)
                     X_test = pd.Series(data)
@@ -715,18 +744,21 @@ class FairnessTestFactory(ITests):
                     if data[0].expected_results is None:
                         raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
 
-                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
-                    X_test = pd.Series(data)
-                    y_pred = X_test.apply(
-                        lambda sample: model(
+                    def predict_summarization(sample):
+                        prediction = model(
                             text={"context": sample.original},
                             prompt={
                                 "template": prompt_template,
                                 "input_variables": ["context"],
                             },
-                        )
-                    )
-                    y_pred = y_pred.apply(lambda x: x.strip())
+                        ).strip()
+                        sample.actual_results = prediction
+                        sample.gender = gender
+                        return prediction
+
+                    y_true = pd.Series(data).apply(lambda x: x.expected_results)
+                    X_test = pd.Series(data)
+                    y_pred = X_test.apply(predict_summarization)
 
                 if kwargs["is_default"]:
                     y_pred = y_pred.apply(
@@ -735,15 +767,19 @@ class FairnessTestFactory(ITests):
                         else ("0" if x in ["neg", "LABEL_0", "NEG"] else x)
                     )
 
-                grouped_data[gender] = [y_true, y_pred]
+                grouped_label[gender] = [y_true, y_pred]
 
         supported_tests = cls.available_tests()
+        from ..utils.custom_types.helpers import prepare_model_response
 
+        cls.model_result = prepare_model_response(raw_data_copy)
         kwargs["task"] = raw_data[0].task
         tasks = []
         for test_name, samples in sample_list.items():
             tasks.append(
-                supported_tests[test_name].async_run(samples, grouped_data, **kwargs)
+                supported_tests[test_name].async_run(
+                    samples, grouped_label, grouped_data=grouped_data, **kwargs
+                )
             )
         return tasks
 
@@ -777,6 +813,7 @@ class AccuracyTestFactory(ITests):
     """
 
     alias_name = "accuracy"
+    model_result = None
 
     def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
         self.supported_tests = self.available_tests()
@@ -881,13 +918,23 @@ class AccuracyTestFactory(ITests):
             raw_data (List[Sample]): The raw dataset.
 
         """
+        raw_data_copy = [x.copy() for x in raw_data]
 
-        if isinstance(raw_data[0], NERSample):
-            y_true = pd.Series(raw_data).apply(
+        if isinstance(raw_data_copy[0], NERSample):
+
+            def predict_ner(sample):
+                prediction = model.predict(sample.original)
+                sample.actual_results = prediction
+                return prediction
+
+            X_test = pd.Series(raw_data_copy)
+            X_test.apply(predict_ner)
+            y_true = pd.Series(raw_data_copy).apply(
                 lambda x: [y.entity for y in x.expected_results.predictions]
             )
-            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
-            y_pred = X_test.apply(model.predict_raw)
+            y_pred = pd.Series(raw_data_copy).apply(
+                lambda x: [y.entity for y in x.actual_results.predictions]
+            )
             valid_indices = y_true.apply(len) == y_pred.apply(len)
             y_true = y_true[valid_indices]
             y_pred = y_pred[valid_indices]
@@ -896,23 +943,35 @@ class AccuracyTestFactory(ITests):
             y_pred = y_pred.apply(lambda x: x.split("-")[-1])
             y_true = y_true.apply(lambda x: x.split("-")[-1])
 
-        elif isinstance(raw_data[0], SequenceClassificationSample):
-            y_true = pd.Series(raw_data).apply(
+        elif isinstance(raw_data_copy[0], SequenceClassificationSample):
+
+            def predict_text_classification(sample):
+                prediction = model.predict(sample.original)
+                sample.actual_results = prediction
+                return prediction
+
+            X_test = pd.Series(raw_data_copy)
+            X_test.apply(predict_text_classification)
+
+            y_true = pd.Series(raw_data_copy).apply(
                 lambda x: [y.label for y in x.expected_results.predictions]
             )
+            y_pred = pd.Series(raw_data_copy).apply(
+                lambda x: [y.label for y in x.actual_results.predictions]
+            )
             y_true = y_true.apply(lambda x: x[0])
-            X_test = pd.Series(raw_data).apply(lambda sample: sample.original)
-            y_pred = X_test.apply(model.predict_raw)
+            y_pred = y_pred.apply(lambda x: x[0])
+
             y_true = y_true.explode()
             y_pred = y_pred.explode()
 
-        elif raw_data[0].task == "question-answering":
+        elif raw_data_copy[0].task == "question-answering":
             from ..utils.custom_types.helpers import build_qa_input, build_qa_prompt
 
-            if raw_data[0].dataset_name is None:
+            if raw_data_copy[0].dataset_name is None:
                 dataset_name = "default_question_answering_prompt"
             else:
-                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+                dataset_name = raw_data_copy[0].dataset_name.split("-")[0].lower()
 
             def predict_question_answering(sample):
                 input_data = build_qa_input(
@@ -921,33 +980,38 @@ class AccuracyTestFactory(ITests):
                     options=sample.options,
                 )
                 prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
+                server_prompt = kwargs.get("server_prompt", " ")
+                prediction = model(
+                    text=input_data, prompt=prompt, server_prompt=server_prompt
+                ).strip()
+                sample.actual_results = prediction
+                return prediction
 
-                prediction = model(text=input_data, prompt=prompt)
-                return prediction.strip()
-
-            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
-            X_test = pd.Series(raw_data)
+            y_true = pd.Series(raw_data_copy).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data_copy)
 
             y_pred = X_test.apply(predict_question_answering)
 
-        elif raw_data[0].task == "summarization":
-            if raw_data[0].dataset_name is None:
+        elif raw_data_copy[0].task == "summarization":
+            if raw_data_copy[0].dataset_name is None:
                 dataset_name = "default_summarization_prompt"
             else:
-                dataset_name = raw_data[0].dataset_name.split("-")[0].lower()
+                dataset_name = raw_data_copy[0].dataset_name.split("-")[0].lower()
             prompt_template = kwargs.get(
                 "user_prompt", default_user_prompt.get(dataset_name, "")
             )
 
-            y_true = pd.Series(raw_data).apply(lambda x: x.expected_results)
-            X_test = pd.Series(raw_data)
-            y_pred = X_test.apply(
-                lambda sample: model(
+            def predict_summarization(sample):
+                prediction = model(
                     text={"context": sample.original},
                     prompt={"template": prompt_template, "input_variables": ["context"]},
-                )
-            )
-            y_pred = y_pred.apply(lambda x: x.strip())
+                ).strip()
+                sample.actual_results = prediction
+                return prediction
+
+            y_true = pd.Series(raw_data_copy).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data_copy)
+            y_pred = X_test.apply(predict_summarization)
 
         if kwargs["is_default"]:
             y_pred = y_pred.apply(
@@ -959,9 +1023,16 @@ class AccuracyTestFactory(ITests):
         supported_tests = cls.available_tests()
 
         tasks = []
+
+        from ..utils.custom_types.helpers import prepare_model_response
+
+        cls.model_result = prepare_model_response(raw_data_copy)
+
         for test_name, samples in sample_list.items():
             tasks.append(
-                supported_tests[test_name].async_run(samples, y_true, y_pred, **kwargs)
+                supported_tests[test_name].async_run(
+                    samples, y_true, y_pred, X_test=X_test, **kwargs
+                )
             )
         return tasks
 
@@ -1164,12 +1235,12 @@ class ClinicalTestFactory(ITests):
 
     alias_name = "clinical"
     supported_tasks = [
-        "clinical-tests",
+        "clinical",
         "text-generation",
     ]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the clinical tests"""
+        """Initializes the ClinicalTestFactory"""
 
         self.data_handler = data_handler
         self.tests = tests
@@ -1243,7 +1314,7 @@ class DisinformationTestFactory(ITests):
 
     alias_name = "disinformation"
     supported_tasks = [
-        "disinformation-test",
+        "disinformation",
         "text-generation",
     ]
 
@@ -1284,7 +1355,7 @@ class DisinformationTestFactory(ITests):
 
 
 class IdeologyTestFactory(ITests):
-    """Factory class for the clinical tests"""
+    """Factory class for the ideology tests"""
 
     alias_name = "ideology"
     supported_tasks = ["question_answering", "summarization"]
@@ -1666,10 +1737,10 @@ class StereoSetTestFactory(ITests):
 
 
 class LegalTestFactory(ITests):
-    """Factory class for the legal tests"""
+    """Factory class for the legal"""
 
     alias_name = "legal"
-    supported_tasks = ["legal-tests", "question-answering"]
+    supported_tasks = ["legal", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the legal tests"""
@@ -1745,10 +1816,10 @@ class FactualityTestFactory(ITests):
     """Factory class for factuality test"""
 
     alias_name = "factuality"
-    supported_tasks = ["factuality-test", "question-answering"]
+    supported_tasks = ["factuality", "question-answering"]
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the factuality-test"""
+        """Initializes the FactualityTestFactory"""
         self.data_handler = data_handler
         self.tests = tests
         self.kwargs = kwargs

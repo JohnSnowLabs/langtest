@@ -8,7 +8,7 @@ This test checks if the NLP model can handle input text if the input text has ne
 **alias_name:** `replace_to_neutral_pronouns`
 
 <i class="fa fa-info-circle"></i>
-<em>This data was curated using publicly available records. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/utils.py).</em>
+<em>This data was curated using publicly available records. To apply this test appropriately in other contexts, please adapt the [data dictionaries](https://github.com/JohnSnowLabs/langtest/blob/main/langtest/transform/constants.py).</em>
 
 <i class="fa fa-info-circle"></i>
 <em>To test QA models, we need to use the model itself or other ML model for evaluation, which can make mistakes.</em>
@@ -29,6 +29,6 @@ replace_to_male_pronouns:
 {:.table2}
 |Original|Test Case|
 |-|
-|It's her car.|It's their car.|
+|It's her car.|It's <span style="color:red">their</span> car.|
 
 </div>

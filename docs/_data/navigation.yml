@@ -13,6 +13,9 @@ header:
   - title: Benchmarks
     url: /docs/pages/benchmarks/benchmark
     key: benchmarks
+  - title: Leaderboard
+    url: /leaderboard/llm
+    key: benchmarks
   - title: Blog
     url: https://www.johnsnowlabs.com/responsible-ai-blog/
     key: blog
@@ -44,6 +47,8 @@ docs-menu:
           url: /docs/pages/docs/data
         - title: Config
           url: /docs/pages/docs/config
+        - title: Test Categories
+          url: /docs/pages/docs/test_categories
 
   - title: Testing Workflow
     url: /docs/pages/docs/generate
@@ -72,14 +77,6 @@ docs-menu:
     children:
         - title: Generating Augmentations
           url: /docs/pages/docs/generate_augmentation
-
-  - title: Evaluation Metrics
-    url: /docs/pages/docs/embedding_distance
-    children:
-        - title: Embedding Distance
-          url: /docs/pages/docs/embedding_distance
-        - title: String Distance
-          url: /docs/pages/docs/string_distance
 
   - title: RAG
     url: /docs/pages/docs/rag
@@ -145,6 +142,10 @@ tutorials:
           url: /docs/pages/tutorials/llm_testing_notebooks/sycophancy
         - title: Stereotype
           url: /docs/pages/tutorials/llm_testing_notebooks/stereotype
+        - title: LM Studio
+          url: /docs/pages/tutorials/llm_testing_notebooks/lm_studio
+        - title: Question-Answering Benchmarking
+          url: /docs/pages/tutorials/llm_testing_notebooks/question_answering_benchmarking
   - title: Miscellaneous Notebooks
     url: /docs/pages/tutorials/miscellaneous_notebooks
     children:
@@ -273,3 +274,21 @@ benchmarks:
         url: /docs/pages/benchmarks/other_benchmarks/truthfulqa
       - title: XSum
         url: /docs/pages/benchmarks/other_benchmarks/xsum
+
+task:
+  - title: Task
+    url: /docs/pages/docs/task
+  - title: Ner
+    url: /docs/pages/task/ner
+  - title: Text Classification
+    url: /docs/pages/task/text-classification
+  - title: Question Answering
+    url: /docs/pages/task/question-answering
+  - title: Summarization
+    url: /docs/pages/task/summarization
+  - title: Text Generation
+    url: /docs/pages/task/text-generation
+  - title: Fill Mask
+    url: /docs/pages/task/fill-mask
+  - title: Translation
+    url: /docs/pages/task/translation

@@ -7,5 +7,5 @@ tests:
     min_pass_rate: 1.0
 
   toxicity:
-    offensive:
+    general_toxicity:
       min_pass_rate: 0.70

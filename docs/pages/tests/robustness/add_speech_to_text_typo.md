@@ -34,7 +34,7 @@ add_speech_to_text_typo:
 {:.table2}
 |Original|Test Case|
 |-|
-|Andrew finally returned the French book to Chris that I bought last week.|Andrew finally returned the French book to Chris that I bot lass week.|
-|The more you learn, the more you grow.|Thee morr you learn, the morr you grow.|
+|Andrew finally returned the French book to Chris that I bought last week.|Andrew finally returned the French book to Chris that I <span style="color:red">bot lass</span> week.|
+|The more you learn, the more you grow.|<span style="color:red">Thee morr</span> you learn, the <span style="color:red">mor</span> you grow.|
 
 </div>

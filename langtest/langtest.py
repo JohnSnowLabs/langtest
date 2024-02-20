@@ -88,7 +88,7 @@ class Harness:
         self,
         task: Union[str, dict],
         model: Optional[Union[list, dict]] = None,
-        data: Optional[dict] = None,
+        data: Optional[Union[list, dict]] = None,
         config: Optional[Union[str, dict]] = None,
     ):
         """Initialize the Harness object.
@@ -135,26 +135,10 @@ class Harness:
         self.task = TaskManager(task)
 
         # Loading default datasets
-        if data is None and (self.task, model, hub) in self.DEFAULTS_DATASET:
-            data_path = os.path.join(
-                "data", self.DEFAULTS_DATASET[(self.task, model, hub)]
-            )
-            data = {"data_source": resource_filename("langtest", data_path)}
-            self.data = DataFactory(data, task=self.task).load()
-            if model == "textcat_imdb":
-                model = resource_filename("langtest", "data/textcat_imdb")
-            self.is_default = True
-            logging.info(Warnings.W002.format(info=(self.task, model, hub)))
-        elif data is None and self.task.category == "ideology":
-            self.data = []
-        elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(Errors.E004)
-
-        if isinstance(data, dict):
-            if isinstance(data.get("data_source"), list):
-                self.data = data.get("data_source")
-            else:
-                self.data = DataFactory(data, task=self.task).load()
+        if isinstance(data, list):
+            self.data = self.__multi_datasets_loading(task, hub, model, data)
+        else:
+            self.data = self.__single_dataset_loading(task, hub, model, data)
 
         # config loading
         if config is not None:
@@ -307,10 +291,10 @@ class Harness:
                 )
                 return self
 
-        elif str(self.task) in ["sensitivity-test", "sycophancy-test"]:
+        elif str(self.task) in ["sensitivity", "sycophancy"]:
             test_data_sources = {
-                "toxicity": ("wikiDataset"),
-                "negation": ("NQ-open", "OpenBookQA"),
+                "add_toxic_words": ("wikiDataset"),
+                "add_negation": ("NQ-open", "OpenBookQA"),
                 "sycophancy_math": ("synthetic-math-data"),
                 "sycophancy_nlp": ("synthetic-nlp-data"),
             }
@@ -461,7 +445,71 @@ class Harness:
             if self._checkpoints is not None:
                 for k, v in self.model.items():
                     self._generated_results[k].extend(self._checkpoints[k])
+
+        # clear cache
+        if isinstance(self.model, dict):
+            for k, v in self.model.items():
+                v.predict.cache_clear()
+        else:
+            self.model.predict.cache_clear()
         return self
+
+    def model_response(self, category: str = None):
+        """
+        Retrieves the model response for a specific category.
+
+        Args:
+            category (str): The category for which the model response is requested. It should be one of the supported categories:
+                "accuracy" or "fairness".
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the model response data with columns including 'gender', 'original',
+                'original_question', 'original_context', 'options', 'expected_results', and 'actual_results'.
+                If the model response is empty or None, returns an empty DataFrame.
+
+        Raises:
+            ValueError: If the category is None or not one of the supported categories.
+        """
+        supported_category = ("accuracy", "fairness")
+
+        if category is None:
+            raise ValueError(Errors.E093)
+
+        if category not in supported_category:
+            raise ValueError(
+                Errors.E094.format(
+                    category=category, supported_category=supported_category
+                )
+            )
+
+        class_name = f"{category.title()}TestFactory"
+        module = importlib.import_module("langtest.transform")
+        testfactory_class = getattr(module, class_name)
+        model_response = testfactory_class.model_result
+
+        if model_response is None:
+            logging.warning(Warnings.W021)
+
+        else:
+            data = [sample.copy() for sample in model_response]
+            data_dict = [{key: value for key, value in x.__dict__.items()} for x in data]
+            data_df = pd.DataFrame(data_dict)
+            data_df = data_df.reset_index(drop=True)
+
+            column_order = [
+                "gender",
+                "original",
+                "original_question",
+                "original_context",
+                "options",
+                "expected_results",
+                "actual_results",
+            ]
+
+            columns = [c for c in column_order if c in data_df.columns]
+            data_df = data_df[columns]
+
+            return data_df.fillna("-")
 
     @classmethod
     def load_checkpoints(cls, task, model, save_checkpoints_dir: str) -> "Harness":
@@ -552,6 +600,18 @@ class Harness:
 
         if self.task.category == "ideology":
             self.df_report = report.political_report(self._generated_results)
+            return self.df_report
+
+        elif self.is_multi_dataset:
+            self.df_report = report.multi_dataset_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
+                self._actual_model if isinstance(self._actual_model, str) else "",
+            )
+
+            report.save_format(format, save_dir, self.df_report)
             return self.df_report
 
         elif not isinstance(self._generated_results, dict):
@@ -709,6 +769,8 @@ class Harness:
             "perturbed_result",
             "pass",
         ]
+        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
+            column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
 
@@ -884,6 +946,8 @@ class Harness:
             "options",
             "expected_result",
         ]
+        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
+            column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df = testcases_df[columns]
 
@@ -926,6 +990,7 @@ class Harness:
         task: str,
         model: Optional[Union[list, dict]] = None,
         load_testcases: bool = False,
+        load_model_response: bool = False,
     ) -> "Harness":
         """Loads a previously saved `Harness` from a given configuration and dataset
 
@@ -972,7 +1037,9 @@ class Harness:
                 harness.generate()
         else:
             harness.generate()
-        if os.path.exists(os.path.join(save_dir, "generated_results.pkl")):
+        if load_model_response and os.path.exists(
+            os.path.join(save_dir, "generated_results.pkl")
+        ):
             with open(os.path.join(save_dir, "generated_results.pkl"), "rb") as reader:
                 generated_results = pickle.load(reader)
             harness._generated_results = generated_results
@@ -1254,3 +1321,41 @@ class Harness:
                 repo_id=repo_name,
                 token=token,
             )
+
+    def __multi_datasets_loading(self, task, hub, model, data):
+        """Loads the data from the given source."""
+        loaded_data = []
+        for dataset in data:
+            processed_data = self.__single_dataset_loading(task, hub, model, dataset)
+            # loaded_data[dataset["data_source"]] = processed_data
+            loaded_data.extend(processed_data)
+        self.is_multi_dataset = True
+        return loaded_data
+
+    def __single_dataset_loading(self, task, hub, model, data):
+        """Loads the data from the given source."""
+        # Loading default datasets
+        o_data = []
+        if data is None and (self.task, model, hub) in self.DEFAULTS_DATASET:
+            data_path = os.path.join(
+                "data", self.DEFAULTS_DATASET[(self.task, model, hub)]
+            )
+            data = {"data_source": resource_filename("langtest", data_path)}
+            o_data = DataFactory(data, task=self.task).load()
+            if model == "textcat_imdb":
+                model = resource_filename("langtest", "data/textcat_imdb")
+            self.is_default = True
+            logging.info(Warnings.W002.format(info=(self.task, model, hub)))
+        elif data is None and self.task.category == "ideology":
+            o_data = []
+        elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
+            raise ValueError(Errors.E004)
+
+        if isinstance(data, dict):
+            if isinstance(data.get("data_source"), list):
+                o_data = data.get("data_source")
+            else:
+                o_data = DataFactory(data, task=self.task).load()
+
+        self.is_multi_dataset = False
+        return o_data

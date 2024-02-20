@@ -19,7 +19,7 @@ class BaseSensitivity(ABC):
 
     alias_name = None
     supported_tasks = [
-        "sensitivity-test",
+        "sensitivity",
         "question-answering",
     ]
 
@@ -82,7 +82,7 @@ class BaseSensitivity(ABC):
         return created_task
 
 
-class Negation(BaseSensitivity):
+class AddNegation(BaseSensitivity):
     """A class for negating sensitivity-related phrases in the input text.
 
     This class identifies common sensitivity-related phrases such as 'is', 'was', 'are', and 'were' in the input text
@@ -96,7 +96,7 @@ class Negation(BaseSensitivity):
             of samples.
     """
 
-    alias_name = "negation"
+    alias_name = "add_negation"
 
     @staticmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -130,10 +130,25 @@ class Negation(BaseSensitivity):
         return sample_list
 
 
-class Toxicity(BaseSensitivity):
-    """A class for handling sensitivity-related phrases in the input text, specifically related to toxicity."""
+class AddToxicWords(BaseSensitivity):
+    """A class for handling sensitivity-related phrases in the input text, specifically related to toxicity.
 
-    alias_name = "toxicity"
+    Attributes:
+        alias_name (str): The alias name for this sensitivity transformation.
+
+    Methods:
+        transform(
+            sample_list: List[Sample],
+            starting_context: Optional[List[str]] = None,
+            ending_context: Optional[List[str]] = None,
+            strategy: str = None,
+        ) -> List[Sample]: Transform the input list of samples to add toxicity-related text.
+
+    Raises:
+        ValueError: If an invalid context strategy is provided.
+    """
+
+    alias_name = "add_toxic_words"
 
     @staticmethod
     def transform(

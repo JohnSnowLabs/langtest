@@ -19,8 +19,7 @@ Listing the available test cases.
 ```python
 h.available_tests()
 ```
-</div>
-The `generate()` method automatically generates test cases (based on the provided configuration).
+</div><div class="h3-box" markdown="1">
 
 ### Configuring Tests
 
@@ -79,6 +78,7 @@ Generating the test cases based on the configuration is as simple as calling the
 ```python
 h.generate()
 ```
+The `generate()` method automatically creates test cases based on the provided configuration. Random perturbations are added each time the generate method is called, resulting in different test cases. Additionally, the method includes a `seed` parameter to generate the same test case consistently.
 
 </div><div class="h3-box" markdown="1">
 
@@ -101,4 +101,4 @@ A sample test cases dataframe looks like the one given below:
 |robustness| uppercase | I live in Berlin | I LIVE IN BERLIN | BERLIN: LOC |
 
 
-</div></div>
+</div>
