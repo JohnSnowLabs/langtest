@@ -30,6 +30,12 @@ You can see which subsets and splits are available below.
 | **test**      | Testing set from the OpenBookQA dataset, containing 500 multiple-choice elementary-level science questions |
 | **test-tiny** | Truncated version of the test set from the OpenBookQA dataset, containing 50 multiple-choice examples.     |
 
+</div><div class="h3-box" markdown="1">
+
+![OpenBookQA Benchmark](/assets/images/benchmark/robustness_OpenBookQA.png)
+
+</div><div class="h3-box" markdown="1">
+
 #### Example
 
 In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the `llm_eval` approach (where llm is used to evaluate the model response). Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.

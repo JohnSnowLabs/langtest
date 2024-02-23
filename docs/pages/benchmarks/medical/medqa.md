@@ -28,6 +28,10 @@ You can see which subsets and splits are available below.
 | **test**       | Testing set from the MedQA dataset, containing 1273 question and answers examples.                         |
 | **test-tiny**  | Truncated version of the test set from the MedQA dataset, containing 50 question and answers examples. |
 
+</div><div class="h3-box" markdown="1">
 
+![MedQA Benchmark](/assets/images/benchmark/robustness_MedQA.png)
+
+</div><div class="h3-box" markdown="1">
 
 </div>

@@ -29,6 +29,11 @@ You can see which subsets and splits are available below.
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------|
 | **test** | Test set from the Consumer-Contracts dataset, containing 396 samples.                                                |  
 
+</div><div class="h3-box" markdown="1">
+
+![Consumer-Contracts Benchmark](/assets/images/benchmark/robustness_Consumer-Contracts.png)
+
+</div><div class="h3-box" markdown="1">
 
 #### Example
 

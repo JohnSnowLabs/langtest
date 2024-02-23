@@ -31,6 +31,11 @@ You can see which subsets and splits are available below.
 | **test**      | Testing set from the BBQ dataset, containing 1012 question and answers examples.                         |
 | **test-tiny** | Truncated version of the test set from the BBQ dataset, containing 50 question and answers examples. |
 
+</div><div class="h3-box" markdown="1">
+
+![BBQ Benchmark](/assets/images/benchmark/robustness_BBQ.png)
+
+</div><div class="h3-box" markdown="1">
 
 #### Example
 

@@ -30,6 +30,12 @@ You can see which subsets and splits are available below.
 | **test**      | Testing set from the LogiQA dataset, containing 1000 question and answers examples.                         |
 | **test-tiny** | Truncated version of the test set from the LogiQA dataset, containing 50 question and answers examples. |
 
+</div><div class="h3-box" markdown="1">
+
+![LogiQA Benchmark](/assets/images/benchmark/robustness_LogiQA.png)
+
+</div><div class="h3-box" markdown="1">
+
 #### Example
 
 In the evaluation process, we start by fetching *original_context* and *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_context* and *original_question*, resulting in *perturbed_context* and *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the `llm_eval` approach (where llm is used to evaluate the model response). Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category.For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.

@@ -28,4 +28,10 @@ You can see which subsets and splits are available below.
 | **pqaa**       | Truncated version of pqa_artificial subset from the PubMedQA, containing 500 question and answers examples.                         |
 | **pqal**  | Truncated version of pqa_labeled subset from the PubMedQA, containing 500 question answers examples. |
 
+</div><div class="h3-box" markdown="1">
+
+![PubMedQA Benchmark](/assets/images/benchmark/robustness_PubMedQA.png)
+
+</div><div class="h3-box" markdown="1">
+
 </div>

@@ -34,6 +34,11 @@ You can see which subsets and splits are available below.
 | **test-tiny** | Truncated version of the test set from the BoolQ dataset, containing 50 labeled examples. This dataset does not contain labels and accuracy & fairness tests cannot be run with it. |
 | **bias**      | Manually annotated bias version of BoolQ dataset, containing 136 labeled examples                                                                                                   |
 
+</div><div class="h3-box" markdown="1">
+
+![BoolQ Benchmark](/assets/images/benchmark/robustness_BoolQ.png)
+
+</div><div class="h3-box" markdown="1">
 
 #### Example
 

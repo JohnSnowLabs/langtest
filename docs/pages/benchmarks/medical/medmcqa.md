@@ -52,5 +52,10 @@ Both the subset contains the following splits:
 - Surgery
 - Unknown
 
+</div><div class="h3-box" markdown="1">
+
+![MedMCQA Benchmark](/assets/images/benchmark/robustness_MedMCQA.png)
+
+</div><div class="h3-box" markdown="1">
 
 </div>

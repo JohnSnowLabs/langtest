@@ -31,6 +31,12 @@ You can see which subsets and splits are available below.
 | **test-tiny** | Truncated version of the test set from the MMLU dataset which covers 57 tasks including elementary mathematics, US history, computer science, law, and more. We took 10 samples from each task in the test-tiny set. |
 | **clinical**    | Curated version of the MMLU dataset which contains the clinical subsets (college_biology, college_medicine, medical_genetics, human_aging, professional_medicine, nutrition).                                       |
 
+</div><div class="h3-box" markdown="1">
+
+![MMLU Benchmark](/assets/images/benchmark/robustness_MMLU.png)
+
+</div><div class="h3-box" markdown="1">
+
 #### Example
 
 In the evaluation process, we start by fetching *original_question* from the dataset. The model then generates an *expected_result* based on this input. To assess model robustness, we introduce perturbations to the *original_question*, resulting in *perturbed_question*. The model processes these perturbed inputs, producing an *actual_result*. The comparison between the *expected_result* and *actual_result* is conducted using the `llm_eval` approach (where llm is used to evaluate the model response). Alternatively, users can employ metrics like **String Distance** or **Embedding Distance** to evaluate the model's performance in the Question-Answering Task within the robustness category. For a more in-depth exploration of these approaches, you can refer to this [notebook](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Evaluation_Metrics.ipynb) discussing these three methods.
