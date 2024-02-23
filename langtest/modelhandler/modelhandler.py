@@ -10,6 +10,7 @@ RENAME_HUBS = {
     "transformers": "huggingface",
     "jsl": "johnsnowlabs",
     "lmstudio": "lm-studio",
+    "lmstudio": "web",
 }
 
 if try_import_lib("langchain"):

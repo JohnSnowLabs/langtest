@@ -65,7 +65,7 @@ class PretrainedModel(ABC):
         __call__(self, text: str) -> str: Calls the predict method for the given input text.
     """
 
-    def __init__(self, model: Any, **kwargs) -> None:
+    def __init__(self, model: Any, out_praser=None, **kwargs) -> None:
         """
         Initialize the PretrainedModel.
 
@@ -74,6 +74,7 @@ class PretrainedModel(ABC):
             **kwargs: Additional keyword arguments.
         """
         self.model = model
+        self.out_praser = out_praser
         self.kwargs = kwargs
         self.predict.cache_clear()
 
@@ -90,6 +91,10 @@ class PretrainedModel(ABC):
         Returns:
             Any: The loaded pretrained model.
         """
+        if isinstance(path, dict):
+            model = path["model"]
+            out_praser = path.get("out_praser", None)
+            return cls(model=model, out_praser=out_praser, **kwargs)
         return cls(model=path, **kwargs)
 
     @lru_cache(maxsize=102400)
@@ -119,6 +124,8 @@ class PretrainedModel(ABC):
                 *args,
                 **self.kwargs,
             )
+            if self.out_praser:
+                return self.out_praser(op)
             return op["choices"][0]["message"]["content"]
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
