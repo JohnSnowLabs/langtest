@@ -33,16 +33,23 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
     else:
         raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
-    headers = {"Content-Type": "application/json"}
-    server_prompt = {"role": "assistant", "content": server_prompt}
-    user_text = {"role": "user", "content": text}
+    if kwargs.get("headers", None):
+        headers = kwargs.get("headers")
+    else:
+        headers = {"Content-Type": "application/json"}
 
-    data = {
-        "messages": [server_prompt, user_text],
-        "temperature": kwargs.get("temperature", 0.2),
-        "max_tokens": kwargs.get("max_tokens", -1),
-        "stream": kwargs.get("stream", False),
-    }
+    if kwargs.get("data", None):
+        input_data_func = kwargs.get("data")
+        data = input_data_func(text)
+    else:
+        server_prompt = {"role": "assistant", "content": server_prompt}
+        user_text = {"role": "user", "content": text}
+        data = {
+            "messages": [server_prompt, user_text],
+            "temperature": kwargs.get("temperature", 0.2),
+            "max_tokens": kwargs.get("max_tokens", -1),
+            "stream": kwargs.get("stream", False),
+        }
 
     try:
         response = requests.post(url, headers=headers, json=data)
@@ -93,8 +100,16 @@ class PretrainedModel(ABC):
         """
         if isinstance(path, dict):
             model = path["model"]
+            input_data = path.get("data", None)
             out_praser = path.get("out_praser", None)
-            return cls(model=model, out_praser=out_praser, **kwargs)
+            headers = path.get("headers", None)
+            return cls(
+                model=model,
+                data=input_data,
+                headers=headers,
+                out_praser=out_praser,
+                **kwargs,
+            )
         return cls(model=path, **kwargs)
 
     @lru_cache(maxsize=102400)

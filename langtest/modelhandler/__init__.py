@@ -11,7 +11,7 @@ RENAME_HUBS = {
     "transformers": "huggingface",
 }
 
-INSTALLED_HUBS = ["custom", "lm-studio"]
+INSTALLED_HUBS = ["custom", "lm-studio", "web"]
 
 libraries = [
     ("johnsnowlabs", "langtest.modelhandler.jsl_modelhandler"),
