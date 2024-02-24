@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Callable, Union
 from .modelhandler import ModelAPI
 from abc import ABC
 from functools import lru_cache
@@ -72,7 +72,7 @@ class PretrainedModel(ABC):
         __call__(self, text: str) -> str: Calls the predict method for the given input text.
     """
 
-    def __init__(self, model: Any, out_praser=None, **kwargs) -> None:
+    def __init__(self, model: Any, output_parser: Callable = None, **kwargs) -> None:
         """
         Initialize the PretrainedModel.
 
@@ -81,7 +81,7 @@ class PretrainedModel(ABC):
             **kwargs: Additional keyword arguments.
         """
         self.model = model
-        self.out_praser = out_praser
+        self.output_parser = output_parser
         self.kwargs = kwargs
         self.predict.cache_clear()
 
@@ -99,15 +99,31 @@ class PretrainedModel(ABC):
             Any: The loaded pretrained model.
         """
         if isinstance(path, dict):
-            model = path["model"]
-            input_data = path.get("data", None)
-            out_praser = path.get("out_praser", None)
+            model = path["url"]
+            input_data = path.get("input_processor", None)
+            output_parser = path.get("output_parser", None)
             headers = path.get("headers", None)
+
+            # missing input_processor, output_parser, headers in the dictionary
+            # will raise an error
+            if not all((input_data, output_parser, headers)):
+                raise ValueError(
+                    Errors.E090.format(
+                        error_message="".join(
+                            [
+                                "input_processor,",
+                                " output_parser",
+                                " and headers",
+                                " are mandatory when model is a dictionary.",
+                            ]
+                        )
+                    )
+                )
             return cls(
                 model=model,
                 data=input_data,
                 headers=headers,
-                out_praser=out_praser,
+                output_parser=output_parser,
                 **kwargs,
             )
         return cls(model=path, **kwargs)
@@ -139,8 +155,8 @@ class PretrainedModel(ABC):
                 *args,
                 **self.kwargs,
             )
-            if self.out_praser:
-                return self.out_praser(op)
+            if self.output_parser:
+                return self.output_parser(op)
             return op["choices"][0]["message"]["content"]
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
