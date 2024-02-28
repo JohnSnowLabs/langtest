@@ -149,14 +149,19 @@ class TestFactory:
         temp_res = asyncio.run(async_tests)
         results = []
         for each in temp_res:
-            if hasattr(each, "_result"):
-                results.extend(each._result)
-            elif isinstance(each, list):
-                for i in each:
-                    if hasattr(i, "_result"):
-                        results.extend(i._result)
-                    else:
-                        results.append(i)
+            try:
+                if hasattr(each, "_result"):
+                    results.extend(each._result)
+                elif isinstance(each, list):
+                    for i in each:
+                        if hasattr(i, "_result"):
+                            results.extend(i._result)
+                        else:
+                            results.append(i)
+            except TypeError:
+                if hasattr(each, "exception"):
+                    raise each.exception()
+                raise ValueError(f"Unknown error occurred {each}")
 
         return results
 
