@@ -230,6 +230,7 @@ class NEROutputFormatter(BaseFormatter):
 class QAFormatter(BaseFormatter):
     def to_jsonl(sample: QASample, *args, **kwargs):
         """Converts a QASample to a JSONL string."""
+
         context = sample.original_context
         question = sample.original_question
         options = sample.options
