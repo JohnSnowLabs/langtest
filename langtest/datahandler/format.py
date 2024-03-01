@@ -252,12 +252,12 @@ class QAFormatter(BaseFormatter):
             row_dict = {
                 question_field: question,
             }
-            if context_field:
+            if context_field and len(context) > 1:
                 row_dict[context_field] = context
-            if options:
+            if options_field and len(options) > 1:
                 row_dict[options_field] = options
 
-            if sample.expected_results:
+            if target_field and sample.expected_results:
                 row_dict[target_field] = (
                     sample.expected_results[0]
                     if isinstance(sample.expected_results, list)
@@ -269,10 +269,10 @@ class QAFormatter(BaseFormatter):
                 "question": question,
             }
 
-            if len(context) > 1:
+            if context and len(context) > 1:
                 row_dict["passage"] = context
 
-            if options:
+            if options and len(options) > 1:
                 row_dict["options"] = options
 
             if sample.expected_results:
