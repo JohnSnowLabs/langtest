@@ -2,7 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Union
 
-from ..utils.custom_types import NERSample, Sample, SequenceClassificationSample
+from ..utils.custom_types import NERSample, Sample, SequenceClassificationSample, QASample
 from ..errors import Errors
 
 
@@ -76,7 +76,13 @@ class Formatter:
         """
         formats = {cls.__name__: cls for cls in BaseFormatter.__subclasses__()}
         class_name = type(sample.expected_results).__name__
+
         try:
+            if sample.task == "question-answering":
+                return getattr(QAFormatter, f"to_{output_format}")(
+                    sample, *args, **kwargs
+                )
+
             return getattr(formats[f"{class_name}Formatter"], f"to_{output_format}")(
                 sample, *args, **kwargs
             )
@@ -219,3 +225,60 @@ class NEROutputFormatter(BaseFormatter):
                 text += f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
 
         return text, temp_id
+
+
+class QAFormatter(BaseFormatter):
+    def to_jsonl(sample: QASample, *args, **kwargs):
+        """Converts a QASample to a JSONL string."""
+        context = sample.original_context
+        question = sample.original_question
+        options = sample.options
+
+        # override if perturbed values are present
+        if sample.perturbed_context:
+            context = sample.perturbed_context
+
+        if sample.perturbed_question:
+            question = sample.perturbed_question
+
+        # restore the fields to their original values
+        if sample.loaded_fields:
+            question_field = sample.loaded_fields["question"]
+            context_field = sample.loaded_fields["context"]
+            options_field = sample.loaded_fields["options"]
+            target_field = sample.loaded_fields["target_column"]
+
+            row_dict = {
+                question_field: question,
+            }
+            if context_field:
+                row_dict[context_field] = context
+            if options:
+                row_dict[options_field] = options
+
+            if sample.expected_results:
+                row_dict[target_field] = (
+                    sample.expected_results[0]
+                    if isinstance(sample.expected_results, list)
+                    else sample.expected_results
+                )
+
+        else:
+            row_dict = {
+                "question": question,
+            }
+
+            if len(context) > 1:
+                row_dict["passage"] = context
+
+            if options:
+                row_dict["options"] = options
+
+            if sample.expected_results:
+                row_dict["answer"] = (
+                    sample.expected_results[0]
+                    if isinstance(sample.expected_results, list)
+                    else sample.expected_results
+                )
+
+        return row_dict
