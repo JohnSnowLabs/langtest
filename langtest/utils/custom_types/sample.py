@@ -386,6 +386,7 @@ class BaseQASample(BaseModel):
     ran_pass: bool = None
     metric_name: str = None
     gender: str = None
+    loaded_fields: Dict[str, Any] = None
 
     def __init__(self, **data):
         """Constructor method"""

@@ -646,7 +646,7 @@ class ConllDataset(BaseDataset):
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
 
-    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):
+    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):  # type: ignore
         """Validates the tokens in a sentence.
 
         Args:
@@ -1125,7 +1125,13 @@ class JSONLDataset(BaseDataset):
             output_path (str):
                 path to save the data to
         """
-        raise NotImplementedError()
+        out = []
+        for each_sample in data:
+            row_dict = Formatter.process(each_sample, output_format="jsonl")
+            out.append(row_dict)
+
+        df = pd.DataFrame(out)
+        df.to_json(output_path, orient="records", lines=True)
 
 
 class HuggingFaceDataset(BaseDataset):
