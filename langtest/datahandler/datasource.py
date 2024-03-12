@@ -129,8 +129,19 @@ class BaseDataset(ABC):
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
+        import pandas as pd
+
         dataset_cls = cls.__name__.replace("Dataset", "").lower()
-        cls.data_sources[dataset_cls] = cls
+        if dataset_cls == "pandas":
+            extensions = [
+                i.replace("read_", "")
+                for i in pd.__all__
+                if i.startswith("read_") and i not in ("read_csv")
+            ]
+            for ext in extensions:
+                cls.data_sources[ext] = cls
+        else:
+            cls.data_sources[dataset_cls] = cls
 
 
 class DataFactory:
@@ -646,7 +657,8 @@ class ConllDataset(BaseDataset):
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
 
-    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):  # type: ignore
+    # type: ignore
+    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):
         """Validates the tokens in a sentence.
 
         Args:
@@ -1583,3 +1595,183 @@ class SynteticDataset(BaseDataset):
 
         df = pd.DataFrame(rows, columns=["original_question", "ground_truth"])
         df.to_csv(output_path, index=False, encoding="utf-8")
+
+
+class PandasDataset(BaseDataset):
+    """Class to handle Pandas datasets. Subclass of BaseDataset."""
+
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+    ]
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
+
+    def __init__(self, file_path: str, task: TaskManager, **kwargs) -> None:
+        """
+        Initializes a PandasDataset object.
+
+        Args:
+            file_path (str):
+                The path to the data file.
+            task (str):
+                Specifies the task of the dataset, which can be one of the following:
+                - "text-classification"
+                - "ner" (Named Entity Recognition)
+                - "question-answering"
+                - "summarization"
+            **kwargs:
+
+        Raises:
+            ValueError:
+                If the specified task is unsupported.
+        """
+        super().__init__()
+        self._file_path = file_path
+        self.task = task
+        self.kwargs = kwargs
+
+        if task.task_name in self.COLUMN_NAMES:
+            self.COLUMN_NAMES = self.COLUMN_NAMES[task.task_name]
+        elif "is_import" not in kwargs:
+            raise ValueError(Errors.E026.format(task=task))
+
+        self.column_map = None
+        self.kwargs = kwargs
+
+    def load_raw_data(self, standardize_columns: bool = False) -> List[Dict]:
+        """Loads data from a CSV file into raw lists of strings
+
+        Args:
+            standardize_columns (bool): whether to standardize column names
+
+        Returns:
+            List[Dict]:
+                parsed CSV file into list of dicts
+        """
+        df = getattr(pd, f"read_{self.__get_extension(self._file_path)}")(
+            self._file_path, **self.kwargs
+        )
+
+        if not standardize_columns:
+            data = df.to_dict(orient="records")
+            return data
+
+        data = []
+        column_names = self._file_path
+
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
+        else:
+            column_names = dict()
+
+        for _, row in df.iterrows():
+            self.task.create_sample(row, **column_names)
+
+        return data
+
+    def load_data(self) -> List[Sample]:
+        """
+        Load data from a CSV file and preprocess it based on the specified task.
+
+        Returns:
+            List[Sample]: A list of preprocessed data samples.
+        """
+
+        if self.kwargs.get("is_import", False):
+            kwargs = self.kwargs.copy()
+            kwargs.pop("is_import")
+            return self._import_data(self._file_path, **kwargs)
+
+        if isinstance(self._file_path, dict):
+            file_path = self._file_path.get("data_source", self._file_path)
+        else:
+            file_path = self._file_path
+
+        ext = self.__get_extension(file_path)
+
+        dataset: pd.DataFrame = getattr(pd, f"read_{ext}")(file_path, **self.kwargs)
+
+        data = []
+        column_names = dataset.columns
+
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
+        else:
+            column_names = dict()
+
+        for idx, row_data in enumerate(dataset.to_dict(orient="records")):
+            try:
+                sample = self.task.create_sample(
+                    row_data,
+                    **column_names,
+                )
+                data.append(sample)
+
+            except Exception as e:
+                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
+                continue
+
+        return data
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """Exports the data to the corresponding format and saves it to 'output_path'."""
+        raise NotImplementedError()
+
+    def _import_data(self, file_name, **kwargs) -> List[Sample]:
+        """
+        Helper function to import testcases from csv file after editing.
+        """
+        if isinstance(file_name, dict):
+            file_name = file_name.get("data_source")
+
+        data = pd.read_csv(file_name, **kwargs)
+        samples = []
+
+        for i in data.to_dict(orient="records"):
+            sample = self.task.get_sample_class(**i)
+            samples.append(sample)
+        return samples
+
+    def __get_extension(self, file_path: str) -> str:
+        """Get the file extension of the file.
+
+        Args:
+            file_path (str): The path to the file.
+
+        Returns:
+            str: The file extension.
+        """
+        # clipboard
+        # excel
+        # feather
+        # fwf
+        # gbq
+        # hdf
+        # html
+        # json
+        # orc
+        # parquet
+        # pickle
+        # sas
+        # spss
+        # sql
+        # sql_query
+        # sql_table
+        # stata
+        # table
+        # xml
+
+        #
+        ext_map = {
+            "xlsx": "excel",
+            "xls": "excel",
+            "pkl": "pickle",
+        }
+        ext = os.path.splitext(file_path)[-1].lower()[1:]
+        if ext in ext_map:
+            return ext_map[ext]
+        return ext
