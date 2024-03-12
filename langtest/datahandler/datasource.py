@@ -1744,7 +1744,7 @@ class PandasDataset(BaseDataset):
         Returns:
             str: The file extension.
         """
-       
+
         ext_map = {
             "xlsx": "excel",
             "xls": "excel",
