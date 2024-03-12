@@ -1744,31 +1744,12 @@ class PandasDataset(BaseDataset):
         Returns:
             str: The file extension.
         """
-        # clipboard
-        # excel
-        # feather
-        # fwf
-        # gbq
-        # hdf
-        # html
-        # json
-        # orc
-        # parquet
-        # pickle
-        # sas
-        # spss
-        # sql
-        # sql_query
-        # sql_table
-        # stata
-        # table
-        # xml
-
-        #
+       
         ext_map = {
             "xlsx": "excel",
             "xls": "excel",
             "pkl": "pickle",
+            "h5": "hdf",
         }
         ext = os.path.splitext(file_path)[-1].lower()[1:]
         if ext in ext_map:
