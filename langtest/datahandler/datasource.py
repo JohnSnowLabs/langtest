@@ -657,8 +657,7 @@ class ConllDataset(BaseDataset):
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
 
-    # type: ignore
-    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):
+    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):  # type: ignore
         """Validates the tokens in a sentence.
 
         Args:
