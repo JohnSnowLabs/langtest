@@ -139,7 +139,16 @@ class BaseDataset(ABC):
                 if i.startswith("read_") and i not in ("read_csv")
             ]
             for ext in extensions:
-                cls.data_sources[ext] = cls
+                supported_extentions = cls.renamed_extensions(inverted=True)
+                if ext in list(supported_extentions.keys()):
+                    if isinstance(supported_extentions[ext], list):
+                        for ext in supported_extentions[ext]:
+                            cls.data_sources[ext] = cls
+                    else:
+                        ext = supported_extentions[ext]
+                        cls.data_sources[ext] = cls
+                else:
+                    cls.data_sources[ext] = cls
         else:
             cls.data_sources[dataset_cls] = cls
 
@@ -1604,6 +1613,16 @@ class PandasDataset(BaseDataset):
         "text-classification",
         "question-answering",
         "summarization",
+        "toxicity",
+        "translation",
+        "security",
+        "clinical",
+        "disinformation",
+        "sensitivity",
+        "wino-bias",
+        "legal",
+        "factuality",
+        "stereoset",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
@@ -1614,12 +1633,8 @@ class PandasDataset(BaseDataset):
         Args:
             file_path (str):
                 The path to the data file.
-            task (str):
-                Specifies the task of the dataset, which can be one of the following:
-                - "text-classification"
-                - "ner" (Named Entity Recognition)
-                - "question-answering"
-                - "summarization"
+           task (str):
+                Task to be evaluated on.
             **kwargs:
 
         Raises:
@@ -1640,14 +1655,14 @@ class PandasDataset(BaseDataset):
         self.kwargs = kwargs
 
     def load_raw_data(self, standardize_columns: bool = False) -> List[Dict]:
-        """Loads data from a CSV file into raw lists of strings
+        """Loads data from a file into raw lists of strings
 
         Args:
             standardize_columns (bool): whether to standardize column names
 
         Returns:
             List[Dict]:
-                parsed CSV file into list of dicts
+                parsed file into list of dicts
         """
         df = getattr(pd, f"read_{self.__get_extension(self._file_path)}")(
             self._file_path, **self.kwargs
@@ -1745,13 +1760,28 @@ class PandasDataset(BaseDataset):
             str: The file extension.
         """
 
+        ext = os.path.splitext(file_path)[-1].lower()[1:]
+        if ext in self.renamed_extensions():
+            return self.renamed_extensions()[ext]
+        return ext
+
+    @classmethod
+    def renamed_extensions(self, inverted: bool = False) -> Dict[str, str]:
+        """Rename the file extensions to the correct format."""
+        if inverted:
+            # if key is already in the dict, then append the value to the list
+            temp_dict = {}
+            for k, v in self.renamed_extensions().items():
+                if v in temp_dict:
+                    temp_dict[v].append(k)
+                else:
+                    temp_dict[v] = [k]
+            return temp_dict
+
         ext_map = {
             "xlsx": "excel",
             "xls": "excel",
             "pkl": "pickle",
             "h5": "hdf",
         }
-        ext = os.path.splitext(file_path)[-1].lower()[1:]
-        if ext in ext_map:
-            return ext_map[ext]
-        return ext
+        return ext_map
