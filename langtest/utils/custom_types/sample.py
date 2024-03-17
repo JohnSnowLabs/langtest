@@ -331,6 +331,8 @@ class MinScoreSample(BaseSample):
         is_pass: Checks if the sample passes based on the minimum score.
     """
 
+    dataset_name: str = None
+
     def __init__(self, **data):
         """Constructor method"""
         super().__init__(**data)

@@ -795,7 +795,7 @@ class LLMEval(BaseAccuracy):
         eval_model = LLMEval.eval_model
 
         def eval():
-            results = []
+            results: Dict[str, list] = {}
             for true_list, pred, sample in zip(y_true, y_pred, X_test):
                 result = is_pass_llm_eval(
                     eval_model=eval_model,
@@ -805,18 +805,40 @@ class LLMEval(BaseAccuracy):
                     perturbed_question=sample.original_question,
                     prediction=pred,
                 )
+                if sample.dataset_name not in results:
+                    results[sample.dataset_name] = []
                 if result:
-                    results.append(1)
+                    results[sample.dataset_name].append(1)
                 else:
-                    results.append(0)
-            total_samples = len(results)
-            passed_samples = sum(results)
-            accuracy = passed_samples / max(total_samples, 1)
+                    results[sample.dataset_name].append(0)
+
+            # accuracy for each dataset
+            accuracy = {}
+            for dataset, results in results.items():
+                total_samples = len(results)
+                passed_samples = sum(results)
+                accuracy[dataset] = passed_samples / max(total_samples, 1)
+            # total_samples = len(results)
+            # passed_samples = sum(results)
+            # accuracy = passed_samples / max(total_samples, 1)
             return accuracy
 
+        # scores
+        scores = eval()
+        temp_samples = []
         for sample in sample_list:
-            sample.actual_results = MinScoreOutput(min_score=eval())
-            sample.state = "done"
+            for dataset, score in scores.items():
+                from copy import deepcopy
+
+                temp_sample = deepcopy(sample)
+                temp_sample.actual_results = MinScoreOutput(min_score=score)
+                temp_sample.state = "done"
+                temp_samples.append(temp_sample)
+                temp_sample.dataset_name = dataset
+
+            # sample.actual_results = MinScoreOutput(min_score=eval())
+            # sample.state = "done"
             if progress:
                 progress.update(1)
-        return sample_list
+        return temp_samples
+        # return sample_list
