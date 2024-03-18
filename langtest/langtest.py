@@ -5,7 +5,7 @@ import pickle
 import importlib
 import subprocess
 from collections import defaultdict
-from typing import Dict, List, Optional, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 import pandas as pd
 import yaml
@@ -249,86 +249,14 @@ class Harness:
             raise RuntimeError(Errors.E005)
         if self._testcases is not None:
             raise RuntimeError(Errors.E006)
+        
+        self._testcases = []
 
-        tests = self._config["tests"]
-        m_data = [sample.copy() for sample in self.data]
+        if isinstance(self.data, list):
+            self._testcases = self.__single_dataset_generate(self.data)
+        elif isinstance(self.data, dict):
+            self._testcases = self.__multi_datasets_generate(self.data)
 
-        if self.task in ["text-classification", "ner"]:
-            if not isinstance(self.model, dict):
-                _ = [
-                    setattr(sample, "expected_results", self.model(sample.original))
-                    for sample in m_data
-                ]
-            else:
-                self._testcases = {}
-                for k, v in self.model.items():
-                    _ = [
-                        setattr(sample, "expected_results", v(sample.original))
-                        for sample in m_data
-                    ]
-                    (self._testcases[k]) = TestFactory.transform(
-                        self.task, self.data, tests, m_data=m_data
-                    )
-
-                return self
-
-        elif str(self.task) in ("question-answering", "summarization"):
-            if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
-                if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
-                    tests_to_filter = tests["bias"].keys()
-                    self._testcases = DataFactory.filter_curated_bias(
-                        tests_to_filter, self.data
-                    )
-                    if len(tests.keys()) > 2:
-                        tests = {k: v for k, v in tests.items() if k != "bias"}
-                        (other_testcases) = TestFactory.transform(
-                            self.task, self.data, tests, m_data=m_data
-                        )
-                        self._testcases.extend(other_testcases)
-                    return self
-                else:
-                    raise ValueError(
-                        Errors.E007.format(data_source=self.__data_dict["data_source"])
-                    )
-            else:
-                self._testcases = TestFactory.transform(
-                    self.task, self.data, tests, m_data=m_data
-                )
-                return self
-
-        elif str(self.task) in ["sensitivity", "sycophancy"]:
-            test_data_sources = {
-                "add_toxic_words": ("wikiDataset"),
-                "add_negation": ("NQ-open", "OpenBookQA"),
-                "sycophancy_math": ("synthetic-math-data"),
-                "sycophancy_nlp": ("synthetic-nlp-data"),
-            }
-
-            category = tests.get(str(self.task).split("-")[0], {})
-            test_name = next(iter(category), None)
-            if test_name in test_data_sources:
-                selected_data_sources = test_data_sources[test_name]
-
-                if self.__data_dict["data_source"] in selected_data_sources:
-                    self._testcases = TestFactory.transform(
-                        self.task, self.data, tests, m_data=m_data
-                    )
-                    return self
-                else:
-                    raise ValueError(
-                        Errors.E008.format(
-                            test_name=test_name,
-                            data_source=self.__data_dict["data_source"],
-                            selected_data_sources=selected_data_sources,
-                        )
-                    )
-
-            else:
-                raise ValueError(Errors.E009.format(test_name=test_name))
-
-        self._testcases = TestFactory.transform(
-            self.task, self.data, tests, m_data=m_data
-        )
         return self
 
     def run(
@@ -350,114 +278,18 @@ class Harness:
         Raises:
             RuntimeError: Raised if test cases are not provided (None).
         """
-        if self._testcases is None:
-            raise RuntimeError(Errors.E010)
-
-        if not isinstance(self._testcases, dict):
-            if checkpoint:
-                checkpoint_manager = CheckpointManager(
-                    checkpoint_folder=save_checkpoints_dir
-                )
-                if self.batches is None:
-                    self.batches = divide_into_batches(self._testcases, batch_size)
-                    checkpoint_manager.save_all_batches(self.batches)
-                    self.save(save_checkpoints_dir)
-                    logging.warning(Warnings.W018.format(total_batches=len(self.batches)))
-
-                if self._generated_results is None:
-                    self._generated_results = []
-
-                for i, batch in self.batches.items():
-                    batch_results = TestFactory.run(
-                        batch,
-                        self.model,
-                        is_default=self.is_default,
-                        raw_data=self.data,
-                        **self._config.get("model_parameters", {}),
-                    )
-
-                    checkpoint_manager.save_checkpoint(
-                        check_point_extension=f"batch_{i}", results_so_far=batch_results
-                    )
-                    self._generated_results.extend(batch_results)
-                    checkpoint_manager.update_status(batch_number=i)
-
-            else:
-                self._generated_results = TestFactory.run(
-                    self._testcases,
-                    self.model,
-                    is_default=self.is_default,
-                    raw_data=self.data,
-                    **self._config.get("model_parameters", {}),
-                )
-            if self._checkpoints is not None:
-                self._generated_results.extend(self._checkpoints)
+        if isinstance(self._testcases, dict):
+            self.is_multi_dataset = True
+            self._generated_results = self.__multi_datasets_run(
+                self._testcases, checkpoint, save_checkpoints_dir, batch_size
+            )
         else:
-            self._generated_results = {}
-            if checkpoint:
-                if self.batches is None:
-                    self.batches = {}
-                    for k, v in self.model.items():
-                        self.batches[k] = divide_into_batches(
-                            self._testcases[k], batch_size
-                        )
-                        logging.warning(
-                            Warnings.W019.format(
-                                model_name=k, total_batches=len(self.batches)
-                            )
-                        )
-
-                    for k, v in self.batches.items():
-                        k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
-                        checkpoint_manager = CheckpointManager(
-                            checkpoint_folder=k_checkpoint_dir
-                        )
-                        checkpoint_manager.save_all_batches(v)
-
-                    self.save(save_checkpoints_dir)
-
-                for k, v in self.model.items():
-                    k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
-                    checkpoint_manager = CheckpointManager(
-                        checkpoint_folder=k_checkpoint_dir
-                    )
-                    self._generated_results[k] = []
-                    for i, batch in self.batches[k].items():
-                        batch_results = TestFactory.run(
-                            batch,
-                            v,
-                            is_default=self.is_default,
-                            raw_data=self.data,
-                            **self._config.get("model_parameters", {}),
-                        )
-
-                        checkpoint_manager.save_checkpoint(
-                            check_point_extension=f"batch_{i}",
-                            results_so_far=batch_results,
-                        )
-                        self._generated_results[k].extend(batch_results)
-                        checkpoint_manager.update_status(batch_number=i)
-
-            else:
-                for k, v in self.model.items():
-                    self._generated_results[k] = TestFactory.run(
-                        self._testcases[k],
-                        v,
-                        is_default=self.is_default,
-                        raw_data=self.data,
-                        **self._config.get("model_parameters", {}),
-                    )
-            if self._checkpoints is not None:
-                for k, v in self.model.items():
-                    self._generated_results[k].extend(self._checkpoints[k])
-
-        # clear cache
-        if isinstance(self.model, dict):
-            for k, v in self.model.items():
-                v.predict.cache_clear()
-        else:
-            self.model.predict.cache_clear()
+            self.is_multi_dataset = False
+            self._generated_results = self.__single_dataset_run(
+                self._testcases, self.data, checkpoint, save_checkpoints_dir, batch_size
+            )
         return self
+
 
     def model_response(self, category: str = None):
         """
@@ -1329,11 +1161,11 @@ class Harness:
 
     def __multi_datasets_loading(self, task, hub, model, data):
         """Loads the data from the given source."""
-        loaded_data = []
+        loaded_data = {}
         for dataset in data:
             processed_data = self.__single_dataset_loading(task, hub, model, dataset)
-            # loaded_data[dataset["data_source"]] = processed_data
-            loaded_data.extend(processed_data)
+            dataset_name = dataset.get("data_source")
+            loaded_data[dataset_name] = processed_data
         self.is_multi_dataset = True
         return loaded_data
 
@@ -1364,3 +1196,217 @@ class Harness:
 
         self.is_multi_dataset = False
         return o_data
+
+    # Generate testcases functions
+    def __single_dataset_generate(self, dataset: list):
+
+        testcases = None
+
+        tests = self._config["tests"]
+        m_data = [sample.copy() for sample in dataset]
+
+        if self.task in ["text-classification", "ner"]:
+            if not isinstance(self.model, dict):
+                _ = [
+                    setattr(sample, "expected_results", self.model(sample.original))
+                    for sample in m_data
+                ]
+            else:
+                testcases = {}
+                for k, v in self.model.items():
+                    _ = [
+                        setattr(sample, "expected_results", v(sample.original))
+                        for sample in m_data
+                    ]
+                    (testcases[k]) = TestFactory.transform(
+                        self.task, dataset, tests, m_data=m_data
+                    )
+
+                return self
+
+        elif str(self.task) in ("question-answering", "summarization"):
+            if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
+                if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
+                    tests_to_filter = tests["bias"].keys()
+                    testcases = DataFactory.filter_curated_bias(
+                        tests_to_filter, dataset
+                    )
+                    if len(tests.keys()) > 2:
+                        tests = {k: v for k, v in tests.items() if k != "bias"}
+                        (other_testcases) = TestFactory.transform(
+                            self.task, dataset, tests, m_data=m_data
+                        )
+                        testcases.extend(other_testcases)
+                    return testcases
+                else:
+                    raise ValueError(
+                        Errors.E007.format(data_source=self.__data_dict["data_source"])
+                    )
+            else:
+                testcases = TestFactory.transform(
+                    self.task, dataset, tests, m_data=m_data
+                )
+                return testcases
+
+        elif str(self.task) in ["sensitivity", "sycophancy"]:
+            test_data_sources = {
+                "add_toxic_words": ("wikiDataset"),
+                "add_negation": ("NQ-open", "OpenBookQA"),
+                "sycophancy_math": ("synthetic-math-data"),
+                "sycophancy_nlp": ("synthetic-nlp-data"),
+            }
+
+            category = tests.get(str(self.task).split("-")[0], {})
+            test_name = next(iter(category), None)
+            if test_name in test_data_sources:
+                selected_data_sources = test_data_sources[test_name]
+
+                if self.__data_dict["data_source"] in selected_data_sources:
+                    testcases = TestFactory.transform(
+                        self.task, dataset, tests, m_data=m_data
+                    )
+                    return self
+                else:
+                    raise ValueError(
+                        Errors.E008.format(
+                            test_name=test_name,
+                            data_source=self.__data_dict["data_source"],
+                            selected_data_sources=selected_data_sources,
+                        )
+                    )
+
+            else:
+                raise ValueError(Errors.E009.format(test_name=test_name))
+
+        testcases = TestFactory.transform(
+            self.task, dataset, tests, m_data=m_data
+        )
+        return testcases
+    
+    def __multi_datasets_generate(self, dataset: Dict[str, list]):
+
+        testcases = {}
+        for dataset_name, samples in dataset.items():
+            testcases[dataset_name] = self.__single_dataset_generate(samples)
+        return testcases
+    
+    def __single_dataset_run(self, testcases: list, data, checkpoint: bool = False, save_checkpoints_dir: str = None, batch_size: int = 500):
+        print(f"Running testcases for {testcases[0].dataset_name} and with lenght", len(testcases))
+        if testcases is None:
+            raise RuntimeError(Errors.E010)
+
+        if not isinstance(testcases, dict):
+            if checkpoint:
+                checkpoint_manager = CheckpointManager(
+                    checkpoint_folder=save_checkpoints_dir
+                )
+                if self.batches is None:
+                    self.batches = divide_into_batches(testcases, batch_size)
+                    checkpoint_manager.save_all_batches(self.batches)
+                    self.save(save_checkpoints_dir)
+                    logging.warning(Warnings.W018.format(total_batches=len(self.batches)))
+
+                if self._generated_results is None:
+                    self._generated_results = []
+
+                for i, batch in self.batches.items():
+                    batch_results = TestFactory.run(
+                        batch,
+                        self.model,
+                        is_default=self.is_default,
+                        raw_data=data,
+                        **self._config.get("model_parameters", {}),
+                    )
+
+                    checkpoint_manager.save_checkpoint(
+                        check_point_extension=f"batch_{i}", results_so_far=batch_results
+                    )
+                    self._generated_results.extend(batch_results)
+                    checkpoint_manager.update_status(batch_number=i)
+
+            else:
+                self._generated_results = TestFactory.run(
+                    testcases,
+                    self.model,
+                    is_default=self.is_default,
+                    raw_data=data,
+                    **self._config.get("model_parameters", {}),
+                )
+            if self._checkpoints is not None:
+                self._generated_results.extend(self._checkpoints)
+        else:
+            self._generated_results = {}
+            if checkpoint:
+                if self.batches is None:
+                    self.batches = {}
+                    for k, v in self.model.items():
+                        self.batches[k] = divide_into_batches(
+                            testcases[k], batch_size
+                        )
+                        logging.warning(
+                            Warnings.W019.format(
+                                model_name=k, total_batches=len(self.batches)
+                            )
+                        )
+
+                    for k, v in self.batches.items():
+                        k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
+                        checkpoint_manager = CheckpointManager(
+                            checkpoint_folder=k_checkpoint_dir
+                        )
+                        checkpoint_manager.save_all_batches(v)
+
+                    self.save(save_checkpoints_dir)
+
+                for k, v in self.model.items():
+                    k_checkpoint_dir = os.path.join(save_checkpoints_dir, k)
+                    checkpoint_manager = CheckpointManager(
+                        checkpoint_folder=k_checkpoint_dir
+                    )
+                    self._generated_results[k] = []
+                    for i, batch in self.batches[k].items():
+                        batch_results = TestFactory.run(
+                            batch,
+                            v,
+                            is_default=self.is_default,
+                            raw_data=data,
+                            **self._config.get("model_parameters", {}),
+                        )
+
+                        checkpoint_manager.save_checkpoint(
+                            check_point_extension=f"batch_{i}",
+                            results_so_far=batch_results,
+                        )
+                        self._generated_results[k].extend(batch_results)
+                        checkpoint_manager.update_status(batch_number=i)
+
+            else:
+                for k, v in self.model.items():
+                    self._generated_results[k] = TestFactory.run(
+                        testcases[k],
+                        v,
+                        is_default=self.is_default,
+                        raw_data=data,
+                        **self._config.get("model_parameters", {}),
+                    )
+            if self._checkpoints is not None:
+                for k, v in self.model.items():
+                    self._generated_results[k].extend(self._checkpoints[k])
+
+        # clear cache
+        if isinstance(self.model, dict):
+            for k, v in self.model.items():
+                v.predict.cache_clear()
+        else:
+            self.model.predict.cache_clear()
+        return testcases
+    
+    def __multi_datasets_run(self, testcases: Dict[str, list], checkpoint: bool = False, save_checkpoints_dir: str = None, batch_size: int = 500):
+        generated_results = {}
+        for dataset_name, samples in testcases.items():
+            raw_data = self.data.get(dataset_name)
+            print(f"Running testcases for {dataset_name}")
+            generated_results[dataset_name] = self.__single_dataset_run(samples, raw_data, checkpoint, f"{save_checkpoints_dir}/{dataset_name}", batch_size)
+            if hasattr(self, "batches"):
+                self.batches = None
+        return generated_results
