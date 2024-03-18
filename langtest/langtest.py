@@ -5,7 +5,7 @@ import pickle
 import importlib
 import subprocess
 from collections import defaultdict
-from typing import Dict, Iterable, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 import yaml
@@ -249,7 +249,7 @@ class Harness:
             raise RuntimeError(Errors.E005)
         if self._testcases is not None:
             raise RuntimeError(Errors.E006)
-        
+
         self._testcases = []
 
         if isinstance(self.data, list):
@@ -289,7 +289,6 @@ class Harness:
                 self._testcases, self.data, checkpoint, save_checkpoints_dir, batch_size
             )
         return self
-
 
     def model_response(self, category: str = None):
         """
@@ -1199,7 +1198,6 @@ class Harness:
 
     # Generate testcases functions
     def __single_dataset_generate(self, dataset: list):
-
         testcases = None
 
         tests = self._config["tests"]
@@ -1228,9 +1226,7 @@ class Harness:
             if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
                 if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
                     tests_to_filter = tests["bias"].keys()
-                    testcases = DataFactory.filter_curated_bias(
-                        tests_to_filter, dataset
-                    )
+                    testcases = DataFactory.filter_curated_bias(tests_to_filter, dataset)
                     if len(tests.keys()) > 2:
                         tests = {k: v for k, v in tests.items() if k != "bias"}
                         (other_testcases) = TestFactory.transform(
@@ -1278,20 +1274,27 @@ class Harness:
             else:
                 raise ValueError(Errors.E009.format(test_name=test_name))
 
-        testcases = TestFactory.transform(
-            self.task, dataset, tests, m_data=m_data
-        )
+        testcases = TestFactory.transform(self.task, dataset, tests, m_data=m_data)
         return testcases
-    
-    def __multi_datasets_generate(self, dataset: Dict[str, list]):
 
+    def __multi_datasets_generate(self, dataset: Dict[str, list]):
         testcases = {}
         for dataset_name, samples in dataset.items():
             testcases[dataset_name] = self.__single_dataset_generate(samples)
         return testcases
-    
-    def __single_dataset_run(self, testcases: list, data, checkpoint: bool = False, save_checkpoints_dir: str = None, batch_size: int = 500):
-        print(f"Running testcases for {testcases[0].dataset_name} and with lenght", len(testcases))
+
+    def __single_dataset_run(
+        self,
+        testcases: list,
+        data,
+        checkpoint: bool = False,
+        save_checkpoints_dir: str = None,
+        batch_size: int = 500,
+    ):
+        print(
+            f"Running testcases for {testcases[0].dataset_name} and with lenght",
+            len(testcases),
+        )
         if testcases is None:
             raise RuntimeError(Errors.E010)
 
@@ -1340,9 +1343,7 @@ class Harness:
                 if self.batches is None:
                     self.batches = {}
                     for k, v in self.model.items():
-                        self.batches[k] = divide_into_batches(
-                            testcases[k], batch_size
-                        )
+                        self.batches[k] = divide_into_batches(testcases[k], batch_size)
                         logging.warning(
                             Warnings.W019.format(
                                 model_name=k, total_batches=len(self.batches)
@@ -1400,13 +1401,25 @@ class Harness:
         else:
             self.model.predict.cache_clear()
         return testcases
-    
-    def __multi_datasets_run(self, testcases: Dict[str, list], checkpoint: bool = False, save_checkpoints_dir: str = None, batch_size: int = 500):
+
+    def __multi_datasets_run(
+        self,
+        testcases: Dict[str, list],
+        checkpoint: bool = False,
+        save_checkpoints_dir: str = None,
+        batch_size: int = 500,
+    ):
         generated_results = {}
         for dataset_name, samples in testcases.items():
             raw_data = self.data.get(dataset_name)
             print(f"Running testcases for {dataset_name}")
-            generated_results[dataset_name] = self.__single_dataset_run(samples, raw_data, checkpoint, f"{save_checkpoints_dir}/{dataset_name}", batch_size)
+            generated_results[dataset_name] = self.__single_dataset_run(
+                samples,
+                raw_data,
+                checkpoint,
+                f"{save_checkpoints_dir}/{dataset_name}",
+                batch_size,
+            )
             if hasattr(self, "batches"):
                 self.batches = None
         return generated_results
