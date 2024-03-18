@@ -33,6 +33,7 @@ class BaseSample(BaseModel):
     category: str = None
     state: str = None
     threshold: float = None
+    dataset_name: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -61,6 +62,9 @@ class BaseSample(BaseModel):
 
         if self.test_case is not None:
             result["test_case"] = self.test_case
+
+        if self.dataset_name is not None:
+            result["dataset_name"] = self.dataset_name
 
         if actual_result is not None:
             result.update(
@@ -330,8 +334,6 @@ class MinScoreSample(BaseSample):
     Methods:
         is_pass: Checks if the sample passes based on the minimum score.
     """
-
-    dataset_name: str = None
 
     def __init__(self, **data):
         """Constructor method"""

@@ -29,6 +29,7 @@ from .errors import Warnings, Errors
 EVAL_MODEL = None
 GLOBAL_HUB = None
 HARNESS_CONFIG = None
+GLOBAL_DATASET_CONFIG = None
 
 
 class Harness:
@@ -108,6 +109,10 @@ class Harness:
 
         self.is_default = False
         self.__data_dict = data
+
+        # set dataset config as global
+        global GLOBAL_DATASET_CONFIG
+        GLOBAL_DATASET_CONFIG = data
 
         # loading model and hub
         if isinstance(model, list):

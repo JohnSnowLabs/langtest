@@ -744,6 +744,7 @@ class LLMEval(BaseAccuracy):
 
         from ..langtest import EVAL_MODEL
         from ..langtest import HARNESS_CONFIG as harness_config
+        from ..langtest import GLOBAL_DATASET_CONFIG as dataset_config
 
         model = params.get("model", None)
         hub = params.get("hub", None)
@@ -760,9 +761,26 @@ class LLMEval(BaseAccuracy):
 
         min_score = params["min_score"]
 
+        if isinstance(dataset_config, list):
+            samples = []
+            for dataset in dataset_config:
+                sample = MinScoreSample(
+                    category="accuracy",
+                    test_type=test,
+                    expected_results=MinScoreOutput(min_score=min_score),
+                )
+                dataset_name = dataset.get("data_source")
+                if dataset_name is None:
+                    continue
+                sample.dataset_name = dataset_name
+
+                samples.append(sample)
+            return samples
+
         sample = MinScoreSample(
             category="accuracy",
             test_type=test,
+            dataset_name=dataset_config.get("data_source"),
             expected_results=MinScoreOutput(min_score=min_score),
         )
 
@@ -817,28 +835,16 @@ class LLMEval(BaseAccuracy):
             for dataset, results in results.items():
                 total_samples = len(results)
                 passed_samples = sum(results)
-                accuracy[dataset] = passed_samples / max(total_samples, 1)
-            # total_samples = len(results)
-            # passed_samples = sum(results)
-            # accuracy = passed_samples / max(total_samples, 1)
+                accuracy[dataset.lower()] = passed_samples / max(total_samples, 1)
             return accuracy
 
         # scores
         scores = eval()
-        temp_samples = []
         for sample in sample_list:
-            for dataset, score in scores.items():
-                from copy import deepcopy
-
-                temp_sample = deepcopy(sample)
-                temp_sample.actual_results = MinScoreOutput(min_score=score)
-                temp_sample.state = "done"
-                temp_samples.append(temp_sample)
-                temp_sample.dataset_name = dataset
-
-            # sample.actual_results = MinScoreOutput(min_score=eval())
-            # sample.state = "done"
+            dataset_name = sample.dataset_name.replace("-", "").lower()
+            if dataset_name in scores:
+                sample.actual_results = MinScoreOutput(min_score=scores[dataset_name])
+                sample.state = "done"
             if progress:
                 progress.update(1)
-        return temp_samples
-        # return sample_list
+        return sample_list
