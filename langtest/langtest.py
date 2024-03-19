@@ -716,38 +716,6 @@ class Harness:
             pd.DataFrame:
                 testcases formatted into a pd.DataFrame
         """
-        if isinstance(self._testcases, dict):
-            testcases_df = []
-            for k, v in self._testcases.items():
-                model_testcases_df = pd.DataFrame([x.to_dict() for x in v])
-                if "prompt" in model_testcases_df.columns:
-                    return model_testcases_df.fillna("-")
-
-                elif (
-                    "test_case" in model_testcases_df.columns
-                    and "original_question" in model_testcases_df.columns
-                ):
-                    model_testcases_df["original_question"].update(
-                        model_testcases_df.pop("test_case")
-                    )
-
-                model_testcases_df["model_name"] = k
-                testcases_df.append(model_testcases_df)
-
-            testcases_df = pd.concat(testcases_df).reset_index(drop=True)
-
-        else:
-            testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
-            testcases_df = testcases_df.reset_index(drop=True)
-            if "prompt" in testcases_df.columns:
-                return testcases_df.fillna("-")
-
-            elif (
-                "test_case" in testcases_df.columns
-                and "original_question" in testcases_df.columns
-            ) and self.task != "political":
-                testcases_df["original_question"].update(testcases_df.pop("test_case"))
-
         column_order = [
             "model_name",
             "category",
@@ -782,6 +750,64 @@ class Harness:
             "options",
             "expected_result",
         ]
+
+        if isinstance(self._testcases, dict) and not self.is_multi_dataset:
+            testcases_df = []
+            for k, v in self._testcases.items():
+                model_testcases_df = pd.DataFrame([x.to_dict() for x in v])
+                if "prompt" in model_testcases_df.columns:
+                    return model_testcases_df.fillna("-")
+
+                elif (
+                    "test_case" in model_testcases_df.columns
+                    and "original_question" in model_testcases_df.columns
+                ):
+                    model_testcases_df["original_question"].update(
+                        model_testcases_df.pop("test_case")
+                    )
+
+                model_testcases_df["model_name"] = k
+                testcases_df.append(model_testcases_df)
+
+            testcases_df = pd.concat(testcases_df).reset_index(drop=True)
+
+        elif self.is_multi_dataset:
+            testcases_df = pd.DataFrame(
+                [
+                    {**x.to_dict(), "dataset_name": dataset_name}
+                    for dataset_name, samples in self._testcases.items()
+                    for x in samples
+                ]
+            )
+            testcases_df = testcases_df.reset_index(drop=True)
+            if "prompt" in testcases_df.columns:
+                return testcases_df.fillna("-")
+
+            elif (
+                "test_case" in testcases_df.columns
+                and "original_question" in testcases_df.columns
+            ) and self.task != "political":
+                testcases_df["original_question"].update(testcases_df.pop("test_case"))
+
+            if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
+                column_order.insert(2, "dataset_name")
+            columns = [c for c in column_order if c in testcases_df.columns]
+            testcases_df = testcases_df[columns]
+
+            return testcases_df.fillna("-")
+
+        else:
+            testcases_df = pd.DataFrame([x.to_dict() for x in self._testcases])
+            testcases_df = testcases_df.reset_index(drop=True)
+            if "prompt" in testcases_df.columns:
+                return testcases_df.fillna("-")
+
+            elif (
+                "test_case" in testcases_df.columns
+                and "original_question" in testcases_df.columns
+            ) and self.task != "political":
+                testcases_df["original_question"].update(testcases_df.pop("test_case"))
+
         if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
             column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in testcases_df.columns]
@@ -1280,7 +1306,9 @@ class Harness:
     def __multi_datasets_generate(self, dataset: Dict[str, list]):
         testcases = {}
         for dataset_name, samples in dataset.items():
+            print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
             testcases[dataset_name] = self.__single_dataset_generate(samples)
+            print(f"{'':-^80}\n")
         return testcases
 
     def __single_dataset_run(
@@ -1291,6 +1319,7 @@ class Harness:
         save_checkpoints_dir: str = None,
         batch_size: int = 500,
     ):
+        generated_results = None
         if testcases is None:
             raise RuntimeError(Errors.E010)
 
@@ -1303,10 +1332,10 @@ class Harness:
                     self.batches = divide_into_batches(testcases, batch_size)
                     checkpoint_manager.save_all_batches(self.batches)
                     self.save(save_checkpoints_dir)
-                    logging.warning(Warnings.W018.format(total_batches=len(self.batches)))
+                    print(Warnings.W018.format(total_batches=len(self.batches)))
 
-                if self._generated_results is None:
-                    self._generated_results = []
+                if generated_results is None:
+                    generated_results = []
 
                 for i, batch in self.batches.items():
                     batch_results = TestFactory.run(
@@ -1320,11 +1349,11 @@ class Harness:
                     checkpoint_manager.save_checkpoint(
                         check_point_extension=f"batch_{i}", results_so_far=batch_results
                     )
-                    self._generated_results.extend(batch_results)
+                    generated_results.extend(batch_results)
                     checkpoint_manager.update_status(batch_number=i)
 
             else:
-                self._generated_results = TestFactory.run(
+                generated_results = TestFactory.run(
                     testcases,
                     self.model,
                     is_default=self.is_default,
@@ -1332,15 +1361,15 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
             if self._checkpoints is not None:
-                self._generated_results.extend(self._checkpoints)
+                generated_results.extend(self._checkpoints)
         else:
-            self._generated_results = {}
+            generated_results = {}
             if checkpoint:
                 if self.batches is None:
                     self.batches = {}
                     for k, v in self.model.items():
                         self.batches[k] = divide_into_batches(testcases[k], batch_size)
-                        logging.warning(
+                        print(
                             Warnings.W019.format(
                                 model_name=k, total_batches=len(self.batches)
                             )
@@ -1360,7 +1389,7 @@ class Harness:
                     checkpoint_manager = CheckpointManager(
                         checkpoint_folder=k_checkpoint_dir
                     )
-                    self._generated_results[k] = []
+                    generated_results[k] = []
                     for i, batch in self.batches[k].items():
                         batch_results = TestFactory.run(
                             batch,
@@ -1374,12 +1403,12 @@ class Harness:
                             check_point_extension=f"batch_{i}",
                             results_so_far=batch_results,
                         )
-                        self._generated_results[k].extend(batch_results)
+                        generated_results[k].extend(batch_results)
                         checkpoint_manager.update_status(batch_number=i)
 
             else:
                 for k, v in self.model.items():
-                    self._generated_results[k] = TestFactory.run(
+                    generated_results[k] = TestFactory.run(
                         testcases[k],
                         v,
                         is_default=self.is_default,
@@ -1388,7 +1417,7 @@ class Harness:
                     )
             if self._checkpoints is not None:
                 for k, v in self.model.items():
-                    self._generated_results[k].extend(self._checkpoints[k])
+                    generated_results[k].extend(self._checkpoints[k])
 
         # clear cache
         if isinstance(self.model, dict):
@@ -1396,7 +1425,7 @@ class Harness:
                 v.predict.cache_clear()
         else:
             self.model.predict.cache_clear()
-        return testcases
+        return generated_results
 
     def __multi_datasets_run(
         self,
@@ -1413,7 +1442,7 @@ class Harness:
 
         for dataset_name, samples in testcases.items():
             raw_data = self.data.get(dataset_name)
-            print(f"Running testcases for {dataset_name}")
+            print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
             generated_results[dataset_name] = self.__single_dataset_run(
                 samples,
                 raw_data,
@@ -1423,4 +1452,5 @@ class Harness:
             )
             if hasattr(self, "batches"):
                 self.batches = None
+            print(f"{'':-^80}\n")
         return generated_results
