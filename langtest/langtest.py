@@ -1406,6 +1406,11 @@ class Harness:
         batch_size: int = 500,
     ):
         generated_results = {}
+
+        # clear batches info if it exists
+        if hasattr(self, "batches"):
+            self.batches = None
+
         for dataset_name, samples in testcases.items():
             raw_data = self.data.get(dataset_name)
             print(f"Running testcases for {dataset_name}")
