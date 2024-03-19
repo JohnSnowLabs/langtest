@@ -1291,10 +1291,6 @@ class Harness:
         save_checkpoints_dir: str = None,
         batch_size: int = 500,
     ):
-        print(
-            f"Running testcases for {testcases[0].dataset_name} and with lenght",
-            len(testcases),
-        )
         if testcases is None:
             raise RuntimeError(Errors.E010)
 
