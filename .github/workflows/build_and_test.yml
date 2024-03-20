@@ -61,4 +61,5 @@ jobs:
       - name: Test with pytest
         run: |
           poetry run task force-cpu-torch
+          poetry run task extra-lib
           poetry run task test

@@ -7,6 +7,7 @@ from langtest.datahandler.datasource import (
     HuggingFaceDataset,
     JSONLDataset,
     SynteticDataset,
+    PandasDataset,
 )
 from langtest.tasks import TaskManager
 from langtest.utils.custom_types.output import (
@@ -443,3 +444,56 @@ class TestSynteticData:
         assert len(df) == len(sample)
         is_file_exist = pl.Path("/tmp/exported_sample.csv").is_file()
         assert is_file_exist
+
+
+class TestPandasDataset:
+
+    """Test cases for PandasDataset"""
+
+    def test_load_data_pickle(self):
+        """Test the load_raw_data and load_data method"""
+
+        dataset = PandasDataset(
+            file_path="tests/fixtures/boolq_test.pkl",
+            task=TaskManager("question-answering"),
+        )
+        raw_data = dataset.load_raw_data()
+        assert len(raw_data) > 0
+        assert isinstance(raw_data, list)
+
+        load_data = dataset.load_data()
+        assert len(load_data) > 0
+        assert isinstance(load_data, list)
+
+    def test_load_data_excel(self):
+        """Test the load_raw_data and load_data method"""
+
+        dataset = PandasDataset(
+            file_path="tests/fixtures/boolq_test.xlsx",
+            task=TaskManager("question-answering"),
+        )
+        raw_data = dataset.load_raw_data()
+        assert len(raw_data) > 0
+        assert isinstance(raw_data, list)
+
+        load_data = dataset.load_data()
+        assert len(load_data) > 0
+        assert isinstance(load_data, list)
+
+    def test_load_data_hdf(self):
+        """Test the load_raw_data and load_data method"""
+
+        gen_hdf = pd.read_excel("tests/fixtures/boolq_test.xlsx")
+        gen_hdf.to_hdf("/tmp/boolq_test.h5", key="df", mode="w")
+
+        dataset = PandasDataset(
+            file_path="/tmp/boolq_test.h5",
+            task=TaskManager("question-answering"),
+        )
+        raw_data = dataset.load_raw_data()
+        assert len(raw_data) > 0
+        assert isinstance(raw_data, list)
+
+        load_data = dataset.load_data()
+        assert len(load_data) > 0
+        assert isinstance(load_data, list)
