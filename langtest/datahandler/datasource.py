@@ -1783,5 +1783,6 @@ class PandasDataset(BaseDataset):
             "xls": "excel",
             "pkl": "pickle",
             "h5": "hdf",
+            "hdf5": "hdf",
         }
         return ext_map
