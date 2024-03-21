@@ -524,32 +524,6 @@ class Harness:
             pd.DataFrame: Generated dataframe.
         """
 
-        if self._generated_results is None:
-            logging.warning(Warnings.W000)
-            return
-
-        if isinstance(self._generated_results, dict):
-            generated_results_df = []
-            for k, v in self._generated_results.items():
-                model_generated_results_df = pd.DataFrame.from_dict(
-                    [x.to_dict() for x in v]
-                )
-                if (
-                    "test_case" in model_generated_results_df.columns
-                    and "original_question" in model_generated_results_df.columns
-                ):
-                    model_generated_results_df["original_question"].update(
-                        model_generated_results_df.pop("test_case")
-                    )
-                model_generated_results_df["model_name"] = k
-                generated_results_df.append(model_generated_results_df)
-            generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
-
-        else:
-            generated_results_df = pd.DataFrame.from_dict(
-                [x.to_dict() for x in self._generated_results]
-            )
-
         column_order = [
             "model_name",
             "category",
@@ -605,6 +579,59 @@ class Harness:
             "perturbed_result",
             "pass",
         ]
+
+        if self._generated_results is None:
+            logging.warning(Warnings.W000)
+            return
+
+        if isinstance(self._generated_results, dict) and not self.is_multi_dataset:
+            generated_results_df = []
+            for k, v in self._generated_results.items():
+                model_generated_results_df = pd.DataFrame.from_dict(
+                    [x.to_dict() for x in v]
+                )
+                if (
+                    "test_case" in model_generated_results_df.columns
+                    and "original_question" in model_generated_results_df.columns
+                ):
+                    model_generated_results_df["original_question"].update(
+                        model_generated_results_df.pop("test_case")
+                    )
+                model_generated_results_df["model_name"] = k
+                generated_results_df.append(model_generated_results_df)
+            generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
+
+        elif self.is_multi_dataset:
+            generated_results_df = pd.DataFrame(
+                [
+                    {**x.to_dict(), "dataset_name": dataset_name}
+                    for dataset_name, samples in self._generated_results.items()
+                    for x in samples
+                ]
+            )
+            generated_results_df = generated_results_df.reset_index(drop=True)
+            if "prompt" in generated_results_df.columns:
+                return generated_results_df.fillna("-")
+
+            elif (
+                "test_case" in generated_results_df.columns
+                and "original_question" in generated_results_df.columns
+            ):
+                generated_results_df["original_question"].update(
+                    generated_results_df.pop("test_case")
+                )
+
+            if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
+                column_order.insert(2, "dataset_name")
+            columns = [c for c in column_order if c in generated_results_df.columns]
+            generated_results_df = generated_results_df[columns]
+
+            return generated_results_df.fillna("-")
+        else:
+            generated_results_df = pd.DataFrame.from_dict(
+                [x.to_dict() for x in self._generated_results]
+            )
+
         if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
             column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in generated_results_df.columns]
@@ -1311,6 +1338,7 @@ class Harness:
             print(f"{'':-^80}\n")
         return testcases
 
+    # Run testcases functions
     def __single_dataset_run(
         self,
         testcases: list,
