@@ -794,6 +794,11 @@ class LLMEval(BaseAccuracy):
 
         eval_model = LLMEval.eval_model
 
+        if not eval_model:
+            from ..langtest import EVAL_MODEL
+
+            eval_model = EVAL_MODEL
+
         def eval():
             results = []
             for true_list, pred, sample in zip(y_true, y_pred, X_test):

@@ -918,14 +918,25 @@ class Harness:
             if os.path.exists(os.path.join(save_dir, "test_cases.pkl")):
                 with open(os.path.join(save_dir, "test_cases.pkl"), "rb") as reader:
                     testcases = pickle.load(reader)
-                for sample in testcases:
-                    sample.expected_results = None
+                if harness.is_multi_dataset:
+                    for _, samples in testcases.items():
+                        for sample in samples:
+                            if sample.category is not None and sample.category not in [
+                                "accuracy",
+                                "fairness",
+                                "representation",
+                            ]:
+                                sample.expected_results = None
+                else:
+                    for sample in testcases:
+                        sample.expected_results = None
                 harness._testcases = testcases
             else:
                 logging.warning(Warnings.W013.format(save_dir=save_dir))
                 harness.generate()
         else:
             harness.generate()
+
         if load_model_response and os.path.exists(
             os.path.join(save_dir, "generated_results.pkl")
         ):
@@ -1243,6 +1254,10 @@ class Harness:
         if isinstance(data, dict):
             if isinstance(data.get("data_source"), list):
                 o_data = data.get("data_source")
+            elif isinstance(data.get("data_source"), dict):
+                o_data = data.get("data_source")
+                self.is_multi_dataset = True
+                return o_data
             else:
                 o_data = DataFactory(data, task=self.task).load()
 
