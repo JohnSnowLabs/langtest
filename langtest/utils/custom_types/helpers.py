@@ -547,3 +547,46 @@ def prepare_model_response(data):
             sample.expected_results = sample.expected_results.predictions
 
     return data
+
+
+def create_dirs(default_location: str, *args, **kwargs) -> dict:
+    """Make directories."""
+    import os
+
+    required_dirs = [
+        default_location,
+        "leaderboard",
+        "reports",
+        "testcases",
+        "logs",
+        "models",
+    ]
+    required_dirs.extend(args)
+    required_dirs.extend(kwargs.values())
+
+    for dir in required_dirs:
+        if not os.path.exists(os.path.join(default_location, dir)):
+            os.makedirs(os.path.join(default_location, dir))
+
+    return {dir: os.path.join(default_location, dir) for dir in required_dirs}
+
+
+def create_folder(default_location: str, data_dict: dict) -> str:
+    """Create the folder based on the data_dict."""
+    import base64
+    import json
+    import os
+
+    # dict to json string
+    json_dump = json.dumps(data_dict)
+
+    # encrypt json string using base64 for folder name
+    encoded = base64.urlsafe_b64encode(json_dump.encode("utf-8")).decode()
+
+    folder_name = os.path.join(default_location, encoded)
+
+    if os.path.exists(folder_name):
+        return folder_name, True
+
+    os.makedirs(folder_name, exist_ok=True)
+    return folder_name, False
