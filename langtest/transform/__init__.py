@@ -1024,9 +1024,9 @@ class AccuracyTestFactory(ITests):
 
         tasks = []
 
-        from ..utils.custom_types.helpers import prepare_model_response
+        from ..utils.custom_types.helpers import ModelResponse
 
-        cls.model_result = prepare_model_response(raw_data_copy)
+        cls.model_result = ModelResponse().prepare_model_response(raw_data_copy)
 
         for test_name, samples in sample_list.items():
             tasks.append(

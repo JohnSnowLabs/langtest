@@ -23,6 +23,7 @@ from .utils import report_utils as report, config_utils
 
 from .transform.utils import RepresentationOperation
 from langtest.utils.lib_manager import try_import_lib
+from langtest.utils.custom_types.helpers import TestResultManager
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
 from .errors import Warnings, Errors
 
@@ -109,6 +110,9 @@ class Harness:
 
         self.is_default = False
         self.__data_dict = data
+
+        # reset classes to default state
+        self.__reset_defaults()
 
         # set dataset config as global
         global GLOBAL_DATASET_CONFIG
@@ -334,6 +338,7 @@ class Harness:
 
             column_order = [
                 "gender",
+                "dataset_name",
                 "original",
                 "original_question",
                 "original_context",
@@ -1496,4 +1501,10 @@ class Harness:
             if hasattr(self, "batches"):
                 self.batches = None
             print(f"{'':-^80}\n")
+
         return generated_results
+
+    def __reset_defaults(self):
+        """Reset the default values."""
+        model_response = TestResultManager()
+        model_response.clear_data()

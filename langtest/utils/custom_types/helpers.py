@@ -536,6 +536,7 @@ class HashableDict(dict):
         return hash(frozenset(items))
 
 
+# decrepated
 def prepare_model_response(data):
     if data[0].task == "text-classification":
         for sample in data:
@@ -546,4 +547,45 @@ def prepare_model_response(data):
             sample.actual_results = sample.actual_results.predictions
             sample.expected_results = sample.expected_results.predictions
 
-    return data
+
+class TestResultManager:
+    _instance = None
+    _data: list = []
+
+    @staticmethod
+    def get_instance():
+        if TestResultManager._instance is None:
+            TestResultManager()
+        return TestResultManager._instance
+
+    def __new__(cls):
+        if TestResultManager._instance is None:
+            TestResultManager._instance = super().__new__(cls)
+            return TestResultManager._instance
+        else:
+            return TestResultManager._instance
+
+    def prepare_model_response(self, data):
+        """check the model response"""
+
+        if data[0].task == "text-classification":
+            for sample in data:
+                sample.actual_results = sample.actual_results.predictions[0]
+                sample.expected_results = sample.expected_results.predictions[0]
+        elif data[0].task == "ner":
+            for sample in data:
+                sample.actual_results = sample.actual_results.predictions
+                sample.expected_results = sample.expected_results.predictions
+
+        if isinstance(data, list):
+            self._data.extend(data)
+        else:
+            self._data.append(data)
+
+        return self._data
+
+    def clear_instance(self):
+        TestResultManager._instance = None
+
+    def clear_data(self):
+        self._data = []
