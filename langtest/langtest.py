@@ -338,7 +338,6 @@ class Harness:
 
             column_order = [
                 "gender",
-                "dataset_name",
                 "original",
                 "original_question",
                 "original_context",
@@ -346,6 +345,10 @@ class Harness:
                 "expected_results",
                 "actual_results",
             ]
+
+            # add the dataset_name column if the data is multi-dataset
+            if self.is_multi_dataset:
+                column_order.insert(0, "dataset_name")
 
             columns = [c for c in column_order if c in data_df.columns]
             data_df = data_df[columns]
