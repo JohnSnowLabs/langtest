@@ -93,10 +93,16 @@ class CheckpointManager:
             batch_number (int): The batch number to update the status for.
         """
 
+        check_status = os.path.join(
+            self.complete_folder, f"checkpoint_batch_{batch_number}.pkl"
+        )
+
         checkpoint_path = os.path.join(
             self.remaining_folder, f"checkpoint_batch_{batch_number}.pkl"
         )
-        os.remove(checkpoint_path)
+
+        if os.path.exists(check_status) and os.path.exists(checkpoint_path):
+            os.remove(checkpoint_path)
 
     def load_batches(self) -> dict:
         """Load all remaining batches.
@@ -124,7 +130,7 @@ class CheckpointManager:
         return batches
 
 
-def divide_into_batches(data: str, batch_size: int) -> dict:
+def divide_into_batches(data: list, batch_size: int) -> dict:
     """
     Divide a list into batches of a specified size.
 
