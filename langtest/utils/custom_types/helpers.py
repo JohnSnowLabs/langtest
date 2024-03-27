@@ -558,6 +558,7 @@ def create_dirs(default_location: str, *args, **kwargs) -> dict:
         "leaderboard",
         "reports",
         "testcases",
+        "checkpoints",
         "logs",
         "models",
     ]
