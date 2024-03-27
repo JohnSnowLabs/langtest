@@ -100,7 +100,7 @@ class CheckpointManager:
         checkpoint_path = os.path.join(
             self.remaining_folder, f"checkpoint_batch_{batch_number}.pkl"
         )
-        
+
         if os.path.exists(check_status) and os.path.exists(checkpoint_path):
             os.remove(checkpoint_path)
 
