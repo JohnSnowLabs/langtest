@@ -386,7 +386,25 @@ class Harness:
             data={"data_source": data},
             config=os.path.join(save_checkpoints_dir, "config.yaml"),
         )
-        if isinstance(model, dict):
+
+        is_multi_dataset = isinstance(data, dict)
+
+        if is_multi_dataset:
+            harness._testcases = {}
+            harness._checkpoints = {}
+            harness.batches = {}
+            for dataset_name, samples in data.items():
+                dataset_checkpoint_dir = os.path.join(save_checkpoints_dir, dataset_name)
+                checkpoint_manager = CheckpointManager(
+                    checkpoint_folder=dataset_checkpoint_dir
+                )
+                harness._checkpoints[dataset_name] = checkpoint_manager.load_checkpoint()
+                harness._testcases[
+                    dataset_name
+                ] = checkpoint_manager.load_remaining_batch()
+                harness.batches[dataset_name] = checkpoint_manager.load_batches()
+
+        elif isinstance(model, dict):
             checkpoint_manager = CheckpointManager(checkpoint_folder=save_checkpoints_dir)
             harness._checkpoints = checkpoint_manager.load_checkpoint()
             harness._testcases = checkpoint_manager.load_remaining_batch()
@@ -1369,6 +1387,7 @@ class Harness:
         checkpoint: bool = False,
         save_checkpoints_dir: str = None,
         batch_size: int = 500,
+        dataset_name: str = None,
     ):
         generated_results = None
         if testcases is None:
@@ -1376,19 +1395,50 @@ class Harness:
 
         if not isinstance(testcases, dict):
             if checkpoint:
-                checkpoint_manager = CheckpointManager(
-                    checkpoint_folder=save_checkpoints_dir
-                )
                 if self.batches is None:
-                    self.batches = divide_into_batches(testcases, batch_size)
-                    checkpoint_manager.save_all_batches(self.batches)
+                    if self.is_multi_dataset:
+                        self.batches = defaultdict(dict)
+                        for dataset, samples in self._testcases.items():
+                            checkpoint_manager = CheckpointManager(
+                                checkpoint_folder=f"{save_checkpoints_dir}/{dataset}"
+                            )
+                            self.batches[dataset] = divide_into_batches(
+                                samples, batch_size
+                            )
+                            checkpoint_manager.save_all_batches(self.batches[dataset])
+                            logging.warning(
+                                Warnings.W022.format(
+                                    name=dataset, total_batches=len(self.batches[dataset])
+                                )
+                            )
+                    else:
+                        checkpoint_manager = CheckpointManager(
+                            checkpoint_folder=save_checkpoints_dir
+                        )
+                        self.batches = divide_into_batches(testcases, batch_size)
+                        checkpoint_manager.save_all_batches(self.batches)
+                        logging.warning(
+                            Warnings.W018.format(total_batches=len(self.batches))
+                        )
+
                     self.save(save_checkpoints_dir)
-                    print(Warnings.W018.format(total_batches=len(self.batches)))
 
                 if generated_results is None:
                     generated_results = []
 
-                for i, batch in self.batches.items():
+                if self.is_multi_dataset:
+                    # print(dataset_name)
+                    batches = self.batches[dataset_name]
+                    checkpoint_manager = CheckpointManager(
+                        checkpoint_folder=f"{save_checkpoints_dir}/{dataset_name}"
+                    )
+                else:
+                    batches = self.batches
+                    checkpoint_manager = CheckpointManager(
+                        checkpoint_folder=save_checkpoints_dir
+                    )
+
+                for i, batch in batches.items():
                     batch_results = TestFactory.run(
                         batch,
                         self.model,
@@ -1412,8 +1462,18 @@ class Harness:
                     **self._config.get("model_parameters", {}),
                 )
             if self._checkpoints is not None:
-                generated_results.extend(self._checkpoints)
+                if self.is_multi_dataset and isinstance(self._checkpoints, dict):
+                    if self._generated_results is None:
+                        self._generated_results = defaultdict(list)
+                    for k, v in self._checkpoints.items():
+                        if k not in self._generated_results:
+                            self._generated_results[k] = []
+                        self._generated_results[k].extend(v)
+                    self._checkpoints = None
+                else:
+                    generated_results.extend(self._checkpoints)
         else:
+            # multi-model run
             generated_results = {}
             if checkpoint:
                 if self.batches is None:
@@ -1487,24 +1547,28 @@ class Harness:
     ):
         generated_results = {}
 
-        # clear batches info if it exists
-        if hasattr(self, "batches"):
-            self.batches = None
-
+        # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
             raw_data = self.data.get(dataset_name)
             print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
-            generated_results[dataset_name] = self.__single_dataset_run(
-                samples,
-                raw_data,
-                checkpoint,
-                f"{save_checkpoints_dir}/{dataset_name}",
-                batch_size,
-            )
-            if hasattr(self, "batches"):
-                self.batches = None
+            if len(samples) == 0:
+                print(Warnings.W023.format(name=dataset_name))
+            else:
+                generated_results[dataset_name] = self.__single_dataset_run(
+                    samples,
+                    raw_data,
+                    checkpoint,
+                    f"{save_checkpoints_dir}",
+                    batch_size,
+                    dataset_name,
+                )
+
             print(f"{'':-^80}\n")
 
+        if self.is_multi_dataset and self._generated_results is None:
+            self._generated_results = self._checkpoints
+            self._checkpoints = None
+            return self._generated_results
         return generated_results
 
     def __reset_defaults(self):
