@@ -7,21 +7,25 @@ from langtest.config import cli
 from langtest import Harness
 from langtest.utils.custom_types.helpers import create_dirs, create_folder
 
-STORE_PATH = os.path.expanduser("~/.langtest/")
 
-store_dir = create_dirs(STORE_PATH)
-
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 @cli.command("eval")
 @click.option("--harness-config", "-c", type=str, required=True)
-@click.option("--output", "-o", type=str, required=False, default="./langtest")
-def init_leaderboard(harness_config, output):
+@click.option(
+    "--output-dir",
+    "-o",
+    type=str,
+    required=False,
+    default=os.path.expanduser("~/.langtest/"),
+)
+def init_leaderboard(harness_config, output_dir):
     """Initialize a new langtest leaderboard."""
     logger.info("Initializing new langtest leaderboard...")
+
+    store_dir = create_dirs(get_store_path(output_dir))
 
     model, task, config, data = get_parameters(harness_config)
 
@@ -31,11 +35,10 @@ def init_leaderboard(harness_config, output):
     if isinstance(data, list):
         logger.warning("Handling multiple datasets is currently not supported.")
     else:
-        testcases_folder_key = generate_folder_key(model, task, data, "testcases")
+        testcases_folder_key, report_folder_key = generate_folder_key(model, task, data)
         testcases_folder_path, is_exists_testcases = create_folder(
             store_dir["testcases"], testcases_folder_key
         )
-        report_folder_key = generate_folder_key(model, task, data, "report")
         report_folder_path, is_exists_report = create_folder(
             store_dir["reports"], report_folder_key
         )
@@ -69,7 +72,6 @@ def init_leaderboard(harness_config, output):
 def get_parameters(params_file: str):
     """Get the parameters from the configuration file."""
     # Check file extension
-    global params
     if params_file.endswith(".yml"):
         loader = yaml.safe_load
     elif params_file.endswith(".json"):
@@ -100,11 +102,6 @@ def load_old_testcases(
     task, model, data: dict, testcases_folder_path: str, config=None, *args, **kwargs
 ) -> Harness:
     """Generate the testcases."""
-    global store_dir
-    if "testcases" not in store_dir:
-        global STORE_PATH
-        store_dir = create_dirs(STORE_PATH)
-
     old_config_path = os.path.join(testcases_folder_path, "config.yaml")
     try:
         with open(old_config_path, "r", encoding="utf-8") as file:
@@ -144,7 +141,7 @@ def generate_store_testcases(
         config=config,
     )
     # Generate the testcases
-    harness.data = harness.data
+    harness.data = harness.data[:10]
     harness.generate(seed=42)
 
     # Save the testcases
@@ -180,7 +177,7 @@ def run_store_checkpoints(
     return harness
 
 
-def generate_folder_key(model, task, data, type: str):
+def generate_folder_key(model, task, data):
     """Generate report folder key."""
 
     model_str = "-".join(model.values())
@@ -189,7 +186,8 @@ def generate_folder_key(model, task, data, type: str):
     )
     task_str = "-".join(task.values()) if isinstance(task, dict) else task
 
-    if type == "report":
-        return f"{model_str}-{task_str}-{data_str}"
-    elif type == "testcases":
-        return f"{task_str}-{data_str}"
+    return f"{task_str}-{data_str}", f"{model_str}-{task_str}-{data_str}"
+
+
+def get_store_path(output_dir):
+    return os.path.expanduser(output_dir)
