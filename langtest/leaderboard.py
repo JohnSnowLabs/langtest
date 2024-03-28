@@ -3,7 +3,9 @@ import click
 import yaml
 import json
 import logging
+import sys
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from langtest.config import cli
 from langtest import Harness
@@ -12,6 +14,18 @@ from langtest.utils.custom_types.helpers import create_dirs
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+desired_order = [
+    "timestamp",
+    "parms_dir",
+    "model",
+    "hub",
+    "data_source",
+    "split",
+    "subset",
+    "task",
+    "category",
+]
 
 
 @cli.command("eval")
@@ -83,7 +97,7 @@ def init_leaderboard(harness_config_path, output_dir):
                     "hub": "lm-studio",
                 }
             ),
-            task=task,
+            task=task if type(task) == dict else {"task": task},
             data=data,
             save_dir=store_dir["leaderboard"],
             parms_dir=os.path.join(
@@ -177,7 +191,6 @@ def generate_store_testcases(
         config=config,
     )
     # Generate the testcases
-    harness.data = harness.data[:10]
     harness.generate(seed=42)
 
     # Save the testcases
@@ -231,7 +244,7 @@ def generate_folder_key(model, task, data, config):
     test_categories = [category for category in config["tests"] if category != "defaults"]
     test_categories_str = "+".join(test_categories)
 
-    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3]
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     model_unique_key = (
         f"{model_str}&{task_str}&{data_str}&{test_categories_str}&{timestamp}"
@@ -257,57 +270,6 @@ def create_folder(default_location: str, folder_name: str) -> str:
     return folder_dir, False
 
 
-def create_leaderboard(
-    report, generated_results, model, task, data, save_dir, parms_dir, timestamp
-):
-    # Define a dictionary to map category to score key
-    category_score_mapping = "accuracy" "robustness"
-
-    test_category = report["category"].unique().tolist()
-
-    for category in test_category:
-        if category in category_score_mapping:
-            # Calculate the score based on category
-            if category == "accuracy":
-                score = generated_results[generated_results["category"] == "accuracy"][
-                    "actual_result"
-                ].mean()
-            elif category == "robustness":
-                robustness_scores = (
-                    report[report["category"] == "robustness"]["pass_rate"]
-                    .str.rstrip("%")
-                    .astype(float)
-                )
-                score = robustness_scores.mean()
-
-            # Save the leaderboard
-            leaderboard_data = {
-                "timestamp": timestamp,
-                "model": model["model"],
-                "hub": model["hub"],
-                "task": task,
-                "+".join(
-                    [
-                        data[key]
-                        for key in ["data_source", "subset", "split"]
-                        if key in data
-                    ]
-                ): score,
-                "parms_dir": parms_dir,
-            }
-
-            leaderboard_file = os.path.join(save_dir, f"{category}-leaderboard.csv")
-            print(leaderboard_file)
-            if not os.path.exists(leaderboard_file):
-                pd.DataFrame([leaderboard_data]).to_csv(leaderboard_file, index=False)
-            else:
-                df = pd.read_csv(leaderboard_file)
-                df = pd.concat([df, pd.DataFrame([leaderboard_data])], ignore_index=True)
-                df.to_csv(leaderboard_file, index=False)
-
-            logger.info(f"{category.capitalize()} Leaderboard File: {leaderboard_file}")
-
-
 def get_lm_studio_model_name(endpoint: str):
     import requests
 
@@ -315,3 +277,89 @@ def get_lm_studio_model_name(endpoint: str):
     r = requests.get(modified_endpoint)
     data = r.json()["data"][0]
     return os.path.basename(data.get("id"))
+
+
+def create_leaderboard(
+    report: pd.DataFrame,
+    generated_results: pd.DataFrame,
+    model: dict,
+    task: dict,
+    data: dict,
+    save_dir: str,
+    **keywords,
+):
+    # Define a dictionary to map category to score key
+    category_score_mapping = ["accuracy", "robustness"]
+
+    test_categories = report["category"].unique().tolist()
+
+    for category in test_categories:
+        if category in category_score_mapping:
+            if category == "accuracy":
+                filtered_report = generated_results[
+                    generated_results["category"] == category
+                ]
+            elif category == "robustness":
+                filtered_report = report[report["category"] == category]
+                filtered_report["pass_rate"] = (
+                    filtered_report["pass_rate"].str.rstrip("%").astype(float)
+                )
+
+            summary_data = getattr(sys.modules[__name__], f"prepare_{category}_summary")(
+                filtered_report, model, task, data, **keywords
+            )
+
+            update_summary(summary_data, category, save_dir)
+
+
+def prepare_accuracy_summary(
+    report: pd.DataFrame, model: dict, task: dict, data: dict, **keywords
+):
+    if "test_case" in report.columns:
+        report["key"] = [
+            f"{test_type}-{test_case}"
+            for test_type, test_case in zip(report["test_type"], report["test_case"])
+        ]
+    else:
+        report["key"] = report["test_type"].values
+    overall_accuracy = report["actual_result"].mean()
+    result_dict = report.set_index("key")["actual_result"].to_dict()
+    result_dict.update(
+        {**model, **task, **data, **keywords, "overall_accuracy": overall_accuracy}
+    )
+    return result_dict
+
+
+def prepare_robustness_summary(
+    report: pd.DataFrame, model: dict, task: dict, data: dict, **keywords
+):
+    overall_robustness = report["pass_rate"].mean()
+    result_dict = report.set_index("test_type")["pass_rate"].to_dict()
+    result_dict.update(
+        {**model, **task, **data, **keywords, "overall_robustness": overall_robustness}
+    )
+    return result_dict
+
+
+def update_summary(summary_data: dict, category: str, save_dir: str):
+    summary_file = os.path.join(save_dir, f"{category}_summary.csv")
+    if not os.path.exists(summary_file):
+        df = pd.DataFrame([summary_data])
+        df = reorder_columns(df, desired_order)
+        df.to_csv(summary_file, index=False)
+    else:
+        df = pd.read_csv(summary_file)
+        for key in summary_data.keys():
+            if key not in df.columns:
+                df[key] = np.nan
+
+        df = pd.concat([df, pd.DataFrame([summary_data])], ignore_index=True)
+        df = reorder_columns(df, desired_order)
+        df.to_csv(summary_file, index=False)
+
+
+def reorder_columns(df: pd.DataFrame, desired_order: list) -> pd.DataFrame:
+    """Reorders columns in the DataFrame according to the desired order."""
+    return df.reindex(
+        columns=desired_order + [col for col in df.columns if col not in desired_order]
+    )
