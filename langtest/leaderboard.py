@@ -269,9 +269,15 @@ def create_leaderboard(
         if category in category_score_mapping:
             # Calculate the score based on category
             if category == "accuracy":
-                score = generated_results["actual_result"].mean()
+                score = generated_results[generated_results["category"] == "accuracy"][
+                    "actual_result"
+                ].mean()
             elif category == "robustness":
-                robustness_scores = report["pass_rate"].str.rstrip("%").astype(float)
+                robustness_scores = (
+                    report[report["category"] == "robustness"]["pass_rate"]
+                    .str.rstrip("%")
+                    .astype(float)
+                )
                 score = robustness_scores.mean()
 
             # Save the leaderboard
