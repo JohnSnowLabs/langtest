@@ -102,7 +102,7 @@ lint = "pflake8 langtest/"
 format = "black langtest/ tests/"
 check-docstrings = "pydocstyle langtest/ --add-select=D417 --add-ignore=D100,D104,D105,D400,D415 --convention=google"
 is-formatted = "black --check langtest/ tests/"
-force-cpu-torch = "python -m pip install torch==2.1.2 --index-url https://download.pytorch.org/whl/cpu"
+force-cpu-torch = "python -m pip install transformers[torch]"
 extra-lib = "python -m pip install openpyxl tables"
 
 
