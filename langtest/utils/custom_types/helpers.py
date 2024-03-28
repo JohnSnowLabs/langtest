@@ -560,7 +560,6 @@ def create_dirs(default_location: str, *args, **kwargs) -> dict:
         "testcases",
         "checkpoints",
         "logs",
-        "models",
         "reports",
     ]
     required_dirs.extend(args)
