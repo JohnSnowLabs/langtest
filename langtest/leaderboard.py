@@ -24,7 +24,6 @@ desired_order = [
     "split",
     "subset",
     "task",
-    "category",
 ]
 
 
@@ -42,53 +41,68 @@ def init_leaderboard(harness_config_path, output_dir):
     logger.info("Initializing new langtest leaderboard...")
 
     store_dir = create_dirs(get_store_path(output_dir))
-
     model, task, config, data = get_parameters(harness_config_path)
 
-    # prepare the harness parameters
-    if isinstance(model, list):
-        logger.warning("Handling multiple models is currently not supported.")
-    if isinstance(data, list):
-        logger.warning("Handling multiple datasets is currently not supported.")
+    testcases_folder_key, timestamp = generate_folder_key(model, task, data, config)
+    testcases_folder_path, is_exists_testcases = create_folder(
+        store_dir["testcases"], testcases_folder_key
+    )
+    report_folder_path, _ = create_folder(store_dir["reports"], timestamp)
+
+    # Save the parameters file
+    save_file(
+        os.path.join(report_folder_path, os.path.basename(harness_config_path)),
+        harness_config_path,
+    )
+
+    if is_exists_testcases:
+        logger.info(f"Testcases already exist at: {testcases_folder_path}")
+        harness = load_old_testcases(
+            task=task,
+            model=model,
+            data=data,
+            config=config,
+            testcases_folder_path=testcases_folder_path,
+        )
     else:
-        testcases_folder_key, report_folder_key, timestamp = generate_folder_key(
-            model, task, data, config
+        harness = generate_store_testcases(
+            task=task,
+            model=model,
+            data=data,
+            config=config,
+            testcases_folder_path=testcases_folder_path,
         )
-        testcases_folder_path, is_exists_testcases = create_folder(
-            store_dir["testcases"], testcases_folder_key
-        )
-        report_folder_path, _ = create_folder(store_dir["reports"], report_folder_key)
 
-        if is_exists_testcases:
-            logger.info(f"Testcases already exist at: {testcases_folder_path}")
-            harness = load_old_testcases(
-                task=task,
-                model=model,
-                data=data,
-                config=config,
-                testcases_folder_path=testcases_folder_path,
-            )
-        else:
-            harness = generate_store_testcases(
-                task=task,
-                model=model,
-                data=data,
-                config=config,
-                testcases_folder_path=testcases_folder_path,
-            )
+    harness.run()
+    generated_results = harness.generated_results()
+    report = harness.report(
+        format="csv", save_dir=os.path.join(report_folder_path, "report.csv")
+    )
 
-        harness.run()
-        generated_results = harness.generated_results()
-        report = harness.report(
-            format="csv", save_dir=os.path.join(report_folder_path, "report.csv")
-        )
-        logger.info("Generated report:")
-        print(report.to_markdown(index=False))
+    if isinstance(data, list):
+        report.columns = [v for col, v in report.columns]
+        report.reset_index(inplace=True)
 
-        logger.info("updating leaderboard...")
+    logger.info("Generated report:")
+    print(report.to_markdown(index=False))
+
+    logger.info("Updating leaderboard...")
+
+    if isinstance(data, list):
+        report_dict = {name: group for name, group in report.groupby("dataset_name")}
+        generated_results_dict = {
+            name: group for name, group in generated_results.groupby("dataset_name")
+        }
+    else:
+        report_dict = {
+            "": report
+        }  # If data is not a list, group everything under an empty string key
+        generated_results_dict = {"": generated_results}
+
+    for name in report_dict.keys():
         create_leaderboard(
-            report=report,
-            generated_results=generated_results,
+            report=report_dict.get(name, report),
+            generated_results=generated_results_dict.get(name, generated_results),
             model=(
                 model
                 if model["hub"] != "lm-studio"
@@ -97,8 +111,8 @@ def init_leaderboard(harness_config_path, output_dir):
                     "hub": "lm-studio",
                 }
             ),
-            task=task if type(task) == dict else {"task": task},
-            data=data,
+            task=task if isinstance(task, dict) else {"task": task},
+            data={"data_source": name} if name else data,
             save_dir=store_dir["leaderboard"],
             parms_dir=os.path.join(
                 report_folder_path, os.path.basename(harness_config_path)
@@ -230,14 +244,20 @@ def run_store_checkpoints(
 def generate_folder_key(model, task, data, config):
     """Generate report folder key."""
 
-    if model["hub"] == "lm-studio":
-        model_name = get_lm_studio_model_name(model["model"])
-        model_str = f"{model_name}+lm-studio"
+    if isinstance(data, list):
+        data_str = ",".join(
+            "+".join(
+                item.get(key, "")
+                for key in ["data_source", "split", "subset"]
+                if key in item
+            )
+            for item in data
+        )
+
     else:
-        model_str = "+".join([model[key] for key in ["model", "hub"] if key in model])
-    data_str = "+".join(
-        [data[key] for key in ["data_source", "subset", "split"] if key in data]
-    )
+        data_str = "+".join(
+            [data[key] for key in ["data_source", "subset", "split"] if key in data]
+        )
 
     task_str = "+".join(task.values()) if isinstance(task, dict) else task
 
@@ -246,12 +266,9 @@ def generate_folder_key(model, task, data, config):
 
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-    model_unique_key = (
-        f"{model_str}&{task_str}&{data_str}&{test_categories_str}&{timestamp}"
-    )
     data_unique_key = f"{task_str}&{data_str}&{test_categories_str}"
 
-    return data_unique_key, model_unique_key, timestamp
+    return data_unique_key, timestamp
 
 
 def get_store_path(output_dir):
@@ -309,7 +326,8 @@ def create_leaderboard(
                 filtered_report, model, task, data, **keywords
             )
 
-            update_summary(summary_data, category, save_dir)
+            summary_file_path = update_summary(summary_data, category, save_dir)
+            update_leaderboard(summary_file_path, category)
 
 
 def prepare_accuracy_summary(
@@ -325,7 +343,7 @@ def prepare_accuracy_summary(
     overall_accuracy = report["actual_result"].mean()
     result_dict = report.set_index("key")["actual_result"].to_dict()
     result_dict.update(
-        {**model, **task, **data, **keywords, "overall_accuracy": overall_accuracy}
+        {**model, "task": task, **data, **keywords, "overall_accuracy": overall_accuracy}
     )
     return result_dict
 
@@ -336,26 +354,71 @@ def prepare_robustness_summary(
     overall_robustness = report["pass_rate"].mean()
     result_dict = report.set_index("test_type")["pass_rate"].to_dict()
     result_dict.update(
-        {**model, **task, **data, **keywords, "overall_robustness": overall_robustness}
+        {
+            **model,
+            "task": task,
+            **data,
+            **keywords,
+            "overall_robustness": overall_robustness,
+        }
     )
     return result_dict
 
 
-def update_summary(summary_data: dict, category: str, save_dir: str):
-    summary_file = os.path.join(save_dir, f"{category}_summary.csv")
-    if not os.path.exists(summary_file):
+def update_summary(summary_data: dict, category: str, save_dir: str) -> str:
+    summary_file_path = os.path.join(save_dir, f"{category}_summary.csv")
+    if not os.path.exists(summary_file_path):
         df = pd.DataFrame([summary_data])
         df = reorder_columns(df, desired_order)
-        df.to_csv(summary_file, index=False)
+        df.to_csv(summary_file_path, index=False)
     else:
-        df = pd.read_csv(summary_file)
+        df = pd.read_csv(summary_file_path)
         for key in summary_data.keys():
             if key not in df.columns:
                 df[key] = np.nan
 
         df = pd.concat([df, pd.DataFrame([summary_data])], ignore_index=True)
         df = reorder_columns(df, desired_order)
-        df.to_csv(summary_file, index=False)
+        df.to_csv(summary_file_path, index=False)
+
+    return summary_file_path
+
+
+def update_leaderboard(summary_file_path: str, category: str):
+    metric = f"overall_{category}"
+    df = pd.read_csv(summary_file_path)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d-%H-%M-%S")
+    df = df.sort_values(by="timestamp", ascending=False)
+    unique_records = df.drop_duplicates(
+        subset=["model", "hub", "data_source", "split", "subset", "task"]
+    )
+    unique_records.reset_index(drop=True, inplace=True)
+    average_robustness = (
+        unique_records.groupby(
+            [
+                "model",
+                "hub",
+                "data_source",
+                "task",
+            ]
+        )[[metric, "timestamp", "split", "subset"]]
+        .agg(
+            {
+                metric: "mean",
+                "timestamp": list,
+                "split": list,
+                "subset": list,
+            }
+        )
+        .reset_index()
+    )
+    pivot_df = average_robustness.pivot_table(
+        index="model", columns="data_source", values=metric, aggfunc="first"
+    )
+    pivot_df.to_csv(
+        os.path.join(os.path.dirname(summary_file_path), f"{category}_leaderboard.csv"),
+        index=False,
+    )
 
 
 def reorder_columns(df: pd.DataFrame, desired_order: list) -> pd.DataFrame:
@@ -363,3 +426,9 @@ def reorder_columns(df: pd.DataFrame, desired_order: list) -> pd.DataFrame:
     return df.reindex(
         columns=desired_order + [col for col in df.columns if col not in desired_order]
     )
+
+
+def save_file(file_path, data):
+    with open(file_path, "w") as file:
+        file.write(data)
+    return file_path
