@@ -86,6 +86,8 @@ class Warnings(metaclass=ErrorsWithCodes):
     W019 = ("model: {model_name}\nTotal number of batches: {total_batches}")
     W020 = ("You have not specified the task in the model parameter in the config file. Loading the model with task: {task}")
     W021 = ("Model results are not available. Please run `Harness.run()` before calling `.model_response()`.")
+    W022 = ("dataset: {name}\nTotal number of batches: {total_batches}")
+    W023 = ("The {name} dataset had previously been executed.")
 
 
 class Errors(metaclass=ErrorsWithCodes):
