@@ -1567,7 +1567,7 @@ class Harness:
 
             print(f"{'':-^80}\n")
 
-        if self.is_multi_dataset and self._generated_results is None:
+        if self.is_multi_dataset and self._generated_results is None and self._checkpoints is not None:
             self._generated_results = self._checkpoints
             self._checkpoints = None
             return self._generated_results
