@@ -195,6 +195,13 @@ class DataFactory:
             ):
                 self.file_ext = "curated"
                 self._file_path = file_path.get("data_source")
+            elif (
+                self._file_path in ["MedMCQA", "PubMedQA"]
+                and self._custom_label.get("split") is None
+                and self._custom_label.get("subset") is None
+            ):
+                self.file_ext = "jsonl"
+                self._file_path = file_path.get("data_source")
             else:
                 self._file_path = self._load_dataset(self._custom_label)
                 _, self.file_ext = os.path.splitext(self._file_path)
@@ -1126,6 +1133,13 @@ class JSONLDataset(BaseDataset):
             list[Sample]: Loaded text data.
         """
         data = []
+        if self._file_path in ["MedMCQA", "PubMedQA"]:
+            proper_dict = {"MedMCQA": "MedMCQA/MedMCQA-Validation"}
+            if self._file_path in proper_dict:
+                self._file_path = proper_dict[self._file_path]
+
+            return self.__aggregate_jsonl(self._file_path)
+
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
                 dataset_name = self._file_path.split("/")[-2].replace("-", "")
@@ -1134,6 +1148,35 @@ class JSONLDataset(BaseDataset):
                 )
                 data.append(sample)
 
+        return data
+
+    def __aggregate_jsonl(self, dataset_name, *args, **kwargs):
+        """Aggregate JSONL files into a single JSONL file.
+
+        Args:
+            dataset_name (str): Name of the dataset.
+
+        Returns:
+            str: Path to the aggregated JSONL file.
+        """
+        import glob
+        from pkg_resources import resource_filename
+
+        data_files = resource_filename("langtest", f"/data/{dataset_name}/")
+
+        all_files = glob.glob(f"{data_files}/**/*.jsonl", recursive=True)
+
+        jsonl_files = [file for file in all_files if re.match(r".*\.jsonl$", file)]
+
+        data = []
+        for file in jsonl_files:
+            with jsonlines.open(file) as reader:
+                for item in reader:
+                    # dataset_name = file.split("/")[-2].replace("-", "")
+                    sample = self.task.create_sample(
+                        item, dataset_name=dataset_name, *args, **kwargs
+                    )
+                    data.append(sample)
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
