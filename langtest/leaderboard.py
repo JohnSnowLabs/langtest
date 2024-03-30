@@ -11,7 +11,6 @@ from langtest.config import cli
 from langtest import Harness
 from langtest.utils.custom_types.helpers import create_dirs
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ desired_order = [
 
 
 @cli.command("eval")
-@click.option("--harness-config-path", "-h", type=str, required=True)
+@click.option("--harness-config-path", "-c", type=str, required=True)
 @click.option(
     "--output-dir",
     "-o",
@@ -36,12 +35,18 @@ desired_order = [
     required=False,
     default=os.path.expanduser("~/.langtest/"),
 )
-def init_leaderboard(harness_config_path, output_dir):
+@click.option("--model", "-m", type=str, required=False)
+@click.option("--hub", "-h", type=str, required=False)
+def init_leaderboard(harness_config_path, output_dir, model, hub):
     """Initialize a new langtest leaderboard."""
     logger.info("Initializing new langtest leaderboard...")
 
     store_dir = create_dirs(get_store_path(output_dir))
-    model, task, config, data = get_parameters(harness_config_path)
+
+    params, model, task, config, data = get_parameters(
+        harness_config_path,
+        update_model_dict={"model": model, "hub": hub} if model and hub else None,
+    )
 
     testcases_folder_key, timestamp = generate_folder_key(model, task, data, config)
     testcases_folder_path, is_exists_testcases = create_folder(
@@ -51,8 +56,7 @@ def init_leaderboard(harness_config_path, output_dir):
 
     # Save the parameters file
     save_file(
-        os.path.join(report_folder_path, os.path.basename(harness_config_path)),
-        harness_config_path,
+        os.path.join(report_folder_path, os.path.basename(harness_config_path)), params
     )
 
     if is_exists_testcases:
@@ -125,7 +129,10 @@ def init_leaderboard(harness_config_path, output_dir):
         )
 
 
-def get_parameters(params_file: str):
+def get_parameters(
+    params_file: str,
+    update_model_dict: dict = None,
+):
     """Get the parameters from the configuration file."""
     # Check file extension
     if params_file.endswith(".yml"):
@@ -146,12 +153,14 @@ def get_parameters(params_file: str):
         raise ValueError(
             f"Required key(s) {', '.join(missing_keys)} not found in the configuration file."
         )
+    if update_model_dict:
+        params["model"].update(update_model_dict)
     model = params.get("model")
     task = params.get("task")
     config = params.get("config")
     data = params.get("data")
 
-    return model, task, config, data
+    return params, model, task, config, data
 
 
 def load_old_testcases(
@@ -397,7 +406,7 @@ def update_leaderboard(summary_file_path: str, category: str):
         subset=["model", "hub", "data_source", "split", "subset", "task"]
     )
     unique_records.reset_index(drop=True, inplace=True)
-    average_robustness = (
+    average = (
         unique_records.groupby(
             [
                 "model",
@@ -416,12 +425,19 @@ def update_leaderboard(summary_file_path: str, category: str):
         )
         .reset_index()
     )
-    pivot_df = average_robustness.pivot_table(
+    pivot_df = average.pivot_table(
         index="model", columns="data_source", values=metric, aggfunc="first"
     )
+    numeric_cols = pivot_df.select_dtypes(include=[float]).columns
+
+    pivot_df["avg"] = pivot_df[numeric_cols].mean(axis=1)
+    pivot_df.insert(0, "avg", pivot_df.pop("avg"))
+
+    pivot_df["std"] = pivot_df[numeric_cols].std(axis=1)
+    pivot_df.insert(1, "std", pivot_df.pop("std"))
+
     pivot_df.to_csv(
         os.path.join(os.path.dirname(summary_file_path), f"{category}_leaderboard.csv"),
-        index=False,
     )
 
 
@@ -433,6 +449,24 @@ def reorder_columns(df: pd.DataFrame, desired_order: list) -> pd.DataFrame:
 
 
 def save_file(file_path, data):
-    with open(file_path, "w") as file:
-        file.write(data)
-    return file_path
+    """
+    Save data to a file based on the file extension.
+
+    Args:
+        file_path (str): The path to the file to save.
+        data (dict): The data to save.
+
+    Raises:
+        ValueError: If the file format is not supported.
+    """
+    if file_path.endswith(".yml"):
+        dumper = yaml.safe_dump
+    elif file_path.endswith(".json"):
+        dumper = json.dump
+    else:
+        raise ValueError(
+            "Unsupported file format. Supported formats are YAML (.yml) and JSON (.json)."
+        )
+
+    with open(file_path, "w", encoding="utf-8") as file:
+        dumper(data, file)
