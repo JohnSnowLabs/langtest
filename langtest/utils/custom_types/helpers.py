@@ -593,6 +593,7 @@ def create_folder(default_location: str, data_dict: dict) -> str:
     os.makedirs(folder_name, exist_ok=True)
     return folder_name, False
 
+
 class TestResultManager:
     _instance = None
     _data: list = []
