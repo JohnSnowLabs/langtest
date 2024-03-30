@@ -770,9 +770,9 @@ class FairnessTestFactory(ITests):
                 grouped_label[gender] = [y_true, y_pred]
 
         supported_tests = cls.available_tests()
-        from ..utils.custom_types.helpers import prepare_model_response
+        from ..utils.custom_types.helpers import TestResultManager
 
-        cls.model_result = prepare_model_response(raw_data_copy)
+        cls.model_result = TestResultManager().prepare_model_response(raw_data_copy)
         kwargs["task"] = raw_data[0].task
         tasks = []
         for test_name, samples in sample_list.items():
@@ -1024,9 +1024,9 @@ class AccuracyTestFactory(ITests):
 
         tasks = []
 
-        from ..utils.custom_types.helpers import prepare_model_response
+        from ..utils.custom_types.helpers import TestResultManager
 
-        cls.model_result = prepare_model_response(raw_data_copy)
+        cls.model_result = TestResultManager().prepare_model_response(raw_data_copy)
 
         for test_name, samples in sample_list.items():
             tasks.append(

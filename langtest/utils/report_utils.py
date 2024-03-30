@@ -366,11 +366,11 @@ def multi_dataset_report(
     generated_results: Dict,
     model_name: str,
 ):
-    datasets = {}
-    for sample in generated_results:
-        if sample.dataset_name not in datasets:
-            datasets[sample.dataset_name] = []
-        datasets[sample.dataset_name].append(sample)
+    datasets: Dict[str, list] = {}
+    for dataset_name, sample in generated_results.items():
+        if dataset_name not in datasets:
+            datasets[dataset_name] = []
+        datasets[dataset_name].extend(sample)
 
     multi_summary = {}
     for dataset_name, generated_results in datasets.items():
