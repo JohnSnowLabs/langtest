@@ -82,10 +82,6 @@ def init_leaderboard(harness_config_path, output_dir):
     if isinstance(data, list):
         report.columns = [v for col, v in report.columns]
         report.reset_index(inplace=True)
-
-    logger.info("Generated report:")
-    print(report.to_markdown(index=False))
-
     logger.info("Updating leaderboard...")
 
     if isinstance(data, list):
@@ -118,6 +114,14 @@ def init_leaderboard(harness_config_path, output_dir):
                 report_folder_path, os.path.basename(harness_config_path)
             ),
             timestamp=timestamp,
+        )
+    # print "leaderboard"
+    for key in report["category"].unique().tolist():
+        logger.info(f"{key} Leaderboard")
+        print(
+            pd.read_csv(
+                os.path.join(store_dir["leaderboard"], f"{key}_leaderboard.csv")
+            ).to_markdown(index=False)
         )
 
 
