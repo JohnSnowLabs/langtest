@@ -1021,13 +1021,16 @@ class JSONLDataset(BaseDataset):
 
         return data
 
-    def __load_jsonl(self, file, dataset_name, data, *args, **kwargs):
+    def __load_jsonl(self, file: str, dataset_name, data, *args, **kwargs):
         """Load data from a JSONL file."""
         # data_files = resource_filename("langtest", f"/data/{file}")
         with jsonlines.open(file, "r") as reader:
             for item in reader:
                 sample = self.task.create_sample(
-                    item, dataset_name=dataset_name, *args, **kwargs
+                    item,
+                    dataset_name=dataset_name,
+                    *args,
+                    **kwargs,
                 )
                 data.append(sample)
         return data

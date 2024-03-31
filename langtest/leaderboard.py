@@ -122,11 +122,14 @@ def init_leaderboard(harness_config_path, output_dir, model, hub):
     # print "leaderboard"
     for key in report["category"].unique().tolist():
         logger.info(f"{key} Leaderboard")
-        print(
-            pd.read_csv(
-                os.path.join(store_dir["leaderboard"], f"{key}_leaderboard.csv")
-            ).to_markdown(index=False)
+        pivot_df = pd.read_csv(
+            os.path.join(store_dir["leaderboard"], f"{key}_leaderboard.csv")
         )
+        pivot_df.sort_values(by="avg", ascending=False, inplace=True)
+        pivot_df.reset_index(drop=True, inplace=True)
+        pivot_df.index += 1
+
+        print(pivot_df.to_markdown())
 
 
 def get_parameters(
