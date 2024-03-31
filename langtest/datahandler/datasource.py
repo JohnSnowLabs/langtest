@@ -211,8 +211,8 @@ class DataFactory:
                 self._file_path = file_path.get("data_source")
             elif (
                 self._file_path in self.datasets_with_jsonl_extension
-                and self._custom_label.get("split") is None
-                and self._custom_label.get("subset") is None
+                and self._custom_label.get("split", "") is None
+                and self._custom_label.get("subset", "") is None
             ):
                 self.file_ext = "jsonl"
                 self._file_path = file_path.get("data_source")
