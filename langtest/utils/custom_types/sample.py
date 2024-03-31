@@ -1108,9 +1108,10 @@ class SecuritySample(BaseModel):
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split("-")[0].lower()
+        print(dataset_name)
         prompt_template = kwargs.get(
             "user_prompt",
-            default_user_prompt.get(dataset_name, "{promt}\n"),
+            default_user_prompt.get(dataset_name, "{prompt}\n"),
         )
         server_prompt = kwargs.get("server_prompt", " ")
 
