@@ -211,8 +211,8 @@ class DataFactory:
                 self._file_path = file_path.get("data_source")
             elif (
                 self._file_path in self.datasets_with_jsonl_extension
-                and self._custom_label.get("split", "") is None
-                and self._custom_label.get("subset", "") is None
+                and self._custom_label.get("split") is None
+                and self._custom_label.get("subset") is None
             ):
                 self.file_ext = "jsonl"
                 self._file_path = file_path.get("data_source")
@@ -1023,8 +1023,8 @@ class JSONLDataset(BaseDataset):
 
     def __load_jsonl(self, file, dataset_name, data, *args, **kwargs):
         """Load data from a JSONL file."""
-        data_files = resource_filename("langtest", f"/data/{dataset_name}/{file}")
-        with jsonlines.open(data_files, "r") as reader:
+        # data_files = resource_filename("langtest", f"/data/{file}")
+        with jsonlines.open(file, "r") as reader:
             for item in reader:
                 sample = self.task.create_sample(
                     item, dataset_name=dataset_name, *args, **kwargs
@@ -1070,7 +1070,8 @@ class JSONLDataset(BaseDataset):
         elif dataset_name in additional_datasets.keys():
             files = additional_datasets[dataset_name]
             for file in files:
-                data = self.__load_jsonl(file, dataset_name, data, *args, **kwargs)
+                file_loc = resource_filename("langtest", f"/data/{dataset_name}/{file}")
+                data = self.__load_jsonl(file_loc, dataset_name, data, *args, **kwargs)
         else:
             if dataset_name == "MedMCQA":
                 data_files = resource_filename(
