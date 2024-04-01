@@ -1065,6 +1065,7 @@ class JSONLDataset(BaseDataset):
                 "DisflQA/test.jsonl",
             ],
             "PubMedQA": ["pqaa/test.jsonl", "pqal/test.jsonl"],
+            "MMLU": ["clinical.jsonl"],
         }
 
         if dataset_name in datasets.values():
