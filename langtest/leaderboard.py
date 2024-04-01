@@ -79,6 +79,14 @@ def init_leaderboard(harness_config_path, output_dir, model, hub):
 
     harness.run()
     generated_results = harness.generated_results()
+    # save the generated results
+    generated_results.to_csv(
+        os.path.join(report_folder_path, "generated_results.csv"), index=False
+    )
+    if "accuracy" in generated_results["category"].unique().tolist():
+        harness.model_response("accuracy").to_csv(
+            os.path.join(report_folder_path, "accuracy_model_responses.csv"), index=False
+        )
     report = harness.report(
         format="csv", save_dir=os.path.join(report_folder_path, "report.csv")
     )
@@ -121,6 +129,8 @@ def init_leaderboard(harness_config_path, output_dir, model, hub):
         )
     # print "leaderboard"
     for key in report["category"].unique().tolist():
+        # print horizontal line
+        print(f"\n\n{'':=^80}\n{key:^80}\n{'':=^80}")
         logger.info(f"{key} Leaderboard")
         pivot_df = pd.read_csv(
             os.path.join(store_dir["leaderboard"], f"{key}_leaderboard.csv")
@@ -130,6 +140,8 @@ def init_leaderboard(harness_config_path, output_dir, model, hub):
         pivot_df.index += 1
 
         print(pivot_df.to_markdown())
+
+        print(f"{'':-^80}\n")
 
 
 def get_parameters(

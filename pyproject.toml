@@ -109,3 +109,6 @@ extra-lib = "python -m pip install openpyxl tables"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+langtest = "langtest.__main__:cli"

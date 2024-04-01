@@ -109,6 +109,8 @@ default_user_prompt = {
     "default_question_answering_prompt1": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\nQuestion: {question}\nOptions: {options}\n Answer:",
     "default_question_answering_prompt2": "You are an AI bot specializing in providing accurate and concise answers to questions. You are provided with a context, along with a question. Your objective is to extract the answer directly from the context and present it in your response. Here's the context:\n{context}\nQuestion: {question}\n Answer:",
     "default_question_answering_prompt3": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Question: {question}\nOptions: {options}\n Answer:",
+    "medmcqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer.\nQuestion: {question}\nOptions: {options}\n Answer:",
+    "pubmedqa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these three choices: 'yes', 'no', or 'maybe'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. If the answer is uncertain or could be either yes or no, say 'maybe'. Do not say anything else other than that.",
 }
 
 
