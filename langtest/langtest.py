@@ -110,6 +110,7 @@ class Harness:
 
         self.is_default = False
         self.__data_dict = data
+        self.__is_multi_model = False
 
         # reset classes to default state
         self.__reset_defaults()
@@ -120,6 +121,7 @@ class Harness:
 
         # loading model and hub
         if isinstance(model, list):
+            self.__is_multi_model = True
             for item in model:
                 if not isinstance(item, dict):
                     raise ValueError(Errors.E000)
@@ -282,7 +284,7 @@ class Harness:
         Raises:
             RuntimeError: Raised if test cases are not provided (None).
         """
-        if isinstance(self._testcases, dict):
+        if isinstance(self._testcases, dict) and not self.__is_multi_model:
             self.is_multi_dataset = True
             self._generated_results = self.__multi_datasets_run(
                 self._testcases, checkpoint, save_checkpoints_dir, batch_size
@@ -1314,7 +1316,7 @@ class Harness:
                         self.task, dataset, tests, m_data=m_data
                     )
 
-                return self
+                return testcases
 
         elif str(self.task) in ("question-answering", "summarization"):
             if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
@@ -1549,7 +1551,12 @@ class Harness:
 
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
-            raw_data = self.data.get(dataset_name)
+            # Get the raw data for the dataset
+            if isinstance(self.data, dict):
+                raw_data = self.data.get(dataset_name)
+            elif isinstance(self.data, list):
+                raw_data = self.data
+
             print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
 
             # Check if the dataset is empty
