@@ -991,16 +991,38 @@ class Harness:
         Args:
             input_path (str): location of the file to load
         """
-        temp_testcases = [
-            sample
-            for sample in self._testcases
-            if sample.category not in ["robustness", "bias"]
-        ]
 
-        self._testcases = DataFactory(
-            {"data_source": input_path}, task=self.task, is_import=True
-        ).load()
-        self._testcases.extend(temp_testcases)
+        # multi dataset case is handled separately
+        if isinstance(self._testcases, dict) and not self.__is_multi_model:
+            temp_testcases = {
+                k: [
+                    sample
+                    for sample in v
+                    if sample.category not in ["robustness", "bias"]
+                ]
+                for k, v in self._testcases.items()
+            }
+
+            imported_testcases = DataFactory(
+                {"data_source": input_path}, task=self.task, is_import=True
+            ).load()
+
+            for name, list_samples in imported_testcases.items():
+                if name not in temp_testcases:
+                    temp_testcases[name] = list_samples
+                temp_testcases[name].extend(list_samples)
+
+        elif isinstance(self._testcases, list):
+            temp_testcases = [
+                sample
+                for sample in self._testcases
+                if sample.category not in ["robustness", "bias"]
+            ]
+
+            self._testcases = DataFactory(
+                {"data_source": input_path}, task=self.task, is_import=True
+            ).load()
+            self._testcases.extend(temp_testcases)
 
         return self
 

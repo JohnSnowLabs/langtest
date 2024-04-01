@@ -918,14 +918,20 @@ class CSVDataset(BaseDataset):
         data = pd.read_csv(file_name, **kwargs)
         samples = []
 
+        # mutli dataset
+        if "dataset_name" in data.columns and data["dataset_name"].nunique() > 1:
+            temp_data = data.groupby("dataset_name")
+            samples = {}
+            for name, df in temp_data:
+                for i in df.to_dict(orient="records"):
+                    sample = self.task.get_sample_class(**i)
+                    samples[name] = sample
+            return samples
+
         for i in data.to_dict(orient="records"):
-            # if self.task in custom_names:
-            #     sample_name = custom_names[self.task] + "sample"
-            # else:
-            #     sample_name = self.task.lower() + "sample"
-            # samples.append(sample_models[sample_name](**i))
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
+
         return samples
 
 
@@ -1700,6 +1706,16 @@ class PandasDataset(BaseDataset):
 
         data = pd.read_csv(file_name, **kwargs)
         samples = []
+
+        # mutli dataset
+        if "dataset_name" in data.columns and data["dataset_name"].nunique() > 1:
+            temp_data = data.groupby("dataset_name")
+            samples = {}
+            for name, df in temp_data:
+                for i in df.to_dict(orient="records"):
+                    sample = self.task.get_sample_class(**i)
+                    samples[name] = sample
+            return samples
 
         for i in data.to_dict(orient="records"):
             sample = self.task.get_sample_class(**i)
