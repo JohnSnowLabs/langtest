@@ -2007,7 +2007,7 @@ class FactualitySample(BaseModel):
                 threshold = evaluation["threshold"]
 
                 if R1:
-                    embeddings2 = model.get_embeddingget_embedding(
+                    embeddings2 = model.get_embedding(
                         [self.swapped_result, self.correct_sent]
                     )
                     similarity2 = EmbeddingDistance()._cosine_distance(
