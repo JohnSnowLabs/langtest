@@ -344,8 +344,8 @@ def generate_folder_key(model, task, data, config):
 
 
 def get_store_path(output_dir):
-    if output_dir == "~/.langtest":
-        return os.path.expanduser("~/.langtest")
+    if output_dir == os.path.expanduser("~/.langtest/"):
+        return output_dir
     return os.path.expanduser(f"{output_dir}/.langtest/")
 
 
