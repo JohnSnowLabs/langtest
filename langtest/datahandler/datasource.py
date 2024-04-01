@@ -7,7 +7,7 @@ import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List, Union
-
+from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
@@ -25,6 +25,8 @@ from langtest.utils.custom_types import (
 )
 from ..utils.lib_manager import try_import_lib
 from ..errors import Warnings, Errors
+import glob
+from pkg_resources import resource_filename
 
 COLUMN_MAPPER = {
     "text-classification": {
@@ -178,6 +180,18 @@ class DataFactory:
         self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
 
+        self.datasets_with_jsonl_extension = []
+        for dataset_name, dataset_info in datasets_info.items():
+            if dataset_info.get("extension", "") == ".jsonl":
+                self.datasets_with_jsonl_extension.append(dataset_name)
+            else:
+                # Check for subsets
+                for subset_name, subset_info in dataset_info.items():
+                    if isinstance(subset_info, dict):
+                        if subset_info.get("extension", "") == ".jsonl":
+                            self.datasets_with_jsonl_extension.append(dataset_name)
+                            break
+
         if isinstance(self._file_path, str):
             _, self.file_ext = os.path.splitext(self._file_path)
 
@@ -194,6 +208,13 @@ class DataFactory:
                 and self._file_path in self.CURATED_BIAS_DATASETS
             ):
                 self.file_ext = "curated"
+                self._file_path = file_path.get("data_source")
+            elif (
+                self._file_path in self.datasets_with_jsonl_extension
+                and self._custom_label.get("split") is None
+                and self._custom_label.get("subset") is None
+            ):
+                self.file_ext = "jsonl"
                 self._file_path = file_path.get("data_source")
             else:
                 self._file_path = self._load_dataset(self._custom_label)
@@ -326,149 +347,6 @@ class DataFactory:
         split: str = custom_label.get("split")
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
-
-        datasets_info = {
-            "BoolQ": {
-                "split": ("test-tiny", "test", "dev-tiny", "dev", "combined"),
-                "extension": ".jsonl",
-            },
-            "NQ-open": {
-                "split": ("test-tiny", "test", "combined"),
-                "extension": ".jsonl",
-            },
-            "XSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "TruthfulQA": {
-                "split": ("test-tiny", "test", "combined"),
-                "extension": ".jsonl",
-            },
-            "MMLU": {"split": ("test-tiny", "test", "clinical"), "extension": ".jsonl"},
-            "OpenBookQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Quac": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Toxicity": {"split": ("test",), "extension": ".jsonl"},
-            "NarrativeQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "HellaSwag": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Translation": {"split": ("test",), "extension": ".jsonl"},
-            "BBQ": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Prompt-Injection-Attack": {"split": ("test",), "extension": ".jsonl"},
-            "Clinical": {
-                "split": (
-                    "Medical-files",
-                    "Gastroenterology-files",
-                    "Oromaxillofacial-files",
-                ),
-                "extension": ".jsonl",
-            },
-            "ASDiv": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Bigbench": {
-                "Causal-judgment": {
-                    "split": ("test-tiny", "test"),
-                    "extension": ".jsonl",
-                },
-                "DisflQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-                "Abstract-narrative-understanding": {
-                    "split": ("test-tiny", "test"),
-                    "extension": ".jsonl",
-                },
-                "DisambiguationQA": {
-                    "split": ("test-tiny", "test"),
-                    "extension": ".jsonl",
-                },
-            },
-            "LogiQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Narrative-Wedging": {"split": ("test-tiny",), "extension": ".jsonl"},
-            "Wino-test": {"split": ("test",), "extension": ".jsonl"},
-            "Legal-Support": {"split": ("test",), "extension": ".jsonl"},
-            "Factual-Summary-Pairs": {"split": ("test",), "extension": ".jsonl"},
-            "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "CommonsenseQA": {
-                "split": (
-                    "test-tiny",
-                    "test",
-                    "validation-tiny",
-                    "validation",
-                    "sample-test-tiny",
-                ),
-                "extension": ".jsonl",
-            },
-            "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "PIQA": {
-                "split": (
-                    "test-tiny",
-                    "test",
-                    "validation-tiny",
-                    "validation",
-                    "sample-test-tiny",
-                ),
-                "extension": ".jsonl",
-            },
-            "Consumer-Contracts": {"split": ("test",), "extension": ".jsonl"},
-            "Contracts": {"split": ("test",), "extension": ".jsonl"},
-            "Privacy-Policy": {"split": ("test",), "extension": ".jsonl"},
-            "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
-            "StereoSet": {"split": ("test",), "extension": ".jsonl"},
-            "Fiqa": {"split": ("test",), "extension": ".jsonl"},
-            "MedQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "MedicationQA": {"split": ("test",), "extension": ".jsonl"},
-            "LiveQA": {"split": ("test",), "extension": ".jsonl"},
-            "healthsearchqa": {"split": ("test",), "extension": ".jsonl"},
-            "PubMedQA": {
-                "pqaa": {"split": ("test",), "extension": ".jsonl"},
-                "pqal": {"split": ("test",), "extension": ".jsonl"},
-            },
-            "MedMCQA": {
-                "MedMCQA-Test": {
-                    "split": (
-                        "Anaesthesia",
-                        "Anatomy",
-                        "Biochemistry",
-                        "Dental",
-                        "ENT",
-                        "Forensic_Medicine",
-                        "Gynaecology_Obstetrics",
-                        "Medicine",
-                        "Microbiology",
-                        "Ophthalmology",
-                        "Pathology",
-                        "Pediatrics",
-                        "Pharmacology",
-                        "Physiology",
-                        "Psychiatry",
-                        "Radiology",
-                        "Skin",
-                        "Social_Preventive_Medicine",
-                        "Surgery",
-                        "Unknown",
-                    ),
-                    "extension": ".jsonl",
-                },
-                "MedMCQA-Validation": {
-                    "split": (
-                        "Anaesthesia",
-                        "Anatomy",
-                        "Biochemistry",
-                        "Dental",
-                        "ENT",
-                        "Forensic_Medicine",
-                        "Gynaecology_Obstetrics",
-                        "Medicine",
-                        "Microbiology",
-                        "Ophthalmology",
-                        "Pathology",
-                        "Pediatrics",
-                        "Pharmacology",
-                        "Physiology",
-                        "Psychiatry",
-                        "Radiology",
-                        "Skin",
-                        "Social_Preventive_Medicine",
-                        "Surgery",
-                        "Unknown",
-                    ),
-                    "extension": ".jsonl",
-                },
-            },
-        }
 
         if dataset_name not in datasets_info:
             raise ValueError(f"{dataset_name} is not a valid dataset name")
@@ -864,12 +742,16 @@ class CSVDataset(BaseDataset):
 
             raw_data.append(
                 {
-                    "text": text
-                    if (isinstance(text, list) or self.task != "ner")
-                    else eval(text),
-                    "labels": labels
-                    if (isinstance(labels, list) or self.task != "ner")
-                    else eval(labels),
+                    "text": (
+                        text
+                        if (isinstance(text, list) or self.task != "ner")
+                        else eval(text)
+                    ),
+                    "labels": (
+                        labels
+                        if (isinstance(labels, list) or self.task != "ner")
+                        else eval(labels)
+                    ),
                 }
             )
 
@@ -1126,6 +1008,9 @@ class JSONLDataset(BaseDataset):
             list[Sample]: Loaded text data.
         """
         data = []
+        if not os.path.splitext(self._file_path)[-1]:
+            return self.__aggregate_jsonl(self._file_path)
+
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
                 dataset_name = self._file_path.split("/")[-2].replace("-", "")
@@ -1133,6 +1018,77 @@ class JSONLDataset(BaseDataset):
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
+
+        return data
+
+    def __load_jsonl(self, file: str, dataset_name, data, *args, **kwargs):
+        """Load data from a JSONL file."""
+        # data_files = resource_filename("langtest", f"/data/{file}")
+        with jsonlines.open(file, "r") as reader:
+            for item in reader:
+                sample = self.task.create_sample(
+                    item,
+                    dataset_name=dataset_name,
+                    *args,
+                    **kwargs,
+                )
+                data.append(sample)
+        return data
+
+    def __aggregate_jsonl(self, dataset_name, *args, **kwargs):
+        """Aggregate JSONL files into a single JSONL file."""
+        data = []
+
+        datasets = {
+            "test.jsonl": [
+                "ASDiv",
+                "BBQ",
+                "HellaSwag",
+                "LogiQA",
+                "MedQA",
+                "MultiLexSum",
+                "NarrativeQA",
+                "NQ-open",
+                "OpenBookQA",
+                "Quac",
+                "SIQA",
+                "TruthfulQA",
+            ],
+            "validation.jsonl": ["BoolQ", "CommonsenseQA", "PIQA"],
+        }
+
+        additional_datasets = {
+            "Bigbench": [
+                "Abstract-narrative-understanding/test.jsonl",
+                "Causal-judgment/test.jsonl",
+                "DisambiguationQA/test.jsonl",
+                "DisflQA/test.jsonl",
+            ],
+            "PubMedQA": ["pqaa/test.jsonl", "pqal/test.jsonl"],
+            "MMLU": ["clinical.jsonl"],
+        }
+
+        if dataset_name in datasets.values():
+            file = f"{dataset_name}/test.jsonl"
+            data = self.__load_jsonl(file, dataset_name, data, *args, **kwargs)
+        elif dataset_name in additional_datasets.keys():
+            files = additional_datasets[dataset_name]
+            for file in files:
+                file_loc = resource_filename("langtest", f"/data/{dataset_name}/{file}")
+                data = self.__load_jsonl(file_loc, dataset_name, data, *args, **kwargs)
+        else:
+            if dataset_name == "MedMCQA":
+                data_files = resource_filename(
+                    "langtest", f"/data/{dataset_name}/MedMCQA-Validation/"
+                )
+            else:
+                data_files = resource_filename("langtest", f"/data/{dataset_name}/")
+
+            all_files = glob.glob(f"{data_files}/**/*.jsonl", recursive=True)
+            jsonl_files = [file for file in all_files if re.match(r".*\.jsonl$", file)]
+
+            for file in jsonl_files:
+                data = self.__load_jsonl(file, dataset_name, data, *args, **kwargs)
 
         return data
 
