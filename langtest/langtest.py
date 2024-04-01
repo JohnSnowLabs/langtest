@@ -1012,6 +1012,7 @@ class Harness:
                     temp_testcases[name] = list_samples
                 temp_testcases[name].extend(list_samples)
 
+        # single dataset case
         elif isinstance(self._testcases, list):
             temp_testcases = [
                 sample
