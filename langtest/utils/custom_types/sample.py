@@ -777,16 +777,20 @@ class SummarizationSample(BaseModel):
             else "default_summarization_prompt"
         )
 
+        server_prompt = kwargs.get("server_prompt", " ")
+
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )
         self.expected_results = model(
             text={"context": self.original},
             prompt={"template": prompt_template, "input_variables": ["context"]},
+            server_prompt=server_prompt,
         )
         self.actual_results = model(
             text={"context": self.test_case},
             prompt={"template": prompt_template, "input_variables": ["context"]},
+            server_prompt=server_prompt,
         )
         return True
 
