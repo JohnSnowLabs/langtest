@@ -41,6 +41,7 @@ def init_leaderboard(harness_config_path, output_dir, model, hub):
     """Initialize a new langtest leaderboard."""
     logger.info("Initializing new langtest leaderboard...")
 
+    print(output_dir)
     store_dir = create_dirs(get_store_path(output_dir))
 
     params, model, task, config, data = get_parameters(
@@ -135,6 +136,49 @@ def init_leaderboard(harness_config_path, output_dir, model, hub):
         pivot_df = pd.read_csv(
             os.path.join(store_dir["leaderboard"], f"{key}_leaderboard.csv")
         )
+        pivot_df.sort_values(by="avg", ascending=False, inplace=True)
+        pivot_df.reset_index(drop=True, inplace=True)
+        pivot_df.index += 1
+
+        print(pivot_df.to_markdown())
+
+        print(f"{'':-^80}\n")
+
+
+@cli.command("show-leaderboard")
+@click.option(
+    "--output-dir",
+    "-o",
+    type=str,
+    required=False,
+    default=os.path.expanduser("."),
+)
+def show_leaderboard(output_dir):
+    # check if the store_dir pickle exists
+    print(os.path.expanduser(f"{output_dir}/.langtest"))
+    if not os.path.exists(os.path.expanduser(f"{output_dir}/.langtest")):
+        output_dir = os.path.expanduser("~/")
+
+    import pickle
+
+    if not os.path.exists(os.path.expanduser(f"{output_dir}/.langtest")):
+        logger.info("Store directory not found. Please run 'init-leaderboard' first.")
+        return
+
+    with open(os.path.expanduser(f"{output_dir}/.langtest/store_dir.pkl"), "rb") as file:
+        store_dir = pickle.load(file)
+
+    leaderboard_files = [
+        file
+        for file in os.listdir(store_dir["leaderboard"])
+        if file.endswith("_leaderboard.csv")
+    ]
+    for file in leaderboard_files:
+        # print horizontal line
+        key = file.split("_")[0]
+        print(f"\n\n{'':=^80}\n{key:^80}\n{'':=^80}")
+        logger.info(f"{key} Leaderboard")
+        pivot_df = pd.read_csv(os.path.join(store_dir["leaderboard"], f"{file}"))
         pivot_df.sort_values(by="avg", ascending=False, inplace=True)
         pivot_df.reset_index(drop=True, inplace=True)
         pivot_df.index += 1
@@ -300,7 +344,9 @@ def generate_folder_key(model, task, data, config):
 
 
 def get_store_path(output_dir):
-    return os.path.expanduser(output_dir)
+    if output_dir == "~/.langtest":
+        return os.path.expanduser("~/.langtest")
+    return os.path.expanduser(f"{output_dir}/.langtest/")
 
 
 def create_folder(default_location: str, folder_name: str) -> str:

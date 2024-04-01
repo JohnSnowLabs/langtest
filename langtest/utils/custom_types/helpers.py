@@ -572,7 +572,14 @@ def create_dirs(default_location: str, *args, **kwargs) -> dict:
         if not os.path.exists(os.path.join(default_location, dir)):
             os.makedirs(os.path.join(default_location, dir))
 
-    return {dir: os.path.join(default_location, dir) for dir in required_dirs}
+    store_dir = {dir: os.path.join(default_location, dir) for dir in required_dirs}
+
+    # write in pickle file
+    with open(os.path.join(default_location, "store_dir.pkl"), "wb") as f:
+        import pickle
+
+        pickle.dump(store_dir, f)
+    return store_dir
 
 
 def create_folder(default_location: str, data_dict: dict) -> str:
