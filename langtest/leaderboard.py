@@ -509,7 +509,7 @@ def reorder_columns(df: pd.DataFrame, desired_order: list) -> pd.DataFrame:
     )
 
 
-def save_file(file_path: str , data):
+def save_file(file_path: str, data):
     """
     Save data to a file based on the file extension.
 
