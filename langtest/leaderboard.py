@@ -509,7 +509,7 @@ def reorder_columns(df: pd.DataFrame, desired_order: list) -> pd.DataFrame:
     )
 
 
-def save_file(file_path, data):
+def save_file(file_path: str , data):
     """
     Save data to a file based on the file extension.
 
@@ -520,7 +520,7 @@ def save_file(file_path, data):
     Raises:
         ValueError: If the file format is not supported.
     """
-    if file_path.endswith(".yml"):
+    if file_path.endswith(".yml") or file_path.endswith(".yaml"):
         dumper = yaml.safe_dump
     elif file_path.endswith(".json"):
         dumper = json.dump
