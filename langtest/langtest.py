@@ -110,6 +110,7 @@ class Harness:
 
         self.is_default = False
         self.__data_dict = data
+        self.__is_multi_model = False
 
         # reset classes to default state
         self.__reset_defaults()
@@ -120,6 +121,7 @@ class Harness:
 
         # loading model and hub
         if isinstance(model, list):
+            self.__is_multi_model = True
             for item in model:
                 if not isinstance(item, dict):
                     raise ValueError(Errors.E000)
@@ -282,7 +284,7 @@ class Harness:
         Raises:
             RuntimeError: Raised if test cases are not provided (None).
         """
-        if isinstance(self._testcases, dict):
+        if isinstance(self._testcases, dict) and not self.__is_multi_model:
             self.is_multi_dataset = True
             self._generated_results = self.__multi_datasets_run(
                 self._testcases, checkpoint, save_checkpoints_dir, batch_size
@@ -989,16 +991,39 @@ class Harness:
         Args:
             input_path (str): location of the file to load
         """
-        temp_testcases = [
-            sample
-            for sample in self._testcases
-            if sample.category not in ["robustness", "bias"]
-        ]
 
-        self._testcases = DataFactory(
-            {"data_source": input_path}, task=self.task, is_import=True
-        ).load()
-        self._testcases.extend(temp_testcases)
+        # multi dataset case is handled separately
+        if isinstance(self._testcases, dict) and not self.__is_multi_model:
+            temp_testcases = {
+                k: [
+                    sample
+                    for sample in v
+                    if sample.category not in ["robustness", "bias"]
+                ]
+                for k, v in self._testcases.items()
+            }
+
+            imported_testcases = DataFactory(
+                {"data_source": input_path}, task=self.task, is_import=True
+            ).load()
+
+            for name, list_samples in imported_testcases.items():
+                if name not in temp_testcases:
+                    temp_testcases[name] = list_samples
+                temp_testcases[name].extend(list_samples)
+
+        # single dataset case
+        elif isinstance(self._testcases, list):
+            temp_testcases = [
+                sample
+                for sample in self._testcases
+                if sample.category not in ["robustness", "bias"]
+            ]
+
+            self._testcases = DataFactory(
+                {"data_source": input_path}, task=self.task, is_import=True
+            ).load()
+            self._testcases.extend(temp_testcases)
 
         return self
 
@@ -1314,7 +1339,7 @@ class Harness:
                         self.task, dataset, tests, m_data=m_data
                     )
 
-                return self
+                return testcases
 
         elif str(self.task) in ("question-answering", "summarization"):
             if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
@@ -1549,7 +1574,12 @@ class Harness:
 
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
-            raw_data = self.data.get(dataset_name)
+            # Get the raw data for the dataset
+            if isinstance(self.data, dict):
+                raw_data = self.data.get(dataset_name)
+            elif isinstance(self.data, list):
+                raw_data = self.data
+
             print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
 
             # Check if the dataset is empty
