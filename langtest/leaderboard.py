@@ -194,7 +194,7 @@ def get_parameters(
 ):
     """Get the parameters from the configuration file."""
     # Check file extension
-    if params_file.endswith(".yml"):
+    if params_file.endswith(".yml") or params_file.endswith(".yaml"):
         loader = yaml.safe_load
     elif params_file.endswith(".json"):
         loader = json.load
