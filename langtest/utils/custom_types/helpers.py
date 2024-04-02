@@ -109,6 +109,8 @@ default_user_prompt = {
     "default_question_answering_prompt1": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Context: {context}\nQuestion: {question}\nOptions: {options}\n Answer:",
     "default_question_answering_prompt2": "You are an AI bot specializing in providing accurate and concise answers to questions. You are provided with a context, along with a question. Your objective is to extract the answer directly from the context and present it in your response. Here's the context:\n{context}\nQuestion: {question}\n Answer:",
     "default_question_answering_prompt3": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a question and multiple-choice answer options. Your task is to choose the correct answer. Question: {question}\nOptions: {options}\n Answer:",
+    "medmcqa": "You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer.\nQuestion: {question}\nOptions: {options}\n Answer:",
+    "pubmedqa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these three choices: 'yes', 'no', or 'maybe'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. If the answer is uncertain or could be either yes or no, say 'maybe'. Do not say anything else other than that.",
 }
 
 
@@ -536,6 +538,7 @@ class HashableDict(dict):
         return hash(frozenset(items))
 
 
+# decrepated
 def prepare_model_response(data):
     if data[0].task == "text-classification":
         for sample in data:
@@ -547,3 +550,97 @@ def prepare_model_response(data):
             sample.expected_results = sample.expected_results.predictions
 
     return data
+
+
+def create_dirs(default_location: str, *args, **kwargs) -> dict:
+    """Make directories."""
+    import os
+
+    required_dirs = [
+        default_location,
+        "leaderboard",
+        "reports",
+        "testcases",
+        "checkpoints",
+        "logs",
+        "reports",
+    ]
+    required_dirs.extend(args)
+    required_dirs.extend(kwargs.values())
+
+    for dir in required_dirs:
+        if not os.path.exists(os.path.join(default_location, dir)):
+            os.makedirs(os.path.join(default_location, dir))
+
+    store_dir = {dir: os.path.join(default_location, dir) for dir in required_dirs}
+
+    # write in pickle file
+    with open(os.path.join(default_location, "store_dir.pkl"), "wb") as f:
+        import pickle
+
+        pickle.dump(store_dir, f)
+    return store_dir
+
+
+def create_folder(default_location: str, data_dict: dict) -> str:
+    """Create the folder based on the data_dict."""
+    import base64
+    import json
+    import os
+
+    # dict to json string
+    json_dump = json.dumps(data_dict)
+
+    # encrypt json string using base64 for folder name
+    encoded = base64.urlsafe_b64encode(json_dump.encode("utf-8")).decode()
+
+    folder_name = os.path.join(default_location, encoded)
+
+    if os.path.exists(folder_name):
+        return folder_name, True
+
+    os.makedirs(folder_name, exist_ok=True)
+    return folder_name, False
+
+
+class TestResultManager:
+    _instance = None
+    _data: list = []
+
+    @staticmethod
+    def get_instance():
+        if TestResultManager._instance is None:
+            TestResultManager()
+        return TestResultManager._instance
+
+    def __new__(cls):
+        if TestResultManager._instance is None:
+            TestResultManager._instance = super().__new__(cls)
+            return TestResultManager._instance
+        else:
+            return TestResultManager._instance
+
+    def prepare_model_response(self, data):
+        """check the model response"""
+
+        if data[0].task == "text-classification":
+            for sample in data:
+                sample.actual_results = sample.actual_results.predictions[0]
+                sample.expected_results = sample.expected_results.predictions[0]
+        elif data[0].task == "ner":
+            for sample in data:
+                sample.actual_results = sample.actual_results.predictions
+                sample.expected_results = sample.expected_results.predictions
+
+        if isinstance(data, list):
+            self._data.extend(data)
+        else:
+            self._data.append(data)
+
+        return self._data
+
+    def clear_instance(self):
+        TestResultManager._instance = None
+
+    def clear_data(self):
+        self._data = []

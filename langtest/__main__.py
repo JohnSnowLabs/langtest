@@ -5,6 +5,7 @@ import sys
 from langtest import Harness
 from langtest.config import cli
 from langtest.pipelines.embedding import benchmark
+from langtest.leaderboard import *  # noqa
 
 click.CommandCollection(sources=[cli, benchmark], help="LangTest CLI")
 

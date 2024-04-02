@@ -1,7 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
-
 from langtest.utils.custom_types import MinScoreOutput, MinScoreSample
 from langtest.utils.util_metrics import calculate_f1_score, classification_report
 
@@ -608,11 +607,16 @@ class MinBLEUcore(BaseAccuracy):
             y_pred (List[Any]): Predicted values
 
         """
-        progress = kwargs.get("progress_bar", False)
-        import evaluate
+        try:
+            progress = kwargs.get("progress_bar", False)
+            import evaluate
 
-        em = evaluate.load("bleu")
-        result = em.compute(references=y_true, predictions=y_pred)
+            em = evaluate.load("bleu")
+            result = em.compute(references=y_true, predictions=y_pred)
+        except Exception as e:
+            print(f"Error in BLEU evaluation: {e}. Setting BLEU score to 0")
+            result = {"bleu": 0}
+
         y_true = [[f"The answer is {y}" for y in x] for x in y_true]
         y_pred = [f"The answer is {x}" for x in y_pred]
 
@@ -793,6 +797,11 @@ class LLMEval(BaseAccuracy):
         from ..utils.custom_types.helpers import is_pass_llm_eval
 
         eval_model = LLMEval.eval_model
+
+        if not eval_model:
+            from ..langtest import EVAL_MODEL
+
+            eval_model = EVAL_MODEL
 
         def eval():
             results = []
