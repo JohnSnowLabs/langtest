@@ -10,49 +10,133 @@ modify_date: 2023-10-17
 
 <div class="h3-box" markdown="1">
 
-## 1.8.0
+## 1.10.0
 
 ## 📢 Highlights
 
-**LangTest 1.8.0 Release by John Snow Labs 🚀**
+🌟 **LangTest 1.10.0 Release by John Snow Labs**
 
-We're thrilled to unveil the latest advancements in LangTest with version 1.8.0. This release is centered around optimizing the codebase with extensive refactoring, enriching the debugging experience through the implementation of error codes, and enhancing workflow efficiency with streamlined task organization. The new categorization approach significantly improves the user experience, ensuring a more cohesive and organized testing process. This update also includes advancements in open source community standards, insightful blog posts, and multiple bug fixes, further solidifying LangTest's reputation as a versatile and user-friendly language testing and evaluation library.
+We're thrilled to announce the latest release of LangTest, introducing remarkable features that elevate its capabilities and user-friendliness. This update brings a host of enhancements:
+
+- **Evaluating RAG with LlamaIndex and Langtest**: LangTest seamlessly integrates LlamaIndex for constructing a RAG and employs LangtestRetrieverEvaluator, measuring retriever precision (Hit Rate) and accuracy (MRR) with both standard and perturbed queries, ensuring robust real-world performance assessment.
+
+- **Grammar Testing for NLP Model Evaluation:** This approach entails creating test cases through the paraphrasing of original sentences. The purpose is to evaluate a language model's proficiency in understanding and interpreting the nuanced meaning of the text, enhancing our understanding of its contextual comprehension capabilities.
+
+
+- **Saving and Loading the Checkpoints:** LangTest now supports the seamless saving and loading of checkpoints, providing users with the ability to manage task progress, recover from interruptions, and ensure data integrity.
+
+- **Extended Support for Medical Datasets:** LangTest adds support for additional medical datasets, including LiveQA, MedicationQA, and HealthSearchQA. These datasets enable a comprehensive evaluation of language models in diverse medical scenarios, covering consumer health, medication-related queries, and closed-domain question-answering tasks.
+
+
+- **Direct Integration with Hugging Face Models:**  Users can effortlessly pass any Hugging Face model object into the LangTest harness and run a variety of tasks. This feature streamlines the process of evaluating and comparing different models, making it easier for users to leverage LangTest's comprehensive suite of tools with the wide array of models available on Hugging Face.
+
+
+</div><div class="h3-box" markdown="1">
 
 ##  🔥 Key Enhancements:
 
-- **Optimized Codebase**: This update features a comprehensively refined codebase, achieved through extensive refactoring, resulting in enhanced efficiency and reliability in our testing processes.
+### 🚀Implementing and Evaluating RAG with LlamaIndex and Langtest
+ [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/JohnSnowLabs/langtest/blob/main/demo/tutorials/RAG/RAG_OpenAI.ipynb)   
 
-- **Advanced Debugging Tools**: The introduction of error codes marks a significant enhancement in the debugging experience, addressing the previous absence of standardized exceptions. This inconsistency in error handling often led to challenges in issue identification and resolution. The integration of a unified set of standardized exceptions, tailored to specific error types and contexts, guarantees a more efficient and seamless troubleshooting process.
+LangTest seamlessly integrates LlamaIndex, focusing on two main aspects: constructing the RAG with LlamaIndex and evaluating its performance. The integration involves utilizing LlamaIndex's generate_question_context_pairs module to create relevant question and context pairs, forming the foundation for retrieval and response evaluation in the RAG system.
 
-- **Task Categorization**: This version introduces an improved task organization system, offering a more efficient and intuitive workflow. Previously, it featured a wide range of tests such as sensitivity, clinical tests, wino-bias and many more, each treated as separate tasks. This approach, while comprehensive, could result in a fragmented workflow. The new categorization method consolidates these tests into universally recognized NLP tasks, including Named Entity Recognition (NER), Text Classification, Question Answering, Summarization, Fill-Mask, Translation, and Test Generation. This integration of tests as sub-categories within these broader NLP tasks enhances clarity and reduces potential overlap.
+To assess the retriever's effectiveness, LangTest introduces LangtestRetrieverEvaluator, employing key metrics such as Hit Rate and Mean Reciprocal Rank (MRR). Hit Rate gauges the precision by assessing the percentage of queries with the correct answer in the top-k retrieved documents. MRR evaluates the accuracy by considering the rank of the highest-placed relevant document across all queries. This comprehensive evaluation, using both standard and perturbed queries generated through LangTest, ensures a thorough understanding of the retriever's robustness and adaptability under various conditions, reflecting its real-world performance.
 
-- **Open Source Community Standards**: With this release, we've strengthened community interactions by introducing issue templates, a code of conduct, and clear repository citation guidelines. The addition of GitHub badges enhances visibility and fosters a collaborative and organized community environment.
+```
+from langtest.evaluation import LangtestRetrieverEvaluator
 
-- **Parameter Standardization**: Aiming to bring uniformity in dataset organization and naming, this feature addresses the variation in dataset structures within the repository. By standardizing key parameters like 'datasource', 'split', and 'subset', we ensure a consistent naming convention and organization across all datasets, enhancing clarity and efficiency in dataset usage.
+retriever_evaluator = LangtestRetrieverEvaluator.from_metric_names(
+    ["mrr", "hit_rate"], retriever=retriever
+)
+     
+retriever_evaluator.setPerturbations("add_typo","dyslexia_word_swap", "add_ocr_typo") 
 
-## 🚀 Community Contributions:
-Our team has published three enlightening blogs on Hugging Face's community platform, focusing on bias detection, model sensitivity, and data augmentation in NLP models:
+# Evaluate
+eval_results = await retriever_evaluator.aevaluate_dataset(qa_dataset)
 
-1. [Detecting and Evaluating Sycophancy Bias: An Analysis of LLM and AI Solutions](https://huggingface.co/blog/Rakshit122/sycophantic-ai)
-2. [Unmasking Language Model Sensitivity in Negation and Toxicity Evaluations](https://huggingface.co/blog/Prikshit7766/llms-sensitivity-testing)
-3. [Elevate Your NLP Models with Automated Data Augmentation for Enhanced Performance](https://huggingface.co/blog/chakravarthik27/boost-nlp-models-with-automated-data-augmentation)
+retriever_evaluator.display_results()
+
+```
+
+### 📚Grammar Testing in Evaluating and Enhancing NLP Models
+ [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/JohnSnowLabs/langtest/blob/main/demo/tutorials/test-specific-notebooks/Grammar_Demo.ipynb)   
+
+Grammar Testing is a key feature in LangTest's suite of evaluation strategies, emphasizing the assessment of a language model's proficiency in contextual understanding and nuance interpretation. By creating test cases that paraphrase original sentences, the goal is to gauge the model's ability to comprehend and interpret text, thereby enriching insights into its contextual mastery.
+
+{:.table3}
+| Category | Test Type  | Original                                                                                                                                                    | Test Case                                                                                                                         | Expected Result | Actual Result | Pass  |
+|----------|------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------:|------------------|---------------|-------|
+| grammar  | paraphrase | This program was on for a brief period when I was a kid, I remember watching it whilst eating fish and chips.<br /><br />Riding on the back of the Tron hype this series was much in the style of streethawk, manimal and the like, except more computery. There was a geeky kid who's computer somehow created this guy - automan. He'd go around solving crimes and the lot.<br /><br />All I really remember was his fancy car and the little flashy cursor thing that used to draw the car and help him out generally.<br /><br />When I mention it to anyone they can remember very little too. Was it real or maybe a dream? | I remember watching a show from my youth that had a Tron theme, with a nerdy kid driving around with a little flashy cursor and solving everyday problems. Was it a genuine story or a mere dream come true? | NEGATIVE         | POSITIVE      | false |
+
+### 🔥 Saving and Loading the Checkpoints
+ [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Saving_Checkpoints.ipynb)     
+Introducing a robust checkpointing system in LangTest! The `run` method in the `Harness` class now supports checkpointing, allowing users to save intermediate results, manage batch processing, and specify a directory for storing checkpoints and results. This feature ensures data integrity, providing a mechanism for recovering progress in case of interruptions or task failures.
+```
+harness.run(checkpoint=True, batch_size=20,save_checkpoints_dir="imdb-checkpoint")
+```
+The `load_checkpoints` method facilitates the direct loading of saved checkpoints and data, providing a convenient mechanism to resume testing tasks from the point where they were previously interrupted, even in the event of runtime failures or errors.
+```
+harness = Harness.load_checkpoints(save_checkpoints_dir="imdb-checkpoint",
+                                   task="text-classification",
+                                   model = {"model": "lvwerra/distilbert-imdb" , "hub":"huggingface"}, )
+```
+
+### 🏥 Added Support for More Medical Datasets
+
+#### LiveQA
+The LiveQA'17 medical task focuses on consumer health question answering. It consists of constructed medical question-answer pairs for training and testing, with additional annotations. LangTest now supports LiveQA for comprehensive medical evaluation.
+
+##### How the dataset looks:
+
+{:.table3}
+| category   | test_type | original_question                                   | perturbed_question                                      | expected_result                                                | actual_result                                              | eval_score | pass |
+|------------|-----------|------------------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------|------------------------------------------------------------|------------|------|
+| robustness | uppercase | Do amphetamine salts 20mg tablets contain gluten?    | DO AMPHETAMINE SALTS 20MG TABLETS CONTAIN GLUTEN?           | No, amphetamine salts 20mg tablets do not contain gluten.       | No, Amphetamine Salts 20mg Tablets do not contain gluten.    | 1.0        | true |
+
+#### MedicationQA
+The MedicationQA dataset consists of commonly asked consumer questions about medications. It includes annotations corresponding to drug focus and interactions. LangTest now integrates MedicationQA for thorough evaluation of models in medication-related scenarios.
+
+##### How the dataset looks:
+
+{:.table3}
+| category   | test_type | original_question                                  | perturbed_question                                     | expected_result                                                                                                                                     | actual_result                                                                                                                                                                    | eval_score          | pass |
+|------------|-----------|-----------------------------------------------------|--------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|------|
+| robustness | uppercase | how does rivatigmine and otc sleep medicine interact | HOW DOES RIVATIGMINE AND OTC SLEEP MEDICINE INTERACT     | Rivastigmine is a cholinesterase inhibitor and OTC (over-the-counter) sleep medicine is a sedative. There is a risk of excessive sedation when taking both of these medications together. Patients should consult their doctor before taking both of these medications together. | Rivastigmine and OTC sleep medicines may interact. Rivastigmine can increase the effects of sedatives, including OTC sleep medicines, resulting in increased drowsiness. It's important to talk to your doctor before taking OTC sleep medicines while taking Rivastigmine. | 0.9365371414708803 | true |
 
 
-## 🚀 New LangTest blogs :
+#### HealthSearchQA
+HealthSearchQA, a new free-response dataset of medical questions sought online, with six existing open-question answering datasets covering professional medical exams, research, and consumer queries. The HealthsearchQA dataset consists of 3375 frequently-asked consumer questions and was curated using seed medical diagnoses and their related symptoms.
 
-| New Blog Posts | Description |
-|----------------|-------------|
-| [**Evaluating Large Language Models on Gender-Occupational Stereotypes Using the Wino Bias Test**](https://medium.com/john-snow-labs/evaluating-large-language-models-on-gender-occupational-stereotypes-using-the-wino-bias-test-2a96619b4960) | Delve into the evaluation of language models with LangTest on the WinoBias dataset, addressing AI biases in gender and occupational roles. |
-| [**Streamlining ML Workflows: Integrating MLFlow Tracking with LangTest for Enhanced Model Evaluations**](https://medium.com/john-snow-labs/streamlining-ml-workflows-integrating-mlflow-tracking-with-langtest-for-enhanced-model-evaluations-4ce9863a0ff1) | Discover the revolutionary approach to ML development through the integration of MLFlow and LangTest, enhancing transparency and systematic tracking of models. |
-| [**Testing the Question Answering Capabilities of Large Language Models**](https://medium.com/john-snow-labs/testing-the-question-answering-capabilities-of-large-language-models-1bc424d61740) | Explore the complexities of evaluating Question Answering (QA) tasks using LangTest's diverse evaluation methods. |
-| [**Evaluating Stereotype Bias with LangTest**](https://medium.com/john-snow-labs/evaluating-stereotype-bias-with-langtest-8286af8f0f22) | In this blog post, we are focusing on using the StereoSet dataset to assess bias related to gender, profession, and race.|
+##### How the dataset looks:
 
-----------------
+{:.table3}
+| category   | test_type | original_question                       | perturbed_question                          | expected_result                                                                                                                | actual_result                                                                                                              | eval_score          | pass |
+|------------|-----------|------------------------------------------|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|---------------------|------|
+| robustness | uppercase | Are dental abscesses serious?            | ARE DENTAL ABSCESSES SERIOUS?               | Yes, dental abscesses are serious and can lead to infection and damage to the surrounding tissue if left untreated. Treatment typically involves antibiotics and/or draining the abscess. If left untreated, the infection can spread to other parts of the body. | Dental abscesses can be serious and require prompt medical attention. Left untreated, they can cause swelling, spreading infections, and damage to the surrounding teeth and bone. | 0.9457038739103363 | true |
+
+
+
+### 🚀Direct Integration with Hugging Face Models
+
+Users can effortlessly pass any Hugging Face model object into the LangTest harness and run a variety of tasks. This feature streamlines the process of evaluating and comparing different models, making it easier for users to leverage LangTest's comprehensive suite of tools with the wide array of models available on Hugging Face.
+
+![image](https://github.com/JohnSnowLabs/langtest/assets/71844877/adef09b7-e33d-42ec-86f3-a96dea85387e)
+
+
+## 🚀 New LangTest Blogs:
+
+{:.table2}
+| Blog | Description |
+| --- | --- |
+| [LangTest: A Secret Weapon for Improving the Robustness of Your Transformers Language Models](https://www.johnsnowlabs.com/langtest-a-secret-weapon-for-improving-the-robustness-of-your-transformers-language-models/) | Explore the robustness of Transformers Language Models with LangTest Insights. |
+| [Testing the Robustness of LSTM-Based Sentiment Analysis Models](https://medium.com/john-snow-labs/testing-the-robustness-of-lstm-based-sentiment-analysis-models-67ed84e42997) | Explore the robustness of custom models with LangTest Insights. |
+
 ## 🐛 Bug Fixes
-- Fixed templatic augmentations
-- Resolved a bug in default configurations
-- Addressed compatibility issues between OpenAI (version 1.1.1) and Langchain 
-- Fixed errors in sycophancy-test, factuality-test, and augmentation 
+
+- Fixed LangTestCallback errors
+- Fixed QA, Default Config, and Transformer Model for QA
+- Fixed multi-model evaluation
+- Fixed datasets format
 
 ## ⚒️ Previous Versions
 
