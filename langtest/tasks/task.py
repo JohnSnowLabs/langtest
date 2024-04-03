@@ -319,11 +319,20 @@ class QuestionAnswering(BaseTask):
         target_column: str = "answer",
     ) -> samples.QASample:
         """Create a sample."""
+
         keys = list(row_data.keys())
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(
             keys, [question, context, target_column, options]
         )
+
+        # this dict helps to augmentation of the data
+        loaded_fields = {
+            "question": column_mapper.get(question, None),
+            "context": column_mapper.get(context, None),
+            "options": column_mapper.get(options, None),
+            "target_column": column_mapper.get(target_column, None),
+        }
 
         expected_results = (
             row_data.get(column_mapper[target_column], None)
@@ -344,6 +353,7 @@ class QuestionAnswering(BaseTask):
             options=options_value,
             expected_results=expected_results,
             dataset_name=dataset_name,
+            loaded_fields=loaded_fields,
         )
 
 

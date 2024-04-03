@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any, Callable, Union
 from .modelhandler import ModelAPI
 from abc import ABC
 from functools import lru_cache
@@ -33,16 +33,23 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
     else:
         raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
 
-    headers = {"Content-Type": "application/json"}
-    server_prompt = {"role": "assistant", "content": server_prompt}
-    user_text = {"role": "user", "content": text}
+    if kwargs.get("headers", None):
+        headers = kwargs.get("headers")
+    else:
+        headers = {"Content-Type": "application/json"}
 
-    data = {
-        "messages": [server_prompt, user_text],
-        "temperature": kwargs.get("temperature", 0.2),
-        "max_tokens": kwargs.get("max_tokens", -1),
-        "stream": kwargs.get("stream", False),
-    }
+    if kwargs.get("data", None):
+        input_data_func = kwargs.get("data")
+        data = input_data_func(text)
+    else:
+        server_prompt = {"role": "assistant", "content": server_prompt}
+        user_text = {"role": "user", "content": text}
+        data = {
+            "messages": [server_prompt, user_text],
+            "temperature": kwargs.get("temperature", 0.2),
+            "max_tokens": kwargs.get("max_tokens", -1),
+            "stream": kwargs.get("stream", False),
+        }
 
     try:
         response = requests.post(url, headers=headers, json=data)
@@ -65,7 +72,7 @@ class PretrainedModel(ABC):
         __call__(self, text: str) -> str: Calls the predict method for the given input text.
     """
 
-    def __init__(self, model: Any, **kwargs) -> None:
+    def __init__(self, model: Any, output_parser: Callable = None, **kwargs) -> None:
         """
         Initialize the PretrainedModel.
 
@@ -74,6 +81,7 @@ class PretrainedModel(ABC):
             **kwargs: Additional keyword arguments.
         """
         self.model = model
+        self.output_parser = output_parser
         self.kwargs = kwargs
         self.predict.cache_clear()
 
@@ -90,6 +98,34 @@ class PretrainedModel(ABC):
         Returns:
             Any: The loaded pretrained model.
         """
+        if isinstance(path, dict):
+            model = path["url"]
+            input_data = path.get("input_processor", None)
+            output_parser = path.get("output_parser", None)
+            headers = path.get("headers", None)
+
+            # missing input_processor, output_parser, headers in the dictionary
+            # will raise an error
+            if not all((input_data, output_parser, headers)):
+                raise ValueError(
+                    Errors.E090.format(
+                        error_message="".join(
+                            [
+                                "input_processor,",
+                                " output_parser",
+                                " and headers",
+                                " are mandatory when model is a dictionary.",
+                            ]
+                        )
+                    )
+                )
+            return cls(
+                model=model,
+                data=input_data,
+                headers=headers,
+                output_parser=output_parser,
+                **kwargs,
+            )
         return cls(model=path, **kwargs)
 
     @lru_cache(maxsize=102400)
@@ -119,6 +155,8 @@ class PretrainedModel(ABC):
                 *args,
                 **self.kwargs,
             )
+            if self.output_parser:
+                return self.output_parser(op)
             return op["choices"][0]["message"]["content"]
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))

@@ -7,7 +7,7 @@ import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import Dict, List, Union
-
+from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
@@ -25,6 +25,8 @@ from langtest.utils.custom_types import (
 )
 from ..utils.lib_manager import try_import_lib
 from ..errors import Warnings, Errors
+import glob
+from pkg_resources import resource_filename
 
 COLUMN_MAPPER = {
     "text-classification": {
@@ -129,8 +131,28 @@ class BaseDataset(ABC):
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
+        import pandas as pd
+
         dataset_cls = cls.__name__.replace("Dataset", "").lower()
-        cls.data_sources[dataset_cls] = cls
+        if dataset_cls == "pandas":
+            extensions = [
+                i.replace("read_", "")
+                for i in pd.__all__
+                if i.startswith("read_") and i not in ("read_csv")
+            ]
+            for ext in extensions:
+                supported_extentions = cls.renamed_extensions(inverted=True)
+                if ext in list(supported_extentions.keys()):
+                    if isinstance(supported_extentions[ext], list):
+                        for ext in supported_extentions[ext]:
+                            cls.data_sources[ext] = cls
+                    else:
+                        ext = supported_extentions[ext]
+                        cls.data_sources[ext] = cls
+                else:
+                    cls.data_sources[ext] = cls
+        else:
+            cls.data_sources[dataset_cls] = cls
 
 
 class DataFactory:
@@ -158,6 +180,18 @@ class DataFactory:
         self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
 
+        self.datasets_with_jsonl_extension = []
+        for dataset_name, dataset_info in datasets_info.items():
+            if dataset_info.get("extension", "") == ".jsonl":
+                self.datasets_with_jsonl_extension.append(dataset_name)
+            else:
+                # Check for subsets
+                for subset_name, subset_info in dataset_info.items():
+                    if isinstance(subset_info, dict):
+                        if subset_info.get("extension", "") == ".jsonl":
+                            self.datasets_with_jsonl_extension.append(dataset_name)
+                            break
+
         if isinstance(self._file_path, str):
             _, self.file_ext = os.path.splitext(self._file_path)
 
@@ -174,6 +208,13 @@ class DataFactory:
                 and self._file_path in self.CURATED_BIAS_DATASETS
             ):
                 self.file_ext = "curated"
+                self._file_path = file_path.get("data_source")
+            elif (
+                self._file_path in self.datasets_with_jsonl_extension
+                and self._custom_label.get("split") is None
+                and self._custom_label.get("subset") is None
+            ):
+                self.file_ext = "jsonl"
                 self._file_path = file_path.get("data_source")
             else:
                 self._file_path = self._load_dataset(self._custom_label)
@@ -306,149 +347,6 @@ class DataFactory:
         split: str = custom_label.get("split")
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
-
-        datasets_info = {
-            "BoolQ": {
-                "split": ("test-tiny", "test", "dev-tiny", "dev", "combined"),
-                "extension": ".jsonl",
-            },
-            "NQ-open": {
-                "split": ("test-tiny", "test", "combined"),
-                "extension": ".jsonl",
-            },
-            "XSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "TruthfulQA": {
-                "split": ("test-tiny", "test", "combined"),
-                "extension": ".jsonl",
-            },
-            "MMLU": {"split": ("test-tiny", "test", "clinical"), "extension": ".jsonl"},
-            "OpenBookQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Quac": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Toxicity": {"split": ("test",), "extension": ".jsonl"},
-            "NarrativeQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "HellaSwag": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Translation": {"split": ("test",), "extension": ".jsonl"},
-            "BBQ": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Prompt-Injection-Attack": {"split": ("test",), "extension": ".jsonl"},
-            "Clinical": {
-                "split": (
-                    "Medical-files",
-                    "Gastroenterology-files",
-                    "Oromaxillofacial-files",
-                ),
-                "extension": ".jsonl",
-            },
-            "ASDiv": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Bigbench": {
-                "Causal-judgment": {
-                    "split": ("test-tiny", "test"),
-                    "extension": ".jsonl",
-                },
-                "DisflQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-                "Abstract-narrative-understanding": {
-                    "split": ("test-tiny", "test"),
-                    "extension": ".jsonl",
-                },
-                "DisambiguationQA": {
-                    "split": ("test-tiny", "test"),
-                    "extension": ".jsonl",
-                },
-            },
-            "LogiQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "Narrative-Wedging": {"split": ("test-tiny",), "extension": ".jsonl"},
-            "Wino-test": {"split": ("test",), "extension": ".jsonl"},
-            "Legal-Support": {"split": ("test",), "extension": ".jsonl"},
-            "Factual-Summary-Pairs": {"split": ("test",), "extension": ".jsonl"},
-            "MultiLexSum": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "wikiDataset": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "CommonsenseQA": {
-                "split": (
-                    "test-tiny",
-                    "test",
-                    "validation-tiny",
-                    "validation",
-                    "sample-test-tiny",
-                ),
-                "extension": ".jsonl",
-            },
-            "SIQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "PIQA": {
-                "split": (
-                    "test-tiny",
-                    "test",
-                    "validation-tiny",
-                    "validation",
-                    "sample-test-tiny",
-                ),
-                "extension": ".jsonl",
-            },
-            "Consumer-Contracts": {"split": ("test",), "extension": ".jsonl"},
-            "Contracts": {"split": ("test",), "extension": ".jsonl"},
-            "Privacy-Policy": {"split": ("test",), "extension": ".jsonl"},
-            "Crows-Pairs": {"split": ("test",), "extension": ".csv"},
-            "StereoSet": {"split": ("test",), "extension": ".jsonl"},
-            "Fiqa": {"split": ("test",), "extension": ".jsonl"},
-            "MedQA": {"split": ("test-tiny", "test"), "extension": ".jsonl"},
-            "MedicationQA": {"split": ("test",), "extension": ".jsonl"},
-            "LiveQA": {"split": ("test",), "extension": ".jsonl"},
-            "healthsearchqa": {"split": ("test",), "extension": ".jsonl"},
-            "PubMedQA": {
-                "pqaa": {"split": ("test",), "extension": ".jsonl"},
-                "pqal": {"split": ("test",), "extension": ".jsonl"},
-            },
-            "MedMCQA": {
-                "MedMCQA-Test": {
-                    "split": (
-                        "Anaesthesia",
-                        "Anatomy",
-                        "Biochemistry",
-                        "Dental",
-                        "ENT",
-                        "Forensic_Medicine",
-                        "Gynaecology_Obstetrics",
-                        "Medicine",
-                        "Microbiology",
-                        "Ophthalmology",
-                        "Pathology",
-                        "Pediatrics",
-                        "Pharmacology",
-                        "Physiology",
-                        "Psychiatry",
-                        "Radiology",
-                        "Skin",
-                        "Social_Preventive_Medicine",
-                        "Surgery",
-                        "Unknown",
-                    ),
-                    "extension": ".jsonl",
-                },
-                "MedMCQA-Validation": {
-                    "split": (
-                        "Anaesthesia",
-                        "Anatomy",
-                        "Biochemistry",
-                        "Dental",
-                        "ENT",
-                        "Forensic_Medicine",
-                        "Gynaecology_Obstetrics",
-                        "Medicine",
-                        "Microbiology",
-                        "Ophthalmology",
-                        "Pathology",
-                        "Pediatrics",
-                        "Pharmacology",
-                        "Physiology",
-                        "Psychiatry",
-                        "Radiology",
-                        "Skin",
-                        "Social_Preventive_Medicine",
-                        "Surgery",
-                        "Unknown",
-                    ),
-                    "extension": ".jsonl",
-                },
-            },
-        }
 
         if dataset_name not in datasets_info:
             raise ValueError(f"{dataset_name} is not a valid dataset name")
@@ -646,7 +544,7 @@ class ConllDataset(BaseDataset):
         with open(output_path, "wb") as fwriter:
             fwriter.write(bytes(otext, encoding="utf-8"))
 
-    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):
+    def __token_validation(self, tokens: str) -> (bool, List[List[str]]):  # type: ignore
         """Validates the tokens in a sentence.
 
         Args:
@@ -844,12 +742,16 @@ class CSVDataset(BaseDataset):
 
             raw_data.append(
                 {
-                    "text": text
-                    if (isinstance(text, list) or self.task != "ner")
-                    else eval(text),
-                    "labels": labels
-                    if (isinstance(labels, list) or self.task != "ner")
-                    else eval(labels),
+                    "text": (
+                        text
+                        if (isinstance(text, list) or self.task != "ner")
+                        else eval(text)
+                    ),
+                    "labels": (
+                        labels
+                        if (isinstance(labels, list) or self.task != "ner")
+                        else eval(labels)
+                    ),
                 }
             )
 
@@ -1016,14 +918,20 @@ class CSVDataset(BaseDataset):
         data = pd.read_csv(file_name, **kwargs)
         samples = []
 
+        # mutli dataset
+        if "dataset_name" in data.columns and data["dataset_name"].nunique() > 1:
+            temp_data = data.groupby("dataset_name")
+            samples = {}
+            for name, df in temp_data:
+                for i in df.to_dict(orient="records"):
+                    sample = self.task.get_sample_class(**i)
+                    samples[name] = sample
+            return samples
+
         for i in data.to_dict(orient="records"):
-            # if self.task in custom_names:
-            #     sample_name = custom_names[self.task] + "sample"
-            # else:
-            #     sample_name = self.task.lower() + "sample"
-            # samples.append(sample_models[sample_name](**i))
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
+
         return samples
 
 
@@ -1106,6 +1014,9 @@ class JSONLDataset(BaseDataset):
             list[Sample]: Loaded text data.
         """
         data = []
+        if not os.path.splitext(self._file_path)[-1]:
+            return self.__aggregate_jsonl(self._file_path)
+
         with jsonlines.open(self._file_path) as reader:
             for item in reader:
                 dataset_name = self._file_path.split("/")[-2].replace("-", "")
@@ -1113,6 +1024,77 @@ class JSONLDataset(BaseDataset):
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
+
+        return data
+
+    def __load_jsonl(self, file: str, dataset_name: str, data, *args, **kwargs):
+        """Load data from a JSONL file."""
+        # data_files = resource_filename("langtest", f"/data/{file}")
+        with jsonlines.open(file, "r") as reader:
+            for item in reader:
+                sample = self.task.create_sample(
+                    item,
+                    dataset_name=dataset_name.replace("-", "").lower(),
+                    *args,
+                    **kwargs,
+                )
+                data.append(sample)
+        return data
+
+    def __aggregate_jsonl(self, dataset_name, *args, **kwargs):
+        """Aggregate JSONL files into a single JSONL file."""
+        data = []
+
+        datasets = {
+            "test.jsonl": [
+                "ASDiv",
+                "BBQ",
+                "HellaSwag",
+                "LogiQA",
+                "MedQA",
+                "MultiLexSum",
+                "NarrativeQA",
+                "NQ-open",
+                "OpenBookQA",
+                "Quac",
+                "SIQA",
+                "TruthfulQA",
+            ],
+            "validation.jsonl": ["BoolQ", "CommonsenseQA", "PIQA"],
+        }
+
+        additional_datasets = {
+            "Bigbench": [
+                "Abstract-narrative-understanding/test.jsonl",
+                "Causal-judgment/test.jsonl",
+                "DisambiguationQA/test.jsonl",
+                "DisflQA/test.jsonl",
+            ],
+            "PubMedQA": ["pqaa/test.jsonl", "pqal/test.jsonl"],
+            "MMLU": ["clinical.jsonl"],
+        }
+
+        if dataset_name in datasets.values():
+            file = f"{dataset_name}/test.jsonl"
+            data = self.__load_jsonl(file, dataset_name, data, *args, **kwargs)
+        elif dataset_name in additional_datasets.keys():
+            files = additional_datasets[dataset_name]
+            for file in files:
+                file_loc = resource_filename("langtest", f"/data/{dataset_name}/{file}")
+                data = self.__load_jsonl(file_loc, dataset_name, data, *args, **kwargs)
+        else:
+            if dataset_name == "MedMCQA":
+                data_files = resource_filename(
+                    "langtest", f"/data/{dataset_name}/MedMCQA-Validation/"
+                )
+            else:
+                data_files = resource_filename("langtest", f"/data/{dataset_name}/")
+
+            all_files = glob.glob(f"{data_files}/**/*.jsonl", recursive=True)
+            jsonl_files = [file for file in all_files if re.match(r".*\.jsonl$", file)]
+
+            for file in jsonl_files:
+                data = self.__load_jsonl(file, dataset_name, data, *args, **kwargs)
 
         return data
 
@@ -1125,7 +1107,13 @@ class JSONLDataset(BaseDataset):
             output_path (str):
                 path to save the data to
         """
-        raise NotImplementedError()
+        out = []
+        for each_sample in data:
+            row_dict = Formatter.process(each_sample, output_format="jsonl")
+            out.append(row_dict)
+
+        df = pd.DataFrame(out)
+        df.to_json(output_path, orient="records", lines=True)
 
 
 class HuggingFaceDataset(BaseDataset):
@@ -1577,3 +1565,196 @@ class SynteticDataset(BaseDataset):
 
         df = pd.DataFrame(rows, columns=["original_question", "ground_truth"])
         df.to_csv(output_path, index=False, encoding="utf-8")
+
+
+class PandasDataset(BaseDataset):
+    """Class to handle Pandas datasets. Subclass of BaseDataset."""
+
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+        "toxicity",
+        "translation",
+        "security",
+        "clinical",
+        "disinformation",
+        "sensitivity",
+        "wino-bias",
+        "legal",
+        "factuality",
+        "stereoset",
+    ]
+    COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
+
+    def __init__(self, file_path: str, task: TaskManager, **kwargs) -> None:
+        """
+        Initializes a PandasDataset object.
+
+        Args:
+            file_path (str):
+                The path to the data file.
+           task (str):
+                Task to be evaluated on.
+            **kwargs:
+
+        Raises:
+            ValueError:
+                If the specified task is unsupported.
+        """
+        super().__init__()
+        self._file_path = file_path
+        self.task = task
+        self.kwargs = kwargs
+
+        if task.task_name in self.COLUMN_NAMES:
+            self.COLUMN_NAMES = self.COLUMN_NAMES[task.task_name]
+        elif "is_import" not in kwargs:
+            raise ValueError(Errors.E026.format(task=task))
+
+        self.column_map = None
+        self.kwargs = kwargs
+
+    def load_raw_data(self, standardize_columns: bool = False) -> List[Dict]:
+        """Loads data from a file into raw lists of strings
+
+        Args:
+            standardize_columns (bool): whether to standardize column names
+
+        Returns:
+            List[Dict]:
+                parsed file into list of dicts
+        """
+        df = getattr(pd, f"read_{self.__get_extension(self._file_path)}")(
+            self._file_path, **self.kwargs
+        )
+
+        if not standardize_columns:
+            data = df.to_dict(orient="records")
+            return data
+
+        data = []
+        column_names = self._file_path
+
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
+        else:
+            column_names = dict()
+
+        for _, row in df.iterrows():
+            self.task.create_sample(row, **column_names)
+
+        return data
+
+    def load_data(self) -> List[Sample]:
+        """
+        Load data from a CSV file and preprocess it based on the specified task.
+
+        Returns:
+            List[Sample]: A list of preprocessed data samples.
+        """
+
+        if self.kwargs.get("is_import", False):
+            kwargs = self.kwargs.copy()
+            kwargs.pop("is_import")
+            return self._import_data(self._file_path, **kwargs)
+
+        if isinstance(self._file_path, dict):
+            file_path = self._file_path.get("data_source", self._file_path)
+        else:
+            file_path = self._file_path
+
+        ext = self.__get_extension(file_path)
+
+        dataset: pd.DataFrame = getattr(pd, f"read_{ext}")(file_path, **self.kwargs)
+
+        data = []
+        column_names = dataset.columns
+
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
+        else:
+            column_names = dict()
+
+        for idx, row_data in enumerate(dataset.to_dict(orient="records")):
+            try:
+                sample = self.task.create_sample(
+                    row_data,
+                    **column_names,
+                )
+                data.append(sample)
+
+            except Exception as e:
+                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
+                continue
+
+        return data
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """Exports the data to the corresponding format and saves it to 'output_path'."""
+        raise NotImplementedError()
+
+    def _import_data(self, file_name, **kwargs) -> List[Sample]:
+        """
+        Helper function to import testcases from csv file after editing.
+        """
+        if isinstance(file_name, dict):
+            file_name = file_name.get("data_source")
+
+        data = pd.read_csv(file_name, **kwargs)
+        samples = []
+
+        # mutli dataset
+        if "dataset_name" in data.columns and data["dataset_name"].nunique() > 1:
+            temp_data = data.groupby("dataset_name")
+            samples = {}
+            for name, df in temp_data:
+                for i in df.to_dict(orient="records"):
+                    sample = self.task.get_sample_class(**i)
+                    samples[name] = sample
+            return samples
+
+        for i in data.to_dict(orient="records"):
+            sample = self.task.get_sample_class(**i)
+            samples.append(sample)
+        return samples
+
+    def __get_extension(self, file_path: str) -> str:
+        """Get the file extension of the file.
+
+        Args:
+            file_path (str): The path to the file.
+
+        Returns:
+            str: The file extension.
+        """
+
+        ext = os.path.splitext(file_path)[-1].lower()[1:]
+        if ext in self.renamed_extensions():
+            return self.renamed_extensions()[ext]
+        return ext
+
+    @classmethod
+    def renamed_extensions(self, inverted: bool = False) -> Dict[str, str]:
+        """Rename the file extensions to the correct format."""
+        if inverted:
+            # if key is already in the dict, then append the value to the list
+            temp_dict = {}
+            for k, v in self.renamed_extensions().items():
+                if v in temp_dict:
+                    temp_dict[v].append(k)
+                else:
+                    temp_dict[v] = [k]
+            return temp_dict
+
+        ext_map = {
+            "xlsx": "excel",
+            "xls": "excel",
+            "pkl": "pickle",
+            "h5": "hdf",
+            "hdf5": "hdf",
+        }
+        return ext_map
