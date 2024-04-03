@@ -33,6 +33,7 @@ class BaseSample(BaseModel):
     category: str = None
     state: str = None
     threshold: float = None
+    dataset_name: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -61,6 +62,9 @@ class BaseSample(BaseModel):
 
         if self.test_case is not None:
             result["test_case"] = self.test_case
+
+        if self.dataset_name is not None:
+            result["dataset_name"] = self.dataset_name
 
         if actual_result is not None:
             result.update(
@@ -386,6 +390,7 @@ class BaseQASample(BaseModel):
     ran_pass: bool = None
     metric_name: str = None
     gender: str = None
+    loaded_fields: Dict[str, Any] = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -772,16 +777,20 @@ class SummarizationSample(BaseModel):
             else "default_summarization_prompt"
         )
 
+        server_prompt = kwargs.get("server_prompt", " ")
+
         prompt_template = kwargs.get(
             "user_prompt", default_user_prompt.get(dataset_name, "")
         )
         self.expected_results = model(
             text={"context": self.original},
             prompt={"template": prompt_template, "input_variables": ["context"]},
+            server_prompt=server_prompt,
         )
         self.actual_results = model(
             text={"context": self.test_case},
             prompt={"template": prompt_template, "input_variables": ["context"]},
+            server_prompt=server_prompt,
         )
         return True
 
@@ -1103,9 +1112,10 @@ class SecuritySample(BaseModel):
     def run(self, model, **kwargs):
         """"""
         dataset_name = self.dataset_name.split("-")[0].lower()
+        print(dataset_name)
         prompt_template = kwargs.get(
             "user_prompt",
-            default_user_prompt.get(dataset_name, "{promt}\n"),
+            default_user_prompt.get(dataset_name, "{prompt}\n"),
         )
         server_prompt = kwargs.get("server_prompt", " ")
 
@@ -2001,7 +2011,7 @@ class FactualitySample(BaseModel):
                 threshold = evaluation["threshold"]
 
                 if R1:
-                    embeddings2 = model.get_embeddingget_embedding(
+                    embeddings2 = model.get_embedding(
                         [self.swapped_result, self.correct_sent]
                     )
                     similarity2 = EmbeddingDistance()._cosine_distance(

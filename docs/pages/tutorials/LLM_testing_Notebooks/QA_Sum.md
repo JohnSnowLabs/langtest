@@ -77,7 +77,7 @@ In this notebook we are testing Cohere `command-xlarge-nightly` Model For Questi
 | ----------------------------------- |
 |  **Question-Answering & Summarization**   | Cohere                            | Question-Answering/Summarization  | `BoolQ`, `NQ-Open`, `Xsum` | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Cohere_QA_Summarization_Testing_Notebook.ipynb) |
 
-0987   <div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
+<div class="main-docs" markdown="1"><div class="h3-box" markdown="1">
 
 ## Hugging Face Inference API Question-Answering & Summarization
 

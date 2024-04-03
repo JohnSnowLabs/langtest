@@ -79,3 +79,56 @@ class ModelAPITestCase(unittest.TestCase):
         with self.assertRaises(ConfigError) as _:
             task = TaskManager("question-answering")
             task.model(model_path="command-xlarge-nightly", model_hub="cohere")
+
+    def test_generic_api_model(self) -> None:
+        """
+        Test loading a model from a generic API
+        """
+
+        # check the web hub is available
+        from langtest.modelhandler import ModelAPI
+
+        AssertionError("web" in ModelAPI.model_registry.keys())
+
+        # check the harness is loading correctly
+        from langtest import Harness
+
+        # with self.assertRaises(AssertionError) as _:
+
+        # endpoint to the model
+        url = "https://generic-api.com/completion"
+
+        # lambda functions to process the input and output
+        input_data = lambda content: {
+            "contents": [{"role": "user", "parts": [{"text": content}]}]
+        }
+
+        output_praser = lambda response: response["candidates"][0]["content"]["parts"][0][
+            "text"
+        ]
+
+        # create the harness
+        harness = Harness(
+            task="question-answering",
+            model={
+                "model": {
+                    "url": url,
+                    "headers": {
+                        "Content-Type": "application/json",
+                    },
+                    "input_processor": input_data,
+                    "output_parser": output_praser,
+                },
+                "hub": "web",
+            },
+            data={
+                "data_source": "OpenBookQA",
+                "split": "test-tiny",
+            },
+        )
+
+        # slice the dataset
+        harness.data = harness.data[:10]
+
+        # generate a testcase
+        harness.generate()
