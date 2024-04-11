@@ -272,7 +272,7 @@ class PretrainedModelForNER(ModelAPI):
         }
 
         # special characters to stop the sequence generation
-        role_extract = self.kwargs.get("role_extract", "<\|(.+?)\|>")
+        role_extract = self.kwargs.get("role_extract", r"<\|(.+?)\|>")
         stop_char = self.kwargs.get("stop_char", "</s>")
 
         # process the input text
@@ -299,7 +299,7 @@ class PretrainedModelForNER(ModelAPI):
                         # extract the JSON content from the generated text
                         content_json = json.loads(content.replace("'", '"'))
 
-                    except json.JSONDecodeError as e:
+                    except json.JSONDecodeError:
                         # print(f"Error decoding JSON content: {e}")
                         content_json = [
                             {
