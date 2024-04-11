@@ -1,4 +1,5 @@
 from typing import Any, Callable, Union
+
 from .modelhandler import ModelAPI
 from abc import ABC
 from functools import lru_cache
@@ -6,6 +7,8 @@ import importlib
 from ..errors import Errors
 from langtest.utils.lib_manager import try_import_lib
 from ..utils.custom_types.helpers import SimplePromptTemplate
+from langtest.utils.custom_types.output import NEROutput
+from langtest.utils.custom_types.predictions import NERPrediction
 from langtest.utils.custom_types.helpers import HashableDict
 
 
@@ -42,10 +45,13 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
         input_data_func = kwargs.get("data")
         data = input_data_func(text)
     else:
-        server_prompt = {"role": "assistant", "content": server_prompt}
+        if isinstance(server_prompt, str):
+            server_prompt = {"role": "assistant", "content": server_prompt}
         user_text = {"role": "user", "content": text}
         data = {
-            "messages": [server_prompt, user_text],
+            "messages": [*server_prompt, user_text]
+            if isinstance(server_prompt, tuple)
+            else [server_prompt, user_text],
             "temperature": kwargs.get("temperature", 0.2),
             "max_tokens": kwargs.get("max_tokens", -1),
             "stream": kwargs.get("stream", False),
@@ -203,6 +209,64 @@ class PretrainedModel(ABC):
         prompt = HashableDict(**prompt)
         return self.predict(
             text=text, prompt=prompt, server_prompt=server_prompt, *args, **kwargs
+        )
+
+
+class PretrainedModelForNER(PretrainedModel, ModelAPI):
+    """A class representing a pretrained model for named entity recognition.
+
+    Inherits:
+        PretrainedModel: The base class for pretrained models.
+
+    Methods
+    -------
+    predict(text: str, *args, **kwargs)
+        Predicts the answer to a given question based on the pre-trained model.
+
+    Raises
+    ------
+    Exception
+        If an error occurs during prediction.
+    """
+
+    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
+        """
+        Calls the predict method for the given input text.
+        """
+        prompt = HashableDict(
+            {
+                "input_variables": ["text"],
+                "template": "Given the text: {text}, identify the named entities.",
+            }
+        )
+
+        server_prompt = self.kwargs.get(
+            "system_prompt", "Please identify the named entities in the given text."
+        )
+
+        if isinstance(server_prompt, list):
+            server_prompt = tuple(HashableDict(item) for item in server_prompt)
+
+        text = HashableDict({"text": text})
+
+        predictions = self.predict(text, prompt, server_prompt, *args, **kwargs)
+
+        if isinstance(predictions, str):
+            try:
+                predictions = eval(predictions)
+            except SyntaxError:
+                predictions = []
+
+        return NEROutput(
+            predictions=[
+                NERPrediction.from_span(
+                    entity=prediction.get("entity_group", prediction.get("entity", None)),
+                    word=prediction.get("word", ""),
+                    start=prediction.get("start", -1),
+                    end=prediction.get("end", -1),
+                )
+                for prediction in predictions
+            ]
         )
 
 
