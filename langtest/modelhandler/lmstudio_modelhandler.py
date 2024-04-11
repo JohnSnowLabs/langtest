@@ -229,10 +229,12 @@ class PretrainedModelForNER(PretrainedModel, ModelAPI):
         If an error occurs during prediction.
     """
 
-    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
+    @lru_cache(maxsize=102400)
+    def predict(self, text: str, *args, **kwargs) -> NEROutput:
         """
-        Calls the predict method for the given input text.
-        """
+        Perform prediction using the pretrained model."""
+
+        # prompt configuration
         prompt = HashableDict(
             {
                 "input_variables": ["text"],
@@ -240,20 +242,43 @@ class PretrainedModelForNER(PretrainedModel, ModelAPI):
             }
         )
 
+        # server prompt configuration
         server_prompt = self.kwargs.get(
             "system_prompt", "Please identify the named entities in the given text."
         )
 
+        # check if server prompt is a list and convert it to a tuple
         if isinstance(server_prompt, list):
             server_prompt = tuple(HashableDict(item) for item in server_prompt)
 
+        # convert text to a dictionary
         text = HashableDict({"text": text})
 
-        predictions = self.predict(text, prompt, server_prompt, *args, **kwargs)
+        # result
+        predictions = None
+
+        try:
+            prompt_template = SimplePromptTemplate(**prompt)
+            p = prompt_template.format(**text)
+            op = chat_completion_api(
+                text=p,
+                url=self.model,
+                server_prompt=server_prompt,
+                *args,
+                **self.kwargs,
+            )
+            if self.output_parser:
+                predictions = self.output_parser(op)
+            else:
+                predictions = op["choices"][0]["message"]["content"]
+        except Exception as e:
+            raise ValueError(Errors.E089.format(error_message=e))
 
         if isinstance(predictions, str):
             try:
                 predictions = eval(predictions)
+                if not isinstance(predictions, list):
+                    predictions = []
             except SyntaxError:
                 predictions = []
 
@@ -268,6 +293,13 @@ class PretrainedModelForNER(PretrainedModel, ModelAPI):
                 for prediction in predictions
             ]
         )
+
+    def __call__(self, text: str, *args, **kwargs) -> NEROutput:
+        """
+        Calls the predict method for the given input text.
+        """
+
+        return self.predict(text, *args, **kwargs)
 
 
 class PretrainedModelForQA(PretrainedModel, ModelAPI):
