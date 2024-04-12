@@ -1572,8 +1572,18 @@ class Harness:
     ):
         generated_results = {}
 
+        # temp_store_prompt
+        temp_store_prompt = self._config.get("model_parameters", {}).get(
+            "user_prompt", None
+        )
+
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
+            # update user prompt for each dataset
+            if temp_store_prompt:
+                self._config.get("model_parameters", {}).update(
+                    {"user_prompt": temp_store_prompt.get(dataset_name)}
+                )
             # Get the raw data for the dataset
             if isinstance(self.data, dict):
                 raw_data = self.data.get(dataset_name)
@@ -1596,6 +1606,12 @@ class Harness:
                 )
 
             print(f"{'':-^80}\n")
+
+        # resore user prompt
+        if temp_store_prompt:
+            self._config.get("model_parameters", {}).update(
+                {"user_prompt": temp_store_prompt}
+            )
 
         if (
             self.is_multi_dataset
