@@ -1580,7 +1580,7 @@ class Harness:
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
             # update user prompt for each dataset
-            if temp_store_prompt:
+            if temp_store_prompt and isinstance(temp_store_prompt, dict):
                 self._config.get("model_parameters", {}).update(
                     {"user_prompt": temp_store_prompt.get(dataset_name)}
                 )
