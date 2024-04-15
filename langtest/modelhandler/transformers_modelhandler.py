@@ -191,7 +191,6 @@ class PretrainedModelForNER(ModelAPI):
         if self.model.model.__class__.__name__.endswith("ForCausalLM"):
             predictions, _ = self.__predict_causalLm(text, **kwargs)
             if predictions:
-                predictions = predictions[-1]["content"]
                 if not isinstance(predictions, list):
                     predictions = [predictions]
             else:
@@ -248,13 +247,12 @@ class PretrainedModelForNER(ModelAPI):
         return self.predict(text=text, **kwargs)
 
     def __predict_causalLm(self, text: str, **kwargs):
-        import re
-        import json
+        """Perform predictions on the input text using a causal language model."""
 
         # override default tokenizer parameters with the user-defined parameters
         tokenizer_params = {
             "tokenize": False,
-            "add_generation_prompt": False,
+            "add_generation_prompt": True,
             "return_dict": True,
             **self.kwargs.get("tokenizer_kwargs", {}),
         }
@@ -267,13 +265,20 @@ class PretrainedModelForNER(ModelAPI):
             "top_k": 10,
             "top_p": 0.95,
             "batch_size": 1,
-            "return_full_text": False,
             **self.kwargs.get("model_kwargs", {}),
         }
 
-        # special characters to stop the sequence generation
-        role_extract = self.kwargs.get("role_extract", r"<\|(.+?)\|>")
-        stop_char = self.kwargs.get("stop_char", "</s>")
+        # override the default parameters for the tokenizer
+        tokenizer_params = {
+            **tokenizer_params,
+            "add_generation_prompt": True,
+        }
+        # override the default parameters for the model
+        model_params = {
+            **model_params,
+            "return_full_text": False,
+            "handle_long_generation": "hole",
+        }
 
         # process the input text
         messages = self.input_process(text)
@@ -288,36 +293,16 @@ class PretrainedModelForNER(ModelAPI):
         )
 
         # Extracting the structured responses from the generated text
-        responses = []
-        for message in outputs[0]["generated_text"].split(stop_char):
-            role_match = re.search(role_extract, message)
-            if role_match:
-                role = role_match.group(1)
-                content = message.replace(role_match.group(0), "").strip()
-                if role == "assistant":
-                    try:
-                        # extract the JSON content from the generated text
-                        content_json = json.loads(content.replace("'", '"'))
+        predictions = []
+        if isinstance(outputs[0]["generated_text"], str):
+            try:
+                predictions = eval(outputs[0]["generated_text"])
+                if not isinstance(predictions, list):
+                    predictions = []
+            except SyntaxError:
+                predictions = []
 
-                    except json.JSONDecodeError:
-                        # print(f"Error decoding JSON content: {e}")
-                        content_json = [
-                            {
-                                "entity": "",
-                                "score": -1,
-                                "index": -1,
-                                "word": "",
-                                "start": -1,
-                                "end": -1,
-                            }
-                        ]
-                    responses.append({"role": role, "content": content_json})
-
-                else:
-                    # responses.append({"role": role, "content": content})
-                    pass
-
-        return responses, outputs
+        return predictions, outputs
 
     def input_process(self, input_sen):
         """
