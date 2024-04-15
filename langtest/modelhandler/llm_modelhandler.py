@@ -2,7 +2,8 @@ import inspect
 from typing import Any, Union
 import langchain.llms as lc
 import langchain.chat_models as cm
-from langchain import LLMChain, PromptTemplate
+from langchain.chains import LLMChain
+from langchain_core.prompts import PromptTemplate
 from pydantic import ValidationError
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 from ..errors import Errors, Warnings
@@ -133,8 +134,8 @@ class PretrainedModelForQA(ModelAPI):
         try:
             prompt_template = PromptTemplate(**prompt)
             llmchain = LLMChain(prompt=prompt_template, llm=self.model)
-            output = llmchain.run(**text)
-            return output
+            output = llmchain.invoke(text)
+            return output.get(llmchain.output_key, "")
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
 
