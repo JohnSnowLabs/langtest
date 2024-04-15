@@ -252,7 +252,7 @@ class PretrainedModelForNER(PretrainedModelForQA, ModelAPI):
             except Exception:
                 return NEROutput(predictions=[])
 
-        except OutputParserException as e:
+        except OutputParserException:
             return NEROutput(predictions=[])
 
         except Exception as e:
