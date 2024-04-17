@@ -1342,7 +1342,11 @@ class Harness:
                 return testcases
 
         elif str(self.task) in ("question-answering", "summarization"):
-            if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
+            if (
+                "bias" in tests.keys()
+                and isinstance(self.__data_dict, dict)
+                and "bias" == self.__data_dict.get("split")
+            ):
                 if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
                     tests_to_filter = tests["bias"].keys()
                     testcases = DataFactory.filter_curated_bias(tests_to_filter, dataset)
