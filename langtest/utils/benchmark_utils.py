@@ -11,6 +11,7 @@ class Leaderboard:
 
 
     """
+
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -21,7 +22,7 @@ class Leaderboard:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, path:str, *args, **kwargs) -> None:
+    def __init__(self, path: str, *args, **kwargs) -> None:
         """
         Initialize the Leaderboard class with the summary file
         """
@@ -89,6 +90,7 @@ class Summary:
     """
     Summary class to manage the summary report
     """
+
     _instance = None
 
     def __new__(cls, *args, **kwargs) -> None:
@@ -99,7 +101,7 @@ class Summary:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, path, *args, **kwargs) -> None:
+    def __init__(self, path: str, *args, **kwargs) -> None:
         """
         Initialize the summary
         """
@@ -114,6 +116,7 @@ class Summary:
             if os.path.exists(path):
                 return self.__read_from_csv(path, *args, **kwargs)
             else:
+                os.makedirs(os.path.dirname(path), exist_ok=True)
                 # Create a new file
                 df = pd.DataFrame(columns=self.__default_columns())
                 df.to_csv(path, index=False)

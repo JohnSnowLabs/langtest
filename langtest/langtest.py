@@ -13,6 +13,7 @@ import random
 
 from pkg_resources import resource_filename
 
+
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
@@ -22,6 +23,7 @@ from .utils import report_utils as report, config_utils
 
 
 from .transform.utils import RepresentationOperation
+from langtest.utils.benchmark_utils import Summary
 from langtest.utils.lib_manager import try_import_lib
 from langtest.utils.custom_types.helpers import TestResultManager
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
@@ -92,6 +94,7 @@ class Harness:
         model: Optional[Union[list, dict]] = None,
         data: Optional[Union[list, dict]] = None,
         config: Optional[Union[str, dict]] = None,
+        benchmarking: dict = None,
     ):
         """Initialize the Harness object.
 
@@ -111,6 +114,8 @@ class Harness:
         self.is_default = False
         self.__data_dict = data
         self.__is_multi_model = False
+        self.__model_info = model
+        self.__benchmarking = benchmarking
 
         # reset classes to default state
         self.__reset_defaults()
@@ -446,6 +451,37 @@ class Harness:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
+
+        # benchmarking true
+        if self.__benchmarking:
+            df = self.generated_results()
+
+            path = self.__benchmarking.get(
+                os.path.expanduser("save_dir"),
+                os.path.expanduser("~/.langtest/leaderboard/summary.csv"),
+            )
+            summary = Summary(path)
+
+            # temp dict
+            temp_dict = {}
+            if isinstance(self.__data_dict, dict):
+                temp_dict[self.__data_dict.get("data_source")] = self.__data_dict
+            else:
+                for i in self.__data_dict:
+                    temp_dict[i.get("data_source")] = i
+
+            # add the dataset_name column if the data is multi-dataset
+            df["split"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("split", "-")
+            )
+            df["model"] = self.__model_info.get("model", "-")
+            df["hub"] = self.__model_info.get("hub", "-")
+            df["task"] = str(self.task)
+            df["subset"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("subset", "-")
+            )
+            summary.add_report(df)
+
         if self._generated_results is None:
             raise RuntimeError(Errors.E011)
 
