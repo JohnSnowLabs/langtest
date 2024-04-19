@@ -28,7 +28,7 @@ class Leaderboard:
         """
         self.summary = Summary(path, *args, **kwargs)
 
-    def get_score_board(self):
+    def default(self):
         """
         Get the score board for the models
         """
@@ -41,19 +41,23 @@ class Leaderboard:
             ["timestamp", "model", "dataset_name", "split", "test_type", "category"]
         )["score"].idxmax()
         df = df.loc[idx]
+
+        # pivot the table
         pvt_table = df.pivot_table(
             index=["model"], columns="dataset_name", values="score"
         )
+
+        # mean column
+        pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
+        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
+
+        # reset the index and fill the NaN values
         pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
         pvt_table = pvt_table.fillna("-")
 
-        # mean column
-        pvt_table.insert(1, "Avg", pvt_table.iloc[:, 1:].mean(axis=1))
-        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
-
         return pvt_table
 
-    def get_score_board_by_tests(self):
+    def split_wise(self):
         """
         Get the score board for the models by test type
         """
@@ -62,13 +66,34 @@ class Leaderboard:
         pvt_table = df.pivot_table(
             index=["model", "split"], columns=["dataset_name"], values="score"
         )
-        # pvt_table.columns = [f"{col[0]}\n{col[1]}" for col in pvt_table.columns]
-        # pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
+
+        # mean column
+        pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
+        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
+
         pvt_table = pvt_table.fillna("-")
 
         return pvt_table
 
-    def get_score_board_by_category(self):
+    def test_wise(self):
+        """
+        Get the score board for the models by test type
+        """
+
+        df = self.summary.summary_df
+        pvt_table = df.pivot_table(
+            index=["model", "test_type"], columns=["dataset_name"], values="score"
+        )
+
+        # mean column
+        pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
+        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
+
+        pvt_table = pvt_table.fillna("-")
+
+        return pvt_table
+
+    def category_wise(self):
         """
         Get the score board for the models by category
         """
@@ -79,6 +104,20 @@ class Leaderboard:
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
         pvt_table = pvt_table.fillna("-")
         pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
+
+        return pvt_table
+
+    def custom_wise(self, indices: list, columns: list = []):
+        """
+        Get the score board for the models by custom group
+        """
+        df = self.summary.summary_df
+        pvt_table = df.pivot_table(
+            index=["model", *indices], columns=["dataset_name", *columns], values="score"
+        )
+        pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
+        pvt_table = pvt_table.fillna("-")
+        # pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
 
         return pvt_table
 

@@ -474,8 +474,18 @@ class Harness:
             df["split"] = df["dataset_name"].apply(
                 lambda x: temp_dict[x].get("split", "-")
             )
-            df["model"] = self.__model_info.get("model", "-")
             df["hub"] = self.__model_info.get("hub", "-")
+            if self.__model_info.get("hub", "-") == "lm-studio":
+                import requests as req
+
+                response = req.get(
+                    "http://localhost:1234/v1/models",
+                ).json()
+
+                model_name = response["data"][0]["id"]
+                df["model"] = model_name
+            else:
+                df["model"] = self.__model_info.get("model", "-")
             df["task"] = str(self.task)
             df["subset"] = df["dataset_name"].apply(
                 lambda x: temp_dict[x].get("subset", "-")
