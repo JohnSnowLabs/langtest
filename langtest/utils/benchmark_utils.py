@@ -87,7 +87,7 @@ class Leaderboard:
 
         # mean column
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
-        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
+        pvt_table = pvt_table.sort_values(by=["model", "Avg"], ascending=[True, False])
 
         pvt_table = pvt_table.fillna("-")
 
