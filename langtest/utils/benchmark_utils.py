@@ -1,8 +1,10 @@
 import os
+from typing import TypeVar, Generic
 import pandas as pd
 
 
-class Leaderboard:
+class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
+
     """
     Leaderboard class to manage the ranking of the models
 
@@ -22,7 +24,12 @@ class Leaderboard:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, path: str, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        path: str = os.path.expanduser("~/.langtest/leaderboard/summary.csv"),
+        *args,
+        **kwargs,
+    ) -> None:
         """
         Initialize the Leaderboard class with the summary file
         """
@@ -49,7 +56,7 @@ class Leaderboard:
 
         # mean column
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
-        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
+        pvt_table = pvt_table.sort_values(by=["model", "Avg"], ascending=[True, False])
 
         # reset the index and fill the NaN values
         pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
@@ -69,7 +76,7 @@ class Leaderboard:
 
         # mean column
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
-        pvt_table = pvt_table.sort_values(by="Avg", ascending=False)
+        pvt_table = pvt_table.sort_values(by=["model", "Avg"], ascending=[True, False])
 
         pvt_table = pvt_table.fillna("-")
 
@@ -102,6 +109,7 @@ class Leaderboard:
             index=["model", "category"], columns=["dataset_name"], values="score"
         )
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
+        pvt_table = pvt_table.sort_values(by=["model", "Avg"], ascending=[True, False])
         pvt_table = pvt_table.fillna("-")
         pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
 
@@ -117,6 +125,7 @@ class Leaderboard:
         )
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
         pvt_table = pvt_table.fillna("-")
+        pvt_table = pvt_table.sort_values(by=["model", "Avg"], ascending=[True, False])
         # pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
 
         return pvt_table
@@ -125,14 +134,14 @@ class Leaderboard:
         return self.summary.summary_df.to_markdown()
 
 
-class Summary:
+class Summary(Generic[TypeVar("T", bound="Summary")]):
     """
     Summary class to manage the summary report
     """
 
     _instance = None
 
-    def __new__(cls, *args, **kwargs) -> None:
+    def __new__(cls, *args, **kwargs):
         """
         Singleton pattern to ensure only one instance of the class is created
         """
@@ -144,8 +153,12 @@ class Summary:
         """
         Initialize the summary
         """
-        self.file_path = path
-        self.summary_df: pd.DataFrame = self.load_data_from_file(path, *args, **kwargs)
+        self.save_dir = path
+        self.file_path = f"{path}summary.csv"
+
+        self.summary_df: pd.DataFrame = self.load_data_from_file(
+            self.file_path, *args, **kwargs
+        )
 
     def load_data_from_file(self, path: str, *args, **kwargs) -> pd.DataFrame:
         """

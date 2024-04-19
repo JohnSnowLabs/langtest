@@ -454,43 +454,7 @@ class Harness:
 
         # benchmarking true
         if self.__benchmarking:
-            df = self.generated_results()
-
-            path = self.__benchmarking.get(
-                os.path.expanduser("save_dir"),
-                os.path.expanduser("~/.langtest/leaderboard/summary.csv"),
-            )
-            summary = Summary(path)
-
-            # temp dict
-            temp_dict = {}
-            if isinstance(self.__data_dict, dict):
-                temp_dict[self.__data_dict.get("data_source")] = self.__data_dict
-            else:
-                for i in self.__data_dict:
-                    temp_dict[i.get("data_source")] = i
-
-            # add the dataset_name column if the data is multi-dataset
-            df["split"] = df["dataset_name"].apply(
-                lambda x: temp_dict[x].get("split", "-")
-            )
-            df["hub"] = self.__model_info.get("hub", "-")
-            if self.__model_info.get("hub", "-") == "lm-studio":
-                import requests as req
-
-                response = req.get(
-                    "http://localhost:1234/v1/models",
-                ).json()
-
-                model_name = response["data"][0]["id"]
-                df["model"] = model_name
-            else:
-                df["model"] = self.__model_info.get("model", "-")
-            df["task"] = str(self.task)
-            df["subset"] = df["dataset_name"].apply(
-                lambda x: temp_dict[x].get("subset", "-")
-            )
-            summary.add_report(df)
+            self.__tracking()
 
         if self._generated_results is None:
             raise RuntimeError(Errors.E011)
@@ -1661,3 +1625,44 @@ class Harness:
         """Reset the default values."""
         model_response = TestResultManager()
         model_response.clear_data()
+
+    def __tracking(self, *args, **kwargs):
+        """Track the progress of the testcases."""
+        if self.__benchmarking:
+            df = self.generated_results()
+
+            path = self.__benchmarking.get(
+                os.path.expanduser("save_dir"),
+                os.path.expanduser("~/.langtest/leaderboard/"),
+            )
+            summary = Summary(path)
+
+            # temp dict
+            temp_dict = {}
+            if isinstance(self.__data_dict, dict):
+                temp_dict[self.__data_dict.get("data_source")] = self.__data_dict
+            else:
+                for i in self.__data_dict:
+                    temp_dict[i.get("data_source")] = i
+
+            # add the dataset_name column if the data is multi-dataset
+            df["split"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("split", "-")
+            )
+            df["hub"] = self.__model_info.get("hub", "-")
+            if self.__model_info.get("hub", "-") == "lm-studio":
+                import requests as req
+
+                response = req.get(
+                    "http://localhost:1234/v1/models",
+                ).json()
+
+                model_name = response["data"][0]["id"]
+                df["model"] = model_name
+            else:
+                df["model"] = self.__model_info.get("model", "-")
+            df["task"] = str(self.task)
+            df["subset"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("subset", "-")
+            )
+            summary.add_report(df)
