@@ -23,7 +23,7 @@ from .utils import report_utils as report, config_utils
 
 
 from .transform.utils import RepresentationOperation
-from langtest.utils.benchmark_utils import Summary
+from langtest.utils.benchmark_utils import Leaderboard, Summary
 from langtest.utils.lib_manager import try_import_lib
 from langtest.utils.custom_types.helpers import TestResultManager
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
@@ -1666,3 +1666,39 @@ class Harness:
                 lambda x: temp_dict[x].get("subset", "-")
             )
             summary.add_report(df)
+
+    def get_leaderboard(
+        self,
+        indices=None,
+        columns=None,
+        category=False,
+        split_wise=False,
+        test_wise=False,
+        *args,
+        **kwargs,
+    ):
+        """Get the rank of the model on the leaderboard."""
+
+        if os.path.exists(os.path.expanduser(self.__benchmarking.get("save_dir"))):
+            path = os.path.expanduser(self.__benchmarking.get("save_dir"))
+        elif os.path.exists(os.path.expanduser("~/.langtest/leaderboard/")):
+            path = os.path.expanduser("./.langtest/leaderboard/")
+        else:
+            raise FileNotFoundError(f"Summary.csv File is not exists in {path}")
+
+        leaderboard = Leaderboard(path)
+
+        # print(leaderboard.default().to_markdown())
+        if indices is not None and columns is not None:
+            return leaderboard.custom_wise(indices, columns)
+
+        if category:
+            return leaderboard.category_wise()
+
+        if test_wise:
+            return leaderboard.test_wise()
+
+        if split_wise:
+            return leaderboard.split_wise()
+
+        return leaderboard.default()

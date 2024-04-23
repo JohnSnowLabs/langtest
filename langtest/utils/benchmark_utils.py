@@ -40,16 +40,7 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         Get the score board for the models
         """
         df = self.summary.summary_df
-
-        # find the timestamp with the highest score
-        df["timestamp"] = pd.to_datetime(df["timestamp"])
-        df = df.sort_values(by="timestamp", ascending=False)
-        idx = df.groupby(
-            ["timestamp", "model", "dataset_name", "split", "test_type", "category"]
-        )["score"].idxmax()
-        df = df.loc[idx]
-
-        # pivot the table
+        df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
             index=["model"], columns="dataset_name", values="score"
         )
@@ -70,6 +61,7 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         """
 
         df = self.summary.summary_df
+        df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
             index=["model", "split"], columns=["dataset_name"], values="score"
         )
@@ -88,6 +80,7 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         """
 
         df = self.summary.summary_df
+        df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
             index=["model", "test_type"], columns=["dataset_name"], values="score"
         )
@@ -105,6 +98,7 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         Get the score board for the models by category
         """
         df = self.summary.summary_df
+        df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
             index=["model", "category"], columns=["dataset_name"], values="score"
         )
@@ -120,6 +114,7 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         Get the score board for the models by custom group
         """
         df = self.summary.summary_df
+        df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
             index=["model", *indices], columns=["dataset_name", *columns], values="score"
         )
@@ -129,6 +124,25 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         # pvt_table = pvt_table.rename_axis(None, axis=1).reset_index()
 
         return pvt_table
+
+    def __drop_duplicates(self, df: pd.DataFrame):
+        """
+        Drop duplicates from the dataframe
+        """
+        # arrange the dataframe by timestamp in descending order
+        df["timestamp"] = pd.to_datetime(df["timestamp"])
+        df = df.sort_values(by="timestamp", ascending=False)
+
+        # remove duplicates
+        df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d-%H-%M-%S")
+        df = df.sort_values(by="timestamp", ascending=False)
+        unique_records = df.drop_duplicates(
+            subset=["model", "hub", "dataset_name", "split", "subset", "task"]
+        )
+
+        unique_records.reset_index(drop=True, inplace=True)
+
+        return unique_records
 
     def __repr__(self) -> str:
         return self.summary.summary_df.to_markdown()
