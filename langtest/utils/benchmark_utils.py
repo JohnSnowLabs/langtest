@@ -63,7 +63,9 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         df = self.summary.summary_df
         df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
-            index=["model", "split"], columns=["dataset_name"], values="score"
+            index=["model", "split"],
+            columns=["dataset_name"],
+            values="score",
         )
 
         # mean column
@@ -116,7 +118,10 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         df = self.summary.summary_df
         df = self.__drop_duplicates(df)
         pvt_table = df.pivot_table(
-            index=["model", *indices], columns=["dataset_name", *columns], values="score"
+            index=["model", *indices],
+            columns=["dataset_name", *columns],
+            values="score",
+            aggfunc="first",
         )
         pvt_table.insert(0, "Avg", pvt_table.mean(axis=1))
         pvt_table = pvt_table.fillna("-")
@@ -136,13 +141,25 @@ class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
         # remove duplicates
         df["timestamp"] = pd.to_datetime(df["timestamp"], format="%Y-%m-%d-%H-%M-%S")
         df = df.sort_values(by="timestamp", ascending=False)
+        df.reset_index(drop=True, inplace=True)
         unique_records = df.drop_duplicates(
-            subset=["model", "hub", "dataset_name", "split", "subset", "task"]
+            subset=[
+                # "timestamp",
+                "category",
+                "test_type",
+                "model",
+                "hub",
+                "dataset_name",
+                "split",
+                "subset",
+                "task",
+            ],
+            # keep=,
         )
 
         unique_records.reset_index(drop=True, inplace=True)
 
-        return unique_records
+        return df
 
     def __repr__(self) -> str:
         return self.summary.summary_df.to_markdown()

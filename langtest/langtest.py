@@ -1669,8 +1669,8 @@ class Harness:
 
     def get_leaderboard(
         self,
-        indices=None,
-        columns=None,
+        indices=[],
+        columns=[],
         category=False,
         split_wise=False,
         test_wise=False,
@@ -1689,9 +1689,8 @@ class Harness:
         leaderboard = Leaderboard(path)
 
         # print(leaderboard.default().to_markdown())
-        if indices is not None and columns is not None:
+        if indices or columns:
             return leaderboard.custom_wise(indices, columns)
-
         if category:
             return leaderboard.category_wise()
 
