@@ -1645,10 +1645,17 @@ class Harness:
                 for i in self.__data_dict:
                     temp_dict[i.get("data_source")] = i
 
-            # add the dataset_name column if the data is multi-dataset
+            # add the dataset_name column if the data is single dataset
+            if isinstance(self.__data_dict, dict) and (not self.is_multi_dataset):
+                df["dataset_name"] = self.__data_dict.get("data_source", "-")
+
             df["split"] = df["dataset_name"].apply(
                 lambda x: temp_dict[x].get("split", "-")
             )
+            df["subset"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("subset", "-")
+            )
+
             df["hub"] = self.__model_info.get("hub", "-")
             if self.__model_info.get("hub", "-") == "lm-studio":
                 import requests as req
@@ -1662,9 +1669,6 @@ class Harness:
             else:
                 df["model"] = self.__model_info.get("model", "-")
             df["task"] = str(self.task)
-            df["subset"] = df["dataset_name"].apply(
-                lambda x: temp_dict[x].get("subset", "-")
-            )
             summary.add_report(df)
 
     def get_leaderboard(
