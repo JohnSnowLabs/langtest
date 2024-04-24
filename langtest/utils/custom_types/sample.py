@@ -948,7 +948,7 @@ class SpeedTestSample(BaseModel):
         expected_unit = self.expected_results.split("/")[1]
         actual_unit = self.actual_results.split("/")[1]
 
-        return (expected_tokens >= actual_tokens) and (expected_unit == actual_unit)
+        return (expected_tokens <= actual_tokens) and (expected_unit == actual_unit)
 
 
 class TranslationSample(BaseModel):
