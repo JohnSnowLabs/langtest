@@ -3,7 +3,6 @@ import yaml
 from typing import Iterable, Union
 from langtest.transform import TestFactory
 from langtest.tasks.task import TaskManager
-from langtest.utils.custom_types.sample import Sample, SequenceClassificationSample
 
 
 class Augmenter:
@@ -36,14 +35,13 @@ class Augmenter:
         """
         # prepare the data for augmentation
         categories = list(self.__tests.keys())
-        hash_map = self.prepare_hash_map(data)
 
         # iterate over the categories
         test_types = self.__tests
 
         testcases = []
         for category in categories:
-            if category not in hash_map:
+            if category not in ["robustness", "bias"]:
                 continue
             R_data = [
                 self.__task.create_sample(
@@ -57,27 +55,6 @@ class Augmenter:
             testcases.extend(test_cases)
         return testcases
 
-    def prepare_hash_map(self, data: Iterable[Sample]) -> dict:
-        """
-        Prepare the data for augmentation.
-        """
-        from collections import defaultdict
-
-        hash_map = defaultdict(lambda: defaultdict(list))
-        for category, test_types in self.__tests.items():
-            if category == "defaults":
-                continue
-            hash_map[category] = {}
-            for test in test_types:
-                hash_map[category][test] = [
-                    SequenceClassificationSample(
-                        original=sample.get("text", "-"), label=sample.get("label", "-")
-                    )
-                    for sample in data
-                ]
-
-        return hash_map
-
     def __or__(self, other: Iterable):
         results = self.augment(other)
         return results
@@ -85,11 +62,3 @@ class Augmenter:
     def __ror__(self, other: Iterable):
         results = self.augment(other)
         return results
-
-
-class ContentDataGenerator:
-    def __init__(self) -> None:
-        pass
-
-    def generate(self, content: str) -> str:
-        return content
