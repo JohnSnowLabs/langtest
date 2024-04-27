@@ -83,10 +83,10 @@ class TestNERDataset:
             (
                 HuggingFaceDataset(
                     source_info={
-                        "data_source": "wikiann",
-                        "subset": "fo",
+                        "data_source": "tner/wikiann",
+                        "subset": "ace",
                         "feature_column": "tokens",
-                        "target_column": "ner_tags",
+                        "target_column": "tags",
                         "split": "test",
                     },
                     task=TaskManager("ner"),
