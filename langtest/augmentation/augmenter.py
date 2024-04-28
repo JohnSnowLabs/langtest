@@ -1,6 +1,7 @@
+import random
 import yaml
 
-from typing import Iterable, Union
+from typing import Any, Dict, Iterable, Union
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.tasks.task import TaskManager
@@ -34,9 +35,14 @@ class Augmenter:
         self.__testfactory.is_augment = True
 
         # parameters
-        self.__max_proportion = self.__tests.get("defaults", 0.6).get(
+        self.__max_proportion = self.__tests.get("defaults", {}).get(
             "max_proportion", 0.6
         )
+        # self.__ntests = len(v for k, v in self.__tests.items()) - 1
+        self.__type = self.__config.get("parameters", {}).get("type", "proportion")
+        self.__style = self.__config.get("parameters", {}).get("style", "extend")
+
+        self.__df_config = self.__config_df()
 
     def load_config(self, config: str) -> dict:
         """
@@ -53,22 +59,93 @@ class Augmenter:
         if isinstance(data, dict):
             self.__datafactory = self.__datafactory(file_path=data, task=self.__task)
             data = self.__datafactory.load()
-        # prepare the data for augmentation
-        categories = list(self.__tests.keys())
+        # # prepare the data for augmentation
+        # categories = list(self.__tests.keys())
 
-        testcases = []
-        for category in categories:
-            if category not in ["robustness", "bias"]:
-                continue
+        # testcases = []
+        # for category in categories:
+        #     if category not in ["robustness", "bias"]:
+        #         continue
 
-            test_cases = self.__testfactory.transform(self.__task, data, self.__tests)
-            testcases.extend(test_cases)
+        #     test_cases = self.__testfactory.transform(self.__task, data, self.__tests)
+        #     testcases.extend(test_cases)
 
-        self.__augmented_data = testcases
+        # self.__augmented_data = testcases
+        if self.__style == "extend":
+            self.extend(data)
+        elif self.__style == "inplace":
+            self.inplace(data)
+        elif self.__style == "new":
+            self.new_data(data)
+        else:
+            raise ValueError("Invalid style")
 
         return self
 
-    def prepare_hash_map(self, data: Union[str, Iterable]) -> str:
+    def extend(self, data: Iterable) -> "Augmenter":
+        """
+        Extend the content.
+        """
+        # calculate the number of rows to be added
+        n = len(data)
+
+        testcases = []
+        data_cut = random.sample(data, int(n * self.__max_proportion))
+
+        test_cases: list = self.__testfactory.transform(
+            self.__task, data_cut, self.__tests
+        )
+        testcases.extend(test_cases)
+
+        self.__augmented_data = (
+            [*data, *testcases] if isinstance(data, list) else testcases
+        )
+
+        return self
+
+    def inplace(self, data: Iterable) -> "Augmenter":
+        """
+        Inplace augmentation.
+        """
+        # calculate the number of rows to be added
+        size = int(len(data) * self.__max_proportion)
+
+        data_dict = self.prepare_hash_map(data)
+
+        selected = random.sample(data_dict.keys(), int(size))
+
+        for idx in selected:
+            test_cases = self.__testfactory.transform(
+                self.__task, [data_dict[idx]], self.__tests
+            )
+            data_dict[idx] = test_cases[0] if test_cases else data_dict[idx]
+
+        self.__augmented_data = data_dict.values()
+
+        return self
+
+    def new_data(self, data: Iterable) -> "Augmenter":
+        """
+        Create new data.
+        """
+        # calculate the number of rows to be added
+        size = int(len(data) * self.__max_proportion)
+
+        data_cut = random.sample(data, size)
+
+        test_cases = self.__testfactory.transform(self.__task, data_cut, self.__tests)
+
+        self.__augmented_data = test_cases
+
+        return self
+
+    def size(self, category: str, test_name: str) -> int:
+        return (
+            self.__max_proportion
+            * self.__tests.get(category, {}).get(test_name, {}).get("max_proportion", 0.6)
+        ) / self.__df_config.shape[0]
+
+    def prepare_hash_map(self, data: Union[str, Iterable]) -> Dict[str, Any]:
         hashmap = {index: sample for index, sample in enumerate(data)}
 
         return hashmap
@@ -86,3 +163,29 @@ class Augmenter:
     def __ror__(self, other: Iterable):
         results = self.augment(other)
         return results
+
+    def __config_df(self):
+        """
+        Configure the data frame.
+        """
+
+        import pandas as pd
+
+        df = pd.DataFrame(columns=["category", "test_name", "proportion"])
+
+        # read the configuration
+        for category, tests in self.__tests.items():
+            if category not in ["robustness", "bias"]:
+                continue
+            for test_name, test in tests.items():
+                proportion = test.get("max_proportion", 0.6)
+                temp = pd.DataFrame(
+                    {
+                        "category": [category],
+                        "test_name": [test_name],
+                        "proportion": [proportion],
+                    },
+                )
+                df = pd.concat([df, temp], ignore_index=True)
+
+        return df
