@@ -25,7 +25,12 @@ class Augmenter:
 
         self.__tests: dict = self.__config.get("tests", [])
         if isinstance(task, str):
-            task = TaskManager(task)
+            if task in ["ner", "text-classification", "question-answering"]:
+                task = TaskManager(task)
+            else:
+                raise ValueError(
+                    "check the task name. It should be one of the following: ner, text-classification, question-answering"
+                )
         self.__task = task
 
         # Test Factory and Data Factory
@@ -59,18 +64,8 @@ class Augmenter:
         if isinstance(data, dict):
             self.__datafactory = self.__datafactory(file_path=data, task=self.__task)
             data = self.__datafactory.load()
-        # # prepare the data for augmentation
-        # categories = list(self.__tests.keys())
 
-        # testcases = []
-        # for category in categories:
-        #     if category not in ["robustness", "bias"]:
-        #         continue
-
-        #     test_cases = self.__testfactory.transform(self.__task, data, self.__tests)
-        #     testcases.extend(test_cases)
-
-        # self.__augmented_data = testcases
+        # check the style of augmentation to be applied. Default is extend
         if self.__style == "extend":
             self.extend(data)
         elif self.__style == "inplace":
@@ -89,17 +84,13 @@ class Augmenter:
         # calculate the number of rows to be added
         n = len(data)
 
-        testcases = []
         data_cut = random.sample(data, int(n * self.__max_proportion))
 
         test_cases: list = self.__testfactory.transform(
             self.__task, data_cut, self.__tests
         )
-        testcases.extend(test_cases)
 
-        self.__augmented_data = (
-            [*data, *testcases] if isinstance(data, list) else testcases
-        )
+        self.__augmented_data = [*data, *test_cases] if isinstance(data, list) else data
 
         return self
 
@@ -110,8 +101,10 @@ class Augmenter:
         # calculate the number of rows to be added
         size = int(len(data) * self.__max_proportion)
 
+        # create a dictionary with index as key and data as value
         data_dict = self.prepare_hash_map(data)
 
+        # select random rows based on the size with its index
         selected = random.sample(data_dict.keys(), int(size))
 
         for idx in selected:
