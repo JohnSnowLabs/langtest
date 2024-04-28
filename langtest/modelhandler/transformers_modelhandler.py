@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 import logging
 import numpy as np
 from functools import lru_cache
@@ -11,7 +11,11 @@ from ..utils.custom_types import (
     TranslationOutput,
 )
 from ..errors import Errors, Warnings
-from ..utils.custom_types.helpers import SimplePromptTemplate, HashableDict
+from ..utils.custom_types.helpers import (
+    SimplePromptTemplate,
+    HashableDict,
+    default_llm_chat_prompt,
+)
 from ..utils.hf_utils import HuggingFacePipeline
 
 
@@ -22,7 +26,7 @@ class PretrainedModelForNER(ModelAPI):
         model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
     """
 
-    def __init__(self, model):
+    def __init__(self, model, **kwargs):
         """Constructor method
 
         Args:
@@ -33,6 +37,7 @@ class PretrainedModelForNER(ModelAPI):
         )
 
         self.model = model
+        self.kwargs = kwargs
         self.predict.cache_clear()
 
     @staticmethod
@@ -136,7 +141,7 @@ class PretrainedModelForNER(ModelAPI):
         return entity_groups
 
     @classmethod
-    def load_model(cls, path: str) -> "Pipeline":
+    def load_model(cls, path: Union[str, Any], **kwargs) -> "Pipeline":
         """Load the NER model into the `model` attribute.
 
         Args:
@@ -146,9 +151,27 @@ class PretrainedModelForNER(ModelAPI):
         Returns:
             'Pipeline':
         """
-        if isinstance(path, str):
-            return cls(pipeline(model=path, task="ner", ignore_labels=[]))
-        return cls(path)
+        # cls.kwargs = kwargs
+        task = kwargs.get("task", "ner")
+        device = kwargs.get("device", -1)
+
+        if isinstance(path, str) and task == "ner":
+            return cls(
+                pipeline(model=path, task=task, device=device, ignore_labels=[]), **kwargs
+            )
+        elif isinstance(path, str):
+            import torch
+
+            return cls(
+                pipeline(
+                    model=path,
+                    task="text-generation",
+                    device=device,
+                    torch_dtype=torch.bfloat16,
+                ),
+                **kwargs,
+            )
+        return cls(path, **kwargs)
 
     @lru_cache(maxsize=102400)
     def predict(self, text: str, **kwargs) -> NEROutput:
@@ -164,17 +187,37 @@ class PretrainedModelForNER(ModelAPI):
         Returns:
             NEROutput: A list of named entities recognized in the input text.
         """
-        predictions = self.model(text, **kwargs)
-        aggregated_words = self._aggregate_words(predictions)
-        aggregated_predictions = self.group_entities(aggregated_words)
+
+        if self.model.model.__class__.__name__.endswith("ForCausalLM"):
+            predictions, _ = self.__predict_causalLm(text, **kwargs)
+            if predictions:
+                if not isinstance(predictions, list):
+                    predictions = [predictions]
+            else:
+                predictions = [
+                    {
+                        "entity": "",
+                        "score": -1,
+                        "index": -1,
+                        "word": "",
+                        "start": -1,
+                        "end": -1,
+                    }
+                ]
+
+            aggregated_predictions = predictions
+        else:
+            predictions = self.model(text, **kwargs)
+            aggregated_words = self._aggregate_words(predictions)
+            aggregated_predictions = self.group_entities(aggregated_words)
 
         return NEROutput(
             predictions=[
                 NERPrediction.from_span(
                     entity=prediction.get("entity_group", prediction.get("entity", None)),
-                    word=prediction["word"],
-                    start=prediction["start"],
-                    end=prediction["end"],
+                    word=prediction.get("word", ""),
+                    start=prediction.get("start", -1),
+                    end=prediction.get("end", -1),
                 )
                 for prediction in aggregated_predictions
             ]
@@ -202,6 +245,81 @@ class PretrainedModelForNER(ModelAPI):
     def __call__(self, text: str, *args, **kwargs) -> NEROutput:
         """Alias of the 'predict' method"""
         return self.predict(text=text, **kwargs)
+
+    def __predict_causalLm(self, text: str, **kwargs):
+        """Perform predictions on the input text using a causal language model."""
+
+        # override default tokenizer parameters with the user-defined parameters
+        tokenizer_params = {
+            "tokenize": False,
+            "add_generation_prompt": True,
+            "return_dict": True,
+            **self.kwargs.get("tokenizer_kwargs", {}),
+        }
+
+        # override default model parameters with the user-defined parameters
+        model_params = {
+            "max_new_tokens": 512,
+            "do_sample": True,
+            "temperature": 0.2,
+            "top_k": 10,
+            "top_p": 0.95,
+            "batch_size": 1,
+            **self.kwargs.get("model_kwargs", {}),
+        }
+
+        # override the default parameters for the tokenizer
+        tokenizer_params = {
+            **tokenizer_params,
+            "add_generation_prompt": True,
+        }
+        # override the default parameters for the model
+        model_params = {
+            **model_params,
+            "return_full_text": False,
+            "handle_long_generation": "hole",
+        }
+
+        # process the input text
+        messages = self.input_process(text)
+
+        # preprocess the messages and generate the prompt for the model
+        prompt = self.model.tokenizer.apply_chat_template(messages, **tokenizer_params)
+
+        # generate the response from the model
+        outputs = self.model(
+            prompt,
+            **model_params,
+        )
+
+        # Extracting the structured responses from the generated text
+        predictions = []
+        if isinstance(outputs[0]["generated_text"], str):
+            try:
+                predictions = eval(outputs[0]["generated_text"])
+                if not isinstance(predictions, list):
+                    predictions = []
+            except SyntaxError:
+                predictions = []
+
+        return predictions, outputs
+
+    def input_process(self, input_sen):
+        """
+        Process the input text to be used in the model
+        """
+
+        # extract the system prompt from the user-defined parameters
+        system_prompt = self.kwargs.get("system_prompt", default_llm_chat_prompt)
+
+        if system_prompt:
+            if isinstance(system_prompt, str):
+                return f"{system_prompt}\n\n {input_sen}"
+            elif isinstance(system_prompt, list):
+                input_sen = {"role": "user", "content": input_sen}
+                return [*system_prompt, input_sen]
+
+        return default_llm_chat_prompt
 
 
 class PretrainedModelForTextClassification(ModelAPI):
