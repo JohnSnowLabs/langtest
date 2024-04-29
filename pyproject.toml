@@ -70,6 +70,7 @@ matplotlib = {version = "^3.7.2", optional = true}
 tenacity = {version = "^8.2.2", optional = true}
 langchain = {version = "^0.1.11", optional = true}
 typing-extensions = "^4.10.0"
+langchain-openai = "^0.1.4"
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]
