@@ -28,12 +28,24 @@ class ErrorsWithCodes(type):
         Example:
             error_message = Errors.E000
         """
+        from langtest.logger import logger
+
         msg = super().__getattribute__(code)
         if code.startswith("__"):
             return msg
         else:
-            return "[{code}] {msg}".format(code=code, msg=msg)
-
+            out = "[{code}] {msg}".format(code=code, msg=msg)
+            if code.startswith("E"):
+                logger.error(out)
+            elif code.startswith("W"):
+                logger.warning(out)
+            elif code.startswith("I"):
+                logger.info(out)
+            elif code.startswith("D"):
+                logger.debug(out)
+            elif code.startswith("C"):
+                logger.critical(out)
+            return out
 
 class Warnings(metaclass=ErrorsWithCodes):
     """
