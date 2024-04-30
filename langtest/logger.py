@@ -87,7 +87,7 @@ class Logger:
         console_handler.setLevel(level)
 
         formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(name)s -> %(message)s",
+            "%(asctime)-20s | %(levelname)-8s | %(name)-10s -> %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         console_handler.setFormatter(formatter)
