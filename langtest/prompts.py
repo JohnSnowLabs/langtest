@@ -4,7 +4,15 @@ from pydantic import BaseModel, Extra, validator
 
 
 class MessageType(BaseModel):
-    __field_order: List[str] = ["content", "context", "question", "original", "testcase", "options", "answer"]
+    __field_order: List[str] = [
+        "content",
+        "context",
+        "question",
+        "original",
+        "testcase",
+        "options",
+        "answer",
+    ]
 
     class Config:
         extra = (
@@ -88,11 +96,13 @@ class PromptConfig(BaseModel):
                 ("ai", self.examples[0].ai.get_template),
             ]
         # return self.examples.get_template
-    
-    def prompt_style(self):
 
+    def prompt_style(self):
         if self.prompt_type == "chat":
-            from langchain.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
+            from langchain.prompts import (
+                ChatPromptTemplate,
+                FewShotChatMessagePromptTemplate,
+            )
 
             few_shot_prompt = FewShotChatMessagePromptTemplate(
                 examples=self.get_examples,
@@ -101,7 +111,7 @@ class PromptConfig(BaseModel):
 
             final_prompt = ChatPromptTemplate.from_messages(
                 [
-                    ('system', self.instructions),
+                    ("system", self.instructions),
                     few_shot_prompt,
                     # ('human', conf),
                     self.get_template[0],
@@ -118,6 +128,3 @@ class PromptConfig(BaseModel):
                 examples=self.examples,
                 example_selector=example,
             )
-
-            
-        
