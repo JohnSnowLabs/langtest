@@ -46,6 +46,14 @@ class MessageType(BaseModel):
                 temp[field] = self.__dict__[field]
         return temp
 
+    @property
+    def input_variables(self):
+        temp = []
+        for field in self.__field_order:
+            if field in self.__dict__:
+                temp.append(field)
+        return temp
+
 
 class Conversion(BaseModel):
     """Conversion model for the conversion of the input and output of the model."""
@@ -92,21 +100,32 @@ class PromptConfig(BaseModel):
             return self.examples.user.get_template
         elif isinstance(self.examples, list):
             return [
-                ("user", self.examples[0].user.get_template),
+                ("human", self.examples[0].user.get_template),
                 ("ai", self.examples[0].ai.get_template),
             ]
         # return self.examples.get_template
 
+    @property
+    def get_input_variables(self):
+        """Generate a list of input variables based on the dynamic fields of the instance."""
+        if isinstance(self.examples, Conversion):
+            return self.examples.user.input_variables
+        elif isinstance(self.examples, list):
+            return self.examples[0].user.input_variables
+
     def prompt_style(self):
+        """Generate a prompt based on the prompt type."""
         if self.prompt_type == "chat":
             from langchain.prompts import (
                 ChatPromptTemplate,
                 FewShotChatMessagePromptTemplate,
             )
 
+            example_prompt = ChatPromptTemplate.from_messages(self.get_template)
+
             few_shot_prompt = FewShotChatMessagePromptTemplate(
                 examples=self.get_examples,
-                example_prompt=self.get_template,
+                example_prompt=example_prompt,
             )
 
             final_prompt = ChatPromptTemplate.from_messages(
@@ -119,7 +138,7 @@ class PromptConfig(BaseModel):
             )
             return final_prompt
 
-        elif self.prompt_type == "normal":
+        elif self.prompt_type == "instruct":
             from langchain.prompts import FewShotPromptTemplate, PromptTemplate
 
             example = PromptTemplate.from_template(self.get_template)
@@ -128,3 +147,6 @@ class PromptConfig(BaseModel):
                 examples=self.examples,
                 example_selector=example,
             )
+
+    def get_prompt(self):
+        return self.prompt_style()
