@@ -150,3 +150,37 @@ class PromptConfig(BaseModel):
 
     def get_prompt(self):
         return self.prompt_style()
+
+
+class PromptManager:
+    _instance = None
+    prompt_configs = {}
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.prompt_configs = {}
+        return cls._instance
+
+    @classmethod
+    def from_prompt_configs(cls, prompt_configs: dict):
+        """Create a prompt manager from a dictionary of prompt configurations."""
+        prompt_manager = cls()
+        for name, prompt_config in prompt_configs.items():
+            prompt_manager.add_prompt(name, prompt_config)
+        return prompt_manager
+
+    def add_prompt(self, name, prompt_config):
+        """Add a prompt template to the prompt manager."""
+        self.prompt_configs[name] = prompt_config
+
+    def get_prompt(self, name):
+        """Get a prompt template based on the name."""
+        prompt_template = PromptConfig(**self.prompt_configs[name]).get_prompt()
+        return prompt_template
+
+    def reset(self):
+        """Reset the prompt manager to its initial state."""
+        self.prompt_configs = {}
+        self._instance = None
+        return self
