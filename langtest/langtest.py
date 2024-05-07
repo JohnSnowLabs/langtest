@@ -13,6 +13,8 @@ import random
 
 from pkg_resources import resource_filename
 
+from langtest.prompts import PromptManager
+
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
@@ -180,6 +182,10 @@ class Harness:
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
+
+        # prompt config
+        self.__prompt_config = self._config.get("prompt_config", None)
+        self.prompt_manager = PromptManager.from_prompt_configs(self.__prompt_config)
 
         # model section
         if isinstance(model, list):
@@ -1579,6 +1585,9 @@ class Harness:
 
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
+            # set prompt in prompt manager
+            if self.prompt_manager is not None:
+                self.prompt_manager.default_state = dataset_name
             # update user prompt for each dataset
             if temp_store_prompt and isinstance(temp_store_prompt, dict):
                 self._config.get("model_parameters", {}).update(
@@ -1627,3 +1636,7 @@ class Harness:
         """Reset the default values."""
         model_response = TestResultManager()
         model_response.clear_data()
+
+        # Reset the PromptManager
+        prompt_manager = PromptManager()
+        prompt_manager.reset()

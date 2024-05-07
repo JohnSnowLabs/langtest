@@ -154,9 +154,8 @@ class PromptConfig(BaseModel):
 
 class PromptManager:
     _instance = None
-    prompt_configs = {
-        "default": "This is a default prompt configuration.",
-    }
+    prompt_configs = {}
+    _default_state = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -168,23 +167,36 @@ class PromptManager:
     def from_prompt_configs(cls, prompt_configs: dict):
         """Create a prompt manager from a dictionary of prompt configurations."""
         prompt_manager = cls()
-        if ["instructions", "prompt_type", "examples"] in prompt_configs.keys():
+        if set(["instructions", "prompt_type", "examples"]).issubset(
+            set(prompt_configs.keys())
+        ):
             prompt_manager.add_prompt("default", prompt_configs)
             return prompt_manager
         for name, prompt_config in prompt_configs.items():
             prompt_manager.add_prompt(name, prompt_config)
+
+        if len(prompt_manager.prompt_configs) == 1:
+            prompt_manager.default_state = list(prompt_manager.prompt_configs.keys())[0]
         return prompt_manager
 
-    def add_prompt(self, name, prompt_config):
+    def add_prompt(self, name: str, prompt_config: dict):
         """Add a prompt template to the prompt manager."""
-        if ["instructions", "prompt_type", "examples"] not in prompt_config.keys():
-            self.prompt_configs["default"] = prompt_config
         self.prompt_configs[name] = prompt_config
 
-    def get_prompt(self, name="default"):
+    def get_prompt(self, name: str = None):
         """Get a prompt template based on the name."""
+        if name is None:
+            name = self.default_state
         prompt_template = PromptConfig(**self.prompt_configs[name]).get_prompt()
         return prompt_template
+
+    @property
+    def default_state(self):
+        return self._default_state
+
+    @default_state.setter
+    def default_state(self, name: str):
+        self._default_state = name
 
     def reset(self):
         """Reset the prompt manager to its initial state."""
