@@ -154,7 +154,9 @@ class PromptConfig(BaseModel):
 
 class PromptManager:
     _instance = None
-    prompt_configs = {}
+    prompt_configs = {
+        "default": "This is a default prompt configuration.",
+    }
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -166,15 +168,20 @@ class PromptManager:
     def from_prompt_configs(cls, prompt_configs: dict):
         """Create a prompt manager from a dictionary of prompt configurations."""
         prompt_manager = cls()
+        if ["instructions", "prompt_type", "examples"] in prompt_configs.keys():
+            prompt_manager.add_prompt("default", prompt_configs)
+            return prompt_manager
         for name, prompt_config in prompt_configs.items():
             prompt_manager.add_prompt(name, prompt_config)
         return prompt_manager
 
     def add_prompt(self, name, prompt_config):
         """Add a prompt template to the prompt manager."""
+        if ["instructions", "prompt_type", "examples"] not in prompt_config.keys():
+            self.prompt_configs["default"] = prompt_config
         self.prompt_configs[name] = prompt_config
 
-    def get_prompt(self, name):
+    def get_prompt(self, name="default"):
         """Get a prompt template based on the name."""
         prompt_template = PromptConfig(**self.prompt_configs[name]).get_prompt()
         return prompt_template
