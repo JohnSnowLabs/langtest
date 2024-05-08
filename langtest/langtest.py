@@ -117,6 +117,23 @@ class Harness:
         self.__model_info = model
         self.__benchmarking = benchmarking
 
+        # check the list of strings in the data
+        if isinstance(data, list) and all(isinstance(i, str) for i in data):
+            temp_data = []
+            for dataset in data:
+                if isinstance(task, dict):
+                    temp_task = task["category"]
+                else:
+                    temp_task = task
+                temp_data.append(
+                    config_utils.BenchmarkDatasets.get_dataset_dict(
+                        dataset_name=dataset, task=temp_task
+                    )
+                )
+
+            data = temp_data
+            self.__data_dict = data
+
         # reset classes to default state
         self.__reset_defaults()
 
