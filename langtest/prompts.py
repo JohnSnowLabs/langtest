@@ -32,9 +32,15 @@ class MessageType(BaseModel):
         """Generate a template string based on the dynamic fields of the instance."""
 
         temp = []
+        order_less = []
         for field in self.__field_order:
+            formatted = f"{field.title()}: {{{field}}}"
             if field in self.__dict__:
-                temp.append(f"{field.title()}: {{{field}}}")
+                temp.append(formatted)
+            else:
+                order_less.append(formatted)
+        if order_less:
+            temp.extend(order_less)
         return "\n" + "\n".join(temp)
 
     @property
