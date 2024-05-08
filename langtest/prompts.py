@@ -78,6 +78,11 @@ class Conversion(BaseModel):
         """Generate a list of examples based on the dynamic fields of the instance."""
         return {**self.user.get_example, **self.ai.get_example}
 
+    @property
+    def get_suffix_user(self):
+        if self.user.get_template:
+            return self.user.get_template
+
 
 class PromptConfig(BaseModel):
     instructions: str
@@ -141,12 +146,22 @@ class PromptConfig(BaseModel):
         elif self.prompt_type == "instruct":
             from langchain.prompts import FewShotPromptTemplate, PromptTemplate
 
-            example = PromptTemplate.from_template(self.get_template)
+            template = "".join(v for _, v in self.get_template)
+            template = f"{template.replace('Answer:', '')}"
+            examples = [v.get_examples for v in self.examples]
+            suffix = self.examples[0].get_suffix_user
+
+            example = PromptTemplate.from_template(template)
 
             final_prompt = FewShotPromptTemplate(
-                examples=self.examples,
-                example_selector=example,
+                examples=examples,
+                example_prompt=example,
+                input_variables=self.get_input_variables,
+                suffix=suffix,
+                prefix=self.instructions,
             )
+
+            return final_prompt
 
     def get_prompt(self):
         return self.prompt_style()
