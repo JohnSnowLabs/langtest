@@ -1,4 +1,5 @@
-from typing import List, Union
+from collections import defaultdict
+from typing import Dict, List, Union
 
 from pydantic import BaseModel, Extra, validator
 
@@ -166,16 +167,19 @@ class PromptConfig(BaseModel):
     def get_prompt(self):
         return self.prompt_style()
 
+    def get_shot_prompt(self):
+        return f"{len(self.get_examples)}-shot {self.prompt_type} prompt"
+
 
 class PromptManager:
     _instance = None
-    prompt_configs = {}
+    prompt_configs: Dict[str, PromptConfig] = defaultdict(PromptConfig)
     _default_state = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.prompt_configs = {}
+            cls._instance.prompt_configs = defaultdict(PromptConfig)
         return cls._instance
 
     @classmethod
@@ -196,13 +200,14 @@ class PromptManager:
 
     def add_prompt(self, name: str, prompt_config: dict):
         """Add a prompt template to the prompt manager."""
-        self.prompt_configs[name] = prompt_config
+        prompt_config_o = PromptConfig(**prompt_config)
+        self.prompt_configs[name] = prompt_config_o
 
     def get_prompt(self, name: str = None):
         """Get a prompt template based on the name."""
         if name is None:
             name = self.default_state
-        prompt_template = PromptConfig(**self.prompt_configs[name]).get_prompt()
+        prompt_template = self.prompt_configs[name].get_prompt()
         return prompt_template
 
     @property
@@ -213,8 +218,12 @@ class PromptManager:
     def default_state(self, name: str):
         self._default_state = name
 
+    @property
+    def get_prompt_shot(self):
+        return self.get_prompt().get_shot_prompt()
+
     def reset(self):
         """Reset the prompt manager to its initial state."""
-        self.prompt_configs = {}
+        self.prompt_configs = defaultdict(PromptConfig)
         self._instance = None
         return self
