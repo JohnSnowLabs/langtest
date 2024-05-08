@@ -91,13 +91,12 @@ class PromptConfig(BaseModel):
     examples: Union[Conversion, List[Conversion]] = None
 
     @property
-    def get_examples(self):
+    def get_examples(self) -> List[dict]:
         """Generate a list of examples based on the dynamic fields of the instance."""
         if isinstance(self.examples, Conversion):
             return [self.examples.get_examples]
         elif isinstance(self.examples, list):
             return [example.get_examples for example in self.examples]
-        return self.examples.get_examples
 
     @property
     def get_template(self):
@@ -164,11 +163,37 @@ class PromptConfig(BaseModel):
 
             return final_prompt
 
-    def get_prompt(self):
+    def get_prompt(self, hub=None):
+        if hub == "lm-studio":
+            return self.lm_studio_prompt()
         return self.prompt_style()
 
     def get_shot_prompt(self):
-        return f"{len(self.get_examples)}-shot {self.prompt_type} prompt"
+        return f"{len(self.get_examples)}-shot prompt"
+
+    def lm_studio_prompt(self):
+        messages = [
+            {"role": "system", "content": self.instructions},
+        ]
+
+        for example in self.examples:
+            temp_user = {}
+            temp_ai = {}
+
+            # user role
+            temp_user["role"] = "user"
+            temp_user["content"] = example.user.get_template.format(
+                **example.user.get_example
+            )
+
+            # assistant role
+            temp_ai["role"] = "assistant"
+            temp_ai["content"] = example.ai.get_template.format(**example.ai.get_example)
+
+            messages.append(temp_user)
+            messages.append(temp_ai)
+            # return messages
+        return messages
 
 
 class PromptManager:
@@ -203,11 +228,13 @@ class PromptManager:
         prompt_config_o = PromptConfig(**prompt_config)
         self.prompt_configs[name] = prompt_config_o
 
-    def get_prompt(self, name: str = None):
+    def get_prompt(self, name: str = None, hub: str = None):
         """Get a prompt template based on the name."""
+        if name is None and self.default_state is None:
+            return None
         if name is None:
             name = self.default_state
-        prompt_template = self.prompt_configs[name].get_prompt()
+        prompt_template = self.prompt_configs[name].get_prompt(hub)
         return prompt_template
 
     @property
