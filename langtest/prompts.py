@@ -33,12 +33,11 @@ class MessageType(BaseModel):
 
         temp = []
         order_less = []
-        for field in self.__field_order:
-            formatted = f"{field.title()}: {{{field}}}"
-            if field in self.__dict__:
-                temp.append(formatted)
+        for field in self.__dict__:
+            if field in self.__field_order:
+                temp.append(f"{field.title()}: {{{field}}}")
             else:
-                order_less.append(formatted)
+                order_less.append(f"{field.title()}: {{{field}}}")
         if order_less:
             temp.extend(order_less)
         return "\n" + "\n".join(temp)
@@ -175,6 +174,7 @@ class PromptConfig(BaseModel):
         return self.prompt_style()
 
     def get_shot_prompt(self):
+        print(self.get_examples)
         return f"{len(self.get_examples)}-shot prompt"
 
     def lm_studio_prompt(self):
