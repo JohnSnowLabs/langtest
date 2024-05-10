@@ -1018,6 +1018,10 @@ class Harness:
         Args:
             input_path (str): location of the file to load
         """
+        if isinstance(self.data, dict) and not self.__is_multi_model:
+            self._testcases = {}
+        elif isinstance(self.data, list):
+            self._testcases = []
 
         # multi dataset case is handled separately
         if isinstance(self._testcases, dict) and not self.__is_multi_model:
@@ -1046,6 +1050,10 @@ class Harness:
                 for sample in self._testcases
                 if sample.category not in ["robustness", "bias"]
             ]
+
+            if len(temp_testcases) == 0:
+                testcases = self.__temp_generate()._testcases
+                temp_testcases.extend(testcases)
 
             self._testcases = DataFactory(
                 {"data_source": input_path}, task=self.task, is_import=True
@@ -1738,3 +1746,25 @@ class Harness:
             return leaderboard.split_wise()
 
         return leaderboard.default()
+
+    def __temp_generate(self, *args, **kwargs):
+        """Temporary function to generate the testcases."""
+
+        # temp config other than robustness and bias
+        temp_config = {
+            "tests": {
+                k: v
+                for k, v in self._config.get("tests", {}).items()
+                if k not in ["robustness", "bias"]
+            }
+        }
+
+        temp_harness = self.__class__(
+            task=str(self.task),
+            model=self.__model_info,
+            data=self.__data_dict,
+            config=temp_config,
+        )
+        temp_harness.generate()
+
+        return temp_harness
