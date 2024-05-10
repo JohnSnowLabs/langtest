@@ -1026,15 +1026,14 @@ class Harness:
         # check the category of the testcases and count the categories
         categories_count = list(self._config.get("tests", {}))
 
-        # pop the robustness and bias categories from the categories_count
-        if "robustness" in categories_count:
-            categories_count.remove("robustness")
-        if "bias" in categories_count:
-            categories_count.remove("bias")
-        if "defaults" in categories_count:
-            categories_count.remove("defaults")
-
-        categories_count = len(categories_count)
+        # Remove the "robustness" and "bias" categories from categories_count
+        categories_count = len(
+            [
+                category
+                for category in categories_count
+                if category not in ["robustness", "bias", "defaults"]
+            ]
+        )
 
         # multi dataset case is handled separately
         if isinstance(self._testcases, dict) and not self.__is_multi_model:
