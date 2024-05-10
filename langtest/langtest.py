@@ -1758,7 +1758,9 @@ class Harness:
                 if k not in ["robustness", "bias"]
             }
         }
-
+        print(
+            f"{'':=^80}\n{'Adding Testcases Other than Robustness and Bias Categories ':^80}\n{'':=^80}"
+        )
         temp_harness = self.__class__(
             task=str(self.task),
             model=self.__model_info,
@@ -1766,5 +1768,6 @@ class Harness:
             config=temp_config,
         )
         temp_harness.generate()
+        print(f"{'':-^80}\n")
 
         return temp_harness
