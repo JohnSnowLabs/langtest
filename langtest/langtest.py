@@ -1023,6 +1023,19 @@ class Harness:
         elif isinstance(self.data, list):
             self._testcases = []
 
+        # check the category of the testcases and count the categories
+        categories_count = list(self._config.get("tests", {}))
+
+        # pop the robustness and bias categories from the categories_count
+        if "robustness" in categories_count:
+            categories_count.remove("robustness")
+        if "bias" in categories_count:
+            categories_count.remove("bias")
+        if "defaults" in categories_count:
+            categories_count.remove("defaults")
+
+        categories_count = len(categories_count)
+
         # multi dataset case is handled separately
         if isinstance(self._testcases, dict) and not self.__is_multi_model:
             temp_testcases = {
@@ -1034,14 +1047,30 @@ class Harness:
                 for k, v in self._testcases.items()
             }
 
+            if categories_count > 0:
+                testcases = self.__temp_generate()._testcases
+                for k, v in testcases.items():
+                    if k in temp_testcases:
+                        temp_testcases[k].extend(v)
+                    else:
+                        temp_testcases[k] = v
+
             imported_testcases = DataFactory(
                 {"data_source": input_path}, task=self.task, is_import=True
             ).load()
 
+            # merge the testcases with the imported ones to the temp_testcases
             for name, list_samples in imported_testcases.items():
                 if name not in temp_testcases:
                     temp_testcases[name] = list_samples
                 temp_testcases[name].extend(list_samples)
+
+            # update the testcases in the harness
+            for k, v in temp_testcases.items():
+                if k in self._testcases:
+                    self._testcases[k].extend(v)
+                else:
+                    self._testcases[k] = v
 
         # single dataset case
         elif isinstance(self._testcases, list):
@@ -1051,7 +1080,7 @@ class Harness:
                 if sample.category not in ["robustness", "bias"]
             ]
 
-            if len(temp_testcases) == 0:
+            if categories_count > 0:
                 testcases = self.__temp_generate()._testcases
                 temp_testcases.extend(testcases)
 
@@ -1759,7 +1788,7 @@ class Harness:
             }
         }
         print(
-            f"{'':=^80}\n{'Adding Testcases Other than Robustness and Bias Categories ':^80}\n{'':=^80}"
+            f"{'':=^80}\n{'Adding Test Cases Other than Robustness and Bias Categories ':^80}\n{'':=^80}"
         )
         temp_harness = self.__class__(
             task=str(self.task),
