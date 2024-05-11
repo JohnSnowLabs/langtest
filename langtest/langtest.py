@@ -1665,11 +1665,10 @@ class Harness:
         """Reset the default values."""
         model_response = TestResultManager()
         model_response.clear_data()
-        
+
         # Reset the PromptManager
         prompt_manager = PromptManager()
         prompt_manager.reset()
-
 
     def __tracking(self, *args, **kwargs):
         """Track the progress of the testcases."""
