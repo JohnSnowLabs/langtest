@@ -13,7 +13,6 @@ import random
 
 from pkg_resources import resource_filename
 
-
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
@@ -21,12 +20,12 @@ from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .utils import report_utils as report, config_utils
 
-
 from .transform.utils import RepresentationOperation
 from langtest.utils.benchmark_utils import Leaderboard, Summary
 from langtest.utils.lib_manager import try_import_lib
 from langtest.utils.custom_types.helpers import TestResultManager
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
+from langtest.prompts import PromptManager
 from .errors import Warnings, Errors
 
 EVAL_MODEL = None
@@ -202,6 +201,11 @@ class Harness:
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
+
+        # prompt config
+        self.__prompt_config = self._config.get("prompt_config", None)
+        if self.__prompt_config:
+            self.prompt_manager = PromptManager.from_prompt_configs(self.__prompt_config)
 
         # model section
         if isinstance(model, list):
@@ -1646,6 +1650,9 @@ class Harness:
 
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
+            # set prompt in prompt manager
+            if hasattr(self, "prompt_manager") and self.prompt_manager is not None:
+                self.prompt_manager.default_state = dataset_name
             # update user prompt for each dataset
             if temp_store_prompt and isinstance(temp_store_prompt, dict):
                 self._config.get("model_parameters", {}).update(
@@ -1694,6 +1701,10 @@ class Harness:
         """Reset the default values."""
         model_response = TestResultManager()
         model_response.clear_data()
+
+        # Reset the PromptManager
+        prompt_manager = PromptManager()
+        prompt_manager.reset()
 
     def __tracking(self, *args, **kwargs):
         """Track the progress of the testcases."""

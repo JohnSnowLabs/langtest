@@ -137,7 +137,16 @@ class PretrainedModelForQA(ModelAPI):
             The prediction result.
         """
         try:
-            prompt_template = PromptTemplate(**prompt)
+            # loading a prompt manager
+            from langtest.prompts import PromptManager
+
+            prompt_manager = PromptManager()
+
+            prompt_template = prompt_manager.get_prompt()
+
+            if prompt_template is None:
+                prompt_template = PromptTemplate(**prompt)
+
             llmchain = LLMChain(prompt=prompt_template, llm=self.model)
             output = llmchain.invoke(text)
             return output.get(llmchain.output_key, "")

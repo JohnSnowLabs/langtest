@@ -1,5 +1,7 @@
 from typing import Any, Callable, Union
 
+from langtest.prompts import PromptManager
+
 from .modelhandler import ModelAPI
 from abc import ABC
 from functools import lru_cache
@@ -45,13 +47,20 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
         input_data_func = kwargs.get("data")
         data = input_data_func(text)
     else:
-        if isinstance(server_prompt, str):
-            server_prompt = {"role": "assistant", "content": server_prompt}
+        examples = []
         user_text = {"role": "user", "content": text}
+
+        if kwargs.get("examples", None) and isinstance(kwargs.get("examples"), list):
+            examples.extend(kwargs.get("examples", []))
+
+        if isinstance(server_prompt, str):
+            server_prompt = {"role": "system", "content": server_prompt}
+        # user_text = {"role": "user", "content": text}
+        messages = [*examples, user_text]
+        # if server_prompt:
+        #     messages.insert(0, server_prompt)
         data = {
-            "messages": [*server_prompt, user_text]
-            if isinstance(server_prompt, tuple)
-            else [server_prompt, user_text],
+            "messages": messages,
             "temperature": kwargs.get("temperature", 0.2),
             "max_tokens": kwargs.get("max_tokens", -1),
             "stream": kwargs.get("stream", False),
@@ -152,12 +161,21 @@ class PretrainedModel(ABC):
             str: The predicted output.
         """
         try:
-            prompt_template = SimplePromptTemplate(**prompt)
-            p = prompt_template.format(**text)
+            prompt_examples = PromptManager()
+            examples = prompt_examples.get_prompt(hub="lm-studio")
+
+            if examples:
+                prompt["template"] = "".join(f"{k.title()}: {{{k}}}" for k in text.keys())
+                prompt_template = SimplePromptTemplate(**prompt)
+                p = prompt_template.format(**text)
+            else:
+                prompt_template = SimplePromptTemplate(**prompt)
+                p = prompt_template.format(**text)
             op = chat_completion_api(
                 text=p,
                 url=self.model,
                 server_prompt=server_prompt,
+                examples=examples,
                 *args,
                 **self.kwargs,
             )
