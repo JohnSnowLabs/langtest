@@ -13,8 +13,6 @@ import random
 
 from pkg_resources import resource_filename
 
-from langtest.prompts import PromptManager
-
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
@@ -22,11 +20,12 @@ from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .utils import report_utils as report, config_utils
 
-
 from .transform.utils import RepresentationOperation
+from langtest.utils.benchmark_utils import Leaderboard, Summary
 from langtest.utils.lib_manager import try_import_lib
 from langtest.utils.custom_types.helpers import TestResultManager
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
+from langtest.prompts import PromptManager
 from .errors import Warnings, Errors
 
 EVAL_MODEL = None
@@ -94,6 +93,7 @@ class Harness:
         model: Optional[Union[list, dict]] = None,
         data: Optional[Union[list, dict]] = None,
         config: Optional[Union[str, dict]] = None,
+        benchmarking: dict = None,
     ):
         """Initialize the Harness object.
 
@@ -113,6 +113,25 @@ class Harness:
         self.is_default = False
         self.__data_dict = data
         self.__is_multi_model = False
+        self.__model_info = model
+        self.__benchmarking = benchmarking
+
+        # check the list of strings in the data
+        if isinstance(data, list) and all(isinstance(i, str) for i in data):
+            temp_data = []
+            for dataset in data:
+                if isinstance(task, dict):
+                    temp_task = task["category"]
+                else:
+                    temp_task = task
+                temp_data.append(
+                    config_utils.BenchmarkDatasets.get_dataset_dict(
+                        dataset_name=dataset, task=temp_task
+                    )
+                )
+
+            data = temp_data
+            self.__data_dict = data
 
         # reset classes to default state
         self.__reset_defaults()
@@ -453,6 +472,11 @@ class Harness:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
+
+        # benchmarking true
+        if self.__benchmarking:
+            self.__tracking()
+
         if self._generated_results is None:
             raise RuntimeError(Errors.E011)
 
@@ -1349,7 +1373,11 @@ class Harness:
                 return testcases
 
         elif str(self.task) in ("question-answering", "summarization"):
-            if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
+            if (
+                "bias" in tests.keys()
+                and isinstance(self.__data_dict, dict)
+                and "bias" == self.__data_dict.get("split")
+            ):
                 if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
                     tests_to_filter = tests["bias"].keys()
                     testcases = DataFactory.filter_curated_bias(tests_to_filter, dataset)
@@ -1637,7 +1665,88 @@ class Harness:
         """Reset the default values."""
         model_response = TestResultManager()
         model_response.clear_data()
-
+        
         # Reset the PromptManager
         prompt_manager = PromptManager()
         prompt_manager.reset()
+
+
+    def __tracking(self, *args, **kwargs):
+        """Track the progress of the testcases."""
+        if self.__benchmarking:
+            df = self.generated_results()
+
+            path = self.__benchmarking.get(
+                os.path.expanduser("save_dir"),
+                os.path.expanduser("~/.langtest/leaderboard/"),
+            )
+            summary = Summary(path)
+
+            # temp dict
+            temp_dict = {}
+            if isinstance(self.__data_dict, dict):
+                temp_dict[self.__data_dict.get("data_source")] = self.__data_dict
+            else:
+                for i in self.__data_dict:
+                    temp_dict[i.get("data_source")] = i
+
+            # add the dataset_name column if the data is single dataset
+            if isinstance(self.__data_dict, dict) and (not self.is_multi_dataset):
+                df["dataset_name"] = self.__data_dict.get("data_source", "-")
+
+            df["split"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("split", "-")
+            )
+            df["subset"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("subset", "-")
+            )
+
+            df["hub"] = self.__model_info.get("hub", "-")
+            if self.__model_info.get("hub", "-") == "lm-studio":
+                import requests as req
+
+                response = req.get(
+                    "http://localhost:1234/v1/models",
+                ).json()
+
+                model_name = response["data"][0]["id"]
+                df["model"] = model_name
+            else:
+                df["model"] = self.__model_info.get("model", "-")
+            df["task"] = str(self.task)
+            summary.add_report(df)
+
+    def get_leaderboard(
+        self,
+        indices=[],
+        columns=[],
+        category=False,
+        split_wise=False,
+        test_wise=False,
+        *args,
+        **kwargs,
+    ):
+        """Get the rank of the model on the leaderboard."""
+
+        if os.path.exists(os.path.expanduser(self.__benchmarking.get("save_dir"))):
+            path = os.path.expanduser(self.__benchmarking.get("save_dir"))
+        elif os.path.exists(os.path.expanduser("~/.langtest/leaderboard/")):
+            path = os.path.expanduser("./.langtest/leaderboard/")
+        else:
+            raise FileNotFoundError(f"Summary.csv File is not exists in {path}")
+
+        leaderboard = Leaderboard(path)
+
+        # print(leaderboard.default().to_markdown())
+        if indices or columns:
+            return leaderboard.custom_wise(indices, columns)
+        if category:
+            return leaderboard.category_wise()
+
+        if test_wise:
+            return leaderboard.test_wise()
+
+        if split_wise:
+            return leaderboard.split_wise()
+
+        return leaderboard.default()
