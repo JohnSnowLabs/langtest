@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 import pandas as pd
 import yaml
 
-from langtest.datahandler.datasource import DataFactory, HuggingFaceDataset
+from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.transform.utils import create_terminology
 from langtest.utils.custom_types import Sample
