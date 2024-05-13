@@ -187,9 +187,7 @@ class Summary(Generic[TypeVar("T", bound="Summary")]):
         self.save_dir = path
         self.file_path = f"{path}summary.csv"
 
-        self.summary_df: pd.DataFrame = self.load_data_from_file(
-            self.file_path, *args, **kwargs
-        )
+        self.summary_df: pd.DataFrame = self.__update_summary_df()
 
     def load_data_from_file(self, path: str, *args, **kwargs) -> pd.DataFrame:
         """
@@ -242,6 +240,8 @@ class Summary(Generic[TypeVar("T", bound="Summary")]):
         """
         Add a new report to the summary
         """
+        # Load and Update the summary dataframe
+        self.summary_df = self.__update_summary_df()
 
         from datetime import datetime
 
@@ -327,4 +327,13 @@ class Summary(Generic[TypeVar("T", bound="Summary")]):
 
     @property
     def df(self) -> pd.DataFrame:
+        return self.summary_df
+
+    def __update_summary_df(self):
+        """
+        Update the summary dataframe
+        """
+        if self.file_path.startswith("~"):
+            self.file_path = os.path.expanduser(self.file_path)
+        self.summary_df = self.load_data_from_file(self.file_path)
         return self.summary_df
