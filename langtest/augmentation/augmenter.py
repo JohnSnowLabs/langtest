@@ -7,10 +7,10 @@ from langtest.transform import TestFactory
 from langtest.tasks.task import TaskManager
 
 
-class Augmenter:
+class DataAugmenter:
     def __init__(self, task: Union[str, TaskManager], config: Union[str, dict]) -> None:
         """
-        Initialize the Augmenter.
+        Initialize the DataAugmenter.
 
         Args:
             config (Union[str, dict]): Configuration file or dictionary.
@@ -77,7 +77,7 @@ class Augmenter:
 
         return self
 
-    def extend(self, data: Iterable) -> "Augmenter":
+    def extend(self, data: Iterable) -> "DataAugmenter":
         """
         Extend the content.
         """
@@ -94,7 +94,7 @@ class Augmenter:
 
         return self
 
-    def inplace(self, data: Iterable) -> "Augmenter":
+    def inplace(self, data: Iterable) -> "DataAugmenter":
         """
         Inplace augmentation.
         """
@@ -117,7 +117,7 @@ class Augmenter:
 
         return self
 
-    def new_data(self, data: Iterable) -> "Augmenter":
+    def new_data(self, data: Iterable) -> "DataAugmenter":
         """
         Create new data.
         """
