@@ -1758,6 +1758,7 @@ class Harness:
         category=False,
         split_wise=False,
         test_wise=False,
+        rank_by: Union[str, list] = "Avg",
         *args,
         **kwargs,
     ):
@@ -1776,15 +1777,15 @@ class Harness:
         if indices or columns:
             return leaderboard.custom_wise(indices, columns)
         if category:
-            return leaderboard.category_wise()
+            return leaderboard.category_wise(rank_by=rank_by)
 
         if test_wise:
-            return leaderboard.test_wise()
+            return leaderboard.test_wise(rank_by=rank_by)
 
         if split_wise:
-            return leaderboard.split_wise()
+            return leaderboard.split_wise(rank_by=rank_by)
 
-        return leaderboard.default()
+        return leaderboard.default(rank_by=rank_by)
 
     def __temp_generate(self, *args, **kwargs):
         """Temporary function to generate the testcases."""
