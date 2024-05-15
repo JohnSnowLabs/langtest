@@ -1,9 +1,13 @@
 import inspect
-from typing import Any, Union
+from typing import Any, List, Union
 import langchain.llms as lc
-import langchain.chat_models as cm
-from langchain import LLMChain, PromptTemplate
-from pydantic import ValidationError
+from langchain.chains import LLMChain
+from langchain_core.prompts import PromptTemplate
+from langchain_core.exceptions import OutputParserException
+from pydantic import Field, ValidationError
+
+from langtest.utils.custom_types.output import NEROutput
+from langtest.utils.custom_types.predictions import NERPrediction
 from ..modelhandler.modelhandler import ModelAPI, LANGCHAIN_HUBS
 from ..errors import Errors, Warnings
 import logging
@@ -76,7 +80,9 @@ class PretrainedModelForQA(ModelAPI):
         try:
             cls._update_model_parameters(hub, filtered_kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
-                model = cm.ChatOpenAI(model=path, *args, **filtered_kwargs)
+                from langchain_openai.chat_models import ChatOpenAI
+
+                model = ChatOpenAI(model=path, *args, **filtered_kwargs)
                 return cls(hub, model, *args, **filtered_kwargs)
             else:
                 model = getattr(lc, LANGCHAIN_HUBS[hub])
@@ -131,10 +137,19 @@ class PretrainedModelForQA(ModelAPI):
             The prediction result.
         """
         try:
-            prompt_template = PromptTemplate(**prompt)
+            # loading a prompt manager
+            from langtest.prompts import PromptManager
+
+            prompt_manager = PromptManager()
+
+            prompt_template = prompt_manager.get_prompt()
+
+            if prompt_template is None:
+                prompt_template = PromptTemplate(**prompt)
+
             llmchain = LLMChain(prompt=prompt_template, llm=self.model)
-            output = llmchain.run(**text)
-            return output
+            output = llmchain.invoke(text)
+            return output.get(llmchain.output_key, "")
         except Exception as e:
             raise ValueError(Errors.E089.format(error_message=e))
 
@@ -195,6 +210,93 @@ class ConfigError(BaseException):
 
     def __str__(self):
         return self.message
+
+
+class PretrainedModelForNER(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for named entity recognition.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    @lru_cache(maxsize=102400)
+    def predict(self, text: Union[str, dict], *args, **kwargs) -> NEROutput:
+        """Perform prediction using the pretrained model.
+
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
+        """
+        try:
+            prompt = {
+                "input_variables": ["text"],
+                "template": "Extract the named entities from the text. \n{format_instructions}\n {text}",
+                "partial_variables": {
+                    "format_instructions": self.__output_parser().get_format_instructions()
+                },
+            }
+            prompt_template = PromptTemplate(**prompt)
+            llmchain = LLMChain(
+                prompt=prompt_template,
+                llm=self.model,
+                output_parser=self.__output_parser(),
+            )
+            result = llmchain.invoke({"text": text})
+            result: dict = result.get(llmchain.output_key, {"entities": []})
+
+            try:
+                predictions = []
+                for entity in result.get("entities", []):
+                    try:
+                        entity = NERPrediction.from_span(**entity)
+                        predictions.append(entity)
+                    except Exception:
+                        pass
+
+                return NEROutput(predictions=predictions)
+            except Exception:
+                return NEROutput(predictions=[])
+
+        except OutputParserException:
+            return NEROutput(predictions=[])
+
+        except Exception as e:
+            raise ValueError(Errors.E089.format(error_message=e))
+
+    def __call__(self, text: str, *args, **kwargs):
+        return self.predict(text, *args, **kwargs)
+
+    def __output_parser(self):
+        from langchain_core.output_parsers import JsonOutputParser
+        from pydantic import BaseModel
+
+        class Word(BaseModel):
+            """Single word in a named entity recognition prediction"""
+
+            word: str = Field(description="Word in the text")
+            start: int = Field(
+                description="Start index of the character in the word from the text"
+            )
+            end: int = Field(
+                description="End index of the character in the word from the text"
+            )
+            entity: str = Field(description="Named entity type")
+            score: float = Field(description="Confidence score of the prediction")
+            pos_tag: str = Field(description="Part of speech tag")
+            chunk_tag: str = Field(description="Chunk tag")
+
+        class NERParser(BaseModel):
+            """Named entity recognition prediction parser"""
+
+            entities: List[Word] = Field(description="List of named entities in the text")
+
+        parser = JsonOutputParser(pydantic_object=NERParser)
+        return parser
 
 
 class PretrainedModelForSummarization(PretrainedModelForQA, ModelAPI):

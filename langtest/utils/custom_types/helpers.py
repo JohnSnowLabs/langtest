@@ -113,6 +113,33 @@ default_user_prompt = {
     "pubmedqa": "Context: {context}\nQuestion: {question}\n I've provided a question and context. From here on, I want you to become an intelligent bot that can only answer with one of these three choices: 'yes', 'no', or 'maybe'. If you think the answer to the question is yes, then say 'yes'. If it is no, then say 'no'. If the answer is uncertain or could be either yes or no, say 'maybe'. Do not say anything else other than that.",
 }
 
+default_llm_chat_prompt = {
+    "ner": [
+        {
+            "role": "system",
+            "content": "You are an NER model designed to identify entities in the text. Your task is to classify each identified entity with its type, confidence score, word index, and the start and end positions in the input text. Respond with a list of dictionaries, each containing the keys 'entity', 'score', 'index', 'word', 'start', and 'end'. Note that all keys are mandatory and choose only ORG, and PER enities. Let's start with a few examples.",
+        },
+        {"role": "user", "content": "The sentence is: John is working at Google."},
+        {
+            "role": "assistant",
+            "content": "[{'entity': 'PER', 'score': 0.99, 'index': 1, 'word': 'John', 'start': 0, 'end': 4}, {'entity': 'ORG', 'score': 0.98, 'index': 5, 'word': 'Google', 'start': 19, 'end': 25}]",
+        },
+        {"role": "user", "content": "The sentence is: Elon Musk founded SpaceX."},
+        {
+            "role": "assistant",
+            "content": "[{'entity': 'PER', 'score': 0.99, 'index': 1, 'word': 'Elon Musk', 'start': 0, 'end': 9}, {'entity': 'ORG', 'score': 0.97, 'index': 4, 'word': 'SpaceX', 'start': 18, 'end': 24}]",
+        },
+        {
+            "role": "user",
+            "content": "The sentence is: Ada Lovelace is considered the first computer programmer.",
+        },
+        {
+            "role": "assistant",
+            "content": "[{'entity': 'PER', 'score': 0.98, 'index': 1, 'word': 'Ada Lovelace', 'start': 0, 'end': 12}]",
+        },
+    ]
+}
+
 
 class Span(BaseModel):
     """Representation of a text's slice"""
