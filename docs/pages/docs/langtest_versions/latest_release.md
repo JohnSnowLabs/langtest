@@ -10,205 +10,65 @@ modify_date: 2024-04-02
 
 <div class="h3-box" markdown="1">
 
-## 2.1.0
+## 2.2.0
 ------------------
 ## 📢 Highlights
 
-John Snow Labs is thrilled to announce the release of LangTest 2.1.0! This update brings exciting new features and improvements designed to streamline your language model testing workflows and provide deeper insights.
+John Snow Labs is excited to announce the release of LangTest 2.2.0! This update introduces powerful new features and enhancements to elevate your language model testing experience and deliver even greater insights.
 
-- **🔗 Enhanced API-based LLM Integration:** LangTest now supports testing API-based Large Language Models (LLMs). This allows you to seamlessly integrate diverse LLM models with LangTest and conduct performance evaluations across various datasets.
+- 🏆 **Model Ranking & Leaderboard**: LangTest introduces a comprehensive model ranking system. Use harness.get_leaderboard() to rank models based on various test metrics and retain previous rankings for historical comparison.
 
-- **📂 Expanded File Format Support:** LangTest 2.1.0 introduces support for additional file formats, further increasing its flexibility in handling different data structures used in LLM testing.
+- 🔍 **Few-Shot Model Evaluation:** Optimize and evaluate your models using few-shot prompt techniques. This feature enables you to assess model performance with minimal data, providing valuable insights into model capabilities with limited examples.
 
-- **📊 Improved Multi-Dataset Handling:** We've made significant improvements in how LangTest manages multiple datasets. This simplifies workflows and allows for more efficient testing across a wider range of data sources.
+- 📊 **Evaluating NER in LLMs:** This release extends support for Named Entity Recognition (NER) tasks specifically for Large Language Models (LLMs). Evaluate and benchmark LLMs on their NER performance with ease.
 
-- **🖥️ New Benchmarking Commands**: LangTest now boasts a set of new commands specifically designed for benchmarking language models. These commands provide a structured approach to evaluating model performance and comparing results across different models and datasets.
+- 🚀 **Enhanced Data Augmentation:** The new DataAugmenter module allows for streamlined and harness-free data augmentation, making it simpler to enhance your datasets and improve model robustness.
+
+- 🎯 **Multi-Dataset Prompts:** LangTest now offers optimized prompt handling for multiple datasets, allowing users to add custom prompts for each dataset, enabling seamless integration and efficient testing.
 
 </div><div class="h3-box" markdown="1">
 
 ## 🔥 Key Enhancements:
 
-### **🔗 Streamlined Integration and Enhanced Functionality for API-Based Large Language Models:**
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Generic_API-Based_Model_Testing_Demo.ipynb)
+### **🏆 Comprehensive Model Ranking & Leaderboard**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/benchmarks/Benchmarking_with_Harness.ipynb)
+The new Model Ranking & Leaderboard system offers a comprehensive way to evaluate and compare model performance based on various metrics across different datasets. This feature allows users to rank models, retain historical rankings, and analyze performance trends.
 
-This feature empowers you to seamlessly integrate virtually any language model hosted on an external API platform. Whether you prefer OpenAI, Hugging Face, or even custom vLLM solutions, LangTest now adapts to your workflow. `input_processor` and `output_parser` functions are not required for openai api compatible server.
+**Key Features:**
+- **Comprehensive Ranking**: Rank models based on various performance metrics across multiple datasets.
+- **Historical Comparison**: Retain and compare previous rankings for consistent performance tracking.
+- **Dataset-Specific Insights**: Evaluate model performance on different datasets to gain deeper insights.
 
-#### Key Features:
+**How It Works:**
 
-- **Effortless API Integration:** Connect to any API system by specifying the API URL, parameters, and a custom function for parsing the returned results. This intuitive approach allows you to leverage your preferred language models with minimal configuration.
+The following are steps to do model ranking and visualize the leaderboard for `google/flan-t5-base` and `google/flan-t5-large` models.
+**1.** Setup and configuration of the Harness are as follows:
 
-- **Customizable Parameters:** Define the URL, parameters specific to your chosen API, and a parsing function tailored to extract the desired output. This level of control ensures compatibility with diverse API structures.
-
-- **Unparalleled Flexibility:** Generic API Support removes platform limitations. Now, you can seamlessly integrate language models from various sources, including OpenAI, Hugging Face, and even custom vLLM solutions hosted on private platforms.
-
-#### How it Works:
-
-**Parameters:**
-Define the `input_processer` function for creating a payload and the `output_parser` function is used to extract the output from the response.
-
-```python
-GOOGLE_API_KEY = "<YOUR API KEY>"
-model_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GOOGLE_API_KEY}"
-
-# headers
-headers = {
-    "Content-Type": "application/json",
-}
-
-# function to create a payload
-def input_processor(content):
-    return {"contents": [
-        {
-            "role": "user",
-            "parts": [
-                {
-                    "text": content
-                }
-            ]
-        }
-    ]}
-
-# function to extract output from model response
-def output_parser(response):
-    try:
-        return response['candidates'][0]['content']['parts'][0]['text']
-    except:
-        return ""
+```yaml
+# config.yaml
+model_parameters:
+  max_tokens: 64
+  device: 0
+  task: text2text-generation
+tests:
+  defaults:
+    min_pass_rate: 0.65
+  robustness:
+    add_typo:
+      min_pass_rate: 0.7
+    lowercase:
+      min_pass_rate: 0.7
 ```
-
-To take advantage of this feature, users can utilize the following setup code:
-
 ```python
 from langtest import Harness
 
-# Initialize Harness with API parameters
 harness = Harness(
     task="question-answering",
     model={
-        "model": {
-            "url": url,
-            "headers": headers,
-            "input_processor": input_processor,
-            "output_parser": output_parser,
-        },
-        "hub": "web",
-    },
-    data={
-        "data_source": "OpenBookQA",
-        "split": "test-tiny",
-    }
-)
-# Generate, Run and get Report
-harness.generate().run().report()
-```
-![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/9754c506-e715-4e2c-8b9d-dfd98f0695e5)
-
-
-### 📂 Streamlined Data Handling and Evaluation
-
-This feature streamlines your testing workflows by enabling LangTest to process a wider range of file formats directly.
-
-#### Key Features:
-
-- **Effortless File Format Handling:** LangTest now seamlessly ingests data from various file formats, including pickles (.pkl) in addition to previously supported formats. Simply provide the data source path in your harness configuration, and LangTest takes care of the rest.
-
-- **Simplified Data Source Management**: LangTest intelligently recognizes the file extension and automatically selects the appropriate processing method. This eliminates the need for manual configuration, saving you time and effort.
-
-- **Enhanced Maintainability**: The underlying code structure is optimized for flexibility. Adding support for new file formats in the future requires minimal effort, ensuring LangTest stays compatible with evolving data storage practices.
-
-#### How it works:
-
-```python
-from langtest import Harness 
-
-harness = Harness(
-    task="question-answering",
-    model={
-        "model": "http://localhost:1234/v1/chat/completions",
-        "hub": "lm-studio",
-    },
-    data={
-        "data_source": "path/to/file.pkl", #
-    },
-)
-# generate, run and report
-harness.generate().run().report()
-```
-### 📊 Multi-Dataset Handling and Evaluation
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Multiple_dataset.ipynb)
-
-This feature empowers you to efficiently benchmark your language models across a wider range of datasets.
-
-#### Key Features:
-
-- **Effortless Multi-Dataset Testing:** LangTest now seamlessly integrates and executes tests on multiple datasets within a single harness configuration. This streamlined approach eliminates the need for repetitive setups, saving you time and resources.
-
-- **Enhanced Fairness Evaluation**: By testing models across diverse datasets, LangTest helps identify and mitigate potential biases. This ensures your models perform fairly and accurately on a broader spectrum of data, promoting ethical and responsible AI development.
-
-- **Robust Accuracy Assessment:** Multi-dataset support empowers you to conduct more rigorous accuracy testing. By evaluating models on various datasets, you gain a deeper understanding of their strengths and weaknesses across different data distributions. This comprehensive analysis strengthens your confidence in the model's real-world performance.
-
-#### How it works:
-
-Initiate the Harness class
-```python
-harness = Harness(
-    task="question-answering",
-    model={"model": "gpt-3.5-turbo-instruct", "hub": "openai"},
-    data=[
-        {"data_source": "NQ-open", "split": "test-tiny",},
-        {"data_source": "MedQA", "split": "test-tiny"},
-        {"data_source": "LogiQA", "split": "test-tiny"},
-    ],
-)
-```
-Configure the accuracy tests in Harness class
-```python
-harness.configure(
-    {
-        "tests": {
-            "defaults": {"min_pass_rate": 0.65},
-           
-            "accuracy": {
-                "llm_eval": {"min_score": 0.60},
-                "min_rouge1_score": {"min_score": 0.60},
-                "min_rouge2_score": {"min_score": 0.60},
-                "min_rougeL_score": {"min_score": 0.60},
-                "min_rougeLsum_score": {"min_score": 0.60},
-            },
-        }
-    }
-)
-```
-harness.generate() generates testcases, .run() executes them, and .report() compiles results.
-```python
-harness.generate().run().report()
-```
-![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/0d48be2f-e5bc-4971-b0a1-2756a10d3f24)
-
-### 🖥️ Streamlined Evaluation Workflows with Enhanced CLI Commands
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/benchmarks/Langtest_Cli_Eval_Command.ipynb)
-
-LangTest's evaluation capabilities, focusing on report management and leaderboards. These enhancements empower you to:
-
-- **Streamlined Reporting and Tracking:** Effortlessly save and load detailed evaluation reports directly from the command line using `langtest eval`, enabling efficient performance tracking and comparative analysis over time, with manual file review options in the `~/.langtest` or `./.langtest` folder.
-
-- **Enhanced Leaderboards:** Gain valuable insights with the new langtest show-leaderboard command. This command displays existing leaderboards, providing a centralized view of ranked model performance across evaluations.
-
-- **Average Model Ranking:** Leaderboard now include the average ranking for each evaluated model. This metric provides a comprehensive understanding of model performance across various datasets and tests.
-
-### How it works:
-
-First, create the `parameter.json` or `parameter.yaml` in the working directory
-
-**JSON Format**
-```json
-{
-    "task": "question-answering",
-    "model": {
         "model": "google/flan-t5-base",
         "hub": "huggingface"
     },
-    "data": [
+    data=[
         {
             "data_source": "MedMCQA"
         },
@@ -222,73 +82,283 @@ First, create the `parameter.json` or `parameter.yaml` in the working directory
             "data_source": "MedQA"
         }
     ],
-    "config": {
-        "model_parameters": {
-            "max_tokens": 64,
-            "device": 0,
-            "task": "text2text-generation"
-        },
-        "tests": {
-            "defaults": {
-                "min_pass_rate": 0.70
+    config="config.yml",
+    benchmarking={
+        "save_dir":"~/.langtest/leaderboard/" # required for benchmarking 
+    }
+)
+```
+
+**2**. generate the test cases, run on the model, and get the report as follows:
+```python
+harness.generate().run().report()
+```
+![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/d8055592-5501-4139-ad90-55baa4fecbfc)
+
+**3**. Similarly, do the same steps for the `google/flan-t5-large` model with the same `save_dir` path for benchmarking and the same `config.yaml`
+
+**4**. Finally, the leaderboard can show the model rank by calling the below code.
+```python
+harness.get_leaderboard()
+```
+![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/ff741d8e-4fc0-4f94-bcc3-9c67653aaba8)
+
+**Conclusion:**
+The Model Ranking & Leaderboard system provides a robust and structured method for evaluating and comparing models across multiple datasets, enabling users to make data-driven decisions and continuously improve model performance.
+
+
+### **🔍 Efficient Few-Shot Model Evaluation**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Fewshot_QA_Notebook.ipynb)
+Few-Shot Model Evaluation optimizes and evaluates model performance using minimal data. This feature provides rapid insights into model capabilities, enabling efficient assessment and optimization with limited examples.
+
+**Key Features:**
+- **Few-Shot Techniques**: Evaluate models with minimal data to gauge performance quickly.
+- **Optimized Performance**: Improve model outputs using targeted few-shot prompts.
+- **Efficient Evaluation**: Streamlined process for rapid and effective model assessment.
+
+**How It Works:**
+**1.** Set up few-shot prompts tailored to specific evaluation needs.
+```yaml
+# config.yaml
+prompt_config:
+  "BoolQ":
+    instructions: >
+      You are an intelligent bot and it is your responsibility to make sure 
+      to give a concise answer. Answer should be `true` or `false`.
+    prompt_type: "instruct" # instruct for completion and chat for conversation(chat models)
+    examples:
+      - user:
+          context: >
+            The Good Fight -- A second 13-episode season premiered on March 4, 2018. 
+            On May 2, 2018, the series was renewed for a third season.
+          question: "is there a third series of the good fight?"
+        ai:
+          answer: "True"
+      - user:
+          context: >
+            Lost in Space -- The fate of the castaways is never resolved, 
+            as the series was unexpectedly canceled at the end of season 3.
+          question: "did the robinsons ever get back to earth"
+        ai:
+          answer: "True"
+  "NQ-open":
+    instructions: >
+      You are an intelligent bot and it is your responsibility to make sure 
+      to give a short concise answer.
+    prompt_type: "instruct" # completion
+    examples:
+      - user:
+          question: "where does the electron come from in beta decay?"
+        ai:
+          answer: "an atomic nucleus"
+      - user:
+          question: "who wrote you're a grand ol flag?"
+        ai:
+          answer: "George M. Cohan"
+
+tests:
+  defaults:
+    min_pass_rate: 0.8
+  robustness:
+    uppercase:
+      min_pass_rate: 0.8
+    add_typo:
+      min_pass_rate: 0.8
+```
+**2.** Initialize the Harness with `config.yaml` file as below code
+```python
+harness = Harness(
+                  task="question-answering", 
+                  model={"model": "gpt-3.5-turbo-instruct","hub":"openai"}, 
+                  data=[{"data_source" :"BoolQ",
+                        "split":"test-tiny"},
+                        {"data_source" :"NQ-open",
+                         "split":"test-tiny"}],
+                  config="config.yaml"
+                  )
+```
+**3.** Generate the test cases, run them on the model, and then generate the report.
+
+```python
+harness.generate().run().report()
+```
+![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/4bae4008-621c-4d1c-a303-218f9df2700d)
+
+**Conclusion:**
+Few-Shot Model Evaluation provides valuable insights into model capabilities with minimal data, allowing for rapid and effective performance optimization. This feature ensures that models can be assessed and improved efficiently, even with limited examples.
+
+
+### **📊 Evaluating NER in LLMs**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/NER%20Casual%20LLM.ipynb)
+Evaluating NER in LLMs enables precise extraction and evaluation of entities using Large Language Models (LLMs). This feature enhances the capability to assess LLM performance on Named Entity Recognition tasks.
+
+**Key Features:**
+- **LLM-Specific Support**: Tailored for evaluating NER tasks using LLMs.
+- **Accurate Entity Extraction**: Improved techniques for precise entity extraction.
+- **Comprehensive Evaluation**: Detailed assessment of entity extraction performance.
+
+**How It Works:**
+**1.** Set up NER tasks for specific LLM evaluation.
+```python
+# Create a Harness object
+harness = Harness(task="ner",
+            model={
+                "model": "gpt-3.5-turbo-instruct",
+                "hub": "openai", },
+            data={
+                "data_source": 'path/to/conll03.conll'
             },
-            "robustness": {
-                "add_typo": {
-                    "min_pass_rate": 0.70
+            config={
+                "model_parameters": {
+                    "temperature": 0,
+                },
+                "tests": {
+                    "defaults": {
+                        "min_pass_rate": 1.0
+                    },
+                    "robustness": {
+                        "lowercase": {
+                            "min_pass_rate": 0.7
+                        }
+                    },
+                    "accuracy": {
+                        "min_f1_score": {
+                            "min_score": 0.7,
+                        },
+                    }
                 }
             }
+            )
+```
+**2.** Generate the test cases based on the configuration in the Harness, run them on the model, and get the report.
+```python
+harness.generate().run().report()
+```
+![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/9435fa17-d3f7-4d47-934c-4cd483b11a53)
+
+Examples:
+![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/2ceb3390-9f07-4b17-b9e7-b32504ad1afe)
+
+**Conclusion:**
+Evaluating NER in LLMs allows for accurate entity extraction and performance assessment using LangTest's comprehensive evaluation methods. This feature ensures thorough and reliable evaluation of LLMs on Named Entity Recognition tasks.
+
+
+### **🚀 Enhanced Data Augmentation**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Data_Augmenter_Notebook.ipynb)
+Enhanced Data Augmentation introduces a new `DataAugmenter` class, enabling streamlined and harness-free data augmentation. This feature simplifies the process of enriching datasets to improve model robustness and performance.
+
+**Key Features:**
+- **Harness-Free Augmentation**: Perform data augmentation without the need for harness testing.
+- **Improved Workflow**: Simplified processes for enhancing datasets efficiently.
+- **Robust Models**: Increase model robustness through effective data augmentation techniques.
+
+**How It Works:**
+The following are steps to import the `DataAugmenter` class from LangTest.
+**1.** Create a config.yaml for the data augmentation.
+```yaml
+# config.yaml
+parameters:
+    type: proportion
+    style: new
+tests:
+    robustness:
+        uppercase:
+            max_proportion: 0.2
+        lowercase:
+            max_proportion: 0.2
+
+```
+**2.** Initialize the `DataAugmenter` class and apply various tests for augmentation to your datasets.
+```python
+from langtest.augmentation import DataAugmenter
+from langtest.tasks.task import TaskManager
+
+data_augmenter = DataAugmenter(
+    task=TaskManager("ner"), # use the ner, text-classification, question-answering...
+    config="config.yaml",
+)
+```
+**3.** Provide the training dataset to `data_augmenter`.
+```python
+data_augmenter.augment(data={
+    'data_source': 'path/to/conll03.conll'
+})
+```
+**4.** Then, save the augmented dataset. 
+```
+data_augmenter.save("augmented.conll")
+```
+**Conclusion:**
+Enhanced Data Augmentation capabilities in LangTest ensure that your models are more robust and capable of handling diverse data scenarios. This feature simplifies the augmentation process, leading to improved model performance and reliability.
+
+
+### **🎯Multi-Dataset Prompts**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/MultiPrompt_MultiDataset.ipynb)
+Multi-Dataset Prompts streamline the process of integrating and testing various data sources by allowing users to define custom prompts for each dataset. This enhancement ensures efficient prompt handling across multiple datasets, enabling comprehensive performance evaluations.
+
+**Key Features:**
+
+- **Custom Prompts:** Add tailored prompts for each dataset to enhance testing accuracy.
+- **Seamless Integration:** Easily incorporate multiple datasets into your testing environment.
+- **Improved Efficiency:** Simplified workflows for handling diverse data sources.
+
+**How It Works:**
+**1.** Initiate the Harness with `BoolQ` and `NQ-open` datasets.
+```python
+# Import Harness from the LangTest library
+from langtest import Harness
+
+harness = Harness(
+    task="question-answering",
+    model={"model": "gpt-3.5-turbo-instruct", "hub": "openai"},
+    data=[
+        {"data_source": "BoolQ", "split": "dev-tiny"},
+        {"data_source": "NQ-open", "split": "test-tiny"}
+    ],
+)
+```
+**2.** Configure prompts specific to each dataset, allowing tailored evaluations.
+```python
+harness.configure(
+    {
+        "model_parameters": {
+            "user_prompt": {
+                "BoolQ": "Answer the following question with a True or False. {context}\nQuestion {question}",
+                "NQ-open": "Answer the following question. Question {question}",
+            }
+        },
+        "tests": {
+            "defaults": {"min_pass_rate": 0.65},
+            "robustness": {
+                "uppercase": {"min_pass_rate": 0.66},
+                "dyslexia_word_swap": {"min_pass_rate": 0.60},
+                "add_abbreviation": {"min_pass_rate": 0.60},
+                "add_slangs": {"min_pass_rate": 0.60},
+                "add_speech_to_text_typo": {"min_pass_rate": 0.60},
+            },
         }
     }
-}
+)
 ```
-**Yaml Format**
-```yaml
-task: question-answering
-model:
-  model: google/flan-t5-base
-  hub: huggingface
-data:
-- data_source: MedMCQA
-- data_source: PubMedQA
-- data_source: MMLU
-- data_source: MedQA
-config:
-  model_parameters:
-    max_tokens: 64
-    device: 0
-    task: text2text-generation
-  tests:
-    defaults:
-      min_pass_rate: 0.70
-    robustness:
-      add_typo:
-        min_pass_rate: 0.7
+**3.** Generate the test cases, run them on the model, and get the report.
+```python
+harness.generate().run().report()
+```
+![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/a961d98d-a229-439e-a9eb-92395dde6f62)
 
-```
-And open the terminal or cmd in your system 
-```bash
-langtest eval --model <your model name or endpoint> \
-              --hub <model hub like hugging face, lm-studio, web ...> \
-              -c < your configuration file like parameter.json or parameter.yaml>
-```
-Finally, we can know the leaderboard and rank of the model.
-![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/a405d0c6-5ef1-4efb-924c-0ba8667ebe43)
-
-----
-
-To visualize the leaderboard anytime using the CLI command
-```bash
-langtest show-leaderboard
-```
-![image](https://github.com/JohnSnowLabs/langtest/assets/23481244/f357c173-e4b1-4dc8-86ad-98438046b89c)
+**Conclusion:**
+Multi-dataset prompts in LangTest empower users to efficiently manage and test multiple data sources, resulting in more effective and comprehensive language model evaluations.
 
 ## 📒 New Notebooks
 
+{:.table2}
 | Notebooks          | Colab Link |
 |--------------------|-------------|
-| Generic API-based Model Testing         | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Generic_API-Based_Model_Testing_Demo.ipynb)|
-| Multi-Dataset     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Multiple_dataset.ipynb) |
-| Langtest Eval Cli Command     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/benchmarks/Langtest_Cli_Eval_Command.ipynb) |
-----------------
+| Model Ranking & Leaderboard       | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/benchmarks/Benchmarking_with_Harness.ipynb)|
+| Fewshot Model Evaluation     | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/Fewshot_QA_Notebook.ipynb) |
+| Evaluating NER in LLMs    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/llm_notebooks/NER%20Casual%20LLM.ipynb) |
+| Data Augmenter    | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/Data_Augmenter_Notebook.ipynb) |
+| Multi-Dataset Prompts   | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnSnowLabs/langtest/blob/main/demo/tutorials/misc/MultiPrompt_MultiDataset.ipynb) |
+
 </div>
 {%- include docs-langtest-pagination.html -%}
