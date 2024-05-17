@@ -20,11 +20,12 @@ from .modelhandler import LANGCHAIN_HUBS
 from .transform import TestFactory
 from .utils import report_utils as report, config_utils
 
-
 from .transform.utils import RepresentationOperation
+from langtest.utils.benchmark_utils import Leaderboard, Summary
 from langtest.utils.lib_manager import try_import_lib
 from langtest.utils.custom_types.helpers import TestResultManager
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
+from langtest.prompts import PromptManager
 from .errors import Warnings, Errors
 
 EVAL_MODEL = None
@@ -92,6 +93,7 @@ class Harness:
         model: Optional[Union[list, dict]] = None,
         data: Optional[Union[list, dict]] = None,
         config: Optional[Union[str, dict]] = None,
+        benchmarking: dict = None,
     ):
         """Initialize the Harness object.
 
@@ -111,6 +113,25 @@ class Harness:
         self.is_default = False
         self.__data_dict = data
         self.__is_multi_model = False
+        self.__model_info = model
+        self.__benchmarking = benchmarking
+
+        # check the list of strings in the data
+        if isinstance(data, list) and all(isinstance(i, str) for i in data):
+            temp_data = []
+            for dataset in data:
+                if isinstance(task, dict):
+                    temp_task = task["category"]
+                else:
+                    temp_task = task
+                temp_data.append(
+                    config_utils.BenchmarkDatasets.get_dataset_dict(
+                        dataset_name=dataset, task=temp_task
+                    )
+                )
+
+            data = temp_data
+            self.__data_dict = data
 
         # reset classes to default state
         self.__reset_defaults()
@@ -180,6 +201,11 @@ class Harness:
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
+
+        # prompt config
+        self.__prompt_config = self._config.get("prompt_config", None)
+        if self.__prompt_config:
+            self.prompt_manager = PromptManager.from_prompt_configs(self.__prompt_config)
 
         # model section
         if isinstance(model, list):
@@ -446,6 +472,11 @@ class Harness:
             pd.DataFrame:
                 DataFrame containing the results of the tests.
         """
+
+        # benchmarking true
+        if self.__benchmarking:
+            self.__tracking()
+
         if self._generated_results is None:
             raise RuntimeError(Errors.E011)
 
@@ -991,6 +1022,22 @@ class Harness:
         Args:
             input_path (str): location of the file to load
         """
+        if isinstance(self.data, dict) and not self.__is_multi_model:
+            self._testcases = {}
+        elif isinstance(self.data, list):
+            self._testcases = []
+
+        # check the category of the testcases and count the categories
+        categories_count = list(self._config.get("tests", {}))
+
+        # Remove the "robustness" and "bias" categories from categories_count
+        categories_count = len(
+            [
+                category
+                for category in categories_count
+                if category not in ["robustness", "bias", "defaults"]
+            ]
+        )
 
         # multi dataset case is handled separately
         if isinstance(self._testcases, dict) and not self.__is_multi_model:
@@ -1003,14 +1050,30 @@ class Harness:
                 for k, v in self._testcases.items()
             }
 
+            if categories_count > 0:
+                testcases = self.__temp_generate()._testcases
+                for k, v in testcases.items():
+                    if k in temp_testcases:
+                        temp_testcases[k].extend(v)
+                    else:
+                        temp_testcases[k] = v
+
             imported_testcases = DataFactory(
                 {"data_source": input_path}, task=self.task, is_import=True
             ).load()
 
+            # merge the testcases with the imported ones to the temp_testcases
             for name, list_samples in imported_testcases.items():
                 if name not in temp_testcases:
                     temp_testcases[name] = list_samples
                 temp_testcases[name].extend(list_samples)
+
+            # update the testcases in the harness
+            for k, v in temp_testcases.items():
+                if k in self._testcases:
+                    self._testcases[k].extend(v)
+                else:
+                    self._testcases[k] = v
 
         # single dataset case
         elif isinstance(self._testcases, list):
@@ -1019,6 +1082,10 @@ class Harness:
                 for sample in self._testcases
                 if sample.category not in ["robustness", "bias"]
             ]
+
+            if categories_count > 0:
+                testcases = self.__temp_generate()._testcases
+                temp_testcases.extend(testcases)
 
             self._testcases = DataFactory(
                 {"data_source": input_path}, task=self.task, is_import=True
@@ -1342,7 +1409,11 @@ class Harness:
                 return testcases
 
         elif str(self.task) in ("question-answering", "summarization"):
-            if "bias" in tests.keys() and "bias" == self.__data_dict.get("split"):
+            if (
+                "bias" in tests.keys()
+                and isinstance(self.__data_dict, dict)
+                and "bias" == self.__data_dict.get("split")
+            ):
                 if self.__data_dict["data_source"] in ("BoolQ", "XSum"):
                     tests_to_filter = tests["bias"].keys()
                     testcases = DataFactory.filter_curated_bias(tests_to_filter, dataset)
@@ -1572,8 +1643,21 @@ class Harness:
     ):
         generated_results = {}
 
+        # temp_store_prompt
+        temp_store_prompt = self._config.get("model_parameters", {}).get(
+            "user_prompt", None
+        )
+
         # Run the testcases for each dataset
         for dataset_name, samples in testcases.items():
+            # set prompt in prompt manager
+            if hasattr(self, "prompt_manager") and self.prompt_manager is not None:
+                self.prompt_manager.default_state = dataset_name
+            # update user prompt for each dataset
+            if temp_store_prompt and isinstance(temp_store_prompt, dict):
+                self._config.get("model_parameters", {}).update(
+                    {"user_prompt": temp_store_prompt.get(dataset_name)}
+                )
             # Get the raw data for the dataset
             if isinstance(self.data, dict):
                 raw_data = self.data.get(dataset_name)
@@ -1597,6 +1681,12 @@ class Harness:
 
             print(f"{'':-^80}\n")
 
+        # resore user prompt
+        if temp_store_prompt:
+            self._config.get("model_parameters", {}).update(
+                {"user_prompt": temp_store_prompt}
+            )
+
         if (
             self.is_multi_dataset
             and self._generated_results is None
@@ -1611,3 +1701,113 @@ class Harness:
         """Reset the default values."""
         model_response = TestResultManager()
         model_response.clear_data()
+
+        # Reset the PromptManager
+        prompt_manager = PromptManager()
+        prompt_manager.reset()
+
+    def __tracking(self, *args, **kwargs):
+        """Track the progress of the testcases."""
+        if self.__benchmarking:
+            df = self.generated_results()
+
+            path = self.__benchmarking.get(
+                os.path.expanduser("save_dir"),
+                os.path.expanduser("~/.langtest/leaderboard/"),
+            )
+            summary = Summary(path)
+
+            # temp dict
+            temp_dict = {}
+            if isinstance(self.__data_dict, dict):
+                temp_dict[self.__data_dict.get("data_source")] = self.__data_dict
+            else:
+                for i in self.__data_dict:
+                    temp_dict[i.get("data_source")] = i
+
+            # add the dataset_name column if the data is single dataset
+            if isinstance(self.__data_dict, dict) and (not self.is_multi_dataset):
+                df["dataset_name"] = self.__data_dict.get("data_source", "-")
+
+            df["split"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("split", "-")
+            )
+            df["subset"] = df["dataset_name"].apply(
+                lambda x: temp_dict[x].get("subset", "-")
+            )
+
+            df["hub"] = self.__model_info.get("hub", "-")
+            if self.__model_info.get("hub", "-") == "lm-studio":
+                import requests as req
+
+                response = req.get(
+                    "http://localhost:1234/v1/models",
+                ).json()
+
+                model_name = response["data"][0]["id"]
+                df["model"] = model_name
+            else:
+                df["model"] = self.__model_info.get("model", "-")
+            df["task"] = str(self.task)
+            summary.add_report(df)
+
+    def get_leaderboard(
+        self,
+        indices=[],
+        columns=[],
+        category=False,
+        split_wise=False,
+        test_wise=False,
+        rank_by: Union[str, list] = "Avg",
+        *args,
+        **kwargs,
+    ):
+        """Get the rank of the model on the leaderboard."""
+
+        if os.path.exists(os.path.expanduser(self.__benchmarking.get("save_dir"))):
+            path = os.path.expanduser(self.__benchmarking.get("save_dir"))
+        elif os.path.exists(os.path.expanduser("~/.langtest/leaderboard/")):
+            path = os.path.expanduser("./.langtest/leaderboard/")
+        else:
+            raise FileNotFoundError(f"Summary.csv File is not exists in {path}")
+
+        leaderboard = Leaderboard(path)
+
+        # print(leaderboard.default().to_markdown())
+        if indices or columns:
+            return leaderboard.custom_wise(indices, columns)
+        if category:
+            return leaderboard.category_wise(rank_by=rank_by)
+
+        if test_wise:
+            return leaderboard.test_wise(rank_by=rank_by)
+
+        if split_wise:
+            return leaderboard.split_wise(rank_by=rank_by)
+
+        return leaderboard.default(rank_by=rank_by)
+
+    def __temp_generate(self, *args, **kwargs):
+        """Temporary function to generate the testcases."""
+
+        # temp config other than robustness and bias
+        temp_config = {
+            "tests": {
+                k: v
+                for k, v in self._config.get("tests", {}).items()
+                if k not in ["robustness", "bias"]
+            }
+        }
+        print(
+            f"{'':=^80}\n{'Adding Test Cases Other than Robustness and Bias Categories ':^80}\n{'':=^80}"
+        )
+        temp_harness = self.__class__(
+            task=str(self.task),
+            model=self.__model_info,
+            data=self.__data_dict,
+            config=temp_config,
+        )
+        temp_harness.generate()
+        print(f"{'':-^80}\n")
+
+        return temp_harness

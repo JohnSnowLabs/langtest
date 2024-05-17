@@ -1680,12 +1680,12 @@ class RandomAge(BaseRobustness):
             for i in range(count):
                 if isinstance(sample, str):
                     s, _ = randomize_ages(sample)
-                    perturbed_samples.append(s)
                 else:
                     s = deepcopy(sample)
                     s.test_case, transformations = randomize_ages(s.original)
                     if s.task in ("ner", "text-classification"):
                         s.transformations = transformations
                     s.category = "robustness"
+                perturbed_samples.append(s)
 
         return perturbed_samples
