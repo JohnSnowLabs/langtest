@@ -15,7 +15,7 @@ class ErrorsWithCodes(type):
         This metaclass is used to create error and warning classes, such as Errors and Warnings.
     """
 
-    def __getattribute__(self, code):
+    def __getattribute__(self, code: str):
         """
         Retrieve the error/warning message associated with a given code.
 
