@@ -373,7 +373,7 @@ class BaseQASample(BaseModel):
 
     original_question: str
     original_context: str
-    options: str
+    options: str = None
     test_type: str = None
     perturbed_question: str = None
     perturbed_context: str = None

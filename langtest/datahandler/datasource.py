@@ -923,9 +923,11 @@ class CSVDataset(BaseDataset):
             temp_data = data.groupby("dataset_name")
             samples = {}
             for name, df in temp_data:
+                temp_samples = []
                 for i in df.to_dict(orient="records"):
                     sample = self.task.get_sample_class(**i)
-                    samples[name] = sample
+                    temp_samples.append(sample)
+                samples[name] = temp_samples
             return samples
 
         for i in data.to_dict(orient="records"):

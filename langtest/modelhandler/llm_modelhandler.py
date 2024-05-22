@@ -1,7 +1,6 @@
 import inspect
 from typing import Any, List, Union
 import langchain.llms as lc
-import langchain.chat_models as cm
 from langchain.chains import LLMChain
 from langchain_core.prompts import PromptTemplate
 from langchain_core.exceptions import OutputParserException
@@ -81,7 +80,9 @@ class PretrainedModelForQA(ModelAPI):
         try:
             cls._update_model_parameters(hub, filtered_kwargs)
             if path in ("gpt-4", "gpt-3.5-turbo", "gpt-4-1106-preview"):
-                model = cm.ChatOpenAI(model=path, *args, **filtered_kwargs)
+                from langchain_openai.chat_models import ChatOpenAI
+
+                model = ChatOpenAI(model=path, *args, **filtered_kwargs)
                 return cls(hub, model, *args, **filtered_kwargs)
             else:
                 model = getattr(lc, LANGCHAIN_HUBS[hub])
@@ -136,7 +137,16 @@ class PretrainedModelForQA(ModelAPI):
             The prediction result.
         """
         try:
-            prompt_template = PromptTemplate(**prompt)
+            # loading a prompt manager
+            from langtest.prompts import PromptManager
+
+            prompt_manager = PromptManager()
+
+            prompt_template = prompt_manager.get_prompt()
+
+            if prompt_template is None:
+                prompt_template = PromptTemplate(**prompt)
+
             llmchain = LLMChain(prompt=prompt_template, llm=self.model)
             output = llmchain.invoke(text)
             return output.get(llmchain.output_key, "")
