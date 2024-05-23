@@ -33,7 +33,7 @@ class PretrainedModelForNER(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+            Errors.E079(Pipeline=Pipeline, type_model=type(model))
         )
 
         self.model = model
@@ -340,7 +340,7 @@ class PretrainedModelForTextClassification(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+            Errors.E079(Pipeline=Pipeline, type_model=type(model))
         )
         self.model = model
 
@@ -420,7 +420,7 @@ class PretrainedModelForTranslation(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+            Errors.E079(Pipeline=Pipeline, type_model=type(model))
         )
         self.model = model
 
@@ -479,7 +479,7 @@ class PretrainedModelForWinoBias(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+            Errors.E079(Pipeline=Pipeline, type_model=type(model))
         )
 
         self.model = model
@@ -559,7 +559,7 @@ class PretrainedModelForCrowsPairs(ModelAPI):
             model (transformers.pipeline.Pipeline): Pretrained HuggingFace NER pipeline for predictions.
         """
         assert isinstance(model, Pipeline), ValueError(
-            Errors.E079.format(Pipeline=Pipeline, type_model=type(model))
+            Errors.E079(Pipeline=Pipeline, type_model=type(model))
         )
 
         self.model = model
@@ -681,7 +681,7 @@ class PretrainedModelForQA(ModelAPI):
         - **kwargs: Additional keyword arguments.
         """
         assert isinstance(model, HuggingFacePipeline), ValueError(
-            Errors.E079.format(Pipeline=HuggingFacePipeline, type_model=type(model))
+            Errors.E079(Pipeline=HuggingFacePipeline, type_model=type(model))
         )
 
         self.model = model
@@ -708,15 +708,13 @@ class PretrainedModelForQA(ModelAPI):
                 model = HuggingFacePipeline(
                     model_id=path, task=task, device=device, **kwargs
                 )
-                logging.warning(Warnings.W020.format(task=task))
+                logging.warning(Warnings.W020(task=task))
                 return model  # Return the successfully initialized model
             except Exception as e:
                 print(f"Failed to initialize model with task '{task}': {e}")
 
         # If no task succeeded, raise an error
-        raise ValueError(
-            Errors.E090.format(error_message=f"All tasks failed for model {path}")
-        )
+        raise ValueError(Errors.E090(error_message=f"All tasks failed for model {path}"))
 
     @classmethod
     def load_model(cls, path: str, **kwargs):
@@ -778,7 +776,7 @@ class PretrainedModelForQA(ModelAPI):
                 return cls(model)
 
         except Exception as e:
-            raise ValueError(Errors.E090.format(error_message=e))
+            raise ValueError(Errors.E090(error_message=e))
 
     @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
@@ -799,7 +797,7 @@ class PretrainedModelForQA(ModelAPI):
             output = self.model._generate([text])
             return output[0]
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
     def __call__(self, text: Union[str, dict], prompt: dict, **kwargs) -> str:
         """
@@ -944,7 +942,6 @@ class PretrainedModelForSensitivity(ModelAPI):
         """
         prompt_template = SimplePromptTemplate(**prompt)
         text = prompt_template.format(**text)
-        print(text)
 
         input_encoded = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=128

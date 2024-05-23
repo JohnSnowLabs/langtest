@@ -98,13 +98,11 @@ class PretrainedModelForQA(ModelAPI):
             return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ImportError:
-            raise ValueError(Errors.E044.format(path=path))
+            raise ValueError(Errors.E044(path=path))
         except ValidationError as e:
             error_msg = [err["loc"][0] for err in e.errors()]
             raise ConfigError(
-                Errors.E045.format(
-                    path=path, hub=hub, field=error_msg[0], error_message=e
-                )
+                Errors.E045(path=path, hub=hub, field=error_msg[0], error_message=e)
             )
 
     @classmethod
@@ -117,7 +115,7 @@ class PretrainedModelForQA(ModelAPI):
         """
         if hub == "azure-openai" and "deployment_name" not in kwargs:
             kwargs["deployment_name"] = "gpt-3.5-turbo-instruct"
-            logging.warning(Warnings.W014.format(hub=hub, kwargs=kwargs))
+            logging.warning(Warnings.W014(hub=hub, kwargs=kwargs))
 
         if "max_tokens" in kwargs and hub in cls.HUB_PARAM_MAPPING:
             new_tokens_key = cls.HUB_PARAM_MAPPING[hub]
@@ -151,7 +149,7 @@ class PretrainedModelForQA(ModelAPI):
             output = llmchain.invoke(text)
             return output.get(llmchain.output_key, "")
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
     def predict_raw(self, text: Union[str, dict], prompt: dict, *args, **kwargs):
         """Perform raw prediction using the pretrained model.
@@ -266,7 +264,7 @@ class PretrainedModelForNER(PretrainedModelForQA, ModelAPI):
             return NEROutput(predictions=[])
 
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
     def __call__(self, text: str, *args, **kwargs):
         return self.predict(text, *args, **kwargs)
@@ -392,7 +390,7 @@ class PretrainedModelForSensitivity(PretrainedModelForQA, ModelAPI):
                 "result": result,
             }
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
 
 class PretrainedModelForWinoBias(PretrainedModelForQA, ModelAPI):
