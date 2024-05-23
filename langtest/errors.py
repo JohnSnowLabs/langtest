@@ -31,21 +31,25 @@ class ErrorsWithCodes(type):
         from langtest.logger import logger
 
         msg = super().__getattribute__(code)
-        if code.startswith("__"):
+        if code.startswith("__") or code.startswith("format") or code.startswith("get"):
             return msg
         else:
-            out = "[{code}] {msg}".format(code=code, msg=msg)
-            if code.startswith("E"):
-                logger.error(out)
-            elif code.startswith("W"):
-                logger.warning(out)
-            elif code.startswith("I"):
-                logger.info(out)
-            elif code.startswith("D"):
-                logger.debug(out)
-            elif code.startswith("C"):
-                logger.critical(out)
-            return out
+            def formatted_msg(**kwargs):
+                formatted_message = msg.format(**kwargs)
+                out = f"[{code}] {formatted_message}"
+                if code.startswith("E"):
+                    logger.exception(out, exc_info=False)
+                elif code.startswith("W"):
+                    logger.warning(out)
+                elif code.startswith("I"):
+                    logger.info(out)
+                elif code.startswith("D"):
+                    logger.debug(out)
+                elif code.startswith("C"):
+                    logger.critical(out)
+                return formatted_message
+            return formatted_msg
+
 
 class Warnings(metaclass=ErrorsWithCodes):
     """
@@ -282,7 +286,7 @@ class ColumnNameError(Exception):
         supported_columns,
         given_columns,
     ):
-        self.message = Errors.E077.format(
+        self.message = Errors.E077(
             supported_columns=supported_columns, given_columns=given_columns
         )
         super().__init__(self.message)

@@ -145,15 +145,15 @@ class Harness:
             self.__is_multi_model = True
             for item in model:
                 if not isinstance(item, dict):
-                    raise ValueError(Errors.E000)
+                    raise ValueError(Errors.E000())
                 if "model" not in item or "hub" not in item:
-                    raise ValueError(Errors.E001)
+                    raise ValueError(Errors.E001())
         elif isinstance(model, dict):
             if "model" not in model or "hub" not in model:
-                raise ValueError(Errors.E002)
+                raise ValueError(Errors.E002())
 
         else:
-            raise ValueError(Errors.E003)
+            raise ValueError(Errors.E003())
 
         if isinstance(model, dict):
             hub, model = model["hub"], model["model"]
@@ -197,7 +197,7 @@ class Harness:
             elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:
-            logging.info(Warnings.W001)
+            logging.info(Warnings.W001())
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
@@ -278,9 +278,9 @@ class Harness:
         if seed:
             random.seed(seed)
         if self._config is None:
-            raise RuntimeError(Errors.E005)
+            raise RuntimeError(Errors.E005())
         if self._testcases is not None:
-            raise RuntimeError(Errors.E006)
+            raise RuntimeError(Errors.E006())
 
         self._testcases = []
 
@@ -341,13 +341,11 @@ class Harness:
         supported_category = ("accuracy", "fairness")
 
         if category is None:
-            raise ValueError(Errors.E093)
+            raise ValueError(Errors.E093())
 
         if category not in supported_category:
             raise ValueError(
-                Errors.E094.format(
-                    category=category, supported_category=supported_category
-                )
+                Errors.E094(category=category, supported_category=supported_category)
             )
 
         class_name = f"{category.title()}TestFactory"
@@ -356,7 +354,7 @@ class Harness:
         model_response = testfactory_class.model_result
 
         if model_response is None:
-            logging.warning(Warnings.W021)
+            logging.warning(Warnings.W021())
 
         else:
             data = [sample.copy() for sample in model_response]
@@ -399,11 +397,11 @@ class Harness:
             OSError: Raised if necessary files (config.yaml, data.pkl) are missing in the checkpoint directory.
         """
         if not os.path.isdir(save_checkpoints_dir):
-            raise OSError(Errors.E092.format(directory=save_checkpoints_dir))
+            raise OSError(Errors.E092(directory=save_checkpoints_dir))
 
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_checkpoints_dir, filename)):
-                raise OSError(Errors.E017.format(filename=filename))
+                raise OSError(Errors.E017(filename=filename))
 
         with open(os.path.join(save_checkpoints_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
@@ -478,7 +476,7 @@ class Harness:
             self.__tracking()
 
         if self._generated_results is None:
-            raise RuntimeError(Errors.E011)
+            raise RuntimeError(Errors.E011())
 
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config["tests"]["defaults"].get(
@@ -640,7 +638,7 @@ class Harness:
         ]
 
         if self._generated_results is None:
-            logging.warning(Warnings.W000)
+            logging.warning(Warnings.W000())
             return
 
         if isinstance(self._generated_results, dict) and not self.is_multi_dataset:
@@ -766,7 +764,7 @@ class Harness:
 
             if not (vaild_test_types.issubset(report_test_types)):
                 raise ValueError(
-                    Errors.E014.format(test_name=(vaild_test_types - report_test_types))
+                    Errors.E014(test_name=(vaild_test_types - report_test_types))
                 )
 
         if templates:
@@ -910,10 +908,10 @@ class Harness:
 
         """
         if self._config is None:
-            raise RuntimeError(Errors.E015)
+            raise RuntimeError(Errors.E015())
 
         if self._testcases is None:
-            raise RuntimeError(Errors.E016)
+            raise RuntimeError(Errors.E016())
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
@@ -958,11 +956,11 @@ class Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
         if not os.path.isdir(save_dir):
-            raise OSError(Errors.E092.format(directory=save_dir))
+            raise OSError(Errors.E092(directory=save_dir))
 
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(Errors.E017.format(filename=filename))
+                raise OSError(Errors.E017(filename=filename))
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
@@ -991,7 +989,7 @@ class Harness:
                         sample.expected_results = None
                 harness._testcases = testcases
             else:
-                logging.warning(Warnings.W013.format(save_dir=save_dir))
+                logging.warning(Warnings.W013(save_dir=save_dir))
                 harness.generate()
         else:
             harness.generate()
@@ -1115,7 +1113,7 @@ class Harness:
         if test_type:
             if test_type not in available_tests.keys():
                 raise ValueError(
-                    Errors.E018.format(
+                    Errors.E018(
                         test_type=test_type, available_tests=available_tests.keys()
                     )
                 )
@@ -1148,7 +1146,7 @@ class Harness:
                 "Ethnicity-Name-Bias",
                 "Gender-Pronoun-Bias",
             ):
-                raise ValueError(Errors.E019.format(test_name=test_name))
+                raise ValueError(Errors.E019(test_name=test_name))
 
             TestFactory.call_add_custom_bias(data, test_name, append)
         elif task == "representation":
@@ -1158,14 +1156,14 @@ class Harness:
                 "Ethnicity-Representation",
                 "Label-Representation",
             ):
-                raise ValueError(Errors.E020.format(test_name=test_name))
+                raise ValueError(Errors.E020(test_name=test_name))
 
             RepresentationOperation.add_custom_representation(
                 data, test_name, append, check=self.task
             )
 
         else:
-            raise ValueError(Errors.E021.format(category=task))
+            raise ValueError(Errors.E021(category=task))
 
     def upload_folder_to_hub(
         repo_name: str,
@@ -1196,7 +1194,7 @@ class Harness:
                                 model_type ("huggingface" or "spacy").
         """
         if token is None:
-            raise ValueError(Errors.E022)
+            raise ValueError(Errors.E022())
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         if (
@@ -1208,7 +1206,7 @@ class Harness:
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
             api = HfApi()
 
             repo_id = repo_name.split("/")[1]
@@ -1226,7 +1224,7 @@ class Harness:
                 dataset_module = importlib.import_module(LIB_NAME)
                 push = getattr(dataset_module, "push")
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
             meta_path = os.path.join(folder_path, "meta.json")
             with open(meta_path, "r") as meta_file:
@@ -1278,7 +1276,7 @@ class Harness:
             None
         """
         if token is None:
-            raise ValueError(Errors.E022)
+            raise ValueError(Errors.E022())
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         file_extension = file_path.split(".")[-1]
@@ -1289,7 +1287,7 @@ class Harness:
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
             api = HfApi()
             repo_id = repo_name.split("/")[1]
@@ -1310,7 +1308,7 @@ class Harness:
                 Dataset = getattr(dataset_module, "Dataset")
 
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
@@ -1363,11 +1361,11 @@ class Harness:
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
             self.is_default = True
-            logging.info(Warnings.W002.format(info=(self.task, model, hub)))
+            logging.info(Warnings.W002(info=(self.task, model, hub)))
         elif data is None and self.task.category == "ideology":
             o_data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(Errors.E004)
+            raise ValueError(Errors.E004())
 
         if isinstance(data, dict):
             if isinstance(data.get("data_source"), list):
@@ -1426,7 +1424,7 @@ class Harness:
                     return testcases
                 else:
                     raise ValueError(
-                        Errors.E007.format(data_source=self.__data_dict["data_source"])
+                        Errors.E007(data_source=self.__data_dict["data_source"])
                     )
             else:
                 testcases = TestFactory.transform(
@@ -1454,7 +1452,7 @@ class Harness:
                     return self
                 else:
                     raise ValueError(
-                        Errors.E008.format(
+                        Errors.E008(
                             test_name=test_name,
                             data_source=self.__data_dict["data_source"],
                             selected_data_sources=selected_data_sources,
@@ -1462,7 +1460,7 @@ class Harness:
                     )
 
             else:
-                raise ValueError(Errors.E009.format(test_name=test_name))
+                raise ValueError(Errors.E009(test_name=test_name))
 
         testcases = TestFactory.transform(self.task, dataset, tests, m_data=m_data)
         return testcases
@@ -1487,7 +1485,7 @@ class Harness:
     ):
         generated_results = None
         if testcases is None:
-            raise RuntimeError(Errors.E010)
+            raise RuntimeError(Errors.E010())
 
         if not isinstance(testcases, dict):
             if checkpoint:
@@ -1503,7 +1501,7 @@ class Harness:
                             )
                             checkpoint_manager.save_all_batches(self.batches[dataset])
                             logging.warning(
-                                Warnings.W022.format(
+                                Warnings.W022(
                                     name=dataset, total_batches=len(self.batches[dataset])
                                 )
                             )
@@ -1513,9 +1511,7 @@ class Harness:
                         )
                         self.batches = divide_into_batches(testcases, batch_size)
                         checkpoint_manager.save_all_batches(self.batches)
-                        logging.warning(
-                            Warnings.W018.format(total_batches=len(self.batches))
-                        )
+                        logging.warning(Warnings.W018(total_batches=len(self.batches)))
 
                     self.save(save_checkpoints_dir)
 
@@ -1577,9 +1573,7 @@ class Harness:
                     for k, v in self.model.items():
                         self.batches[k] = divide_into_batches(testcases[k], batch_size)
                         print(
-                            Warnings.W019.format(
-                                model_name=k, total_batches=len(self.batches)
-                            )
+                            Warnings.W019(model_name=k, total_batches=len(self.batches))
                         )
 
                     for k, v in self.batches.items():
@@ -1668,7 +1662,7 @@ class Harness:
 
             # Check if the dataset is empty
             if len(samples) == 0:
-                print(Warnings.W023.format(name=dataset_name))
+                print(Warnings.W023(name=dataset_name))
             else:
                 generated_results[dataset_name] = self.__single_dataset_run(
                     samples,
