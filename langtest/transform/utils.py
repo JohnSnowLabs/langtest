@@ -65,10 +65,10 @@ class RepresentationOperation:
             add_custom_data(data, name, append)
         else:
             if not isinstance(data, list):
-                raise ValueError(Errors.E068)
+                raise ValueError(Errors.E068())
 
             if check != "ner":
-                raise ValueError(Errors.E069)
+                raise ValueError(Errors.E069())
 
             if append:
                 RepresentationOperation.entity_types = list(
@@ -137,7 +137,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = set(sample.original.replace(".", "").lower().split())
             else:
-                raise ValueError(Errors.E070.format(var=sample.task))
+                raise ValueError(Errors.E070(var=sample.task))
 
             for income, countries in country_economic_dict.items():
                 for country in countries:
@@ -181,7 +181,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = sample.original.split()
             else:
-                raise ValueError(Errors.E070.format(var=sample.task))
+                raise ValueError(Errors.E070(var=sample.task))
 
             for word in words:
                 for religion in religions:
@@ -222,7 +222,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = sample.original.split()
             else:
-                raise ValueError(Errors.E070.format(var=sample.task))
+                raise ValueError(Errors.E070(var=sample.task))
 
             for word in words:
                 if check_name(
