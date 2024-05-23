@@ -77,7 +77,7 @@ class RobustnessTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -85,7 +85,7 @@ class RobustnessTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -203,7 +203,7 @@ class RobustnessTestFactory(ITests):
 
                         transformed_samples.extend(transformed_samples_perturbation)
                     elif key != "min_pass_rate":
-                        raise ValueError(Errors.E050.format(key=key))
+                        raise ValueError(Errors.E050(key=key))
 
             elif (
                 test_name == "multiple_perturbations"
@@ -244,10 +244,10 @@ class RobustnessTestFactory(ITests):
                         transformed_samples.extend(transformed_samples_perturbation)
 
                     elif key not in ("min_pass_rate", "prob"):
-                        raise ValueError(Errors.E050.format(key=key))
+                        raise ValueError(Errors.E050(key=key))
 
             elif test_name == "multiple_perturbations" and TestFactory.task == "ner":
-                raise ValueError(Errors.E051)
+                raise ValueError(Errors.E051())
 
             else:
                 transformed_samples = test_func(
@@ -263,9 +263,9 @@ class RobustnessTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009
+            warning_message = Warnings.W009()
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010.format(
+                warning_message += Warnings.W010(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
@@ -303,7 +303,7 @@ class BiasTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -311,7 +311,7 @@ class BiasTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -462,9 +462,9 @@ class BiasTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009
+            warning_message = Warnings.W009()
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010.format(
+                warning_message += Warnings.W010(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
@@ -504,7 +504,7 @@ class RepresentationTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -512,7 +512,7 @@ class RepresentationTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -572,7 +572,7 @@ class FairnessTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -580,7 +580,7 @@ class FairnessTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -597,7 +597,7 @@ class FairnessTestFactory(ITests):
         all_samples = []
 
         if self._data_handler[0].expected_results is None:
-            raise RuntimeError(Errors.E052.format(var="fairness"))
+            raise RuntimeError(Errors.E052(var="fairness"))
 
         for test_name, params in self.tests.items():
             transformed_samples = self.supported_tests[test_name].transform(
@@ -712,7 +712,7 @@ class FairnessTestFactory(ITests):
                         dataset_name = data[0].dataset_name.split("-")[0].lower()
 
                     if data[0].expected_results is None:
-                        raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
+                        raise RuntimeError(Errors.E053(dataset_name=dataset_name))
 
                     def predict_question_answering(sample):
                         input_data = build_qa_input(
@@ -742,7 +742,7 @@ class FairnessTestFactory(ITests):
                         "user_prompt", default_user_prompt.get(dataset_name, "")
                     )
                     if data[0].expected_results is None:
-                        raise RuntimeError(Errors.E053.format(dataset_name=dataset_name))
+                        raise RuntimeError(Errors.E053(dataset_name=dataset_name))
 
                     def predict_summarization(sample):
                         prediction = model(
@@ -822,7 +822,7 @@ class AccuracyTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -830,7 +830,7 @@ class AccuracyTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -847,7 +847,7 @@ class AccuracyTestFactory(ITests):
         all_samples = []
 
         if self._data_handler[0].expected_results is None:
-            raise RuntimeError(Errors.E052.format(var="accuracy"))
+            raise RuntimeError(Errors.E052(var="accuracy"))
 
         for test_name, params in self.tests.items():
             data_handler_copy = [x.copy() for x in self._data_handler]
@@ -1051,7 +1051,7 @@ class ToxicityTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -1059,7 +1059,7 @@ class ToxicityTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -1452,7 +1452,7 @@ class SensitivityTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -1460,7 +1460,7 @@ class SensitivityTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -1503,9 +1503,9 @@ class SensitivityTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009
+            warning_message = Warnings.W009()
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010.format(
+                warning_message += Warnings.W010(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
@@ -1922,7 +1922,7 @@ class SycophancyTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -1930,7 +1930,7 @@ class SycophancyTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
