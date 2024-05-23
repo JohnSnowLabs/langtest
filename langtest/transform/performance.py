@@ -34,7 +34,7 @@ class BasePerformance(ABC):
         Raises:
             NotImplementedError: This method must be implemented in the derived class.
         """
-        raise NotImplementedError(Errors.E063)
+        raise NotImplementedError(Errors.E063())
 
     @staticmethod
     @abstractmethod

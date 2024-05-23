@@ -178,7 +178,7 @@ class AddToxicWords(BaseSensitivity):
             if strategy is None:
                 strategy = random.choice(possible_methods)
             elif strategy not in possible_methods:
-                raise ValueError(Errors.E066.format(strategy=strategy))
+                raise ValueError(Errors.E066(strategy=strategy))
 
             if strategy == "start" or strategy == "combined":
                 add_tokens = random.choice(starting_context)

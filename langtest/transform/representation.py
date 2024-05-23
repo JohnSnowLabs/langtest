@@ -164,7 +164,7 @@ class GenderRepresentation(BaseRepresentation):
                 min_proportions = params["min_proportion"]
                 if sum(min_proportions.values()) > 1:
                     raise ValueError(
-                        Errors.E064.format(var="min_gender_representation_proportion")
+                        Errors.E064(var="min_gender_representation_proportion")
                     )
 
             for key, value in min_proportions.items():
@@ -350,7 +350,7 @@ class EthnicityRepresentation(BaseRepresentation):
 
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(
+                            Errors.E064(
                                 var="min_ethnicity_name_representation_proportion"
                             )
                         )
@@ -362,7 +362,7 @@ class EthnicityRepresentation(BaseRepresentation):
                     }
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(
+                            Errors.E064(
                                 var="min_ethnicity_name_representation_proportion"
                             )
                         )
@@ -515,7 +515,7 @@ class LabelRepresentation(BaseRepresentation):
 
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(var="min_label_representation_proportion")
+                            Errors.E064(var="min_label_representation_proportion")
                         )
 
                 elif isinstance(params["min_proportion"], float):
@@ -524,7 +524,7 @@ class LabelRepresentation(BaseRepresentation):
                     }
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(var="min_label_representation_proportion")
+                            Errors.E064(var="min_label_representation_proportion")
                         )
 
             for key, value in expected_representation.items():
@@ -686,9 +686,7 @@ class ReligionRepresentation(BaseRepresentation):
 
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(
-                                var="min_religion_name_representation_proportion"
-                            )
+                            Errors.E064(var="min_religion_name_representation_proportion")
                         )
 
                 elif isinstance(params["min_proportion"], float):
@@ -698,9 +696,7 @@ class ReligionRepresentation(BaseRepresentation):
                     }
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(
-                                var="min_religion_name_representation_proportion"
-                            )
+                            Errors.E064(var="min_religion_name_representation_proportion")
                         )
 
             entity_representation = (
@@ -889,7 +885,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
 
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(
+                            Errors.E064(
                                 var="min_country_economic_representation_proportion"
                             )
                         )
@@ -901,7 +897,7 @@ class CountryEconomicRepresentation(BaseRepresentation):
                     }
                     if sum(expected_representation.values()) > 1:
                         raise ValueError(
-                            Errors.E064.format(
+                            Errors.E064(
                                 var="min_country_economic_representation_proportion"
                             )
                         )

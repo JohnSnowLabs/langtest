@@ -34,7 +34,7 @@ class GrammarTestFactory(ITests):
         self.kwargs = kwargs
 
         if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048)
+            raise ValueError(Errors.E048())
 
         if len(self.tests) == 0:
             self.tests = self.supported_tests
@@ -42,7 +42,7 @@ class GrammarTestFactory(ITests):
         not_supported_tests = set(self.tests) - set(self.supported_tests)
         if len(not_supported_tests) > 0:
             raise ValueError(
-                Errors.E049.format(
+                Errors.E049(
                     not_supported_tests=not_supported_tests,
                     supported_tests=list(self.supported_tests.keys()),
                 )
@@ -94,9 +94,9 @@ class GrammarTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009
+            warning_message = Warnings.W009()
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010.format(
+                warning_message += Warnings.W010(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
@@ -181,4 +181,4 @@ class Paraphrase(BaseGrammar):
             return sample_list
 
         else:
-            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME="transformers"))
+            raise ModuleNotFoundError(Errors.E023(LIB_NAME="transformers"))

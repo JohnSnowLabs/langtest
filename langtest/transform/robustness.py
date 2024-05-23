@@ -472,10 +472,10 @@ class SwapEntities(BaseRobustness):
             List[Sample]: The transformed sample list with entities swapped.
         """
         if terminology is None:
-            raise ValueError(Errors.E065.format(var="terminology"))
+            raise ValueError(Errors.E065(var="terminology"))
 
         if labels is None:
-            raise ValueError(Errors.E065.format(var="labels"))
+            raise ValueError(Errors.E065(var="labels"))
 
         assert len(sample_list) == len(
             labels
@@ -658,7 +658,7 @@ class AddContext(BaseRobustness):
             if strategy is None:
                 strategy = random.choice(possible_methods)
             elif strategy not in possible_methods:
-                raise ValueError(Errors.E066.format(strategy=strategy))
+                raise ValueError(Errors.E066(strategy=strategy))
 
             transformations = []
 
@@ -1324,7 +1324,7 @@ class MultiplePerturbations(BaseRobustness):
             elif order == "strip_all_punctuation":
                 transformed_list = StripAllPunctuation.transform(sample, prob)
             else:
-                raise ValueError(Errors.E067.format(order=order))
+                raise ValueError(Errors.E067(order=order))
             return transformed_list
 
         if isinstance(sample_list[0], SequenceClassificationSample):
