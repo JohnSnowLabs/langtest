@@ -31,7 +31,7 @@ class ErrorsWithCodes(type):
         from langtest.logger import logger
 
         msg = super().__getattribute__(code)
-        if code.startswith("__") or code.startswith("format") or code.startswith("get"):
+        if code.startswith("__") or code.startswith("_") or code.startswith("get"):
             return msg
         else:
             def formatted_msg(**kwargs):
@@ -82,8 +82,8 @@ class Warnings(metaclass=ErrorsWithCodes):
     W006 = ("target_column '{target_column}' not found in the dataset.")
     W007 = ("'feature_column' '{feature_column}' not found in the dataset.")
     W008 = ("Invalid or Missing label entries in the sentence: {sent}")
-    W009 = ("Removing samples where no transformation has been applied:\n")
-    W010 = ("- Test '{test}': {count} samples removed out of {total_sample}\n")
+    _W009 = ("Removing samples where no transformation has been applied:\n")
+    _W010 = ("- Test '{test}': {count} samples removed out of {total_sample}\n")
     W011 = ("{class_name} successfully ran!")
     W012 = ("You haven't provided the {var1}. Loading the default {var1}: {var2}")
     W013 = ("Unable to find test_cases.pkl inside {save_dir}. Generating new testcases.")

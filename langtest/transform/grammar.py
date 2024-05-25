@@ -7,9 +7,7 @@ from langtest.transform import ITests, TestFactory
 from langtest.modelhandler.modelhandler import ModelAPI
 from ..utils.lib_manager import try_import_lib
 from langtest.transform.utils import filter_unique_samples
-import logging
-
-getLogger = logging.getLogger(__name__)
+from langtest.logger import logger as logging
 
 
 class GrammarTestFactory(ITests):
@@ -94,9 +92,9 @@ class GrammarTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009()
+            warning_message = Warnings._W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010(
+                warning_message += Warnings._W010.format(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 

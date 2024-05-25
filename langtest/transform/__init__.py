@@ -1,21 +1,15 @@
 import asyncio
 import copy
-import time
-import logging
-from collections import defaultdict
-from abc import ABC, abstractmethod
-from typing import Dict, List, Union
+from typing import Dict, List
 
 import nest_asyncio
 import pandas as pd
-from tqdm.asyncio import tqdm
 
 from langtest.transform.performance import BasePerformance
 from langtest.transform.security import BaseSecurity
 
 from .accuracy import BaseAccuracy
 from .bias import BaseBias
-from .custom_data import add_custom_data
 from .fairness import BaseFairness
 from .representation import BaseRepresentation
 from .robustness import BaseRobustness
@@ -46,10 +40,9 @@ from ..utils.custom_types.sample import (
     Sample,
 )
 from ..utils.custom_types.helpers import default_user_prompt
-from ..utils.util_metrics import calculate_f1_score
-from ..errors import Errors, Warnings
 from langtest.transform.base import ITests, TestFactory
-from langtest.transform.grammar import GrammarTestFactory
+from ..errors import Errors, Warnings
+from ..logger import logger as logging
 
 nest_asyncio.apply()
 
@@ -263,9 +256,9 @@ class RobustnessTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009()
+            warning_message = Warnings._W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010(
+                warning_message += Warnings._W010.format(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
@@ -462,9 +455,9 @@ class BiasTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009()
+            warning_message = Warnings._W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010(
+                warning_message += Warnings._W010.format(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
@@ -651,7 +644,7 @@ class FairnessTestFactory(ITests):
             else:
                 if isinstance(data[0], NERSample):
 
-                    def predict_ner(sample):
+                    def predict_ner(sample: Sample):
                         prediction = model.predict(sample.original)
                         sample.actual_results = prediction
                         sample.gender = gender
@@ -679,7 +672,7 @@ class FairnessTestFactory(ITests):
 
                 elif isinstance(data[0], SequenceClassificationSample):
 
-                    def predict_text_classification(sample):
+                    def predict_text_classification(sample: Sample):
                         prediction = model.predict(sample.original)
                         sample.actual_results = prediction
                         sample.gender = gender
@@ -714,7 +707,7 @@ class FairnessTestFactory(ITests):
                     if data[0].expected_results is None:
                         raise RuntimeError(Errors.E053(dataset_name=dataset_name))
 
-                    def predict_question_answering(sample):
+                    def predict_question_answering(sample: Sample):
                         input_data = build_qa_input(
                             context=sample.original_context,
                             question=sample.original_question,
@@ -744,7 +737,7 @@ class FairnessTestFactory(ITests):
                     if data[0].expected_results is None:
                         raise RuntimeError(Errors.E053(dataset_name=dataset_name))
 
-                    def predict_summarization(sample):
+                    def predict_summarization(sample: Sample):
                         prediction = model(
                             text={"context": sample.original},
                             prompt={
@@ -784,7 +777,7 @@ class FairnessTestFactory(ITests):
         return tasks
 
     @staticmethod
-    def get_gendered_data(data):
+    def get_gendered_data(data: List[Sample]) -> Dict[str, List[Sample]]:
         """Split list of samples into gendered lists."""
         from langtest.utils.gender_classifier import GenderClassifier
 
@@ -1503,9 +1496,9 @@ class SensitivityTestFactory(ITests):
             no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
-            warning_message = Warnings.W009()
+            warning_message = Warnings._W009
             for test, count in no_transformation_applied_tests.items():
-                warning_message += Warnings.W010(
+                warning_message += Warnings._W010.format(
                     test=test, count=count, total_sample=len(self._data_handler)
                 )
 
