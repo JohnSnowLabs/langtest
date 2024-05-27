@@ -31,7 +31,7 @@ class LangTestCallback(TrainerCallback):
             IPython = importlib.import_module(LIB_NAME)
             self.display = getattr(IPython.display, "display")
         else:
-            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+            raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
     def on_init_end(self, args, state, control, **kwargs):
         model = kwargs["model"]

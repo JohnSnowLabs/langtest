@@ -38,14 +38,14 @@ class BaseTask(ABC):
             if model_hub in ("huggingface"):
                 model_hub = "transformers"
             raise AssertionError(
-                Errors.E078.format(
+                Errors.E078(
                     hub=model_hub,
                     lib=("langchain" if model_hub in LANGCHAIN_HUBS else model_hub),
                 )
             )
 
         if model_hub not in supported_hubs:
-            raise AssertionError(Errors.E042.format(supported_hubs=supported_hubs))
+            raise AssertionError(Errors.E042(supported_hubs=supported_hubs))
 
         if "user_prompt" in kwargs:
             cls.user_prompt = kwargs.get("user_prompt")
@@ -66,7 +66,7 @@ class BaseTask(ABC):
                 )
             return cls.model
         except TypeError:
-            raise ValueError(Errors.E081.format(hub=model_hub))
+            raise ValueError(Errors.E081(hub=model_hub))
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
@@ -122,17 +122,13 @@ class TaskManager:
         if isinstance(task, str):
             task_name = task
             if task_name not in BaseTask.task_registry:
-                raise AssertionError(
-                    Errors.E043.format(l=list(BaseTask.task_registry.keys()))
-                )
+                raise AssertionError(Errors.E043(l=list(BaseTask.task_registry.keys())))
             self.__task_name = task_name
             self.__task: BaseTask = BaseTask.task_registry[task_name]()
         else:
             task_name = task["task"]
             if task_name not in BaseTask.task_registry:
-                raise AssertionError(
-                    Errors.E043.format(l=list(BaseTask.task_registry.keys()))
-                )
+                raise AssertionError(Errors.E043(l=list(BaseTask.task_registry.keys())))
             self.__task_name = task_name
             self.__category = task["category"]
             self.__task: BaseTask = BaseTask.task_registry[self.__category]()

@@ -25,9 +25,7 @@ class PretrainedModelForNER(ModelAPI):
         """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
-            Errors.E080.format(
-                expected_type=Doc, returned_type=annotation.get("return", None)
-            )
+            Errors.E080(expected_type=Doc, returned_type=annotation.get("return", None))
         )
 
         self.model = model
@@ -43,7 +41,7 @@ class PretrainedModelForNER(ModelAPI):
         try:
             return cls(spacy.load(path))
         except OSError:
-            raise ValueError(Errors.E041.format(path=path))
+            raise ValueError(Errors.E041(path=path))
 
     @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> NEROutput:
@@ -109,9 +107,7 @@ class PretrainedModelForTextClassification(ModelAPI):
         """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
-            Errors.E080.format(
-                expected_type=Doc, returned_type=annotation.get("return", None)
-            )
+            Errors.E080(expected_type=Doc, returned_type=annotation.get("return", None))
         )
 
         self.model = model
@@ -133,7 +129,7 @@ class PretrainedModelForTextClassification(ModelAPI):
                 path = resource_filename("langtest", "data/textcat_imdb")
             return cls(spacy.load(path))
         except OSError:
-            raise ValueError(Errors.E041.format(path=path))
+            raise ValueError(Errors.E041(path=path))
 
     @lru_cache(maxsize=102400)
     def predict(
@@ -191,9 +187,7 @@ class PretrainedModelForTranslation(ModelAPI):
         """
         annotation = getattr(model, "__call__").__annotations__
         assert annotation.get("return") and annotation["return"] is Doc, ValueError(
-            Errors.E080.format(
-                expected_type=Doc, returned_type=annotation.get("return", None)
-            )
+            Errors.E080(expected_type=Doc, returned_type=annotation.get("return", None))
         )
 
         self.model = model
@@ -208,7 +202,7 @@ class PretrainedModelForTranslation(ModelAPI):
         try:
             return cls(spacy.load(path))
         except OSError:
-            raise ValueError(Errors.E041.format(path=path))
+            raise ValueError(Errors.E041(path=path))
 
     @lru_cache(maxsize=102400)
     def predict(self, text: str, *args, **kwargs) -> str:

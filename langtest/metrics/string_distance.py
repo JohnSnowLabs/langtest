@@ -24,7 +24,7 @@ class StringDistance:
         @functools.wraps(func)
         def wrapper(str1: str, str2: str) -> float:
             if not isinstance(str1, str) or not isinstance(str2, str):
-                raise ValueError(Errors.E035.format(type_a=type(str1), type_b=str))
+                raise ValueError(Errors.E035(type_a=type(str1), type_b=str))
             return func(str1, str2)
 
         return wrapper
@@ -33,7 +33,7 @@ class StringDistance:
         if name in self.available_string_distance:
             return self.available_string_distance[name]
         else:
-            raise KeyError(Errors.E036.format(name=name))
+            raise KeyError(Errors.E036(name=name))
 
     @staticmethod
     @validate_input
@@ -308,7 +308,5 @@ class StringDistance:
         }
 
         if distance not in distance_mapping:
-            raise ValueError(
-                Errors.E076.format(metric="string", selected_metric=distance)
-            )
+            raise ValueError(Errors.E076(metric="string", selected_metric=distance))
         return distance_mapping[distance]

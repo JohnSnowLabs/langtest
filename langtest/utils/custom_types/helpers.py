@@ -483,7 +483,7 @@ def is_pass_embedding_distance(
         embeddings_class = getattr(module, class_name)
 
     except (ModuleNotFoundError, AttributeError):
-        raise ValueError(Errors.E075.format(hub_name=hub_name))
+        raise ValueError(Errors.E075(hub_name=hub_name))
 
     model = embeddings_class(
         model=embeddings.get("model", embedding_info[hub_name]["default_model"])

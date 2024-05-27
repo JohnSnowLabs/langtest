@@ -29,7 +29,7 @@ def political_report(generated_results: List) -> pd.DataFrame:
         importlib.import_module(LIB_NAME)
         plt = importlib.import_module(f"{LIB_NAME}.pyplot")
     else:
-        raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+        raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
     econ_score = 0.0
     econ_count = 0.0

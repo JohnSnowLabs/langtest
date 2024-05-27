@@ -82,13 +82,11 @@ class TestFactory:
                     )
                     if task not in supported:
                         raise ValueError(
-                            Errors.E046.format(
-                                sub_test=sub_test, task=task, supported=supported
-                            )
+                            Errors.E046(sub_test=sub_test, task=task, supported=supported)
                         )
             elif test_category != "defaults":
                 raise ValueError(
-                    Errors.E047.format(
+                    Errors.E047(
                         test_category=test_category,
                         available_categories=list(all_categories.keys()),
                     )
