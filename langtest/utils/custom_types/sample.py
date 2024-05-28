@@ -606,6 +606,8 @@ class QASample(BaseQASample):
                 self.ran_pass = result
                 return result
             elif self.metric_name == "llm_eval":
+                if isinstance(self.eval_model, dict):
+                    self.eval_model = list(self.eval_model.values())[-1]
                 result = metric_function(
                     eval_model=self.eval_model,
                     dataset_name=self.dataset_name,
