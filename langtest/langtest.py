@@ -494,7 +494,17 @@ class Harness:
         if self.task.category == "ideology":
             self.df_report = report.political_report(self._generated_results)
             return self.df_report
+        elif self.is_multi_dataset and isinstance(self.model, dict):
+            self.df_report = report.multi_dataset_multi_model_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
+                self.model,
+            )
 
+            report.save_format(format, save_dir, self.df_report)
+            return self.df_report
         elif self.is_multi_dataset:
             self.df_report = report.multi_dataset_report(
                 summary,
@@ -1594,7 +1604,7 @@ class Harness:
                     generated_results.extend(self._checkpoints)
         else:
             # multi-model run
-            generated_results = {}
+            generated_results = defaultdict(list)
             if checkpoint:
                 if self.batches is None:
                     self.batches = {}
