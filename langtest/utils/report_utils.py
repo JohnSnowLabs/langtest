@@ -1,7 +1,7 @@
-from collections import defaultdict
 import datetime
 import importlib
 import pandas as pd
+from collections import defaultdict
 from typing import Dict, List, Union
 from ..errors import Errors
 from langtest.tasks import TaskManager
@@ -375,8 +375,6 @@ def multi_dataset_report(
 
     multi_summary = {}
     for dataset_name, generated_results in datasets.items():
-        from collections import defaultdict
-
         summary = defaultdict(lambda: defaultdict(int))
         for sample in generated_results:
             summary[sample.test_type]["category"] = sample.category
@@ -491,7 +489,7 @@ def multi_dataset_multi_model_report(
     )
 
     cols = pd.MultiIndex.from_tuples(
-        [(f"Benchmarking Results", V) for V in df_report.columns]
+        [("Benchmarking Results", V) for V in df_report.columns]
     )
 
     df_report_final = pd.DataFrame(df_report.values, columns=cols, index=df_report.index)
