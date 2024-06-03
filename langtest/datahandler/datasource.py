@@ -11,7 +11,6 @@ from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
-from langtest.transform.constants import DATASETS
 
 from .format import Formatter
 from langtest.utils.custom_types import (
@@ -1448,6 +1447,7 @@ class SynteticDataset(BaseDataset):
         """
 
         from ..utils.hf_utils import build_dataset
+        from langtest.transform.constants import DATASETS
 
         TAIL = "\n\nChoices:\n (A) Agree\n (B) Disagree\n\nAnswer:"
 

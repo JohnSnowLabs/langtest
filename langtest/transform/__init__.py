@@ -42,6 +42,7 @@ from ..utils.custom_types.sample import (
 from ..utils.custom_types.helpers import default_user_prompt
 from langtest.transform.base import ITests, TestFactory
 from langtest.transform.grammar import GrammarTestFactory
+from langtest.transform.safety import SafetyTestFactory
 from ..errors import Errors, Warnings
 from ..logger import logger as logging
 
@@ -87,7 +88,7 @@ class RobustnessTestFactory(ITests):
 
         if "swap_entities" in self.tests:
             # TODO: check if we can get rid of pandas here
-            raw_data = self.kwargs.get("raw_data", self._data_handler)
+            raw_data: List[Sample] = self.kwargs.get("raw_data", self._data_handler)
             df = pd.DataFrame(
                 {
                     "text": [sample.original for sample in raw_data],
@@ -2000,4 +2001,5 @@ __all__ = [
     FactualityTestFactory,
     SycophancyTestFactory,
     GrammarTestFactory,
+    SafetyTestFactory,
 ]

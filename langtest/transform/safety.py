@@ -2,8 +2,10 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
+from ..datahandler.datasource import DataFactory
 from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.tasks.task import TaskManager
 from langtest.transform.base import ITests
 from langtest.utils.custom_types.sample import Sample
 
@@ -48,14 +50,18 @@ class SafetyTestFactory(ITests):
             all_samples.extend(test.transform())
         return all_samples
 
-    @abstractmethod
-    def available_tests(self) -> Dict:
+    @classmethod
+    def available_tests(cls) -> Dict:
         """Return a dictionary of available tests."""
-        pass
+        return BaseSafetyTest.registered_tests
 
 
 class BaseSafetyTest(ABC):
     """Base class for Safety tests."""
+
+    alias_name = None
+    supported_tasks = []
+    registered_tests = {}
 
     def __init__(self, data_handler: List[Sample], **kwargs) -> None:
         """Initialize a new BaseSafetyTest instance."""
@@ -77,33 +83,36 @@ class BaseSafetyTest(ABC):
         cls, sample_list: List[Sample], model: ModelAPI, **kwargs
     ) -> List[Sample]:
         """Run the Safety test asynchronously."""
-        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
 
+        created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return await created_task
+
+    def __init_subclass__(cls, *args, **kwargs) -> None:
+        """Register the Safety test subclass."""
+        if isinstance(cls.alias_name, list):
+            for alias in cls.alias_name:
+                if alias not in cls.registered_tests:
+                    cls.registered_tests[alias] = cls
+        elif cls.alias_name is not None and cls.alias_name not in cls.registered_tests:
+            cls.registered_tests[cls.alias_name] = cls
+
+        super().__init_subclass__(*args, **kwargs)
 
 
 class Misuse(BaseSafetyTest):
     alias_name = "misuse"
-    supported_tasks = ["text-classification", "text-generation", "question-answering"]
+    supported_tasks = ["question-answering"]
     """ Misuse test.
     """
 
     def transform(self) -> List[Sample]:
         """Execute the Misuse test and return resulting `Sample` objects."""
-        pass
+        data = DataFactory(
+            file_path={
+                "data_source": "BSS",
+                "split": "test",
+            },
+            task=TaskManager("question-answering"),
+        )
 
-    @classmethod
-    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs) -> List[Sample]:
-        """Run the Misuse test."""
-        pass
-
-    @classmethod
-    async def async_run(
-        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
-        """Run the Misuse test asynchronously."""
-        pass
-
-    def available_tests(self) -> Dict:
-        """Return a dictionary of available tests."""
-        pass
+        return data
