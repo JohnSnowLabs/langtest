@@ -113,6 +113,6 @@ class Misuse(BaseSafetyTest):
                 "split": "test",
             },
             task=TaskManager("question-answering"),
-        )
+        ).load()
 
         return data

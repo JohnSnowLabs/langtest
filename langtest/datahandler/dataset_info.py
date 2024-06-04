@@ -139,4 +139,8 @@ datasets_info = {
             "extension": ".jsonl",
         },
     },
+    "BSS": {
+        "split": ("test",),
+        "extension": ".jsonl",
+    },
 }
