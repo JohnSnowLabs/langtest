@@ -97,6 +97,9 @@ class RepresentationOperation:
                         label_representation[prediction.entity] += 1
                     elif prediction.entity in RepresentationOperation.entity_types:
                         label_representation[prediction.entity.split("-")[1]] += 1
+                    elif prediction.entity is not None:
+                        key = re.sub(r"^(B-|I-)", "", prediction.entity)
+                        label_representation[key] += 1
 
         return label_representation
 
