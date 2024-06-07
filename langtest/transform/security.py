@@ -1,9 +1,53 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import List
-from ..errors import Errors
+from collections import defaultdict
+from typing import List, Dict
+from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.transform.base import ITests
 from langtest.utils.custom_types.sample import Sample
+
+
+class SecurityTestFactory(ITests):
+
+    """Factory class for the security tests"""
+
+    alias_name = "security"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        self.supported_tests = self.available_tests()
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+    def transform(self) -> List[Sample]:
+        all_samples = []
+        for test_name, params in self.tests.items():
+            transformed_samples = self.supported_tests[test_name].transform(
+                self.data_handler, **self.kwargs
+            )
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
+    ) -> List[Sample]:
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+
+        return tasks
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, str]:
+        """ """
+        return BaseSecurity.test_types
 
 
 class BaseSecurity(ABC):
@@ -14,6 +58,9 @@ class BaseSecurity(ABC):
     Attributes:
         None
     """
+
+    test_types = defaultdict(lambda: BaseSecurity)
+    alias_name = None
 
     @staticmethod
     @abstractmethod
@@ -44,6 +91,13 @@ class BaseSecurity(ABC):
         """Abstract method that implements the model security."""
         created_task = await asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
+
+    def __init_subclass__(cls) -> None:
+        """Registers the test types"""
+        alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
+
+        for alias_name in alias:
+            BaseSecurity.test_types[alias_name] = cls
 
 
 class PromptInjection(BaseSecurity):

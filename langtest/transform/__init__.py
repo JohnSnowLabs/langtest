@@ -3,15 +3,15 @@ from typing import Dict, List
 
 import nest_asyncio
 
-from langtest.transform.performance import BasePerformance
+from langtest.transform.performance import PerformanceTestFactory
 from langtest.transform.robustness import RobustnessTestFactory
 from langtest.transform.bias import BiasTestFactory
 from langtest.transform.representation import RepresentationTestFactory
 from langtest.transform.fairness import FairnessTestFactory
 from langtest.transform.accuracy import AccuracyTestFactory
-from langtest.transform.security import BaseSecurity
+from langtest.transform.security import SecurityTestFactory
+from langtest.transform.toxicity import ToxicityTestFactory
 
-from .toxicity import BaseToxicity
 from .ideology import BaseIdeology
 from .sensitivity import BaseSensitivity
 from .sycophancy import BaseSycophancy
@@ -25,199 +25,6 @@ from ..errors import Errors, Warnings
 from ..logger import logger as logging
 
 nest_asyncio.apply()
-
-
-class ToxicityTestFactory(ITests):
-    """
-    A class for performing toxicity tests on a given dataset.
-    """
-
-    alias_name = "toxicity"
-
-    def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
-        self.supported_tests = self.available_tests()
-        self._data_handler = data_handler
-        self.tests = tests
-        self.kwargs = kwargs
-
-        if not isinstance(self.tests, dict):
-            raise ValueError(Errors.E048())
-
-        if len(self.tests) == 0:
-            self.tests = self.supported_tests
-
-        not_supported_tests = set(self.tests) - set(self.supported_tests)
-        if len(not_supported_tests) > 0:
-            raise ValueError(
-                Errors.E049(
-                    not_supported_tests=not_supported_tests,
-                    supported_tests=list(self.supported_tests.keys()),
-                )
-            )
-
-    def transform(self) -> List[Sample]:
-        """
-        Runs the toxicity test and returns the resulting `Sample` objects.
-
-        Returns:
-            List[Sample]:
-                A list of `Sample` objects representing the resulting dataset after running the toxicity test.
-        """
-        all_samples = []
-
-        for test_name, params in self.tests.items():
-            data_handler_copy = [x.copy() for x in self._data_handler]
-
-            test_func = self.supported_tests[test_name].transform
-            transformed_samples = test_func(
-                data_handler_copy, test_name=test_name, **params.get("parameters", {})
-            )
-
-            for sample in transformed_samples:
-                sample.test_type = test_name
-            all_samples.extend(transformed_samples)
-
-        return all_samples
-
-    @staticmethod
-    def available_tests() -> dict:
-        """
-        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
-
-        Returns:
-            dict: A dictionary of test names and classes.
-        """
-        tests = {
-            j: i
-            for i in BaseToxicity.__subclasses__()
-            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-        }
-        return tests
-
-
-class PerformanceTestFactory(ITests):
-    """Factory class for the model performance
-
-    This class implements the model performance The robustness measure is the number of test cases that the model fails to run on.
-
-    """
-
-    alias_name = "performance"
-
-    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        """Initializes the model performance"""
-
-        self.supported_tests = self.available_tests()
-        self.data_handler = data_handler
-        self.tests = tests
-        self.kwargs = kwargs
-
-    def transform(self) -> List[Sample]:
-        """Transforms the sample data based on the implemented tests measure.
-
-        Args:
-            sample (Sample): The input data to be transformed.
-            **kwargs: Additional arguments to be passed to the tests measure.
-
-        Returns:
-            Sample: The transformed data based on the implemented
-            tests measure.
-
-        """
-        all_samples = []
-        for test_name, params in self.tests.items():
-            transformed_samples = self.supported_tests[test_name].transform(
-                params=params, **self.kwargs
-            )
-            all_samples.extend(transformed_samples)
-        return all_samples
-
-    @classmethod
-    async def run(
-        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
-        """Runs the model performance
-
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the model performance
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented model performance
-
-        """
-        supported_tests = cls.available_tests()
-        tasks = []
-        for test_name, samples in sample_list.items():
-            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
-            if isinstance(out, list):
-                tasks.extend(out)
-            else:
-                tasks.append(out)
-
-        return tasks
-
-    @classmethod
-    def available_tests(cls) -> Dict[str, str]:
-        """Returns the available model performance
-
-        Returns:
-            Dict[str, str]: The available model performance
-
-        """
-        tests = {
-            j: i
-            for i in BasePerformance.__subclasses__()
-            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-        }
-        return tests
-
-
-class SecurityTestFactory(ITests):
-
-    """Factory class for the security tests"""
-
-    alias_name = "security"
-
-    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
-        self.supported_tests = self.available_tests()
-        self.data_handler = data_handler
-        self.tests = tests
-        self.kwargs = kwargs
-
-    def transform(self) -> List[Sample]:
-        all_samples = []
-        for test_name, params in self.tests.items():
-            transformed_samples = self.supported_tests[test_name].transform(
-                self.data_handler, **self.kwargs
-            )
-            all_samples.extend(transformed_samples)
-        return all_samples
-
-    @classmethod
-    async def run(
-        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
-        supported_tests = cls.available_tests()
-        tasks = []
-        for test_name, samples in sample_list.items():
-            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
-            if isinstance(out, list):
-                tasks.extend(out)
-            else:
-                tasks.append(out)
-
-        return tasks
-
-    @classmethod
-    def available_tests(cls) -> Dict[str, str]:
-        tests = {
-            j: i
-            for i in BaseSecurity.__subclasses__()
-            for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
-        }
-        return tests
 
 
 class ClinicalTestFactory(ITests):
@@ -983,4 +790,7 @@ __all__ = [
     RepresentationTestFactory,
     FairnessTestFactory,
     AccuracyTestFactory,
+    ToxicityTestFactory,
+    SecurityTestFactory,
+    PerformanceTestFactory,
 ]

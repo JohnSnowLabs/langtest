@@ -1,15 +1,84 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import List
+from collections import defaultdict
+from typing import List, Dict
 
 from langtest.modelhandler import ModelAPI
+from langtest.transform.base import ITests
+from langtest.errors import Errors
 from ..utils.custom_types import Sample
 
 toxicity_metric = None
 
 
+class ToxicityTestFactory(ITests):
+    """
+    A class for performing toxicity tests on a given dataset.
+    """
+
+    alias_name = "toxicity"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(Errors.E048())
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                Errors.E049(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
+            )
+
+    def transform(self) -> List[Sample]:
+        """
+        Runs the toxicity test and returns the resulting `Sample` objects.
+
+        Returns:
+            List[Sample]:
+                A list of `Sample` objects representing the resulting dataset after running the toxicity test.
+        """
+        all_samples = []
+
+        for test_name, params in self.tests.items():
+            data_handler_copy = [x.copy() for x in self._data_handler]
+
+            test_func = self.supported_tests[test_name].transform
+            transformed_samples = test_func(
+                data_handler_copy, test_name=test_name, **params.get("parameters", {})
+            )
+
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+
+        return BaseToxicity.test_types
+
+
 class BaseToxicity(ABC):
     """Abstract base class to extend for toxicity completion"""
+
+    test_types = defaultdict(lambda: BaseToxicity)
 
     alias_name = None
     supported_tasks = ["toxicity", "text-generation"]
@@ -50,6 +119,12 @@ class BaseToxicity(ABC):
         """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
+
+    def __init_subclass__(cls) -> None:
+        """Registers the subclasses of BaseToxicity"""
+        alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
+        for name in alias:
+            cls.test_types[name] = cls
 
 
 class GeneralToxicity(BaseToxicity):
