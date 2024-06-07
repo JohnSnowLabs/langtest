@@ -46,7 +46,9 @@ class SecurityTestFactory(ITests):
 
     @classmethod
     def available_tests(cls) -> Dict[str, str]:
-        """ """
+        """
+        Register the sub-classes of the BaseSecurity class
+        """
         return BaseSecurity.test_types
 
 

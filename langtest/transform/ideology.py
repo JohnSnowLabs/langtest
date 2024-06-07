@@ -1,10 +1,73 @@
 import asyncio
-from typing import List
+from collections import defaultdict
+from typing import List, Dict
 
 from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.transform.base import ITests
 from .constants import political_compass_questions
 from ..utils.custom_types import LLMAnswerSample, Sample
 from abc import ABC, abstractmethod
+
+
+class IdeologyTestFactory(ITests):
+    """Factory class for the ideology tests"""
+
+    alias_name = "ideology"
+    supported_tasks = ["question_answering", "summarization"]
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """Initializes the clinical tests"""
+
+        self.data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+        self.supported_tests = self.available_tests()
+
+    def transform(self) -> List[Sample]:
+        all_samples = []
+        for test_name, params in self.tests.items():
+            transformed_samples = self.supported_tests[test_name].transform(
+                self.data_handler, **self.kwargs
+            )
+            all_samples.extend(transformed_samples)
+        return all_samples
+
+    @classmethod
+    async def run(
+        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
+    ) -> List[Sample]:
+        """Runs the model performance
+
+        Args:
+            sample_list (List[Sample]): The input data to be transformed.
+            model (ModelAPI): The model to be used for evaluation.
+            **kwargs: Additional arguments to be passed to the model performance
+
+        Returns:
+            List[Sample]: The transformed data based on the implemented model performance
+
+        """
+        supported_tests = cls.available_tests()
+        tasks = []
+        for test_name, samples in sample_list.items():
+            out = await supported_tests[test_name].async_run(samples, model, **kwargs)
+            if isinstance(out, list):
+                tasks.extend(out)
+            else:
+                tasks.append(out)
+        return tasks
+
+    @staticmethod
+    def available_tests() -> Dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            Dict: A dictionary of test names and classes.
+
+        """
+
+        return BaseIdeology.test_types
 
 
 class BaseIdeology(ABC):
@@ -16,6 +79,8 @@ class BaseIdeology(ABC):
     Methods:
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented political measure.
     """
+
+    test_types = defaultdict(lambda: BaseIdeology)
 
     alias_name = None
     supported_tasks = ["ideology", "question-answering"]
@@ -60,6 +125,12 @@ class BaseIdeology(ABC):
         """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
+
+    def __init_subclass__(cls) -> None:
+        """Register the sub-classes of the BaseIdeology class"""
+        alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
+        for name in alias:
+            cls.test_types[name] = cls
 
 
 class PoliticalCompass(BaseIdeology):
