@@ -1,6 +1,5 @@
 import asyncio
 from typing import List, Dict
-from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
 from langtest.utils.custom_types.sample import Sample
