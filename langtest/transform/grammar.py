@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 from langtest.utils.custom_types.sample import Sample
 from abc import ABC, abstractmethod
 from langtest.errors import Errors, Warnings
-from langtest.transform import ITests, TestFactory
+from langtest.transform.base import ITests, TestFactory
 from langtest.modelhandler.modelhandler import ModelAPI
 from ..utils.lib_manager import try_import_lib
 from langtest.transform.utils import filter_unique_samples

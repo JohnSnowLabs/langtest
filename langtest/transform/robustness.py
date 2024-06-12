@@ -1,15 +1,22 @@
 import asyncio
+import copy
 import random
 import re
 import string
-from ..errors import Errors
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple, Union
 
+import pandas as pd
+
+from langtest.logger import logger as logging
 from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.transform.base import ITests, TestFactory
+from langtest.errors import Errors, Warnings
+from langtest.transform.utils import create_terminology, filter_unique_samples
 from langtest.utils.custom_types import SequenceClassificationSample
 from .constants import (
+    A2B_DICT,
     CONTRACTION_MAP,
     Slang_Adjectives,
     Slang_Adverbs,
@@ -32,6 +39,241 @@ for k, v in ocr_typo_dict.items():
     inverted_ocr_typo_dict[v].append(k)
 
 
+class RobustnessTestFactory(ITests):
+    """
+    A class for performing robustness tests on a given dataset.
+    """
+
+    alias_name = "robustness"
+
+    def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
+        """
+        Initializes a new instance of the `Robustness` class.
+
+        Args:
+            data_handler (List[Sample]):
+                A list of `Sample` objects representing the input dataset.
+            tests Optional[Dict]:
+                A dictionary of test names and corresponding parameters (default is None).
+        """
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(Errors.E048())
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                Errors.E049(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
+            )
+
+        if "swap_entities" in self.tests:
+            # TODO: check if we can get rid of pandas here
+            raw_data = self.kwargs.get("raw_data", self._data_handler)
+            df = pd.DataFrame(
+                {
+                    "text": [sample.original for sample in raw_data],
+                    "label": [
+                        [i.entity for i in sample.expected_results.predictions]
+                        for sample in raw_data
+                    ],
+                }
+            )
+            params = self.tests["swap_entities"]
+            if len(params.get("parameters", {}).get("terminology", {})) == 0:
+                params["parameters"] = {}
+                params["parameters"]["terminology"] = create_terminology(df)
+                params["parameters"]["labels"] = df.label.tolist()
+
+        if "american_to_british" in self.tests:
+            self.tests["american_to_british"]["parameters"] = {}
+            self.tests["american_to_british"]["parameters"]["accent_map"] = A2B_DICT
+
+        if "british_to_american" in self.tests:
+            self.tests["british_to_american"]["parameters"] = {}
+            self.tests["british_to_american"]["parameters"]["accent_map"] = {
+                v: k for k, v in A2B_DICT.items()
+            }
+
+        self._data_handler = data_handler
+
+    def transform(self) -> List[Sample]:
+        """
+        Runs the robustness test and returns the resulting `Sample` objects.
+
+        Returns:
+            List[Sample]
+                A list of `Sample` objects representing the resulting dataset after running the robustness test.
+        """
+        all_samples = []
+        no_transformation_applied_tests = {}
+        tests_copy = self.tests.copy()
+        for test_name, params in tests_copy.items():
+            if TestFactory.is_augment:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+            elif test_name in ["swap_entities"]:
+                data_handler_copy = [x.copy() for x in self.kwargs.get("raw_data", [])]
+            else:
+                data_handler_copy = [x.copy() for x in self._data_handler]
+
+            test_func = self.supported_tests[test_name].transform
+
+            if (
+                TestFactory.task in ("question-answering", "summarization")
+                and test_name != "multiple_perturbations"
+            ):
+                _ = [
+                    sample.transform(
+                        test_func,
+                        params.get("parameters", {}),
+                        prob=params.pop("prob", 1.0),
+                    )
+                    if hasattr(sample, "transform")
+                    else sample
+                    for sample in data_handler_copy
+                ]
+                transformed_samples = data_handler_copy
+
+            elif test_name == "multiple_perturbations" and TestFactory.task in (
+                "question-answering",
+                "summarization",
+            ):
+                transformed_samples = []
+                prob = params.pop("prob", 1.0)
+                for key, perturbations in params.items():
+                    if key.startswith("perturbations"):
+                        perturbation_number = key[len("perturbations") :]
+
+                        if "american_to_british" in perturbations:
+                            self.tests.setdefault("american_to_british", {})[
+                                "parameters"
+                            ] = {"accent_map": A2B_DICT}
+
+                        if "british_to_american" in perturbations:
+                            self.tests.setdefault("british_to_american", {})[
+                                "parameters"
+                            ] = {"accent_map": {v: k for k, v in A2B_DICT.items()}}
+                        _ = [
+                            sample.transform(
+                                func=test_func,
+                                params=self.tests,
+                                prob=prob,
+                                perturbations=perturbations,
+                            )
+                            if hasattr(sample, "transform")
+                            else sample
+                            for sample in data_handler_copy
+                        ]
+                        transformed_samples_perturbation = copy.deepcopy(
+                            data_handler_copy
+                        )  # Create a deep copy
+                        if perturbation_number != "":
+                            test_type = "-".join(
+                                str(perturbation)
+                                if not isinstance(perturbation, dict)
+                                else next(iter(perturbation))
+                                for perturbation in perturbations
+                            )
+                            for sample in transformed_samples_perturbation:
+                                sample.test_type = test_type
+
+                        transformed_samples.extend(transformed_samples_perturbation)
+                    elif key != "min_pass_rate":
+                        raise ValueError(Errors.E050(key=key))
+
+            elif (
+                test_name == "multiple_perturbations"
+                and TestFactory.task == "text-classification"
+            ):
+                transformed_samples = []
+                prob = params.pop("prob", 1.0)
+                for key, perturbations in params.items():
+                    if key.startswith("perturbations"):
+                        perturbation_number = key[len("perturbations") :]
+
+                        if "american_to_british" in perturbations:
+                            self.tests.setdefault("american_to_british", {})[
+                                "parameters"
+                            ] = {"accent_map": A2B_DICT}
+
+                        if "british_to_american" in perturbations:
+                            self.tests.setdefault("british_to_american", {})[
+                                "parameters"
+                            ] = {"accent_map": {v: k for k, v in A2B_DICT.items()}}
+
+                        transformed_samples_perturbation = test_func(
+                            data_handler_copy,
+                            perturbations,
+                            prob=prob,
+                            config=self.tests,
+                        )
+
+                        if perturbation_number != "":
+                            test_type = "-".join(
+                                str(perturbation)
+                                if not isinstance(perturbation, dict)
+                                else next(iter(perturbation))
+                                for perturbation in perturbations
+                            )
+                            for sample in transformed_samples_perturbation:
+                                sample.test_type = test_type
+                        transformed_samples.extend(transformed_samples_perturbation)
+
+                    elif key not in ("min_pass_rate", "prob"):
+                        raise ValueError(Errors.E050(key=key))
+
+            elif test_name == "multiple_perturbations" and TestFactory.task == "ner":
+                raise ValueError(Errors.E051())
+
+            else:
+                transformed_samples = test_func(
+                    data_handler_copy,
+                    **params.get("parameters", {}),
+                    prob=params.pop("prob", 1.0),
+                )
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            all_samples.extend(new_transformed_samples)
+
+            no_transformation_applied_tests.update(removed_samples_tests)
+
+        if no_transformation_applied_tests:
+            warning_message = Warnings._W009
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += Warnings._W010.format(
+                    test=test, count=count, total_sample=len(self._data_handler)
+                )
+
+            logging.warning(warning_message)
+
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+        # tests = {
+        #     j: i
+        #     for i in BaseRobustness.__subclasses__()
+        #     for j in (i.alias_name if isinstance(i.alias_name, list) else [i.alias_name])
+        # }
+        return BaseRobustness.test_types
+
+
 class BaseRobustness(ABC):
     """Abstract base class for implementing robustness measures.
 
@@ -42,6 +284,7 @@ class BaseRobustness(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented robustness measure.
     """
 
+    test_types = defaultdict(lambda: BaseRobustness)
     alias_name = None
     supported_tasks = [
         "ner",
@@ -108,6 +351,12 @@ class BaseRobustness(ABC):
         """
         created_task = asyncio.create_task(cls.run(sample_list, model, **kwargs))
         return created_task
+
+    def __init_subclass__(cls, *args, **kwargs) -> None:
+        """Registers the robustness measure with the test factory."""
+        alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
+        for name in alias:
+            BaseRobustness.test_types[name] = cls
 
 
 class UpperCase(BaseRobustness):
