@@ -93,10 +93,16 @@ class RepresentationOperation:
                 if isinstance(prediction, SequenceLabel):
                     label_representation[prediction.label] += 1
                 elif isinstance(prediction, NERPrediction):
-                    if prediction.entity == "O":
-                        label_representation[prediction.entity] += 1
-                    elif prediction.entity in RepresentationOperation.entity_types:
-                        label_representation[prediction.entity.split("-")[1]] += 1
+                    entity = prediction.entity
+                    if entity == "O":
+                        label_representation[entity] += 1
+                    elif (
+                        entity in RepresentationOperation.entity_types
+                        and entity.startswith("B-")
+                    ):
+                        label_representation[entity[2:]] += 1
+                    elif isinstance(entity, str) and not entity.startswith("I-"):
+                        label_representation[re.sub(r"^(B-)", "", entity)] += 1
 
         return label_representation
 
