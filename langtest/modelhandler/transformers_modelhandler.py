@@ -565,7 +565,7 @@ class PretrainedModelForCrowsPairs(ModelAPI):
         self.model = model
 
     @classmethod
-    def load_model(cls, path: str) -> "Pipeline":
+    def load_model(cls, path: Union[Pipeline, str]) -> "Pipeline":
         """Load the Translation model into the `model` attribute.
 
         Args:
@@ -792,10 +792,19 @@ class PretrainedModelForQA(ModelAPI):
         - str: The generated prediction.
         """
         try:
-            prompt_template = SimplePromptTemplate(**prompt)
-            text = prompt_template.format(**text)
-            output = self.model._generate([text])
-            return output[0]
+             # loading a prompt manager
+            from langtest.prompts import PromptManager
+
+            prompt_manager = PromptManager()
+
+            prompt_template = prompt_manager.get_prompt()
+            if prompt_template is None:
+                prompt_template = SimplePromptTemplate(**prompt)
+                output = self.model._generate([prompt_template.format(**text)])
+                return output[0]
+            else:
+                output = self.model._generate(prompt_template.format(**text))
+                return output
         except Exception as e:
             raise ValueError(Errors.E089(error_message=e))
 
