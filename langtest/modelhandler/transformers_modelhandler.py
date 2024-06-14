@@ -997,7 +997,7 @@ class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for Sycophancy.
 
     Inherits:
-        PretrainedModelForQA: The base class for pretrained models.
+        PretrainedModelForSycophancy: The base class for pretrained models.
     """
 
     pass
@@ -1007,7 +1007,7 @@ class PretrainedModelForClinical(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for clinical.
 
     Inherits:
-        PretrainedModelForQA: The base class for pretrained models.
+        PretrainedModelForClinical: The base class for pretrained models.
     """
 
     pass
@@ -1017,7 +1017,7 @@ class PretrainedModelForLegal(PretrainedModelForQA, ModelAPI):
     """A class representing a pretrained model for legal.
 
     Inherits:
-        PretrainedModelForQA: The base class for pretrained models.
+        PretrainedModelForLegal: The base class for pretrained models.
     """
 
     pass
