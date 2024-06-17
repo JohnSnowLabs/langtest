@@ -418,7 +418,6 @@ def llm_prompt_eval(
                 list(graded_outputs[0].values())[0].replace("\n", "").strip(),
             )
         )
-        print(graded_outputs, result)
         return result
 
 
