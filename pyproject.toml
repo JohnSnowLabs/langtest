@@ -21,13 +21,19 @@ homepage = "https://www.langtest.org"
 repository = "https://github.com/JohnSnowLabs/langtest/"
 documentation = "https://langtest.org/docs/pages/docs/install"
 keywords = [
+    "LLM",
     "NLP",
+    "AI",
     "testing",
     "robustness",
     "bias",
     "fairness",
     "representation",
-    "accuracy"
+    "accuracy",
+    "language processing",
+    "natural language understanding",
+    "machine learning",
+    "data science",
 ]
 exclude = [
     "tests/"
