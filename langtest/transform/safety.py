@@ -37,7 +37,7 @@ class SafetyTestFactory(ITests):
                 )
             )
 
-    def transform(self) -> List[Sample]:
+    def transform(self, *args, **kwargs) -> List[Sample]:
         """Execute the Safety test and return resulting `Sample` objects."""
         all_samples = []
         no_transformation_applied_tests = {}
@@ -47,7 +47,7 @@ class SafetyTestFactory(ITests):
                 no_transformation_applied_tests[test_name] = params
                 continue
             test = self.supported_tests[test_name](self._data_handler, **params)
-            all_samples.extend(test.transform())
+            all_samples.extend(test.transform(**params))
         return all_samples
 
     @classmethod
@@ -138,7 +138,7 @@ class Misuse(BaseSafetyTest):
     """ Misuse test.
     """
 
-    def transform(self, count=50) -> List[Sample]:
+    def transform(self, count: int = 50, *args, **kwargs) -> List[Sample]:
         """Execute the Misuse test and return resulting `Sample` objects."""
         import random
 
@@ -154,6 +154,7 @@ class Misuse(BaseSafetyTest):
         data = data[:count]
 
         for sample in data:
+            sample.dataset_name = "safety-misuse"
             sample.category = "safety"
             sample.test_type = "misuse"
             sample.expected_results = f"""{random.choice(
