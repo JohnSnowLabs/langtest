@@ -284,8 +284,10 @@ class Harness:
 
         self._testcases = []
 
-        if isinstance(self.data, list):
+        if isinstance(self.data, list) and not self.__is_multi_model:
             self._testcases = self.__single_dataset_generate(self.data)
+        elif isinstance(self.data, list) and self.__is_multi_model:
+            self._testcases = self.__multi_datasets_generate(self.data)
         elif isinstance(self.data, dict):
             self._testcases = self.__multi_datasets_generate(self.data)
 
@@ -310,15 +312,20 @@ class Harness:
         Raises:
             RuntimeError: Raised if test cases are not provided (None).
         """
-        if isinstance(self._testcases, dict) and not self.__is_multi_model:
-            self.is_multi_dataset = True
-            self._generated_results = self.__multi_datasets_run(
-                self._testcases, checkpoint, save_checkpoints_dir, batch_size
-            )
-        else:
+        if isinstance(self._testcases, list) and not self.__is_multi_model:
             self.is_multi_dataset = False
             self._generated_results = self.__single_dataset_run(
                 self._testcases, self.data, checkpoint, save_checkpoints_dir, batch_size
+            )
+        elif isinstance(self.data, list) and self.__is_multi_model:
+            self.is_multi_dataset = False
+            self._generated_results = self.__single_dataset_run(
+                self._testcases, self.data, checkpoint, save_checkpoints_dir, batch_size
+            )
+        else:
+            self.is_multi_dataset = True
+            self._generated_results = self.__multi_datasets_run(
+                self._testcases, checkpoint, save_checkpoints_dir, batch_size
             )
         return self
 
@@ -494,7 +501,17 @@ class Harness:
         if self.task.category == "ideology":
             self.df_report = report.political_report(self._generated_results)
             return self.df_report
+        elif self.is_multi_dataset and isinstance(self.model, dict):
+            self.df_report = report.multi_dataset_multi_model_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
+                self.model,
+            )
 
+            report.save_format(format, save_dir, self.df_report)
+            return self.df_report
         elif self.is_multi_dataset:
             self.df_report = report.multi_dataset_report(
                 summary,
@@ -641,12 +658,26 @@ class Harness:
             logging.warning(Warnings.W000())
             return
 
-        if isinstance(self._generated_results, dict) and not self.is_multi_dataset:
+        if isinstance(self._generated_results, dict) and isinstance(self.model, dict):
             generated_results_df = []
             for k, v in self._generated_results.items():
-                model_generated_results_df = pd.DataFrame.from_dict(
-                    [x.to_dict() for x in v]
-                )
+                if isinstance(v, dict):
+                    model_generated_results_df = pd.DataFrame.from_dict(
+                        [
+                            {
+                                "dataset_name": k,
+                                "model_name": model_name,
+                                **sample.to_dict(),
+                            }
+                            for model_name, samples in v.items()
+                            if isinstance(samples, list)
+                            for sample in samples
+                        ]
+                    )
+                else:
+                    model_generated_results_df = pd.DataFrame.from_dict(
+                        [{"model_name": k, **x.to_dict()} for x in v]
+                    )
                 if (
                     "test_case" in model_generated_results_df.columns
                     and "original_question" in model_generated_results_df.columns
@@ -654,7 +685,7 @@ class Harness:
                     model_generated_results_df["original_question"].update(
                         model_generated_results_df.pop("test_case")
                     )
-                model_generated_results_df["model_name"] = k
+                # model_generated_results_df["model_name"] = k
                 generated_results_df.append(model_generated_results_df)
             generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
 
@@ -1467,10 +1498,29 @@ class Harness:
 
     def __multi_datasets_generate(self, dataset: Dict[str, list]):
         testcases = {}
-        for dataset_name, samples in dataset.items():
-            print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
-            testcases[dataset_name] = self.__single_dataset_generate(samples)
-            print(f"{'':-^80}\n")
+        if not isinstance(self.model, dict):
+            for dataset_name, samples in dataset.items():
+                print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
+                testcases[dataset_name] = self.__single_dataset_generate(samples)
+                print(f"{'':-^80}\n")
+        elif isinstance(self.data, list) and self.__is_multi_model:
+            temp_testcases = self.__single_dataset_generate(dataset)
+            for model_name, _ in self.model.items():
+                testcases[model_name] = [sample.copy() for sample in temp_testcases]
+
+        else:
+            for dataset_name, samples in dataset.items():
+                print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
+                if dataset_name not in testcases:
+                    testcases[dataset_name] = {}
+                for model_name, _ in self.model.items():
+                    if model_name not in testcases[dataset_name]:
+                        testcases[dataset_name][model_name] = []
+                    testcases[dataset_name][model_name] = self.__single_dataset_generate(
+                        samples
+                    )
+                print(f"{'':-^80}\n")
+
         return testcases
 
     # Run testcases functions
@@ -1487,7 +1537,7 @@ class Harness:
         if testcases is None:
             raise RuntimeError(Errors.E010())
 
-        if not isinstance(testcases, dict):
+        if not isinstance(testcases, dict) and not isinstance(self.model, dict):
             if checkpoint:
                 if self.batches is None:
                     if self.is_multi_dataset:
@@ -1566,7 +1616,7 @@ class Harness:
                     generated_results.extend(self._checkpoints)
         else:
             # multi-model run
-            generated_results = {}
+            generated_results = defaultdict(list)
             if checkpoint:
                 if self.batches is None:
                     self.batches = {}
