@@ -37,18 +37,20 @@ class PrometheusEval:
             model_name: The name of the model for evaluation.
         """
         self.model_name = model_name
-        if check_memory():
-            self.pipeline = HuggingFacePipeline(
-                model_id=model_name, task="text-generation"
-            )
-        else:
-            print("Memory not available")
-            sys.exit(1)
+        self.hub = hub
         self.input_variables = ["query", "result", "answer"]
         self.eval_type = eval_type
         self.criteria_description = criteria_description
         self.model_kwargs = model_kwargs
 
+        try:
+            # Check if memory is available
+            if check_memory():
+                self.pipeline = HuggingFacePipeline(
+                    model_id=model_name, task="text-generation"
+                )
+        except MemoryError as e:
+            raise MemoryError("Memory is not available to run the model", e)
 
     def _get_feedback(self, response_text: str) -> Optional[Tuple[str, int]]:
         """
@@ -100,7 +102,7 @@ class PrometheusEval:
                 response = self.pipeline(prompt, **self.model_kwargs)
             else:
                 response = self.pipeline(prompt, max_tokens=200, return_full_text=False)
-            
+
             feedback, result = self._get_feedback(response)
             return feedback, result
 
@@ -151,7 +153,8 @@ class AbsoluteGrading:
             The prompt for the model.
         """
         s, f = self.get_score_rubric()
-        prompt = dedent("""
+        prompt = dedent(
+            """
         ###Task Description:
         An instruction (might include an Input inside it), a response to evaluate, a reference answer that gets from {formatted_criteria_keys}, and a score rubric representing a evaluation criteria are given.
         1. Write a detailed feedback that assess the quality of the response strictly based on the given score rubric, not evaluating in general.
@@ -172,7 +175,8 @@ class AbsoluteGrading:
         {score_rubric}
 
         ###Feedback:
-        """)
+        """
+        )
         return prompt.format(
             instruction=self.instruction,
             response=self.response,
