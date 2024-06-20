@@ -998,13 +998,17 @@ class LLMEval(BaseAccuracy):
 
         model = params.get("model", None)
         hub = params.get("hub", None)
+
+        # get model parameters from tests config or harness config if not provided
+        # if not provided, default to the default model parameters
+        parameters = params.get(
+            "model_parameters", harness_config.get("model_parameters", {})
+        )
         if model and hub:
             from ..tasks import TaskManager
 
             load_eval_model = TaskManager("question-answering")
-            cls.eval_model = load_eval_model.model(
-                model, hub, **harness_config.get("model_parameters", {})
-            )
+            cls.eval_model = load_eval_model.model(model, hub, **parameters)
 
         else:
             cls.eval_model = EVAL_MODEL
