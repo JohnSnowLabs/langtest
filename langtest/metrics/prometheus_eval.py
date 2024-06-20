@@ -6,6 +6,7 @@ from langtest.modelhandler import ModelAPI
 from langtest.utils.hf_utils import HuggingFacePipeline
 import re
 import sys
+from textwrap import dedent
 
 # check the available of RAM or GPU memory is above 30 GB in current system
 
@@ -26,6 +27,8 @@ class PrometheusEval:
         model_name: str = "prometheus-eval/prometheus-7b-v2.0",
         hub: str = "huggingface",
         eval_type: str = "absolute_grading",
+        criteria_description: Dict[str, str] = None,
+        model_kwargs: Dict[str, str] = None,
     ):
         """
         Initializes the PrometheusEval object.
@@ -42,6 +45,10 @@ class PrometheusEval:
             print("Memory not available")
             sys.exit(1)
         self.input_variables = ["query", "result", "answer"]
+        self.eval_type = eval_type
+        self.criteria_description = criteria_description
+        self.model_kwargs = model_kwargs
+
 
     def _get_feedback(self, response_text: str) -> Optional[Tuple[str, int]]:
         """
@@ -80,7 +87,22 @@ class PrometheusEval:
         Returns:
             A tuple of feedback and score.
         """
-        pass
+        if self.eval_type == "absolute_grading":
+            build_prompt = AbsoluteGrading(
+                instruction=query,
+                response=result,
+                reference_answer=answer,
+                criteria_description=self.criteria_description,
+            )
+            prompt = build_prompt.get_prompt()
+
+            if self.model_kwargs:
+                response = self.pipeline(prompt, **self.model_kwargs)
+            else:
+                response = self.pipeline(prompt, max_tokens=200, return_full_text=False)
+            
+            feedback, result = self._get_feedback(response)
+            return feedback, result
 
     def evaluate_batch(
         self, queries: List[str], results: List[str], answers: List[str]
@@ -96,7 +118,10 @@ class PrometheusEval:
         Returns:
             A list of tuples of feedback and score.
         """
-        pass
+        return [
+            self.evaluate(query, result, answer)
+            for query, result, answer in zip(queries, results, answers)
+        ]
 
 
 @dataclass
@@ -126,7 +151,7 @@ class AbsoluteGrading:
             The prompt for the model.
         """
         s, f = self.get_score_rubric()
-        prompt = """
+        prompt = dedent("""
         ###Task Description:
         An instruction (might include an Input inside it), a response to evaluate, a reference answer that gets from {formatted_criteria_keys}, and a score rubric representing a evaluation criteria are given.
         1. Write a detailed feedback that assess the quality of the response strictly based on the given score rubric, not evaluating in general.
@@ -147,7 +172,7 @@ class AbsoluteGrading:
         {score_rubric}
 
         ###Feedback:
-        """
+        """)
         return prompt.format(
             instruction=self.instruction,
             response=self.response,
@@ -164,10 +189,11 @@ class AbsoluteGrading:
             The score rubric for the model.
         """
         # Format the criteria keys for the score rubric
-        formatted_criteria_keys = " or ".join(
+        formatted_criteria_keys = ", ".join(
             f"'{i}'" for i in self.criteria_description.keys()
         )
-        score_rubric = f"[{formatted_criteria_keys}]\n"
+        formatted_criteria_keys = f"[{formatted_criteria_keys}]"
+        score_rubric = f"{formatted_criteria_keys}\n"
 
         # Add criteria and description to the score rubric
         for criteria, description in self.criteria_description.items():
