@@ -204,3 +204,87 @@ class AbsoluteGrading:
             score_rubric += f"{criteria}: {description}\n"
 
         return score_rubric, formatted_criteria_keys
+
+
+@dataclass
+class RelativeGrading:
+    """Class for relative grading of the Prometheus model.
+
+    Relative Grading (Comparative Assessment)
+    Prometheus requires 4 components in the input: An instruction, a response to evaluate,
+    a reference answer, and a comparative answer. You could refer to the prompt format below.
+    You should fill in the instruction, response, reference answer, and comparative answer.
+    """
+
+    instruction: str
+    response_a: str
+    response_b: str
+    reference_answer: str
+    criteria_description: Dict[str, str]
+
+    def __post_init__(self):
+        self.input_variables = ["instruction", "response", "reference_answer"]
+
+    def get_prompt(self) -> str:
+        """
+        Get the prompt for the model.
+
+        Returns:
+            The prompt for the model.
+        """
+        s, f = self.get_score_rubric()
+        prompt = dedent(
+            """
+        ###Task Description:
+        An instruction (might include an Input inside it), a response to evaluate, and a score rubric representing a evaluation criteria are given.
+        1. Write a detailed feedback that assess the quality of two responses strictly based on the given score rubric, not evaluating in general.
+        2. After writing a feedback, evaluate a both responses Response A and Response B. You should refer to the score rubric.
+        3. The output format should look as follows: "Feedback: (write a feedback for criteria) [RESULT] (anyone from this {formatted_criteria_keys})"
+        4. Please do not generate any other opening, closing, and explanations.
+
+        ###Instruction:
+        {instruction}
+
+        ###Response A:
+        {response_a}
+
+        ###Response B:
+        {response_b}
+
+        ###Reference Answer:
+        {reference_answer}
+
+        ###Score Rubric:
+        {score_rubric}
+
+        ###Feedback:
+        """
+        )
+        return prompt.format(
+            instruction=self.instruction,
+            response_a=self.response_a,
+            response_b=self.response_b,
+            reference_answer=self.reference_answer,
+            score_rubric=s,
+            formatted_criteria_keys=f,
+        )
+
+    def get_score_rubric(self) -> Dict[str, str]:
+        """
+        Get the score rubric for the model.
+
+        Returns:
+            The score rubric for the model.
+        """
+        # Format the criteria keys for the score rubric
+        formatted_criteria_keys = ", ".join(
+            f"'{i}'" for i in self.criteria_description.keys()
+        )
+        formatted_criteria_keys = f"[{formatted_criteria_keys}]"
+        score_rubric = f"{formatted_criteria_keys}\n"
+
+        # Add criteria and description to the score rubric
+        for criteria, description in self.criteria_description.items():
+            score_rubric += f"{criteria}: {description}\n"
+
+        return score_rubric, formatted_criteria_keys
