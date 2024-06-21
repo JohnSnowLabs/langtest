@@ -1,6 +1,7 @@
 import datetime
 import importlib
 import pandas as pd
+from collections import defaultdict
 from typing import Dict, List, Union
 from ..errors import Errors
 from langtest.tasks import TaskManager
@@ -374,8 +375,6 @@ def multi_dataset_report(
 
     multi_summary = {}
     for dataset_name, generated_results in datasets.items():
-        from collections import defaultdict
-
         summary = defaultdict(lambda: defaultdict(int))
         for sample in generated_results:
             summary[sample.test_type]["category"] = sample.category
@@ -419,6 +418,80 @@ def multi_dataset_report(
     cols = pd.MultiIndex.from_tuples(
         [(f"Benchmarking Results: {model_name}", V) for V in df_report.columns]
     )
+    df_report_final = pd.DataFrame(df_report.values, columns=cols, index=df_report.index)
+
+    return df_report_final
+
+
+def multi_dataset_multi_model_report(
+    summary: Dict,
+    min_pass_dict: Dict,
+    default_min_pass_dict: float,
+    generated_results: Dict,
+    model_dict: Dict,
+) -> pd.DataFrame:
+    datasets: Dict[str, Dict[str, list]] = {}
+
+    for dataset_name, model_results in generated_results.items():
+        for model_name, results in model_results.items():
+            datasets.setdefault(dataset_name, {}).setdefault(model_name, []).extend(
+                results
+            )
+
+    multi_summary = {}
+    for dataset_name, model_results in datasets.items():
+        multi_summary[dataset_name] = {}
+        for model_name, generated_results in model_results.items():
+            summary = defaultdict(lambda: defaultdict(int))
+            for sample in generated_results:
+                summary[sample.test_type]["category"] = sample.category
+                summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+            multi_summary[dataset_name][model_name] = summary
+
+    df_report = pd.DataFrame()
+    for dataset_name, model_results in multi_summary.items():
+        for model_name, summary in model_results.items():
+            report = {}
+            for test_type, value in summary.items():
+                pass_rate = summary[test_type]["true"] / (
+                    summary[test_type]["true"] + summary[test_type]["false"]
+                )
+                min_pass_rate = min_pass_dict.get(test_type, default_min_pass_dict)
+
+                if summary[test_type]["category"] in ["Accuracy", "performance"]:
+                    min_pass_rate = 1
+
+                report[test_type] = {
+                    "dataset_name": dataset_name,
+                    "model_name": model_name,
+                    "category": summary[test_type]["category"],
+                    "test_type": test_type,
+                    "fail_count": summary[test_type]["false"],
+                    "pass_count": summary[test_type]["true"],
+                    "pass_rate": pass_rate,
+                    "minimum_pass_rate": min_pass_rate,
+                    "pass": pass_rate >= min_pass_rate,
+                }
+
+            df_report = pd.concat(
+                [df_report, pd.DataFrame.from_dict(report, orient="index")]
+            )
+
+    df_report["pass_rate"] = df_report["pass_rate"].apply(
+        lambda x: "{:.0f}%".format(x * 100)
+    )
+    df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
+        lambda x: "{:.0f}%".format(x * 100)
+    )
+
+    df_report.set_index(
+        ["dataset_name", "model_name", "category", "test_type"], inplace=True
+    )
+
+    cols = pd.MultiIndex.from_tuples(
+        [("Benchmarking Results", V) for V in df_report.columns]
+    )
+
     df_report_final = pd.DataFrame(df_report.values, columns=cols, index=df_report.index)
 
     return df_report_final
