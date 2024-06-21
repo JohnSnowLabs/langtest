@@ -77,7 +77,7 @@ class PrometheusEval:
 
         return feedback, result
 
-    def evaluate(self, query: str, result: str, answer: str) -> Tuple[str, int]:
+    def evaluate_response(self, llm_response: Dict[str, str]) -> Tuple[str, int]:
         """
         Evaluate the model.
 
@@ -89,6 +89,13 @@ class PrometheusEval:
         Returns:
             A tuple of feedback and score.
         """
+        query = llm_response.get("query", None)
+        result = llm_response.get("result", None)
+        answer = llm_response.get("answer", None)
+
+        if any(v is None for v in [query, result, answer]):
+            raise ValueError("Input variables should be query, result, and answer.")
+
         if self.eval_type == "absolute_grading":
             build_prompt = AbsoluteGrading(
                 instruction=query,
@@ -106,9 +113,7 @@ class PrometheusEval:
             feedback, result = self._get_feedback(response)
             return feedback, result
 
-    def evaluate_batch(
-        self, queries: List[str], results: List[str], answers: List[str]
-    ) -> List[Tuple[str, int]]:
+    def evaluate_batch(self, entries: List[Dict[str, str]]) -> List[Tuple[str, int]]:
         """
         Evaluate the model on a batch of queries.
 
@@ -120,10 +125,32 @@ class PrometheusEval:
         Returns:
             A list of tuples of feedback and score.
         """
+        queries = [entry.get("query", None) for entry in entries]
+        results = [entry.get("result", None) for entry in entries]
+        answers = [entry.get("answer", None) for entry in entries]
         return [
-            self.evaluate(query, result, answer)
+            self.evaluate_response(query, result, answer)
             for query, result, answer in zip(queries, results, answers)
         ]
+
+    def evaluate(
+        self,
+        inputs: List[Dict[str, str]],
+        predictions: List[Dict[str, str]],
+        question_key: str = "query",
+        answer_key: str = "answer",
+        prediction_key: str = "result",
+    ) -> List[Tuple[str, int]]:
+        """Evaluate question answering examples and predictions."""
+        examples = [
+            {
+                "query": input_example.get(question_key, ""),
+                "result": prediction_example.get(prediction_key, ""),
+                "answer": input_example.get(answer_key, ""),
+            }
+            for input_example, prediction_example in zip(inputs, predictions)
+        ]
+        return self.evaluate_batch(examples)
 
 
 @dataclass
