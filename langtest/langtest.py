@@ -288,8 +288,10 @@ class Harness:
             self._testcases = self.__single_dataset_generate(self.data)
         elif isinstance(self.data, list) and self.__is_multi_model:
             self._testcases = self.__multi_datasets_generate(self.data)
-        elif isinstance(self.data, dict):
+        elif isinstance(self.data, dict) and len(self.data) > 1:
             self._testcases = self.__multi_datasets_generate(self.data)
+        else:
+            self._testcases = self.__single_dataset_generate(self.data)
 
         return self
 
@@ -886,7 +888,7 @@ class Harness:
 
             testcases_df = pd.concat(testcases_df).reset_index(drop=True)
 
-        elif self.is_multi_dataset:
+        elif self.is_multi_dataset and isinstance(self._testcases, dict):
             testcases_df = pd.DataFrame(
                 [
                     {**x.to_dict(), "dataset_name": dataset_name}
