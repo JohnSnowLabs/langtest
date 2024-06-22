@@ -635,7 +635,7 @@ class QASample(BaseQASample):
                     options=self.options,
                 )
                 self.ran_pass = result
-                return result
+                return result.get("score", False)
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
 
