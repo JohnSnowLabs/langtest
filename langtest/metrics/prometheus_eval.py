@@ -43,13 +43,11 @@ class PrometheusEval:
         self.model_kwargs = model_kwargs
 
         try:
-            # Check if memory is available
-            assert (
-                check_memory() and PrometheusEval.pipeline is None
-            ), "Memory is not available to run the model"
-
             if PrometheusEval.pipeline is None:
                 from transformers import pipeline
+
+                # Check if memory is available
+                assert check_memory(), "Memory is not available to run the model"
 
                 PrometheusEval.pipeline = pipeline(
                     model=model_name, task="text-generation"
