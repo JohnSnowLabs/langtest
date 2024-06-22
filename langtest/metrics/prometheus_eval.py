@@ -110,16 +110,6 @@ class PrometheusEval:
             )
             prompt = build_prompt.get_prompt()
 
-            if self.model_kwargs:
-                response = self.pipeline(prompt, **self.model_kwargs)
-            else:
-                response = self.pipeline(
-                    prompt, max_new_tokens=500, return_full_text=False
-                )
-
-            feedback, result = self._get_feedback(response)
-            return feedback, result
-
         elif self.eval_type == "relative_grading":
             build_prompt = RelativeGrading(
                 instruction=query,
@@ -130,17 +120,13 @@ class PrometheusEval:
             )
             prompt = build_prompt.get_prompt()
 
-            if self.model_kwargs:
-                response = self.pipeline(prompt, **self.model_kwargs)
-            else:
-                response = self.pipeline(
-                    prompt, max_new_tokens=500, return_full_text=False
-                )
+        if self.model_kwargs:
+            response = self.pipeline(prompt, **self.model_kwargs)
+        else:
+            response = self.pipeline(prompt, max_new_tokens=500, return_full_text=False)
 
-            print(response)
-
-            feedback, result = self._get_feedback(response)
-            return feedback, result
+        feedback, result = self._get_feedback(response[0]["generated_text"])
+        return feedback, result
 
     def evaluate_batch(self, entries: List[Dict[str, str]]) -> List[Tuple[str, int]]:
         """
