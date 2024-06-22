@@ -44,13 +44,15 @@ class PrometheusEval:
 
         try:
             # Check if memory is available
-            if check_memory():
+            assert check_memory(), "Memory is not available to run the model"
+
+            if PrometheusEval.pipeline is None:
                 from transformers import pipeline
 
-                if self.pipeline is None:
-                    self.pipeline = pipeline(model=model_name, task="text-generation")
-            else:
-                raise MemoryError("Memory is not available to run the model")
+                PrometheusEval.pipeline = pipeline(
+                    model=model_name, task="text-generation"
+                )
+
         except MemoryError as e:
             raise MemoryError("Memory is not available to run the model", e)
 
