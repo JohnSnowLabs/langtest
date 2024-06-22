@@ -92,6 +92,8 @@ class PrometheusEval:
         query = llm_response.get("query", None)
         result = llm_response.get("result", None)
         answer = llm_response.get("answer", None)
+        response_a = llm_response.get("response_a", None)
+        response_b = llm_response.get("response_b", None)
 
         if any(v is None for v in [query, result, answer]):
             raise ValueError("Input variables should be query, result, and answer.")
@@ -100,6 +102,24 @@ class PrometheusEval:
             build_prompt = AbsoluteGrading(
                 instruction=query,
                 response=result,
+                reference_answer=answer,
+                criteria_description=self.criteria_description,
+            )
+            prompt = build_prompt.get_prompt()
+
+            if self.model_kwargs:
+                response = self.pipeline(prompt, **self.model_kwargs)
+            else:
+                response = self.pipeline(prompt, max_tokens=200, return_full_text=False)
+
+            feedback, result = self._get_feedback(response)
+            return feedback, result
+
+        elif self.eval_type == "relative_grading":
+            build_prompt = RelativeGrading(
+                instruction=query,
+                response_a=response_a,
+                response_b=response_b,
                 reference_answer=answer,
                 criteria_description=self.criteria_description,
             )

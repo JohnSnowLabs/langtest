@@ -511,6 +511,25 @@ class QASample(BaseQASample):
                         self.eval_model = load_eval_model.model(
                             model, hub, **harness_config.get("model_parameters", {})
                         )
+                elif harness_config["evaluation"]["metric"].lower() == "prometheus_eval":
+                    self.criteria_description = harness_config["evaluation"].get(
+                        "criteria", None
+                    )
+                    self.model_kwargs = harness_config["evaluation"].get(
+                        "model_kwargs", None
+                    )
+
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+
+                    if model and hub:
+                        from ...tasks import TaskManager
+
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **self.model_kwargs
+                        )
+
             else:
                 self.eval_model = EVAL_MODEL
 
@@ -563,6 +582,10 @@ class QASample(BaseQASample):
                 if "evaluation" in self.config and "metric" in self.config["evaluation"]:
                     if self.config["evaluation"]["metric"].lower() != "llm_eval":
                         result.update({"eval_score": self.distance_result})
+                    elif self.config["evaluation"][
+                        "metric"
+                    ].lower() == "prometheus_eval" and isinstance(self.ran_pass, dict):
+                        result.update(**self.ran_pass)
 
         return result
 
@@ -619,6 +642,43 @@ class QASample(BaseQASample):
 
                 self.ran_pass = result
                 return result
+            elif self.metric_name == "prometheus_eval":
+                from langtest.metrics.prometheus_eval import PrometheusEval
+
+                eval_model = PrometheusEval(
+                    criteria_description=self.criteria_description,
+                    model_kwargs=self.model_kwargs,
+                )
+                query = (
+                    (
+                        f"Context: {self.original_context}"
+                        if len(self.original_context) > 1
+                        else ""
+                    )
+                    + f"Question: {self.original_question}"
+                    + (self.options if len(self.options) > 1 else "")
+                )
+                if self.category not in (
+                    "accuracy",
+                    "fairness",
+                ):
+                    eval_model.eval_type = "relative_grading"
+
+                    llm_response = {
+                        "query": query,
+                        "response_a": self.expected_results,
+                        "response_b": self.actual_results,
+                    }
+
+                else:
+                    llm_response = {
+                        "query": query,
+                        "answer": self.expected_results,
+                        "result": self.actual_results,
+                    }
+
+                feedback, score = eval_model.evaluate(llm_response)
+                self.ran_pass = {"feedback": feedback, "score": score}
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
 
