@@ -46,9 +46,9 @@ class PrometheusEval:
         try:
             # Check if memory is available
             if check_memory():
-                self.pipeline = HuggingFacePipeline(
-                    model_id=model_name, task="text-generation"
-                )
+                from transformers import pipeline
+
+                self.pipeline = pipeline(model_id=model_name, task="text-generation")
             else:
                 raise MemoryError("Memory is not available to run the model")
         except MemoryError as e:
