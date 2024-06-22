@@ -511,24 +511,6 @@ class QASample(BaseQASample):
                         self.eval_model = load_eval_model.model(
                             model, hub, **harness_config.get("model_parameters", {})
                         )
-                elif harness_config["evaluation"]["metric"].lower() == "prometheus_eval":
-                    self.criteria_description = harness_config["evaluation"].get(
-                        "criteria", None
-                    )
-                    self.model_kwargs = harness_config["evaluation"].get(
-                        "model_kwargs", None
-                    )
-
-                    model = harness_config["evaluation"].get("model", None)
-                    hub = harness_config["evaluation"].get("hub", None)
-
-                    if model and hub:
-                        from ...tasks import TaskManager
-
-                        load_eval_model = TaskManager(self.task)
-                        self.eval_model = load_eval_model.model(
-                            model, hub, **self.model_kwargs
-                        )
 
             else:
                 self.eval_model = EVAL_MODEL
@@ -644,11 +626,26 @@ class QASample(BaseQASample):
                 return result
             elif self.metric_name == "prometheus_eval":
                 from langtest.metrics.prometheus_eval import PrometheusEval
+                from ...langtest import HARNESS_CONFIG as harness_config
 
-                eval_model = PrometheusEval(
-                    criteria_description=self.criteria_description,
-                    model_kwargs=self.model_kwargs,
-                )
+                criteria_description = harness_config["evaluation"].get("criteria", None)
+                model_kwargs = harness_config["evaluation"].get("model_kwargs", None)
+
+                model = harness_config["evaluation"].get("model", None)
+                hub = harness_config["evaluation"].get("hub", None)
+
+                if model and hub:
+                    from ...tasks import TaskManager
+
+                    load_eval_model = TaskManager(self.task)
+                    self.eval_model = load_eval_model.model(
+                        model, hub, **self.model_kwargs
+                    )
+                else:
+                    eval_model = PrometheusEval(
+                        criteria_description=self.criteria_description,
+                        model_kwargs=self.model_kwargs,
+                    )
                 query = (
                     (
                         f"Context: {self.original_context}"
