@@ -391,6 +391,7 @@ class BaseQASample(BaseModel):
     metric_name: str = None
     gender: str = None
     loaded_fields: Dict[str, Any] = None
+    feedback: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -565,7 +566,7 @@ class QASample(BaseQASample):
                     if self.config["evaluation"][
                         "metric"
                     ].lower() == "prometheus_eval" and isinstance(self.ran_pass, dict):
-                        result.update(**self.ran_pass)
+                        result.update({"feedback": self.feedback})
                     elif self.config["evaluation"]["metric"].lower() != "llm_eval":
                         result.update({"eval_score": self.distance_result})
 
@@ -634,8 +635,9 @@ class QASample(BaseQASample):
                     original_context=self.original_context,
                     options=self.options,
                 )
-                self.ran_pass = result
-                return result.get("score", False)
+                self.ran_pass = result.get("score", False)
+                self.feedback = result.get("feedback", None)
+                return self.ran_pass
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
 
