@@ -625,57 +625,17 @@ class QASample(BaseQASample):
                 self.ran_pass = result
                 return result
             elif self.metric_name == "prometheus_eval":
-                from langtest.metrics.prometheus_eval import PrometheusEval
-                from ...langtest import HARNESS_CONFIG as harness_config
-
-                criteria_description = harness_config["evaluation"].get("criteria", None)
-                model_kwargs = harness_config["evaluation"].get("model_kwargs", None)
-
-                model = harness_config["evaluation"].get("model", None)
-                hub = harness_config["evaluation"].get("hub", None)
-
-                if model and hub:
-                    from ...tasks import TaskManager
-
-                    load_eval_model = TaskManager(self.task)
-                    self.eval_model = load_eval_model.model(
-                        model, hub, **self.model_kwargs
-                    )
-                else:
-                    eval_model = PrometheusEval(
-                        criteria_description=self.criteria_description,
-                        model_kwargs=self.model_kwargs,
-                    )
-                query = (
-                    (
-                        f"Context: {self.original_context}"
-                        if len(self.original_context) > 1
-                        else ""
-                    )
-                    + f"Question: {self.original_question}"
-                    + (self.options if len(self.options) > 1 else "")
+                result = metric_function(
+                    task=self.task,
+                    original_question=self.original_question,
+                    expected_results=self.expected_results,
+                    actual_results=self.actual_results,
+                    category=self.category,
+                    original_context=self.original_context,
+                    options=self.options,
                 )
-                if self.category not in (
-                    "accuracy",
-                    "fairness",
-                ):
-                    eval_model.eval_type = "relative_grading"
-
-                    llm_response = {
-                        "query": query,
-                        "response_a": self.expected_results,
-                        "response_b": self.actual_results,
-                    }
-
-                else:
-                    llm_response = {
-                        "query": query,
-                        "answer": self.expected_results,
-                        "result": self.actual_results,
-                    }
-
-                feedback, score = eval_model.evaluate(llm_response)
-                self.ran_pass = {"feedback": feedback, "score": score}
+                self.ran_pass = result
+                return result
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
 
