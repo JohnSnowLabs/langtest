@@ -19,6 +19,8 @@ def check_memory():
 class PrometheusEval:
     """Class for evaluating the Prometheus model."""
 
+    pipeline = None
+
     def __init__(
         self,
         model_name: str = "prometheus-eval/prometheus-7b-v2.0",
@@ -45,7 +47,8 @@ class PrometheusEval:
             if check_memory():
                 from transformers import pipeline
 
-                self.pipeline = pipeline(model=model_name, task="text-generation")
+                if self.pipeline is None:
+                    self.pipeline = pipeline(model=model_name, task="text-generation")
             else:
                 raise MemoryError("Memory is not available to run the model")
         except MemoryError as e:
@@ -163,6 +166,10 @@ class PrometheusEval:
             for input_example, prediction_example in zip(inputs, predictions)
         ]
         return self.evaluate_batch(examples)
+
+    @staticmethod
+    def reset_pipeline():
+        PrometheusEval.pipeline = None
 
 
 @dataclass

@@ -563,9 +563,7 @@ class QASample(BaseQASample):
                 )
 
                 if "evaluation" in self.config and "metric" in self.config["evaluation"]:
-                    if self.config["evaluation"][
-                        "metric"
-                    ].lower() == "prometheus_eval" and isinstance(self.ran_pass, dict):
+                    if self.config["evaluation"]["metric"].lower() == "prometheus_eval":
                         result.update({"feedback": self.feedback})
                     elif self.config["evaluation"]["metric"].lower() != "llm_eval":
                         result.update({"eval_score": self.distance_result})
