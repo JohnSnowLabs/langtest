@@ -44,7 +44,9 @@ class PrometheusEval:
 
         try:
             # Check if memory is available
-            assert check_memory(), "Memory is not available to run the model"
+            assert (
+                check_memory() and PrometheusEval.pipeline is None
+            ), "Memory is not available to run the model"
 
             if PrometheusEval.pipeline is None:
                 from transformers import pipeline
