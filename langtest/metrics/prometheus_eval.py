@@ -2,10 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 import psutil
-from langtest.modelhandler import ModelAPI
-from langtest.utils.hf_utils import HuggingFacePipeline
 import re
-import sys
 from textwrap import dedent
 
 # check the available of RAM or GPU memory is above 30 GB in current system
