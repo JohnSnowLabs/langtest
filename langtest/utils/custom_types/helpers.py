@@ -595,7 +595,7 @@ def is_pass_prometheus_eval(
             "result": actual_results,
         }
 
-    feedback, score = eval_model.evaluate(llm_response)
+    feedback, score = eval_model.evaluate_response(llm_response)
     return {"feedback": feedback, "score": score}
 
 

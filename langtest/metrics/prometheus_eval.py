@@ -49,6 +49,8 @@ class PrometheusEval:
                 self.pipeline = HuggingFacePipeline(
                     model_id=model_name, task="text-generation"
                 )
+            else:
+                raise MemoryError("Memory is not available to run the model")
         except MemoryError as e:
             raise MemoryError("Memory is not available to run the model", e)
 
@@ -96,7 +98,8 @@ class PrometheusEval:
         response_b = llm_response.get("response_b", None)
 
         if any(v is None for v in [query, result, answer]):
-            raise ValueError("Input variables should be query, result, and answer.")
+            if any(v is None for v in [query, response_a, response_b]):
+                raise ValueError("Input variables should be query, result, and answer.")
 
         if self.eval_type == "absolute_grading":
             build_prompt = AbsoluteGrading(
