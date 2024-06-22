@@ -133,7 +133,9 @@ class PrometheusEval:
             if self.model_kwargs:
                 response = self.pipeline(prompt, **self.model_kwargs)
             else:
-                response = self.pipeline(prompt, max_tokens=200, return_full_text=False)
+                response = self.pipeline(
+                    prompt, max_new_tokens=500, return_full_text=False
+                )
 
             feedback, result = self._get_feedback(response)
             return feedback, result
