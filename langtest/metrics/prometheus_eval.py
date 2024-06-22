@@ -137,6 +137,8 @@ class PrometheusEval:
                     prompt, max_new_tokens=500, return_full_text=False
                 )
 
+            print(response)
+
             feedback, result = self._get_feedback(response)
             return feedback, result
 
