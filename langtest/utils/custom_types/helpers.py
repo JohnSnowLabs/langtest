@@ -542,7 +542,7 @@ def is_pass_string_distance(
     return distance_result, comparison_function(distance_result, threshold)
 
 
-def is_pass_promtheus_eval(
+def is_pass_prometheus_eval(
     task: str,
     original_question: str,
     expected_results: str,
@@ -551,6 +551,7 @@ def is_pass_promtheus_eval(
     original_context: str = None,
     options: str = None,
 ):
+    """Check if the sample passes based on prometheus evaluation."""
     from langtest.metrics.prometheus_eval import PrometheusEval
     from ...langtest import HARNESS_CONFIG as harness_config
 
