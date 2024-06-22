@@ -647,6 +647,7 @@ class Harness:
             "result",
             "swapped_result",
             "model_response",
+            "feedback",
             "eval_score",
             "similarity_score",
             "original_result",
