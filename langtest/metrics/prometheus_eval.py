@@ -48,7 +48,7 @@ class PrometheusEval:
             if check_memory():
                 from transformers import pipeline
 
-                self.pipeline = pipeline(model_id=model_name, task="text-generation")
+                self.pipeline = pipeline(model=model_name, task="text-generation")
             else:
                 raise MemoryError("Memory is not available to run the model")
         except MemoryError as e:
