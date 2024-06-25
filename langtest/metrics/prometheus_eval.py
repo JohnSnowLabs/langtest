@@ -5,6 +5,9 @@ import psutil
 import re
 from textwrap import dedent
 
+from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.tasks.task import TaskManager
+
 # check the available of RAM or GPU memory is above 30 GB in current system
 
 
@@ -43,15 +46,19 @@ class PrometheusEval:
         self.model_kwargs = model_kwargs
 
         try:
-            if PrometheusEval.pipeline is None:
-                from transformers import pipeline
+            if hub != "huggingface" and PrometheusEval.pipeline is None:
+                task = TaskManager("question-answer")
+                PrometheusEval.pipeline = task.model(model_path=model_name, model_hub=hub)
+            else:
+                if PrometheusEval.pipeline is None:
+                    from transformers import pipeline
 
-                # Check if memory is available
-                assert check_memory(), "Memory is not available to run the model"
+                    # Check if memory is available
+                    assert check_memory(), "Memory is not available to run the model"
 
-                PrometheusEval.pipeline = pipeline(
-                    model=model_name, task="text-generation"
-                )
+                    PrometheusEval.pipeline = pipeline(
+                        model=model_name, task="text-generation"
+                    )
 
         except MemoryError as e:
             raise MemoryError("Memory is not available to run the model", e)
@@ -122,10 +129,24 @@ class PrometheusEval:
             )
             prompt = build_prompt.get_prompt()
 
-        if self.model_kwargs:
-            response = self.pipeline(prompt, **self.model_kwargs)
+        # to support vllm endpoint from langchain
+        if isinstance(self.pipeline, ModelAPI):
+            response = self.pipeline.predict(
+                text={
+                    "text": prompt,
+                },
+                prompt={
+                    "template": "{text}",
+                    "input_variables": ["text"],
+                },
+            )
         else:
-            response = self.pipeline(prompt, max_new_tokens=500, return_full_text=False)
+            if self.model_kwargs:
+                response = self.pipeline(prompt, **self.model_kwargs)
+            else:
+                response = self.pipeline(
+                    prompt, max_new_tokens=500, return_full_text=False
+                )
 
         feedback, result = self._get_feedback(response[0]["generated_text"])
         return feedback, result
