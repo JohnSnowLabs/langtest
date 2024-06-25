@@ -1,4 +1,6 @@
+from abc import ABC, abstractmethod
 import asyncio
+from collections import defaultdict
 from typing import List, Dict
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -58,7 +60,9 @@ class ClinicalTestFactory(ITests):
         Returns:
             Dict[str, str]: Empty dict, no clinical tests
         """
-        return {"demographic-bias": cls}
+        test_types = BaseClincial.available_tests()
+        test_types.update({"demographic-bias": cls})
+        return test_types
 
     async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Runs the clinical tests
@@ -82,3 +86,66 @@ class ClinicalTestFactory(ITests):
             if progress:
                 progress.update(1)
         return sample_list["demographic-bias"]
+
+
+class BaseClincial(ABC):
+    """
+    Baseclass for the clinical tests
+    """
+
+    test_types = defaultdict(lambda: BaseClincial)
+    alias_name = None
+    supported_tasks = [
+        "question-answering",
+    ]
+
+    @staticmethod
+    @abstractmethod
+    def transform(*args, **kwargs):
+        """Transform method for the clinical tests"""
+
+        raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    async def run(*args, **kwargs):
+        """Run method for the clinical tests"""
+
+        raise NotImplementedError
+
+    @classmethod
+    async def async_run(cls, *args, **kwargs):
+        """Async run method for the clinical tests"""
+        created_task = asyncio.create_task(cls.run(*args, **kwargs))
+        return await created_task
+
+    @classmethod
+    def available_tests(cls) -> Dict[str, "BaseClincial"]:
+        """Available tests for the clinical tests"""
+
+        return cls.test_types
+
+    def __init_subclass__(cls) -> None:
+        """Initializes the subclass for the clinical tests"""
+        alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
+        for name in alias:
+            BaseClincial.test_types[name] = cls
+
+
+class Generic2Brand(BaseClincial):
+    """
+    GenericBrand class for the clinical tests
+    """
+
+    alias_name = "drug_generic_to_brand"
+
+    @staticmethod
+    def transform(*args, **kwargs):
+        """Transform method for the GenericBrand class"""
+
+        raise NotImplementedError
+
+    @staticmethod
+    async def run(*args, **kwargs):
+        """Run method for the GenericBrand class"""
+        pass
