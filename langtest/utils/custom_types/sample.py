@@ -391,6 +391,7 @@ class BaseQASample(BaseModel):
     metric_name: str = None
     gender: str = None
     loaded_fields: Dict[str, Any] = None
+    feedback: str = None
 
     def __init__(self, **data):
         """Constructor method"""
@@ -511,6 +512,7 @@ class QASample(BaseQASample):
                         self.eval_model = load_eval_model.model(
                             model, hub, **harness_config.get("model_parameters", {})
                         )
+
             else:
                 self.eval_model = EVAL_MODEL
 
@@ -561,7 +563,9 @@ class QASample(BaseQASample):
                 )
 
                 if "evaluation" in self.config and "metric" in self.config["evaluation"]:
-                    if self.config["evaluation"]["metric"].lower() != "llm_eval":
+                    if self.config["evaluation"]["metric"].lower() == "prometheus_eval":
+                        result.update({"feedback": self.feedback})
+                    elif self.config["evaluation"]["metric"].lower() != "llm_eval":
                         result.update({"eval_score": self.distance_result})
 
         return result
@@ -619,6 +623,19 @@ class QASample(BaseQASample):
 
                 self.ran_pass = result
                 return result
+            elif self.metric_name == "prometheus_eval":
+                result = metric_function(
+                    task=self.task,
+                    original_question=self.original_question,
+                    expected_results=self.expected_results,
+                    actual_results=self.actual_results,
+                    category=self.category,
+                    original_context=self.original_context,
+                    options=self.options,
+                )
+                self.ran_pass = result.get("score", False)
+                self.feedback = result.get("feedback", None)
+                return self.ran_pass
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
 
