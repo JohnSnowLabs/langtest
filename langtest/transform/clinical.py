@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
 from typing import List, Dict
+from langtest.datahandler.datasource import DataFactory
 from langtest.modelhandler.modelhandler import ModelAPI
-from langtest.transform.base import ITests
+from langtest.transform.base import ITests, TestFactory
 from langtest.utils.custom_types.sample import Sample
 
 
@@ -143,9 +144,58 @@ class Generic2Brand(BaseClincial):
     def transform(*args, **kwargs):
         """Transform method for the GenericBrand class"""
 
-        raise NotImplementedError
+        task = TestFactory.task
+
+        if task == "ner":
+            dataset_path = "ner_g2b.jsonl"
+        elif task == "question-answering":
+            dataset_path = "qa_g2b.jsonl"
+
+        data: List[Sample] = DataFactory(
+            file_path={"data_source": "DrugSwap", "split": dataset_path},
+            task=task,
+        )
+        for sample in data:
+            sample.test_type = "drug_generic_to_brand"
+            sample.category = "clinical"
+
+        return data
 
     @staticmethod
     async def run(*args, **kwargs):
         """Run method for the GenericBrand class"""
+        pass
+
+
+class Brand2Generic(BaseClincial):
+    """
+    BrandGeneric class for the clinical tests
+    """
+
+    alias_name = "drug_brand_to_generic"
+
+    @staticmethod
+    def transform(*args, **kwargs):
+        """Transform method for the BrandGeneric class"""
+
+        task = TestFactory.task
+
+        if task == "ner":
+            dataset_path = "ner_b2g.jsonl"
+        elif task == "question-answering":
+            dataset_path = "qa_b2g.jsonl"
+
+        data: List[Sample] = DataFactory(
+            file_path={"data_source": "DrugSwap", "split": dataset_path},
+            task=task,
+        )
+        for sample in data:
+            sample.test_type = "drug_brand_to_generic"
+            sample.category = "clinical"
+
+        return data
+
+    @staticmethod
+    async def run(*args, **kwargs):
+        """Run method for the BrandGeneric class"""
         pass
