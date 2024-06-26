@@ -212,6 +212,7 @@ setup(
             "data/healthsearchqa/*",
             "data/LiveQA/*",
             "data/MedicationQA/*",
+            "data/BSS/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may

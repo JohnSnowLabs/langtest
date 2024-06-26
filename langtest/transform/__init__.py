@@ -20,6 +20,7 @@ from langtest.transform.clinical import ClinicalTestFactory
 from langtest.transform.factuality import FactualityTestFactory
 from langtest.transform.sycophancy import SycophancyTestFactory
 from langtest.transform.grammar import GrammarTestFactory
+from langtest.transform.safety import SafetyTestFactory
 
 # Fixing the asyncio event loop
 nest_asyncio.apply()
@@ -45,4 +46,5 @@ __all__ = [
     FactualityTestFactory,
     SycophancyTestFactory,
     GrammarTestFactory,
+    SafetyTestFactory,
 ]
