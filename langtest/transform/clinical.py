@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
-from typing import List, Dict
-from langtest.datahandler.datasource import DataFactory
+from typing import List, Dict, Union
+from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
 from langtest.utils.custom_types.sample import Sample
@@ -20,9 +20,20 @@ class ClinicalTestFactory(ITests):
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the ClinicalTestFactory"""
 
+        self.supported_tests = self.available_tests()
         self.data_handler = data_handler
         self.tests = tests
         self.kwargs = kwargs
+
+        # check if configured tests are supported
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                Errors.E049(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
+            )
 
     def transform(self) -> List[Sample]:
         """Nothing to use transform for no longer to generating testcases.
@@ -31,9 +42,14 @@ class ClinicalTestFactory(ITests):
             Empty list
 
         """
-        for sample in self.data_handler:
-            sample.test_type = "demographic-bias"
-            sample.category = "clinical"
+        for test_name, params in self.tests.items():
+            if test_name == "demographic-bias":
+                for sample in self.data_handler:
+                    sample.test_type = "demographic-bias"
+                    sample.category = "clinical"
+            else:
+                test_func = self.supported_tests[test_name].transform
+                self.data_handler = test_func(**params)
         return self.data_handler
 
     @classmethod
@@ -55,7 +71,7 @@ class ClinicalTestFactory(ITests):
         return task
 
     @classmethod
-    def available_tests(cls) -> Dict[str, str]:
+    def available_tests(cls) -> Dict[str, Union["BaseClincial", "ClinicalTestFactory"]]:
         """Returns the empty dict, no clinical tests
 
         Returns:
@@ -143,18 +159,19 @@ class Generic2Brand(BaseClincial):
     @staticmethod
     def transform(*args, **kwargs):
         """Transform method for the GenericBrand class"""
+        from langtest import DataFactory
 
         task = TestFactory.task
 
         if task == "ner":
             dataset_path = "ner_g2b.jsonl"
         elif task == "question-answering":
-            dataset_path = "qa_g2b.jsonl"
+            dataset_path = "qa_generic_to_brand"
 
         data: List[Sample] = DataFactory(
             file_path={"data_source": "DrugSwap", "split": dataset_path},
             task=task,
-        )
+        ).load()
         for sample in data:
             sample.test_type = "drug_generic_to_brand"
             sample.category = "clinical"
@@ -188,13 +205,14 @@ class Brand2Generic(BaseClincial):
     @staticmethod
     def transform(*args, **kwargs):
         """Transform method for the BrandGeneric class"""
+        from langtest import DataFactory
 
         task = TestFactory.task
 
         if task == "ner":
             dataset_path = "ner_b2g.jsonl"
         elif task == "question-answering":
-            dataset_path = "qa_b2g.jsonl"
+            dataset_path = "qa_generic_to_brand.jsonl"
 
         data: List[Sample] = DataFactory(
             file_path={"data_source": "DrugSwap", "split": dataset_path},
