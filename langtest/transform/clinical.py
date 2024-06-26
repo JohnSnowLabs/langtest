@@ -162,9 +162,20 @@ class Generic2Brand(BaseClincial):
         return data
 
     @staticmethod
-    async def run(*args, **kwargs):
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Run method for the GenericBrand class"""
-        pass
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if hasattr(sample, "run"):
+                sample.run(model, **kwargs)
+            else:
+                sample.expected_results = model.predict(sample.original)
+                sample.actual_results = model.predict(sample.test_case)
+            if progress_bar:
+                progress_bar.update(1)
+            sample.state = "done"
 
 
 class Brand2Generic(BaseClincial):
@@ -196,6 +207,17 @@ class Brand2Generic(BaseClincial):
         return data
 
     @staticmethod
-    async def run(*args, **kwargs):
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs):
         """Run method for the BrandGeneric class"""
-        pass
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if hasattr(sample, "run"):
+                sample.run(model, **kwargs)
+            else:
+                sample.expected_results = model.predict(sample.original)
+                sample.actual_results = model.predict(sample.test_case)
+            if progress_bar:
+                progress_bar.update(1)
+            sample.state = "done"
