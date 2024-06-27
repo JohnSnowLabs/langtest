@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
+import logging
+import random
 from typing import List, Dict, Union
-from langtest.errors import Errors
+
+import importlib_resources
+from langtest.errors import Errors, Warnings
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
-from langtest.utils.custom_types.sample import Sample
+from langtest.transform.utils import filter_unique_samples
+from langtest.utils.custom_types.helpers import HashableDict
+from langtest.utils.custom_types.sample import QASample, Sample
 
 
 class ClinicalTestFactory(ITests):
@@ -42,33 +48,17 @@ class ClinicalTestFactory(ITests):
             Empty list
 
         """
-        for test_name, params in self.tests.items():
-            if test_name == "demographic-bias":
-                for sample in self.data_handler:
-                    sample.test_type = "demographic-bias"
-                    sample.category = "clinical"
-            else:
-                test_func = self.supported_tests[test_name].transform
-                self.data_handler = test_func(**params)
-        return self.data_handler
+        all_samples = []
+        no_transformation_applied_tests = {}
+        tests_copy = self.tests.copy()
+        for test_name, params in tests_copy.items():
+            test_func = self.supported_tests[test_name].transform
+            data_handler_copy = [sample.copy() for sample in self.data_handler]
+            samples = test_func(data_handler_copy, **params)
 
-    @classmethod
-    async def run(
-        cls, sample_list: List[Sample], model: ModelAPI, **kwargs
-    ) -> List[Sample]:
-        """Runs the clinical tests
+            all_samples.extend(samples)
 
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the clinical tests
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented clinical tests
-
-        """
-        task = asyncio.create_task(cls.async_run(sample_list, model, **kwargs))
-        return task
+        return all_samples
 
     @classmethod
     def available_tests(cls) -> Dict[str, Union["BaseClincial", "ClinicalTestFactory"]]:
@@ -78,31 +68,8 @@ class ClinicalTestFactory(ITests):
             Dict[str, str]: Empty dict, no clinical tests
         """
         test_types = BaseClincial.available_tests()
-        test_types.update({"demographic-bias": cls})
+        # test_types.update({"demographic-bias": cls})
         return test_types
-
-    async def async_run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
-        """Runs the clinical tests
-
-        Args:
-            sample_list (List[Sample]): The input data to be transformed.
-            model (ModelAPI): The model to be used for evaluation.
-            **kwargs: Additional arguments to be passed to the clinical tests
-
-        Returns:
-            List[Sample]: The transformed data based on the implemented clinical tests@
-
-        """
-        progress = kwargs.get("progress_bar", False)
-        for sample in sample_list["demographic-bias"]:
-            if sample.state != "done":
-                if hasattr(sample, "run"):
-                    sample_status = sample.run(model, **kwargs)
-                    if sample_status:
-                        sample.state = "done"
-            if progress:
-                progress.update(1)
-        return sample_list["demographic-bias"]
 
 
 class BaseClincial(ABC):
@@ -149,6 +116,41 @@ class BaseClincial(ABC):
             BaseClincial.test_types[name] = cls
 
 
+class DemographicBias(BaseClincial):
+    """
+    DemographicBias class for the clinical tests
+    """
+
+    alias_name = "demographic-bias"
+    supported_tasks = [
+        "question-answering",
+    ]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """Transform method for the DemographicBias class"""
+        for sample in sample_list:
+            sample.test_type = "demographic-bias"
+            sample.category = "clinical"
+        return sample_list
+
+    @staticmethod
+    async def run(sample_list: List[Sample], model: ModelAPI, **kwargs):
+        """Run method for the DemographicBias class"""
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress_bar:
+                progress_bar.update(1)
+        return sample_list
+
+
 class Generic2Brand(BaseClincial):
     """
     GenericBrand class for the clinical tests
@@ -159,24 +161,40 @@ class Generic2Brand(BaseClincial):
     @staticmethod
     def transform(*args, **kwargs):
         """Transform method for the GenericBrand class"""
-        from langtest import DataFactory
+        import pandas as pd
 
         task = TestFactory.task
-
+        data = []
         if task == "ner":
             dataset_path = "ner_g2b.jsonl"
         elif task == "question-answering":
-            dataset_path = "qa_generic_to_brand"
+            dataset_path = "qa_generic_to_brand_v2.jsonl"
+            file_path = (
+                importlib_resources.files("langtest") / "data" / "DrugSwap" / dataset_path
+            )
+            df = pd.read_json(file_path, lines=True)
+            sample_df = df.sample(50, random_state=42, replace=True)
+            for index, row in sample_df.iterrows():
+                sample = QASample(
+                    original_context="-",
+                    original_question=row["original_question"],
+                    perturbed_question=row["perturbed_question"],
+                )
+                # sample.expected_results = row["expected_results"]
+                # sample.actual_results = row["actual_results"]
+                sample.test_type = "drug_generic_to_brand"
+                sample.category = "clinical"
+                data.append(sample)
 
-        data: List[Sample] = DataFactory(
-            file_path={"data_source": "DrugSwap", "split": dataset_path},
-            task=task,
-        ).load()
-        for sample in data:
-            sample.test_type = "drug_generic_to_brand"
-            sample.category = "clinical"
+        # data: List[Sample] = DataFactory(
+        #     file_path={"data_source": "DrugSwap", "split": dataset_path},
+        #     task=task,
+        # ).load()
+        # for sample in data[:50]:
+        #     sample.test_type = "drug_generic_to_brand"
+        #     sample.category = "clinical"
 
-        return data
+        return random.choices(data, k=50)
 
     @staticmethod
     async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
@@ -185,14 +203,45 @@ class Generic2Brand(BaseClincial):
         progress_bar = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
-            if hasattr(sample, "run"):
-                sample.run(model, **kwargs)
+            # if hasattr(sample, "run"):
+            #     sample.run(model, **kwargs)
+            # else:
+            if isinstance(sample, QASample):
+                sample.expected_results = model.predict(
+                    text=HashableDict(
+                        {
+                            "text": sample.original_question,
+                        }
+                    ),
+                    prompt=HashableDict(
+                        {
+                            "template": TEMPLATE,
+                            "input_variables": ["text"],
+                        }
+                    ),
+                    server_prompt="Perform the task to the best of your ability:",
+                )
+                sample.actual_results = model.predict(
+                    text=HashableDict(
+                        {
+                            "text": sample.perturbed_question,
+                        }
+                    ),
+                    prompt=HashableDict(
+                        {
+                            "template": TEMPLATE,
+                            "input_variables": ["text"],
+                        }
+                    ),
+                    server_prompt="Perform the task to the best of your ability:",
+                )
             else:
                 sample.expected_results = model.predict(sample.original)
                 sample.actual_results = model.predict(sample.test_case)
             if progress_bar:
                 progress_bar.update(1)
             sample.state = "done"
+        return sample_list
 
 
 class Brand2Generic(BaseClincial):
@@ -239,3 +288,28 @@ class Brand2Generic(BaseClincial):
             if progress_bar:
                 progress_bar.update(1)
             sample.state = "done"
+
+        return sample_list
+
+
+TEMPLATE = """
+
+You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the right option.
+
+Example Format:
+
+QUESTION: 
+What is the shape of a stop sign?
+OPTIONS:
+A: hexagon
+B: square
+C: triangle
+D: circle
+
+ANSWER: 
+A: hexagon
+
+Choose the correct answer from the options provided below based on the information given.:
+{text}
+ANSWER:
+"""
