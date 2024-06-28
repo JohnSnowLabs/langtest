@@ -89,10 +89,19 @@ class BaseClincial(ABC):
 
     @staticmethod
     @abstractmethod
-    async def run(*args, **kwargs):
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
         """Run method for the clinical tests"""
 
-        raise NotImplementedError
+        progress = kwargs.get("progress_bar", False)
+        for sample in sample_list:
+            if sample.state != "done":
+                if hasattr(sample, "run"):
+                    sample_status = sample.run(model, **kwargs)
+                    if sample_status:
+                        sample.state = "done"
+            if progress:
+                progress.update(1)
+        return sample_list
 
     @classmethod
     async def async_run(cls, *args, **kwargs):
