@@ -1,15 +1,13 @@
 from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
-import logging
 import random
 from typing import List, Dict, Union
 
 import importlib_resources
-from langtest.errors import Errors, Warnings
+from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
-from langtest.transform.utils import filter_unique_samples
 from langtest.utils.custom_types.helpers import HashableDict
 from langtest.utils.custom_types.sample import QASample, Sample
 
@@ -49,7 +47,6 @@ class ClinicalTestFactory(ITests):
 
         """
         all_samples = []
-        no_transformation_applied_tests = {}
         tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             test_func = self.supported_tests[test_name].transform
@@ -293,12 +290,11 @@ class Brand2Generic(BaseClincial):
 
 
 TEMPLATE = """
-
 You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the right option.
 
 Example Format:
 
-QUESTION: 
+QUESTION:
 What is the shape of a stop sign?
 OPTIONS:
 A: hexagon
@@ -306,7 +302,7 @@ B: square
 C: triangle
 D: circle
 
-ANSWER: 
+ANSWER:
 A: hexagon
 
 Choose the correct answer from the options provided below based on the information given.:
