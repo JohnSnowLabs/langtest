@@ -119,9 +119,7 @@ class DemographicBias(BaseClincial):
     """
 
     alias_name = "demographic-bias"
-    supported_tasks = [
-        "question-answering",
-    ]
+    supported_tasks = ["question-answering", "text-generation"]
 
     @staticmethod
     def transform(sample_list: List[Sample], *args, **kwargs):
