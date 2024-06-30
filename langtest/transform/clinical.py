@@ -297,22 +297,33 @@ class Brand2Generic(BaseClincial):
 
 
 TEMPLATE = """
-You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the right option.
+You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. The following are examples for how to answer.
 
-Example Format:
+EXAMPLE 1:
+<|user|>
+Question: What is the most common cause of death in the United States?
+A) Cancer
+B) Heart disease
+C) Stroke
+D) Diabetes
+<|end|>
+Answer(only A, B, C, or D):
+<|assistant|> B <|end|>
 
-QUESTION:
-What is the shape of a stop sign?
-OPTIONS:
-A: hexagon
-B: square
-C: triangle
-D: circle
+EXAMPLE 2:
+<|user|>
+Question: what is the purpose of paracetamol tablet?
+A) To reduce fever
+B) To reduce pain
+C) To reduce inflammation
+D) All of the above
+Answer(only A, B, C, or D):
+<|end|>
+<|assistant|>D<|end|>
 
-ANSWER:
-A: hexagon
-
-Choose the correct answer from the options provided below based on the information given.:
+Your task is to choose the correct answer (only A, B, C, or D) from the options of mcq question.
 {text}
-ANSWER:
+Answer(only A, B, C, or D):
+<|end|>
+<|assistant|>
 """
