@@ -185,7 +185,7 @@ class Generic2Brand(BaseClincial):
                     original_question=row["original_question"],
                     perturbed_question=row["perturbed_question"],
                 )
-                # sample.expected_results = row["expected_results"]
+                sample.expected_results = row["answer_option"]
                 # sample.actual_results = row["actual_results"]
                 sample.test_type = "drug_generic_to_brand"
                 sample.category = "clinical"
@@ -204,20 +204,6 @@ class Generic2Brand(BaseClincial):
             #     sample.run(model, **kwargs)
             # else:
             if isinstance(sample, QASample):
-                sample.expected_results = model.predict(
-                    text=HashableDict(
-                        {
-                            "text": sample.original_question,
-                        }
-                    ),
-                    prompt=HashableDict(
-                        {
-                            "template": TEMPLATE,
-                            "input_variables": ["text"],
-                        }
-                    ),
-                    server_prompt="Perform the task to the best of your ability:",
-                )
                 sample.actual_results = model.predict(
                     text=HashableDict(
                         {
@@ -233,7 +219,6 @@ class Generic2Brand(BaseClincial):
                     server_prompt="Perform the task to the best of your ability:",
                 )
             else:
-                sample.expected_results = model.predict(sample.original)
                 sample.actual_results = model.predict(sample.test_case)
             if progress_bar:
                 progress_bar.update(1)
@@ -296,10 +281,10 @@ end
 
 user
 Question: What is the most common cause of death in the United States?
-A) Cancer
-B) Heart disease
-C) Stroke
-D) Diabetes
+A: Cancer
+B: Heart disease
+C: Stroke
+D: Diabetes
 Answer (only A, B, C, or D):
 assistant
 B
@@ -307,10 +292,10 @@ end
 
 user
 Question: what is the purpose of paracetamol tablet?
-A) To reduce fever
-B) To reduce pain
-C) To reduce inflammation
-D) All of the above
+A: To reduce fever
+B: To reduce pain
+C: To reduce inflammation
+D: All of the above
 Answer(only A, B, C, or D):
 assistant
 D
