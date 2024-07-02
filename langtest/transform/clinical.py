@@ -168,6 +168,7 @@ class Generic2Brand(BaseClincial):
         import pandas as pd
 
         task = TestFactory.task
+        count = kwargs.get("count", 50)
         data = []
         if task == "ner":
             dataset_path = "ner_g2b.jsonl"
@@ -190,15 +191,7 @@ class Generic2Brand(BaseClincial):
                 sample.category = "clinical"
                 data.append(sample)
 
-        # data: List[Sample] = DataFactory(
-        #     file_path={"data_source": "DrugSwap", "split": dataset_path},
-        #     task=task,
-        # ).load()
-        # for sample in data[:50]:
-        #     sample.test_type = "drug_generic_to_brand"
-        #     sample.category = "clinical"
-
-        return random.choices(data, k=50)
+        return random.choices(data, k=count)
 
     @staticmethod
     async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
@@ -297,33 +290,35 @@ class Brand2Generic(BaseClincial):
 
 
 TEMPLATE = """
-You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. The following are examples for how to answer.
+system
+You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer (only A, B, C, or D) from the options of the multiple-choice question.
+end
 
-EXAMPLE 1:
-<|user|>
+user
 Question: What is the most common cause of death in the United States?
 A) Cancer
 B) Heart disease
 C) Stroke
 D) Diabetes
-<|end|>
-Answer(only A, B, C, or D):
-<|assistant|> B <|end|>
+Answer (only A, B, C, or D):
+assistant
+B
+end
 
-EXAMPLE 2:
-<|user|>
+user
 Question: what is the purpose of paracetamol tablet?
 A) To reduce fever
 B) To reduce pain
 C) To reduce inflammation
 D) All of the above
 Answer(only A, B, C, or D):
-<|end|>
-<|assistant|>D<|end|>
+assistant
+D
+end
 
-Your task is to choose the correct answer (only A, B, C, or D) from the options of mcq question.
+user
+Choose the correct answer (only A, B, C, or D) from the options of the multiple-choice question likely to be EXAMPLE 1.
 {text}
-Answer(only A, B, C, or D):
-<|end|>
-<|assistant|>
+Answer (only A, B, C, or D):'
+assistant
 """
