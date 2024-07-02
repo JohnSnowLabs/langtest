@@ -143,4 +143,8 @@ datasets_info = {
         "split": ("test",),
         "extension": ".jsonl",
     },
+    "DrugSwap": {
+        "split": ("qa_generic_to_brand",),
+        "extension": ".jsonl",
+    },
 }
