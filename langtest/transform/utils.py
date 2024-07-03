@@ -437,3 +437,33 @@ def compare_generations_overlap(phrase) -> int:
     count = len(matches)
 
     return count
+
+
+GENERIC2BRAND_TEMPLATE = """
+{system}
+You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer (only A, B, C, or D) from the options of the multiple-choice question.
+{end}
+
+{user}
+Question: What is the most common cause of death in the United States?
+A: Cancer
+B: Heart disease
+C: Stroke
+D: Diabetes
+Answer (only A, B, C, or D):
+{assistant}B{end}
+
+{user}
+Question: what is the purpose of paracetamol tablet?
+A: To reduce fever
+B: To reduce pain
+C: To reduce inflammation
+D: All of the above
+Answer(only A, B, C, or D):
+{assistant}D{end}
+
+{user}
+{text}
+Answer (only A, B, C, or D):'
+{assistant}
+"""

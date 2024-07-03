@@ -8,6 +8,7 @@ import importlib_resources
 from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
+from langtest.transform.utils import GENERIC2BRAND_TEMPLATE
 from langtest.utils.custom_types.helpers import HashableDict
 from langtest.utils.custom_types.sample import QASample, Sample
 
@@ -161,6 +162,7 @@ class Generic2Brand(BaseClincial):
     """
 
     alias_name = "drug_generic_to_brand"
+    template = GENERIC2BRAND_TEMPLATE
 
     @staticmethod
     def transform(*args, **kwargs):
@@ -170,14 +172,16 @@ class Generic2Brand(BaseClincial):
         task = TestFactory.task
         count = kwargs.get("count", 50)
 
+        # reset the template
+        Generic2Brand.template = GENERIC2BRAND_TEMPLATE
+
         # update the template with the special tokens
         system_token = kwargs.get("system_token", "system")
         user_token = kwargs.get("user_token", "user")
         assistant_token = kwargs.get("assistant_token", "assistant\n")
         end_token = kwargs.get("end_token", "\nend")
 
-        global TEMPLATE
-        TEMPLATE = TEMPLATE.format(
+        Generic2Brand.template = Generic2Brand.template.format(
             system=system_token,
             user=user_token,
             assistant=assistant_token,
@@ -229,7 +233,7 @@ class Generic2Brand(BaseClincial):
                     ),
                     prompt=HashableDict(
                         {
-                            "template": TEMPLATE,
+                            "template": Generic2Brand.template,
                             "input_variables": ["text"],
                         }
                     ),
@@ -289,33 +293,3 @@ class Brand2Generic(BaseClincial):
             sample.state = "done"
 
         return sample_list
-
-
-TEMPLATE = """
-{system}
-You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer (only A, B, C, or D) from the options of the multiple-choice question.
-{end}
-
-{user}
-Question: What is the most common cause of death in the United States?
-A: Cancer
-B: Heart disease
-C: Stroke
-D: Diabetes
-Answer (only A, B, C, or D):
-{assistant}B{end}
-
-{user}
-Question: what is the purpose of paracetamol tablet?
-A: To reduce fever
-B: To reduce pain
-C: To reduce inflammation
-D: All of the above
-Answer(only A, B, C, or D):
-{assistant}D{end}
-
-{user}
-{text}
-Answer (only A, B, C, or D):'
-{assistant}
-"""
