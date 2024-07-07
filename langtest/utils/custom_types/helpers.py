@@ -555,7 +555,7 @@ def is_pass_prometheus_eval(
     from langtest.metrics.prometheus_eval import PrometheusEval
     from ...langtest import HARNESS_CONFIG as harness_config
 
-    criteria_description = harness_config["evaluation"].get("criteria", None)
+    criteria_description = harness_config["evaluation"].get("rubric_score", None)
     model_kwargs = harness_config["evaluation"].get("model_kwargs", None)
 
     model = harness_config["evaluation"].get("model", None)
