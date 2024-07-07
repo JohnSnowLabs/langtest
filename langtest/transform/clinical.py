@@ -293,3 +293,107 @@ class Brand2Generic(BaseClincial):
             sample.state = "done"
 
         return sample_list
+
+
+class Posology:
+    def __init__(self, drug_swap_type="generic_to_brand", seed=25) -> None:
+        from johnsnowlabs import nlp, medical
+
+        # Set the seed
+        self.drug_swap_type = drug_swap_type
+        self.seed = seed
+
+        # Initialize Spark NLP
+        self.spark = nlp.start()
+
+        # Build the pipeline
+        document_assembler = (
+            nlp.DocumentAssembler().setInputCol("text").setOutputCol("document")
+        )
+
+        sentence_detector = (
+            nlp.SentenceDetector().setInputCols(["document"]).setOutputCol("sentence")
+        )
+
+        tokenizer = nlp.Tokenizer().setInputCols("sentence").setOutputCol("token")
+
+        word_embeddings = (
+            nlp.WordEmbeddingsModel.pretrained(
+                "embeddings_clinical", "en", "clinical/models"
+            )
+            .setInputCols(["sentence", "token"])
+            .setOutputCol("embeddings")
+        )
+
+        # NER model to detect drug in the text
+        clinical_ner = (
+            medical.NerModel.pretrained("ner_posology", "en", "clinical/models")
+            .setInputCols(["sentence", "token", "embeddings"])
+            .setOutputCol("ner")
+            .setLabelCasing("upper")
+        )
+
+        ner_converter = (
+            medical.NerConverterInternal()
+            .setInputCols(["sentence", "token", "ner"])
+            .setOutputCol("ner_chunk")
+            .setWhiteList(["DRUG"])
+        )
+
+        if self.drug_swap_type == "generic_to_brand":
+            chunkerMapper = (
+                medical.ChunkMapperApproach()
+                .setInputCols(["ner_chunk"])
+                .setOutputCol("mappings")
+                .setDictionary(r"./chunk_mapper_g2b_dataset.json")
+                .setRels(["brand"])
+            )  # or change generic to brand
+
+        elif self.drug_swap_type == "brand_to_generic":
+            chunkerMapper = (
+                medical.ChunkMapperApproach()
+                .setInputCols(["ner_chunk"])
+                .setOutputCol("mappings")
+                .setDictionary(r"./chunk_mapper_b2g_dataset.json")
+                .setRels(["generic"])
+            )  # or change brand to generic
+
+        # Define the pipeline
+        self.pipeline = nlp.Pipeline().setStages(
+            [
+                document_assembler,
+                sentence_detector,
+                tokenizer,
+                word_embeddings,
+                clinical_ner,
+                ner_converter,
+                chunkerMapper,
+            ]
+        )
+
+        text = ["The patient was given 1 unit of metformin daily."]
+        test_data = self.spark.createDataFrame([text]).toDF("text")
+        self.model = self.pipeline.fit(test_data)
+        self.res = self.model.transform(test_data)
+
+        # Light pipeline
+        self.light_pipeline = nlp.LightPipeline(self.model)
+
+    def __call__(self, text: str) -> str:
+        result = self.light_pipeline.fullAnnotate(text)
+        return self.__drug_swap(result, text)
+
+    def __drug_swap(self, result: str, text: str) -> str:
+        import random
+
+        if self.seed:
+            random.seed(self.seed)
+
+        for n, maps in zip(result[0]["ner_chunk"], result[0]["mappings"]):
+            # skip if drug brand is not found or generic is not found
+            if maps.result == "NONE":
+                continue
+            random_brand = random.choice(maps.metadata["all_k_resolutions"].split(":::"))
+            text = text.replace(n.result, random_brand)
+
+        return text
