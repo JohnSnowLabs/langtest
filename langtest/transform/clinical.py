@@ -165,12 +165,8 @@ class Generic2Brand(BaseClincial):
     template = GENERIC2BRAND_TEMPLATE
 
     @staticmethod
-    def transform(*args, **kwargs):
+    def transform(sample_list: List[Sample] = [], *args, **kwargs):
         """Transform method for the GenericBrand class"""
-        import pandas as pd
-
-        task = TestFactory.task
-        count = kwargs.get("count", 50)
 
         # reset the template
         Generic2Brand.template = GENERIC2BRAND_TEMPLATE
@@ -189,30 +185,54 @@ class Generic2Brand(BaseClincial):
             text="{text}",
         )
 
-        # loading the dataset and creating the samples
-        data = []
-        if task == "ner":
-            dataset_path = "ner_g2b.jsonl"
-        elif task == "question-answering":
-            dataset_path = "qa_generic_to_brand_v2.jsonl"
-            file_path = (
-                importlib_resources.files("langtest") / "data" / "DrugSwap" / dataset_path
-            )
-            df = pd.read_json(file_path, lines=True)
-            sample_df = df.sample(50, random_state=42, replace=True)
-            for index, row in sample_df.iterrows():
-                sample = QASample(
-                    original_context="-",
-                    original_question=row["original_question"],
-                    perturbed_question=row["perturbed_question"],
+        if len(sample_list) <= 0:
+            import pandas as pd
+
+            task = TestFactory.task
+            count = kwargs.get("count", 50)
+
+            # loading the dataset and creating the samples
+            data = []
+            if task == "ner":
+                dataset_path = "ner_g2b.jsonl"
+            elif task == "question-answering":
+                dataset_path = "qa_generic_to_brand_v2.jsonl"
+                file_path = (
+                    importlib_resources.files("langtest")
+                    / "data"
+                    / "DrugSwap"
+                    / dataset_path
                 )
-                sample.expected_results = row["answer_option"]
-                # sample.actual_results = row["actual_results"]
+                df = pd.read_json(file_path, lines=True)
+                sample_df = df.sample(50, random_state=42, replace=True)
+                for _, row in sample_df.iterrows():
+                    sample = QASample(
+                        original_context="-",
+                        original_question=row["original_question"],
+                        perturbed_question=row["perturbed_question"],
+                    )
+                    sample.expected_results = row["answer_option"]
+                    # sample.actual_results = row["actual_results"]
+                    sample.test_type = "drug_generic_to_brand"
+                    sample.category = "clinical"
+                    data.append(sample)
+
+            return random.choices(data, k=count)
+        else:
+            # loading the posology model for the drug swap
+            posology = Posology(drug_swap_type="generic_to_brand", seed=25)
+            for sample in sample_list:
                 sample.test_type = "drug_generic_to_brand"
                 sample.category = "clinical"
-                data.append(sample)
 
-        return random.choices(data, k=count)
+                if isinstance(sample, QASample):
+                    sample.perturbed_question = posology(sample.original_question)
+
+                    if len(sample.original_context) > 1:
+                        sample.perturbed_context = posology(sample.original_context)
+                else:
+                    sample.test_case = posology(sample.test_case)
+            return sample_list
 
     @staticmethod
     async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
@@ -255,26 +275,54 @@ class Brand2Generic(BaseClincial):
     alias_name = "drug_brand_to_generic"
 
     @staticmethod
-    def transform(*args, **kwargs):
+    def transform(sampe_list: List[Sample] = [], *args, **kwargs):
         """Transform method for the BrandGeneric class"""
-        from langtest import DataFactory
 
-        task = TestFactory.task
+        if len(sampe_list) <= 0:
+            import pandas as pd
 
-        if task == "ner":
-            dataset_path = "ner_b2g.jsonl"
-        elif task == "question-answering":
-            dataset_path = "qa_generic_to_brand.jsonl"
+            task = TestFactory.task
+            count = kwargs.get("count", 50)
 
-        data: List[Sample] = DataFactory(
-            file_path={"data_source": "DrugSwap", "split": dataset_path},
-            task=task,
-        )
-        for sample in data:
-            sample.test_type = "drug_brand_to_generic"
-            sample.category = "clinical"
+            data = []
+            if task == "ner":
+                dataset_path = "ner_b2g.jsonl"
+            elif task == "question-answering":
+                dataset_path = "qa_generic_to_brand.jsonl"
+                file_path = (
+                    importlib_resources.files("langtest")
+                    / "data"
+                    / "DrugSwap"
+                    / dataset_path
+                )
+                df = pd.read_json(file_path, lines=True)
+                sample_df = df.sample(50, random_state=42, replace=True)
+                for _, row in sample_df.iterrows():
+                    sample = QASample(
+                        original_context="-",
+                        original_question=row["original_question"],
+                        perturbed_question=row["perturbed_question"],
+                    )
+                    sample.expected_results = row["answer_option"]
+                    # sample.actual_results = row["actual_results"]
+                    sample.test_type = "drug_generic_to_brand"
+                    sample.category = "clinical"
+                    data.append(sample)
 
-        return data
+            return random.choices(data, k=count)
+        else:
+            # loading the posology model for the drug swap
+            posology = Posology(drug_swap_type="brand_to_generic", seed=25)
+            for sample in sampe_list:
+                sample.test_type = "drug_brand_to_generic"
+                sample.category = "clinical"
+
+                if isinstance(sample, QASample):
+                    sample.perturbed_question = posology(sample.original_question)
+
+                    if len(sample.original_context) > 1:
+                        sample.perturbed_context = posology(sample.original_context)
+            return sampe_list
 
     @staticmethod
     async def run(sample_list: List[Sample], model: ModelAPI, **kwargs):
@@ -283,15 +331,29 @@ class Brand2Generic(BaseClincial):
         progress_bar = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
-            if hasattr(sample, "run"):
-                sample.run(model, **kwargs)
+            # if hasattr(sample, "run"):
+            #     sample.run(model, **kwargs)
+            # else:
+            if isinstance(sample, QASample):
+                sample.actual_results = model.predict(
+                    text=HashableDict(
+                        {
+                            "text": sample.perturbed_question,
+                        }
+                    ),
+                    prompt=HashableDict(
+                        {
+                            "template": Generic2Brand.template,
+                            "input_variables": ["text"],
+                        }
+                    ),
+                    server_prompt="Perform the task to the best of your ability:",
+                )
             else:
-                sample.expected_results = model.predict(sample.original)
                 sample.actual_results = model.predict(sample.test_case)
             if progress_bar:
                 progress_bar.update(1)
             sample.state = "done"
-
         return sample_list
 
 
@@ -341,20 +403,33 @@ class Posology:
         )
 
         if self.drug_swap_type == "generic_to_brand":
+            mapper_dataset = str(
+                importlib_resources.files("langtest")
+                / "data"
+                / "resources"
+                / "chunk_mapper_g2b_dataset.json"
+            )
+
             chunkerMapper = (
                 medical.ChunkMapperApproach()
                 .setInputCols(["ner_chunk"])
                 .setOutputCol("mappings")
-                .setDictionary(r"./chunk_mapper_g2b_dataset.json")
+                .setDictionary(mapper_dataset)
                 .setRels(["brand"])
             )  # or change generic to brand
 
         elif self.drug_swap_type == "brand_to_generic":
+            mapper_dataset = str(
+                importlib_resources.files("langtest")
+                / "data"
+                / "resources"
+                / "chunk_mapper_b2g_dataset.json"
+            )
             chunkerMapper = (
                 medical.ChunkMapperApproach()
                 .setInputCols(["ner_chunk"])
                 .setOutputCol("mappings")
-                .setDictionary(r"./chunk_mapper_b2g_dataset.json")
+                .setDictionary(mapper_dataset)
                 .setRels(["generic"])
             )  # or change brand to generic
 
