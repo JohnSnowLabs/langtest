@@ -97,6 +97,11 @@ class PretrainedModelForQA(ModelAPI):
 
                 model = ChatOpenAI(model=path, *args, **filtered_kwargs)
                 return cls(hub, model, *args, **filtered_kwargs)
+            elif hub == "ollama":
+                from langchain.chat_models.ollama import ChatOllama
+
+                model = ChatOllama(model=path, *args, **filtered_kwargs)
+                return cls(hub, model, *args, **filtered_kwargs)
             else:
                 model = getattr(lc, LANGCHAIN_HUBS[hub])
             default_args = inspect.getfullargspec(model).kwonlyargs

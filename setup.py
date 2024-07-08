@@ -213,6 +213,8 @@ setup(
             "data/LiveQA/*",
             "data/MedicationQA/*",
             "data/BSS/*",
+            "data/resources/*",
+            "data/DrugSwap/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
