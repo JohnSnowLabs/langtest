@@ -430,7 +430,16 @@ class Brand2Generic(BaseClincial):
 
 
 class Posology:
+    """Posology class is replacing the generic to brand or brand to generic drug names in given text"""
+
     def __init__(self, drug_swap_type="generic_to_brand", seed=25) -> None:
+        """
+        Initialize the Posology class.
+
+        Args:
+            drug_swap_type (str, optional): The type of drug swap to perform. Defaults to "generic_to_brand".
+            seed (int, optional): The seed value for random number generation. Defaults to 25.
+        """
         from johnsnowlabs import nlp, medical
 
         # Set the seed
@@ -527,10 +536,30 @@ class Posology:
         self.light_pipeline = nlp.LightPipeline(self.model)
 
     def __call__(self, text: str) -> str:
+        """
+        Applies the clinical transformation to the input text.
+
+        Args:
+            text (str): The input text to be transformed.
+
+        Returns:
+            str: The transformed text.
+        """
         result = self.light_pipeline.fullAnnotate(text)
         return self.__drug_swap(result, text)
 
     def __drug_swap(self, result: str, text: str) -> str:
+        """
+        Swaps drug names in the given text with random alternatives.
+
+        Args:
+            result (str): The result string containing the drug information.
+            text (str): The original text to perform the drug name swapping.
+
+        Returns:
+            str: The modified text with drug names swapped.
+
+        """
         import random
 
         if self.seed:
@@ -540,7 +569,11 @@ class Posology:
             # skip if drug brand is not found or generic is not found
             if maps.result == "NONE":
                 continue
-            random_brand = random.choice(maps.metadata["all_k_resolutions"].split(":::"))
-            text = text.replace(n.result, random_brand)
+            words = maps.metadata["all_k_resolutions"].split(":::")
+
+            if len(words) > 0:
+                random_word: str = random.choice(words)
+                if len(random_word.strip()) > 0:
+                    text = text.replace(n.result, random_word)
 
         return text
