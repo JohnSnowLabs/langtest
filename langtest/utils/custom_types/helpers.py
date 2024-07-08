@@ -547,6 +547,63 @@ def is_pass_string_distance(
     return distance_result, comparison_function(distance_result, threshold)
 
 
+def is_pass_prometheus_eval(
+    task: str,
+    original_question: str,
+    expected_results: str,
+    actual_results: str,
+    category: str,
+    original_context: str = None,
+    options: str = None,
+):
+    """Check if the sample passes based on prometheus evaluation."""
+    from langtest.metrics.prometheus_eval import PrometheusEval
+    from ...langtest import HARNESS_CONFIG as harness_config
+
+    criteria_description = harness_config["evaluation"].get("rubric_score", None)
+    model_kwargs = harness_config["evaluation"].get("model_kwargs", None)
+
+    model = harness_config["evaluation"].get("model", None)
+    hub = harness_config["evaluation"].get("hub", None)
+
+    if model and hub:
+        from ...tasks import TaskManager
+
+        load_eval_model = TaskManager(task)
+        eval_model = load_eval_model.model(model, hub, **model_kwargs)
+    else:
+        eval_model = PrometheusEval(
+            criteria_description=criteria_description,
+            model_kwargs=model_kwargs,
+        )
+    query = (
+        (f"Context: {original_context}" if len(original_context) > 1 else "")
+        + f"Question: {original_question}"
+        + (options if len(options) > 1 else "")
+    )
+    if category not in (
+        "accuracy",
+        "fairness",
+    ):
+        eval_model.eval_type = "relative_grading"
+
+        llm_response = {
+            "query": query,
+            "response_a": expected_results,
+            "response_b": actual_results,
+        }
+
+    else:
+        llm_response = {
+            "query": query,
+            "answer": expected_results,
+            "result": actual_results,
+        }
+
+    feedback, score = eval_model.evaluate_response(llm_response)
+    return {"feedback": feedback, "score": score}
+
+
 class HashableDict(dict):
     """A hashable dictionary with support for nested dictionaries and lists."""
 

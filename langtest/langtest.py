@@ -649,6 +649,7 @@ class Harness:
             "result",
             "swapped_result",
             "model_response",
+            "feedback",
             "eval_score",
             "similarity_score",
             "original_result",
@@ -1751,6 +1752,11 @@ class Harness:
         # Reset the PromptManager
         prompt_manager = PromptManager()
         prompt_manager.reset()
+
+        # Prometheus eval
+        from langtest.metrics.prometheus_eval import PrometheusEval
+
+        PrometheusEval.reset_pipeline()
 
     def __tracking(self, *args, **kwargs):
         """Track the progress of the testcases."""
