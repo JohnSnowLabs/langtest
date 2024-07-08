@@ -571,8 +571,11 @@ class Posology:
                 continue
             words = maps.metadata["all_k_resolutions"].split(":::")
 
+            # remove the word if length is 0 from the words
+            words = [word for word in words if len(word) > 1]
+
             if len(words) > 0:
-                random_word: str = random.choice(words)
+                random_word: str = random.choice(words) if len(words) > 1 else words[0]
                 if len(random_word.strip()) > 0:
                     text = text.replace(n.result, random_word)
 
