@@ -18,7 +18,7 @@ REQUIRED_PKGS = [
     "numpy",
     "pandas",
     "matplotlib",
-    "transformers<=4.35",
+    "transformers>=4.38.0",
     "torch",
     "sentencepiece",
     "pydantic",
@@ -27,7 +27,7 @@ REQUIRED_PKGS = [
     "langchain",
     "evaluate",
     "rouge_score",
-    "typing-extensions < 4.6.0",  # Remove it once spacy issue is resolved
+    "typing-extensions >= 4.10.0",  # Remove it once spacy issue is resolved
 ]
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -119,7 +119,7 @@ setup(
     # Note that this is a list of additional keywords, separated
     # by commas, to be used to assist searching for the distribution in a
     # larger catalog.
-    keywords="NLP testing robustness bias fairness representation accuracy",  # Optional
+    keywords="LLM & NLP testing robustness bias fairness representation accuracy",  # Optional
     # When your source code is in a subdirectory under the project root, e.g.
     # `src/`, it is necessary to specify the `package_dir` argument.
     # package_dir={"": "src"},  # Optional
@@ -213,6 +213,8 @@ setup(
             "data/LiveQA/*",
             "data/MedicationQA/*",
             "data/BSS/*",
+            "data/resources/*",
+            "data/DrugSwap/*",
         ],
     },
     # Although 'package_data' is the preferred approach, in some case you may
