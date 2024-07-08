@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
+import logging
 import random
 from typing import List, Dict, Union
 
 import importlib_resources
-from langtest.errors import Errors
+from langtest.errors import Errors, Warnings
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
-from langtest.transform.utils import GENERIC2BRAND_TEMPLATE
+from langtest.transform.utils import GENERIC2BRAND_TEMPLATE, filter_unique_samples
 from langtest.utils.custom_types.helpers import HashableDict
 from langtest.utils.custom_types.sample import QASample, Sample
 
@@ -48,13 +49,28 @@ class ClinicalTestFactory(ITests):
 
         """
         all_samples = []
+        no_transformation_applied_tests = {}
         tests_copy = self.tests.copy()
         for test_name, params in tests_copy.items():
             test_func = self.supported_tests[test_name].transform
             data_handler_copy = [sample.copy() for sample in self.data_handler]
-            samples = test_func(data_handler_copy, **params)
+            transformed_samples = test_func(data_handler_copy, **params)
 
-            all_samples.extend(samples)
+            new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                TestFactory.task, transformed_samples, test_name
+            )
+            all_samples.extend(new_transformed_samples)
+
+            no_transformation_applied_tests.update(removed_samples_tests)
+
+        if no_transformation_applied_tests:
+            warning_message = Warnings._W009
+            for test, count in no_transformation_applied_tests.items():
+                warning_message += Warnings._W010.format(
+                    test=test, count=count, total_sample=len(self.data_handler)
+                )
+
+            logging.warning(warning_message)
 
         return all_samples
 
@@ -204,8 +220,7 @@ class Generic2Brand(BaseClincial):
                     / dataset_path
                 )
                 df = pd.read_json(file_path, lines=True)
-                sample_df = df.sample(50, random_state=42, replace=True)
-                for _, row in sample_df.iterrows():
+                for _, row in df.iterrows():
                     sample = QASample(
                         original_context="-",
                         original_question=row["original_question"],
@@ -226,12 +241,25 @@ class Generic2Brand(BaseClincial):
                 sample.category = "clinical"
 
                 if isinstance(sample, QASample):
-                    sample.perturbed_question = posology(sample.original_question)
+                    query = sample.original_question
+                    if len(sample.options) > 1:
+                        query = f"{query}\nOptions:\n{sample.options}"
+                        sample.original_question = query
+                        sample.options = "-"
+
+                    sample.perturbed_question = posology(query)
 
                     if len(sample.original_context) > 1:
                         sample.perturbed_context = posology(sample.original_context)
+                    else:
+                        sample.perturbed_context = "-"
+
+                    if isinstance(sample.expected_results, list):
+                        sample.expected_results = "\n".join(sample.expected_results)
+
                 else:
-                    sample.test_case = posology(sample.test_case)
+                    sample.test_case = posology(sample.original)
+
             return sample_list
 
     @staticmethod
@@ -245,10 +273,17 @@ class Generic2Brand(BaseClincial):
             #     sample.run(model, **kwargs)
             # else:
             if isinstance(sample, QASample):
+                temp_temlate = "Context:\n {context}\nQuestion:\n {text}"
+                query = {"text": sample.perturbed_question}
+                if len(sample.original_context) > 1:
+                    query["context"] = sample.perturbed_context
+                else:
+                    temp_temlate = "Question:\n {text}"
+
                 sample.actual_results = model.predict(
                     text=HashableDict(
                         {
-                            "text": sample.perturbed_question,
+                            "text": temp_temlate.format(**query),
                         }
                     ),
                     prompt=HashableDict(
@@ -278,6 +313,23 @@ class Brand2Generic(BaseClincial):
     def transform(sampe_list: List[Sample] = [], *args, **kwargs):
         """Transform method for the BrandGeneric class"""
 
+        # reset the template
+        Generic2Brand.template = GENERIC2BRAND_TEMPLATE
+
+        # update the template with the special tokens
+        system_token = kwargs.get("system_token", "system")
+        user_token = kwargs.get("user_token", "user")
+        assistant_token = kwargs.get("assistant_token", "assistant\n")
+        end_token = kwargs.get("end_token", "\nend")
+
+        Generic2Brand.template = Generic2Brand.template.format(
+            system=system_token,
+            user=user_token,
+            assistant=assistant_token,
+            end=end_token,
+            text="{text}",
+        )
+
         if len(sampe_list) <= 0:
             import pandas as pd
 
@@ -288,7 +340,7 @@ class Brand2Generic(BaseClincial):
             if task == "ner":
                 dataset_path = "ner_b2g.jsonl"
             elif task == "question-answering":
-                dataset_path = "qa_generic_to_brand.jsonl"
+                dataset_path = "qa_brand_to_generic.jsonl"
                 file_path = (
                     importlib_resources.files("langtest")
                     / "data"
@@ -296,8 +348,7 @@ class Brand2Generic(BaseClincial):
                     / dataset_path
                 )
                 df = pd.read_json(file_path, lines=True)
-                sample_df = df.sample(50, random_state=42, replace=True)
-                for _, row in sample_df.iterrows():
+                for _, row in df.iterrows():
                     sample = QASample(
                         original_context="-",
                         original_question=row["original_question"],
@@ -318,10 +369,24 @@ class Brand2Generic(BaseClincial):
                 sample.category = "clinical"
 
                 if isinstance(sample, QASample):
-                    sample.perturbed_question = posology(sample.original_question)
+                    query = sample.original_question
+                    if len(sample.options) > 1:
+                        query = f"{query}\nOptions:\n{sample.options}"
+                        sample.original_question = query
+                        sample.options = "-"
+
+                    sample.perturbed_question = posology(query)
 
                     if len(sample.original_context) > 1:
                         sample.perturbed_context = posology(sample.original_context)
+                    else:
+                        sample.perturbed_context = "-"
+
+                    if isinstance(sample.expected_results, list):
+                        sample.expected_results = "\n".join(sample.expected_results)
+                else:
+                    sample.test_case = posology(sample.original)
+
             return sampe_list
 
     @staticmethod
@@ -335,17 +400,24 @@ class Brand2Generic(BaseClincial):
             #     sample.run(model, **kwargs)
             # else:
             if isinstance(sample, QASample):
+                # build the template
+                temp_temlate = "Context:\n {context}\nQuestion:\n {text}"
+
+                # build the query
+                query = {"text": sample.perturbed_question}
+                if len(sample.original_context) > 1:
+                    query["context"] = sample.perturbed_context
+                else:
+                    temp_temlate = "Question:\n {text}"
+
                 sample.actual_results = model.predict(
                     text=HashableDict(
                         {
-                            "text": sample.perturbed_question,
+                            "text": temp_temlate.format(**query),
                         }
                     ),
                     prompt=HashableDict(
-                        {
-                            "template": Generic2Brand.template,
-                            "input_variables": ["text"],
-                        }
+                        {"template": Generic2Brand.template, "input_variables": ["text"]}
                     ),
                     server_prompt="Perform the task to the best of your ability:",
                 )
