@@ -56,12 +56,15 @@ class ClinicalTestFactory(ITests):
             data_handler_copy = [sample.copy() for sample in self.data_handler]
             transformed_samples = test_func(data_handler_copy, **params)
 
-            new_transformed_samples, removed_samples_tests = filter_unique_samples(
-                TestFactory.task, transformed_samples, test_name
-            )
-            all_samples.extend(new_transformed_samples)
+            if test_name == "demographic-bias":
+                all_samples.extend(transformed_samples)
+            else:
+                new_transformed_samples, removed_samples_tests = filter_unique_samples(
+                    TestFactory.task, transformed_samples, test_name
+                )
+                all_samples.extend(new_transformed_samples)
 
-            no_transformation_applied_tests.update(removed_samples_tests)
+                no_transformation_applied_tests.update(removed_samples_tests)
 
         if no_transformation_applied_tests:
             warning_message = Warnings._W009
