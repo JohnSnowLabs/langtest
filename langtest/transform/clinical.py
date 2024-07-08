@@ -204,7 +204,7 @@ class Generic2Brand(BaseClincial):
             text="{text}",
         )
 
-        if len(sample_list) <= 0:
+        if len(sample_list) <= 0 or kwargs.get("curated_dataset", False):
             import pandas as pd
 
             task = TestFactory.task
@@ -333,7 +333,7 @@ class Brand2Generic(BaseClincial):
             text="{text}",
         )
 
-        if len(sampe_list) <= 0:
+        if len(sampe_list) <= 0 or kwargs.get("curated_dataset", False):
             import pandas as pd
 
             task = TestFactory.task
