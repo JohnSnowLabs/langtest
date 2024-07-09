@@ -601,6 +601,7 @@ class Harness:
         """
 
         column_order = [
+            "dataset_name",
             "model_name",
             "category",
             "test_type",
@@ -835,6 +836,7 @@ class Harness:
                 testcases formatted into a pd.DataFrame
         """
         column_order = [
+            "dataset_name",
             "model_name",
             "category",
             "test_type",
@@ -888,6 +890,44 @@ class Harness:
                 testcases_df.append(model_testcases_df)
 
             testcases_df = pd.concat(testcases_df).reset_index(drop=True)
+        
+        elif isinstance(self._testcases, dict) and isinstance(self.model, dict):
+            testcases_df = []
+            for k, v in self._testcases.items():
+                if isinstance(v, dict):
+                    model_testcases_df = pd.DataFrame.from_dict(
+                        [
+                            {
+                                "dataset_name": k,
+                                "model_name": model_name,
+                                **sample.to_dict(),
+                            }
+                            for model_name, samples in v.items()
+                            if isinstance(samples, list)
+                            for sample in samples
+                        ]
+                    )
+                else:
+                    model_testcases_df = pd.DataFrame.from_dict(
+                        [{"model_name": k, **x.to_dict()} for x in v]
+                    )
+                
+                if "prompt" in model_testcases_df.columns:
+                    return model_testcases_df.fillna("-")
+
+                elif (
+                    "test_case" in model_testcases_df.columns
+                    and "original_question" in model_testcases_df.columns
+                ) and self.task != "political":
+                    model_testcases_df["original_question"].update(model_testcases_df.pop("test_case"))
+
+                testcases_df.append(model_testcases_df)
+            testcases_df = pd.concat(testcases_df).reset_index(drop=True)
+
+            columns = [c for c in column_order if c in testcases_df.columns]
+            testcases_df = testcases_df[columns]
+
+            return testcases_df.fillna("-")
 
         elif self.is_multi_dataset and isinstance(self._testcases, dict):
             testcases_df = pd.DataFrame(
