@@ -1508,8 +1508,11 @@ class Harness:
                 print(f"{'':-^80}\n")
         elif isinstance(self.data, list) and self.__is_multi_model:
             temp_testcases = self.__single_dataset_generate(dataset)
-            for model_name, _ in self.model.items():
-                testcases[model_name] = [sample.copy() for sample in temp_testcases]
+            if isinstance(temp_testcases, dict) and set(temp_testcases.keys()) == set(self.model.keys()):
+                testcases = temp_testcases
+            else:
+                for model_name, _ in self.model.items():
+                    testcases[model_name] = [sample.copy() for sample in temp_testcases]
 
         else:
             for dataset_name, samples in dataset.items():
