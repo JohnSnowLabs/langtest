@@ -16,7 +16,7 @@ class OpenaiEmbeddings:
         self.openai = None
         self._check_openai_package()
         if not self.api_key:
-            raise ValueError(Errors.E032)
+            raise ValueError(Errors.E032())
 
         self.openai.api_key = self.api_key
 
@@ -28,7 +28,7 @@ class OpenaiEmbeddings:
         if try_import_lib(self.LIB_NAME):
             self.openai = importlib.import_module(self.LIB_NAME)
         else:
-            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=self.LIB_NAME))
+            raise ModuleNotFoundError(Errors.E023(LIB_NAME=self.LIB_NAME))
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
     def get_embedding(

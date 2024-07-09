@@ -254,7 +254,7 @@ class NEREnd2EndPipeline(FlowSpec):
     @step
     def end(self):
         """Ending step of the flow (required by Metaflow)"""
-        logging.info(Warnings.W011.format(class_name=self.__class__))
+        logging.info(Warnings.W011(class_name=self.__class__))
 
 
 if __name__ == "__main__":

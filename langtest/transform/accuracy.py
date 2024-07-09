@@ -1,8 +1,247 @@
 import asyncio
+from collections import defaultdict
+import pandas as pd
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
-from langtest.utils.custom_types import MinScoreOutput, MinScoreSample
+
+from langtest.modelhandler.modelhandler import ModelAPI
+from langtest.transform.base import ITests
+from langtest.utils.custom_types import (
+    MinScoreOutput,
+    MinScoreSample,
+    NERSample,
+    SequenceClassificationSample,
+    Sample,
+)
+from langtest.utils.custom_types.helpers import default_user_prompt
+from langtest.errors import Errors
 from langtest.utils.util_metrics import calculate_f1_score, classification_report
+
+
+class AccuracyTestFactory(ITests):
+    """
+    A class for performing accuracy tests on a given dataset.
+    """
+
+    alias_name = "accuracy"
+    model_result = None
+
+    def __init__(self, data_handler: List[Sample], tests: Dict, **kwargs) -> None:
+        self.supported_tests = self.available_tests()
+        self._data_handler = data_handler
+        self.tests = tests
+        self.kwargs = kwargs
+
+        if not isinstance(self.tests, dict):
+            raise ValueError(Errors.E048())
+
+        if len(self.tests) == 0:
+            self.tests = self.supported_tests
+
+        not_supported_tests = set(self.tests) - set(self.supported_tests)
+        if len(not_supported_tests) > 0:
+            raise ValueError(
+                Errors.E049(
+                    not_supported_tests=not_supported_tests,
+                    supported_tests=list(self.supported_tests.keys()),
+                )
+            )
+
+    def transform(self) -> List[Sample]:
+        """
+        Runs the accuracy test and returns the resulting `Sample` objects.
+
+        Returns:
+            List[Sample]:
+                A list of `Sample` objects representing the resulting dataset after running the accuracy test.
+        """
+        all_samples = []
+
+        if self._data_handler[0].expected_results is None:
+            raise RuntimeError(Errors.E052(var="accuracy"))
+
+        for test_name, params in self.tests.items():
+            data_handler_copy = [x.copy() for x in self._data_handler]
+
+            if data_handler_copy[0].task == "ner":
+                y_true = pd.Series(data_handler_copy).apply(
+                    lambda x: [y.entity for y in x.expected_results.predictions]
+                )
+                y_true = y_true.explode().apply(
+                    lambda x: x.split("-")[-1] if isinstance(x, str) else x
+                )
+            elif data_handler_copy[0].task == "text-classification":
+                y_true = (
+                    pd.Series(data_handler_copy)
+                    .apply(lambda x: [y.label for y in x.expected_results.predictions])
+                    .explode()
+                )
+            elif (
+                data_handler_copy[0].task == "question-answering"
+                or data_handler_copy[0].task == "summarization"
+            ):
+                y_true = (
+                    pd.Series(data_handler_copy)
+                    .apply(lambda x: x.expected_results)
+                    .explode()
+                )
+
+            y_true = y_true.dropna()
+            transformed_samples = self.supported_tests[test_name].transform(
+                test_name, y_true, params
+            )
+
+            for sample in transformed_samples:
+                sample.test_type = test_name
+            all_samples.extend(transformed_samples)
+
+        return all_samples
+
+    @staticmethod
+    def available_tests() -> dict:
+        """
+        Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
+
+        Returns:
+            dict: A dictionary of test names and classes.
+        """
+
+        return BaseAccuracy.test_types
+
+    @classmethod
+    def run(
+        cls,
+        sample_list: Dict[str, List[Sample]],
+        model: ModelAPI,
+        raw_data: List[Sample],
+        **kwargs,
+    ):
+        """
+        Runs the accuracy tests on the given model and dataset.
+
+        Args:
+            sample_list (Dict[str, List[Sample]]): A dictionary of test names and corresponding `Sample` objects.
+            model (ModelAPI): The model to be tested.
+            raw_data (List[Sample]): The raw dataset.
+
+        """
+        raw_data_copy = [x.copy() for x in raw_data]
+
+        if isinstance(raw_data_copy[0], NERSample):
+
+            def predict_ner(sample):
+                prediction = model.predict(sample.original)
+                sample.actual_results = prediction
+                return prediction
+
+            X_test = pd.Series(raw_data_copy)
+            X_test.apply(predict_ner)
+            y_true = pd.Series(raw_data_copy).apply(
+                lambda x: [y.entity for y in x.expected_results.predictions]
+            )
+            y_pred = pd.Series(raw_data_copy).apply(
+                lambda x: [y.entity for y in x.actual_results.predictions]
+            )
+            valid_indices = y_true.apply(len) == y_pred.apply(len)
+            y_true = y_true[valid_indices]
+            y_pred = y_pred[valid_indices]
+            y_true = y_true.explode()
+            y_pred = y_pred.explode()
+            y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+            y_true = y_true.apply(lambda x: x.split("-")[-1])
+
+        elif isinstance(raw_data_copy[0], SequenceClassificationSample):
+
+            def predict_text_classification(sample):
+                prediction = model.predict(sample.original)
+                sample.actual_results = prediction
+                return prediction
+
+            X_test = pd.Series(raw_data_copy)
+            X_test.apply(predict_text_classification)
+
+            y_true = pd.Series(raw_data_copy).apply(
+                lambda x: [y.label for y in x.expected_results.predictions]
+            )
+            y_pred = pd.Series(raw_data_copy).apply(
+                lambda x: [y.label for y in x.actual_results.predictions]
+            )
+            y_true = y_true.apply(lambda x: x[0])
+            y_pred = y_pred.apply(lambda x: x[0])
+
+            y_true = y_true.explode()
+            y_pred = y_pred.explode()
+
+        elif raw_data_copy[0].task == "question-answering":
+            from ..utils.custom_types.helpers import build_qa_input, build_qa_prompt
+
+            if raw_data_copy[0].dataset_name is None:
+                dataset_name = "default_question_answering_prompt"
+            else:
+                dataset_name = raw_data_copy[0].dataset_name.split("-")[0].lower()
+
+            def predict_question_answering(sample):
+                input_data = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    options=sample.options,
+                )
+                prompt = build_qa_prompt(input_data, dataset_name, **kwargs)
+                server_prompt = kwargs.get("server_prompt", " ")
+                prediction = model(
+                    text=input_data, prompt=prompt, server_prompt=server_prompt
+                ).strip()
+                sample.actual_results = prediction
+                return prediction
+
+            y_true = pd.Series(raw_data_copy).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data_copy)
+
+            y_pred = X_test.apply(predict_question_answering)
+
+        elif raw_data_copy[0].task == "summarization":
+            if raw_data_copy[0].dataset_name is None:
+                dataset_name = "default_summarization_prompt"
+            else:
+                dataset_name = raw_data_copy[0].dataset_name.split("-")[0].lower()
+            prompt_template = kwargs.get(
+                "user_prompt", default_user_prompt.get(dataset_name, "")
+            )
+
+            def predict_summarization(sample):
+                prediction = model(
+                    text={"context": sample.original},
+                    prompt={"template": prompt_template, "input_variables": ["context"]},
+                ).strip()
+                sample.actual_results = prediction
+                return prediction
+
+            y_true = pd.Series(raw_data_copy).apply(lambda x: x.expected_results)
+            X_test = pd.Series(raw_data_copy)
+            y_pred = X_test.apply(predict_summarization)
+
+        if kwargs["is_default"]:
+            y_pred = y_pred.apply(
+                lambda x: "1"
+                if x in ["pos", "LABEL_1", "POS"]
+                else ("0" if x in ["neg", "LABEL_0", "NEG"] else x)
+            )
+
+        supported_tests = cls.available_tests()
+
+        tasks = []
+
+        from ..utils.custom_types.helpers import TestResultManager
+
+        cls.model_result = TestResultManager().prepare_model_response(raw_data_copy)
+
+        for test_name, samples in sample_list.items():
+            tasks.append(
+                supported_tests[test_name].async_run(
+                    samples, y_true, y_pred, X_test=X_test, **kwargs
+                )
+            )
+        return tasks
 
 
 class BaseAccuracy(ABC):
@@ -14,6 +253,8 @@ class BaseAccuracy(ABC):
     Methods:
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
     """
+
+    test_types = defaultdict(lambda: BaseAccuracy)
 
     alias_name = None
     supported_tasks = ["ner", "text-classification"]
@@ -64,6 +305,12 @@ class BaseAccuracy(ABC):
         """
         created_task = asyncio.create_task(cls.run(sample_list, y_true, y_pred, **kwargs))
         return created_task
+
+    def __init_subclass__(cls) -> None:
+        """Registers subclasses of BaseAccuracy in the test_types dictionary."""
+        alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
+        for name in alias:
+            BaseAccuracy.test_types[name] = cls
 
 
 class MinPrecisionScore(BaseAccuracy):
@@ -751,13 +998,17 @@ class LLMEval(BaseAccuracy):
 
         model = params.get("model", None)
         hub = params.get("hub", None)
+
+        # get model parameters from tests config or harness config if not provided
+        # if not provided, default to the default model parameters
+        parameters = params.get(
+            "model_parameters", harness_config.get("model_parameters", {})
+        )
         if model and hub:
             from ..tasks import TaskManager
 
             load_eval_model = TaskManager("question-answering")
-            cls.eval_model = load_eval_model.model(
-                model, hub, **harness_config.get("model_parameters", {})
-            )
+            cls.eval_model = load_eval_model.model(model, hub, **parameters)
 
         else:
             cls.eval_model = EVAL_MODEL

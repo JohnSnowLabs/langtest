@@ -5,6 +5,7 @@ import asyncio
 import nest_asyncio
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.errors import Errors
+from langtest.tasks.task import TaskManager
 from .custom_data import add_custom_data
 from ..utils.custom_types.sample import (
     Sample,
@@ -20,7 +21,7 @@ class TestFactory:
     """
 
     is_augment = False
-    task: str = None
+    task: TaskManager = None
 
     # Additional operations can be performed here using the validated data
 
@@ -61,7 +62,7 @@ class TestFactory:
         all_results = []
         all_categories = TestFactory.test_categories()
         test_names = list(test_types.keys())
-        TestFactory.task = task
+        TestFactory.task = task if isinstance(task, TaskManager) else TaskManager(task)
 
         if "defaults" in test_names:
             test_names.pop(test_names.index("defaults"))
@@ -82,13 +83,11 @@ class TestFactory:
                     )
                     if task not in supported:
                         raise ValueError(
-                            Errors.E046.format(
-                                sub_test=sub_test, task=task, supported=supported
-                            )
+                            Errors.E046(sub_test=sub_test, task=task, supported=supported)
                         )
             elif test_category != "defaults":
                 raise ValueError(
-                    Errors.E047.format(
+                    Errors.E047(
                         test_category=test_category,
                         available_categories=list(all_categories.keys()),
                     )

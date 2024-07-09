@@ -125,7 +125,7 @@ class CheckpointManager:
                     batches[batch_number] = batch
 
                 except ValueError:
-                    raise ValueError(Errors.E091.format(file_name=file_name))
+                    raise ValueError(Errors.E091(file_name=file_name))
 
         return batches
 
