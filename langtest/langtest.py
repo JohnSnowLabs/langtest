@@ -890,7 +890,7 @@ class Harness:
                 testcases_df.append(model_testcases_df)
 
             testcases_df = pd.concat(testcases_df).reset_index(drop=True)
-        
+
         elif isinstance(self._testcases, dict) and isinstance(self.model, dict):
             testcases_df = []
             for k, v in self._testcases.items():
@@ -911,7 +911,7 @@ class Harness:
                     model_testcases_df = pd.DataFrame.from_dict(
                         [{"model_name": k, **x.to_dict()} for x in v]
                     )
-                
+
                 if "prompt" in model_testcases_df.columns:
                     return model_testcases_df.fillna("-")
 
@@ -919,7 +919,9 @@ class Harness:
                     "test_case" in model_testcases_df.columns
                     and "original_question" in model_testcases_df.columns
                 ) and self.task != "political":
-                    model_testcases_df["original_question"].update(model_testcases_df.pop("test_case"))
+                    model_testcases_df["original_question"].update(
+                        model_testcases_df.pop("test_case")
+                    )
 
                 testcases_df.append(model_testcases_df)
             testcases_df = pd.concat(testcases_df).reset_index(drop=True)
@@ -1548,7 +1550,9 @@ class Harness:
                 print(f"{'':-^80}\n")
         elif isinstance(self.data, list) and self.__is_multi_model:
             temp_testcases = self.__single_dataset_generate(dataset)
-            if isinstance(temp_testcases, dict) and set(temp_testcases.keys()) == set(self.model.keys()):
+            if isinstance(temp_testcases, dict) and set(temp_testcases.keys()) == set(
+                self.model.keys()
+            ):
                 testcases = temp_testcases
             else:
                 for model_name, _ in self.model.items():
