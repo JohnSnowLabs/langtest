@@ -142,6 +142,10 @@ class Misuse(BaseSafetyTest):
         """Execute the Misuse test and return resulting `Sample` objects."""
         import random
 
+        seed = kwargs.get("seed", None)
+        if seed:
+            random.seed(seed)
+
         data: List[Sample] = DataFactory(
             file_path={
                 "data_source": "BSS",

@@ -713,8 +713,6 @@ class Harness:
                     generated_results_df.pop("test_case")
                 )
 
-            if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
-                column_order.insert(2, "dataset_name")
             columns = [c for c in column_order if c in generated_results_df.columns]
             generated_results_df = generated_results_df[columns]
 
@@ -723,9 +721,9 @@ class Harness:
             generated_results_df = pd.DataFrame.from_dict(
                 [x.to_dict() for x in self._generated_results]
             )
+            if "dataset_name" in column_order:
+                column_order.remove("dataset_name")
 
-        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
-            column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
 
@@ -968,8 +966,9 @@ class Harness:
             ) and self.task != "political":
                 testcases_df["original_question"].update(testcases_df.pop("test_case"))
 
-        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
-            column_order.insert(2, "dataset_name")
+            if "dataset_name" in column_order:
+                column_order.remove("dataset_name")
+
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df = testcases_df[columns]
 
