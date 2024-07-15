@@ -65,10 +65,10 @@ class RepresentationOperation:
             add_custom_data(data, name, append)
         else:
             if not isinstance(data, list):
-                raise ValueError(Errors.E068)
+                raise ValueError(Errors.E068())
 
             if check != "ner":
-                raise ValueError(Errors.E069)
+                raise ValueError(Errors.E069())
 
             if append:
                 RepresentationOperation.entity_types = list(
@@ -93,10 +93,16 @@ class RepresentationOperation:
                 if isinstance(prediction, SequenceLabel):
                     label_representation[prediction.label] += 1
                 elif isinstance(prediction, NERPrediction):
-                    if prediction.entity == "O":
-                        label_representation[prediction.entity] += 1
-                    elif prediction.entity in RepresentationOperation.entity_types:
-                        label_representation[prediction.entity.split("-")[1]] += 1
+                    entity = prediction.entity
+                    if entity == "O":
+                        label_representation[entity] += 1
+                    elif (
+                        entity in RepresentationOperation.entity_types
+                        and entity.startswith("B-")
+                    ):
+                        label_representation[entity[2:]] += 1
+                    elif isinstance(entity, str) and not entity.startswith("I-"):
+                        label_representation[re.sub(r"^(B-)", "", entity)] += 1
 
         return label_representation
 
@@ -137,7 +143,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = set(sample.original.replace(".", "").lower().split())
             else:
-                raise ValueError(Errors.E070.format(var=sample.task))
+                raise ValueError(Errors.E070(var=sample.task))
 
             for income, countries in country_economic_dict.items():
                 for country in countries:
@@ -181,7 +187,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = sample.original.split()
             else:
-                raise ValueError(Errors.E070.format(var=sample.task))
+                raise ValueError(Errors.E070(var=sample.task))
 
             for word in words:
                 for religion in religions:
@@ -222,7 +228,7 @@ class RepresentationOperation:
             elif sample.task == "summarization":
                 words = sample.original.split()
             else:
-                raise ValueError(Errors.E070.format(var=sample.task))
+                raise ValueError(Errors.E070(var=sample.task))
 
             for word in words:
                 if check_name(
@@ -431,3 +437,33 @@ def compare_generations_overlap(phrase) -> int:
     count = len(matches)
 
     return count
+
+
+GENERIC2BRAND_TEMPLATE = """
+{system}
+You are an AI bot specializing in providing accurate and concise answers to questions. You will be presented with a medical question and multiple-choice answer options. Your task is to choose the correct answer (only A, B, C, or D) from the options of the multiple-choice question.
+{end}
+
+{user}
+Question: What is the most common cause of death in the United States?
+A: Cancer
+B: Heart disease
+C: Stroke
+D: Diabetes
+Answer (only A, B, C, or D):
+{assistant}B{end}
+
+{user}
+Question: what is the purpose of paracetamol tablet?
+A: To reduce fever
+B: To reduce pain
+C: To reduce inflammation
+D: All of the above
+Answer(only A, B, C, or D):
+{assistant}D{end}
+
+{user}
+{text}
+Answer (only A, B, C, or D):'
+{assistant}
+"""

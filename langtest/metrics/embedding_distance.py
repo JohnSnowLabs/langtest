@@ -26,7 +26,7 @@ class EmbeddingDistance:
         @functools.wraps(func)
         def wrapper(a: np.ndarray, b: np.ndarray) -> np.ndarray:
             if not isinstance(a, np.ndarray) or not isinstance(b, np.ndarray):
-                raise ValueError(Errors.E033.format(type_a=type(a), type_b=type(b)))
+                raise ValueError(Errors.E033(type_a=type(a), type_b=type(b)))
             return func(a, b)
 
         return wrapper
@@ -35,7 +35,7 @@ class EmbeddingDistance:
         if name in self.available_embedding_distance:
             return self.available_embedding_distance[name]
         else:
-            raise KeyError(Errors.E34.format(name=name))
+            raise KeyError(Errors.E034(name=name))
 
     @staticmethod
     @validate_input
@@ -163,8 +163,6 @@ class EmbeddingDistance:
         }
 
         if distance not in distance_mapping:
-            raise ValueError(
-                Errors.E076.format(metric="embedding", selected_metric=distance)
-            )
+            raise ValueError(Errors.E076(metric="embedding", selected_metric=distance))
 
         return distance_mapping[distance]

@@ -87,7 +87,7 @@ class Formatter:
                 sample, *args, **kwargs
             )
         except KeyError:
-            raise NameError(Errors.E031.format(class_name=class_name))
+            raise NameError(Errors.E031(class_name=class_name))
 
 
 class SequenceClassificationOutputFormatter(BaseFormatter, ABC):

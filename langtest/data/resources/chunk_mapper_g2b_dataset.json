@@ -1,0 +1,10111 @@
+{
+  "mappings": [
+    {
+      "key": "abatacept",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "orencia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "abciximab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "reopro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "acarbose",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "precose"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "acebutolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sectral"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "acetazolamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diamox"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "acetone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "keratex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "acitretin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "soriatane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "acyclovir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zovirax",
+            "virovir",
+            "xerese",
+            "lidovir",
+            "sitavig"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "adapalene",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "differin",
+            "epiduo",
+            "plixda",
+            "cabtreo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "albendazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "albenza",
+            "valbazen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "aldesleukin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "proleukin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "alendronate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "fosamax",
+            "binosto"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "alfentanil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "alfenta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "aliskiren",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tekturna",
+            "valturna",
+            "amturnide",
+            "tekamlo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "allantoin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sarene",
+            "neutracett",
+            "shing-releev",
+            "fungisan",
+            "theraworx",
+            "vexa",
+            "zzip"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "allopurinol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "caplenal",
+            "cosuric",
+            "rimapurinol",
+            "xanthomax",
+            "zyloprim",
+            "lopurin",
+            "aloprim",
+            "aloral",
+            "aluline",
+            "hamarin",
+            "duzallo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "alogliptin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nesina",
+            "kazano",
+            "oseni"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "alprazolam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xanax",
+            "calprazolam",
+            "niravam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "alprostadil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "edex",
+            "caverject",
+            "muse"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "alteplase",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "activase"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "amantadine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "symmetrel",
+            "symadine",
+            "mantadine",
+            "gocovri",
+            "osmolex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ambenonium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mytelase"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "amikacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "amikin",
+            "amimax",
+            "arikayce"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "amiodarone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cordarone",
+            "pacerone",
+            "amidox",
+            "nexterone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "amitriptyline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lentizol",
+            "limbitrol",
+            "elavil",
+            "domical",
+            "triavil",
+            "vanatrip",
+            "endep",
+            "duo-vil",
+            "etrafon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "amlodipine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "norvasc",
+            "lotrel",
+            "caduet",
+            "exforge",
+            "azor",
+            "amturnide",
+            "tekamlo",
+            "tribenzor",
+            "twynsta",
+            "prestalia",
+            "consensi",
+            "katerzia",
+            "norliqva"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "amoxapine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "asendin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ampicillin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "unasyn",
+            "penbritin",
+            "rimacillin",
+            "vidopen",
+            "ampitrin",
+            "polycillin",
+            "omnipen",
+            "amficot",
+            "marcillin",
+            "omnipen-n",
+            "polycillin-prb",
+            "principen",
+            "totacillin",
+            "totacillin-n",
+            "hetacin-k",
+            "polyflex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "anakinra",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "kineret"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "anastrozole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arimidex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "apixaban",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eliquis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "apraclonidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "iopidine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "aprepitant",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emend",
+            "cinvanti",
+            "aponvie"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "aripiprazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "abilify"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "atenolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tenoretic",
+            "antipressan",
+            "atenix",
+            "atenixco",
+            "tenchlor",
+            "tenormin",
+            "totamol",
+            "totaretic",
+            "senormin",
+            "vasaten",
+            "tenoret"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "atorvastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lipitor",
+            "caduet",
+            "liptruzet",
+            "lypqozet",
+            "atorvaliq"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "atracurium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tracrium"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "atropine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lomotil",
+            "donnatal",
+            "antispas",
+            "antrocol",
+            "atropine-care",
+            "atropisol",
+            "atrosept",
+            "barbidonna",
+            "barophen",
+            "bellalphen",
+            "bellatal",
+            "colidrops",
+            "cystemms-v",
+            "d-tal",
+            "di-atro",
+            "dimotal",
+            "dolsed",
+            "donnaphen",
+            "donnapine",
+            "elixiral",
+            "enlon-plus",
+            "haponal",
+            "hyosophen",
+            "hypersed",
+            "lomocot",
+            "lonox",
+            "malatal",
+            "motofen",
+            "ocu-tropine",
+            "phenobel",
+            "sal-tropine",
+            "spasmolin",
+            "spasquid",
+            "spastolate",
+            "uaa",
+            "urapine",
+            "uretron",
+            "urised",
+            "uritin",
+            "vi-atro",
+            "eumydrin",
+            "atropen",
+            "mhp-a",
+            "usept",
+            "atreza",
+            "alkabel",
+            "duodote",
+            "servira",
+            "uritact",
+            "prosed",
+            "uri-sep",
+            "chardonna",
+            "urimar",
+            "b-donna",
+            "phenohytro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "azathioprine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "azamune",
+            "immunoprin",
+            "oprisine",
+            "imuran",
+            "berkaprine",
+            "azasan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "azithromycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zithromax",
+            "zpak",
+            "zmax",
+            "azinthromycin",
+            "azasite"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bacitracin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "polysporin",
+            "ak-tracin",
+            "baci-im",
+            "baci-rx",
+            "baciguent",
+            "neocin",
+            "ocu-cort",
+            "ocumycin",
+            "ocutricin",
+            "polycin-b",
+            "polycin",
+            "polytracin",
+            "septa",
+            "lanabiotic",
+            "ocu-tracin",
+            "ocu-spore-b",
+            "polymycin",
+            "polycidin",
+            "procomycin",
+            "neo-polycin",
+            "vetropolycin",
+            "triplicin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "baclofen",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "baclospas",
+            "balgifen",
+            "lioresal",
+            "kemstro",
+            "gablofen",
+            "ozobax",
+            "lyvispah",
+            "fleqsuvy"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "basiliximab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "simulect"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "beclomethasone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "beconase",
+            "beclovent",
+            "vancenase",
+            "vanceril",
+            "qvar",
+            "qnasl"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "belladonna",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "butibel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "benazepril",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lotensin",
+            "lotrel",
+            "cardalis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bendamustine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "treanda",
+            "bendeka",
+            "belrapzo",
+            "vivimusta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "benzalkonium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "bactine",
+            "benza",
+            "pedi-pro",
+            "roccal",
+            "mercuroclear",
+            "herpetrol",
+            "instantfoam",
+            "readybath",
+            "scrubs",
+            "skilcraft",
+            "ecocare",
+            "dephyze",
+            "sani-foam",
+            "meditize",
+            "zephiran",
+            "pheneen",
+            "nobac",
+            "keepan",
+            "throat-releev",
+            "shing-releev",
+            "viroxyn",
+            "hex-o-prep",
+            "fungisan",
+            "allercaine",
+            "handclens",
+            "cicloferon",
+            "lysimax",
+            "med-i-san",
+            "omnicide",
+            "fung-a-way",
+            "mertodol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "benzocaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cepacol",
+            "auralgan",
+            "cetacaine",
+            "chloraseptic",
+            "orabase",
+            "anbesol",
+            "anacaine",
+            "aurodex",
+            "auroto",
+            "bicozene",
+            "dermoplast",
+            "dolotic",
+            "foille",
+            "isodettes",
+            "navogan",
+            "oticaine",
+            "otigesic",
+            "otocain",
+            "spec-t",
+            "tympagesic",
+            "zilactin-b",
+            "hurricaine",
+            "americaine",
+            "rx-otic",
+            "tebamide",
+            "ti-plex",
+            "triban",
+            "retre-gel",
+            "omedia",
+            "boil-ease",
+            "ear-gesic",
+            "trimazide",
+            "gingicaine",
+            "algiotic",
+            "otoalgan",
+            "antiben",
+            "balagan",
+            "freez-eez",
+            "topicale",
+            "exactacain",
+            "auroguard",
+            "medicone",
+            "benz-o-sthetic",
+            "benzo-o-sthetic",
+            "benzoquick",
+            "orajel",
+            "trocaine",
+            "neotic",
+            "conffits",
+            "trioxin",
+            "z-xtra",
+            "treagan",
+            "dent-o-kain",
+            "superdent",
+            "benzo-jel",
+            "beegentle",
+            "lanacane",
+            "ultracare",
+            "bucalcide",
+            "dentapaine",
+            "dermagesic",
+            "orasep",
+            "sepasoothe",
+            "otozin",
+            "benzodent",
+            "myoxin",
+            "clinistat",
+            "alpha-caine",
+            "bucalsep",
+            "stingeze",
+            "viroxyn",
+            "orastat",
+            "neutracaine",
+            "bencocaine",
+            "salinocaine",
+            "anesgerm",
+            "angidol",
+            "tokisan",
+            "sting-kill",
+            "salivacaine",
+            "sensicaine",
+            "lollicaine",
+            "chiggerex",
+            "vistacaine",
+            "stingx",
+            "numstat"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "benztropine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cogentin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "betamethasone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "betnesol",
+            "betnelan",
+            "betnovate",
+            "celestone",
+            "adbeon",
+            "alphatrex",
+            "beta-val",
+            "betaderm",
+            "betanate",
+            "betatrex",
+            "cell-u-jec",
+            "del-beta",
+            "diprolene",
+            "diprosone",
+            "lotrisone",
+            "maxivate",
+            "selestoject",
+            "teladar",
+            "uticort",
+            "valisone",
+            "vista-methasone",
+            "luxiq",
+            "betamethacot",
+            "betastat",
+            "detamethasone",
+            "dovobet",
+            "taclonex",
+            "gentaved",
+            "gentacalm",
+            "vetromax",
+            "gentaspray",
+            "genone",
+            "gentaotic",
+            "malotic",
+            "relifor",
+            "remicin",
+            "betavet",
+            "otomax",
+            "enstilar",
+            "sernivo",
+            "vetaderm",
+            "wynzora"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "betaxolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "kerlone",
+            "betoptic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bethanechol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "duvoid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bimatoprost",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lumigan",
+            "latisse",
+            "durysta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "biotin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "appearex",
+            "nail-ex",
+            "hemax",
+            "nephrocaps",
+            "infuvite",
+            "lexinal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bisacodyl",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dulcolax",
+            "bisa-plex",
+            "bisac-evac",
+            "bisco-lax",
+            "bisolax",
+            "dulcogen",
+            "veracolate",
+            "alophen",
+            "evac-u-gen",
+            "feen-a-mint",
+            "correctol",
+            "bet-r-prep"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bisoprolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ziac",
+            "emcor",
+            "monocor",
+            "zebeta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bosentan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tracleer"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bran",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "fybranta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "brimonidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "alphagan",
+            "combigan",
+            "simbrinza",
+            "mirvaso",
+            "lumify"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bromocriptine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "parlodel",
+            "cycloset"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "budesonide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "entocort",
+            "pulmicort",
+            "rhinocort",
+            "symbicort",
+            "uceris",
+            "ortikos",
+            "breztri",
+            "tarpeyo",
+            "breyna",
+            "airsupra",
+            "eohilia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bupivacaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sensorcaine",
+            "duocaine",
+            "vivacaine",
+            "marcaine",
+            "exparel",
+            "nocita",
+            "xaracoll",
+            "zynrelef",
+            "posimir"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bupropion",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "wellbutrin",
+            "zyban",
+            "budeprion",
+            "buproban",
+            "aplenzin",
+            "forfivo",
+            "contrave",
+            "auvelity"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "butorphanol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "stadol",
+            "butorphic",
+            "torbugesic",
+            "torphaject",
+            "torphadine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cabergoline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dostinex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "caffeine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cafergot",
+            "fiorinal",
+            "revive",
+            "combiflex",
+            "fioricet",
+            "alagesic",
+            "americet",
+            "anacin",
+            "anoquan",
+            "arcet",
+            "aspircaf",
+            "dolmar",
+            "emagrin",
+            "endolor",
+            "esgic",
+            "excedrin",
+            "ezol",
+            "femcet",
+            "fiormor",
+            "fiorpap",
+            "fiortal",
+            "fortabs",
+            "genace",
+            "genasan",
+            "geone",
+            "ide-cet",
+            "idenal",
+            "isocet",
+            "isollyl",
+            "laniroif",
+            "major-cin",
+            "margesic",
+            "medigesic",
+            "migergot",
+            "minotal",
+            "mygracet",
+            "norgesic",
+            "pc-cap",
+            "pacaps",
+            "pharmagesic",
+            "q-acin",
+            "caffedrine",
+            "repan",
+            "saleto",
+            "supac",
+            "synalgos-dc",
+            "tenake",
+            "tencet",
+            "tussirex",
+            "two-dyne",
+            "uni-ann",
+            "uni-case",
+            "vanquish",
+            "verv",
+            "vivarin",
+            "wakespan",
+            "waykup",
+            "wigraine",
+            "zebutal",
+            "cafcit",
+            "orphengesic",
+            "ex-pain",
+            "nonbac",
+            "migralam",
+            "migrend",
+            "levacet",
+            "durabac",
+            "lucidex",
+            "cafgesic",
+            "migraten",
+            "zerlor",
+            "trezix",
+            "pep-back",
+            "farbital",
+            "prodrin",
+            "triad",
+            "backprin",
+            "orbivan",
+            "arthriten",
+            "capacet",
+            "sedalmex",
+            "bc",
+            "belcomp",
+            "migracet",
+            "exaprin",
+            "ascomp",
+            "anolor",
+            "drowz-away",
+            "jet-alert",
+            "vanatol",
+            "sed-max",
+            "dvorah",
+            "nosnooze",
+            "vtol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "calamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cala-gen",
+            "caladryl",
+            "calagesic",
+            "callergy",
+            "calohist",
+            "ivarest",
+            "dermaseptin",
+            "dermasav",
+            "calmafx"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "calcitriol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "calcijex",
+            "rocaltrol",
+            "vectical"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "capecitabine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xeloda"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "captopril",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "capozide",
+            "acepril",
+            "capoten",
+            "ecopace",
+            "kaplon",
+            "hypapril",
+            "tensopril",
+            "hyteneze",
+            "capropril"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carbamazepine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "epimaz",
+            "tegretol",
+            "epitol",
+            "carbatrol",
+            "equetro",
+            "carnexiv"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carbamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "proxigel",
+            "amino-cerv",
+            "accuzyme",
+            "atrac-tain",
+            "gormel",
+            "nutraplus",
+            "panafil",
+            "rea-lo",
+            "u-lactin",
+            "carmol",
+            "ethezyme",
+            "kovia",
+            "gladase",
+            "vanamide",
+            "ziox",
+            "umecta",
+            "keralac",
+            "pedural",
+            "gladase-c",
+            "ultralytic",
+            "cerovel",
+            "keratol",
+            "x-viate",
+            "u-kera",
+            "allanzyme",
+            "allanfil",
+            "kerafoam",
+            "kerol",
+            "paptase",
+            "allanenzyme",
+            "allanfillenzyme",
+            "mectalyte",
+            "remeven",
+            "papfyll",
+            "uramaxin",
+            "latrix",
+            "carb-o-lac",
+            "aluvea",
+            "lipidro",
+            "utopic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carbidopa",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sinemet",
+            "lodosyn",
+            "atamet",
+            "carbodopa",
+            "parcopa",
+            "stalevo",
+            "rytary",
+            "duopa",
+            "dhivy"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carboplatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "paraplatin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carboprost",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "hemabate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carteolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cartrol",
+            "ocupress",
+            "teoptic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "carvedilol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eucardic",
+            "coreg"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cefaclor",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "keftid",
+            "ceclor",
+            "raniclor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cefoperazone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cefobid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cefotaxime",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "claforan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cefotetan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cefotan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cefpodoxime",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vantin",
+            "orelox",
+            "simplicef",
+            "cefpoderm"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ceftazidime",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tazidime",
+            "fortaz",
+            "tazicef",
+            "ceptaz",
+            "avycaz"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ceftizoxime",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cefizox",
+            "zincaf"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ceftriaxone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rocephin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "celecoxib",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "celebrex",
+            "consensi",
+            "elyxyb",
+            "seglentis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "celiprolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "celectol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cephalexin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tenkorex",
+            "keflex",
+            "biocef",
+            "keftab",
+            "zartan",
+            "kiflone",
+            "keflex-c",
+            "rilexine",
+            "daxbia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cephalothin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "keflin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cetuximab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "erbitux"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cevimeline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "evoxac"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorambucil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "leukeran"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chloramphenicol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ophthocort",
+            "chloromycetin",
+            "kemicetine",
+            "ak-chlor",
+            "chloracol",
+            "chloroptic",
+            "ocu-chlor",
+            "econochlor",
+            "viceton"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlordiazepoxide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "librium",
+            "librax",
+            "limbitrol",
+            "tropium",
+            "mitran",
+            "chlordinium",
+            "clindex",
+            "libritabs",
+            "poxi",
+            "h-tran"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorhexidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "hibitane",
+            "rotersept",
+            "instillagel",
+            "hibisol",
+            "corsodyl",
+            "betasept",
+            "chlorostat",
+            "dyna-hex",
+            "hibistat",
+            "periochip",
+            "periogard",
+            "hibiclens",
+            "tisept",
+            "sterexidine",
+            "perisol",
+            "chlorhexigard",
+            "denticare",
+            "periosep",
+            "oris",
+            "denti-rinse",
+            "chloraprep",
+            "septi-soothe",
+            "avagard",
+            "malaseb",
+            "chlorascrub",
+            "supreme",
+            "bactoshield",
+            "prevantics",
+            "vital-chlor",
+            "hex-o-prep",
+            "vital-ketodine",
+            "hexidip",
+            "paroex",
+            "mal-a-ket",
+            "ketochlor",
+            "hexi-dip",
+            "kenocidin",
+            "hexadine",
+            "vetasan",
+            "scrub-stat",
+            "exidine",
+            "keto-c",
+            "vetraseb",
+            "otodine",
+            "nolvadent",
+            "nolvasan",
+            "soluprep",
+            "maxiclens"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chloroprocaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nesacaine",
+            "clorotekal",
+            "iheezo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chloroquine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "malarivon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorothiazide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diuril",
+            "diupres",
+            "aldoclor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorpheniramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "chlor-trimeton",
+            "aller-chlor",
+            "allerlief",
+            "amtussin",
+            "chlo-amine",
+            "chlor-phen",
+            "colrex",
+            "demi-cof",
+            "ditussin-hc",
+            "ed-tlc",
+            "efasin-hd",
+            "endagen-hd",
+            "endal-hd",
+            "enditussin-hd",
+            "endotuss-hd",
+            "enplus-hd",
+            "exo-tuss",
+            "hexatussin",
+            "histussin-hc",
+            "hyphed",
+            "hyphen-hd",
+            "kg-tussin",
+            "m-end",
+            "med-hist-hc",
+            "nasatuss",
+            "notuss",
+            "pediacof",
+            "pedituss",
+            "poly-tussin",
+            "rindal-hd",
+            "rolatuss",
+            "tuss-ds",
+            "tuss-hc",
+            "tussend",
+            "tussin-v",
+            "vanex-hd",
+            "ventuss",
+            "b-tuss",
+            "trionate",
+            "coldcough",
+            "pancof",
+            "pancof-pd",
+            "relacon-hc",
+            "triant-hc",
+            "uni-cof",
+            "hist-hc",
+            "hist-plus",
+            "aerohist",
+            "tussionex",
+            "ricotuss",
+            "cordron-hc",
+            "ryneze",
+            "tusana-d",
+            "codeprex",
+            "hytan",
+            "tustan",
+            "pediatan",
+            "relasin-hc",
+            "baltussin",
+            "drotuss-cp",
+            "didone",
+            "novasus",
+            "p-tann",
+            "wal-finate",
+            "pediox-s",
+            "chlortan",
+            "dexodryl",
+            "phena-hc",
+            "tussicaps",
+            "tanahist-pd",
+            "zhist",
+            "duohist",
+            "notuss-ac",
+            "cotabflu",
+            "jaycof-hc",
+            "vanex",
+            "ztuss",
+            "phendal-hd",
+            "tuss-pd",
+            "echotuss-hc",
+            "hydrocof-hc",
+            "entre-s",
+            "ryna-c",
+            "despec-pdc",
+            "zutripro",
+            "chlorate",
+            "vituz",
+            "tuzistra",
+            "tuxarin",
+            "clorrelief"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorpromazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "largactil",
+            "thorazine",
+            "dozine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorpropamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diabinese",
+            "insulase"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "chlorthalidone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "combipres",
+            "tenoretic",
+            "atenixco",
+            "hygroton",
+            "tenchlor",
+            "totaretic",
+            "regroton",
+            "thalitone",
+            "clorpres",
+            "demi-regroton",
+            "tenoret",
+            "edarbyclor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ciclesonide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "alvesco",
+            "omnaris",
+            "zetonna",
+            "aservo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cilastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "primaxin",
+            "recarbrio"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cilostazol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pletal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cimetidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "algitec",
+            "dyspamet",
+            "galenamet",
+            "phimetin",
+            "tagamet",
+            "ultec",
+            "zita"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cinnarizine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cinazi\u00e8re"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ciprofloxacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ciproxin",
+            "cipro",
+            "ciloxan",
+            "ciprodex",
+            "ciproflaxacin",
+            "proquin",
+            "cetraxal",
+            "otiprio",
+            "otovel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cisatracurium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nimbex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cisplatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "platinol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "citalopram",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cipramil",
+            "celexa",
+            "citalopraam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cladribine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mavenclad"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clarithromycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "biaxin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clavulanate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "timentin",
+            "augmentin",
+            "amoxicillinan",
+            "amoclan",
+            "clavamox",
+            "clavacillin",
+            "betacillin",
+            "umbrellin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clindamycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "antirobe",
+            "cleocin",
+            "clinda-derm",
+            "benzaclin",
+            "clindets",
+            "clindagel",
+            "duac",
+            "clindamax",
+            "clindesse",
+            "evoclin",
+            "ziana",
+            "cleocin-t",
+            "acanya",
+            "clindareach",
+            "clindarobe",
+            "clintabs",
+            "clinsol",
+            "pledgaclin",
+            "veltin",
+            "clindacure",
+            "clindacin",
+            "zydaclin",
+            "clindamed",
+            "neuac",
+            "clindrops",
+            "onexton",
+            "clinda-guard",
+            "xaciato",
+            "cabtreo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clofazimine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lamprene"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clomiphene",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "serophene",
+            "clomid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clomipramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "anafranil",
+            "clomicalm",
+            "caniquell"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clonidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "combipres",
+            "dixarit",
+            "catapres",
+            "clorpres",
+            "duraclon",
+            "kapvay",
+            "nexiclon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clopidogrel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "plavix"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clotrimazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "canesten",
+            "lotrimin",
+            "mycelex",
+            "femcare",
+            "lotrisone",
+            "mycelex-g",
+            "masnoderm",
+            "dermatin",
+            "pedesil",
+            "vetromax",
+            "clotrimazoil",
+            "fungazoil",
+            "alevazol",
+            "malotic",
+            "remicin",
+            "motazol",
+            "otomax",
+            "mometamax",
+            "pattotic",
+            "fungistat",
+            "maxi-otic",
+            "lozatom",
+            "jock-eze",
+            "mometazole",
+            "mometavet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "clozapine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "clozaril",
+            "fazaclo",
+            "versacloz"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cobalamin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eldertonic",
+            "anemagen",
+            "crystamine",
+            "cyanoject",
+            "cyomin",
+            "neuroforte-r",
+            "poly-vi-sol",
+            "sytobex",
+            "vibal",
+            "foltx",
+            "nascobal",
+            "fetrin",
+            "primabalt",
+            "foltrate",
+            "folbalin",
+            "folbee",
+            "folbic",
+            "allanfol",
+            "folplex",
+            "rena-vite",
+            "foltabs",
+            "calomist",
+            "vita-respa",
+            "nufol",
+            "multigen",
+            "biferarx",
+            "folcaps",
+            "mi-omega",
+            "ferotrin",
+            "ferocon",
+            "ferotrinsic",
+            "ferraplus",
+            "folbecal",
+            "hemax",
+            "nephrocaps",
+            "vanachol",
+            "multi-delyn",
+            "folgard",
+            "cenfol",
+            "fumatinic",
+            "lactocal",
+            "vitafol-one",
+            "foleve",
+            "folnate",
+            "natafort",
+            "infuvite",
+            "hematogen",
+            "feogen",
+            "ferrogels",
+            "niva-fol",
+            "dodex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "codeine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "codafen",
+            "ambenyl",
+            "bron-tuss",
+            "brontex",
+            "calcidrine",
+            "codafed",
+            "colrex",
+            "cycofed",
+            "demi-cof",
+            "dicomal-ph",
+            "dihistine",
+            "glydeine",
+            "guai-co",
+            "kg-fed",
+            "m-phen",
+            "nucochem",
+            "nucodine",
+            "nucofed",
+            "pediacof",
+            "pedituss",
+            "rolatuss",
+            "statuss",
+            "tussirex",
+            "phenco-care",
+            "vopac",
+            "gencofed",
+            "codeprex",
+            "codrix",
+            "notuss-ac",
+            "notuss-dc",
+            "cotabflu",
+            "vanacof",
+            "nucotuss",
+            "cocet",
+            "notuss-pe",
+            "execlear-c",
+            "airacof",
+            "pyregesic",
+            "tylagesic",
+            "ryna-c",
+            "bitex",
+            "alphen",
+            "cyndal",
+            "endotuss",
+            "biotussin",
+            "cheratussin",
+            "co-histine",
+            "codahistine",
+            "decohistine",
+            "deproist",
+            "novagest",
+            "phenhist",
+            "ryna-cx",
+            "suttar",
+            "tussar",
+            "codegest",
+            "tusso-c",
+            "zotex-c",
+            "notuss-nxd",
+            "notuss-nx",
+            "nasotuss",
+            "pluratuss",
+            "ascomp",
+            "tuzistra",
+            "tuxarin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "colchicine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "colcrys",
+            "mitigare",
+            "gloperba",
+            "lodoco"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "colesevelam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "welchol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "collagenase",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "santyl"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cromolyn",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cusilyn",
+            "intal",
+            "opticrom",
+            "viz-on",
+            "nasalcrom",
+            "crolom",
+            "gastrocrom",
+            "rynacrom"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cyclophosphamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "endoxana",
+            "cytoxan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cycloserine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "seromycin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cyclosporine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sandimmune",
+            "neoral",
+            "sangcya",
+            "gengraf",
+            "restasis",
+            "atopica",
+            "cyslosporine",
+            "optimmune",
+            "cequa",
+            "cyclavance",
+            "verkazia",
+            "vevye",
+            "sporimune"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cyproheptadine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "periactin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cyproterone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cyprostat"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "cytarabine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "alexan",
+            "cytosar-u",
+            "cytosar",
+            "depocyt",
+            "vyxeos"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "danazol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "danocrine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dantrolene",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dantrium",
+            "revonto",
+            "ryanodex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dapsone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aczone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "daptomycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cubicin",
+            "dapzura"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "darunavir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prezista",
+            "prezcobix",
+            "symtuza"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dasatinib",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sprycel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "deferoxamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "desferal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "demeclocycline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "declomycin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "deoxycholate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "kybella"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "desflurane",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "suprane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "desipramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pertofrane",
+            "norpramin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "desmopressin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ddavp",
+            "stimate",
+            "minirin",
+            "noctiva",
+            "nocdurna"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "desogestrel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "desogen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dexamethasone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "maxitrol",
+            "hexadrol",
+            "dexasone",
+            "maxidex",
+            "decaspray",
+            "aeroseb-dex",
+            "ak-dex",
+            "ak-neo-dex",
+            "ak-trol",
+            "dalalone",
+            "decadron-la",
+            "dexacidin",
+            "dexacine",
+            "dexacort-la",
+            "dexasol",
+            "dexasporin",
+            "methadex",
+            "neo-decadron",
+            "neo-dex",
+            "neo-dexair",
+            "poly-dex",
+            "tobradex",
+            "decadron",
+            "ocu-dex",
+            "ocu-trol",
+            "ciprodex",
+            "robadex",
+            "eyetrol",
+            "neopolydex",
+            "ozurdex",
+            "baycadron",
+            "dexaject",
+            "tresaderm",
+            "dexium",
+            "dexycu",
+            "dextenza",
+            "hemady"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dextran",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "macrodex",
+            "promit"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dextroamphetamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "adderall",
+            "dexedrine",
+            "dextrostat",
+            "durophet",
+            "liquadd",
+            "procentra",
+            "zenzedi",
+            "mydayis",
+            "xelstrym"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dextrose",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emetrol",
+            "glutose",
+            "monojel",
+            "ionosol-b",
+            "ionosol-mb",
+            "ionosol-t",
+            "normosol-m",
+            "navstel",
+            "glucoburst"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "diazepam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dialar",
+            "rimapam",
+            "tensium",
+            "valclair",
+            "valium",
+            "diazemuls",
+            "stesolid",
+            "d-val",
+            "diastat",
+            "dizac",
+            "valrelease",
+            "zetran",
+            "solis",
+            "alupram",
+            "atensine",
+            "evacalm",
+            "valicot",
+            "valtoco"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dibucaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rectacaine",
+            "nupercainal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "diclofenac",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "voltarol",
+            "arthrotec",
+            "flector",
+            "dicloflex",
+            "diclozip",
+            "flamrase",
+            "isclofen",
+            "lofensaid",
+            "rhumalgan",
+            "valenac",
+            "volraman",
+            "voltarene",
+            "diclotard",
+            "voltaren",
+            "cataflam",
+            "acoflam",
+            "solaraze",
+            "diclovol",
+            "zipsor",
+            "cambia",
+            "pennsaid",
+            "zorvolex",
+            "dyloject",
+            "licart",
+            "lofena",
+            "trifena"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dicloxacillin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dynapen",
+            "dycill"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "didanosine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "videx",
+            "viden"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "diethylstilbestrol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "apstil",
+            "stilphostrol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "digoxin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cardoxin",
+            "lanoxin",
+            "lanoxicaps",
+            "digitek",
+            "digox"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dihydroergotamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "migranal",
+            "trudhesa"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dihydroxyacetone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vitadye",
+            "chromelin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "diltiazem",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "angiozem",
+            "britiazim",
+            "metazem",
+            "slozem",
+            "tildiem",
+            "calazem",
+            "cardizem",
+            "teczem",
+            "tiazac",
+            "kentiazem",
+            "tiamate",
+            "calcicard",
+            "taztia",
+            "cartia",
+            "dilt",
+            "diltzac",
+            "diltia",
+            "dilacor",
+            "matzim",
+            "tiadylt"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dinoprostone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prepidil",
+            "cervidil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "diphenhydramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diphenyl",
+            "sominex",
+            "paxidorm",
+            "benadryl",
+            "aler-dryl",
+            "allergia-c",
+            "allermax",
+            "altaryl",
+            "antihist",
+            "banophen",
+            "beldin",
+            "belix",
+            "bydramine",
+            "di-delamine",
+            "diphedryl",
+            "diphenadryl",
+            "diphendryl",
+            "diphenhist",
+            "diphenylin",
+            "dytuss",
+            "genahist",
+            "hydramine",
+            "nervine",
+            "nu-med",
+            "pardryl",
+            "siladryl",
+            "sleepinal",
+            "somnicaps",
+            "tusstat",
+            "twilite",
+            "uni-hist",
+            "valu-dryl",
+            "derma-pax",
+            "dytan",
+            "dytan-d",
+            "tussinate",
+            "dytan-cs",
+            "dytan-hc",
+            "aldex-ct",
+            "dytan-at",
+            "dytan-cd",
+            "calagel",
+            "respa-sa",
+            "tekral",
+            "airacof",
+            "wal-dryl",
+            "compoz",
+            "wal-dryl-d",
+            "calohist",
+            "hc-derma-pax",
+            "nytol",
+            "sleeptabs",
+            "sleep-eze",
+            "benekraft",
+            "siladyl",
+            "acetadryl",
+            "dermamycin",
+            "zzzquil",
+            "ivarest",
+            "sebrx",
+            "vetadryl",
+            "wal-som",
+            "zzztime",
+            "z-sleep",
+            "somnapure",
+            "dalay",
+            "vanamine",
+            "dormin",
+            "tact"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "diphenoxylate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lomotil",
+            "di-atro",
+            "dimotal",
+            "lomocot",
+            "lonox",
+            "vi-atro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dipivefrine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "propine",
+            "ak-pro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "disulfiram",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "antabuse"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dobutamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dobutrex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "docetaxel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "taxotere",
+            "docefrez",
+            "docivyx"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "docusate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "colace",
+            "ferro-sequels",
+            "peri-colace",
+            "doxidan",
+            "aqualax",
+            "dok",
+            "dialose",
+            "dioctyn",
+            "docal",
+            "docucal",
+            "docucal-p",
+            "doculax",
+            "kasof",
+            "octycine",
+            "senokot-s",
+            "unilax",
+            "docusol",
+            "senosol-ss",
+            "senexon-s",
+            "purgasol",
+            "prenexa",
+            "ferraplus",
+            "hemax",
+            "promolaxin",
+            "enemeez",
+            "therevac",
+            "pet-ema",
+            "docusoft-s",
+            "doculase",
+            "dulcoease",
+            "laxacin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dolutegravir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tivicay",
+            "triumeq",
+            "juluca",
+            "dovato"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "donepezil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aricept",
+            "namzaric",
+            "adlarity"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "doripenem",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "doribax"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "dorzolamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "trusopt",
+            "cosopt"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "doxepin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zonalon",
+            "adapin",
+            "sinequan",
+            "prudoxin",
+            "silenor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "doxorubicin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "adriamycin",
+            "doxil",
+            "lipodox",
+            "caelyx"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "doxycycline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vibramycin",
+            "doryx",
+            "doxy-caps",
+            "monodox",
+            "periostat",
+            "vibra-tabs",
+            "adoxa",
+            "bio-tab",
+            "doxal",
+            "doxy",
+            "pelodis",
+            "oracea",
+            "alodox",
+            "oraxyl",
+            "avidoxy",
+            "ocudox",
+            "morgidox",
+            "acticlate",
+            "mondoxyne",
+            "targadox",
+            "soloxide",
+            "okebo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "duloxetine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cymbalta",
+            "irenka",
+            "drizalma"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "econazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pevaryl",
+            "ecostatin",
+            "spectazole",
+            "ecoza"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "edrophonium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "enlon",
+            "tensilon",
+            "enlon-plus",
+            "reversol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "edta",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "disotate",
+            "endrate",
+            "meritate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "efavirenz",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sustiva",
+            "atripla",
+            "symfi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "empagliflozin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "jardiance",
+            "glyxambi",
+            "synjardy",
+            "trijardy"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "emtricitabine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emtriva",
+            "truvada",
+            "atripla",
+            "complera",
+            "stribild",
+            "genvoya",
+            "odefsey",
+            "descovy",
+            "biktarvy",
+            "symtuza"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "enalapril",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "innovace",
+            "renitec",
+            "vaseretic",
+            "lexxel",
+            "teczem",
+            "vasotec",
+            "epaned"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "enflurane",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ethrane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "enoxaparin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lovenox"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "entacapone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "comtess",
+            "comtan",
+            "stalevo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "entecavir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "baraclude"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ephedrine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "quadrinal",
+            "ami-rax",
+            "broncholate",
+            "bronkaid",
+            "kie",
+            "lufyllin-epg",
+            "marax",
+            "mudrane",
+            "pretz-d",
+            "bronkolixir",
+            "akovaz",
+            "corphedra",
+            "emerphed",
+            "rezipres"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "epinephrine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "medihaler-epi",
+            "glaucon",
+            "epifrin",
+            "ana-guard",
+            "asthmahaler",
+            "bronitin",
+            "simplene",
+            "septocaine",
+            "epinal",
+            "iontocaine",
+            "lignospan",
+            "lidosite",
+            "zorcaine",
+            "twinject",
+            "epipen",
+            "articadent",
+            "adrenaclick",
+            "vivacaine",
+            "auvi-q",
+            "ganda",
+            "orabloc",
+            "adrenalin",
+            "ultacan",
+            "symjepi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "eplerenone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "inspra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "epoprostenol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "flolan",
+            "veletri"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "eptifibatide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "integrilin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ergocalciferol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "drisdol",
+            "deltalin",
+            "calcidol",
+            "calel-d"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ertapenem",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "invanz"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "erythromycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pediazole",
+            "staticin",
+            "aknemycin",
+            "akne-mycin",
+            "benzamycin",
+            "eryzole",
+            "arpimycin",
+            "rommix",
+            "erymin",
+            "ilotycin",
+            "e-mycin",
+            "ery-tab",
+            "eryderm",
+            "robimycin",
+            "erygel",
+            "eryc",
+            "erycette",
+            "erymax",
+            "t-stat",
+            "eryped",
+            "erythroped",
+            "ilosone",
+            "del-mycin",
+            "emgel",
+            "ery-sol",
+            "erythra-derm",
+            "erythrocot",
+            "my-e",
+            "romycin",
+            "sulfimycin",
+            "theramycin",
+            "stiemycin",
+            "erythrolar",
+            "erythromicin",
+            "eyemycin",
+            "erythrocin",
+            "ery",
+            "pce",
+            "maracyn",
+            "ornacyn",
+            "gallimycin",
+            "aktipak"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "erythropoietin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eprex",
+            "epogen",
+            "procrit",
+            "retacrit"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "escitalopram",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lexapro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "esmolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "brevibloc"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "estramustine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emcyt",
+            "estracyt"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "estriol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "incurin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "etanercept",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "enbrel",
+            "eticovo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ethambutol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "myambutol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ethinylestradiol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "estinyl",
+            "desogen",
+            "alesse",
+            "levlen",
+            "levlite",
+            "levora",
+            "ovral",
+            "femhrt",
+            "cryselle",
+            "ortho-cyclen",
+            "angeliq",
+            "tri-levlen",
+            "nuvaring",
+            "lybrel",
+            "jinteli",
+            "jevantique",
+            "xulane",
+            "fyavolv",
+            "annovera",
+            "eluryng",
+            "twirla",
+            "zafemy",
+            "haloette",
+            "enilloring"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ethionamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "trecator",
+            "trecator-sc"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "etomidate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "amidate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "etonogestrel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "implanon",
+            "nuvaring",
+            "nexplanon",
+            "eluryng",
+            "haloette",
+            "enilloring"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "etoposide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vepesid",
+            "toposar",
+            "etopophos"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "exenatide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "byetta",
+            "bydureon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ezetimibe",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zetia",
+            "vytorin",
+            "liptruzet",
+            "nexlizet",
+            "roszet",
+            "lypqozet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "famotidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pepcid",
+            "fluxid",
+            "calmicid",
+            "duexis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "febuxostat",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "uloric"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fenfluramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ponderax",
+            "pondimin",
+            "fintepla"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fenofibrate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lipanthyl",
+            "tricor",
+            "lofibra",
+            "antara",
+            "triglide",
+            "triblide",
+            "lipofen",
+            "fenoglide",
+            "fenochol",
+            "trilipix",
+            "fibricor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fenoldopam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "corlopam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fentanyl",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sublimaze",
+            "innovar",
+            "duragesic",
+            "actiq",
+            "fentora",
+            "onsolis",
+            "abstral",
+            "lazanda",
+            "subsys",
+            "recuvyra",
+            "ionsys"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fexofenadine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "allegra-d",
+            "allegra",
+            "wal-fex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "flecainide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tambocor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluconazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diflucan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "flucytosine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ancobon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fludarabine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "oforta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fludrocortisone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "florinef"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "flumazenil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "romazicon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluorescein",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "fluoracaine",
+            "flucaine",
+            "altafluor",
+            "flurox",
+            "fluress"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluorometholone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eflone",
+            "flarex",
+            "fluor-op",
+            "fml-s",
+            "fml",
+            "tobraflex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluorouracil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "adrucil",
+            "fluoroplex",
+            "efudex",
+            "carac",
+            "tolak"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluoxetine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prozac",
+            "rapiflux",
+            "symbyax",
+            "sarafem",
+            "reconcile",
+            "selfemra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluphenazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prolixin",
+            "moditen",
+            "permitil",
+            "decazate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "flutamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eulexin",
+            "chimax"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluticasone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "flonase",
+            "cutivate",
+            "flovent",
+            "advair",
+            "veramyst",
+            "dymista",
+            "breo",
+            "arnuity",
+            "clarispray",
+            "nasoflow",
+            "aller-flo",
+            "airduo",
+            "armonair",
+            "trelegy",
+            "xhance",
+            "fluticare",
+            "wixela",
+            "beser"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fluvastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lescol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fomepizole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "antizol",
+            "antizol-vet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fondaparinux",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arixtra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "formoterol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "foradil",
+            "symbicort",
+            "perforomist",
+            "dulera",
+            "bevespi",
+            "duaklir",
+            "breztri",
+            "breyna"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "foscarnet",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "foscavir"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "framycetin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "soframycin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "frovatriptan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "frova"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fructose",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emetrol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "fulvestrant",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "faslodex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "furosemide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dryptal",
+            "froop",
+            "frusid",
+            "rusyde",
+            "frusemek",
+            "lasix",
+            "lo-aqua",
+            "frusol",
+            "diuresal",
+            "aluzine",
+            "frumax",
+            "frusetic",
+            "delone",
+            "furocot",
+            "disal",
+            "furoquid",
+            "furoscix"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "gabapentin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "neurontin",
+            "gabarone",
+            "gralise",
+            "horizant"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "galantamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "reminyl",
+            "razadyne"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "gallamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "flaxedil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "gallium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ganite"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ganciclovir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cymevene",
+            "cytovene",
+            "vitrasert",
+            "zirgan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "gatifloxacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tequin",
+            "zymar",
+            "zymaxid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "gentamicin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "garamycin",
+            "genoptic",
+            "g-myticin",
+            "ed-mycin",
+            "gentacidin",
+            "gentak",
+            "gentasol",
+            "pred-g",
+            "ocu-mycin",
+            "gentafair",
+            "gentaved",
+            "legacy",
+            "easotic",
+            "gentacalm",
+            "vetromax",
+            "gentaspray",
+            "genone",
+            "gentaotic",
+            "malotic",
+            "relifor",
+            "remicin",
+            "motazol",
+            "otomax",
+            "mometamax",
+            "garasol",
+            "pattotic",
+            "vetaderm",
+            "maxi-otic",
+            "lozatom",
+            "mometazole",
+            "mometavet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "glipizide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "glibenese",
+            "minidiab",
+            "glucotrol",
+            "metaglip"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "glucagon",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "glucagen",
+            "baqsimi",
+            "gvoke"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "glucosamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cidaflex",
+            "cosamin",
+            "schiff",
+            "optiflex-g",
+            "synovacin",
+            "tripleflex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "glutaraldehyde",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "verucasep",
+            "glutarol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "glycerin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aci-jel",
+            "osmoglyn",
+            "introl",
+            "neutracett",
+            "pretz",
+            "minica",
+            "sani-supp",
+            "regener-eyes"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "goserelin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zoladex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "griseofulvin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "gris-peg",
+            "fulvicin-u-f",
+            "griseofulicin",
+            "griseofulvic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "halothane",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "fluothane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hyaluronidase",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "amphadase",
+            "vitrase",
+            "hydase",
+            "hylenex",
+            "phesgo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hydralazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "apresazide",
+            "apresoline",
+            "hydrap-es",
+            "marpres",
+            "ser-ap-es",
+            "serathide",
+            "serpazide",
+            "serpex",
+            "tri-hydroserpine",
+            "unipres",
+            "hhr",
+            "bidil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hydrochlorothiazide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aldactazide",
+            "capozide",
+            "dyazide",
+            "maxzide",
+            "ziac",
+            "zestoretic",
+            "apresazide",
+            "accuretic",
+            "zida-co",
+            "cozaar-comp",
+            "esimil",
+            "vaseretic",
+            "esidrix",
+            "oretic",
+            "hydrodiuril",
+            "carozide",
+            "diaqua",
+            "ezide",
+            "hydrap-es",
+            "hydro-reserp",
+            "hydroserp",
+            "hydroserpine",
+            "hyzaar",
+            "loqua",
+            "mallopress",
+            "marpres",
+            "microzide",
+            "prinzide",
+            "ser-ap-es",
+            "serathide",
+            "serpazide",
+            "serpex",
+            "tri-hydroserpine",
+            "unipres",
+            "uniretic",
+            "avalide",
+            "hhr",
+            "micardis-hct",
+            "timolide",
+            "quinaretic",
+            "prinize",
+            "trandide",
+            "hydrocot",
+            "hydrokraft",
+            "aldoril",
+            "amturnide",
+            "moduretic",
+            "dutoprol",
+            "monopril-hct",
+            "moduret",
+            "hydropres",
+            "tribenzor",
+            "oreticyl"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hydrocortisone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cortisporin",
+            "proctofoam-hc",
+            "terra-cortril",
+            "epifoam",
+            "locoid",
+            "corticaine",
+            "cortifoam",
+            "ophthocort",
+            "proctocream-hc",
+            "anusol-hc",
+            "efcortesol",
+            "hydrocortistab",
+            "nystaform-hc",
+            "cortenema",
+            "aeroseb-hc",
+            "cetacort",
+            "cort-dome",
+            "cortef",
+            "dermacort",
+            "hydrocortone",
+            "hytone",
+            "nutracort",
+            "proctocort",
+            "solu-cortef",
+            "a-hydrocort",
+            "ala-cort",
+            "ala-quin",
+            "analpram-hc",
+            "anucort-hc",
+            "balneol",
+            "caldecort",
+            "cortaid",
+            "cortane",
+            "cortatrigen",
+            "cortisporin-tc",
+            "cortomycin",
+            "cotacort",
+            "dermolate",
+            "drotic",
+            "ear-eze",
+            "earsol-hc",
+            "enzone",
+            "gly-cort",
+            "hycort",
+            "hydrocortisone-aloe",
+            "hysone",
+            "ivocort",
+            "lacticare-hc",
+            "mantadil",
+            "neo-cortef",
+            "ocu-cort",
+            "otimar",
+            "otobiotic",
+            "pandel",
+            "pediotic",
+            "penecort",
+            "pramosone",
+            "procort",
+            "proctocream",
+            "rederm",
+            "sarnol-hc",
+            "scalp-aid",
+            "scalp-cort",
+            "steroform",
+            "texacort",
+            "theracort",
+            "tri-otic",
+            "vanoxide-hc",
+            "vio-tex-hc",
+            "vytone",
+            "westcort",
+            "efcortelan",
+            "dioderm",
+            "cortic",
+            "lazersporin-c",
+            "colocort",
+            "proctozone-h",
+            "cort-biotic",
+            "dermazene",
+            "exotic-hc",
+            "oti-sone",
+            "otocort",
+            "masporin",
+            "instacort",
+            "otirx",
+            "u-cort",
+            "encort",
+            "procto-pak",
+            "novacort",
+            "alcortin",
+            "cortane-b",
+            "rectacreame",
+            "proctocare-hc",
+            "nuzon",
+            "hydropramox",
+            "lodocortisone",
+            "lodocort",
+            "gynecort",
+            "peranex",
+            "micort-hc",
+            "procto-kit",
+            "coraz",
+            "otocidin",
+            "corticool",
+            "massengill",
+            "lidocort",
+            "xebcort",
+            "nucort",
+            "scalacort",
+            "trioxin",
+            "zypram",
+            "cortalo",
+            "ala-scalp",
+            "propet",
+            "xerese",
+            "rectagel",
+            "ana-lex",
+            "lidazone",
+            "maximum-h",
+            "beta-hc",
+            "rectacreme",
+            "hydroskin",
+            "hc-derma-pax",
+            "z-pram",
+            "myoxin",
+            "pramcort",
+            "biocorneum",
+            "easotic",
+            "hemril",
+            "proctosol",
+            "zoto-hc",
+            "rhulicort",
+            "kera-hc",
+            "cortratigen",
+            "rectacort-hc",
+            "resicort",
+            "hemmorex",
+            "procto-med",
+            "cortizone",
+            "malacetic",
+            "alkindi",
+            "clinicalm",
+            "skynplex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hydromorphone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dilaudid",
+            "palladone",
+            "hydrostat",
+            "exalgo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hydroxychloroquine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "plaquenil",
+            "quineprox",
+            "sovuna"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hypochlorite",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "di-dak-sol",
+            "anasept",
+            "hysept",
+            "veteribac"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ibuprofen",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "apsifen",
+            "cuprofen",
+            "ebufac",
+            "fenbid",
+            "ibuleve",
+            "isisfen",
+            "lidifen",
+            "migrafen",
+            "pacifene",
+            "proflex",
+            "relcofen",
+            "rimafen",
+            "inoven",
+            "advil",
+            "brufen",
+            "motrin",
+            "ibumetin",
+            "nuprin",
+            "rufen",
+            "cap-profen",
+            "dolgesic",
+            "genpril",
+            "haltran",
+            "ibu",
+            "ibu-tab",
+            "menadol",
+            "q-profen",
+            "tab-profen",
+            "uni-pro",
+            "vicoprofen",
+            "junifen",
+            "ibumousse",
+            "ibren",
+            "ibrufhalal",
+            "ibular",
+            "paxofen",
+            "ibumed",
+            "combunox",
+            "reprexain",
+            "neoprofen",
+            "wal-profen",
+            "ibuprohm",
+            "caldolor",
+            "addaprin",
+            "ultraprin",
+            "duexis",
+            "proprinal",
+            "ibutab",
+            "ibudone",
+            "xylon",
+            "combogesic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ibutilide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "corvert"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "icatibant",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "firazyr",
+            "sajazir"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ifosfamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ifex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "imatinib",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "gleevec"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "imipramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tofranil",
+            "tofranil-pm",
+            "pramimil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "imiquimod",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aldara",
+            "zyclara"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "indinavir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "crixivan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "indomethacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "artracin",
+            "imbrilon",
+            "indocid",
+            "indomax",
+            "indomod",
+            "rimacid",
+            "indocin",
+            "indoflex",
+            "indolar",
+            "mobilan",
+            "slo-indo",
+            "tivorbex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "infliximab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "remicade",
+            "inflectra",
+            "renflexis",
+            "avsola",
+            "zymfentra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ipratropium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "atrovent",
+            "combivent",
+            "duoneb"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "irbesartan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "avapro",
+            "avalide"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "isoflurane",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "forane",
+            "attane",
+            "terrell",
+            "isoflo",
+            "fluriso",
+            "isothesia",
+            "isosol",
+            "isospire"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "isoniazid",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rifater",
+            "rifamate",
+            "tubizid",
+            "soniazio",
+            "isonarif"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "isosorbide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "angeze",
+            "elantan",
+            "imdur",
+            "isotrate",
+            "monit",
+            "mono-cedocard",
+            "ketanodur",
+            "ismo",
+            "monoket",
+            "monodur"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "isotretinoin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "accutane",
+            "isotrex",
+            "amnest",
+            "amnesteem",
+            "sotret",
+            "claravis",
+            "myorisan",
+            "absorica",
+            "zenatane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "itraconazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sporanox",
+            "hyphanox",
+            "onmel",
+            "tolsura"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ivermectin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "stromectol",
+            "eqvalan",
+            "mectizan",
+            "zimecterin",
+            "bimectin",
+            "ivermax",
+            "equimax",
+            "equell",
+            "noromectin",
+            "vetrimec",
+            "endo-mectin",
+            "agri-mectin",
+            "ivomec",
+            "heartgard",
+            "acarexx",
+            "agrimectin",
+            "sklice",
+            "quadriguard",
+            "ivercare",
+            "promectin",
+            "privermectin",
+            "iver-on",
+            "duramectin",
+            "ivercide",
+            "iverchoice",
+            "soolantra",
+            "duocare",
+            "iverhart",
+            "imectro",
+            "vetrishield"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ketamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ketalar",
+            "ketaflo",
+            "ketaved",
+            "keta-thesia",
+            "vetalar",
+            "ketaset",
+            "ketathesia",
+            "ketaject",
+            "ketacine",
+            "zetamine",
+            "vetaket"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ketoconazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nizoral",
+            "kuric",
+            "xolegel",
+            "feoris",
+            "extina",
+            "pharmaseb",
+            "ketodan",
+            "vital-ketodine",
+            "mal-a-ket",
+            "ketochlor",
+            "keto-c",
+            "malacetic",
+            "recorlev"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ketoprofen",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "alrheumat",
+            "fenoket",
+            "ketocid",
+            "ketonal",
+            "ketovail",
+            "oruvail",
+            "powergel",
+            "ketotard",
+            "orudis",
+            "actron",
+            "ketofen",
+            "ketomed",
+            "kiprofen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ketorolac",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "toradol",
+            "acular",
+            "acuvail",
+            "sprix",
+            "omidria"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ketotifen",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zaditor",
+            "zaditen",
+            "alaway"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "labetalol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "labrocol",
+            "trandate",
+            "normodyne",
+            "trandide"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lactulose",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "duphalac",
+            "cephulac",
+            "cholac",
+            "chronulac",
+            "constilac",
+            "constulose",
+            "enulose",
+            "evalose",
+            "generlac",
+            "heptalac",
+            "kristalose",
+            "catulac",
+            "ro-lactulose"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lamivudine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "combivir",
+            "epivir",
+            "trizivir",
+            "epzicom",
+            "triumeq",
+            "cimduo",
+            "symfi",
+            "delstrigo",
+            "dovato",
+            "temixys"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lamotrigine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lamictal",
+            "subvenite"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lansoprazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prevacid",
+            "zoton"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "latanoprost",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xalatan",
+            "xelpros",
+            "rocklatan",
+            "iyuzeh"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lecithin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lecithin-softgels"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "leflunomide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arava"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lenalidomide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "revlimid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "letrozole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "femara"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "leucovorin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "refolinon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "levamisole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ergamisol",
+            "valcor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "levodopa",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "madopar",
+            "sinemet",
+            "brocadopa",
+            "larodopa",
+            "atamet",
+            "dopar",
+            "carbodopa",
+            "parcopa",
+            "stalevo",
+            "rytary",
+            "duopa",
+            "inbrija",
+            "dhivy"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "levofloxacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "levaquin",
+            "quixin",
+            "iquix"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lidocaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emla",
+            "instillagel",
+            "solarcaine",
+            "vagisil",
+            "xylocaine",
+            "anestacaine",
+            "anestacon",
+            "bactine",
+            "d-caine",
+            "dermaflex",
+            "dilocaine",
+            "ela-max",
+            "l-caine",
+            "lidomar",
+            "nervocaine",
+            "truxacaine",
+            "zilactin-l",
+            "xylocard",
+            "lidoderm",
+            "octocaine",
+            "oraqix",
+            "duocaine",
+            "licodaine",
+            "mylocaine",
+            "iontocaine",
+            "lignospan",
+            "lidosite",
+            "rectacreame",
+            "lidodan",
+            "synera",
+            "lidamantle",
+            "senatec",
+            "mercuroclear",
+            "pliaglis",
+            "zingo",
+            "lidopen",
+            "peranex",
+            "lidocream",
+            "staphaseptic",
+            "anecream",
+            "lidocort",
+            "akten",
+            "lta",
+            "lmx",
+            "rectagel",
+            "ana-lex",
+            "lidazone",
+            "regenecare",
+            "lidoject",
+            "lidum",
+            "lidoworx",
+            "rectacreme",
+            "cutiecaine",
+            "anestafoam",
+            "procomycin",
+            "soulus",
+            "hexa-caine",
+            "keepan",
+            "recticare",
+            "lidopatch",
+            "lidovir",
+            "sonacaine",
+            "zcaine",
+            "hemaway",
+            "unburn",
+            "lenzapatch",
+            "lenzagel",
+            "allercaine",
+            "lidopro",
+            "lidostat",
+            "cicloferon",
+            "xolido",
+            "neuromed",
+            "alocane",
+            "vexa",
+            "radiaguard",
+            "puroxcin",
+            "glydo",
+            "comfortcaine",
+            "dermacool",
+            "silvera",
+            "topicaine",
+            "relador",
+            "lidotral",
+            "zensa",
+            "lexifen",
+            "lidocare",
+            "burnx",
+            "tranzarel",
+            "alocaine",
+            "cidaleaze",
+            "lidozen",
+            "ztlido",
+            "workvie",
+            "kool-down",
+            "bio-kool",
+            "lipocaine",
+            "omeza",
+            "hush",
+            "zionodil",
+            "lydexa",
+            "niravi",
+            "lidotran",
+            "lidocan",
+            "trifena",
+            "bruselix"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "linezolid",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zyvox"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "liothyronine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cytomel",
+            "thyrolar",
+            "triostat"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "liraglutide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "victoza",
+            "saxenda",
+            "xultophy"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lisinopril",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zestoretic",
+            "carace",
+            "zestril",
+            "prinivil",
+            "prinzide",
+            "prinize",
+            "qbrelis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "loperamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arret",
+            "diocaps",
+            "imodium",
+            "loperagen",
+            "normaloe",
+            "lodiar",
+            "anti-diarrhea",
+            "diamode",
+            "diar-aid",
+            "imotil",
+            "kao-paverin",
+            "norimode",
+            "diareze",
+            "enterocina",
+            "vaprino"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "loratadine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "claritin",
+            "claritin-d",
+            "alavert",
+            "agistam",
+            "clear-atadine",
+            "clear-atadine-d",
+            "wal-itin",
+            "loradamed",
+            "wal-vert",
+            "allerclear"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lorazepam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ativan",
+            "almazine",
+            "loreev"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lorcaserin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "belviq"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "losartan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cozaar",
+            "cozaar-comp",
+            "hyzaar"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "lovastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mevacor",
+            "advicor",
+            "altocor",
+            "altoprev"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "malathion",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "suleo-m",
+            "ovide",
+            "prioderm"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mannitol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "osmitrol",
+            "resectisol",
+            "bronchitol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "maraviroc",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "selzentry"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mebendazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pripsen",
+            "vermox",
+            "emverm"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mefloquine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lariam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "meloxicam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mobic",
+            "mobicox",
+            "metacam",
+            "loxicom",
+            "meloxidyl",
+            "ostilox",
+            "eloxiject",
+            "vivlodex",
+            "eloxioral",
+            "qmiiz",
+            "alloxate",
+            "anjeso",
+            "zynrelef",
+            "meloxivet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "memantine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "namenda",
+            "namzaric"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mepivacaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "carbocaine",
+            "isocaine",
+            "scandonest",
+            "polocaine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mepolizumab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nucala"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mesalazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "canasa",
+            "pentasa",
+            "asacol",
+            "rowasa",
+            "fiv-asa",
+            "lialda",
+            "apriso",
+            "delzicol",
+            "zaldyon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mesna",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mesnex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "metformin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "glucamet",
+            "glucophage",
+            "glucovance",
+            "avandamet",
+            "metaglip",
+            "riomet",
+            "fortamet",
+            "metforming",
+            "glumetza",
+            "kazano",
+            "jentadueto",
+            "prandimet",
+            "kombiglyze",
+            "janumet",
+            "invokamet",
+            "xigduo",
+            "synjardy",
+            "segluromet",
+            "trijardy",
+            "qternmet",
+            "zituvimet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methadone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "methadose",
+            "methex",
+            "physeptone",
+            "dolophine",
+            "diskets"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methenamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "hiprex",
+            "atrosept",
+            "cystemms-v",
+            "cystex",
+            "dolsed",
+            "uaa",
+            "urapine",
+            "uretron",
+            "urex",
+            "urised",
+            "urisedamine",
+            "uritin",
+            "uro-phosphate",
+            "urogesic-blue",
+            "urimax",
+            "mandelamine",
+            "msp-blu",
+            "urelle",
+            "mhp-a",
+            "usept",
+            "utira",
+            "utac",
+            "darcalma",
+            "darpaz",
+            "utrona-c",
+            "uticap",
+            "uribel",
+            "uritact",
+            "hyophen",
+            "phosphasal",
+            "ustell",
+            "prosed",
+            "uri-sep",
+            "urimar",
+            "uro-blue",
+            "uralgic",
+            "urolet",
+            "hyolev",
+            "uramit",
+            "indiomin",
+            "urophen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methocarbamol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "robaxisal",
+            "robaxin",
+            "rabdolax"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methotrexate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "maxtrex",
+            "trexall",
+            "emtexate",
+            "rheumatrex",
+            "otrexup",
+            "rasuvo",
+            "xatmep",
+            "reditrex",
+            "jylamvo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methoxyflurane",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "penthrane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methyldopa",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aldomet",
+            "aldoril",
+            "aldoclor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methylphenidate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ritalin",
+            "methylin",
+            "concerta",
+            "metadate",
+            "daytrana",
+            "quillivant",
+            "aptensio",
+            "quillichew",
+            "cotempla",
+            "relexxii",
+            "adhansia",
+            "jornay"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methylprednisolone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "depo-medrol",
+            "medrol",
+            "solu-medrol",
+            "a-methapred",
+            "hybrisil",
+            "neo-medrol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "methysergide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sansert"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "metoclopramide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "reglan",
+            "primperan",
+            "mygdalon",
+            "maxolon",
+            "gastroflux",
+            "gastromax",
+            "metramid",
+            "parmid",
+            "gastrese-la",
+            "metozolv",
+            "pileran",
+            "gimoti"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "metoprolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arbralene",
+            "betaloc",
+            "lopressor",
+            "lopresor",
+            "metoros",
+            "mepranix",
+            "toprol",
+            "dutoprol",
+            "kapspargo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "metronidazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "metrolyl",
+            "norzol",
+            "rozex",
+            "vaginyl",
+            "zadstat",
+            "zidoval",
+            "flagyl",
+            "metrogel",
+            "metrocream",
+            "metrolotion",
+            "metryl",
+            "noritate",
+            "protostat",
+            "metrotop",
+            "anabact",
+            "elyzol",
+            "nidazol",
+            "vandazole",
+            "nydamax",
+            "pylera",
+            "vitazol",
+            "rosadan",
+            "nuvessa",
+            "likmez"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "metyrapone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "metopirone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "miconazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "daktarin",
+            "gyno-daktarin",
+            "anti-fungal",
+            "baza",
+            "dermagran",
+            "desenex",
+            "fungoid",
+            "micatin",
+            "mitrazol",
+            "ony-clear",
+            "vagistat",
+            "micro-guard",
+            "monistat",
+            "secura",
+            "vusion",
+            "dermafungal",
+            "tetterine",
+            "micaderm",
+            "surolan",
+            "oravig",
+            "nuzole",
+            "inzo",
+            "malaseb",
+            "trivase",
+            "easotic",
+            "miranel",
+            "femmesil",
+            "dermasana",
+            "macerrx",
+            "micaved",
+            "zeasorb",
+            "lagicam",
+            "dermazole",
+            "vetraseb"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "midazolam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "versed",
+            "hypnovel",
+            "midazolan",
+            "seizalam",
+            "nayzilam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "midodrine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "proamatine",
+            "orvaten"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mifepristone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mifeprex",
+            "korlym"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "miglitol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "glyset"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "miltefosine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "impavido"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "minocycline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aknemin",
+            "blemix",
+            "cyclomin",
+            "minocin",
+            "minogal",
+            "dynacin",
+            "vectrin",
+            "dentomycin",
+            "arestin",
+            "myrac",
+            "solodyn",
+            "cleeravue-m",
+            "ximino",
+            "minolira",
+            "amzeeq",
+            "zilxi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mirtazapine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "remeron",
+            "mirataz"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "misoprostol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arthrotec",
+            "cytotec"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mivacurium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mivacron"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "modafinil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "provigil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "montelukast",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "singulair"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "morphine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "m-eslon",
+            "oramorph",
+            "sevredol",
+            "zomorph",
+            "kadian",
+            "duramorph",
+            "roxanol",
+            "msir",
+            "infumorph",
+            "rms",
+            "rescudose",
+            "avinza",
+            "duromorph",
+            "depodur",
+            "embeda",
+            "astramorph",
+            "cyclimorph",
+            "morphabond",
+            "arymo",
+            "mitigo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "moxifloxacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "avelox",
+            "vigamox",
+            "moxeza"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "moxonidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "physiotens"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "mupirocin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "bactroban",
+            "centany",
+            "muprocin",
+            "muricin",
+            "pirnuo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nadolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "corgard",
+            "corgaretic",
+            "corzide"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nafarelin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "synarel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "naloxone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "narcan",
+            "suboxone",
+            "zubsolv",
+            "evzio",
+            "bunavail",
+            "targiniq",
+            "cassipa",
+            "kloxxado",
+            "zimhi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "naltrexone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "revia",
+            "depade",
+            "vivitrol",
+            "embeda",
+            "contrave",
+            "troxyca"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nandrolone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "durabolin",
+            "deca-durabolin",
+            "androlone-d",
+            "hybolin-improved",
+            "pri-andriol",
+            "nandrocot"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "naproxen",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "synflex",
+            "arthroxen",
+            "laraflex",
+            "ec-naprosyn",
+            "nycopren",
+            "prosaid",
+            "rimoxyn",
+            "timpron",
+            "anaprox",
+            "naprosyn",
+            "aleve",
+            "naprelan",
+            "aflaxen",
+            "valrox",
+            "rheuflex",
+            "wal-proxen",
+            "treximet",
+            "vimovo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "naratriptan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "amerge",
+            "trexima"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nefazodone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "serzone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nelfinavir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "viracept"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "neostigmine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prostigmin",
+            "bloxiverz",
+            "prevduo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nesiritide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "natrecor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nevirapine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "viramune"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "niclosamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "niclocide"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nicotine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "habitrol",
+            "nicorette",
+            "nicotrol",
+            "prostep",
+            "commit",
+            "nicorelief",
+            "zonnic",
+            "nicotac"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nifedipine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "adalat",
+            "angiopine",
+            "calanif",
+            "calcilat",
+            "nifelease",
+            "adalate",
+            "procardia",
+            "calcipine",
+            "vasad",
+            "nifedical",
+            "nifediac"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nifurtimox",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lampit"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nimodipine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nimotop",
+            "nymalize"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nitisinone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "orfadin",
+            "nityr"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nitrofurantoin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "macrobid",
+            "macrodantin",
+            "furadantin",
+            "urotoin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nitroglycerin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "coro-nitro",
+            "deponit",
+            "glytrin",
+            "minitran",
+            "nitrocine",
+            "nitrolingual",
+            "nitronal",
+            "percutol",
+            "suscard",
+            "nitro-dur",
+            "sustac",
+            "nitrodisc",
+            "nitro-bid",
+            "nitrol",
+            "nitrong",
+            "nitrostat",
+            "transderm-nitro",
+            "nitrek",
+            "nitro-par",
+            "nitrocot",
+            "nitrogard",
+            "nitroquick",
+            "gtn",
+            "nitrotab",
+            "nitromist",
+            "rectiv",
+            "gonitro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nitroprusside",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nitropress"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nizatidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zinga",
+            "axid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "norepinephrine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "levophed"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "norgestimate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prefest",
+            "ortho-cyclen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nortriptyline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pamelor",
+            "aventyl",
+            "notriptyline"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "novobiocin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "albamycin",
+            "albadry"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "nystatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nystan",
+            "nystamont",
+            "infestat",
+            "nystaform-hc",
+            "nystex",
+            "mycostatin",
+            "nilstat",
+            "bio-statin",
+            "mycasone",
+            "mycomar",
+            "mytrex",
+            "nystop",
+            "pedi-dri",
+            "myocidin",
+            "nyamyc",
+            "myco-triacet",
+            "mycogen",
+            "mycolog",
+            "nyst-olone",
+            "tri-statin",
+            "animax",
+            "dermalone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "octreotide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sandostatin",
+            "bynfezia",
+            "mycapssa"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ofloxacin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "floxin",
+            "ocuflox"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "olanzapine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zyprexa",
+            "symbyax",
+            "lybalvi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "olsalazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dipentum"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "omalizumab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xolair"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "omeprazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "losec",
+            "prilosec",
+            "omesec",
+            "ulcergard",
+            "genozol",
+            "yosprala",
+            "talicia",
+            "konvomep"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "orciprenaline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "alupent",
+            "metaprel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "orlistat",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xenical",
+            "alli"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oseltamivir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tamiflu"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oxaliplatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "eloxatin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oxybate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xyrem",
+            "xywav",
+            "lumryz"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oxybutynin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ditropan",
+            "contimin",
+            "urimin",
+            "oxytrol",
+            "gelnique",
+            "anturol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oxycodone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "percodan",
+            "percocet",
+            "endodan",
+            "tylox",
+            "endocet",
+            "m-oxy",
+            "oxycontin",
+            "oxyfast",
+            "percolone",
+            "roxicet",
+            "roxicodone",
+            "roxilox",
+            "roxiprin",
+            "oxydose",
+            "taxadone",
+            "oxynorm",
+            "oxyrapid",
+            "combunox",
+            "endocodone",
+            "eth-oxydose",
+            "perloxx",
+            "narvox",
+            "magnacet",
+            "dazidox",
+            "xolox",
+            "oxecta",
+            "primalev",
+            "lynox",
+            "xartemis",
+            "primlev",
+            "targiniq",
+            "oxaydo",
+            "xtampza",
+            "troxyca",
+            "roxybond",
+            "nalocet",
+            "prolate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oxymetazoline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "afrin",
+            "four-way",
+            "genasal",
+            "nostrilla",
+            "ocuclear",
+            "oxyfrin",
+            "afrazine",
+            "nasin",
+            "anefrin",
+            "kovanaze",
+            "rhofade",
+            "upneeq"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "oxytocin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pitocin",
+            "oxoject"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "paba",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "swineaid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "paclitaxel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "taxol",
+            "onxol",
+            "abraxane",
+            "paccal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pancuronium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pavulon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "panitumumab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vectibix"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pantoprazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "protonix"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "papaverine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "papacon",
+            "pavacot",
+            "pavagen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "paracetamol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "midrin",
+            "percogesic",
+            "percocet",
+            "duocet",
+            "talacen",
+            "tempra",
+            "vicodin",
+            "lortab",
+            "calpol",
+            "fanalgic",
+            "infadrops",
+            "panaleve",
+            "paracets",
+            "paramol",
+            "placidex",
+            "salzone",
+            "combiflex",
+            "fioricet",
+            "tylox",
+            "panadol",
+            "tylenol",
+            "aceta",
+            "aceta-gesic",
+            "actamin",
+            "alagesic",
+            "alidrin",
+            "allay",
+            "altenol",
+            "americet",
+            "amidrine",
+            "anexsia",
+            "anoquan",
+            "apacet",
+            "apagesic",
+            "apapgesic",
+            "apara",
+            "apra",
+            "arcet",
+            "axocet",
+            "bucet",
+            "bupap",
+            "cephadyn",
+            "co-gesic",
+            "colrex",
+            "conacetol",
+            "dolacet",
+            "dolagesic",
+            "dolgic",
+            "dolmar",
+            "dolono",
+            "duogesic",
+            "duradrin",
+            "ed-apap",
+            "endocet",
+            "endolor",
+            "esgic",
+            "excedrin",
+            "ezol",
+            "femcet",
+            "feverall",
+            "fiorpap",
+            "genace",
+            "genapap",
+            "genasec",
+            "genebs",
+            "geone",
+            "gericet",
+            "halenol",
+            "hy-phen",
+            "hyco-pap",
+            "hycomed",
+            "hydrocet",
+            "hydrogesic",
+            "ide-cet",
+            "infantaire",
+            "iso-acetazone",
+            "isocet",
+            "isocom",
+            "liquiprin",
+            "major-gesic",
+            "mapap",
+            "mardol",
+            "margesic",
+            "margesic-h",
+            "marten-tab",
+            "masophen",
+            "medigesic",
+            "midchlor",
+            "migquin",
+            "migrapap",
+            "migratine",
+            "migrazone",
+            "migrex",
+            "minotal",
+            "mygracet",
+            "norco",
+            "oncet",
+            "pacaps",
+            "pain-eze",
+            "pain-gesic",
+            "panacet",
+            "panex",
+            "panlor",
+            "pediapap",
+            "perisine",
+            "pharmagesic",
+            "phenagesic",
+            "phenylgesic",
+            "phrenilin",
+            "polygesic",
+            "prominol",
+            "q-gesic",
+            "q-nol",
+            "redutemp",
+            "repan",
+            "roxicet",
+            "roxilox",
+            "saleto",
+            "sedapap",
+            "stagesic",
+            "supac",
+            "t-gesic",
+            "t-painol",
+            "t-panol",
+            "tenake",
+            "tencet",
+            "tencon",
+            "triaprin",
+            "two-dyne",
+            "tycolene",
+            "tylophen",
+            "ugesic",
+            "uni-ace",
+            "uni-case",
+            "uni-perr",
+            "uniserts",
+            "vanacet",
+            "vanquish",
+            "vendone",
+            "vitapap",
+            "vitoxapap",
+            "wygesic",
+            "zebutal",
+            "zydone",
+            "acephen",
+            "paldesic",
+            "maxidone",
+            "rhinoflex",
+            "ex-pain",
+            "lopap",
+            "contragesic",
+            "nonbac",
+            "procet",
+            "promacet",
+            "relagesic",
+            "ultracet",
+            "va-zone",
+            "panasorb",
+            "epidrin",
+            "staflex",
+            "lorcet",
+            "darvocet",
+            "migralam",
+            "migrend",
+            "taxadone",
+            "frenadol",
+            "phenco-care",
+            "xodol",
+            "ali-flex",
+            "dologesic",
+            "acuflex",
+            "vopac",
+            "hyflex",
+            "flextra",
+            "vidone",
+            "tylefon",
+            "hycet",
+            "levacet",
+            "anabar",
+            "ed-flex",
+            "lobac",
+            "durabac",
+            "novagesic",
+            "balacet",
+            "lagesic",
+            "alpain",
+            "cafgesic",
+            "migraten",
+            "migran-a",
+            "by-ache",
+            "zerlor",
+            "perloxx",
+            "narvox",
+            "liquicet",
+            "magnacet",
+            "codrix",
+            "pediaphen",
+            "qflex",
+            "propacet",
+            "vistra",
+            "trezix",
+            "zgesic",
+            "tactinal",
+            "cotabflu",
+            "zamicet",
+            "prodrin",
+            "xolox",
+            "triad",
+            "cocet",
+            "backprin",
+            "orbivan",
+            "pyregesic",
+            "tylagesic",
+            "zflex",
+            "cetazone",
+            "bactimicina",
+            "ofirmev",
+            "zolvit",
+            "arthriten",
+            "bf-paradac",
+            "duraxin",
+            "mejoralito",
+            "capacet",
+            "nortemp",
+            "acetadryl",
+            "sedalmex",
+            "xl-dol",
+            "ringl",
+            "acetadrink",
+            "syncol",
+            "pharbetol",
+            "un-aspirin",
+            "backaid",
+            "cetafen",
+            "exaprin",
+            "painaid",
+            "primalev",
+            "anolor",
+            "lynox",
+            "nodolor",
+            "xartemis",
+            "primlev",
+            "fortolin",
+            "verdrocet",
+            "ninjacof-a",
+            "vanatol",
+            "zyfrel",
+            "femadrine",
+            "sed-max",
+            "dolofin",
+            "apadaz",
+            "nalocet",
+            "dvorah",
+            "vtol",
+            "allzital",
+            "prolate",
+            "dolorex",
+            "combogesic"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "paromomycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "paromycin",
+            "humatin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "paroxetine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "paxil",
+            "pexeva",
+            "brisdelle"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pectin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "kao-spen",
+            "kapectolin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pegloticase",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "krystexxa"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pegvisomant",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "somavert"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pemoline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cylert",
+            "pemolert"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "penicillamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cuprimine",
+            "depen",
+            "d-penamine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pentamidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nebupent",
+            "pentam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pentazocine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "talwin",
+            "talacen",
+            "fortral"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pepsin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "digipepsin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "perphenazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "fentazin",
+            "trilafon",
+            "triavil",
+            "duo-vil",
+            "etrafon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pethidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pethilorfan",
+            "meprozine",
+            "demerol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenelzine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nardil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenobarbital",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "bellergal",
+            "quadrinal",
+            "donnatal",
+            "antispas",
+            "antrocol",
+            "barbidonna",
+            "barophen",
+            "bellalphen",
+            "bellatal",
+            "colidrops",
+            "d-tal",
+            "donnaphen",
+            "donnapine",
+            "elixiral",
+            "haponal",
+            "hyosophen",
+            "hypersed",
+            "lufyllin-epg",
+            "malatal",
+            "mudrane",
+            "phenobel",
+            "solfoton",
+            "spasmolin",
+            "spasquid",
+            "spastolate",
+            "spastrin",
+            "alkabel",
+            "servira",
+            "luminal",
+            "bronkolixir",
+            "chardonna",
+            "b-donna",
+            "phenohytro",
+            "nobatol",
+            "sezaby"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "hycolin",
+            "clearsol",
+            "campho-phenique",
+            "cepastat",
+            "unguentine",
+            "ulcerease",
+            "stingeze"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenoxybenzamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dibenyline",
+            "dibenzyline"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phentolamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "oraverse",
+            "ryzumvi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenylbutazone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "butacote",
+            "butazolidin",
+            "butazone",
+            "cotylbutazone",
+            "butasone",
+            "pributazone",
+            "equizone",
+            "equi-bute",
+            "equi-phar",
+            "phenylbute",
+            "vetribute",
+            "butatron"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenylephrine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cyclomydril",
+            "vasosulf",
+            "zincfrin",
+            "biorphen",
+            "dristan",
+            "neo-synephrine",
+            "ak-dilate",
+            "ak-nefrin",
+            "colrex",
+            "demi-cof",
+            "dicomal-dh",
+            "dicomal-ph",
+            "ditussin-hc",
+            "duo-medihaler",
+            "ed-tlc",
+            "efasin-hd",
+            "endagen-hd",
+            "endal-hd",
+            "enditussin-hd",
+            "endotuss-hd",
+            "enplus-hd",
+            "exo-tuss",
+            "prep-hem",
+            "hem-prep",
+            "histussin-hc",
+            "hyco-dh",
+            "hyphen-hd",
+            "m-phen",
+            "med-hist-hc",
+            "myci",
+            "mydfrin",
+            "nalex-dh",
+            "nasatuss",
+            "otigesic",
+            "pediacof",
+            "pedituss",
+            "poly-tussin",
+            "prefrin",
+            "rindal-hd",
+            "rolatuss",
+            "tuss-ds",
+            "tuss-hc",
+            "tussirex",
+            "tympagesic",
+            "vanex-hd",
+            "ventuss",
+            "despec-sf",
+            "rhinall",
+            "tussafed-hc",
+            "b-tuss",
+            "ear-gesic",
+            "dytan-d",
+            "k-tan",
+            "pancof-pd",
+            "relacon-hc",
+            "triant-hc",
+            "viravan-s",
+            "viravan-t",
+            "hist-hc",
+            "hist-plus",
+            "nasop",
+            "tusdec-hc",
+            "sudal",
+            "lusonal",
+            "tussinate",
+            "dytan-cs",
+            "dytan-hc",
+            "excof",
+            "canges-hc",
+            "tusana-d",
+            "simuc-hd",
+            "hydrofed",
+            "rynessa",
+            "exetuss-hc",
+            "relasin-hc",
+            "baltussin",
+            "aldex-ct",
+            "drotuss-cp",
+            "didone",
+            "carbatuss-cl",
+            "phena-hc",
+            "xyralid",
+            "tussplex",
+            "dytan-cd",
+            "phenyl-t",
+            "vazotab",
+            "duohist",
+            "rynesa",
+            "vanacof",
+            "vanex",
+            "notuss-pe",
+            "phendal-hd",
+            "tuss-pd",
+            "echotuss-hc",
+            "ru-hist-d",
+            "airacof",
+            "zotex-c",
+            "nasotuss",
+            "sinex",
+            "pluratuss",
+            "wal-dryl-d",
+            "wal-four",
+            "despec-pdc",
+            "nasopen-ch",
+            "vanacof-pe",
+            "dallergy",
+            "alconefrin",
+            "hemaway",
+            "sudo-tab",
+            "centussin",
+            "nikzon",
+            "hemorrodil",
+            "omidria",
+            "vazculep",
+            "immphentiv",
+            "mydcombi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "phenytoin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pentran",
+            "dilantin",
+            "epanutin",
+            "di-phen",
+            "phenytek",
+            "euthasol",
+            "somnasol",
+            "beuthanasia",
+            "euthaphen"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "physostigmine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "anticholium"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pilocarpine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "isoptocarpine",
+            "pilogel",
+            "salagen",
+            "adsorbocarpine",
+            "akarpine",
+            "ocu-carpine",
+            "pilocar",
+            "pilostat",
+            "pilokair",
+            "pilopine",
+            "piloptic",
+            "pilagan",
+            "vuity"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pindolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "visken",
+            "betadren"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pioglitazone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "actos",
+            "duetact",
+            "oseni"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "piperacillin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zosyn",
+            "pipracil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pirenzepine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "gastrotsepin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "piroxicam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "flamatrol",
+            "piroflam",
+            "pirozip",
+            "feldene",
+            "brexidol",
+            "larapam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "podophyllin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "podofin",
+            "pododerm",
+            "podocon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "povidone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "freshkote",
+            "minidrops",
+            "ivizia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "povidone-iodine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "iodex",
+            "betagen",
+            "betadine",
+            "disadine",
+            "pharmadine",
+            "aerodine",
+            "antisept",
+            "clinidine",
+            "efodine",
+            "mallisol",
+            "minidyne",
+            "polydine",
+            "povidex",
+            "povidine",
+            "videne",
+            "steribath",
+            "triadine",
+            "alphadine",
+            "meijer",
+            "ovadine",
+            "prevail-fx",
+            "prevail",
+            "biozide",
+            "poviderm",
+            "rexall",
+            "loris",
+            "dermawound",
+            "apocreme"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pralidoxime",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "duodote",
+            "protopam"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pramipexole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mirapex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pramlintide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "symlin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "prasugrel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "effient"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pravastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pravachol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "prazosin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "minipress",
+            "alphavase",
+            "kentovace",
+            "minizide"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "prednisolone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "predsol",
+            "vasocidin",
+            "ak-pred",
+            "predenema",
+            "prednesol",
+            "hydeltrasol",
+            "ak-cide",
+            "blephamide",
+            "cetapred",
+            "cotolone",
+            "depo-predate",
+            "econopred",
+            "key-pred",
+            "medasulf",
+            "medicort",
+            "metimyd",
+            "pediapred",
+            "pred-g",
+            "predcor",
+            "prednisol",
+            "prelone",
+            "sulster",
+            "supred",
+            "predfoam",
+            "orapred",
+            "ocu-pred",
+            "ocu-pred-a",
+            "codelsol",
+            "stintisone",
+            "codelson",
+            "prednoral",
+            "pred-phosphate",
+            "predsulfair",
+            "pricortin",
+            "bubbli-pred",
+            "omnipred",
+            "flo-pred",
+            "millipred",
+            "optimyd",
+            "veripred",
+            "surolan",
+            "temaril-p",
+            "prednistab",
+            "solu-delta-cortef"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "prednisone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "decortisyl",
+            "prednicen-m",
+            "sterapred",
+            "meticorten",
+            "orasone",
+            "deltasone",
+            "prednicot",
+            "econosone",
+            "predone",
+            "rayos"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "primidone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "mysoline"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "probenecid",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "benemid",
+            "polycillin-prb"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "procainamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pronestyl",
+            "procan",
+            "procanbid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "procaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "novocaine",
+            "mericaine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "procarbazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "natulan",
+            "matulane"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "prochlorperazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "stemetil",
+            "compazine",
+            "compro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "proguanil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "malarone"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "promethazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "phenergan",
+            "q-mazine",
+            "m-phen",
+            "meprozine",
+            "pentazine",
+            "promacot",
+            "promethegan",
+            "phenadoz"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "propofol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diprivan",
+            "propoven",
+            "propoflo",
+            "rapinovet",
+            "propovan",
+            "propothesia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "propranolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "angilol",
+            "apsolol",
+            "berkolol",
+            "beta-prograne",
+            "cardinol",
+            "inderal",
+            "propanix",
+            "sloprolol",
+            "bedranol",
+            "pronol",
+            "innopran",
+            "hemangeol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pyrantel",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "combantrin",
+            "antiminth",
+            "ascarel",
+            "pin-x",
+            "drontal",
+            "rfd",
+            "nemex",
+            "strongid",
+            "equistrength",
+            "evict",
+            "vermocks",
+            "quadriguard",
+            "exodus",
+            "virbantel",
+            "parasitexx",
+            "iverhart",
+            "imectro",
+            "vetrishield"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pyrazinamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rifater"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "quetiapine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "seroquel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "quinidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "quinora",
+            "cardioquin",
+            "quin-g",
+            "quin-release",
+            "quinaglute",
+            "kiditard",
+            "quinicardine",
+            "quinadure",
+            "quin-tab",
+            "quinidex",
+            "nuedexta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "quinine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "quinamm",
+            "qualaquin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "radium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xofigo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "raloxifene",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "evista"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ramelteon",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rozerem"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ramipril",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "altace"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ranitidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zantac",
+            "raciran",
+            "tritec",
+            "rantec",
+            "zaedoc",
+            "taladine",
+            "wal-zan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rasburicase",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "elitek"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "remifentanil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ultiva"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "repaglinide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prandin",
+            "novonorm",
+            "prandimet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "resorcinol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "acnomel",
+            "acnotex",
+            "bensulfoid",
+            "rezamid",
+            "sulforcin",
+            "resinol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "retinol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "poly-vi-sol",
+            "tri-vi-sol",
+            "viva-drops",
+            "multi-delyn",
+            "lactocal",
+            "vitafol-one",
+            "infuvite"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ribavirin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "virazole",
+            "copegus",
+            "rebetol",
+            "ribasphere",
+            "ribatab",
+            "moderiba"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rifampin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rifater",
+            "rifadin",
+            "rimactane",
+            "rifamate",
+            "isonarif"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rifaximin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xifaxan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "riluzole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rilutek",
+            "tiglutik",
+            "exservan",
+            "teglutik"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "risedronate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "actonel"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ritonavir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "norvir",
+            "kaletra",
+            "technivie"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rituximab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "rituxan",
+            "truxima",
+            "ruxience",
+            "riabni"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rivaroxaban",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "xarelto"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rivastigmine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "exelon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rizatriptan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "maxalt",
+            "rizaport",
+            "rizafilm"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rocuronium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zemuron"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "romiplostim",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nplate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ropinirole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "requip"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ropivacaine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "naropin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "rosuvastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "crestor",
+            "ezallor",
+            "roszet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ruxolitinib",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "jakafi",
+            "opzelura"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sacubitril",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "entresto"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "salbutamol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ventolin",
+            "combivent",
+            "salbulin",
+            "volmax",
+            "libetist",
+            "proventil",
+            "airet",
+            "asmaven",
+            "duoneb",
+            "arm-a-med",
+            "accuneb",
+            "vospire",
+            "salbuvent",
+            "cobutolin",
+            "proair",
+            "airsupra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "salmeterol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "serevent",
+            "advair",
+            "airduo",
+            "wixela"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "saquinavir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "invirase",
+            "fortovase"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "scopolamine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "donnatal",
+            "antispas",
+            "barbidonna",
+            "barophen",
+            "bellalphen",
+            "bellatal",
+            "colidrops",
+            "d-tal",
+            "donnaphen",
+            "donnapine",
+            "elixiral",
+            "haponal",
+            "hyosophen",
+            "hypersed",
+            "malatal",
+            "phenobel",
+            "scopace",
+            "spasmolin",
+            "spasquid",
+            "spastolate",
+            "transderm-scop",
+            "maldemar",
+            "alkabel",
+            "servira",
+            "chardonna",
+            "b-donna",
+            "phenohytro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "secretin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "secretin-ferring"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "selegiline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "carbex",
+            "eldepryl",
+            "stilline",
+            "centrapryl",
+            "vivapryl",
+            "atapryl",
+            "emsam",
+            "zelapar",
+            "anipryl"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "senna",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "senokot",
+            "dosaflex",
+            "senexon",
+            "senokot-s",
+            "senolax",
+            "uni-cenna",
+            "lax-ease",
+            "senosol",
+            "senosol-ss",
+            "senna-time",
+            "peri-colace",
+            "pedia-lax",
+            "senexon-s",
+            "purgasol",
+            "laxacin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sertraline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zoloft"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sevelamer",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "renagel",
+            "renvela"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sevoflurane",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ultane",
+            "petrem",
+            "sojourn",
+            "sevothesia",
+            "sevosol",
+            "sevoflo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sildenafil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "viagra",
+            "revatio",
+            "liqrev"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "simeprevir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "olysio"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "simvastatin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zocor",
+            "vytorin",
+            "simcor",
+            "juvisync",
+            "flolipid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sitagliptin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "januvia",
+            "janumet",
+            "juvisync",
+            "steglujan",
+            "zituvio",
+            "zituvimet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sofosbuvir",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sovaldi",
+            "harvoni",
+            "epclusa",
+            "vosevi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sorbitol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arlex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "spironolactone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aldactazide",
+            "aldactone",
+            "spiretic",
+            "spiroctan",
+            "spirolone",
+            "spirospare",
+            "spironol",
+            "diatensec",
+            "laractone",
+            "carospir",
+            "cardalis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "stanozolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "winstrol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "stavudine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zerit"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "streptokinase",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "kabikinase",
+            "streptase"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "succimer",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "chemet"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sufentanil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sufenta",
+            "dsuvia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sulbactam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "unasyn",
+            "xacduro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sulfadiazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "uniprim",
+            "rebalance",
+            "tucoprim"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sulfamethoxazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "bactrim",
+            "comixco",
+            "fectrim",
+            "laratrim",
+            "cotrim",
+            "septra",
+            "septrin",
+            "bethaprim",
+            "sulfatrim",
+            "uroplus",
+            "gantanol",
+            "comox",
+            "bacter-aid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sulfasalazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "azulfidine",
+            "ucine",
+            "sulfazine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sulindac",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "clinoril"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sumatriptan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "imitrex",
+            "trexima",
+            "treximet",
+            "alsuma",
+            "zecuity",
+            "sumavel",
+            "zembrace",
+            "onzetra",
+            "tosymra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "suxamethonium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "quelicin",
+            "anectine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tacrolimus",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "prograf",
+            "protopic",
+            "hecoria",
+            "astagraf",
+            "envarsus"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tadalafil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cialis",
+            "adcirca",
+            "alyq",
+            "entadfi",
+            "tadliq",
+            "opsynvi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tamoxifen",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "emblon",
+            "fentamox",
+            "nolvadex-d",
+            "oestrifen",
+            "tamofen",
+            "nolvadex",
+            "noltam",
+            "soltamox"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tamsulosin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "flomax",
+            "jalyn"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "taurine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "trophamine",
+            "premasol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tazarotene",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zorac",
+            "tazorac",
+            "avage",
+            "fabior",
+            "duobrii",
+            "arazlo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tazobactam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zosyn",
+            "zerbaxa"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "teicoplanin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "targocid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "telmisartan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "micardis",
+            "micardis-hct",
+            "twynsta",
+            "semintra"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "temazepam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "normison",
+            "euhypnos",
+            "restoril"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "terazosin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "hytrin",
+            "terazoisin",
+            "terazoosin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "terbinafine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "lamisil",
+            "terbinex",
+            "claro",
+            "simplera"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "terbutaline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "bricanyl",
+            "brethine",
+            "brethaire"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "teriparatide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "forteo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tetrabenazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nitoman",
+            "xenazine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tetracycline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "topicycline",
+            "panmycin",
+            "ala-tet",
+            "brodspec",
+            "sumycin",
+            "achromycin",
+            "actisite",
+            "tetracap",
+            "tetracon",
+            "pylera",
+            "ornacycline",
+            "diabecline",
+            "viabecline",
+            "vitastem"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tetrahydrobiopterin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "kuvan",
+            "javygtor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "thalidomide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "thalomid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "theophylline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "quadrinal",
+            "quibron-t",
+            "lasma",
+            "slo-phyllin",
+            "theodur",
+            "theo-dur",
+            "theovent",
+            "uniphyl",
+            "theospan",
+            "theolair",
+            "theobid",
+            "sustaire",
+            "elixophyllin",
+            "bronkodyl",
+            "aquaphyllin",
+            "aerolate",
+            "theochron",
+            "t-phyl",
+            "slo-bid",
+            "respbid",
+            "ami-rax",
+            "asmalix",
+            "bronchial",
+            "elixophyllin-gg",
+            "marax",
+            "q-b",
+            "quibron",
+            "theo-time",
+            "theo-x",
+            "theocon",
+            "theolate",
+            "theophyll-gg",
+            "truxophyllin",
+            "uni-dur",
+            "theo-sav",
+            "biophylline",
+            "labophylline",
+            "theograd",
+            "pro-vent",
+            "theoclear",
+            "h-quib",
+            "broncodur",
+            "theocap",
+            "bronkolixir"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "thrombin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "thrombogen",
+            "tisseel",
+            "thrombin-jmi",
+            "evithrom",
+            "recothrom",
+            "artiss",
+            "tachosil",
+            "raplixa",
+            "evarrest",
+            "evicel",
+            "vistaseal"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "thyroxine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "thyrolar",
+            "soloxine",
+            "eltroxin",
+            "euthyrox",
+            "levo-t",
+            "levotabs",
+            "levothroid",
+            "levoxyl",
+            "synthroid",
+            "unithroid",
+            "thyrox",
+            "novothyrox",
+            "estre",
+            "tirosint",
+            "leventa",
+            "thyro-tabs",
+            "thyromed",
+            "thyrokare",
+            "levocrine",
+            "thyquidity",
+            "ermeza",
+            "thyrocryn"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tibolone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "livial"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ticagrelor",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "brilinta"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ticlopidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ticlid"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "timolol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "blocadren",
+            "timoptic",
+            "timoptol",
+            "betim",
+            "glaucol",
+            "glau-opt",
+            "betimol",
+            "cosopt",
+            "timolide",
+            "istalol",
+            "combigan"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tiotropium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "spiriva",
+            "stiolto"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tirofiban",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "aggrastat"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tizanidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zanaflex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tocilizumab",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "actemra",
+            "tyenne"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tolazoline",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tolazine",
+            "tolazil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tolbutamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "orinase",
+            "tol-tab"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tolterodine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "detrol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tolvaptan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "samsca",
+            "jynarque"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "topiramate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "topamax",
+            "topiragen",
+            "qsymia",
+            "trokendi",
+            "qudexy",
+            "eprontia"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "topotecan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "hycamtin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tramadol",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zydol",
+            "tramake",
+            "zamadol",
+            "ultram",
+            "ultracet",
+            "tramalgin",
+            "ryzolt",
+            "rybix",
+            "conzip",
+            "qdolo",
+            "seglentis"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trazodone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "desyrel",
+            "molipaxin",
+            "oleptro"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "triamcinolone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "adcortyl",
+            "ledercort",
+            "lederspan",
+            "nasacort",
+            "aristocort",
+            "kenalog",
+            "azmacort",
+            "aristospan",
+            "acetocot",
+            "amcort",
+            "aricin",
+            "aristopak",
+            "cort-k",
+            "flutex",
+            "mycasone",
+            "mycomar",
+            "mytrex",
+            "tri-kort",
+            "tri-med",
+            "triacet",
+            "triamcot",
+            "trilog",
+            "trilone",
+            "tristoject",
+            "u-tri-lone",
+            "tri-nasal",
+            "cinalog",
+            "cinolar",
+            "clinacort",
+            "clinalog",
+            "cortinide",
+            "robalog",
+            "trilocort",
+            "cinolone",
+            "cortilone",
+            "oralone",
+            "myocidin",
+            "triesence",
+            "zytopic",
+            "trivaris",
+            "allernaze",
+            "myco-triacet",
+            "mycogen",
+            "mycolog",
+            "nyst-olone",
+            "tri-statin",
+            "delta-tritex",
+            "tac",
+            "ken-jec",
+            "kenaject",
+            "tramacort",
+            "triam",
+            "triamonide",
+            "cenocort",
+            "trianex",
+            "animax",
+            "cortalone",
+            "vetalog",
+            "genesis",
+            "zilretta",
+            "dermalone",
+            "aller-cort",
+            "hexatrione",
+            "tritocin",
+            "xipere",
+            "kourzeq"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "triamterene",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dyazide",
+            "maxzide",
+            "dyrenium"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "triazolam",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "halcion"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "triclosan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "dermasana",
+            "fungasol"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trifluoperazine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "stelazine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trihexyphenidyl",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "artane",
+            "broflex",
+            "trihexane",
+            "bentex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trimethaphan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "arfonad"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trimethoprim",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "polytrim",
+            "bactrim",
+            "comixco",
+            "fectrim",
+            "laratrim",
+            "cotrim",
+            "septra",
+            "septrin",
+            "bethaprim",
+            "sulfatrim",
+            "uroplus",
+            "trimpex",
+            "proloprim",
+            "primsol",
+            "comox",
+            "bacter-aid",
+            "uniprim",
+            "tucoprim"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trimipramine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "surmontil"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "triprolidine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "actifed",
+            "actidil",
+            "a-phedrin",
+            "actacin",
+            "actagen",
+            "actamine",
+            "actedril",
+            "allercon",
+            "allerfrim",
+            "altafed",
+            "atrofed",
+            "atrogen",
+            "genac",
+            "hista-tabs",
+            "histafed",
+            "tri-pseudo",
+            "tri-sudo",
+            "triafed",
+            "triphed",
+            "triptifed",
+            "trisofed",
+            "vi-sudo",
+            "trisudrine",
+            "zymine",
+            "acticon",
+            "zymine-d",
+            "tripohist",
+            "hist-pse",
+            "wal-act",
+            "vanaclear"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "triptorelin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "trelstar",
+            "triptodur"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tropicamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "tropicacyl",
+            "mydriacyl",
+            "mydral",
+            "opticyl",
+            "paremyd",
+            "ocu-tropic",
+            "eyemyd",
+            "mydcombi"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trospium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sanctura"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "trypsin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "granulex",
+            "dermuspray",
+            "granul-derm",
+            "granulderm",
+            "granumed",
+            "xenaderm",
+            "optase",
+            "allanderm",
+            "revina",
+            "vasolex"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "tryptophan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "trophamine",
+            "optimax",
+            "nephramine",
+            "pacitron",
+            "hepatasol",
+            "aminomine",
+            "prosol",
+            "premasol",
+            "restone",
+            "somnicin",
+            "plenamine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ubiquinone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "nutradrops",
+            "liqsorb",
+            "quinzyme",
+            "q-gel",
+            "q-up",
+            "q-sorb"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ulipristal",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "ella"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "valproate",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "epilim",
+            "depakene",
+            "depacon",
+            "depakote",
+            "stavzor"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "valsartan",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "diovan",
+            "exforge",
+            "valturna",
+            "entresto",
+            "byvalson"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vancomycin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vancocin",
+            "firvanq"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vasopressin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "pitressin",
+            "vasostrict"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vecuronium",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "norcuron"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "verapamil",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "cordilox",
+            "berkatens",
+            "securon",
+            "hypaneze",
+            "tarka",
+            "isoptin",
+            "calan",
+            "verelan",
+            "univer",
+            "geangin",
+            "covera"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vigabatrin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "sabril",
+            "vigadrone",
+            "vigpoder"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vincristine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vincasar",
+            "marqibo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "vorapaxar",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zontivity"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "voriconazole",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "vfend"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "warfarin",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "coumadin",
+            "jantoven",
+            "narfarin",
+            "marfarin"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "yohimbine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "yohimex",
+            "actibine",
+            "yocon",
+            "aphrodyne",
+            "dayto-himbin",
+            "erex",
+            "mederek",
+            "testomar",
+            "thybine",
+            "yohimar",
+            "yoman",
+            "yovital",
+            "yobine"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "zafirlukast",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "accolate"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "zidovudine",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "combivir",
+            "retrovir",
+            "trizivir"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "zileuton",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zyflo"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "ziprasidone",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "geodon"
+          ]
+        }
+      ]
+    },
+    {
+      "key": "zonisamide",
+      "relations": [
+        {
+          "key": "brand",
+          "values": [
+            "zonegran",
+            "zonisade"
+          ]
+        }
+      ]
+    }
+  ]
+}
