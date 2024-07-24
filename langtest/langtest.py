@@ -23,7 +23,7 @@ from .utils import report_utils as report, config_utils
 from .transform.utils import RepresentationOperation
 from langtest.utils.benchmark_utils import Leaderboard, Summary
 from langtest.utils.lib_manager import try_import_lib
-from langtest.utils.custom_types.helpers import TestResultManager
+from langtest.utils.custom_types.helpers import TestResultManager, get_transformations
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
 from langtest.prompts import PromptManager
 from .errors import Warnings, Errors
@@ -1137,6 +1137,11 @@ class Harness:
 
             # merge the testcases with the imported ones to the temp_testcases
             for name, list_samples in imported_testcases.items():
+                # check the task and apply transformations
+                if self.task == "ner":
+                    list_samples = [
+                        get_transformations(sample) for sample in list_samples
+                    ]
                 if name not in temp_testcases:
                     temp_testcases[name] = list_samples
                 temp_testcases[name].extend(list_samples)
@@ -1163,6 +1168,10 @@ class Harness:
             self._testcases = DataFactory(
                 {"data_source": input_path}, task=self.task, is_import=True
             ).load()
+            if self.task == "ner":
+                self._testcases = [
+                    get_transformations(sample) for sample in self._testcases
+                ]
             self._testcases.extend(temp_testcases)
 
         return self
