@@ -38,7 +38,7 @@ def get_model_n_tokenizer(model_name):
             AutoTokenizer,
         )
     except ImportError:
-        raise ValueError(Errors.E085)
+        raise ValueError(Errors.E085())
 
     login_with_token()
 
@@ -51,7 +51,7 @@ def get_model_n_tokenizer(model_name):
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
     except OSError:
-        raise GatedRepoAccessError(Errors.E071.format(model_name=model_name))
+        raise GatedRepoAccessError(Errors.E071(model_name=model_name))
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token
@@ -120,7 +120,7 @@ def build_dataset(
         dataset_module = importlib.import_module(LIB_NAME)
         load_dataset = getattr(dataset_module, "load_dataset")
     else:
-        raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+        raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
     """Uses inputted dataset details to build dictionary of train/test values."""
     if not dataset_subset:
@@ -198,7 +198,7 @@ class HuggingFacePipeline:
             )
             from transformers import pipeline as hf_pipeline
         except ImportError:
-            raise ValueError(Errors.E085)
+            raise ValueError(Errors.E085())
 
         tokenizer = AutoTokenizer.from_pretrained(model_id)
 
@@ -211,15 +211,15 @@ class HuggingFacePipeline:
             elif task in ("text2text-generation", "summarization"):
                 model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
             else:
-                raise ValueError(Errors.E086.format(task=task))
+                raise ValueError(Errors.E086(task=task))
         except ImportError as e:
-            raise ValueError(Errors.E087.format(task=task)) from e
+            raise ValueError(Errors.E087(task=task)) from e
 
         if (
             getattr(model, "is_loaded_in_4bit", False)
             or getattr(model, "is_loaded_in_8bit", False)
         ) and device is not None:
-            logging.warning(Warnings.W015.format(device=device))
+            logging.warning(Warnings.W015(device=device))
             device = None
 
         if device is not None and importlib.util.find_spec("torch") is not None:
@@ -228,10 +228,10 @@ class HuggingFacePipeline:
             cuda_device_count = torch.cuda.device_count()
             if device < -1 or (device >= cuda_device_count):
                 raise ValueError(
-                    Errors.E088.format(device=device, cuda_device_count=cuda_device_count)
+                    Errors.E088(device=device, cuda_device_count=cuda_device_count)
                 )
             if device < 0 and cuda_device_count > 0:
-                logging.warning(Warnings.W016.format(cuda_device_count=cuda_device_count))
+                logging.warning(Warnings.W016(cuda_device_count=cuda_device_count))
 
         return hf_pipeline(
             task=task,
@@ -268,7 +268,7 @@ class HuggingFacePipeline:
                         != ReturnType.NEW_TEXT
                     )
                 except Exception as e:
-                    logging.warning(Warnings.W017.format(e=e))
+                    logging.warning(Warnings.W017(e=e))
                     remove_prompt = True
                 if remove_prompt:
                     text = response["generated_text"][len(prompt) :]
@@ -279,7 +279,7 @@ class HuggingFacePipeline:
             elif self.pipeline.task == "summarization":
                 text = response["summary_text"]
             else:
-                raise ValueError(Errors.E086.format(task=self.pipeline.task))
+                raise ValueError(Errors.E086(task=self.pipeline.task))
 
             text_generations.append(text)
 

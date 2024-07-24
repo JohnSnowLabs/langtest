@@ -11,7 +11,6 @@ from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
-from langtest.transform.constants import DATASETS
 
 from .format import Formatter
 from langtest.utils.custom_types import (
@@ -325,7 +324,7 @@ class DataFactory:
             if item.test_type in tests_to_filter:
                 data.append(item)
         logging.warning(
-            Warnings.W003.format(
+            Warnings.W003(
                 len_bias_data=len(bias_data),
                 len_samples_removed=len(bias_data) - len(data),
             )
@@ -356,14 +355,14 @@ class DataFactory:
         if "split" not in dataset_info:
             if subset is None:
                 subset = list(dataset_info.keys())[0]
-                logging.warning(Warnings.W012.format(var1="subset", var2=subset))
+                logging.warning(Warnings.W012(var1="subset", var2=subset))
             if split is None:
                 split = dataset_info[subset]["split"][0]
-                logging.warning(Warnings.W012.format(var1="split", var2=split))
+                logging.warning(Warnings.W012(var1="split", var2=split))
 
             if subset not in dataset_info or split not in dataset_info[subset]["split"]:
                 raise ValueError(
-                    Errors.E082.format(
+                    Errors.E082(
                         subset=subset,
                         split=split,
                         dataset_name=dataset_name,
@@ -386,11 +385,11 @@ class DataFactory:
         else:
             if split is None:
                 split = dataset_info["split"][0]
-                logging.warning(Warnings.W012.format(var1="split", var2=split))
+                logging.warning(Warnings.W012(var1="split", var2=split))
 
             if split not in dataset_info["split"]:
                 raise ValueError(
-                    Errors.E083.format(
+                    Errors.E083(
                         split=split,
                         dataset_name=dataset_name,
                         available_splits=", ".join(dataset_info["split"]),
@@ -449,7 +448,7 @@ class ConllDataset(BaseDataset):
                     valid_tokens, token_list = self.__token_validation(tokens)
 
                     if not valid_tokens:
-                        logging.warning(Warnings.W004.format(sent=sent))
+                        logging.warning(Warnings.W004(sent=sent))
                         continue
 
                     #  get token and labels from the split
@@ -491,7 +490,7 @@ class ConllDataset(BaseDataset):
                     valid_tokens, token_list = self.__token_validation(tokens)
 
                     if not valid_tokens:
-                        logging.warning(Warnings.W004.format(sent=sent))
+                        logging.warning(Warnings.W004(sent=sent))
                         continue
 
                     #  get token and labels from the split
@@ -565,7 +564,7 @@ class ConllDataset(BaseDataset):
                 token_list.append(tsplit)
                 valid_labels.append(tsplit[-1])
             else:
-                logging.warning(Warnings.W008.format(sent=t))
+                logging.warning(Warnings.W008(sent=t))
                 return False, token_list
 
         if valid_labels[0].startswith("I-"):
@@ -671,7 +670,7 @@ class CSVDataset(BaseDataset):
         if task_name in self.COLUMN_NAMES:
             self.COLUMN_NAMES = self.COLUMN_NAMES[task_name]
         elif "is_import" not in kwargs:
-            raise ValueError(Errors.E026.format(task=task))
+            raise ValueError(Errors.E026(task=task))
 
         self.column_map = None
         self.kwargs = kwargs
@@ -699,7 +698,7 @@ class CSVDataset(BaseDataset):
 
             if feature_column not in df.columns or target_column not in df.columns:
                 raise ValueError(
-                    Errors.E027.format(
+                    Errors.E027(
                         feature_column=feature_column, target_column=target_column
                     )
                 )
@@ -810,7 +809,7 @@ class CSVDataset(BaseDataset):
                 data.append(sample)
 
             except Exception as e:
-                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
+                logging.warning(Warnings.W005(idx=idx, row_data=row_data, e=e))
                 continue
 
         return data
@@ -993,7 +992,7 @@ class JSONLDataset(BaseDataset):
 
         if "text" in not_referenced_columns:
             raise OSError(
-                Errors.E029.format(
+                Errors.E029(
                     valid_column_names=self.COLUMN_NAMES[self.task.task_name]["text"],
                     column_names=column_names,
                 )
@@ -1157,7 +1156,7 @@ class HuggingFaceDataset(BaseDataset):
             dataset_module = importlib.import_module(self.LIB_NAME)
             self.load_dataset = getattr(dataset_module, "load_dataset")
         else:
-            raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=self.LIB_NAME))
+            raise ModuleNotFoundError(Errors.E023(LIB_NAME=self.LIB_NAME))
 
     def load_raw_data(
         self,
@@ -1299,7 +1298,7 @@ class SynteticDataset(BaseDataset):
             samples = getattr(self, method_name)()
             return samples
         else:
-            raise ValueError(Errors.E030.format(dataset_name=self.dataset_name))
+            raise ValueError(Errors.E030(dataset_name=self.dataset_name))
 
     @staticmethod
     def extract_data_with_equal_proportion(data_dict, total_samples):
@@ -1448,6 +1447,7 @@ class SynteticDataset(BaseDataset):
         """
 
         from ..utils.hf_utils import build_dataset
+        from langtest.transform.constants import DATASETS
 
         TAIL = "\n\nChoices:\n (A) Agree\n (B) Disagree\n\nAnswer:"
 
@@ -1613,7 +1613,7 @@ class PandasDataset(BaseDataset):
         if task.task_name in self.COLUMN_NAMES:
             self.COLUMN_NAMES = self.COLUMN_NAMES[task.task_name]
         elif "is_import" not in kwargs:
-            raise ValueError(Errors.E026.format(task=task))
+            raise ValueError(Errors.E026(task=task))
 
         self.column_map = None
         self.kwargs = kwargs
@@ -1690,7 +1690,7 @@ class PandasDataset(BaseDataset):
                 data.append(sample)
 
             except Exception as e:
-                logging.warning(Warnings.W005.format(idx=idx, row_data=row_data, e=e))
+                logging.warning(Warnings.W005(idx=idx, row_data=row_data, e=e))
                 continue
 
         return data

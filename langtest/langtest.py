@@ -23,7 +23,7 @@ from .utils import report_utils as report, config_utils
 from .transform.utils import RepresentationOperation
 from langtest.utils.benchmark_utils import Leaderboard, Summary
 from langtest.utils.lib_manager import try_import_lib
-from langtest.utils.custom_types.helpers import TestResultManager
+from langtest.utils.custom_types.helpers import TestResultManager, get_transformations
 from langtest.utils.checkpoints import divide_into_batches, CheckpointManager
 from langtest.prompts import PromptManager
 from .errors import Warnings, Errors
@@ -145,15 +145,15 @@ class Harness:
             self.__is_multi_model = True
             for item in model:
                 if not isinstance(item, dict):
-                    raise ValueError(Errors.E000)
+                    raise ValueError(Errors.E000())
                 if "model" not in item or "hub" not in item:
-                    raise ValueError(Errors.E001)
+                    raise ValueError(Errors.E001())
         elif isinstance(model, dict):
             if "model" not in model or "hub" not in model:
-                raise ValueError(Errors.E002)
+                raise ValueError(Errors.E002())
 
         else:
-            raise ValueError(Errors.E003)
+            raise ValueError(Errors.E003())
 
         if isinstance(model, dict):
             hub, model = model["hub"], model["model"]
@@ -197,7 +197,7 @@ class Harness:
             elif isinstance(self.DEFAULTS_CONFIG[self.task], str):
                 self._config = self.configure(self.DEFAULTS_CONFIG[self.task])
         else:
-            logging.info(Warnings.W001)
+            logging.info(Warnings.W001())
             self._config = self.configure(
                 resource_filename("langtest", "data/config.yml")
             )
@@ -278,16 +278,20 @@ class Harness:
         if seed:
             random.seed(seed)
         if self._config is None:
-            raise RuntimeError(Errors.E005)
+            raise RuntimeError(Errors.E005())
         if self._testcases is not None:
-            raise RuntimeError(Errors.E006)
+            raise RuntimeError(Errors.E006())
 
         self._testcases = []
 
-        if isinstance(self.data, list):
+        if isinstance(self.data, list) and not self.__is_multi_model:
             self._testcases = self.__single_dataset_generate(self.data)
-        elif isinstance(self.data, dict):
+        elif isinstance(self.data, list) and self.__is_multi_model:
             self._testcases = self.__multi_datasets_generate(self.data)
+        elif isinstance(self.data, dict) and len(self.data) > 1:
+            self._testcases = self.__multi_datasets_generate(self.data)
+        else:
+            self._testcases = self.__single_dataset_generate(self.data)
 
         return self
 
@@ -310,15 +314,20 @@ class Harness:
         Raises:
             RuntimeError: Raised if test cases are not provided (None).
         """
-        if isinstance(self._testcases, dict) and not self.__is_multi_model:
-            self.is_multi_dataset = True
-            self._generated_results = self.__multi_datasets_run(
-                self._testcases, checkpoint, save_checkpoints_dir, batch_size
-            )
-        else:
+        if isinstance(self._testcases, list) and not self.__is_multi_model:
             self.is_multi_dataset = False
             self._generated_results = self.__single_dataset_run(
                 self._testcases, self.data, checkpoint, save_checkpoints_dir, batch_size
+            )
+        elif isinstance(self.data, list) and self.__is_multi_model:
+            self.is_multi_dataset = False
+            self._generated_results = self.__single_dataset_run(
+                self._testcases, self.data, checkpoint, save_checkpoints_dir, batch_size
+            )
+        else:
+            self.is_multi_dataset = True
+            self._generated_results = self.__multi_datasets_run(
+                self._testcases, checkpoint, save_checkpoints_dir, batch_size
             )
         return self
 
@@ -341,13 +350,11 @@ class Harness:
         supported_category = ("accuracy", "fairness")
 
         if category is None:
-            raise ValueError(Errors.E093)
+            raise ValueError(Errors.E093())
 
         if category not in supported_category:
             raise ValueError(
-                Errors.E094.format(
-                    category=category, supported_category=supported_category
-                )
+                Errors.E094(category=category, supported_category=supported_category)
             )
 
         class_name = f"{category.title()}TestFactory"
@@ -356,7 +363,7 @@ class Harness:
         model_response = testfactory_class.model_result
 
         if model_response is None:
-            logging.warning(Warnings.W021)
+            logging.warning(Warnings.W021())
 
         else:
             data = [sample.copy() for sample in model_response]
@@ -399,11 +406,11 @@ class Harness:
             OSError: Raised if necessary files (config.yaml, data.pkl) are missing in the checkpoint directory.
         """
         if not os.path.isdir(save_checkpoints_dir):
-            raise OSError(Errors.E092.format(directory=save_checkpoints_dir))
+            raise OSError(Errors.E092(directory=save_checkpoints_dir))
 
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_checkpoints_dir, filename)):
-                raise OSError(Errors.E017.format(filename=filename))
+                raise OSError(Errors.E017(filename=filename))
 
         with open(os.path.join(save_checkpoints_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
@@ -478,7 +485,7 @@ class Harness:
             self.__tracking()
 
         if self._generated_results is None:
-            raise RuntimeError(Errors.E011)
+            raise RuntimeError(Errors.E011())
 
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config["tests"]["defaults"].get(
@@ -496,7 +503,17 @@ class Harness:
         if self.task.category == "ideology":
             self.df_report = report.political_report(self._generated_results)
             return self.df_report
+        elif self.is_multi_dataset and isinstance(self.model, dict):
+            self.df_report = report.multi_dataset_multi_model_report(
+                summary,
+                self.min_pass_dict,
+                self.default_min_pass_dict,
+                self._generated_results,
+                self.model,
+            )
 
+            report.save_format(format, save_dir, self.df_report)
+            return self.df_report
         elif self.is_multi_dataset:
             self.df_report = report.multi_dataset_report(
                 summary,
@@ -584,6 +601,7 @@ class Harness:
         """
 
         column_order = [
+            "dataset_name",
             "model_name",
             "category",
             "test_type",
@@ -632,6 +650,7 @@ class Harness:
             "result",
             "swapped_result",
             "model_response",
+            "feedback",
             "eval_score",
             "similarity_score",
             "original_result",
@@ -640,15 +659,29 @@ class Harness:
         ]
 
         if self._generated_results is None:
-            logging.warning(Warnings.W000)
+            logging.warning(Warnings.W000())
             return
 
-        if isinstance(self._generated_results, dict) and not self.is_multi_dataset:
+        if isinstance(self._generated_results, dict) and isinstance(self.model, dict):
             generated_results_df = []
             for k, v in self._generated_results.items():
-                model_generated_results_df = pd.DataFrame.from_dict(
-                    [x.to_dict() for x in v]
-                )
+                if isinstance(v, dict):
+                    model_generated_results_df = pd.DataFrame.from_dict(
+                        [
+                            {
+                                "dataset_name": k,
+                                "model_name": model_name,
+                                **sample.to_dict(),
+                            }
+                            for model_name, samples in v.items()
+                            if isinstance(samples, list)
+                            for sample in samples
+                        ]
+                    )
+                else:
+                    model_generated_results_df = pd.DataFrame.from_dict(
+                        [{"model_name": k, **x.to_dict()} for x in v]
+                    )
                 if (
                     "test_case" in model_generated_results_df.columns
                     and "original_question" in model_generated_results_df.columns
@@ -656,7 +689,7 @@ class Harness:
                     model_generated_results_df["original_question"].update(
                         model_generated_results_df.pop("test_case")
                     )
-                model_generated_results_df["model_name"] = k
+                # model_generated_results_df["model_name"] = k
                 generated_results_df.append(model_generated_results_df)
             generated_results_df = pd.concat(generated_results_df).reset_index(drop=True)
 
@@ -680,8 +713,6 @@ class Harness:
                     generated_results_df.pop("test_case")
                 )
 
-            if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
-                column_order.insert(2, "dataset_name")
             columns = [c for c in column_order if c in generated_results_df.columns]
             generated_results_df = generated_results_df[columns]
 
@@ -690,9 +721,9 @@ class Harness:
             generated_results_df = pd.DataFrame.from_dict(
                 [x.to_dict() for x in self._generated_results]
             )
+            if "dataset_name" in column_order:
+                column_order.remove("dataset_name")
 
-        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
-            column_order.insert(2, "dataset_name")
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
 
@@ -766,7 +797,7 @@ class Harness:
 
             if not (vaild_test_types.issubset(report_test_types)):
                 raise ValueError(
-                    Errors.E014.format(test_name=(vaild_test_types - report_test_types))
+                    Errors.E014(test_name=(vaild_test_types - report_test_types))
                 )
 
         if templates:
@@ -803,6 +834,7 @@ class Harness:
                 testcases formatted into a pd.DataFrame
         """
         column_order = [
+            "dataset_name",
             "model_name",
             "category",
             "test_type",
@@ -857,7 +889,47 @@ class Harness:
 
             testcases_df = pd.concat(testcases_df).reset_index(drop=True)
 
-        elif self.is_multi_dataset:
+        elif isinstance(self._testcases, dict) and isinstance(self.model, dict):
+            testcases_df = []
+            for k, v in self._testcases.items():
+                if isinstance(v, dict):
+                    model_testcases_df = pd.DataFrame.from_dict(
+                        [
+                            {
+                                "dataset_name": k,
+                                "model_name": model_name,
+                                **sample.to_dict(),
+                            }
+                            for model_name, samples in v.items()
+                            if isinstance(samples, list)
+                            for sample in samples
+                        ]
+                    )
+                else:
+                    model_testcases_df = pd.DataFrame.from_dict(
+                        [{"model_name": k, **x.to_dict()} for x in v]
+                    )
+
+                if "prompt" in model_testcases_df.columns:
+                    return model_testcases_df.fillna("-")
+
+                elif (
+                    "test_case" in model_testcases_df.columns
+                    and "original_question" in model_testcases_df.columns
+                ) and self.task != "political":
+                    model_testcases_df["original_question"].update(
+                        model_testcases_df.pop("test_case")
+                    )
+
+                testcases_df.append(model_testcases_df)
+            testcases_df = pd.concat(testcases_df).reset_index(drop=True)
+
+            columns = [c for c in column_order if c in testcases_df.columns]
+            testcases_df = testcases_df[columns]
+
+            return testcases_df.fillna("-")
+
+        elif self.is_multi_dataset and isinstance(self._testcases, dict):
             testcases_df = pd.DataFrame(
                 [
                     {**x.to_dict(), "dataset_name": dataset_name}
@@ -894,8 +966,9 @@ class Harness:
             ) and self.task != "political":
                 testcases_df["original_question"].update(testcases_df.pop("test_case"))
 
-        if hasattr(self, "is_multi_dataset") and self.is_multi_dataset:
-            column_order.insert(2, "dataset_name")
+            if "dataset_name" in column_order:
+                column_order.remove("dataset_name")
+
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df = testcases_df[columns]
 
@@ -910,10 +983,10 @@ class Harness:
 
         """
         if self._config is None:
-            raise RuntimeError(Errors.E015)
+            raise RuntimeError(Errors.E015())
 
         if self._testcases is None:
-            raise RuntimeError(Errors.E016)
+            raise RuntimeError(Errors.E016())
 
         if not os.path.isdir(save_dir):
             os.mkdir(save_dir)
@@ -958,11 +1031,11 @@ class Harness:
                 `Harness` loaded from from a previous configuration along with the new model to evaluate
         """
         if not os.path.isdir(save_dir):
-            raise OSError(Errors.E092.format(directory=save_dir))
+            raise OSError(Errors.E092(directory=save_dir))
 
         for filename in ["config.yaml", "data.pkl"]:
             if not os.path.exists(os.path.join(save_dir, filename)):
-                raise OSError(Errors.E017.format(filename=filename))
+                raise OSError(Errors.E017(filename=filename))
 
         with open(os.path.join(save_dir, "data.pkl"), "rb") as reader:
             data = pickle.load(reader)
@@ -991,7 +1064,7 @@ class Harness:
                         sample.expected_results = None
                 harness._testcases = testcases
             else:
-                logging.warning(Warnings.W013.format(save_dir=save_dir))
+                logging.warning(Warnings.W013(save_dir=save_dir))
                 harness.generate()
         else:
             harness.generate()
@@ -1064,6 +1137,11 @@ class Harness:
 
             # merge the testcases with the imported ones to the temp_testcases
             for name, list_samples in imported_testcases.items():
+                # check the task and apply transformations
+                if self.task == "ner":
+                    list_samples = [
+                        get_transformations(sample) for sample in list_samples
+                    ]
                 if name not in temp_testcases:
                     temp_testcases[name] = list_samples
                 temp_testcases[name].extend(list_samples)
@@ -1090,6 +1168,10 @@ class Harness:
             self._testcases = DataFactory(
                 {"data_source": input_path}, task=self.task, is_import=True
             ).load()
+            if self.task == "ner":
+                self._testcases = [
+                    get_transformations(sample) for sample in self._testcases
+                ]
             self._testcases.extend(temp_testcases)
 
         return self
@@ -1115,7 +1197,7 @@ class Harness:
         if test_type:
             if test_type not in available_tests.keys():
                 raise ValueError(
-                    Errors.E018.format(
+                    Errors.E018(
                         test_type=test_type, available_tests=available_tests.keys()
                     )
                 )
@@ -1148,7 +1230,7 @@ class Harness:
                 "Ethnicity-Name-Bias",
                 "Gender-Pronoun-Bias",
             ):
-                raise ValueError(Errors.E019.format(test_name=test_name))
+                raise ValueError(Errors.E019(test_name=test_name))
 
             TestFactory.call_add_custom_bias(data, test_name, append)
         elif task == "representation":
@@ -1158,14 +1240,14 @@ class Harness:
                 "Ethnicity-Representation",
                 "Label-Representation",
             ):
-                raise ValueError(Errors.E020.format(test_name=test_name))
+                raise ValueError(Errors.E020(test_name=test_name))
 
             RepresentationOperation.add_custom_representation(
                 data, test_name, append, check=self.task
             )
 
         else:
-            raise ValueError(Errors.E021.format(category=task))
+            raise ValueError(Errors.E021(category=task))
 
     def upload_folder_to_hub(
         repo_name: str,
@@ -1196,7 +1278,7 @@ class Harness:
                                 model_type ("huggingface" or "spacy").
         """
         if token is None:
-            raise ValueError(Errors.E022)
+            raise ValueError(Errors.E022())
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         if (
@@ -1208,7 +1290,7 @@ class Harness:
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
             api = HfApi()
 
             repo_id = repo_name.split("/")[1]
@@ -1226,7 +1308,7 @@ class Harness:
                 dataset_module = importlib.import_module(LIB_NAME)
                 push = getattr(dataset_module, "push")
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
             meta_path = os.path.join(folder_path, "meta.json")
             with open(meta_path, "r") as meta_file:
@@ -1278,7 +1360,7 @@ class Harness:
             None
         """
         if token is None:
-            raise ValueError(Errors.E022)
+            raise ValueError(Errors.E022())
         subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
 
         file_extension = file_path.split(".")[-1]
@@ -1289,7 +1371,7 @@ class Harness:
                 huggingface_hub = importlib.import_module(LIB_NAME)
                 HfApi = getattr(huggingface_hub, "HfApi")
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
             api = HfApi()
             repo_id = repo_name.split("/")[1]
@@ -1310,7 +1392,7 @@ class Harness:
                 Dataset = getattr(dataset_module, "Dataset")
 
             else:
-                raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+                raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
             with open(file_path, "r", encoding="utf-8") as f:
                 lines = f.readlines()
@@ -1363,11 +1445,11 @@ class Harness:
             if model == "textcat_imdb":
                 model = resource_filename("langtest", "data/textcat_imdb")
             self.is_default = True
-            logging.info(Warnings.W002.format(info=(self.task, model, hub)))
+            logging.info(Warnings.W002(info=(self.task, model, hub)))
         elif data is None and self.task.category == "ideology":
             o_data = []
         elif data is None and (task, model, hub) not in self.DEFAULTS_DATASET.keys():
-            raise ValueError(Errors.E004)
+            raise ValueError(Errors.E004())
 
         if isinstance(data, dict):
             if isinstance(data.get("data_source"), list):
@@ -1426,7 +1508,7 @@ class Harness:
                     return testcases
                 else:
                     raise ValueError(
-                        Errors.E007.format(data_source=self.__data_dict["data_source"])
+                        Errors.E007(data_source=self.__data_dict["data_source"])
                     )
             else:
                 testcases = TestFactory.transform(
@@ -1454,7 +1536,7 @@ class Harness:
                     return self
                 else:
                     raise ValueError(
-                        Errors.E008.format(
+                        Errors.E008(
                             test_name=test_name,
                             data_source=self.__data_dict["data_source"],
                             selected_data_sources=selected_data_sources,
@@ -1462,17 +1544,41 @@ class Harness:
                     )
 
             else:
-                raise ValueError(Errors.E009.format(test_name=test_name))
+                raise ValueError(Errors.E009(test_name=test_name))
 
         testcases = TestFactory.transform(self.task, dataset, tests, m_data=m_data)
         return testcases
 
     def __multi_datasets_generate(self, dataset: Dict[str, list]):
         testcases = {}
-        for dataset_name, samples in dataset.items():
-            print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
-            testcases[dataset_name] = self.__single_dataset_generate(samples)
-            print(f"{'':-^80}\n")
+        if not isinstance(self.model, dict):
+            for dataset_name, samples in dataset.items():
+                print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
+                testcases[dataset_name] = self.__single_dataset_generate(samples)
+                print(f"{'':-^80}\n")
+        elif isinstance(self.data, list) and self.__is_multi_model:
+            temp_testcases = self.__single_dataset_generate(dataset)
+            if isinstance(temp_testcases, dict) and set(temp_testcases.keys()) == set(
+                self.model.keys()
+            ):
+                testcases = temp_testcases
+            else:
+                for model_name, _ in self.model.items():
+                    testcases[model_name] = [sample.copy() for sample in temp_testcases]
+
+        else:
+            for dataset_name, samples in dataset.items():
+                print(f"{'':=^80}\n{dataset_name:^80}\n{'':=^80}")
+                if dataset_name not in testcases:
+                    testcases[dataset_name] = {}
+                for model_name, _ in self.model.items():
+                    if model_name not in testcases[dataset_name]:
+                        testcases[dataset_name][model_name] = []
+                    testcases[dataset_name][model_name] = self.__single_dataset_generate(
+                        samples
+                    )
+                print(f"{'':-^80}\n")
+
         return testcases
 
     # Run testcases functions
@@ -1487,9 +1593,9 @@ class Harness:
     ):
         generated_results = None
         if testcases is None:
-            raise RuntimeError(Errors.E010)
+            raise RuntimeError(Errors.E010())
 
-        if not isinstance(testcases, dict):
+        if not isinstance(testcases, dict) and not isinstance(self.model, dict):
             if checkpoint:
                 if self.batches is None:
                     if self.is_multi_dataset:
@@ -1503,7 +1609,7 @@ class Harness:
                             )
                             checkpoint_manager.save_all_batches(self.batches[dataset])
                             logging.warning(
-                                Warnings.W022.format(
+                                Warnings.W022(
                                     name=dataset, total_batches=len(self.batches[dataset])
                                 )
                             )
@@ -1513,9 +1619,7 @@ class Harness:
                         )
                         self.batches = divide_into_batches(testcases, batch_size)
                         checkpoint_manager.save_all_batches(self.batches)
-                        logging.warning(
-                            Warnings.W018.format(total_batches=len(self.batches))
-                        )
+                        logging.warning(Warnings.W018(total_batches=len(self.batches)))
 
                     self.save(save_checkpoints_dir)
 
@@ -1570,16 +1674,14 @@ class Harness:
                     generated_results.extend(self._checkpoints)
         else:
             # multi-model run
-            generated_results = {}
+            generated_results = defaultdict(list)
             if checkpoint:
                 if self.batches is None:
                     self.batches = {}
                     for k, v in self.model.items():
                         self.batches[k] = divide_into_batches(testcases[k], batch_size)
                         print(
-                            Warnings.W019.format(
-                                model_name=k, total_batches=len(self.batches)
-                            )
+                            Warnings.W019(model_name=k, total_batches=len(self.batches))
                         )
 
                     for k, v in self.batches.items():
@@ -1668,7 +1770,7 @@ class Harness:
 
             # Check if the dataset is empty
             if len(samples) == 0:
-                print(Warnings.W023.format(name=dataset_name))
+                print(Warnings.W023(name=dataset_name))
             else:
                 generated_results[dataset_name] = self.__single_dataset_run(
                     samples,
@@ -1705,6 +1807,11 @@ class Harness:
         # Reset the PromptManager
         prompt_manager = PromptManager()
         prompt_manager.reset()
+
+        # Prometheus eval
+        from langtest.metrics.prometheus_eval import PrometheusEval
+
+        PrometheusEval.reset_pipeline()
 
     def __tracking(self, *args, **kwargs):
         """Track the progress of the testcases."""

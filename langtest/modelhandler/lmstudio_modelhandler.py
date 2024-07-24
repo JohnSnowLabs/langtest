@@ -36,7 +36,7 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
     if try_import_lib(LIB_NAME):
         requests = importlib.import_module(LIB_NAME)
     else:
-        raise ModuleNotFoundError(Errors.E023.format(LIB_NAME=LIB_NAME))
+        raise ModuleNotFoundError(Errors.E023(LIB_NAME=LIB_NAME))
 
     if kwargs.get("headers", None):
         headers = kwargs.get("headers")
@@ -71,7 +71,7 @@ def chat_completion_api(text: str, url: str, server_prompt: str, **kwargs):
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(Errors.E095.format(e=str(e)))
+        raise RuntimeError(Errors.E095(e=str(e)))
 
 
 class PretrainedModel(ABC):
@@ -123,7 +123,7 @@ class PretrainedModel(ABC):
             # will raise an error
             if not all((input_data, output_parser, headers)):
                 raise ValueError(
-                    Errors.E090.format(
+                    Errors.E090(
                         error_message="".join(
                             [
                                 "input_processor,",
@@ -183,7 +183,7 @@ class PretrainedModel(ABC):
                 return self.output_parser(op)
             return op["choices"][0]["message"]["content"]
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
     def predict_raw(
         self, text: Union[str, dict], prompt: dict, server_prompt: str, *args, **kwargs
@@ -290,7 +290,7 @@ class PretrainedModelForNER(PretrainedModel, ModelAPI):
             else:
                 predictions = op["choices"][0]["message"]["content"]
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
         if isinstance(predictions, str):
             try:
@@ -443,7 +443,7 @@ class PretrainedModelForSensitivity(PretrainedModel, ModelAPI):
             }
 
         except Exception as e:
-            raise ValueError(Errors.E089.format(error_message=e))
+            raise ValueError(Errors.E089(error_message=e))
 
 
 class PretrainedModelForWinoBias(PretrainedModel, ModelAPI):

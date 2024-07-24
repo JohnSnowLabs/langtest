@@ -1,0 +1,1014 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>langtest.utils.custom_types.helpers.TestResultManager &#8212; langtest 2.3.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../static/documentation_options.js"></script>
+    <script src="../static/doctools.js"></script>
+    <script src="../static/sphinx_highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autosummary/langtest.utils.custom_types.helpers.TestResultManager';</script>
+    <link rel="icon" href="../static/fav.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="langtest.utils.custom_types.helpers.Transformation" href="langtest.utils.custom_types.helpers.Transformation.html" />
+    <link rel="prev" title="langtest.utils.custom_types.helpers.Span" href="langtest.utils.custom_types.helpers.Span.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../static/logo.png" class="logo__image only-light" alt="langtest 2.3.1 documentation - Home"/>
+    <script>document.write(`<img src="../static/logo.png" class="logo__image only-dark" alt="langtest 2.3.1 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../quick_start.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="langtest.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/JohnSnowLabs/langtest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../quick_start.html">
+                        Quick Start
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="langtest.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/JohnSnowLabs/langtest" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.augmentation.html">langtest.augmentation</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.augmentation.augmenter.html">langtest.augmentation.augmenter</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.augmentation.augmenter.DataAugmenter.html">langtest.augmentation.augmenter.DataAugmenter</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.augmentation.base.html">langtest.augmentation.base</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.augmentation.base.AugmentRobustness.html">langtest.augmentation.base.AugmentRobustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.augmentation.base.BaseAugmentaion.html">langtest.augmentation.base.BaseAugmentaion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.augmentation.base.TemplaticAugment.html">langtest.augmentation.base.TemplaticAugment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.callback.html">langtest.callback</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.callback.LangTestCallback.html">langtest.callback.LangTestCallback</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.config.html">langtest.config</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.config.read_config.html">langtest.config.read_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.config.update_config.html">langtest.config.update_config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.config.write_config.html">langtest.config.write_config</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.datahandler.html">langtest.datahandler</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.datahandler.dataset_info.html">langtest.datahandler.dataset_info</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.datahandler.datasource.html">langtest.datahandler.datasource</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.BaseDataset.html">langtest.datahandler.datasource.BaseDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.CSVDataset.html">langtest.datahandler.datasource.CSVDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.ConllDataset.html">langtest.datahandler.datasource.ConllDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.DataFactory.html">langtest.datahandler.datasource.DataFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.HuggingFaceDataset.html">langtest.datahandler.datasource.HuggingFaceDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.JSONDataset.html">langtest.datahandler.datasource.JSONDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.JSONLDataset.html">langtest.datahandler.datasource.JSONLDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.PandasDataset.html">langtest.datahandler.datasource.PandasDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.datasource.SynteticDataset.html">langtest.datahandler.datasource.SynteticDataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.datahandler.format.html">langtest.datahandler.format</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.format.BaseFormatter.html">langtest.datahandler.format.BaseFormatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.format.Formatter.html">langtest.datahandler.format.Formatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.format.NEROutputFormatter.html">langtest.datahandler.format.NEROutputFormatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.format.QAFormatter.html">langtest.datahandler.format.QAFormatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.datahandler.format.SequenceClassificationOutputFormatter.html">langtest.datahandler.format.SequenceClassificationOutputFormatter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.embeddings.html">langtest.embeddings</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.embeddings.huggingface.html">langtest.embeddings.huggingface</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.embeddings.huggingface.HuggingfaceEmbeddings.html">langtest.embeddings.huggingface.HuggingfaceEmbeddings</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.embeddings.openai.html">langtest.embeddings.openai</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.embeddings.openai.OpenaiEmbeddings.html">langtest.embeddings.openai.OpenaiEmbeddings</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.errors.html">langtest.errors</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.errors.Errors.html">langtest.errors.Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.errors.ErrorsWithCodes.html">langtest.errors.ErrorsWithCodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.errors.Warnings.html">langtest.errors.Warnings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.errors.ColumnNameError.html">langtest.errors.ColumnNameError</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.langtest.html">langtest.langtest</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.langtest.Harness.html">langtest.langtest.Harness</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.leaderboard.html">langtest.leaderboard</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.create_folder.html">langtest.leaderboard.create_folder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.create_leaderboard.html">langtest.leaderboard.create_leaderboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.generate_folder_key.html">langtest.leaderboard.generate_folder_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.generate_store_testcases.html">langtest.leaderboard.generate_store_testcases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.get_lm_studio_model_name.html">langtest.leaderboard.get_lm_studio_model_name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.get_parameters.html">langtest.leaderboard.get_parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.get_store_path.html">langtest.leaderboard.get_store_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.load_old_testcases.html">langtest.leaderboard.load_old_testcases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.prepare_accuracy_summary.html">langtest.leaderboard.prepare_accuracy_summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.prepare_robustness_summary.html">langtest.leaderboard.prepare_robustness_summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.reorder_columns.html">langtest.leaderboard.reorder_columns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.run_store_checkpoints.html">langtest.leaderboard.run_store_checkpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.save_file.html">langtest.leaderboard.save_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.update_leaderboard.html">langtest.leaderboard.update_leaderboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.leaderboard.update_summary.html">langtest.leaderboard.update_summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.logger.html">langtest.logger</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.logger.Logger.html">langtest.logger.Logger</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.metrics.html">langtest.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.metrics.embedding_distance.html">langtest.metrics.embedding_distance</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.embedding_distance.EmbeddingDistance.html">langtest.metrics.embedding_distance.EmbeddingDistance</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.metrics.llm_eval.html">langtest.metrics.llm_eval</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.llm_eval.LlmEval.html">langtest.metrics.llm_eval.LlmEval</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.metrics.prometheus_eval.html">langtest.metrics.prometheus_eval</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.prometheus_eval.check_memory.html">langtest.metrics.prometheus_eval.check_memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.prometheus_eval.AbsoluteGrading.html">langtest.metrics.prometheus_eval.AbsoluteGrading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.prometheus_eval.PrometheusEval.html">langtest.metrics.prometheus_eval.PrometheusEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.prometheus_eval.RelativeGrading.html">langtest.metrics.prometheus_eval.RelativeGrading</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.metrics.string_distance.html">langtest.metrics.string_distance</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.metrics.string_distance.StringDistance.html">langtest.metrics.string_distance.StringDistance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="langtest.modelhandler.html">langtest.modelhandler</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.pipelines.html">langtest.pipelines</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.pipelines.embedding.html">langtest.pipelines.embedding</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.pipelines.embedding.BasePipeline.html">langtest.pipelines.embedding.BasePipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.pipelines.embedding.EmbeddingPipeline.html">langtest.pipelines.embedding.EmbeddingPipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.pipelines.transformers.html">langtest.pipelines.transformers</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="langtest.pipelines.transformers.ner_pipeline.html">langtest.pipelines.transformers.ner_pipeline</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="langtest.pipelines.transformers.ner_pipeline.NEREnd2EndPipeline.html">langtest.pipelines.transformers.ner_pipeline.NEREnd2EndPipeline</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.pipelines.utils.html">langtest.pipelines.utils</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="langtest.pipelines.utils.data_helpers.html">langtest.pipelines.utils.data_helpers</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="langtest.pipelines.utils.data_helpers.ner_dataset.html">langtest.pipelines.utils.data_helpers.ner_dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="langtest.pipelines.utils.metrics.html">langtest.pipelines.utils.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="langtest.pipelines.utils.metrics.compute_ner_metrics.html">langtest.pipelines.utils.metrics.compute_ner_metrics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.prompts.html">langtest.prompts</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="langtest.prompts.Conversion.html">langtest.prompts.Conversion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.prompts.MessageType.html">langtest.prompts.MessageType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.prompts.PromptConfig.html">langtest.prompts.PromptConfig</a></li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.prompts.PromptManager.html">langtest.prompts.PromptManager</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.tasks.html">langtest.tasks</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.tasks.task.html">langtest.tasks.task</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.BaseTask.html">langtest.tasks.task.BaseTask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Clinical.html">langtest.tasks.task.Clinical</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.CrowsPairs.html">langtest.tasks.task.CrowsPairs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Disinformation.html">langtest.tasks.task.Disinformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Factuality.html">langtest.tasks.task.Factuality</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.FillMask.html">langtest.tasks.task.FillMask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Ideology.html">langtest.tasks.task.Ideology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Legal.html">langtest.tasks.task.Legal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.NER.html">langtest.tasks.task.NER</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.QuestionAnswering.html">langtest.tasks.task.QuestionAnswering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Security.html">langtest.tasks.task.Security</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Sensitivity.html">langtest.tasks.task.Sensitivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Stereoset.html">langtest.tasks.task.Stereoset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Summarization.html">langtest.tasks.task.Summarization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Sycophancy.html">langtest.tasks.task.Sycophancy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.TaskManager.html">langtest.tasks.task.TaskManager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.TextClassification.html">langtest.tasks.task.TextClassification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.TextGeneration.html">langtest.tasks.task.TextGeneration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Toxicity.html">langtest.tasks.task.Toxicity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.Translation.html">langtest.tasks.task.Translation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.tasks.task.WinoBias.html">langtest.tasks.task.WinoBias</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="langtest.transform.html">langtest.transform</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.accuracy.html">langtest.transform.accuracy</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.AccuracyTestFactory.html">langtest.transform.accuracy.AccuracyTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.BaseAccuracy.html">langtest.transform.accuracy.BaseAccuracy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.LLMEval.html">langtest.transform.accuracy.LLMEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinBLEUcore.html">langtest.transform.accuracy.MinBLEUcore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinEMcore.html">langtest.transform.accuracy.MinEMcore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinF1Score.html">langtest.transform.accuracy.MinF1Score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinMacroF1Score.html">langtest.transform.accuracy.MinMacroF1Score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinMicroF1Score.html">langtest.transform.accuracy.MinMicroF1Score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinPrecisionScore.html">langtest.transform.accuracy.MinPrecisionScore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinROUGEcore.html">langtest.transform.accuracy.MinROUGEcore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinRecallScore.html">langtest.transform.accuracy.MinRecallScore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.accuracy.MinWeightedF1Score.html">langtest.transform.accuracy.MinWeightedF1Score</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.base.html">langtest.transform.base</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.base.ITests.html">langtest.transform.base.ITests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.base.TestFactory.html">langtest.transform.base.TestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.bias.html">langtest.transform.bias</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.bias.BaseBias.html">langtest.transform.bias.BaseBias</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.bias.BiasTestFactory.html">langtest.transform.bias.BiasTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.bias.CountryEconomicBias.html">langtest.transform.bias.CountryEconomicBias</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.bias.EthnicityNameBias.html">langtest.transform.bias.EthnicityNameBias</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.bias.GenderPronounBias.html">langtest.transform.bias.GenderPronounBias</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.bias.ReligionBias.html">langtest.transform.bias.ReligionBias</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.clinical.html">langtest.transform.clinical</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-35"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.clinical.BaseClincial.html">langtest.transform.clinical.BaseClincial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.clinical.Brand2Generic.html">langtest.transform.clinical.Brand2Generic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.clinical.ClinicalTestFactory.html">langtest.transform.clinical.ClinicalTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.clinical.DemographicBias.html">langtest.transform.clinical.DemographicBias</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.clinical.Generic2Brand.html">langtest.transform.clinical.Generic2Brand</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.clinical.Posology.html">langtest.transform.clinical.Posology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="langtest.transform.constants.html">langtest.transform.constants</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.custom_data.html">langtest.transform.custom_data</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-36"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.custom_data.add_custom_data.html">langtest.transform.custom_data.add_custom_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.disinformation.html">langtest.transform.disinformation</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-37"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.disinformation.DisinformationTestFactory.html">langtest.transform.disinformation.DisinformationTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.factuality.html">langtest.transform.factuality</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-38"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.factuality.FactualityTestFactory.html">langtest.transform.factuality.FactualityTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.fairness.html">langtest.transform.fairness</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-39"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.BaseFairness.html">langtest.transform.fairness.BaseFairness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.FairnessTestFactory.html">langtest.transform.fairness.FairnessTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.MaxGenderF1Score.html">langtest.transform.fairness.MaxGenderF1Score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.MaxGenderLLMEval.html">langtest.transform.fairness.MaxGenderLLMEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.MaxGenderRougeScore.html">langtest.transform.fairness.MaxGenderRougeScore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.MinGenderF1Score.html">langtest.transform.fairness.MinGenderF1Score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.MinGenderLLMEval.html">langtest.transform.fairness.MinGenderLLMEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.fairness.MinGenderRougeScore.html">langtest.transform.fairness.MinGenderRougeScore</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.grammar.html">langtest.transform.grammar</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-40"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.grammar.BaseGrammar.html">langtest.transform.grammar.BaseGrammar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.grammar.GrammarTestFactory.html">langtest.transform.grammar.GrammarTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.grammar.Paraphrase.html">langtest.transform.grammar.Paraphrase</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.ideology.html">langtest.transform.ideology</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-41"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.ideology.BaseIdeology.html">langtest.transform.ideology.BaseIdeology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.ideology.IdeologyTestFactory.html">langtest.transform.ideology.IdeologyTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.ideology.PoliticalCompass.html">langtest.transform.ideology.PoliticalCompass</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.legal.html">langtest.transform.legal</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-42"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.legal.LegalTestFactory.html">langtest.transform.legal.LegalTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.performance.html">langtest.transform.performance</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-43"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.performance.BasePerformance.html">langtest.transform.performance.BasePerformance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.performance.PerformanceTestFactory.html">langtest.transform.performance.PerformanceTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.performance.Speed.html">langtest.transform.performance.Speed</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.representation.html">langtest.transform.representation</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-44"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.BaseRepresentation.html">langtest.transform.representation.BaseRepresentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.CountryEconomicRepresentation.html">langtest.transform.representation.CountryEconomicRepresentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.EthnicityRepresentation.html">langtest.transform.representation.EthnicityRepresentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.GenderRepresentation.html">langtest.transform.representation.GenderRepresentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.LabelRepresentation.html">langtest.transform.representation.LabelRepresentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.ReligionRepresentation.html">langtest.transform.representation.ReligionRepresentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.representation.RepresentationTestFactory.html">langtest.transform.representation.RepresentationTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.robustness.html">langtest.transform.robustness</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-45"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AbbreviationInsertion.html">langtest.transform.robustness.AbbreviationInsertion</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddContext.html">langtest.transform.robustness.AddContext</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddContraction.html">langtest.transform.robustness.AddContraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddOcrTypo.html">langtest.transform.robustness.AddOcrTypo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddPunctuation.html">langtest.transform.robustness.AddPunctuation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddSlangifyTypo.html">langtest.transform.robustness.AddSlangifyTypo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddSpeechToTextTypo.html">langtest.transform.robustness.AddSpeechToTextTypo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AddTypo.html">langtest.transform.robustness.AddTypo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AdjectiveAntonymSwap.html">langtest.transform.robustness.AdjectiveAntonymSwap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.AdjectiveSynonymSwap.html">langtest.transform.robustness.AdjectiveSynonymSwap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.BaseRobustness.html">langtest.transform.robustness.BaseRobustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.ConvertAccent.html">langtest.transform.robustness.ConvertAccent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.DyslexiaWordSwap.html">langtest.transform.robustness.DyslexiaWordSwap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.LowerCase.html">langtest.transform.robustness.LowerCase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.MultiplePerturbations.html">langtest.transform.robustness.MultiplePerturbations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.NumberToWord.html">langtest.transform.robustness.NumberToWord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.RandomAge.html">langtest.transform.robustness.RandomAge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.RobustnessTestFactory.html">langtest.transform.robustness.RobustnessTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.StripAllPunctuation.html">langtest.transform.robustness.StripAllPunctuation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.StripPunctuation.html">langtest.transform.robustness.StripPunctuation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.SwapEntities.html">langtest.transform.robustness.SwapEntities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.TitleCase.html">langtest.transform.robustness.TitleCase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.robustness.UpperCase.html">langtest.transform.robustness.UpperCase</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.safety.html">langtest.transform.safety</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-46"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.safety.BaseSafetyTest.html">langtest.transform.safety.BaseSafetyTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.safety.Misuse.html">langtest.transform.safety.Misuse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.safety.SafetyTestFactory.html">langtest.transform.safety.SafetyTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.security.html">langtest.transform.security</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-47"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.security.BaseSecurity.html">langtest.transform.security.BaseSecurity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.security.PromptInjection.html">langtest.transform.security.PromptInjection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.security.SecurityTestFactory.html">langtest.transform.security.SecurityTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.sensitivity.html">langtest.transform.sensitivity</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-48"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sensitivity.AddNegation.html">langtest.transform.sensitivity.AddNegation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sensitivity.AddToxicWords.html">langtest.transform.sensitivity.AddToxicWords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sensitivity.BaseSensitivity.html">langtest.transform.sensitivity.BaseSensitivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sensitivity.SensitivityTestFactory.html">langtest.transform.sensitivity.SensitivityTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.stereoset.html">langtest.transform.stereoset</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-49"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.stereoset.StereoSetTestFactory.html">langtest.transform.stereoset.StereoSetTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.stereotype.html">langtest.transform.stereotype</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-50"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.stereotype.StereoTypeTestFactory.html">langtest.transform.stereotype.StereoTypeTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.sycophancy.html">langtest.transform.sycophancy</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-51"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sycophancy.BaseSycophancy.html">langtest.transform.sycophancy.BaseSycophancy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sycophancy.SycophancyMath.html">langtest.transform.sycophancy.SycophancyMath</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sycophancy.SycophancyNlp.html">langtest.transform.sycophancy.SycophancyNlp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.sycophancy.SycophancyTestFactory.html">langtest.transform.sycophancy.SycophancyTestFactory</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.toxicity.html">langtest.transform.toxicity</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-52"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.toxicity.BaseToxicity.html">langtest.transform.toxicity.BaseToxicity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.toxicity.GeneralToxicity.html">langtest.transform.toxicity.GeneralToxicity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.toxicity.ToxicityTestFactory.html">langtest.transform.toxicity.ToxicityTestFactory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.toxicity.ToxicityTypes.html">langtest.transform.toxicity.ToxicityTypes</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.transform.utils.html">langtest.transform.utils</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-53"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.utils.check_name.html">langtest.transform.utils.check_name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.utils.compare_generations_overlap.html">langtest.transform.utils.compare_generations_overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.utils.create_terminology.html">langtest.transform.utils.create_terminology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.utils.filter_unique_samples.html">langtest.transform.utils.filter_unique_samples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.utils.get_substitution_names.html">langtest.transform.utils.get_substitution_names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.transform.utils.RepresentationOperation.html">langtest.transform.utils.RepresentationOperation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="langtest.utils.html">langtest.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-54"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.SoundsLikeFunctions.html">langtest.utils.SoundsLikeFunctions</a><input class="toctree-checkbox" id="toctree-checkbox-55" name="toctree-checkbox-55" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-55"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.SoundsLikeFunctions.G2p.html">langtest.utils.SoundsLikeFunctions.G2p</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.SoundsLikeFunctions.PhoneFunctions.html">langtest.utils.SoundsLikeFunctions.PhoneFunctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.SoundsLikeFunctions.PronunciationFunctions.html">langtest.utils.SoundsLikeFunctions.PronunciationFunctions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.SoundsLikeFunctions.Search.html">langtest.utils.SoundsLikeFunctions.Search</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.SoundsLikeFunctions.WordFunctions.html">langtest.utils.SoundsLikeFunctions.WordFunctions</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.benchmark_utils.html">langtest.utils.benchmark_utils</a><input class="toctree-checkbox" id="toctree-checkbox-56" name="toctree-checkbox-56" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-56"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.benchmark_utils.Leaderboard.html">langtest.utils.benchmark_utils.Leaderboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.benchmark_utils.Summary.html">langtest.utils.benchmark_utils.Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.checkpoints.html">langtest.utils.checkpoints</a><input class="toctree-checkbox" id="toctree-checkbox-57" name="toctree-checkbox-57" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-57"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.checkpoints.divide_into_batches.html">langtest.utils.checkpoints.divide_into_batches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.checkpoints.CheckpointManager.html">langtest.utils.checkpoints.CheckpointManager</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.config_utils.html">langtest.utils.config_utils</a><input class="toctree-checkbox" id="toctree-checkbox-58" name="toctree-checkbox-58" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-58"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.config_utils.BenchmarkDatasets.html">langtest.utils.config_utils.BenchmarkDatasets</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="langtest.utils.custom_types.html">langtest.utils.custom_types</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-59" name="toctree-checkbox-59" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-59"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="langtest.utils.custom_types.helpers.html">langtest.utils.custom_types.helpers</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-60" name="toctree-checkbox-60" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-60"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.build_qa_input.html">langtest.utils.custom_types.helpers.build_qa_input</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.build_qa_prompt.html">langtest.utils.custom_types.helpers.build_qa_prompt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.create_dirs.html">langtest.utils.custom_types.helpers.create_dirs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.create_folder.html">langtest.utils.custom_types.helpers.create_folder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.is_pass_embedding_distance.html">langtest.utils.custom_types.helpers.is_pass_embedding_distance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.is_pass_llm_eval.html">langtest.utils.custom_types.helpers.is_pass_llm_eval</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.is_pass_prometheus_eval.html">langtest.utils.custom_types.helpers.is_pass_prometheus_eval</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.is_pass_string_distance.html">langtest.utils.custom_types.helpers.is_pass_string_distance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.llm_prompt_eval.html">langtest.utils.custom_types.helpers.llm_prompt_eval</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.prepare_llm_evaluation_data.html">langtest.utils.custom_types.helpers.prepare_llm_evaluation_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.prepare_model_response.html">langtest.utils.custom_types.helpers.prepare_model_response</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.transformer_prompt_eval.html">langtest.utils.custom_types.helpers.transformer_prompt_eval</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.HashableDict.html">langtest.utils.custom_types.helpers.HashableDict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.SimplePromptTemplate.html">langtest.utils.custom_types.helpers.SimplePromptTemplate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.Span.html">langtest.utils.custom_types.helpers.Span</a></li>
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">langtest.utils.custom_types.helpers.TestResultManager</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.helpers.Transformation.html">langtest.utils.custom_types.helpers.Transformation</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="langtest.utils.custom_types.output.html">langtest.utils.custom_types.output</a><input class="toctree-checkbox" id="toctree-checkbox-61" name="toctree-checkbox-61" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-61"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.output.MaxScoreOutput.html">langtest.utils.custom_types.output.MaxScoreOutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.output.MinScoreOutput.html">langtest.utils.custom_types.output.MinScoreOutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.output.NEROutput.html">langtest.utils.custom_types.output.NEROutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.output.SequenceClassificationOutput.html">langtest.utils.custom_types.output.SequenceClassificationOutput</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.output.TranslationOutput.html">langtest.utils.custom_types.output.TranslationOutput</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="langtest.utils.custom_types.predictions.html">langtest.utils.custom_types.predictions</a><input class="toctree-checkbox" id="toctree-checkbox-62" name="toctree-checkbox-62" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-62"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.predictions.NERPrediction.html">langtest.utils.custom_types.predictions.NERPrediction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.predictions.SequenceLabel.html">langtest.utils.custom_types.predictions.SequenceLabel</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="langtest.utils.custom_types.sample.html">langtest.utils.custom_types.sample</a><input class="toctree-checkbox" id="toctree-checkbox-63" name="toctree-checkbox-63" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-63"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.BaseQASample.html">langtest.utils.custom_types.sample.BaseQASample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.BaseSample.html">langtest.utils.custom_types.sample.BaseSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.ClinicalSample.html">langtest.utils.custom_types.sample.ClinicalSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.CrowsPairsSample.html">langtest.utils.custom_types.sample.CrowsPairsSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.DisinformationSample.html">langtest.utils.custom_types.sample.DisinformationSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.FactualitySample.html">langtest.utils.custom_types.sample.FactualitySample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.FillMaskSample.html">langtest.utils.custom_types.sample.FillMaskSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.LLMAnswerSample.html">langtest.utils.custom_types.sample.LLMAnswerSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.LegalSample.html">langtest.utils.custom_types.sample.LegalSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.MaxScoreQASample.html">langtest.utils.custom_types.sample.MaxScoreQASample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.MaxScoreSample.html">langtest.utils.custom_types.sample.MaxScoreSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.MinScoreQASample.html">langtest.utils.custom_types.sample.MinScoreQASample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.MinScoreSample.html">langtest.utils.custom_types.sample.MinScoreSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.NERSample.html">langtest.utils.custom_types.sample.NERSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.QASample.html">langtest.utils.custom_types.sample.QASample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.SecuritySample.html">langtest.utils.custom_types.sample.SecuritySample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.SensitivitySample.html">langtest.utils.custom_types.sample.SensitivitySample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.SequenceClassificationSample.html">langtest.utils.custom_types.sample.SequenceClassificationSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.SpeedTestSample.html">langtest.utils.custom_types.sample.SpeedTestSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.StereoSetSample.html">langtest.utils.custom_types.sample.StereoSetSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.SummarizationSample.html">langtest.utils.custom_types.sample.SummarizationSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.SycophancySample.html">langtest.utils.custom_types.sample.SycophancySample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.TextGenerationSample.html">langtest.utils.custom_types.sample.TextGenerationSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.ToxicitySample.html">langtest.utils.custom_types.sample.ToxicitySample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.TranslationSample.html">langtest.utils.custom_types.sample.TranslationSample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="langtest.utils.custom_types.sample.WinoBiasSample.html">langtest.utils.custom_types.sample.WinoBiasSample</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.gender_classifier.html">langtest.utils.gender_classifier</a><input class="toctree-checkbox" id="toctree-checkbox-64" name="toctree-checkbox-64" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-64"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.gender_classifier.GenderClassifier.html">langtest.utils.gender_classifier.GenderClassifier</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.hf_utils.html">langtest.utils.hf_utils</a><input class="toctree-checkbox" id="toctree-checkbox-65" name="toctree-checkbox-65" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-65"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.hf_utils.build_dataset.html">langtest.utils.hf_utils.build_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.hf_utils.clean_input.html">langtest.utils.hf_utils.clean_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.hf_utils.get_model_n_tokenizer.html">langtest.utils.hf_utils.get_model_n_tokenizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.hf_utils.login_with_token.html">langtest.utils.hf_utils.login_with_token</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.hf_utils.HuggingFacePipeline.html">langtest.utils.hf_utils.HuggingFacePipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.hf_utils.GatedRepoAccessError.html">langtest.utils.hf_utils.GatedRepoAccessError</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.lib_manager.html">langtest.utils.lib_manager</a><input class="toctree-checkbox" id="toctree-checkbox-66" name="toctree-checkbox-66" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-66"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.lib_manager.log_verbosity_handler.html">langtest.utils.lib_manager.log_verbosity_handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.lib_manager.try_import_lib.html">langtest.utils.lib_manager.try_import_lib</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.number_to_word.html">langtest.utils.number_to_word</a><input class="toctree-checkbox" id="toctree-checkbox-67" name="toctree-checkbox-67" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-67"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.number_to_word.print3.html">langtest.utils.number_to_word.print3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.number_to_word.ConvertNumberToWord.html">langtest.utils.number_to_word.ConvertNumberToWord</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.number_to_word.BadChunkingOptionError.html">langtest.utils.number_to_word.BadChunkingOptionError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.number_to_word.NumOutOfRangeError.html">langtest.utils.number_to_word.NumOutOfRangeError</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.report_utils.html">langtest.utils.report_utils</a><input class="toctree-checkbox" id="toctree-checkbox-68" name="toctree-checkbox-68" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-68"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.color_cells.html">langtest.utils.report_utils.color_cells</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.mlflow_report.html">langtest.utils.report_utils.mlflow_report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.model_report.html">langtest.utils.report_utils.model_report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.multi_dataset_multi_model_report.html">langtest.utils.report_utils.multi_dataset_multi_model_report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.multi_dataset_report.html">langtest.utils.report_utils.multi_dataset_report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.multi_model_report.html">langtest.utils.report_utils.multi_model_report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.political_report.html">langtest.utils.report_utils.political_report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.report_utils.save_format.html">langtest.utils.report_utils.save_format</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="langtest.utils.util_metrics.html">langtest.utils.util_metrics</a><input class="toctree-checkbox" id="toctree-checkbox-69" name="toctree-checkbox-69" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-69"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.util_metrics.calculate_f1_score.html">langtest.utils.util_metrics.calculate_f1_score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="langtest.utils.util_metrics.classification_report.html">langtest.utils.util_metrics.classification_report</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="langtest.html" class="nav-link">langtest</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="langtest.utils.custom_types.helpers.html" class="nav-link">langtest.utils.custom_types.helpers</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">langtest.uti...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="langtest-utils-custom-types-helpers-testresultmanager">
+<h1>langtest.utils.custom_types.helpers.TestResultManager<a class="headerlink" href="#langtest-utils-custom-types-helpers-testresultmanager" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="langtest.utils.custom_types.helpers.TestResultManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TestResultManager</span></span><a class="headerlink" href="#langtest.utils.custom_types.helpers.TestResultManager" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="langtest.utils.custom_types.helpers.TestResultManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#langtest.utils.custom_types.helpers.TestResultManager.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#langtest.utils.custom_types.helpers.TestResultManager.__init__" title="langtest.utils.custom_types.helpers.TestResultManager.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_data</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_instance</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_instance</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#langtest.utils.custom_types.helpers.TestResultManager.prepare_model_response" title="langtest.utils.custom_types.helpers.TestResultManager.prepare_model_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_model_response</span></code></a>(data)</p></td>
+<td><p>check the model response</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="langtest.utils.custom_types.helpers.TestResultManager.prepare_model_response">
+<span class="sig-name descname"><span class="pre">prepare_model_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#langtest.utils.custom_types.helpers.TestResultManager.prepare_model_response" title="Permalink to this definition">#</a></dt>
+<dd><p>check the model response</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="langtest.utils.custom_types.helpers.Span.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">langtest.utils.custom_types.helpers.Span</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="langtest.utils.custom_types.helpers.Transformation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">langtest.utils.custom_types.helpers.Transformation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#langtest.utils.custom_types.helpers.TestResultManager"><code class="docutils literal notranslate"><span class="pre">TestResultManager</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#langtest.utils.custom_types.helpers.TestResultManager.__init__"><code class="docutils literal notranslate"><span class="pre">TestResultManager.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#langtest.utils.custom_types.helpers.TestResultManager.prepare_model_response"><code class="docutils literal notranslate"><span class="pre">TestResultManager.prepare_model_response()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2023, John Snow Labs.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

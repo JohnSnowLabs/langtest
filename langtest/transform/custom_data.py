@@ -39,7 +39,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
 
         # Validate the schema
         if not set(data.keys()).issubset(valid_names):
-            raise ValueError(Errors.E054.format(var=", ".join(valid_names)))
+            raise ValueError(Errors.E054(var=", ".join(valid_names)))
 
         if append:
             # Append unique values to existing keys
@@ -58,7 +58,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
 
         # Validate the schema
         if not set(data.keys()).issubset(valid_names):
-            raise ValueError(Errors.E054.format(var=", ".join(valid_names)))
+            raise ValueError(Errors.E054(var=", ".join(valid_names)))
 
         if append:
             # Append unique values to existing keys
@@ -86,28 +86,26 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
 
         for data_dict in data:
             if "name" not in data_dict:
-                raise ValueError(Errors.E055)
+                raise ValueError(Errors.E055())
 
             name = data_dict["name"]
             first_names = data_dict.get("first_names", [])
             last_names = data_dict.get("last_names", [])
 
             if not isinstance(name, str):
-                raise ValueError(Errors.E057)
+                raise ValueError(Errors.E057())
 
             if name not in valid_names:
-                raise ValueError(
-                    Errors.E056.format(var1=name, var2=", ".join(valid_names))
-                )
+                raise ValueError(Errors.E056(var1=name, var2=", ".join(valid_names)))
 
             if not first_names and not last_names:
                 if name not in ("native_american_names", "inter_racial_names"):
-                    raise ValueError(Errors.E058.format(name=name))
+                    raise ValueError(Errors.E058(name=name))
                 else:
-                    raise ValueError(Errors.E059.format(name=name))
+                    raise ValueError(Errors.E059(name=name))
 
             if set(data_dict.keys()) - {"name", "first_names", "last_names"}:
-                raise ValueError(Errors.E060.format(name=name))
+                raise ValueError(Errors.E060(name=name))
 
             if name in (
                 "white_names",
@@ -133,14 +131,12 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
         # Validate the schema
         for data_dict in data:
             if "name" not in data_dict:
-                raise ValueError(Errors.E055)
+                raise ValueError(Errors.E055())
 
             name = data_dict["name"]
 
             if name not in valid_names:
-                raise ValueError(
-                    Errors.E056.format(var1=name, var2=", ".join(valid_names))
-                )
+                raise ValueError(Errors.E056(var1=name, var2=", ".join(valid_names)))
 
             pronouns = {
                 "subjective_pronouns": data_dict.get("subjective_pronouns", []),
@@ -158,7 +154,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
                     "possessive_pronouns",
                 ]
             ):
-                raise ValueError(Errors.E061.format(name=name))
+                raise ValueError(Errors.E061(name=name))
 
             invalid_keys = set(data_dict.keys()) - {
                 "name",
@@ -168,9 +164,7 @@ def add_custom_data(data: Union[list, dict], name: str, append: bool) -> None:
                 "possessive_pronouns",
             }
             if invalid_keys:
-                raise ValueError(
-                    Errors.E062.format(var1=name, var2=", ".join(invalid_keys))
-                )
+                raise ValueError(Errors.E062(var1=name, var2=", ".join(invalid_keys)))
 
             bias_dict = {
                 "female_pronouns": female_pronouns,

@@ -165,7 +165,7 @@ class PretrainedJSLModel(ABC):
             self.model = _pipeline.fit(tmp_df)
 
         else:
-            raise ValueError(Errors.E038.format(model_type=type(model)))
+            raise ValueError(Errors.E038(model_type=type(model)))
 
         self.predict.cache_clear()
 
@@ -186,7 +186,7 @@ class PretrainedJSLModel(ABC):
                 if try_import_lib("johnsnowlabs"):
                     loaded_model = nlp.load(path)
                 else:
-                    raise ValueError(Errors.E039)
+                    raise ValueError(Errors.E039())
 
             return cls(loaded_model)
         return cls(path)
@@ -235,7 +235,7 @@ class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
                 break
 
         if ner_model is None:
-            raise ValueError(Errors.E040.format(var="NER"))
+            raise ValueError(Errors.E040(var="NER"))
 
         self.output_col = ner_model.getOutputCol()
 
@@ -415,7 +415,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
                 break
 
         if _classifier is None:
-            raise ValueError(Errors.E040.format(var="classifier"))
+            raise ValueError(Errors.E040(var="classifier"))
 
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
@@ -495,7 +495,7 @@ class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
                 break
 
         if _translator is None:
-            raise ValueError(Errors.E040.format(var="translator"))
+            raise ValueError(Errors.E040(var="translator"))
 
         self.output_col = _translator.getOutputCol()
         self.model = LightPipeline(self.model)
