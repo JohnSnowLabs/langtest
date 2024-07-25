@@ -295,7 +295,7 @@ class NERSample(BaseSample):
     def is_pass(self) -> bool:
         """Checks if the sample passes based on the maximum score."""
         return all(
-            [a == b for (a, b) in self.get_aligned_span_pairs() if a and a.entity != "O"]
+            [a == b for (a, b) in self.get_aligned_span_pairs() if (a and a.entity != "O") or (b and b.entity != "O")]
         )
 
 
