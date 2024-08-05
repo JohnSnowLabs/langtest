@@ -1089,7 +1089,7 @@ class Harness:
         Args:
             output_path (str): path to save the testcases to
         """
-        temp_df = self.testcases(additional_col=True)
+        temp_df = self.testcases(additional_cols=True)
         temp_df = temp_df[temp_df["category"].isin(["robustness", "bias"])]
         if return_dataframe:
             return temp_df
