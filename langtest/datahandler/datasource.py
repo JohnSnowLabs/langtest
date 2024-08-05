@@ -931,7 +931,6 @@ class CSVDataset(BaseDataset):
 
         for i in data.to_dict(orient="records"):
             if self.task == "ner" and isinstance(i["transformations"], str):
-                
                 i["transformations"] = eval(i["transformations"])
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
