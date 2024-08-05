@@ -930,8 +930,15 @@ class CSVDataset(BaseDataset):
             return samples
 
         for i in data.to_dict(orient="records"):
-            if self.task == "ner" and isinstance(i["transformations"], str):
-                i["transformations"] = eval(i["transformations"])
+            temp = i["transformations"]
+            if temp == "-" or len(temp) < 3:
+                temp = None
+                i.pop("transformations")
+
+            if self.task == "ner" and isinstance(temp, str):
+                import ast
+
+                i["transformations"] = ast.literal_eval(temp)
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
 
