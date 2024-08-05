@@ -186,6 +186,10 @@ class Span(BaseModel):
         """"""
         return f"<Span(start={self.start}, end={self.end}, word='{self.word}')>"
 
+    def __add__(self, other: "Span") -> "Span":
+        """"""
+        return Span(start=self.start, end=other.end, word=f"{self.word} {other.word}")
+
 
 class Transformation(BaseModel):
     """
@@ -196,6 +200,24 @@ class Transformation(BaseModel):
     original_span: Span
     new_span: Span
     ignore: bool = False
+
+    def from_dict(self, data: dict):
+        """"""
+        self.original_span = Span(**data["original_span"])
+        self.new_span = Span(**data["new_span"])
+        self.ignore = data.get("ignore", False)
+
+    def to_dict(self):
+        """"""
+        import json
+
+        return json.dumps(
+            {
+                "original_span": self.original_span.dict(),
+                "new_span": self.new_span.dict(),
+                "ignore": self.ignore,
+            }
+        )
 
 
 class SimplePromptTemplate:
@@ -753,49 +775,3 @@ class TestResultManager:
 
     def clear_data(self):
         self._data = []
-
-
-def get_transformations(sample) -> List[Transformation]:
-    """Detects the changes between two texts and returns the transformations."""
-    from langtest.utils.custom_types.helpers import Span, Transformation
-
-    original_text = sample.original
-    new_text = sample.test_case
-    transformations = []
-    i, j = 0, 0
-    len_orig = len(original_text)
-    len_new = len(new_text)
-
-    while i < len_orig and j < len_new:
-        if original_text[i] != new_text[j]:
-            start_i = i
-            start_j = j
-
-            while (
-                i < len_orig
-                and j < len_new
-                and original_text[i] != " "
-                and new_text[j] != " "
-            ):
-                i += 1
-                j += 1
-
-            while i < len_orig and original_text[i] != " ":
-                i += 1
-            while j < len_new and new_text[j] != " ":
-                j += 1
-
-            original_word = original_text[start_i:i]
-            new_word = new_text[start_j:j]
-
-            original_span = Span(start=start_i, end=i, word=original_word)
-            new_span = Span(start=start_j, end=j, word=new_word)
-            transformations.append(
-                Transformation(original_span=original_span, new_span=new_span)
-            )
-        else:
-            i += 1
-            j += 1
-
-    sample.transformations = transformations
-    return sample
