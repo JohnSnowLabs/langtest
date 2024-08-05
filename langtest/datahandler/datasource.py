@@ -467,7 +467,7 @@ class ConllDataset(BaseDataset):
             List[NERSample]: List of formatted sentences from the dataset.
         """
         data = []
-        with open(self._file_path) as f:
+        with open(self._file_path, encoding="utf-8") as f:
             content = f.read()
             docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
             docs = [
@@ -930,6 +930,10 @@ class CSVDataset(BaseDataset):
             return samples
 
         for i in data.to_dict(orient="records"):
+            if self.task == "ner" and isinstance(i["transformations"], str):
+                import json
+
+                i["transformations"] = eval(i["transformations"])
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
 

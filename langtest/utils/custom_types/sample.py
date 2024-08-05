@@ -75,6 +75,15 @@ class BaseSample(BaseModel):
                 }
             )
 
+        if self.transformations:
+            result.update(
+                {
+                    "transformations": [
+                        transformation.dict() for transformation in self.transformations
+                    ]
+                }
+            )
+
         return result
 
     @validator("transformations")
