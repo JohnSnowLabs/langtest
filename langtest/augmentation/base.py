@@ -338,7 +338,7 @@ class TemplaticAugment(BaseAugmentaion):
         if generate_templates:
             if try_import_lib("openai"):
                 import openai
-                from pydantic import BaseModel, Field
+                from pydantic import BaseModel
 
                 client = openai.OpenAI()
 
@@ -356,7 +356,10 @@ class TemplaticAugment(BaseAugmentaion):
 
                     response = client.beta.chat.completions.parse(
                         model="gpt-4o-mini",
-                        messages=[{"role": "system", "content": "Action: Generate templates"}, {"role": "user", "content": prompt}],
+                        messages=[
+                            {"role": "system", "content": "Action: Generate templates"},
+                            {"role": "user", "content": prompt},
+                        ],
                         max_tokens=500,
                         temperature=0,
                         response_format=Templates,
