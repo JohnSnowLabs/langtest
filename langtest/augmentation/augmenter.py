@@ -86,7 +86,7 @@ class DataAugmenter:
         """
         Extend the content.
         """
-        # calculate the number of rows to be added
+        # arrange the test cases based on the test_type in a dictionary
         test_cases = defaultdict(list)
         for sample in testcases:
             if sample.test_type in test_cases:
@@ -95,7 +95,7 @@ class DataAugmenter:
                 test_cases[sample.test_type] = [sample]
 
         final_data = []
-
+        # pick the test cases based on the allocated size of the test_type
         for _, tests in self.__tests.items():
             for test_name, _ in tests.items():
                 size = self.allocated_size(test_name)
@@ -113,6 +113,7 @@ class DataAugmenter:
                     )
                     final_data.extend(temp_test_cases)
 
+        # append the augmented data to the original data
         self.__augmented_data = [*data, *final_data] if isinstance(data, list) else data
 
         return self
@@ -121,10 +122,11 @@ class DataAugmenter:
         """
         Inplace augmentation.
         """
-
+        # indices of the data and the data itself
         data_indices = self.prepare_hash_map(data, inverted=True)
         data_dict = self.prepare_hash_map(data)
 
+        # arrange the test cases based on the test type in a dictionary
         test_cases = defaultdict(list)
         for sample in testcases:
             if sample.test_type in test_cases:
@@ -132,11 +134,12 @@ class DataAugmenter:
             else:
                 test_cases[sample.test_type] = [sample]
 
+        # pick the test cases based on the allocated size of the test_type
         final_data: List[Sample] = []
         for _, tests in self.__tests.items():
             for test_name, _ in tests.items():
                 size = self.allocated_size(test_name)
-                print(size)
+
                 if size == 0:
                     continue
 
@@ -150,6 +153,7 @@ class DataAugmenter:
                     )
                     final_data.extend(temp_test_cases)
 
+        # replace the original data with the augmented data in extact position.
         for sample in final_data:
             key = (
                 sample.original_question
@@ -163,11 +167,11 @@ class DataAugmenter:
 
         return self
 
-    def new_data(self, data: Iterable, testcases: Iterable) -> "DataAugmenter":
+    def new_data(self, data: Iterable, testcases: Iterable[Sample]) -> "DataAugmenter":
         """
         Create new data.
         """
-        # calculate the number of rows to be added
+        # arrange the test cases based on the test type in a dictionary
         test_cases = defaultdict(list)
         for sample in testcases:
             if sample.test_type in test_cases:
@@ -176,6 +180,8 @@ class DataAugmenter:
                 test_cases[sample.test_type] = [sample]
 
         final_data = []
+
+        # pick the test cases based on the allocated size of the test_type
         for _, tests in self.__tests.items():
             for test_name, _ in tests.items():
                 size = self.allocated_size(test_name)
@@ -193,6 +199,7 @@ class DataAugmenter:
                     )
                     final_data.extend(temp_test_cases)
 
+        # replace the original data with the augmented data
         self.__augmented_data = final_data
 
         return self
