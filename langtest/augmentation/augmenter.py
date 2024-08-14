@@ -3,7 +3,7 @@ import random
 import yaml
 import pandas as pd
 
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Dict, Iterable, List, Union
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.tasks.task import TaskManager
@@ -117,24 +117,47 @@ class DataAugmenter:
 
         return self
 
-    def inplace(self, data: Iterable, testcases: Iterable) -> "DataAugmenter":
+    def inplace(self, data: Iterable, testcases: Iterable[Sample]) -> "DataAugmenter":
         """
         Inplace augmentation.
         """
-        # calculate the number of rows to be added
-        size = int(len(data) * self.allocated_size())
 
-        # create a dictionary with index as key and data as value
+        data_indices = self.prepare_hash_map(data, inverted=True)
         data_dict = self.prepare_hash_map(data)
 
-        # select random rows based on the size with its index
-        selected = random.sample(data_dict.keys(), int(size))
+        test_cases = defaultdict(list)
+        for sample in testcases:
+            if sample.test_type in test_cases:
+                test_cases[sample.test_type].append(sample)
+            else:
+                test_cases[sample.test_type] = [sample]
 
-        for idx in selected:
-            test_cases = self.__testfactory.transform(
-                self.__task, [data_dict[idx]], self.__tests
+        final_data: List[Sample] = []
+        for _, tests in self.__tests.items():
+            for test_name, _ in tests.items():
+                size = self.allocated_size(test_name)
+                print(size)
+                if size == 0:
+                    continue
+
+                temp_test_cases = test_cases.get(test_name, [])
+                if temp_test_cases:
+                    # select random rows based on the size
+                    temp_test_cases = (
+                        random.choices(temp_test_cases, k=size)
+                        if size < len(temp_test_cases)
+                        else temp_test_cases
+                    )
+                    final_data.extend(temp_test_cases)
+
+        for sample in final_data:
+            key = (
+                sample.original_question
+                if hasattr(sample, "original_question")
+                else sample.original
             )
-            data_dict[idx] = test_cases[0] if test_cases else data_dict[idx]
+            index = data_indices[key]
+            data_dict[index] = sample
 
         self.__augmented_data = data_dict.values()
 
@@ -192,8 +215,20 @@ class DataAugmenter:
                 "Dataset is not loaded. please load the data using the `DataAugmenter.augment(data={'data_source': '..'})` method"
             )
 
-    def prepare_hash_map(self, data: Union[Iterable[Sample], Sample]) -> Dict[str, Any]:
-        hashmap = {index: sample for index, sample in enumerate(data)}
+    def prepare_hash_map(
+        self, data: Union[Iterable[Sample], Sample], inverted=False
+    ) -> Dict[str, Any]:
+        if inverted:
+            hashmap = {}
+            for index, sample in enumerate(data):
+                key = (
+                    sample.original_question
+                    if hasattr(sample, "original_question")
+                    else sample.original
+                )
+                hashmap[key] = index
+        else:
+            hashmap = {index: sample for index, sample in enumerate(data)}
 
         return hashmap
 
