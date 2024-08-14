@@ -338,6 +338,12 @@ class TemplaticAugment(BaseAugmentaion):
         if generate_templates:
             if try_import_lib("openai"):
                 import openai
+                from pydantic import BaseModel
+
+                client = openai.OpenAI()
+
+                class Templates(BaseModel):
+                    templates: List[str]
 
                 given_template = self.__templates[:]
                 for template in given_template:
@@ -346,30 +352,32 @@ class TemplaticAugment(BaseAugmentaion):
                         Template:
                         "{template}"
 
-                        Expected Python List Output:
-                        ['Template 1', 'Template 2', 'Template 3', ...]  # Replace with actual generated templates
                         """
 
-                    response = openai.Completion.create(
-                        engine="gpt-3.5-turbo-instruct",
-                        prompt=prompt,
+                    response = client.beta.chat.completions.parse(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": "Action: Generate templates"},
+                            {"role": "user", "content": prompt},
+                        ],
                         max_tokens=500,
                         temperature=0,
+                        response_format=Templates,
                     )
 
-                    generated_response = response.choices[0].text.strip()
+                    generated_response = response.choices[0].message.parsed
                     # Process the generated response
                     if generated_response:
-                        # Assuming the response format is a Python-like list in a string
-                        templates_list = generated_response.strip("[]").split('",')
-                        templates_list = [
-                            template.strip().strip('"')
-                            for template in templates_list
-                            if template.strip()
-                        ]
+                        # # Assuming the response format is a Python-like list in a string
+                        # templates_list = generated_response.strip("[]").split('",')
+                        # templates_list = [
+                        #     template.strip().strip('"')
+                        #     for template in templates_list
+                        #     if template.strip()
+                        # ]
 
                         # Extend the existing templates list
-                        self.__templates.extend(templates_list)
+                        self.__templates.extend(generated_response.templates)
                     else:
                         print("No response or unexpected format.")
 
