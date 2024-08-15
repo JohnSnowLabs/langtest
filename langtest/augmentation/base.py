@@ -323,6 +323,7 @@ class TemplaticAugment(BaseAugmentaion):
         task: TaskManager,
         generate_templates=False,
         show_templates=False,
+        num_extra_templates=10,
     ) -> None:
         """This constructor for the TemplaticAugment class.
 
@@ -347,7 +348,7 @@ class TemplaticAugment(BaseAugmentaion):
 
                 given_template = self.__templates[:]
                 for template in given_template:
-                    prompt = f"""Based on the template provided, create 10 new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
+                    prompt = f"""Based on the template provided, create {num_extra_templates} new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
 
                         Template:
                         "{template}"
@@ -357,7 +358,10 @@ class TemplaticAugment(BaseAugmentaion):
                     response = client.beta.chat.completions.parse(
                         model="gpt-4o-mini",
                         messages=[
-                            {"role": "system", "content": "Action: Generate templates"},
+                            {
+                                "role": "system",
+                                "content": f"Action: Generate templates upto {num_extra_templates}",
+                            },
                             {"role": "user", "content": prompt},
                         ],
                         max_tokens=500,
@@ -368,16 +372,9 @@ class TemplaticAugment(BaseAugmentaion):
                     generated_response = response.choices[0].message.parsed
                     # Process the generated response
                     if generated_response:
-                        # # Assuming the response format is a Python-like list in a string
-                        # templates_list = generated_response.strip("[]").split('",')
-                        # templates_list = [
-                        #     template.strip().strip('"')
-                        #     for template in templates_list
-                        #     if template.strip()
-                        # ]
-
+                        
                         # Extend the existing templates list
-                        self.__templates.extend(generated_response.templates)
+                        self.__templates.extend(generated_response.templates[:num_extra_templates])
                     else:
                         print("No response or unexpected format.")
 
