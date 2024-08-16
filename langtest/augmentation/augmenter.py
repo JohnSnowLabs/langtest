@@ -66,6 +66,8 @@ class DataAugmenter:
             self.__datafactory = self.__datafactory(file_path=data, task=self.__task)
 
             data = self.__datafactory.load()
+        elif isinstance(self.__datafactory, DataFactory):
+            data = self.__datafactory.load()
 
         # generate the augmented data
         test_cases = self.__testfactory.transform(self.__task, data, self.__tests)
