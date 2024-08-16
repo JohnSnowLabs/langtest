@@ -26,7 +26,7 @@ class DataAugmenter:
         if isinstance(config, str):
             self.__config = self.load_config(config)
 
-        self.__tests: dict = self.__config.get("tests", [])
+        self.__tests: Dict[str, Dict[str, dict]] = self.__config.get("tests", [])
         if isinstance(task, str):
             if task in ["ner", "text-classification", "question-answering"]:
                 task = TaskManager(task)
@@ -65,6 +65,8 @@ class DataAugmenter:
         if isinstance(data, dict) and not isinstance(self.__datafactory, DataFactory):
             self.__datafactory = self.__datafactory(file_path=data, task=self.__task)
 
+            data = self.__datafactory.load()
+        elif isinstance(self.__datafactory, DataFactory):
             data = self.__datafactory.load()
 
         # generate the augmented data
@@ -275,6 +277,9 @@ class DataAugmenter:
                     }
                 )
         df = pd.concat([df, pd.DataFrame(temp_data)], ignore_index=True)
+
+        # Convert 'proportion' column to float
+        df["proportion"] = pd.to_numeric(df["proportion"], errors="coerce")
 
         # normalize the proportion and round it to 2 decimal places
         df["normalized_proportion"] = df["proportion"] / df["proportion"].sum()

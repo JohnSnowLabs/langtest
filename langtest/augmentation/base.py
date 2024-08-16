@@ -355,7 +355,7 @@ class TemplaticAugment(BaseAugmentaion):
 
                         self.__templates.extend(generated_templates[:num_extra_templates])
             except Exception as e:
-                raise Errors.E095(e)
+                raise Errors.E095(msg=e)
 
         if show_templates:
             [print(template) for template in self.__templates]
@@ -609,7 +609,7 @@ class TemplaticAugment(BaseAugmentaion):
                 def __post_init__(self):
                     self.templates = [i.strip('"') for i in self.templates]
 
-                @validator("templates", each_item=True)
+                @validator("templates", each_item=True, allow_reuse=True)
                 def check_templates(cls, v: str):
                     if not v:
                         raise ValueError("No templates generated.")
