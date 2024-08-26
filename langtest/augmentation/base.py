@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 import pandas as pd
 import yaml
 
+from langtest.augmentation.types import AzureOpenAIConfig, OpenAIConfig
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.transform.utils import create_terminology
@@ -324,6 +325,7 @@ class TemplaticAugment(BaseAugmentaion):
         generate_templates=False,
         show_templates=False,
         num_extra_templates=10,
+        model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
     ) -> None:
         """This constructor for the TemplaticAugment class.
 
@@ -341,12 +343,14 @@ class TemplaticAugment(BaseAugmentaion):
                 given_template = self.__templates[:]
                 for template in given_template:
                     generated_templates: List[str] = self.__generate_templates(
-                        template, num_extra_templates
+                        template, num_extra_templates, model_config
                     )
 
                     while len(generated_templates) < num_extra_templates:
                         temp_templates = self.__generate_templates(
-                            template, num_extra_templates
+                            template,
+                            num_extra_templates,
+                            model_config,
                         )
                         generated_templates.extend(temp_templates)
 
@@ -354,8 +358,8 @@ class TemplaticAugment(BaseAugmentaion):
                         # Extend the existing templates list
 
                         self.__templates.extend(generated_templates[:num_extra_templates])
-            except Exception as e:
-                raise Errors.E095(msg=e)
+            except Exception as e_msg:
+                raise Errors.E095(e=e_msg)
 
         if show_templates:
             [print(template) for template in self.__templates]
@@ -596,12 +600,25 @@ class TemplaticAugment(BaseAugmentaion):
 
         return text
 
-    def __generate_templates(self, template, num_extra_templates) -> List[str]:
+    def __generate_templates(
+        self,
+        template: str,
+        num_extra_templates: int,
+        model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
+    ) -> List[str]:
         if try_import_lib("openai"):
             import openai
             from pydantic import BaseModel, validator
 
-            client = openai.OpenAI()
+            if model_config and model_config.get("provider") == "openai":
+                client = openai.OpenAI()
+            elif model_config and model_config.get("provider") == "azure":
+                params = model_config
+                del params["provider"]
+
+                client = openai.AzureOpenAI(**params)
+            else:
+                client = openai.OpenAI()
 
             class Templates(BaseModel):
                 templates: List[str]
