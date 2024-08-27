@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 import pandas as pd
 import yaml
 
-from langtest.augmentation.types import AzureOpenAIConfig, OpenAIConfig
+from langtest.augmentation.utils import AzureOpenAIConfig, OpenAIConfig
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.transform.utils import create_terminology
@@ -607,69 +607,24 @@ class TemplaticAugment(BaseAugmentaion):
         model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
     ) -> List[str]:
         if try_import_lib("openai"):
-            import openai
-            from pydantic import BaseModel, validator
+            from langtest.augmentation.utils import (
+                generate_templates_azoi,
+                generate_templates_openai,
+            )
 
             if model_config and model_config.get("provider") == "openai":
-                client = openai.OpenAI()
+                params = model_config
+                if "provider" in params:
+                    del params["provider"]
+
+                return generate_templates_openai(template, num_extra_templates, params)
+
             elif model_config and model_config.get("provider") == "azure":
                 params = model_config
-                del params["provider"]
+                if "provider" in params:
+                    del params["provider"]
 
-                client = openai.AzureOpenAI(**params)
+                return generate_templates_azoi(template, num_extra_templates, params)
+
             else:
-                client = openai.OpenAI()
-
-            class Templates(BaseModel):
-                templates: List[str]
-
-                def __post_init__(self):
-                    self.templates = [i.strip('"') for i in self.templates]
-
-                @validator("templates", each_item=True, allow_reuse=True)
-                def check_templates(cls, v: str):
-                    if not v:
-                        raise ValueError("No templates generated.")
-                    return v.strip('"')
-
-                def remove_invalid_templates(self, original_template):
-                    # extract variable names using regex
-                    regexs = r"{([^{}]*)}"
-                    original_vars = re.findall(regexs, original_template)
-                    original_vars = set([var.strip() for var in original_vars])
-
-                    # remove invalid templates
-                    valid_templates = []
-                    for template in self.templates:
-                        template_vars: List[str] = re.findall(regexs, template)
-                        template_vars = set([var.strip() for var in template_vars])
-                        if template_vars == original_vars:
-                            valid_templates.append(template)
-                    self.templates = valid_templates
-
-            prompt = (
-                f"Based on the provided template, create {num_extra_templates} new and unique templates that are "
-                "variations on this theme. Present these as a list, with each template as a quoted string. The list should "
-                "contain only the templates, without any additional text or explanation. Ensure that the structure of "
-                "these variables remains consistent in each generated template. Note: don't add any extra variables and ignore typo errors.\n\n"
-                "Template:\n"
-                f"{template}\n"
-            )
-            response = client.beta.chat.completions.parse(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": f"Action: Generate up to {num_extra_templates} templates and ensure that the structure of the variables within the templates remains unchanged and don't add any extra variables.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                max_tokens=500,
-                temperature=0,
-                response_format=Templates,
-            )
-
-            generated_response = response.choices[0].message.parsed
-            generated_response.remove_invalid_templates(template)
-
-            return generated_response.templates[:num_extra_templates]
+                return generate_templates_openai(template, num_extra_templates)
