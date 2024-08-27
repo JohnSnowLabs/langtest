@@ -608,7 +608,7 @@ class TemplaticAugment(BaseAugmentaion):
     ) -> List[str]:
         if try_import_lib("openai"):
             from langtest.augmentation.utils import (
-                generate_templates_azoi,
+                generate_templates_azoi,  # azoi means Azure OpenAI
                 generate_templates_openai,
             )
 
