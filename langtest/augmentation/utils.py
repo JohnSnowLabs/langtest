@@ -3,6 +3,7 @@ from typing import List, TypedDict, Union
 import os
 
 from pydantic import BaseModel, validator
+from langtest.logger import logger
 
 
 class OpenAIConfig(TypedDict):
@@ -31,6 +32,7 @@ class Templates(BaseModel):
 
     def __post_init__(self):
         self.templates = [i.strip('"') for i in self.templates]
+        logger.info(f"Generated templates: {self.templates}")
 
     @validator("templates", each_item=True, allow_reuse=True)
     def check_templates(cls, v: str):
@@ -51,7 +53,14 @@ class Templates(BaseModel):
             template_vars = set([var.strip() for var in template_vars])
             if template_vars == original_vars:
                 valid_templates.append(template)
+                logger.info(f"Valid template: {template}")
+            else:
+                logger.warning(
+                    f"Invalid Variables in template: {template} - {template_vars}"
+                )
+
         self.templates = valid_templates
+        logger.info(f"Valid templates: {self.templates}")
 
 
 def generate_templates_azoi(
@@ -59,6 +68,9 @@ def generate_templates_azoi(
 ):
     """Generate new templates based on the provided template using Azure OpenAI API."""
     import openai
+
+    if "provider" in model_config:
+        del model_config["provider"]
 
     client = openai.AzureOpenAI(**model_config)
 
@@ -76,7 +88,7 @@ def generate_templates_azoi(
         messages=[
             {
                 "role": "system",
-                "content": f"Generate new templates based on the provided template.\n\n Output Schema: {Templates.schema()}\n",
+                "content": f"Generate up to {num_extra_templates} templates based on the provided template.\n\n JSON Output Schema: {Templates.schema()}\n",
             },
             {
                 "role": "user",
@@ -96,7 +108,8 @@ def generate_templates_azoi(
                 ),
             },
         ],
-        temperature=0,
+        temperature=0.1,
+        max_tokens=1000,
     )
 
     import json
@@ -109,6 +122,7 @@ def generate_templates_azoi(
         return gen_templates.templates[:num_extra_templates]
 
     except json.JSONDecodeError as e:
+        logger.error(f"Error decoding response: {e}")
         raise ValueError(f"Error decoding response: {e}")
 
 
@@ -117,6 +131,9 @@ def generate_templates_openai(
 ):
     """Generate new templates based on the provided template using OpenAI API."""
     import openai
+
+    if "provider" in model_config:
+        del model_config["provider"]
 
     client = openai.OpenAI(**model_config)
 
@@ -137,8 +154,8 @@ def generate_templates_openai(
             },
             {"role": "user", "content": prompt},
         ],
-        max_tokens=500,
-        temperature=0,
+        max_tokens=100,
+        temperature=0.1,
         response_format=Templates,
     )
 

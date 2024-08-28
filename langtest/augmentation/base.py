@@ -612,18 +612,12 @@ class TemplaticAugment(BaseAugmentaion):
                 generate_templates_openai,
             )
 
-            if model_config and model_config.get("provider") == "openai":
-                params = model_config
-                if "provider" in params:
-                    del params["provider"]
+            params = model_config.copy() if model_config else {}
 
+            if model_config and model_config.get("provider") == "openai":
                 return generate_templates_openai(template, num_extra_templates, params)
 
             elif model_config and model_config.get("provider") == "azure":
-                params = model_config
-                if "provider" in params:
-                    del params["provider"]
-
                 return generate_templates_azoi(template, num_extra_templates, params)
 
             else:
