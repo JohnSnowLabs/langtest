@@ -1,6 +1,5 @@
 import csv
 import importlib
-import logging
 import os
 import random
 import re
@@ -11,6 +10,7 @@ from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
+from langtest.logger import logger as logging
 
 from .format import Formatter
 from langtest.utils.custom_types import (
