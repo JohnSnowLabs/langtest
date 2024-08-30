@@ -55,22 +55,22 @@ pydantic = "1.10.8"
 johnsnowlabs = { version = "4.3.5", optional = true }
 rouge-score = { version = "^0.1.2", optional = true }
 evaluate = { version = "^0.4.0", optional = true }
-transformers = "^4.38.2"
+transformers = {version = "^4.44.2", optional = true}
 huggingface_hub = { version = ">0.16.0", optional = true}
 spacy = { version = ">=3.0.0", optional = true }
 nest-asyncio = "^1.5.0"
 openai = {version = "^1.13.3", optional = true}
 jsonlines = "^3.1.0"
-torch = { version = "^2.0.0", optional = true }
+torch = {version = "^2.4.0", optional = true}
 pandas = "^2.0.3"
 pyyaml = "^6.0"
 tqdm = "^4.65.0"
 cohere = { version = "^4.10.0", optional = true}
 ai21 = {version = "^1.1.0", optional = true}
 metaflow = {version = ">=2.9.0", optional = true}
-accelerate = {version = "<0.21.0", optional = true}
+accelerate = {version = "^0.33.0", optional = true}
 seqeval = {version = "^1.2.0", optional = true}
-mlflow = {version = "^2.14.0", optional = true}
+mlflow = {version = "^2.15.1", optional = true}
 datasets = {version = ">=2.14.0", optional = true}
 matplotlib = {version = "^3.7.2", optional = true}
 tenacity = {version = "^8.2.2", optional = true}
