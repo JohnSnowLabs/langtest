@@ -171,7 +171,7 @@ class DataFactory:
     data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
     CURATED_BIAS_DATASETS = ["BoolQ", "XSum"]
 
-    def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
+    def __init__(self, file_path: Union[str, dict], task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
 
         Args:
@@ -230,6 +230,7 @@ class DataFactory:
         self.task = task
         self.init_cls: BaseDataset = None
         self.kwargs = kwargs
+        self.kwargs.update({"doc_wise": self._custom_label.get("doc_wise", False)})
 
     def load_raw(self):
         """Loads the data into a raw format"""
@@ -256,7 +257,9 @@ class DataFactory:
             return DataFactory.load_curated_bias(self._file_path)
         else:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
-                self._file_path, task=self.task, **self.kwargs
+                self._file_path,
+                task=self.task,
+                **self.kwargs,
             )
 
         loaded_data = self.init_cls.load_data()
@@ -424,7 +427,9 @@ class ConllDataset(BaseDataset):
 
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, file_path: str, task: TaskManager) -> None:
+    def __init__(
+        self, file_path: Union[str, Dict[str, str]], task: TaskManager, **kwargs
+    ) -> None:
         """Initializes ConllDataset object.
 
         Args:
@@ -432,8 +437,9 @@ class ConllDataset(BaseDataset):
             task (str): name of the task to perform
         """
         super().__init__()
+        print(kwargs, file_path)
         self._file_path = file_path
-
+        self.doc_wise = kwargs.get("doc_wise") if "doc_wise" in kwargs else False
         self.task = task
 
     def load_raw_data(self) -> List[Dict]:
@@ -494,42 +500,31 @@ class ConllDataset(BaseDataset):
             ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
-
-                if sentences == [""]:
-                    continue
-
-                for sent in sentences:
-                    # sentence string to token level split
-                    tokens = sent.strip().split("\n")
-
-                    # get annotations from token level split
-                    valid_tokens, token_list = self.__token_validation(tokens)
-
-                    if not valid_tokens:
-                        logging.warning(Warnings.W004(sent=sent))
-                        continue
-
-                    #  get token and labels from the split
+                if self.doc_wise:
+                    tokens = doc.strip().split("\n")
                     ner_labels = []
                     cursor = 0
-                    for split in token_list:
+
+                    for token in tokens:
+                        token_list = token.split()
+
+                        print(token, token_list)
+                        if len(token_list) == 0:
+                            continue
+
                         ner_labels.append(
                             NERPrediction.from_span(
-                                entity=split[-1],
-                                word=split[0],
+                                entity=token_list[-1],
+                                word=token_list[0],
                                 start=cursor,
-                                end=cursor + len(split[0]),
+                                end=cursor + len(token_list[0]),
                                 doc_id=d_id,
                                 doc_name=(
                                     docs_strings[d_id] if len(docs_strings) > 0 else ""
                                 ),
-                                pos_tag=split[1],
-                                chunk_tag=split[2],
                             )
                         )
-                        # +1 to account for the white space
-                        cursor += len(split[0]) + 1
+                        cursor += len(token_list[0]) + 1
 
                     original = " ".join([label.span.word for label in ner_labels])
 
@@ -539,6 +534,55 @@ class ConllDataset(BaseDataset):
                             expected_results=NEROutput(predictions=ner_labels),
                         )
                     )
+
+                else:
+                    sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
+
+                    if sentences == [""]:
+                        continue
+
+                    for sent in sentences:
+                        # sentence string to token level split
+                        tokens = sent.strip().split("\n")
+
+                        # get annotations from token level split
+                        valid_tokens, token_list = self.__token_validation(tokens)
+
+                        if not valid_tokens:
+                            logging.warning(Warnings.W004(sent=sent))
+                            continue
+
+                        #  get token and labels from the split
+                        ner_labels = []
+                        cursor = 0
+                        for split in token_list:
+                            ner_labels.append(
+                                NERPrediction.from_span(
+                                    entity=split[-1],
+                                    word=split[0],
+                                    start=cursor,
+                                    end=cursor + len(split[0]),
+                                    doc_id=d_id,
+                                    doc_name=(
+                                        docs_strings[d_id]
+                                        if len(docs_strings) > 0
+                                        else ""
+                                    ),
+                                    pos_tag=split[1],
+                                    chunk_tag=split[2],
+                                )
+                            )
+                            # +1 to account for the white space
+                            cursor += len(split[0]) + 1
+
+                        original = " ".join([label.span.word for label in ner_labels])
+
+                        data.append(
+                            self.task.get_sample_class(
+                                original=original,
+                                expected_results=NEROutput(predictions=ner_labels),
+                            )
+                        )
         self.dataset_size = len(data)
         return data
 
