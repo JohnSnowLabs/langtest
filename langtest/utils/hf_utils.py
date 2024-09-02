@@ -72,7 +72,8 @@ def login_with_token():
         try:
             from huggingface_hub import login
 
-            login(os.environ["HUGGINGFACEHUB_API_TOKEN"])
+            token = os.environ.get("HUGGINGFACEHUB_API_TOKEN", "")
+            login(token)
         except ImportError:
             pass
 
