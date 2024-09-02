@@ -7,6 +7,8 @@ from langtest.logger import logger
 
 
 class OpenAIConfig(TypedDict):
+    """OpenAI Configuration for API Key and Provider."""
+
     api_key: str = os.environ.get("OPENAI_API_KEY")
     base_url: Union[str, None] = None
     organization: Union[str, None] = (None,)
@@ -15,6 +17,8 @@ class OpenAIConfig(TypedDict):
 
 
 class AzureOpenAIConfig(TypedDict):
+    """Azure OpenAI Configuration for API Key and Provider."""
+
     from openai.lib.azure import AzureADTokenProvider
 
     azure_endpoint: str
@@ -28,19 +32,24 @@ class AzureOpenAIConfig(TypedDict):
 
 
 class Templates(BaseModel):
+    """Model to validate generated templates."""
+
     templates: List[str]
 
     def __post_init__(self):
+        """Post init method to remove quotes from templates."""
         self.templates = [i.strip('"') for i in self.templates]
         logger.info(f"Generated templates: {self.templates}")
 
     @validator("templates", each_item=True, allow_reuse=True)
     def check_templates(cls, v: str):
+        """Validator to check if templates are generated."""
         if not v:
             raise ValueError("No templates generated.")
         return v.strip('"')
 
     def remove_invalid_templates(self, original_template):
+        """Remove invalid templates based on the original template."""
         # extract variable names using regex
         regexs = r"{([^{}]*)}"
         original_vars = re.findall(regexs, original_template)
