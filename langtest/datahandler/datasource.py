@@ -958,7 +958,7 @@ class CSVDataset(BaseDataset):
 
                 i["transformations"] = ast.literal_eval(temp)
             else:
-                i["transformations"] = None
+                i.pop("transformations")
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
 
