@@ -42,6 +42,7 @@ if try_import_lib("sparknlp"):
         XlmRoBertaForSequenceClassification,
         XlnetForSequenceClassification,
         MarianTransformer,
+        MultiClassifierDLModel,
     )
     from sparknlp.base import LightPipeline
     from sparknlp.pretrained import PretrainedPipeline
@@ -63,6 +64,7 @@ if try_import_lib("sparknlp"):
 
     SUPPORTED_SPARKNLP_CLASSIFERS.extend(
         [
+            MultiClassifierDLModel,
             ClassifierDLModel,
             SentimentDLModel,
             AlbertForSequenceClassification,
@@ -409,6 +411,7 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
         super().__init__(model)
 
         _classifier = None
+        self.multi_label_classifier = False
         for annotator in self.model.stages:
             if self.is_classifier(annotator):
                 _classifier = annotator
@@ -416,6 +419,10 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
 
         if _classifier is None:
             raise ValueError(Errors.E040(var="classifier"))
+
+        if isinstance(_classifier, MultiClassifierDLModel):
+            self.multi_label_classifier = True
+            self.threshold = _classifier.getThreshold()
 
         self.output_col = _classifier.getOutputCol()
         self.classes = _classifier.getClasses()
@@ -442,13 +449,32 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
         Returns:
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
-        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col][
-            0
-        ].metadata
-        prediction = [{"label": x, "score": y} for x, y in prediction_metadata.items()]
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col]
 
-        if not return_all_scores:
-            prediction = [max(prediction, key=lambda x: x["score"])]
+        if self.multi_label_classifier:
+            multi_label = True
+            if len(prediction_metadata) > 0:
+                prediction_metadata = prediction_metadata[0].metadata
+
+                prediction = [
+                    {"label": x, "score": y} for x, y in prediction_metadata.items()
+                ]
+                # filter based on the threshold value with score greater than threshold
+                prediction = [x for x in prediction if float(x["score"]) > self.threshold]
+
+                return SequenceClassificationOutput(
+                    text=text,
+                    predictions=prediction,
+                    multi_label=multi_label,
+                )
+            else:
+                return SequenceClassificationOutput(
+                    text=text, predictions=[], multi_label=multi_label
+                )
+
+        else:
+            if not return_all_scores:
+                prediction = [max(prediction, key=lambda x: x["score"])]
 
         return SequenceClassificationOutput(text=text, predictions=prediction)
 
