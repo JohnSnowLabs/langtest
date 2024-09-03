@@ -522,6 +522,8 @@ class ConllDataset(BaseDataset):
                                 doc_name=(
                                     docs_strings[d_id] if len(docs_strings) > 0 else ""
                                 ),
+                                pos_tag=token_list[1],
+                                chunk_tag=token_list[2],
                             )
                         )
                         cursor += len(token_list[0]) + 1
