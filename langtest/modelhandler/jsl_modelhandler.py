@@ -450,31 +450,25 @@ class PretrainedModelForTextClassification(PretrainedJSLModel, ModelAPI):
             SequenceClassificationOutput: Classification output from SparkNLP LightPipeline.
         """
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col]
+        prediction = []
+
+        if len(prediction_metadata) > 0:
+            prediction_metadata = prediction_metadata[0].metadata
+            prediction = [
+                {"label": x, "score": y} for x, y in prediction_metadata.items()
+            ]
 
         if self.multi_label_classifier:
-            multi_label = True
-            if len(prediction_metadata) > 0:
-                prediction_metadata = prediction_metadata[0].metadata
+            prediction = [x for x in prediction if float(x["score"]) > self.threshold]
 
-                prediction = [
-                    {"label": x, "score": y} for x, y in prediction_metadata.items()
-                ]
-                # filter based on the threshold value with score greater than threshold
-                prediction = [x for x in prediction if float(x["score"]) > self.threshold]
+            return SequenceClassificationOutput(
+                text=text,
+                predictions=prediction,
+                multi_label=self.multi_label_classifier,
+            )
 
-                return SequenceClassificationOutput(
-                    text=text,
-                    predictions=prediction,
-                    multi_label=multi_label,
-                )
-            else:
-                return SequenceClassificationOutput(
-                    text=text, predictions=[], multi_label=multi_label
-                )
-
-        else:
-            if not return_all_scores:
-                prediction = [max(prediction, key=lambda x: x["score"])]
+        if not return_all_scores:
+            prediction = [max(prediction, key=lambda x: x["score"])]
 
         return SequenceClassificationOutput(text=text, predictions=prediction)
 
