@@ -108,9 +108,18 @@ class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
             Tuple[str, str]:
                 Row formatted as a list of strings.
         """
-        if sample.test_case:
-            return [sample.test_case, sample.expected_results.predictions[0].label]
-        return [sample.original, sample.expected_results.predictions[0].label]
+        predictions = sample.expected_results.predictions
+        multi_label = sample.expected_results.multi_label
+
+        if multi_label:
+            return [
+                sample.test_case or sample.original,
+                [elt.label for elt in predictions] if predictions else [],
+            ]
+        else:
+            if sample.test_case:
+                return [sample.test_case, sample.expected_results.predictions[0].label]
+            return [sample.original, sample.expected_results.predictions[0].label]
 
 
 class NEROutputFormatter(BaseFormatter):

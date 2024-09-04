@@ -1,6 +1,5 @@
 import csv
 import importlib
-import logging
 import os
 import random
 import re
@@ -11,6 +10,7 @@ from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
+from langtest.logger import logger as logging
 
 from .format import Formatter
 from langtest.utils.custom_types import (
@@ -104,6 +104,7 @@ class BaseDataset(ABC):
     """
 
     data_sources = defaultdict()
+    dataset_size = None
 
     @abstractmethod
     def load_raw_data(self):
@@ -153,6 +154,12 @@ class BaseDataset(ABC):
         else:
             cls.data_sources[dataset_cls] = cls
 
+    def __len__(self):
+        """Returns the size of the dataset"""
+        if self.dataset_size is None:
+            self.dataset_size = len(self.load_data())
+        return self.dataset_size
+
 
 class DataFactory:
     """Data factory for creating Dataset objects.
@@ -178,6 +185,7 @@ class DataFactory:
             raise ValueError(Errors.E025)
         self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
+        self._size = None
 
         self.datasets_with_jsonl_extension = []
         for dataset_name, dataset_info in datasets_info.items():
@@ -250,7 +258,10 @@ class DataFactory:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._file_path, task=self.task, **self.kwargs
             )
-        return self.init_cls.load_data()
+
+        loaded_data = self.init_cls.load_data()
+        self._size = len(loaded_data)
+        return loaded_data
 
     def export(self, data: List[Sample], output_path: str) -> None:
         """Exports the data to the corresponding format and saves it to 'output_path'.
@@ -399,6 +410,12 @@ class DataFactory:
             extension = dataset_info.get("extension", "jsonl")
             return script_dir[:-7] + "/" + dataset_name + "/" + split + extension
 
+    def __len__(self):
+        """dataset size"""
+        if self._size is None:
+            self._size = len(self.load())
+        return self._size
+
 
 class ConllDataset(BaseDataset):
     """Class to handle Conll files. Subclass of BaseDataset."""
@@ -467,7 +484,7 @@ class ConllDataset(BaseDataset):
             List[NERSample]: List of formatted sentences from the dataset.
         """
         data = []
-        with open(self._file_path) as f:
+        with open(self._file_path, encoding="utf-8") as f:
             content = f.read()
             docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
             docs = [
@@ -522,7 +539,7 @@ class ConllDataset(BaseDataset):
                             expected_results=NEROutput(predictions=ner_labels),
                         )
                     )
-
+        self.dataset_size = len(data)
         return data
 
     def export_data(self, data: List[NERSample], output_path: str):
@@ -812,6 +829,7 @@ class CSVDataset(BaseDataset):
                 logging.warning(Warnings.W005(idx=idx, row_data=row_data, e=e))
                 continue
 
+        self.dataset_size = len(data)
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -930,6 +948,17 @@ class CSVDataset(BaseDataset):
             return samples
 
         for i in data.to_dict(orient="records"):
+            temp = i["transformations"]
+            if temp == "-" or len(temp) < 3:
+                temp = None
+                i.pop("transformations")
+
+            if self.task == "ner" and isinstance(temp, str):
+                import ast
+
+                i["transformations"] = ast.literal_eval(temp)
+            elif "transformations" in i:
+                i.pop("transformations")
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
 
@@ -1025,7 +1054,7 @@ class JSONLDataset(BaseDataset):
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
-
+        self.dataset_size = len(data)
         return data
 
     def __load_jsonl(self, file: str, dataset_name: str, data, *args, **kwargs):
@@ -1215,7 +1244,7 @@ class HuggingFaceDataset(BaseDataset):
                 **column_names,
             )
             data.append(sample)
-
+        self.dataset_size = len(data)
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -1296,6 +1325,7 @@ class SynteticDataset(BaseDataset):
         method_name = f"load_{self.dataset_name.replace('-', '_')}"
         if hasattr(self, method_name):
             samples = getattr(self, method_name)()
+            self.dataset_size = len(samples)
             return samples
         else:
             raise ValueError(Errors.E030(dataset_name=self.dataset_name))
