@@ -13,7 +13,9 @@ from langtest.logger import logger
 
 class DataAugmenter:
     def __init__(
-        self, task: Union[str, TaskManager], config: Union[str, dict], for_gen_ai=False
+        self,
+        task: Union[str, TaskManager],
+        config: Union[str, dict],
     ) -> None:
         """
         Initialize the DataAugmenter.
@@ -26,7 +28,6 @@ class DataAugmenter:
         """
 
         self.__config = config
-        self.__for_gen_ai = for_gen_ai
         if isinstance(config, str):
             self.__config = self.load_config(config)
 
@@ -245,14 +246,14 @@ class DataAugmenter:
 
         return hashmap
 
-    def save(self, file_path: str):
+    def save(self, file_path: str, for_gen_ai=False) -> None:
         """
         Save the augmented data.
         """
         try:
             # .json file allow only for_gen_ai boolean is true and task is ner
             # then file_path should be .json
-            if not (self.__for_gen_ai) and self.__task.task_name == "ner":
+            if not (for_gen_ai) and self.__task.task_name == "ner":
                 if file_path.endswith(".json"):
                     raise ValueError("File path shouldn't be .json file")
 
