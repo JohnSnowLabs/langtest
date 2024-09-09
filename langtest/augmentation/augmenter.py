@@ -8,10 +8,13 @@ from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.tasks.task import TaskManager
 from langtest.utils.custom_types.sample import Sample
+from langtest.logger import logger
 
 
 class DataAugmenter:
-    def __init__(self, task: Union[str, TaskManager], config: Union[str, dict]) -> None:
+    def __init__(
+        self, task: Union[str, TaskManager], config: Union[str, dict], for_gen_ai=False
+    ) -> None:
         """
         Initialize the DataAugmenter.
 
@@ -23,6 +26,7 @@ class DataAugmenter:
         """
 
         self.__config = config
+        self.__for_gen_ai = for_gen_ai
         if isinstance(config, str):
             self.__config = self.load_config(config)
 
@@ -245,7 +249,16 @@ class DataAugmenter:
         """
         Save the augmented data.
         """
-        self.__datafactory.export(data=self.__augmented_data, output_path=file_path)
+        try:
+            # .json file allow only for_gen_ai boolean is true and task is ner
+            # then file_path should be .json
+            if not (self.__for_gen_ai) and self.__task.task_name == "ner":
+                if file_path.endswith(".json"):
+                    raise ValueError("File path shouldn't be .json file")
+
+            self.__datafactory.export(data=self.__augmented_data, output_path=file_path)
+        except Exception as e:
+            logger.error(f"Error in saving the augmented data: {e}")
 
     def __or__(self, other: Iterable):
         results = self.augment(other)

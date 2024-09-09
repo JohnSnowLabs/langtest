@@ -235,6 +235,13 @@ class NEROutputFormatter(BaseFormatter):
 
         return text, temp_id
 
+    @staticmethod
+    def to_json(sample: NERSample, temp_id: int = None) -> dict:
+        """Converts a NERSample to a JSON string."""
+
+        text, temp_id = NEROutputFormatter.to_conll(sample, temp_id)
+        return text, temp_id
+
 
 class QAFormatter(BaseFormatter):
     def to_jsonl(sample: QASample, *args, **kwargs):
