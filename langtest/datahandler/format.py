@@ -192,7 +192,7 @@ class NEROutputFormatter(BaseFormatter):
             temp_len = 0
             for jdx, item in enumerate(norm_test_case_items):
                 if test_case_items[jdx] == "\n":
-                    text += "\n"
+                    text += "\n" # add a newline character after each sentence
                 else:
                     try:
                         if (
