@@ -226,10 +226,13 @@ class NEROutputFormatter(BaseFormatter):
 
         else:
             for j in sample.expected_results.predictions:
-                if temp_id != j.doc_id:
-                    text += f"{j.doc_name}\n\n"
-                    temp_id = j.doc_id
-                text += f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
+                if j.span.word == "\n":
+                    text += "\n"
+                else:
+                    if temp_id != j.doc_id:
+                        text += f"{j.doc_name}\n\n"
+                        temp_id = j.doc_id
+                    text += f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
 
         return text, temp_id
 
