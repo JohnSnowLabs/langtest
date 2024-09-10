@@ -510,23 +510,33 @@ class ConllDataset(BaseDataset):
 
                         print(token, token_list)
                         if len(token_list) == 0:
-                            continue
-
-                        ner_labels.append(
-                            NERPrediction.from_span(
-                                entity=token_list[-1],
-                                word=token_list[0],
+                            pred = NERPrediction.from_span(
+                                entity="",
+                                word="\n",
                                 start=cursor,
-                                end=cursor + len(token_list[0]),
-                                doc_id=d_id,
-                                doc_name=(
-                                    docs_strings[d_id] if len(docs_strings) > 0 else ""
-                                ),
-                                pos_tag=token_list[1],
-                                chunk_tag=token_list[2],
+                                end=cursor,
+                                pos_tag="",
+                                chunk_tag="",
                             )
-                        )
-                        cursor += len(token_list[0]) + 1
+                            ner_labels.append(pred)
+                        else:
+                            ner_labels.append(
+                                NERPrediction.from_span(
+                                    entity=token_list[-1],
+                                    word=token_list[0],
+                                    start=cursor,
+                                    end=cursor + len(token_list[0]),
+                                    doc_id=d_id,
+                                    doc_name=(
+                                        docs_strings[d_id]
+                                        if len(docs_strings) > 0
+                                        else ""
+                                    ),
+                                    pos_tag=token_list[1],
+                                    chunk_tag=token_list[2],
+                                )
+                            )
+                            cursor += len(token_list[0]) + 1
 
                     original = " ".join([label.span.word for label in ner_labels])
 
