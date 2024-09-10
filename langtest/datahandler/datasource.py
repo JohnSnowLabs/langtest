@@ -230,7 +230,9 @@ class DataFactory:
         self.task = task
         self.init_cls: BaseDataset = None
         self.kwargs = kwargs
-        self.kwargs.update({"doc_wise": self._custom_label.get("doc_wise", False)})
+
+        if self.task == "ner":
+            self.kwargs.update({"doc_wise": self._custom_label.get("doc_wise", False)})
 
     def load_raw(self):
         """Loads the data into a raw format"""
@@ -437,7 +439,6 @@ class ConllDataset(BaseDataset):
             task (str): name of the task to perform
         """
         super().__init__()
-        print(kwargs, file_path)
         self._file_path = file_path
         self.doc_wise = kwargs.get("doc_wise") if "doc_wise" in kwargs else False
         self.task = task
@@ -508,7 +509,6 @@ class ConllDataset(BaseDataset):
                     for token in tokens:
                         token_list = token.split()
 
-                        print(token, token_list)
                         if len(token_list) == 0:
                             pred = NERPrediction.from_span(
                                 entity="",
