@@ -378,7 +378,7 @@ class UpperCase(BaseRobustness):
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                words = sample.split()
+                words = sample.split(" ")
                 num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(
                     range(len(words)), num_transform_words
@@ -422,7 +422,7 @@ class LowerCase(BaseRobustness):
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                words = sample.split()
+                words = sample.split(" ")
                 num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(
                     range(len(words)), num_transform_words
@@ -433,7 +433,7 @@ class LowerCase(BaseRobustness):
                 ]
                 sample_list[idx] = " ".join(transformed_words)
             else:
-                words = sample.original.split()
+                words = sample.original.split(" ")
                 num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(
                     range(len(words)), num_transform_words
@@ -466,7 +466,7 @@ class TitleCase(BaseRobustness):
         """
         for idx, sample in enumerate(sample_list):
             if isinstance(sample, str):
-                words = sample.split()
+                words = sample.split(" ")
                 num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(
                     range(len(words)), num_transform_words
@@ -477,7 +477,7 @@ class TitleCase(BaseRobustness):
                 ]
                 sample_list[idx] = " ".join(transformed_words)
             else:
-                words = sample.original.split()
+                words = sample.original.split(" ")
                 num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(
                     range(len(words)), num_transform_words
