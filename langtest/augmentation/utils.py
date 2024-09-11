@@ -19,15 +19,13 @@ class OpenAIConfig(TypedDict):
 class AzureOpenAIConfig(TypedDict):
     """Azure OpenAI Configuration for API Key and Provider."""
 
-    from openai.lib.azure import AzureADTokenProvider
-
     azure_endpoint: str
     api_version: str
     api_key: str
     provider: str
     azure_deployment: Union[str, None] = None
     azure_ad_token: Union[str, None] = (None,)
-    azure_ad_token_provider: Union[AzureADTokenProvider, None] = (None,)
+    azure_ad_token_provider = (None,)
     organization: Union[str, None] = (None,)
 
 
@@ -76,6 +74,7 @@ def generate_templates_azoi(
     template: str, num_extra_templates: int, model_config: AzureOpenAIConfig
 ):
     """Generate new templates based on the provided template using Azure OpenAI API."""
+
     import openai
 
     if "provider" in model_config:
@@ -139,6 +138,7 @@ def generate_templates_openai(
     template: str, num_extra_templates: int, model_config: OpenAIConfig = OpenAIConfig()
 ):
     """Generate new templates based on the provided template using OpenAI API."""
+
     import openai
 
     if "provider" in model_config:
