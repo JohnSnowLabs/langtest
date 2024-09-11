@@ -231,7 +231,7 @@ class DataFactory:
         self.init_cls: BaseDataset = None
         self.kwargs = kwargs
 
-        if self.task == "ner":
+        if self.task == "ner" and "doc_wise" in self._custom_label:
             self.kwargs.update({"doc_wise": self._custom_label.get("doc_wise", False)})
 
     def load_raw(self):
