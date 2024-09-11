@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 import pandas as pd
 import yaml
 
+from langtest.augmentation.utils import AzureOpenAIConfig, OpenAIConfig
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.transform.utils import create_terminology
@@ -324,6 +325,7 @@ class TemplaticAugment(BaseAugmentaion):
         generate_templates=False,
         show_templates=False,
         num_extra_templates=10,
+        model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
     ) -> None:
         """This constructor for the TemplaticAugment class.
 
@@ -341,12 +343,14 @@ class TemplaticAugment(BaseAugmentaion):
                 given_template = self.__templates[:]
                 for template in given_template:
                     generated_templates: List[str] = self.__generate_templates(
-                        template, num_extra_templates
+                        template, num_extra_templates, model_config
                     )
 
                     while len(generated_templates) < num_extra_templates:
                         temp_templates = self.__generate_templates(
-                            template, num_extra_templates
+                            template,
+                            num_extra_templates,
+                            model_config,
                         )
                         generated_templates.extend(temp_templates)
 
@@ -354,8 +358,8 @@ class TemplaticAugment(BaseAugmentaion):
                         # Extend the existing templates list
 
                         self.__templates.extend(generated_templates[:num_extra_templates])
-            except Exception as e:
-                raise Errors.E095(msg=e)
+            except Exception as e_msg:
+                raise Errors.E095(e=e_msg)
 
         if show_templates:
             [print(template) for template in self.__templates]
@@ -596,63 +600,25 @@ class TemplaticAugment(BaseAugmentaion):
 
         return text
 
-    def __generate_templates(self, template, num_extra_templates) -> List[str]:
+    def __generate_templates(
+        self,
+        template: str,
+        num_extra_templates: int,
+        model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
+    ) -> List[str]:
         if try_import_lib("openai"):
-            import openai
-            from pydantic import BaseModel, validator
-
-            client = openai.OpenAI()
-
-            class Templates(BaseModel):
-                templates: List[str]
-
-                def __post_init__(self):
-                    self.templates = [i.strip('"') for i in self.templates]
-
-                @validator("templates", each_item=True, allow_reuse=True)
-                def check_templates(cls, v: str):
-                    if not v:
-                        raise ValueError("No templates generated.")
-                    return v.strip('"')
-
-                def remove_invalid_templates(self, original_template):
-                    # extract variable names using regex
-                    regexs = r"{([^{}]*)}"
-                    original_vars = re.findall(regexs, original_template)
-                    original_vars = set([var.strip() for var in original_vars])
-
-                    # remove invalid templates
-                    valid_templates = []
-                    for template in self.templates:
-                        template_vars: List[str] = re.findall(regexs, template)
-                        template_vars = set([var.strip() for var in template_vars])
-                        if template_vars == original_vars:
-                            valid_templates.append(template)
-                    self.templates = valid_templates
-
-            prompt = (
-                f"Based on the provided template, create {num_extra_templates} new and unique templates that are "
-                "variations on this theme. Present these as a list, with each template as a quoted string. The list should "
-                "contain only the templates, without any additional text or explanation. Ensure that the structure of "
-                "these variables remains consistent in each generated template. Note: don't add any extra variables and ignore typo errors.\n\n"
-                "Template:\n"
-                f"{template}\n"
-            )
-            response = client.beta.chat.completions.parse(
-                model="gpt-4o-mini",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": f"Action: Generate up to {num_extra_templates} templates and ensure that the structure of the variables within the templates remains unchanged and don't add any extra variables.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                max_tokens=500,
-                temperature=0,
-                response_format=Templates,
+            from langtest.augmentation.utils import (
+                generate_templates_azoi,  # azoi means Azure OpenAI
+                generate_templates_openai,
             )
 
-            generated_response = response.choices[0].message.parsed
-            generated_response.remove_invalid_templates(template)
+            params = model_config.copy() if model_config else {}
 
-            return generated_response.templates[:num_extra_templates]
+            if model_config and model_config.get("provider") == "openai":
+                return generate_templates_openai(template, num_extra_templates, params)
+
+            elif model_config and model_config.get("provider") == "azure":
+                return generate_templates_azoi(template, num_extra_templates, params)
+
+            else:
+                return generate_templates_openai(template, num_extra_templates)

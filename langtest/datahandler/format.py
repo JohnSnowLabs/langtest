@@ -108,9 +108,18 @@ class SequenceClassificationOutputFormatter(BaseFormatter, ABC):
             Tuple[str, str]:
                 Row formatted as a list of strings.
         """
-        if sample.test_case:
-            return [sample.test_case, sample.expected_results.predictions[0].label]
-        return [sample.original, sample.expected_results.predictions[0].label]
+        predictions = sample.expected_results.predictions
+        multi_label = sample.expected_results.multi_label
+
+        if multi_label:
+            return [
+                sample.test_case or sample.original,
+                [elt.label for elt in predictions] if predictions else [],
+            ]
+        else:
+            if sample.test_case:
+                return [sample.test_case, sample.expected_results.predictions[0].label]
+            return [sample.original, sample.expected_results.predictions[0].label]
 
 
 class NEROutputFormatter(BaseFormatter):
@@ -234,6 +243,13 @@ class NEROutputFormatter(BaseFormatter):
                         temp_id = j.doc_id
                     text += f"{j.span.word} {j.pos_tag} {j.chunk_tag} {j.entity}\n"
 
+        return text, temp_id
+
+    @staticmethod
+    def to_json(sample: NERSample, temp_id: int = None) -> dict:
+        """Converts a NERSample to a JSON string."""
+
+        text, temp_id = NEROutputFormatter.to_conll(sample, temp_id)
         return text, temp_id
 
 

@@ -8,6 +8,7 @@ class SequenceClassificationOutput(BaseModel):
     """Output model for text classification tasks."""
 
     predictions: List[SequenceLabel]
+    multi_label: bool = False
 
     def to_str_list(self) -> str:
         """Convert the output into list of strings.
@@ -15,18 +16,27 @@ class SequenceClassificationOutput(BaseModel):
         Returns:
             List[str]: predictions in form of a list of strings.
         """
-        return ",".join([x.label for x in self.predictions])
+        return ", ".join([x.label for x in self.predictions])
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation"""
         labels = {elt.label: elt.score for elt in self.predictions}
         return f"SequenceClassificationOutput(predictions={labels})"
 
-    def __eq__(self, other):
+    def __eq__(self, other: "SequenceClassificationOutput") -> bool:
         """Equality comparison method."""
-        top_class = max(self.predictions, key=lambda x: x.score).label
-        other_top_class = max(other.predictions, key=lambda x: x.score).label
-        return top_class == other_top_class
+
+        if self.multi_label:
+            # get all labels
+            self_labels = {elt.label for elt in self.predictions}
+            other_labels = {elt.label for elt in other.predictions}
+            return set(self_labels) == set(other_labels)
+        elif len(self.predictions) == 0 and len(other.predictions) == 0:
+            return True
+        else:
+            top_class = max(self.predictions, key=lambda x: x.score).label
+            other_top_class = max(other.predictions, key=lambda x: x.score).label
+            return top_class == other_top_class
 
 
 class MinScoreOutput(BaseModel):

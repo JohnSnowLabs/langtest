@@ -1,3 +1,4 @@
+import ast
 import re
 from abc import ABC, abstractmethod
 from typing import Union
@@ -267,17 +268,28 @@ class TextClassification(BaseTask):
         row_data: dict,
         feature_column="text",
         target_column: Union[samples.SequenceLabel, str] = "label",
+        multi_label: bool = False,
+        *args,
+        **kwargs,
     ) -> samples.SequenceClassificationSample:
         """Create a sample."""
         keys = list(row_data.keys())
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(keys, [feature_column, target_column])
 
+        # is multi-label classification
+        # if "multi_label" in kwargs:
+        #     multi_label = kwargs.get("multi_label", False)
+        #     kwargs.pop("multi_label")
+
         labels = row_data.get(column_mapper[target_column])
 
         if isinstance(labels, samples.SequenceLabel):
             labels = [labels]
-        elif isinstance(labels, list):
+        elif isinstance(labels, list) or isinstance(labels, str):
+            labels = ast.literal_eval(labels)
+            if not isinstance(labels, list):
+                labels = [labels]
             labels = [
                 samples.SequenceLabel(label=label, score=1.0)
                 if isinstance(label, str)
@@ -289,7 +301,9 @@ class TextClassification(BaseTask):
 
         return samples.SequenceClassificationSample(
             original=row_data[column_mapper[feature_column]],
-            expected_results=samples.SequenceClassificationOutput(predictions=labels),
+            expected_results=samples.SequenceClassificationOutput(
+                predictions=labels, multi_label=multi_label
+            ),
         )
 
 

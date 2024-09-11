@@ -1,6 +1,5 @@
 import csv
 import importlib
-import logging
 import os
 import random
 import re
@@ -11,6 +10,7 @@ from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
+from langtest.logger import logger as logging
 
 from .format import Formatter
 from langtest.utils.custom_types import (
@@ -26,6 +26,7 @@ from ..utils.lib_manager import try_import_lib
 from ..errors import Warnings, Errors
 import glob
 from pkg_resources import resource_filename
+from langtest.logger import logger
 
 COLUMN_MAPPER = {
     "text-classification": {
@@ -607,14 +608,49 @@ class ConllDataset(BaseDataset):
             output_path (str):
                 path to save the data to
         """
-        otext = ""
-        temp_id = None
-        for i in data:
-            text, temp_id = Formatter.process(i, output_format="conll", temp_id=temp_id)
-            otext += text + "\n"
+        if output_path.endswith(".conll"):
+            otext = ""
+            temp_id = None
+            for i in data:
+                text, temp_id = Formatter.process(
+                    i, output_format="conll", temp_id=temp_id
+                )
+                otext += text + "\n"
 
-        with open(output_path, "wb") as fwriter:
-            fwriter.write(bytes(otext, encoding="utf-8"))
+            with open(output_path, "wb") as fwriter:
+                fwriter.write(bytes(otext, encoding="utf-8"))
+
+        elif output_path.endswith(".json"):
+            import json
+            from .utils import process_document
+
+            logger.warn("Only for Gen AI Lab use")
+            logger.info("Converting NER sample to JSON format")
+
+            otext_list = []
+            temp_id = None
+            for i in data:
+                otext, temp_id = Formatter.process(
+                    i, output_format="json", temp_id=temp_id
+                )
+                processed_text = process_document(otext)
+                # add test info
+                tem_dict = processed_text["data"]
+                tem_dict["test_type"] = i.test_type or "null"
+                tem_dict["category"] = i.category or "null"
+
+                processed_text["data"] = tem_dict
+                otext_list.append(processed_text)
+
+                # otext += text + "\n"
+                # if temp_id2 != temp_id:
+                #     processed_text = process_document(otext)
+                #     otext_list.append(processed_text)
+                #     otext = ""
+                #     temp_id = temp_id2
+
+            with open(output_path, "w") as fwriter:
+                json.dump(otext_list, fwriter)
 
     def __token_validation(self, tokens: str) -> (bool, List[List[str]]):  # type: ignore
         """Validates the tokens in a sentence.
@@ -1013,6 +1049,8 @@ class CSVDataset(BaseDataset):
                 import ast
 
                 i["transformations"] = ast.literal_eval(temp)
+            elif "transformations" in i:
+                i.pop("transformations")
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
 
