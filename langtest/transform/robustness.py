@@ -389,7 +389,7 @@ class UpperCase(BaseRobustness):
                 ]
                 sample_list[idx] = " ".join(transformed_words)
             else:
-                words = sample.original.split()
+                words = sample.original.split(" ")
                 num_transform_words = int(prob * len(words))
                 transformed_indices = random.sample(
                     range(len(words)), num_transform_words
