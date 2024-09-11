@@ -19,7 +19,6 @@ from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
 from langtest.tasks import TaskManager
-from ..utils.lib_manager import try_import_lib
 from ..errors import Errors
 
 
@@ -358,6 +357,9 @@ class TemplaticAugment(BaseAugmentaion):
                         # Extend the existing templates list
 
                         self.__templates.extend(generated_templates[:num_extra_templates])
+            except ModuleNotFoundError:
+                raise ImportError(Errors.E097())
+
             except Exception as e_msg:
                 raise Errors.E095(e=e_msg)
 
@@ -606,19 +608,19 @@ class TemplaticAugment(BaseAugmentaion):
         num_extra_templates: int,
         model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
     ) -> List[str]:
-        if try_import_lib("openai"):
-            from langtest.augmentation.utils import (
-                generate_templates_azoi,  # azoi means Azure OpenAI
-                generate_templates_openai,
-            )
+        """This method is used to generate extra templates from a given template."""
+        from langtest.augmentation.utils import (
+            generate_templates_azoi,  # azoi means Azure OpenAI
+            generate_templates_openai,
+        )
 
-            params = model_config.copy() if model_config else {}
+        params = model_config.copy() if model_config else {}
 
-            if model_config and model_config.get("provider") == "openai":
-                return generate_templates_openai(template, num_extra_templates, params)
+        if model_config and model_config.get("provider") == "openai":
+            return generate_templates_openai(template, num_extra_templates, params)
 
-            elif model_config and model_config.get("provider") == "azure":
-                return generate_templates_azoi(template, num_extra_templates, params)
+        elif model_config and model_config.get("provider") == "azure":
+            return generate_templates_azoi(template, num_extra_templates, params)
 
-            else:
-                return generate_templates_openai(template, num_extra_templates)
+        else:
+            return generate_templates_openai(template, num_extra_templates)
