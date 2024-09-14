@@ -80,7 +80,7 @@ class PretrainedModelForQA(ModelAPI):
         try:
             cls._update_model_parameters(hub, filtered_kwargs)
             if path in (
-                "gpt-4o",
+                "gpt-4o-mini",
                 "gpt-4",
                 "gpt-3.5-turbo",
                 "gpt-4-1106-preview",

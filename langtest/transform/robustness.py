@@ -1946,8 +1946,9 @@ class AddNewLines(BaseRobustness):
     @staticmethod
     def transform(
         sample_list: List[Sample],
-        prob: Optional[float] = 0.2,
+        prob: Optional[float] = 1.0,
         count: int = 1,
+        number_of_lines: int = 3,
     ) -> List[Sample]:
         """Transforms the given sample list by adding new lines to the input text.
 
@@ -1985,7 +1986,7 @@ class AddNewLines(BaseRobustness):
             transformed_indices = random.sample(
                 transformed_indices,
                 min(
-                    len(text) // len(transformed_indices),
+                    2 * len(text) // len(transformed_indices),
                     int(len(transformed_indices) * prob),
                 ),
             )
@@ -2001,7 +2002,7 @@ class AddNewLines(BaseRobustness):
                 perturbed_word = token["word"]
 
                 if i in transformed_indices:
-                    perturbed_word += "\n\n"
+                    perturbed_word += "\n" * max(1, random.randint(1, number_of_lines))
                     transformations.append(
                         Transformation(
                             original_span=Span(
