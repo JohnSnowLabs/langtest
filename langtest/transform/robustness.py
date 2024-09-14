@@ -1938,3 +1938,102 @@ class RandomAge(BaseRobustness):
                 perturbed_samples.append(s)
 
         return perturbed_samples
+
+
+class AddNewLines(BaseRobustness):
+    alias_name = "add_new_lines"
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        prob: Optional[float] = 0.2,
+        count: int = 1,
+    ) -> List[Sample]:
+        """Transforms the given sample list by adding new lines to the input text.
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+            prob (Optional[float]): The probability controlling the proportion of samples to be perturbed.
+                                    Defaults to 0.2.
+            count: Number of variations to create.
+
+        Returns:
+            List[Sample]: The transformed list of samples with new lines added.
+        """
+
+        def add_new_lines(text: str) -> Tuple[str, List[Transformation]]:
+            transformations = []
+
+            # Find all tokens and their positions
+            tokens = []
+            for match in re.finditer(r"\S+", text):
+                word = match.group()
+                start = match.start()
+                end = match.end()
+                tokens.append({"word": word, "start": start, "end": end})
+
+            if len(tokens) < 5:
+                return text, transformations
+
+            # Decide which tokens to transform
+            transformed_indices = []
+            for i, _ in enumerate(tokens):
+                if random.random() < prob:
+                    transformed_indices.append(i)
+
+            # randomly select the transformed indices
+            transformed_indices = random.sample(
+                transformed_indices,
+                min(
+                    len(text) // len(transformed_indices),
+                    int(len(transformed_indices) * prob),
+                ),
+            )
+
+            # Build the perturbed text and record transformations
+            perturbed_text = ""
+            prev_end = 0
+            for i, token in enumerate(tokens):
+                # Add any intermediate spaces or punctuation
+                perturbed_text += text[prev_end : token["start"]]
+
+                perturbed_start = len(perturbed_text)
+                perturbed_word = token["word"]
+
+                if i in transformed_indices:
+                    perturbed_word += "\n\n"
+                    transformations.append(
+                        Transformation(
+                            original_span=Span(
+                                start=token["start"], end=token["end"], word=token["word"]
+                            ),
+                            new_span=Span(
+                                start=perturbed_start,
+                                end=perturbed_start + len(perturbed_word),
+                                word=perturbed_word,
+                            ),
+                            ignore=False,
+                        )
+                    )
+
+                perturbed_text += perturbed_word
+                prev_end = token["end"]
+
+            # Add any remaining text after the last token
+            perturbed_text += text[prev_end:]
+
+            return perturbed_text, transformations
+
+        perturbed_samples = []
+        for s in sample_list:
+            for _ in range(count):
+                sample = deepcopy(s)
+                if isinstance(sample, str):
+                    sample, _ = add_new_lines(sample)
+                else:
+                    sample.test_case, transformations = add_new_lines(sample.original)
+                    if sample.task in ("ner", "text-classification"):
+                        sample.transformations = transformations
+                    sample.category = "robustness"
+                perturbed_samples.append(sample)
+        return perturbed_samples
