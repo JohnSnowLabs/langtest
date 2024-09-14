@@ -452,3 +452,13 @@ class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
     """
 
     pass
+
+
+class PretrainedModelForVisualQA(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for visual question answering.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    pass
