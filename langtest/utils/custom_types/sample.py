@@ -2752,6 +2752,18 @@ class FillMaskSample(TextGenerationSample):
 
 
 class VisualQASample(BaseModel):
+    """
+    A class representing a sample for the Visual Question Answering task.
+
+    Attributes:
+        original_image (str): The original image used for the test.
+        perturbed_image (str): The perturbed image used for the test.
+        question (str): The question asked about the image.
+        ground_truth (str): The ground truth answer to the question.
+        expected_result (str): The expected result of the test.
+        actual_result (str): The actual result of the test.
+    """
+
     original_image: str
     perturbed_image: str
     question: str
