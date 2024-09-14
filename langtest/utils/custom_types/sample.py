@@ -2751,6 +2751,121 @@ class FillMaskSample(TextGenerationSample):
     pass
 
 
+class VisualQASample(BaseModel):
+    original_image: str
+    perturbed_image: str
+    question: str
+    ground_truth: str
+    expected_result: str
+    actual_result: str
+    dataset_name: str
+    category: str
+    test_type: str
+    state: str
+    task: str
+    ran_pass: bool
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Converts the VisualQASample object to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the VisualQASample object.
+        """
+        result = {
+            "category": self.category,
+            "test_type": self.test_type,
+            "original_image": self.original_image,
+            "perturbed_image": self.perturbed_image,
+            "question": self.question,
+            "ground_truth": self.ground_truth,
+            "expected_result": self.expected_result,
+            "actual_result": self.actual_result,
+            "pass": self.is_pass(),
+        }
+
+        return result
+
+    def is_pass(self):
+        """
+        Check if the VisualQASample test passes based on evaluation results.
+
+        Returns:
+            bool: True if the test passes, False otherwise.
+        """
+        if self.ran_pass is not None:
+            return self.ran_pass
+
+        if self.expected_result.lower().strip() == self.actual_result.lower().strip():
+            self.ran_pass = True
+        else:
+            self.ran_pass = False
+
+        return self.ran_pass
+
+    def run(self, model, **kwargs):
+        """
+        Run the VisualQASample test using the provided model.
+
+        Args:
+            model: The model used for VisualQASample testing.
+            **kwargs: Additional keyword arguments for the model.
+
+        Returns:
+            bool: True
+        """
+        dataset_name = self.dataset_name.split("-")[0].lower()
+        prompt_template = kwargs.get(
+            "user_prompt",
+            default_user_prompt.get(dataset_name, ""),
+        )
+
+        server_prompt = kwargs.get("server_prompt", " ")
+
+        self.expected_result = model(
+            text={
+                "image": self.original_image,
+                "question": self.question,
+            },
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["image", "question"],
+            },
+            server_prompt=server_prompt,
+        )
+        self.actual_result = model(
+            text={
+                "image": self.perturbed_image,
+                "question": self.question,
+            },
+            prompt={
+                "template": prompt_template,
+                "input_variables": ["image", "question"],
+            },
+            server_prompt=server_prompt,
+        )
+        return True
+
+    def transform(self, func: Callable, params: Dict, **kwargs):
+        """
+        Transform the original image using a specified function.
+
+        Args:
+            func (Callable): The transformation function.
+            params (Dict): Parameters for the transformation function.
+            **kwargs: Additional keyword arguments for the transformation.
+
+        """
+        sens = [self.original_image]
+        self.perturbed_image = func(sens, **params, **kwargs)
+        self.category = func.__module__.split(".")[-1]
+
+        return self
+
+
 Sample = TypeVar(
     "Sample",
     MaxScoreSample,

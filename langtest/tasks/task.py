@@ -851,3 +851,34 @@ class TextGeneration(BaseTask):
 
 class FillMask(BaseTask):
     pass
+
+
+class VisualQA(BaseTak):
+    _name = "visual-question-answering"
+    _default_col = {
+        "image": ["image"],
+        "question": ["question"],
+        "answer": ["answer"],
+    }
+    sample_class = samples.VisualQASample
+
+    def create_sample(
+        cls,
+        row_data: dict,
+        image: str = "image",
+        question: str = "question",
+        answer: str = "answer",
+        dataset_name: str = "",
+    ) -> samples.VisualQASample:
+        """Create a sample."""
+        keys = list(row_data.keys())
+
+        # auto-detect the default column names from the row_data
+        column_mapper = cls.column_mapping(keys, [image, question, answer])
+
+        return samples.VisualQASample(
+            image=row_data[column_mapper[image]],
+            question=row_data[column_mapper[question]],
+            answer=row_data[column_mapper[answer]],
+            dataset_name=dataset_name,
+        )
