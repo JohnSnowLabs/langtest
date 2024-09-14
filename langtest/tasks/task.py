@@ -853,7 +853,7 @@ class FillMask(BaseTask):
     pass
 
 
-class VisualQA(BaseTak):
+class VisualQA(BaseTask):
     _name = "visual-question-answering"
     _default_col = {
         "image": ["image"],
