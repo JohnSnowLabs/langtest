@@ -40,12 +40,12 @@ class ImageRotation(BaseRobustness):
 
     @staticmethod
     def transform(
-        sample_list: List[Sample], angle: int = 90, *args, **kwargs
+        sample_list: List[Sample], angle: int = 90, exapand = True, *args, **kwargs
     ) -> List[Sample]:
         for sample in sample_list:
             sample.category = "robustness"
             sample.test_type = "image_rotate"
-            sample.perturbed_image = sample.original_image.rotate(angle)
+            sample.perturbed_image = sample.original_image.rotate(angle, expand=True)
 
         return sample_list
 
@@ -84,14 +84,15 @@ class ImageNoise(BaseRobustness):
             for sample in sample_list:
                 sample.category = "robustness"
                 sample.test_type = "image_noise"
-                sample.perturbed_image = cls.add_noise(sample.original_image, noise)
+                sample.perturbed_image = cls.add_noise(image=sample.original_image, noise_level=noise)
             return sample_list
 
         except Exception as e:
             logger.error(f"Error in adding noise to the image: {e}")
             raise e
 
-    def add_noise(self, image: Image.Image, noise_level: float) -> Image:
+    @staticmethod
+    def add_noise(image: Image.Image, noise_level: float) -> Image:
         width, height = image.size
 
         # Create a new image to hold the noisy version
