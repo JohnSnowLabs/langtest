@@ -2773,14 +2773,21 @@ class VisualQASample(BaseModel):
     question: str = None
     options: str = None
     ground_truth: str = None
-    expected_result: str = None
-    actual_result: str = None
+    expected_results: str = None
+    actual_results: str = None
     dataset_name: str = None
     category: str = None
     test_type: str = None
     state: str = None
     task: str = None
     ran_pass: bool = None
+    metric_name: str = None
+    config: Union[str, dict] = None
+    state: str = None
+    task: str = Field(default="visualqa", const=True)
+    distance_result: float = None
+    eval_model: str = None
+    feedback: str = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -2796,38 +2803,35 @@ class VisualQASample(BaseModel):
         Returns:
             Dict[str, Any]: A dictionary representation of the VisualQASample object.
         """
+        self.__update_params()
+
         result = {
             "category": self.category,
             "test_type": self.test_type,
             "original_image": self.convert_image_to_html(self.original_image),
             "perturbed_image": self.convert_image_to_html(self.perturbed_image),
             "question": self.question,
-            # "expected_result": self.expected_result,
-            # "actual_result": self.actual_result,
-            # "pass": self.is_pass(),
         }
 
         if self.options is not None:
             result["options"] = self.options
 
+        if self.state == "done":
+            if self.expected_results is not None and self.actual_results is not None:
+                result.update(
+                    {
+                        "expected_result": self.expected_results,
+                        "actual_result": self.actual_results,
+                        "pass": self.is_pass(),
+                    }
+                )
+                if "evaluation" in self.config and "metric" in self.config["evaluation"]:
+                    if self.config["evaluation"]["metric"].lower() == "prometheus_eval":
+                        result.update({"feedback": self.feedback})
+                    elif self.config["evaluation"]["metric"].lower() != "llm_eval":
+                        result.update({"eval_score": self.distance_result})
+
         return result
-
-    def is_pass(self):
-        """
-        Check if the VisualQASample test passes based on evaluation results.
-
-        Returns:
-            bool: True if the test passes, False otherwise.
-        """
-        if self.ran_pass is not None:
-            return self.ran_pass
-
-        if self.expected_result.lower().strip() == self.actual_result.lower().strip():
-            self.ran_pass = True
-        else:
-            self.ran_pass = False
-
-        return self.ran_pass
 
     def run(self, model: ModelAPI, **kwargs):
         """
@@ -2844,7 +2848,38 @@ class VisualQASample(BaseModel):
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
             "user_prompt",
-            default_user_prompt.get(dataset_name, "Question: {question}\n {options}"),
+            default_user_prompt.get(
+                dataset_name,
+                (
+                    """You are an AI Vision bot specializing in providing accurate and concise answers to multiple-choice questions. You will be presented with a question and options. Choose the correct answer.
+
+Example:
+
+Question: What is the capital of France <image 1>?
+
+Options:
+A. Berlin
+B. Madrid
+C. Paris
+D. Rome
+
+Answer: C. Paris.
+
+Example 2:
+
+Question: What is in the image <image 1>?
+
+Options:
+A. Dog
+B. Cat
+C. Elephant
+D. Ear
+
+Answer: UnRecognizable.
+"""
+                    " Similary \n Question: {question}\nOptions: {options}\n Answer:"
+                ),
+            ),
         )
 
         server_prompt = kwargs.get("server_prompt", " ")
@@ -2870,12 +2905,12 @@ class VisualQASample(BaseModel):
         orig_image = self.convert_image_to_bas64_url(self.original_image)
         pred_image = self.convert_image_to_bas64_url(self.perturbed_image)
 
-        self.expected_result = model(
+        self.expected_results = model(
             **payload,
             images=(orig_image,),
             server_prompt=server_prompt,
         )
-        self.actual_result = model(
+        self.actual_results = model(
             **payload,
             images=(pred_image,),
             server_prompt=server_prompt,
@@ -2941,6 +2976,107 @@ class VisualQASample(BaseModel):
             image.save(buffered, format="PNG")
             img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
             return f"data:image/png;base64,{img_str}"
+
+    def __update_params(self):
+        from ...langtest import HARNESS_CONFIG as harness_config
+
+        self.config = harness_config
+        self.metric_name = (
+            self.config.get("evaluation", {}).get("metric", "llm_eval").lower()
+        )
+
+        if self.state == "done":
+            from ...langtest import EVAL_MODEL
+
+            if (
+                "evaluation" in harness_config
+                and "metric" in harness_config["evaluation"]
+            ):
+                if harness_config["evaluation"]["metric"].lower() == "llm_eval":
+                    model = harness_config["evaluation"].get("model", None)
+                    hub = harness_config["evaluation"].get("hub", None)
+                    if model and hub:
+                        from ...tasks import TaskManager
+
+                        load_eval_model = TaskManager(self.task)
+                        self.eval_model = load_eval_model.model(
+                            model, hub, **harness_config.get("model_parameters", {})
+                        )
+
+            else:
+                self.eval_model = EVAL_MODEL
+
+    def is_pass(self) -> bool:
+        """Checks if the sample has passed the evaluation.
+
+        Returns:
+            bool: True if the sample passed the evaluation, False otherwise.
+        """
+
+        if self.ran_pass is not None:
+            return self.ran_pass
+        elif self.expected_results.strip().lower() == self.actual_results.strip().lower():
+            self.ran_pass = True
+            return True
+        else:
+            self.__update_params()
+            try:
+                metric_module = importlib.import_module(
+                    "langtest.utils.custom_types.helpers"
+                )
+                metric_function = getattr(metric_module, f"is_pass_{self.metric_name}")
+            except (ImportError, AttributeError):
+                raise ValueError(f"Metric '{self.metric_name}' not found.")
+
+            if self.metric_name == "string_distance":
+                selected_distance = self.config["evaluation"].get("distance", "jaro")
+                threshold = self.config["evaluation"].get("threshold")
+
+            elif self.metric_name == "embedding_distance":
+                selected_distance = self.config["evaluation"].get("distance", "cosine")
+                threshold = self.config["evaluation"].get("threshold")
+
+            if self.metric_name in (
+                "string_distance",
+                "embedding_distance",
+            ):
+                self.distance_result, result = metric_function(
+                    answer=self.expected_results,
+                    prediction=self.actual_results,
+                    selected_distance=selected_distance,
+                    threshold=threshold,
+                )
+                self.ran_pass = result
+                return result
+            elif self.metric_name == "llm_eval":
+                if isinstance(self.eval_model, dict):
+                    self.eval_model = list(self.eval_model.values())[-1]
+                result = metric_function(
+                    eval_model=self.eval_model,
+                    dataset_name=self.dataset_name,
+                    original_question="<image 1> " + self.question,
+                    answer=self.expected_results,
+                    perturbed_question="<perturbed_image 1> " + self.question,
+                    prediction=self.actual_results,
+                )
+
+            #     self.ran_pass = result
+            #     return result
+            # elif self.metric_name == "prometheus_eval":
+            #     result = metric_function(
+            #         task=self.task,
+            #         original_question=self.original_question,
+            #         expected_results=self.expected_results,
+            #         actual_results=self.actual_results,
+            #         category=self.category,
+            #         original_context=self.original_context,
+            #         options=self.options,
+            #     )
+            #     self.ran_pass = result.get("score", False)
+            #     self.feedback = result.get("feedback", None)
+            #     return self.ran_pass
+            else:
+                raise ValueError(f"Metric '{self.metric_name}' not found.")
 
 
 Sample = TypeVar(

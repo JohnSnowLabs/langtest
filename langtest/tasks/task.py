@@ -877,10 +877,18 @@ class VisualQA(BaseTask):
         # auto-detect the default column names from the row_data
         column_mapper = cls.column_mapping(keys, [image, question, options, answer])
 
+        options = row_data.get(column_mapper.get(options, "-"), "-")
+
+        if len(options) > 3 and options[0] == "[" and options[-1] == "]":
+            options = ast.literal_eval(row_data[column_mapper["options"]])
+            options = "\n".join(
+                [f"{chr(65 + i)}. {option}" for i, option in enumerate(options)]
+            )
+
         return samples.VisualQASample(
             original_image=row_data[column_mapper[image]],
             question=row_data[column_mapper[question]],
-            options=row_data.get(column_mapper.get(options, "-"), "-"),
+            options=options,
             expected_result=row_data[column_mapper[answer]],
             dataset_name=dataset_name,
         )
