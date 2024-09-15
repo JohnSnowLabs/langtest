@@ -95,6 +95,12 @@ COLUMN_MAPPER = {
         "anti-stereotype": ["anti-stereotype"],
         "unrelated": ["unrelated"],
     },
+    "visualqa": {
+        'image': ['image'],
+        'question': ['question'],
+        'options': ['options'],
+        'answer': ['answer']
+    }
 }
 
 
@@ -183,7 +189,7 @@ class DataFactory:
             raise ValueError(Errors.E024)
 
         if "data_source" not in file_path:
-            raise ValueError(Errors.E025)
+            raise ValueError(Errors.E025())
         self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
         self._size = None
@@ -1246,6 +1252,7 @@ class HuggingFaceDataset(BaseDataset):
         "summarization",
         "ner",
         "question-answering",
+        "visualqa",
     ]
 
     LIB_NAME = "datasets"
@@ -1709,6 +1716,7 @@ class PandasDataset(BaseDataset):
         "legal",
         "factuality",
         "stereoset",
+        "visualqa",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 

@@ -854,7 +854,7 @@ class FillMask(BaseTask):
 
 
 class VisualQA(BaseTask):
-    _name = "visual-question-answering"
+    _name = "visualqa"
     _default_col = {
         "image": ["image"],
         "question": ["question"],
@@ -865,8 +865,9 @@ class VisualQA(BaseTask):
     def create_sample(
         cls,
         row_data: dict,
-        image: str = "image",
+        image: str = "image_1",
         question: str = "question",
+        options: str = "options",
         answer: str = "answer",
         dataset_name: str = "",
     ) -> samples.VisualQASample:
@@ -877,8 +878,9 @@ class VisualQA(BaseTask):
         column_mapper = cls.column_mapping(keys, [image, question, answer])
 
         return samples.VisualQASample(
-            image=row_data[column_mapper[image]],
+            original_image=row_data[column_mapper[image]],
             question=row_data[column_mapper[question]],
-            answer=row_data[column_mapper[answer]],
+            options=row_data.get(column_mapper.get(options, "-"), "-"),
+            expected_result=row_data[column_mapper[answer]],
             dataset_name=dataset_name,
         )
