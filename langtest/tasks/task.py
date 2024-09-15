@@ -875,7 +875,7 @@ class VisualQA(BaseTask):
         keys = list(row_data.keys())
 
         # auto-detect the default column names from the row_data
-        column_mapper = cls.column_mapping(keys, [image, question, answer])
+        column_mapper = cls.column_mapping(keys, [image, question, options, answer])
 
         return samples.VisualQASample(
             original_image=row_data[column_mapper[image]],

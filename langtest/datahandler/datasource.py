@@ -96,11 +96,11 @@ COLUMN_MAPPER = {
         "unrelated": ["unrelated"],
     },
     "visualqa": {
-        'image': ['image'],
-        'question': ['question'],
-        'options': ['options'],
-        'answer': ['answer']
-    }
+        "image": ["image"],
+        "question": ["question"],
+        "options": ["options"],
+        "answer": ["answer"],
+    },
 }
 
 

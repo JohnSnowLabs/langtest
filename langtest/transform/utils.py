@@ -397,6 +397,8 @@ def filter_unique_samples(task: str, transformed_samples: list, test_name: str):
                         no_transformation_applied_tests[test_name] += 1
                     else:
                         no_transformation_applied_tests[test_name] = 1
+    elif task == "visualqa":
+        return transformed_samples, no_transformation_applied_tests
     else:
         for sample in transformed_samples:
             if sample.original.replace(" ", "") != sample.test_case.replace(" ", ""):

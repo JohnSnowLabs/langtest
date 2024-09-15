@@ -2763,6 +2763,7 @@ class VisualQASample(BaseModel):
         expected_result (str): The expected result of the test.
         actual_result (str): The actual result of the test.
     """
+
     from PIL.Image import Image
 
     original_image: Union[Image, str, Any] = None
@@ -2799,11 +2800,13 @@ class VisualQASample(BaseModel):
             "original_image": self.convert_image_to_html(self.original_image),
             "perturbed_image": self.convert_image_to_html(self.perturbed_image),
             "question": self.question,
-            "ground_truth": self.ground_truth,
-            "expected_result": self.expected_result,
-            "actual_result": self.actual_result,
+            # "expected_result": self.expected_result,
+            # "actual_result": self.actual_result,
             # "pass": self.is_pass(),
         }
+
+        if self.options is not None:
+            result["options"] = self.options
 
         return result
 
@@ -2882,13 +2885,13 @@ class VisualQASample(BaseModel):
         self.category = func.__module__.split(".")[-1]
 
         return self
-    
+
     def __load_image(self, image_path):
         # check the image path as url using regex
-        import requests 
+        import requests
         from PIL import Image
         import io
-        import base64 
+        import base64
 
         if isinstance(image_path, dict) and "bytes" in image_path:
             image = Image.open(io.BytesIO(image_path["bytes"]))
@@ -2902,16 +2905,19 @@ class VisualQASample(BaseModel):
         else:
             image = Image.open(image_path)
         return image.convert("RGB")
-    
-    def convert_image_to_html(self, Image: Image):
+
+    def convert_image_to_html(self, image: Image):
         import io
         import base64
 
-        if Image is not None:
+        if image is not None:
+            image = image.copy()
             buffered = io.BytesIO()
-            Image.save(buffered, format="PNG")
+            image.thumbnail((400, 400))
+            image.save(buffered, format="PNG")
             img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
             return f'<img src="data:image/png;base64,{img_str}" />'
+
 
 Sample = TypeVar(
     "Sample",
@@ -2934,4 +2940,5 @@ Sample = TypeVar(
     LegalSample,
     CrowsPairsSample,
     StereoSetSample,
+    VisualQASample,
 )
