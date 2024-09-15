@@ -13,6 +13,7 @@ from ..errors import Errors, Warnings
 import logging
 from functools import lru_cache
 from langtest.utils.custom_types.helpers import HashableDict
+from langchain.chat_models.base import BaseChatModel
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -461,4 +462,60 @@ class PretrainedModelForVisualQA(PretrainedModelForQA, ModelAPI):
         PretrainedModelForQA: The base class for pretrained models.
     """
 
-    pass
+    @lru_cache(maxsize=102400)
+    def predict(
+        self, text: Union[str, dict], prompt: dict, images: List[Any], *args, **kwargs
+    ):
+        """Perform prediction using the pretrained model.
+
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            prompt (dict): The prompt configuration.
+            images (List[Any]): The list of images.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
+        """
+        try:
+            if not isinstance(self.model, BaseChatModel):
+                ValueError("visualQA task is only supported for chat models")
+
+            # if isinstance(text, dict):
+            #     input_variables = list(text.keys())
+            #     # input_variables in to string enclosed by {}
+            #     template = "\n".join(f"{var.title()}: {{{var}}}" for var in input_variables)
+            # else:
+            #     input_variables = ["text"]
+            #     template = "{text}"
+
+            # prompt = {
+            #     "input_variables": input_variables,
+            #     "template": f"Answer the question based on the image and the text.\n {template} "
+            # }
+
+            prompt_template = PromptTemplate(**prompt)
+            from langchain_core.messages import HumanMessage
+
+            images = [
+                {
+                    "type": "image_url",
+                    "image_url": {"url": image},
+                }
+                for image in images
+            ]
+
+            messages = HumanMessage(
+                content=[
+                    {"type": "text", "text": prompt_template.format(**text)},
+                    *images,
+                ]
+            )
+
+            response = self.model.invoke([messages])
+            return response.content
+
+        except Exception as e:
+            raise ValueError(Errors.E089(error_message=e))

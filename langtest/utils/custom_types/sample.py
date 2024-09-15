@@ -3,6 +3,8 @@ import string
 import importlib
 from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
+
+from langtest.modelhandler.modelhandler import ModelAPI
 from ...errors import Errors
 from pydantic import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
@@ -2827,7 +2829,7 @@ class VisualQASample(BaseModel):
 
         return self.ran_pass
 
-    def run(self, model, **kwargs):
+    def run(self, model: ModelAPI, **kwargs):
         """
         Run the VisualQASample test using the provided model.
 
@@ -2838,34 +2840,44 @@ class VisualQASample(BaseModel):
         Returns:
             bool: True
         """
+
         dataset_name = self.dataset_name.split("-")[0].lower()
         prompt_template = kwargs.get(
             "user_prompt",
-            default_user_prompt.get(dataset_name, ""),
+            default_user_prompt.get(dataset_name, "Question: {question}\n {options}"),
         )
 
         server_prompt = kwargs.get("server_prompt", " ")
 
-        self.expected_result = model(
-            text={
-                "image": self.original_image,
-                "question": self.question,
-            },
-            prompt={
+        text_dict = {
+            "question": self.question,
+        }
+        input_variables = ["question"]
+
+        if self.options is not None:
+            text_dict["options"] = self.options
+            input_variables.append("options")
+
+        payload = {
+            "text": text_dict,
+            "prompt": {
                 "template": prompt_template,
-                "input_variables": ["image", "question"],
+                "input_variables": input_variables,
             },
+        }
+
+        # convert the image to base64 url
+        orig_image = self.convert_image_to_bas64_url(self.original_image)
+        pred_image = self.convert_image_to_bas64_url(self.perturbed_image)
+
+        self.expected_result = model(
+            **payload,
+            images=(orig_image,),
             server_prompt=server_prompt,
         )
         self.actual_result = model(
-            text={
-                "image": self.perturbed_image,
-                "question": self.question,
-            },
-            prompt={
-                "template": prompt_template,
-                "input_variables": ["image", "question"],
-            },
+            **payload,
+            images=(pred_image,),
             server_prompt=server_prompt,
         )
         return True
@@ -2917,6 +2929,18 @@ class VisualQASample(BaseModel):
             image.save(buffered, format="PNG")
             img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
             return f'<img src="data:image/png;base64,{img_str}" />'
+
+    def convert_image_to_bas64_url(self, image: Image):
+        import io
+        import base64
+
+        if image is not None:
+            image = image.copy()
+            buffered = io.BytesIO()
+            image.thumbnail((400, 400))
+            image.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+            return f"data:image/png;base64,{img_str}"
 
 
 Sample = TypeVar(

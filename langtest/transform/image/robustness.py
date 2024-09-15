@@ -1,7 +1,6 @@
 import random
-from typing import Coroutine, List, Tuple, Union
+from typing import List, Tuple, Union
 from langtest.logger import logger
-from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.robustness import BaseRobustness
 from langtest.utils.custom_types.sample import Sample
 from PIL import Image, ImageFilter
@@ -40,7 +39,7 @@ class ImageRotation(BaseRobustness):
 
     @staticmethod
     def transform(
-        sample_list: List[Sample], angle: int = 90, exapand = True, *args, **kwargs
+        sample_list: List[Sample], angle: int = 90, exapand=True, *args, **kwargs
     ) -> List[Sample]:
         for sample in sample_list:
             sample.category = "robustness"
@@ -84,7 +83,9 @@ class ImageNoise(BaseRobustness):
             for sample in sample_list:
                 sample.category = "robustness"
                 sample.test_type = "image_noise"
-                sample.perturbed_image = cls.add_noise(image=sample.original_image, noise_level=noise)
+                sample.perturbed_image = cls.add_noise(
+                    image=sample.original_image, noise_level=noise
+                )
             return sample_list
 
         except Exception as e:
