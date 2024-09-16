@@ -1,10 +1,13 @@
 from collections import Counter
-from typing import List, Union, Dict
+from typing import List, Set, Union, Dict
 from ..errors import Errors
 
 
 def classification_report(
-    y_true: List[Union[str, int]], y_pred: List[Union[str, int]], zero_division: int = 0
+    y_true: List[Union[str, int]],
+    y_pred: List[Union[str, int]],
+    zero_division: int = 0,
+    multi_label: bool = False,
 ) -> Dict[str, Dict[str, Union[float, int]]]:
     """Generate a classification report including precision, recall, f1-score, and support.
 
@@ -170,3 +173,101 @@ def calculate_f1_score(
     else:
         raise ValueError(Errors.E074)
     return f1_score
+
+
+def simple_multilabel_binarizer(y_true, y_pred):
+    """
+    A simple implementation of a multilabel binarizer for y_true and y_pred.
+
+    Args:
+        y_true (list of lists or sets): Actual labels for the data.
+        y_pred (list of lists or sets): Predicted labels for the data.
+
+    Returns:
+        binarized_y_true (list of lists): Binary matrix of true labels.
+        binarized_y_pred (list of lists): Binary matrix of predicted labels.
+        classes (list): List of all unique classes (labels).
+    """
+    # Get all unique labels (classes) from both y_true and y_pred
+    classes = sorted(set(label for labels in y_true + y_pred for label in labels))
+
+    # Binarize y_true and y_pred based on the classes
+    binarized_y_true = [
+        [1 if label in labels else 0 for label in classes] for labels in y_true
+    ]
+    binarized_y_pred = [
+        [1 if label in labels else 0 for label in classes] for labels in y_pred
+    ]
+
+    return binarized_y_true, binarized_y_pred, classes
+
+
+def classification_report_multi_label(
+    y_true: List[Set[Union[str, int]]],
+    y_pred: List[Set[Union[str, int]]],
+    zero_division: int = 0,
+) -> Dict[str, Dict[str, Union[float, int]]]:
+    """
+    Generate a classification report for multi-label classification.
+
+    Args:
+        y_true (List[Set[Union[str, int]]]): List of sets of true labels.
+        y_pred (List[Set[Union[str, int]]]): List of sets of predicted labels.
+        zero_division (int, optional): Specifies the value to return when there is a zero division case. Defaults to 0.
+
+    Returns:
+        Dict[str, Dict[str, Union[float, int]]]: Classification report.
+    """
+    # Binarize the multi-label data
+    y_true_bin, y_pred_bin, classes = simple_multilabel_binarizer(y_true, y_pred)
+
+    # Initialize data structure for the report
+    report = {}
+    for i, class_label in enumerate(classes):
+        support = sum(row[i] for row in y_true_bin)
+        predicted_labels = sum(row[i] for row in y_pred_bin)
+        correct_predictions = sum(
+            1
+            for true_row, pred_row in zip(y_true_bin, y_pred_bin)
+            if true_row[i] == pred_row[i] == 1
+        )
+
+        # Precision, recall, and F1 score calculations
+        if predicted_labels > 0:
+            precision = correct_predictions / predicted_labels
+        else:
+            precision = zero_division
+
+        if support > 0:
+            recall = correct_predictions / support
+        else:
+            recall = zero_division
+
+        if (precision + recall) > 0:
+            f1_score = (2 * precision * recall) / (precision + recall)
+        else:
+            f1_score = zero_division
+
+        # Add stats to the report
+        report[class_label] = {
+            "precision": precision,
+            "recall": recall,
+            "f1-score": f1_score,
+            "support": support,
+        }
+
+    # Compute macro averages
+    avg_precision = sum([metrics["precision"] for metrics in report.values()]) / len(
+        report
+    )
+    avg_recall = sum([metrics["recall"] for metrics in report.values()]) / len(report)
+    avg_f1_score = sum([metrics["f1-score"] for metrics in report.values()]) / len(report)
+
+    report["macro avg"] = {
+        "precision": avg_precision,
+        "recall": avg_recall,
+        "f1-score": avg_f1_score,
+        "support": len(y_true),
+    }
+
+    return report

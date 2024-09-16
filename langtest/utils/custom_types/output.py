@@ -20,6 +20,8 @@ class SequenceClassificationOutput(BaseModel):
 
     def __str__(self) -> str:
         """String representation"""
+        if self.multi_label:
+            return self.to_str_list()
         labels = {elt.label: elt.score for elt in self.predictions}
         return f"SequenceClassificationOutput(predictions={labels})"
 

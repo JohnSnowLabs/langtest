@@ -15,7 +15,11 @@ from langtest.utils.custom_types import (
 )
 from langtest.utils.custom_types.helpers import default_user_prompt
 from langtest.errors import Errors
-from langtest.utils.util_metrics import calculate_f1_score, classification_report
+from langtest.utils.util_metrics import (
+    calculate_f1_score,
+    classification_report,
+    classification_report_multi_label,
+)
 
 
 class AccuracyTestFactory(ITests):
@@ -151,6 +155,7 @@ class AccuracyTestFactory(ITests):
             y_true = y_true.apply(lambda x: x.split("-")[-1])
 
         elif isinstance(raw_data_copy[0], SequenceClassificationSample):
+            is_mutli_label = raw_data_copy[0].expected_results.multi_label
 
             def predict_text_classification(sample):
                 prediction = model.predict(sample.original)
@@ -166,11 +171,16 @@ class AccuracyTestFactory(ITests):
             y_pred = pd.Series(raw_data_copy).apply(
                 lambda x: [y.label for y in x.actual_results.predictions]
             )
-            y_true = y_true.apply(lambda x: x[0])
-            y_pred = y_pred.apply(lambda x: x[0])
 
-            y_true = y_true.explode()
-            y_pred = y_pred.explode()
+            if is_mutli_label:
+                kwargs["is_multi_label"] = is_mutli_label
+
+            else:
+                y_true = y_true.apply(lambda x: x[0])
+                y_pred = y_pred.apply(lambda x: x[0])
+
+                y_true = y_true.explode()
+                y_pred = y_pred.explode()
 
         elif raw_data_copy[0].task == "question-answering":
             from ..utils.custom_types.helpers import build_qa_input, build_qa_prompt
@@ -531,8 +541,13 @@ class MinF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-
-        df_metrics = classification_report(y_true, y_pred, zero_division=0)
+        is_multi_label = kwargs.get("is_multi_label", False)
+        if is_multi_label:
+            df_metrics = classification_report_multi_label(
+                y_true, y_pred, zero_division=0
+            )
+        else:
+            df_metrics = classification_report(y_true, y_pred, zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):

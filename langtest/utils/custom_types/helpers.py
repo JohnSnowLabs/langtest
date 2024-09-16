@@ -756,8 +756,12 @@ class TestResultManager:
 
         if data[0].task == "text-classification":
             for sample in data:
-                sample.actual_results = sample.actual_results.predictions[0]
-                sample.expected_results = sample.expected_results.predictions[0]
+                if sample.expected_results.multi_label:
+                    sample.actual_results = sample.actual_results
+                    sample.expected_results = sample.expected_results
+                else:
+                    sample.actual_results = sample.actual_results.predictions[0]
+                    sample.expected_results = sample.expected_results.predictions[0]
         elif data[0].task == "ner":
             for sample in data:
                 sample.actual_results = sample.actual_results.predictions
