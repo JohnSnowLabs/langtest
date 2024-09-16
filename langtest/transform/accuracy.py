@@ -17,6 +17,7 @@ from langtest.utils.custom_types.helpers import default_user_prompt
 from langtest.errors import Errors
 from langtest.utils.util_metrics import (
     calculate_f1_score,
+    calculate_f1_score_multi_label,
     classification_report,
     classification_report_multi_label,
 )
@@ -384,7 +385,13 @@ class MinPrecisionScore(BaseAccuracy):
             y_pred (List[Any]): Predicted values
         """
         progress = kwargs.get("progress_bar", False)
-        df_metrics = classification_report(y_true, y_pred, zero_division=0)
+        is_multi_label = kwargs.get("is_multi_label", False)
+        if is_multi_label:
+            df_metrics = classification_report_multi_label(
+                y_true, y_pred, zero_division=0
+            )
+        else:
+            df_metrics = classification_report(y_true, y_pred, zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -464,7 +471,13 @@ class MinRecallScore(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        df_metrics = classification_report(y_true, y_pred, zero_division=0)
+        is_multi_label = kwargs.get("is_multi_label", False)
+        if is_multi_label:
+            df_metrics = classification_report_multi_label(
+                y_true, y_pred, zero_division=0
+            )
+        else:
+            df_metrics = classification_report(y_true, y_pred, zero_division=0)
         df_metrics.pop("macro avg")
 
         for idx, sample in enumerate(sample_list):
@@ -614,8 +627,14 @@ class MinMicroF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
+        is_multi_label = kwargs.get("is_multi_label", False)
 
-        f1 = calculate_f1_score(y_true, y_pred, average="micro", zero_division=0)
+        if is_multi_label:
+            f1 = calculate_f1_score_multi_label(
+                y_true, y_pred, average="micro", zero_division=0
+            )
+        else:
+            f1 = calculate_f1_score(y_true, y_pred, average="micro", zero_division=0)
 
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
@@ -679,7 +698,14 @@ class MinMacroF1Score(BaseAccuracy):
         """
         progress = kwargs.get("progress_bar", False)
 
-        f1 = calculate_f1_score(y_true, y_pred, average="macro", zero_division=0)
+        is_multi_label = kwargs.get("is_multi_label", False)
+
+        if is_multi_label:
+            f1 = calculate_f1_score_multi_label(
+                y_true, y_pred, average="macro", zero_division=0
+            )
+        else:
+            f1 = calculate_f1_score(y_true, y_pred, average="macro", zero_division=0)
 
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
@@ -741,7 +767,14 @@ class MinWeightedF1Score(BaseAccuracy):
 
         """
         progress = kwargs.get("progress_bar", False)
-        f1 = calculate_f1_score(y_true, y_pred, average="weighted", zero_division=0)
+        is_multi_label = kwargs.get("is_multi_label", False)
+
+        if is_multi_label:
+            f1 = calculate_f1_score_multi_label(
+                y_true, y_pred, average="weighted", zero_division=0
+            )
+        else:
+            f1 = calculate_f1_score(y_true, y_pred, average="weighted", zero_division=0)
 
         for sample in sample_list:
             sample.actual_results = MinScoreOutput(min_score=f1)
