@@ -3060,21 +3060,9 @@ Answer: UnRecognizable.
                     prediction=self.actual_results,
                 )
 
-            #     self.ran_pass = result
-            #     return result
-            # elif self.metric_name == "prometheus_eval":
-            #     result = metric_function(
-            #         task=self.task,
-            #         original_question=self.original_question,
-            #         expected_results=self.expected_results,
-            #         actual_results=self.actual_results,
-            #         category=self.category,
-            #         original_context=self.original_context,
-            #         options=self.options,
-            #     )
-            #     self.ran_pass = result.get("score", False)
-            #     self.feedback = result.get("feedback", None)
-            #     return self.ran_pass
+                self.ran_pass = result
+                return result
+
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
 

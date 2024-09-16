@@ -483,19 +483,7 @@ class PretrainedModelForVisualQA(PretrainedModelForQA, ModelAPI):
             if not isinstance(self.model, BaseChatModel):
                 ValueError("visualQA task is only supported for chat models")
 
-            # if isinstance(text, dict):
-            #     input_variables = list(text.keys())
-            #     # input_variables in to string enclosed by {}
-            #     template = "\n".join(f"{var.title()}: {{{var}}}" for var in input_variables)
-            # else:
-            #     input_variables = ["text"]
-            #     template = "{text}"
-
-            # prompt = {
-            #     "input_variables": input_variables,
-            #     "template": f"Answer the question based on the image and the text.\n {template} "
-            # }
-
+            # prepare prompt
             prompt_template = PromptTemplate(**prompt)
             from langchain_core.messages import HumanMessage
 
