@@ -2936,7 +2936,7 @@ Answer: UnRecognizable.
     def __load_image(self, image_path):
         # check the image path as url using regex
         import requests
-        from PIL import Image
+        from PIL.Image import Image
         import io
         import base64
 
@@ -2960,7 +2960,7 @@ Answer: UnRecognizable.
         if image is not None:
             image = image.copy()
             buffered = io.BytesIO()
-            image.thumbnail((400, 400))
+            image.thumbnail((200, 200))
             image.save(buffered, format="PNG")
             img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
             return f'<img src="data:image/png;base64,{img_str}" />'

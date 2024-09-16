@@ -96,7 +96,7 @@ COLUMN_MAPPER = {
         "unrelated": ["unrelated"],
     },
     "visualqa": {
-        "image": ["image"],
+        "image": ["image", "image_1"],
         "question": ["question"],
         "options": ["options"],
         "answer": ["answer"],
