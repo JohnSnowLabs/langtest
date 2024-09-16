@@ -138,3 +138,149 @@ class ImageNoise(BaseRobustness):
             raise ValueError("The input image must be in 'L' (grayscale) or 'RGB' mode.")
 
         return noisy_image
+
+
+class ImageConstrast(BaseRobustness):
+    alias_name = "image_contrast"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample], contrast_factor: float = 0.5, *args, **kwargs
+    ) -> List[Sample]:
+        from PIL import ImageEnhance
+
+        if contrast_factor < 0:
+            raise ValueError("Contrast factor must be above 0.")
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_contrast"
+            img = ImageEnhance.Contrast(sample.original_image)
+            sample.perturbed_image = img.enhance(contrast_factor)
+
+        return sample_list
+
+
+class ImageBrightness(BaseRobustness):
+    alias_name = "image_brightness"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample], brightness_factor: float = 0.3, *args, **kwargs
+    ) -> List[Sample]:
+        from PIL import ImageEnhance
+
+        if brightness_factor < 0:
+            raise ValueError("Brightness factor must be above 0.")
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_brightness"
+            enchancer = ImageEnhance.Brightness(sample.original_image)
+            sample.perturbed_image = enchancer.enhance(brightness_factor)
+
+        return sample_list
+
+
+class ImageSharpness(BaseRobustness):
+    alias_name = "image_sharpness"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample], sharpness_factor: float = 1.5, *args, **kwargs
+    ) -> List[Sample]:
+        from PIL import ImageEnhance
+
+        if sharpness_factor < 0:
+            raise ValueError("Sharpness factor must be above 0.")
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_sharpness"
+            enchancer = ImageEnhance.Sharpness(sample.original_image)
+            sample.perturbed_image = enchancer.enhance(sharpness_factor)
+
+        return sample_list
+
+
+class ImageColor(BaseRobustness):
+    3
+    alias_name = "image_color"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample], color_factor: float = 0, *args, **kwargs
+    ) -> List[Sample]:
+        from PIL import ImageEnhance
+
+        if color_factor < 0:
+            raise ValueError("Color factor must be in the range [0, inf].")
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_color"
+            enchancer = ImageEnhance.Color(sample.original_image)
+            sample.perturbed_image = enchancer.enhance(color_factor)
+
+        return sample_list
+
+
+class ImageFlip(BaseRobustness):
+    alias_name = "image_flip"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample], flip: str = "horizontal", *args, **kwargs
+    ) -> List[Sample]:
+        if flip not in ["horizontal", "vertical"]:
+            raise ValueError("Flip must be either 'horizontal' or 'vertical'.")
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_flip"
+            if flip == "horizontal":
+                sample.perturbed_image = sample.original_image.transpose(
+                    Image.FLIP_LEFT_RIGHT
+                )
+            else:
+                sample.perturbed_image = sample.original_image.transpose(
+                    Image.FLIP_TOP_BOTTOM
+                )
+
+        return sample_list
+
+
+class ImageCrop(BaseRobustness):
+    alias_name = "image_crop"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        crop_size: Union[float, Tuple[int, int]] = (100, 100),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_crop"
+            if isinstance(crop_size, float):
+                sample.perturbed_image = sample.original_image.crop(
+                    (
+                        0,
+                        0,
+                        int(sample.original_image.width * crop_size),
+                        int(sample.original_image.height * crop_size),
+                    )
+                )
+            else:
+                sample.perturbed_image = sample.original_image.crop(
+                    (0, 0, crop_size[0], crop_size[1])
+                )
+
+        return sample_list
