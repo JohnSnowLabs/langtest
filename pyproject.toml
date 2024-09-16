@@ -80,6 +80,7 @@ langchain-openai = {version = "^0.1.4", optional = true}
 boto3 = {version = "^1.34.93", optional = true}
 importlib-resources = "^6.4.0"
 click = "^8.1.7"
+pillow = "^10.4.0"
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]
