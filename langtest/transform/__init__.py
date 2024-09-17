@@ -22,6 +22,8 @@ from langtest.transform.sycophancy import SycophancyTestFactory
 from langtest.transform.grammar import GrammarTestFactory
 from langtest.transform.safety import SafetyTestFactory
 
+from langtest.transform import image
+
 # Fixing the asyncio event loop
 nest_asyncio.apply()
 
@@ -47,4 +49,5 @@ __all__ = [
     SycophancyTestFactory,
     GrammarTestFactory,
     SafetyTestFactory,
+    image,
 ]

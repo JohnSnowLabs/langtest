@@ -82,6 +82,7 @@ importlib-resources = "^6.4.0"
 click = "^8.1.7"
 openpyxl = "^3.1.5"
 tables = "3.8.0"
+pillow = "10.0.0"
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]

@@ -13,6 +13,7 @@ from ..errors import Errors, Warnings
 import logging
 from functools import lru_cache
 from langtest.utils.custom_types.helpers import HashableDict
+from langchain.chat_models.base import BaseChatModel
 
 
 class PretrainedModelForQA(ModelAPI):
@@ -452,3 +453,57 @@ class PretrainedModelForSycophancy(PretrainedModelForQA, ModelAPI):
     """
 
     pass
+
+
+class PretrainedModelForVisualQA(PretrainedModelForQA, ModelAPI):
+    """A class representing a pretrained model for visual question answering.
+
+    Inherits:
+        PretrainedModelForQA: The base class for pretrained models.
+    """
+
+    @lru_cache(maxsize=102400)
+    def predict(
+        self, text: Union[str, dict], prompt: dict, images: List[Any], *args, **kwargs
+    ):
+        """Perform prediction using the pretrained model.
+
+        Args:
+            text (Union[str, dict]): The input text or dictionary.
+            prompt (dict): The prompt configuration.
+            images (List[Any]): The list of images.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            dict: A dictionary containing the prediction result.
+                - 'result': The prediction result.
+        """
+        try:
+            if not isinstance(self.model, BaseChatModel):
+                ValueError("visualQA task is only supported for chat models")
+
+            # prepare prompt
+            prompt_template = PromptTemplate(**prompt)
+            from langchain_core.messages import HumanMessage
+
+            images = [
+                {
+                    "type": "image_url",
+                    "image_url": {"url": image},
+                }
+                for image in images
+            ]
+
+            messages = HumanMessage(
+                content=[
+                    {"type": "text", "text": prompt_template.format(**text)},
+                    *images,
+                ]
+            )
+
+            response = self.model.invoke([messages])
+            return response.content
+
+        except Exception as e:
+            raise ValueError(Errors.E089(error_message=e))
