@@ -105,8 +105,10 @@ def calculate_f1_score(
     elif isinstance(y_true, pd.Series) and isinstance(y_pred, pd.Series):
         unique_labels = set(y_true.tolist() + y_pred.tolist())
     else:
-        raise ValueError("y_true and y_pred must be of the same type. Supported types are list and pandas Series.")
-    
+        raise ValueError(
+            "y_true and y_pred must be of the same type. Supported types are list and pandas Series."
+        )
+
     num_classes = len(unique_labels)
 
     if average == "micro":
