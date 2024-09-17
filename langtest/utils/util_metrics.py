@@ -1,6 +1,7 @@
 from collections import Counter
 from typing import List, Set, Union, Dict
 from ..errors import Errors
+import pandas as pd
 
 
 def classification_report(
@@ -99,7 +100,13 @@ def calculate_f1_score(
     """
     assert len(y_true) == len(y_pred), "Lengths of y_true and y_pred must be equal."
 
-    unique_labels = set(y_true + y_pred)
+    if isinstance(y_true, list) and isinstance(y_pred, list):
+        unique_labels = set(y_true + y_pred)
+    elif isinstance(y_true, pd.Series) and isinstance(y_pred, pd.Series):
+        unique_labels = set(y_true.tolist() + y_pred.tolist())
+    else:
+        raise ValueError("y_true and y_pred must be of the same type. Supported types are list and pandas Series.")
+    
     num_classes = len(unique_labels)
 
     if average == "micro":
