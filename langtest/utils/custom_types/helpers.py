@@ -4,7 +4,6 @@ from collections.abc import Hashable
 import importlib
 from typing import List, Tuple
 from ...errors import Errors
-from . import sample as samples
 
 default_user_prompt = {
     "boolq": "Respond as an expert in natural language understanding. Your output should be 'True' or 'False' based on the information provided. Answer only with 'True' or 'False' and nothing else.\n\nAnswer Schema: True or False\n\nContext: {context}\nQuestion: {question}\nAnswer:",
@@ -752,11 +751,12 @@ class TestResultManager:
         else:
             return TestResultManager._instance
 
-    def prepare_model_response(self, data: List[samples.Sample]) -> List[samples.Sample]:
+    def prepare_model_response(self, data):
         """check the model response"""
+        from langtest.utils.custom_types import SequenceClassificationSample, NERSample
 
         if (
-            isinstance(data[0], samples.SequenceClassificationSample)
+            isinstance(data[0], SequenceClassificationSample)
             and data[0].task == "text-classification"
         ):
             for sample in data:
@@ -769,7 +769,7 @@ class TestResultManager:
                 else:
                     sample.actual_results = sample.actual_results.predictions[0]
                     sample.expected_results = sample.expected_results.predictions[0]
-        elif isinstance(data[0], samples.NERSample) and data[0].task == "ner":
+        elif isinstance(data[0], NERSample) and data[0].task == "ner":
             for sample in data:
                 sample.actual_results = sample.actual_results.predictions
                 sample.expected_results = sample.expected_results.predictions
