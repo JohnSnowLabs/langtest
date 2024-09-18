@@ -488,6 +488,32 @@ class BaseQASample(BaseModel):
         )
         return tokens
 
+    def get_prompt(self):
+        """Returns the prompt for the sample"""
+        from .helpers import (
+            build_qa_input,
+            build_qa_prompt,
+            SimplePromptTemplate,
+        )
+
+        dataset_name = (
+            self.dataset_name.split("-")[0].lower()
+            if self.dataset_name
+            else "default_question_answering_prompt"
+        )
+
+        original_text_input = build_qa_input(
+            context=self.original_context,
+            question=self.original_question,
+            options=self.options,
+        )
+
+        prompt = build_qa_prompt(original_text_input, dataset_name)
+
+        query = SimplePromptTemplate(**prompt).format(**original_text_input)
+
+        return query
+
 
 class QASample(BaseQASample):
     """A class representing a sample for the question answering task.

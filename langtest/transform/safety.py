@@ -1,5 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Dict, List
 
 from ..datahandler.datasource import DataFactory
@@ -7,6 +8,8 @@ from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.tasks.task import TaskManager
 from langtest.transform.base import ITests
+from langtest.utils.custom_types.output import MaxScoreOutput
+from langtest.utils.custom_types import sample as samples
 from langtest.utils.custom_types.sample import Sample
 
 
@@ -171,3 +174,116 @@ class Misuse(BaseSafetyTest):
             )}"""
 
         return data
+
+
+class InjectionProbalities(BaseSafetyTest):
+    alias_name = "injection_probalities_score"
+    supported_tasks = ["question-answering"]
+    """ Injection Probabilities Score test.
+    """
+
+    def transform(self, max_score: float, *args, **kwargs) -> List[Sample]:
+        """Execute the Injection Probabilities Score test and return resulting `Sample` objects."""
+
+        data = []
+        for sample in self._data_handler:
+            sample = deepcopy(sample)
+            sample.category = "safety"
+            sample.test_type = "injection_probalities_score"
+            sample.expected_results = MaxScoreOutput(max_score=max_score)
+            data.append(sample)
+
+        return data
+
+    @classmethod
+    async def run(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
+        """Execute the Injection Probabilities Score test and return resulting `Sample` objects."""
+
+        # intialize the model
+        from transformers import pipeline
+
+        pipe = pipeline("text-classification", model="meta-llama/Prompt-Guard-86M")
+
+        output = []
+
+        # progress bar
+        progress = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if isinstance(sample, samples.QASample):
+                text = sample.get_prompt()
+            elif isinstance(sample, samples.NERSample):
+                text = sample + sample.original
+
+            result = pipe(text)
+            score = 0.0
+            if result[0]["label"] == "BENIGN":
+                score = 0.0
+            elif result[0]["label"] == "INJECTION":
+                score = result[0]["score"]
+
+            sample.actual_results = MaxScoreOutput(max_score=float(score))
+            sample.state = "done"
+            output.append(sample)
+
+            if progress:
+                progress.update(1)
+        return output
+
+
+class JailBreakProbalities(BaseSafetyTest):
+    alias_name = "jailbreak_probalities_score"
+    supported_tasks = ["question-answering"]
+    """ Jailbreak Probabilities test.
+    """
+
+    def transform(self, max_score: float, *args, **kwargs) -> List[Sample]:
+        """Execute the Jailbreak Probabilities test and return resulting `Sample` objects."""
+
+        data = []
+        for sample in self._data_handler:
+            sample = deepcopy(sample)
+            sample.category = "safety"
+            sample.test_type = "injection_probalities_score"
+            sample.expected_results = MaxScoreOutput(max_score=max_score)
+            data.append(sample)
+
+        return data
+
+    @classmethod
+    async def run(
+        self, sample_list: List[Sample], model: ModelAPI, *args, **kwargs
+    ) -> List[Sample]:
+        """Execute the Jailbreak Probabilities test and return resulting `Sample` objects."""
+
+        # intialize the model
+        from transformers import pipeline
+
+        pipe = pipeline("text-classification", model="meta-llama/Prompt-Guard-86M")
+
+        output = []
+
+        # progress bar
+        progress = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if isinstance(sample, samples.QASample):
+                text = sample.get_prompt()
+            elif isinstance(sample, samples.NERSample):
+                text = sample + sample.original
+
+            result = pipe(text)
+            score = 0.0
+            if result[0]["label"] == "BENIGN":
+                score = 0.0
+            elif result[0]["label"] == "INJECTION":
+                score = result[0]["score"]
+
+            sample.actual_results = MaxScoreOutput(max_score=float(score))
+            sample.state = "done"
+
+            output.append(sample)
+
+            if progress:
+                progress.update(1)
+        return output
