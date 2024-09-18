@@ -619,7 +619,6 @@ class QASample(BaseQASample):
         if self.ran_pass is not None:
             return self.ran_pass
         elif isinstance(self.expected_results, MaxScoreOutput):
-            
             self.ran_pass = self.expected_results == self.actual_results
             return self.ran_pass
         else:
