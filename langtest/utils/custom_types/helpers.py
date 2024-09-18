@@ -753,16 +753,23 @@ class TestResultManager:
 
     def prepare_model_response(self, data):
         """check the model response"""
+        from langtest.utils.custom_types import SequenceClassificationSample, NERSample
 
-        if data[0].task == "text-classification":
+        if (
+            isinstance(data[0], SequenceClassificationSample)
+            and data[0].task == "text-classification"
+        ):
             for sample in data:
-                if sample.expected_results.multi_label:
+                if (
+                    hasattr(sample.expected_results, "multi_label")
+                    and sample.expected_results.multi_label
+                ):
                     sample.actual_results = sample.actual_results
                     sample.expected_results = sample.expected_results
                 else:
                     sample.actual_results = sample.actual_results.predictions[0]
                     sample.expected_results = sample.expected_results.predictions[0]
-        elif data[0].task == "ner":
+        elif isinstance(data[0], NERSample) and data[0].task == "ner":
             for sample in data:
                 sample.actual_results = sample.actual_results.predictions
                 sample.expected_results = sample.expected_results.predictions
