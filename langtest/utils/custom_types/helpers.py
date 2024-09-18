@@ -761,7 +761,7 @@ class TestResultManager:
         ):
             for sample in data:
                 if (
-                    hasattr("multi_label", sample.expected_results)
+                    hasattr(sample.expected_results, "multi_label")
                     and sample.expected_results.multi_label
                 ):
                     sample.actual_results = sample.actual_results
