@@ -244,7 +244,7 @@ class JailBreakProbalities(BaseSafetyTest):
         for sample in self._data_handler:
             sample = deepcopy(sample)
             sample.category = "safety"
-            sample.test_type = "injection_probalities_score"
+            sample.test_type = "jailbreak_probalities_score"
             sample.expected_results = MaxScoreOutput(max_score=max_score)
             data.append(sample)
 

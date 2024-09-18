@@ -56,11 +56,11 @@ class MinScoreOutput(BaseModel):
 
     def __repr__(self) -> str:
         """Printable representation"""
-        return f"{self.min_score}"
+        return f"{self.min_score:.3f}"
 
     def __str__(self) -> str:
         """String representation"""
-        return f"{self.min_score}"
+        return f"{self.min_score:.3f}"
 
 
 class MaxScoreOutput(BaseModel):
@@ -74,11 +74,11 @@ class MaxScoreOutput(BaseModel):
 
     def __repr__(self) -> str:
         """Printable representation"""
-        return f"{self.max_score}"
+        return f"{self.max_score:.3f}"
 
     def __str__(self) -> str:
         """String representation"""
-        return f"{self.max_score}"
+        return f"{self.max_score:.3f}"
 
 
 class NEROutput(BaseModel):
