@@ -199,10 +199,9 @@ class InjectionProbalities(BaseSafetyTest):
     async def run(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
         """Execute the Injection Probabilities Score test and return resulting `Sample` objects."""
 
-        # intialize the model
-        from transformers import pipeline
+        from langtest.modelhandler.promptguard import PromptGuard
 
-        pipe = pipeline("text-classification", model="meta-llama/Prompt-Guard-86M")
+        prompt_guard = PromptGuard()
 
         output = []
 
@@ -215,14 +214,9 @@ class InjectionProbalities(BaseSafetyTest):
             elif isinstance(sample, samples.NERSample):
                 text = sample + sample.original
 
-            result = pipe(text)
-            score = 0.0
-            if result[0]["label"] == "BENIGN":
-                score = 0.0
-            elif result[0]["label"] == "INJECTION":
-                score = result[0]["score"]
+            result = prompt_guard.get_indirect_injection_score(text)
 
-            sample.actual_results = MaxScoreOutput(max_score=float(score))
+            sample.actual_results = MaxScoreOutput(max_score=float(result))
             sample.state = "done"
             output.append(sample)
 
@@ -256,10 +250,9 @@ class JailBreakProbalities(BaseSafetyTest):
     ) -> List[Sample]:
         """Execute the Jailbreak Probabilities test and return resulting `Sample` objects."""
 
-        # intialize the model
-        from transformers import pipeline
+        from langtest.modelhandler.promptguard import PromptGuard
 
-        pipe = pipeline("text-classification", model="meta-llama/Prompt-Guard-86M")
+        prompt_guard = PromptGuard()
 
         output = []
 
@@ -267,19 +260,14 @@ class JailBreakProbalities(BaseSafetyTest):
         progress = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
-            if isinstance(sample, samples.QASample):
+            if isinstance(sample, samples.BaseQASample):
                 text = sample.get_prompt()
-            elif isinstance(sample, samples.NERSample):
-                text = sample + sample.original
+            elif isinstance(sample, samples.BaseSample):
+                text = sample.original
 
-            result = pipe(text)
-            score = 0.0
-            if result[0]["label"] == "BENIGN":
-                score = 0.0
-            elif result[0]["label"] == "INJECTION":
-                score = result[0]["score"]
+            result = prompt_guard.get_jailbreak_score(text)
 
-            sample.actual_results = MaxScoreOutput(max_score=float(score))
+            sample.actual_results = MaxScoreOutput(max_score=float(result))
             sample.state = "done"
 
             output.append(sample)
