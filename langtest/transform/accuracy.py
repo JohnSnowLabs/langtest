@@ -2,7 +2,7 @@ import asyncio
 from collections import defaultdict
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List
+from typing import Any, DefaultDict, Dict, List, Type
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -103,7 +103,7 @@ class AccuracyTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> dict:
+    def available_tests() -> DefaultDict[str, Type["BaseAccuracy"]]:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -265,7 +265,7 @@ class BaseAccuracy(ABC):
         transform(data: List[Sample]) -> Any: Transforms the input data into an output based on the implemented accuracy measure.
     """
 
-    test_types = defaultdict(lambda: BaseAccuracy)
+    test_types: DefaultDict[str, Type["BaseAccuracy"]] = defaultdict(lambda: BaseAccuracy)
 
     alias_name = None
     supported_tasks = ["ner", "text-classification"]

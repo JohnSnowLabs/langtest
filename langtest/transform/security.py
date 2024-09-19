@@ -120,3 +120,43 @@ class PromptInjection(BaseSecurity):
             sample.category = "security"
 
         return sample_list
+
+
+class CheckPromptInjection(BaseSecurity):
+    """
+    CheckPromptInjection is a class that implements the model security for checking prompt injection.
+    """
+
+    alias_name = ["check_prompt_injection_attack"]
+    supported_tasks = [
+        "security",
+        "text-generation",
+    ]
+
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """"""
+        for sample in sample_list:
+            sample.test_type = "check_prompt_injection"
+            sample.category = "security"
+
+        return sample_list
+
+
+class CheckJailBreaks(BaseSecurity):
+    """
+    CheckJailBreaks is a class that implements the model security for checking jailbreaks.
+    """
+
+    alias_name = ["check_jailbreaks"]
+    supported_tasks = [
+        "security",
+        "text-generation",
+    ]
+
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """"""
+        for sample in sample_list:
+            sample.test_type = "check_jailbreaks"
+            sample.category = "security"
+
+        return sample_list
