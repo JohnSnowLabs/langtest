@@ -415,17 +415,22 @@ class MinGenderF1Score(BaseFairness):
 
         is_multi_label = kwargs.get("is_multi_label", False)
 
-
         for sample in sample_list:
             data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
                 if is_multi_label:
                     macro_f1_score = calculate_f1_score_multi_label(
-                        data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
                     )
                 else:
                     macro_f1_score = calculate_f1_score(
-                        data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
                     )
             else:
                 macro_f1_score = 1
@@ -515,11 +520,17 @@ class MaxGenderF1Score(BaseFairness):
             if len(data[0]) > 0:
                 if is_multi_label:
                     macro_f1_score = calculate_f1_score_multi_label(
-                        data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
                     )
                 else:
                     macro_f1_score = calculate_f1_score(
-                        data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
                     )
             else:
                 macro_f1_score = 1
