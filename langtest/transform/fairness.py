@@ -15,7 +15,7 @@ from langtest.utils.custom_types import (
     SequenceClassificationSample,
     Sample,
 )
-from langtest.utils.util_metrics import calculate_f1_score
+from langtest.utils.util_metrics import calculate_f1_score, calculate_f1_score_multi_label
 from langtest.utils.custom_types.helpers import default_user_prompt
 from langtest.errors import Errors
 from langtest.transform.base import ITests
@@ -138,6 +138,7 @@ class FairnessTestFactory(ITests):
                     )
 
                 elif isinstance(data[0], SequenceClassificationSample):
+                    is_mutli_label = raw_data_copy[0].expected_results.multi_label
 
                     def predict_text_classification(sample: Sample):
                         prediction = model.predict(sample.original)
@@ -154,11 +155,16 @@ class FairnessTestFactory(ITests):
                     y_pred = pd.Series(data).apply(
                         lambda x: [y.label for y in x.actual_results.predictions]
                     )
-                    y_true = y_true.apply(lambda x: x[0])
-                    y_pred = y_pred.apply(lambda x: x[0])
 
-                    y_true = y_true.explode()
-                    y_pred = y_pred.explode()
+                    if is_mutli_label:
+                        kwargs["is_multi_label"] = is_mutli_label
+
+                    else:
+                        y_true = y_true.apply(lambda x: x[0])
+                        y_pred = y_pred.apply(lambda x: x[0])
+
+                        y_true = y_true.explode()
+                        y_pred = y_pred.explode()
 
                 elif data[0].task == "question-answering":
                     from ..utils.custom_types.helpers import (
@@ -406,12 +412,26 @@ class MinGenderF1Score(BaseFairness):
             List[MinScoreSample]: The evaluated data samples.
         """
         progress = kwargs.get("progress_bar", False)
+
+        is_multi_label = kwargs.get("is_multi_label", False)
+
         for sample in sample_list:
             data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
-                macro_f1_score = calculate_f1_score(
-                    data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
-                )
+                if is_multi_label:
+                    macro_f1_score = calculate_f1_score_multi_label(
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
+                    )
+                else:
+                    macro_f1_score = calculate_f1_score(
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
+                    )
             else:
                 macro_f1_score = 1
 
@@ -493,13 +513,25 @@ class MaxGenderF1Score(BaseFairness):
             List[MaxScoreSample]: The evaluated data samples.
         """
         progress = kwargs.get("progress_bar", False)
+        is_multi_label = kwargs.get("is_multi_label", False)
 
         for sample in sample_list:
             data = grouped_label[sample.test_case]
             if len(data[0]) > 0:
-                macro_f1_score = calculate_f1_score(
-                    data[0].to_list(), data[1].to_list(), average="macro", zero_division=0
-                )
+                if is_multi_label:
+                    macro_f1_score = calculate_f1_score_multi_label(
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
+                    )
+                else:
+                    macro_f1_score = calculate_f1_score(
+                        data[0].to_list(),
+                        data[1].to_list(),
+                        average="macro",
+                        zero_division=0,
+                    )
             else:
                 macro_f1_score = 1
 
