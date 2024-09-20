@@ -80,6 +80,10 @@ class MaxScoreOutput(BaseModel):
         """String representation"""
         return f"{self.max_score:.3f}"
 
+    def __eq__(self, other: "MaxScoreOutput") -> bool:
+        """Greater than comparison method."""
+        return self.max_score >= other.max_score
+
     def __ge__(self, other: "MaxScoreOutput") -> bool:
         """Greater than comparison method."""
         return self.max_score >= other.max_score

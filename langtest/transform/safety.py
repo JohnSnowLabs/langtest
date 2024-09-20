@@ -178,7 +178,7 @@ class Misuse(BaseSafetyTest):
 
 class InjectionProbalities(BaseSafetyTest):
     alias_name = "injection_probalities_score"
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["text-classification", "question-answering"]
     """ Injection Probabilities Score test.
     """
 
@@ -209,10 +209,10 @@ class InjectionProbalities(BaseSafetyTest):
         progress = kwargs.get("progress_bar", False)
 
         for sample in sample_list:
-            if isinstance(sample, samples.QASample):
+            if isinstance(sample, samples.BaseQASample):
                 text = sample.get_prompt()
-            elif isinstance(sample, samples.NERSample):
-                text = sample + sample.original
+            elif isinstance(sample, samples.BaseSample):
+                text = sample.original
 
             result = prompt_guard.get_indirect_injection_score(text)
 
@@ -227,7 +227,7 @@ class InjectionProbalities(BaseSafetyTest):
 
 class JailBreakProbalities(BaseSafetyTest):
     alias_name = "jailbreak_probalities_score"
-    supported_tasks = ["question-answering"]
+    supported_tasks = ["text-classification", "question-answering"]
     """ Jailbreak Probabilities test.
     """
 
