@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "langtest"
-version = "2.3.1"
+version = "2.4.0"
 description = "John Snow Labs provides a library for delivering safe & effective NLP models."
 authors = ["John Snow Labs <support@johnsnowlabs.com>"]
 readme = "README.md"
