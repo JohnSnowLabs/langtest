@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 import pandas as pd
 import yaml
 
+from langtest.augmentation.utils import AzureOpenAIConfig, OpenAIConfig
 from langtest.datahandler.datasource import DataFactory
 from langtest.transform import TestFactory
 from langtest.transform.utils import create_terminology
@@ -18,7 +19,6 @@ from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction, SequenceLabel
 from langtest.utils.custom_types.sample import NERSample
 from langtest.tasks import TaskManager
-from ..utils.lib_manager import try_import_lib
 from ..errors import Errors
 
 
@@ -323,6 +323,8 @@ class TemplaticAugment(BaseAugmentaion):
         task: TaskManager,
         generate_templates=False,
         show_templates=False,
+        num_extra_templates=10,
+        model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
     ) -> None:
         """This constructor for the TemplaticAugment class.
 
@@ -336,45 +338,30 @@ class TemplaticAugment(BaseAugmentaion):
         self.__task = task
 
         if generate_templates:
-            if try_import_lib("openai"):
-                import openai
-
+            try:
                 given_template = self.__templates[:]
                 for template in given_template:
-                    prompt = f"""Based on the template provided, create 10 new and unique templates that are variations on this theme. Present these as a Python list, with each template as a quoted string. The list should contain only the templates without any additional text or explanation.
-
-                        Template:
-                        "{template}"
-
-                        Expected Python List Output:
-                        ['Template 1', 'Template 2', 'Template 3', ...]  # Replace with actual generated templates
-                        """
-
-                    response = openai.Completion.create(
-                        engine="gpt-3.5-turbo-instruct",
-                        prompt=prompt,
-                        max_tokens=500,
-                        temperature=0,
+                    generated_templates: List[str] = self.__generate_templates(
+                        template, num_extra_templates, model_config
                     )
 
-                    generated_response = response.choices[0].text.strip()
-                    # Process the generated response
-                    if generated_response:
-                        # Assuming the response format is a Python-like list in a string
-                        templates_list = generated_response.strip("[]").split('",')
-                        templates_list = [
-                            template.strip().strip('"')
-                            for template in templates_list
-                            if template.strip()
-                        ]
+                    while len(generated_templates) < num_extra_templates:
+                        temp_templates = self.__generate_templates(
+                            template,
+                            num_extra_templates,
+                            model_config,
+                        )
+                        generated_templates.extend(temp_templates)
 
+                    if generated_templates:
                         # Extend the existing templates list
-                        self.__templates.extend(templates_list)
-                    else:
-                        print("No response or unexpected format.")
 
-            else:
-                raise RuntimeError(Errors.E084)
+                        self.__templates.extend(generated_templates[:num_extra_templates])
+            except ModuleNotFoundError:
+                raise ImportError(Errors.E097())
+
+            except Exception as e_msg:
+                raise Errors.E095(e=e_msg)
 
         if show_templates:
             [print(template) for template in self.__templates]
@@ -614,3 +601,26 @@ class TemplaticAugment(BaseAugmentaion):
         text = re.sub(r"\s+", " ", text).strip()
 
         return text
+
+    def __generate_templates(
+        self,
+        template: str,
+        num_extra_templates: int,
+        model_config: Union[OpenAIConfig, AzureOpenAIConfig] = None,
+    ) -> List[str]:
+        """This method is used to generate extra templates from a given template."""
+        from langtest.augmentation.utils import (
+            generate_templates_azoi,  # azoi means Azure OpenAI
+            generate_templates_openai,
+        )
+
+        params = model_config.copy() if model_config else {}
+
+        if model_config and model_config.get("provider") == "openai":
+            return generate_templates_openai(template, num_extra_templates, params)
+
+        elif model_config and model_config.get("provider") == "azure":
+            return generate_templates_azoi(template, num_extra_templates, params)
+
+        else:
+            return generate_templates_openai(template, num_extra_templates)

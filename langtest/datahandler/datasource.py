@@ -1,6 +1,5 @@
 import csv
 import importlib
-import logging
 import os
 import random
 import re
@@ -11,6 +10,7 @@ from .dataset_info import datasets_info
 import jsonlines
 import pandas as pd
 from langtest.tasks.task import TaskManager
+from langtest.logger import logger as logging
 
 from .format import Formatter
 from langtest.utils.custom_types import (
@@ -26,6 +26,7 @@ from ..utils.lib_manager import try_import_lib
 from ..errors import Warnings, Errors
 import glob
 from pkg_resources import resource_filename
+from langtest.logger import logger
 
 COLUMN_MAPPER = {
     "text-classification": {
@@ -94,6 +95,12 @@ COLUMN_MAPPER = {
         "anti-stereotype": ["anti-stereotype"],
         "unrelated": ["unrelated"],
     },
+    "visualqa": {
+        "image": ["image", "image_1"],
+        "question": ["question"],
+        "options": ["options"],
+        "answer": ["answer"],
+    },
 }
 
 
@@ -104,6 +111,7 @@ class BaseDataset(ABC):
     """
 
     data_sources = defaultdict()
+    dataset_size = None
 
     @abstractmethod
     def load_raw_data(self):
@@ -153,6 +161,12 @@ class BaseDataset(ABC):
         else:
             cls.data_sources[dataset_cls] = cls
 
+    def __len__(self):
+        """Returns the size of the dataset"""
+        if self.dataset_size is None:
+            self.dataset_size = len(self.load_data())
+        return self.dataset_size
+
 
 class DataFactory:
     """Data factory for creating Dataset objects.
@@ -164,7 +178,7 @@ class DataFactory:
     data_sources: Dict[str, BaseDataset] = BaseDataset.data_sources
     CURATED_BIAS_DATASETS = ["BoolQ", "XSum"]
 
-    def __init__(self, file_path: dict, task: TaskManager, **kwargs) -> None:
+    def __init__(self, file_path: Union[str, dict], task: TaskManager, **kwargs) -> None:
         """Initializes DataFactory object.
 
         Args:
@@ -175,9 +189,10 @@ class DataFactory:
             raise ValueError(Errors.E024)
 
         if "data_source" not in file_path:
-            raise ValueError(Errors.E025)
+            raise ValueError(Errors.E025())
         self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
+        self._size = None
 
         self.datasets_with_jsonl_extension = []
         for dataset_name, dataset_info in datasets_info.items():
@@ -223,6 +238,9 @@ class DataFactory:
         self.init_cls: BaseDataset = None
         self.kwargs = kwargs
 
+        if self.task == "ner" and "doc_wise" in self._custom_label:
+            self.kwargs.update({"doc_wise": self._custom_label.get("doc_wise", False)})
+
     def load_raw(self):
         """Loads the data into a raw format"""
         self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
@@ -248,9 +266,14 @@ class DataFactory:
             return DataFactory.load_curated_bias(self._file_path)
         else:
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
-                self._file_path, task=self.task, **self.kwargs
+                self._file_path,
+                task=self.task,
+                **self.kwargs,
             )
-        return self.init_cls.load_data()
+
+        loaded_data = self.init_cls.load_data()
+        self._size = len(loaded_data)
+        return loaded_data
 
     def export(self, data: List[Sample], output_path: str) -> None:
         """Exports the data to the corresponding format and saves it to 'output_path'.
@@ -399,6 +422,12 @@ class DataFactory:
             extension = dataset_info.get("extension", "jsonl")
             return script_dir[:-7] + "/" + dataset_name + "/" + split + extension
 
+    def __len__(self):
+        """dataset size"""
+        if self._size is None:
+            self._size = len(self.load())
+        return self._size
+
 
 class ConllDataset(BaseDataset):
     """Class to handle Conll files. Subclass of BaseDataset."""
@@ -407,7 +436,9 @@ class ConllDataset(BaseDataset):
 
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 
-    def __init__(self, file_path: str, task: TaskManager) -> None:
+    def __init__(
+        self, file_path: Union[str, Dict[str, str]], task: TaskManager, **kwargs
+    ) -> None:
         """Initializes ConllDataset object.
 
         Args:
@@ -416,7 +447,7 @@ class ConllDataset(BaseDataset):
         """
         super().__init__()
         self._file_path = file_path
-
+        self.doc_wise = kwargs.get("doc_wise") if "doc_wise" in kwargs else False
         self.task = task
 
     def load_raw_data(self) -> List[Dict]:
@@ -467,7 +498,7 @@ class ConllDataset(BaseDataset):
             List[NERSample]: List of formatted sentences from the dataset.
         """
         data = []
-        with open(self._file_path) as f:
+        with open(self._file_path, encoding="utf-8") as f:
             content = f.read()
             docs_strings = re.findall(r"-DOCSTART- \S+ \S+ O", content.strip())
             docs = [
@@ -477,42 +508,42 @@ class ConllDataset(BaseDataset):
             ]
             for d_id, doc in enumerate(docs):
                 #  file content to sentence split
-                sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
-
-                if sentences == [""]:
-                    continue
-
-                for sent in sentences:
-                    # sentence string to token level split
-                    tokens = sent.strip().split("\n")
-
-                    # get annotations from token level split
-                    valid_tokens, token_list = self.__token_validation(tokens)
-
-                    if not valid_tokens:
-                        logging.warning(Warnings.W004(sent=sent))
-                        continue
-
-                    #  get token and labels from the split
+                if self.doc_wise:
+                    tokens = doc.strip().split("\n")
                     ner_labels = []
                     cursor = 0
-                    for split in token_list:
-                        ner_labels.append(
-                            NERPrediction.from_span(
-                                entity=split[-1],
-                                word=split[0],
+
+                    for token in tokens:
+                        token_list = token.split()
+
+                        if len(token_list) == 0:
+                            pred = NERPrediction.from_span(
+                                entity="",
+                                word="\n",
                                 start=cursor,
-                                end=cursor + len(split[0]),
-                                doc_id=d_id,
-                                doc_name=(
-                                    docs_strings[d_id] if len(docs_strings) > 0 else ""
-                                ),
-                                pos_tag=split[1],
-                                chunk_tag=split[2],
+                                end=cursor,
+                                pos_tag="",
+                                chunk_tag="",
                             )
-                        )
-                        # +1 to account for the white space
-                        cursor += len(split[0]) + 1
+                            ner_labels.append(pred)
+                        else:
+                            ner_labels.append(
+                                NERPrediction.from_span(
+                                    entity=token_list[-1],
+                                    word=token_list[0],
+                                    start=cursor,
+                                    end=cursor + len(token_list[0]),
+                                    doc_id=d_id,
+                                    doc_name=(
+                                        docs_strings[d_id]
+                                        if len(docs_strings) > 0
+                                        else ""
+                                    ),
+                                    pos_tag=token_list[1],
+                                    chunk_tag=token_list[2],
+                                )
+                            )
+                            cursor += len(token_list[0]) + 1
 
                     original = " ".join([label.span.word for label in ner_labels])
 
@@ -523,6 +554,55 @@ class ConllDataset(BaseDataset):
                         )
                     )
 
+                else:
+                    sentences = re.split(r"\n\n|\n\s+\n", doc.strip())
+
+                    if sentences == [""]:
+                        continue
+
+                    for sent in sentences:
+                        # sentence string to token level split
+                        tokens = sent.strip().split("\n")
+
+                        # get annotations from token level split
+                        valid_tokens, token_list = self.__token_validation(tokens)
+
+                        if not valid_tokens:
+                            logging.warning(Warnings.W004(sent=sent))
+                            continue
+
+                        #  get token and labels from the split
+                        ner_labels = []
+                        cursor = 0
+                        for split in token_list:
+                            ner_labels.append(
+                                NERPrediction.from_span(
+                                    entity=split[-1],
+                                    word=split[0],
+                                    start=cursor,
+                                    end=cursor + len(split[0]),
+                                    doc_id=d_id,
+                                    doc_name=(
+                                        docs_strings[d_id]
+                                        if len(docs_strings) > 0
+                                        else ""
+                                    ),
+                                    pos_tag=split[1],
+                                    chunk_tag=split[2],
+                                )
+                            )
+                            # +1 to account for the white space
+                            cursor += len(split[0]) + 1
+
+                        original = " ".join([label.span.word for label in ner_labels])
+
+                        data.append(
+                            self.task.get_sample_class(
+                                original=original,
+                                expected_results=NEROutput(predictions=ner_labels),
+                            )
+                        )
+        self.dataset_size = len(data)
         return data
 
     def export_data(self, data: List[NERSample], output_path: str):
@@ -534,14 +614,49 @@ class ConllDataset(BaseDataset):
             output_path (str):
                 path to save the data to
         """
-        otext = ""
-        temp_id = None
-        for i in data:
-            text, temp_id = Formatter.process(i, output_format="conll", temp_id=temp_id)
-            otext += text + "\n"
+        if output_path.endswith(".conll"):
+            otext = ""
+            temp_id = None
+            for i in data:
+                text, temp_id = Formatter.process(
+                    i, output_format="conll", temp_id=temp_id
+                )
+                otext += text + "\n"
 
-        with open(output_path, "wb") as fwriter:
-            fwriter.write(bytes(otext, encoding="utf-8"))
+            with open(output_path, "wb") as fwriter:
+                fwriter.write(bytes(otext, encoding="utf-8"))
+
+        elif output_path.endswith(".json"):
+            import json
+            from .utils import process_document
+
+            logger.warn("Only for Gen AI Lab use")
+            logger.info("Converting NER sample to JSON format")
+
+            otext_list = []
+            temp_id = None
+            for i in data:
+                otext, temp_id = Formatter.process(
+                    i, output_format="json", temp_id=temp_id
+                )
+                processed_text = process_document(otext)
+                # add test info
+                tem_dict = processed_text["data"]
+                tem_dict["test_type"] = i.test_type or "null"
+                tem_dict["category"] = i.category or "null"
+
+                processed_text["data"] = tem_dict
+                otext_list.append(processed_text)
+
+                # otext += text + "\n"
+                # if temp_id2 != temp_id:
+                #     processed_text = process_document(otext)
+                #     otext_list.append(processed_text)
+                #     otext = ""
+                #     temp_id = temp_id2
+
+            with open(output_path, "w") as fwriter:
+                json.dump(otext_list, fwriter)
 
     def __token_validation(self, tokens: str) -> (bool, List[List[str]]):  # type: ignore
         """Validates the tokens in a sentence.
@@ -812,6 +927,7 @@ class CSVDataset(BaseDataset):
                 logging.warning(Warnings.W005(idx=idx, row_data=row_data, e=e))
                 continue
 
+        self.dataset_size = len(data)
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -930,6 +1046,17 @@ class CSVDataset(BaseDataset):
             return samples
 
         for i in data.to_dict(orient="records"):
+            temp = i["transformations"]
+            if temp == "-" or len(temp) < 3:
+                temp = None
+                i.pop("transformations")
+
+            if self.task == "ner" and isinstance(temp, str):
+                import ast
+
+                i["transformations"] = ast.literal_eval(temp)
+            elif "transformations" in i:
+                i.pop("transformations")
             sample = self.task.get_sample_class(**i)
             samples.append(sample)
 
@@ -1025,7 +1152,7 @@ class JSONLDataset(BaseDataset):
                     item, dataset_name=dataset_name, *args, **kwargs
                 )
                 data.append(sample)
-
+        self.dataset_size = len(data)
         return data
 
     def __load_jsonl(self, file: str, dataset_name: str, data, *args, **kwargs):
@@ -1125,6 +1252,7 @@ class HuggingFaceDataset(BaseDataset):
         "summarization",
         "ner",
         "question-answering",
+        "visualqa",
     ]
 
     LIB_NAME = "datasets"
@@ -1215,7 +1343,7 @@ class HuggingFaceDataset(BaseDataset):
                 **column_names,
             )
             data.append(sample)
-
+        self.dataset_size = len(data)
         return data
 
     def export_data(self, data: List[Sample], output_path: str):
@@ -1296,6 +1424,7 @@ class SynteticDataset(BaseDataset):
         method_name = f"load_{self.dataset_name.replace('-', '_')}"
         if hasattr(self, method_name):
             samples = getattr(self, method_name)()
+            self.dataset_size = len(samples)
             return samples
         else:
             raise ValueError(Errors.E030(dataset_name=self.dataset_name))
@@ -1587,6 +1716,7 @@ class PandasDataset(BaseDataset):
         "legal",
         "factuality",
         "stereoset",
+        "visualqa",
     ]
     COLUMN_NAMES = {task: COLUMN_MAPPER[task] for task in supported_tasks}
 

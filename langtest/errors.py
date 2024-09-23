@@ -274,6 +274,8 @@ class Errors(metaclass=ErrorsWithCodes):
     E093 = ("Category cannot be None. Please provide a valid category.")
     E094 = ("Unsupported category: '{category}'. Supported categories: {supported_category}")
     E095 = ("Failed to make API request: {e}")
+    E096 = ("Failed to generate the templates in Augmentation: {msg}")
+    E097 = ("Failed to load openai. Please install it using `pip install openai`")
 
 
 class ColumnNameError(Exception):

@@ -22,6 +22,7 @@ from .sample import (
     CrowsPairsSample,
     StereoSetSample,
     TextGenerationSample,
+    VisualQASample,
 )
 from .helpers import Span, Transformation
 from .output import (
