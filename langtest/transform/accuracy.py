@@ -1128,3 +1128,31 @@ class LLMEval(BaseAccuracy):
             if progress:
                 progress.update(1)
         return sample_list
+
+
+class DegradationAnalysis(BaseAccuracy):
+    """
+    Evaluation class for model performance degradation analysis.
+
+    Attributes:
+        alias_name (List[str]): Alias names for the evaluation class, should
+            include "degradation_analysis".
+        supported_tasks (List[str]): Supported tasks for evaluation, includes
+            "question-answering".
+
+    Methods:
+    """
+
+    alias_name = ["degradation_analysis"]
+
+    supported_tasks = ["ner", "text-classification"]
+
+    @classmethod
+    def transform(cls, test: str, y_true: List[Any], params: Dict):
+        pass
+
+    @staticmethod
+    async def run(
+        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+    ):
+        pass
