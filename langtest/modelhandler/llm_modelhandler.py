@@ -95,7 +95,6 @@ class PretrainedModelForQA(ModelAPI):
                 "gpt-4o",
             ):
                 if hub == "openai":
-
                     from langchain_openai.chat_models import ChatOpenAI
 
                     model = ChatOpenAI(model=path, *args, **filtered_kwargs)
