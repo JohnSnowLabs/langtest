@@ -240,8 +240,9 @@ class PromptManager:
             return None
         if name is None:
             name = self.default_state
-        prompt_template = self.prompt_configs[name].get_prompt(hub)
-        return prompt_template
+        if name in self.prompt_configs:
+            prompt_template = self.prompt_configs[name].get_prompt(hub)
+            return prompt_template
 
     @property
     def default_state(self):

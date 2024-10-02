@@ -94,9 +94,16 @@ class PretrainedModelForQA(ModelAPI):
                 "gpt-4o-2024-05-13",
                 "gpt-4o",
             ):
-                from langchain_openai.chat_models import ChatOpenAI
+                if hub == "openai":
 
-                model = ChatOpenAI(model=path, *args, **filtered_kwargs)
+                    from langchain_openai.chat_models import ChatOpenAI
+
+                    model = ChatOpenAI(model=path, *args, **filtered_kwargs)
+                elif hub == "azure-openai":
+                    from langchain.chat_models.azure_openai import AzureChatOpenAI
+
+                    model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
+
                 return cls(hub, model, *args, **filtered_kwargs)
             elif hub == "ollama":
                 from langchain.chat_models.ollama import ChatOllama
