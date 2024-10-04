@@ -1149,10 +1149,40 @@ class DegradationAnalysis(BaseAccuracy):
 
     @classmethod
     def transform(cls, test: str, y_true: List[Any], params: Dict):
-        pass
+        sample = MinScoreSample(
+            category="accuracy",
+            test_type="degradation_analysis",
+        )
+
+        return [sample]
 
     @staticmethod
     async def run(
         sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
     ):
-        pass
+        test_cases = kwargs.get("test_cases", [])
+        ground_truth = [i.expected_results for i in kwargs.get("X_test", [])]
+
+        # if ground_truth is having None values, raise an error
+        if None in ground_truth:
+            raise ValueError("Ground truth values cannot be None.")
+
+        progress = kwargs.get("progress_bar", False)
+
+        output = defaultdict(dict)
+
+        for category, data in test_cases.items():
+            for test_type, samples in data.items():
+                expected_results = [x.expected_results for x in samples]
+                actual_results = [x.actual_results for x in samples]
+
+                accuracy_score1 = calculate_f1_score(ground_truth, expected_results)
+                accuracy_score2 = calculate_f1_score(ground_truth, actual_results)
+
+                degradation = accuracy_score2 - accuracy_score1
+
+                output[category][test_type] = degradation
+            if progress:
+                progress.update(1)
+
+        return []

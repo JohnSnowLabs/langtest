@@ -185,6 +185,9 @@ class TestFactory:
             else:
                 hash_samples[sample.category][sample.test_type].append(sample)
 
+        # Add hash_samples in kwargs
+        kwargs["test_cases"] = hash_samples
+
         all_categories = TestFactory.test_categories()
         tests = tqdm(
             total=len(samples_list),
