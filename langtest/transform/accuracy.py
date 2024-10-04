@@ -1137,9 +1137,7 @@ class DegradationAnalysis(BaseAccuracy):
     Attributes:
         alias_name (List[str]): Alias names for the evaluation class, should
             include "degradation_analysis".
-        supported_tasks (List[str]): Supported tasks for evaluation, includes
-            "question-answering".
-
+        supported_tasks (List[str]): Supported tasks for evaluation,
     Methods:
     """
 

@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Type, Union
 from abc import ABC, abstractmethod
 from tqdm import tqdm
 import asyncio
@@ -110,7 +110,7 @@ class TestFactory:
         return all_results
 
     @classmethod
-    def test_categories(cls) -> Dict:
+    def test_categories(cls) -> Dict[str, Type["ITests"]]:
         """
         Returns a dictionary mapping test category names to the corresponding test classes.
 
@@ -215,7 +215,8 @@ class ITests(ABC):
     An abstract base class for defining different types of tests.
     """
 
-    alias_name = None
+    alias_name: Union[None, List[str], str] = None
+    supported_tasks: List[str] = []
 
     @abstractmethod
     def transform(self):
@@ -230,7 +231,7 @@ class ITests(ABC):
 
     @staticmethod
     @abstractmethod
-    def available_tests():
+    def available_tests() -> Dict[str, Type["ITests"]]:
         """
         Returns a list of available test scenarios for the test class.
 
