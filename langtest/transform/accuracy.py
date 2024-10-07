@@ -134,7 +134,7 @@ class AccuracyTestFactory(ITests):
 
         if isinstance(raw_data_copy[0], NERSample):
 
-            def predict_ner(sample):
+            def predict_ner(sample: NERSample):
                 prediction = model.predict(sample.original)
                 sample.actual_results = prediction
                 return prediction
@@ -1170,12 +1170,18 @@ class DegradationAnalysis(BaseAccuracy):
         output = defaultdict(dict)
 
         for category, data in test_cases.items():
+            if category not in ["robustness", "bias"]:
+                continue
             for test_type, samples in data.items():
                 expected_results = [x.expected_results for x in samples]
                 actual_results = [x.actual_results for x in samples]
 
-                accuracy_score1 = calculate_f1_score(ground_truth, expected_results)
-                accuracy_score2 = calculate_f1_score(ground_truth, actual_results)
+                accuracy_score1 = calculate_f1_score(
+                    *DegradationAnalysis.preprocess(ground_truth, expected_results)
+                )
+                accuracy_score2 = calculate_f1_score(
+                    *DegradationAnalysis.preprocess(ground_truth, actual_results)
+                )
 
                 degradation = accuracy_score2 - accuracy_score1
 
@@ -1184,3 +1190,26 @@ class DegradationAnalysis(BaseAccuracy):
                 progress.update(1)
 
         return []
+
+    @staticmethod
+    def preprocess(y_true, y_pred):
+        """
+        Preprocesses the input data for the degradation analysis.
+        """
+
+        if isinstance(y_true, list):
+            y_true = pd.Series(y_true).apply(lambda x: [y.entity for y in x])
+        else:
+            y_true = pd.Series(y_true).apply(lambda x: [y.entity for y in x.predictions])
+
+        y_pred = pd.Series(y_pred).apply(lambda x: [y.entity for y in x.predictions])
+
+        valid_indices = y_true.apply(len) == y_pred.apply(len)
+        y_true = y_true[valid_indices]
+        y_pred = y_pred[valid_indices]
+        y_true = y_true.explode()
+        y_pred = y_pred.explode()
+        y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+        y_true = y_true.apply(lambda x: x.split("-")[-1])
+
+        return y_true, y_pred
