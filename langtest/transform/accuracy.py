@@ -1159,7 +1159,7 @@ class DegradationAnalysis(BaseAccuracy):
     async def run(
         sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
     ):
-        test_cases = kwargs.get("test_cases", [])
+        test_cases: Dict[str, Dict[str, List[Sample]]] = kwargs.get("test_cases", [])
         X_test = kwargs.get("X_test", [])
 
         if isinstance(X_test, pd.Series) or isinstance(X_test, list):
@@ -1167,7 +1167,6 @@ class DegradationAnalysis(BaseAccuracy):
                 {
                     "index": [x.original for x in X_test],
                     "expected_results": [x.expected_results for x in X_test],
-                    "actual_results": [x.actual_results for x in X_test],
                 }
             )
 
@@ -1179,8 +1178,8 @@ class DegradationAnalysis(BaseAccuracy):
         # ground_truth = X_test["expected_results"].to_list()
 
         # # if ground_truth is having None values, raise an error
-        # if None in ground_truth:
-        #     raise ValueError("Ground truth values cannot be None.")
+        if X_test["expected_results"].isnull().any():
+            raise ValueError("Ground truth values cannot be None.")
 
         progress = kwargs.get("progress_bar", False)
 
