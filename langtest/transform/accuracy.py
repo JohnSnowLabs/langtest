@@ -20,6 +20,7 @@ from langtest.utils.util_metrics import (
     calculate_f1_score_multi_label,
     classification_report,
     classification_report_multi_label,
+    combine_labels,
 )
 
 
@@ -1159,11 +1160,27 @@ class DegradationAnalysis(BaseAccuracy):
         sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
     ):
         test_cases = kwargs.get("test_cases", [])
-        ground_truth = [i.expected_results for i in kwargs.get("X_test", [])]
+        X_test = kwargs.get("X_test", [])
 
-        # if ground_truth is having None values, raise an error
-        if None in ground_truth:
-            raise ValueError("Ground truth values cannot be None.")
+        if isinstance(X_test, pd.Series) or isinstance(X_test, list):
+            X_test = pd.DataFrame(
+                {
+                    "index": [x.original for x in X_test],
+                    "expected_results": [x.expected_results for x in X_test],
+                    "actual_results": [x.actual_results for x in X_test],
+                }
+            )
+
+            X_test.set_index("index", inplace=True)
+
+        else:
+            raise ValueError("X_test should be either a pd.Series or a list of samples.")
+
+        # ground_truth = X_test["expected_results"].to_list()
+
+        # # if ground_truth is having None values, raise an error
+        # if None in ground_truth:
+        #     raise ValueError("Ground truth values cannot be None.")
 
         progress = kwargs.get("progress_bar", False)
 
@@ -1173,6 +1190,10 @@ class DegradationAnalysis(BaseAccuracy):
             if category not in ["robustness", "bias"]:
                 continue
             for test_type, samples in data.items():
+                ground_truth = X_test[X_test.index.isin([i.original for i in samples])][
+                    "expected_results"
+                ].to_list()
+
                 expected_results = [x.expected_results for x in samples]
                 actual_results = [x.actual_results for x in samples]
 
@@ -1189,6 +1210,7 @@ class DegradationAnalysis(BaseAccuracy):
             if progress:
                 progress.update(1)
 
+        print(output)
         return []
 
     @staticmethod
@@ -1204,9 +1226,14 @@ class DegradationAnalysis(BaseAccuracy):
 
         y_pred = pd.Series(y_pred).apply(lambda x: [y.entity for y in x.predictions])
 
+        # remove the B- and I- prefixes from the entity tags and merge it
+        y_pred = y_pred.apply(lambda x: combine_labels(x))
+        y_true = y_true.apply(lambda x: combine_labels(x))
+
         valid_indices = y_true.apply(len) == y_pred.apply(len)
         y_true = y_true[valid_indices]
         y_pred = y_pred[valid_indices]
+
         y_true = y_true.explode()
         y_pred = y_pred.explode()
         y_pred = y_pred.apply(lambda x: x.split("-")[-1])
