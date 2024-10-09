@@ -2,7 +2,7 @@ import asyncio
 from collections import defaultdict
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Any, DefaultDict, Dict, List, Type
+from typing import Any, DefaultDict, Dict, List, Type, Union
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -1213,9 +1213,16 @@ class DegradationAnalysis(BaseAccuracy):
         return []
 
     @staticmethod
-    def preprocess(y_true, y_pred):
+    def preprocess(y_true: List, y_pred: List):
         """
         Preprocesses the input data for the degradation analysis.
+
+        Args:
+            y_true (List): The true labels.
+            y_pred (List): The predicted labels.
+
+        Returns:
+            Tuple[pd.Series, pd.Series]: The preprocessed true and predicted labels.
         """
 
         if isinstance(y_true, list):

@@ -407,9 +407,19 @@ def calculate_f1_score_multi_label(
 
 def combine_labels(labels: List[str]) -> List[str]:
     """
-    Combines labels for degradation analysis.
-    input labels: ["B-ORG", "I-ORG", "B-PER", "I-PER"]
-    output labels: ["ORG", "PER"]
+    Combine labels by removing the BIO tags and keeping only the entity type.
+
+    Args:
+        labels (List[str]): List of strings or a string. Labels can be in the format of BIO tags.
+                            Example: ["B-ORG", "I-ORG", "B-PER", "I-PER"]
+
+    Raises:
+        ValueError: If the input is not a list or a string.
+
+
+    Returns:
+        labels (List[str]): List of entity types without the BIO tags.
+
     """
     try:
         output_list = []
