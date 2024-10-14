@@ -1153,7 +1153,12 @@ class DegradationAnalysis(BaseAccuracy):
         # reset the result data
         DegradationAnalysis.result_data.clear()
 
-        return []
+        return [
+            MinScoreSample(
+                category="accuracy",
+                test_type="degradation_analysis",
+            )
+        ]
 
     @staticmethod
     async def run(
@@ -1311,10 +1316,8 @@ class DegradationAnalysis(BaseAccuracy):
             ax.set_xlim(0, 1)
             ax.set_yticks(y_pos)
             ax.set_yticklabels(y_labels)
-            ax.set_xlabel("Accuracy Score Over Robustness and Bias Tests")
-            ax.set_title(
-                "Comparison of Accuracy Before and After Robustness and Bias Tests"
-            )
+            ax.set_xlabel(f"Accuracy Score Over {category} Tests")
+            ax.set_title(f"Comparison of Accuracy Before and After {category} Tests")
             ax.legend()
 
             plt.tight_layout()
