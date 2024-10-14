@@ -52,7 +52,7 @@ class MinScoreOutput(BaseModel):
         Returns:
             List[str]: predictions in form of a list of strings.
         """
-        return self.min_score
+        return round(self.min_score, 2)
 
     def __repr__(self) -> str:
         """Printable representation"""
@@ -70,7 +70,7 @@ class MaxScoreOutput(BaseModel):
 
     def to_str_list(self) -> float:
         """Formatting helper"""
-        return self.max_score
+        return round(self.max_score, 2)
 
     def __repr__(self) -> str:
         """Printable representation"""
