@@ -13,6 +13,8 @@ import random
 
 from pkg_resources import resource_filename
 
+from langtest.types import DatasetConfig, ModelConfig
+
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
@@ -90,8 +92,8 @@ class Harness:
     def __init__(
         self,
         task: Union[str, dict],
-        model: Optional[Union[list, dict]] = None,
-        data: Optional[Union[list, dict]] = None,
+        model: Optional[Union[List[ModelConfig], ModelConfig]] = None,
+        data: Optional[Union[List[DatasetConfig], DatasetConfig]] = None,
         config: Optional[Union[str, dict]] = None,
         benchmarking: dict = None,
     ):
