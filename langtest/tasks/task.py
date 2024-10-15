@@ -23,7 +23,9 @@ class BaseTask(ABC):
         pass
 
     @classmethod
-    def load_model(cls, model_path: str, model_hub: str, *args, **kwargs):
+    def load_model(
+        cls, model_path: str, model_hub: str, model_type: str, *args, **kwargs
+    ):
         """Load the model."""
 
         models = ModelAPI.model_registry
@@ -54,6 +56,10 @@ class BaseTask(ABC):
         if "server_prompt" in kwargs:
             cls.server_prompt = kwargs.get("server_prompt")
             kwargs.pop("server_prompt")
+
+        if model_type:
+            kwargs["model_type"] = model_type
+
         try:
             if model_hub in LANGCHAIN_HUBS:
                 # LLM models
@@ -145,9 +151,9 @@ class TaskManager:
 
         return self.__task.create_sample(*args, **kwargs)
 
-    def model(self, *args, **kwargs) -> "ModelAPI":
+    def model(self, model_name, hub, model_type, **kwargs) -> "ModelAPI":
         """Add a task to the task manager."""
-        return self.__task.load_model(*args, **kwargs)
+        return self.__task.load_model(model_name, hub, model_type, **kwargs)
 
     def __eq__(self, __value: str) -> bool:
         """Check if the task is equal to another task."""

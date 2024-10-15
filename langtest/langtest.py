@@ -158,11 +158,12 @@ class Harness:
             raise ValueError(Errors.E003())
 
         if isinstance(model, dict):
-            hub, model = model["hub"], model["model"]
+            hub, model, model_type = model["hub"], model["model"], model.get("type")
             self.hub = hub
             self._actual_model = model
         else:
             hub = None
+            model_type = None
 
         # loading task
 
@@ -217,14 +218,14 @@ class Harness:
                 hub = i["hub"]
 
                 model_dict[model] = self.task.model(
-                    model, hub, **self._config.get("model_parameters", {})
+                    model, hub, model_type, **self._config.get("model_parameters", {})
                 )
 
                 self.model = model_dict
 
         else:
             self.model = self.task.model(
-                model, hub, **self._config.get("model_parameters", {})
+                model, hub, model_type, **self._config.get("model_parameters", {})
             )
         # end model selection
         formatted_config = json.dumps(self._config, indent=1)
