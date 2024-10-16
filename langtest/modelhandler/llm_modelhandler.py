@@ -97,13 +97,15 @@ class PretrainedModelForQA(ModelAPI):
                 "gpt-3.5-turbo-1106",
                 "gpt-4o-2024-05-13",
                 "gpt-4o",
-            ):
+                "o1-preview",
+                "o1-mini",
+            ) and hub in ["openai", "azure-openai"]:
                 if hub == "openai":
                     from langchain_openai.chat_models import ChatOpenAI
 
                     model = ChatOpenAI(model=path, *args, **filtered_kwargs)
                 elif hub == "azure-openai":
-                    from langchain.chat_models.azure_openai import AzureChatOpenAI
+                    from langchain_openai.chat_models import AzureChatOpenAI
 
                     model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
 
