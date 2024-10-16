@@ -169,7 +169,7 @@ class PromptConfig(BaseModel):
             return final_prompt
 
     def get_prompt(self, hub=None):
-        if hub == "lm-studio":
+        if hub in ("lm-studio", "transformers"):
             return self.lm_studio_prompt()
         return self.prompt_style()
 

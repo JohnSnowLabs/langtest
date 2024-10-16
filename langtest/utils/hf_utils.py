@@ -168,8 +168,12 @@ class HuggingFacePipeline:
         **kwargs: Any,
     ):
         """Construct the pipeline object from model_id and task."""
+        from transformers import Pipeline
+
         login_with_token()
+
         self.model_id = model_id
+        self.pipeline: Pipeline = None
         if pipeline:
             self.pipeline = pipeline
         else:

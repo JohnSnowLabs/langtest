@@ -151,7 +151,7 @@ class TaskManager:
 
         return self.__task.create_sample(*args, **kwargs)
 
-    def model(self, model_name, hub, model_type, **kwargs) -> "ModelAPI":
+    def model(self, model_name, hub, model_type=None, **kwargs) -> "ModelAPI":
         """Add a task to the task manager."""
         return self.__task.load_model(model_name, hub, model_type, **kwargs)
 
