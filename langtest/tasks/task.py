@@ -1,7 +1,7 @@
 import ast
 import re
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Literal, Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS, INSTALLED_HUBS
 from langtest.errors import Errors, ColumnNameError
 
@@ -24,7 +24,12 @@ class BaseTask(ABC):
 
     @classmethod
     def load_model(
-        cls, model_path: str, model_hub: str, model_type: str, *args, **kwargs
+        cls,
+        model_path: str,
+        model_hub: str,
+        model_type: Literal["chat", "completion"] = None,
+        *args,
+        **kwargs,
     ):
         """Load the model."""
 
@@ -151,9 +156,9 @@ class TaskManager:
 
         return self.__task.create_sample(*args, **kwargs)
 
-    def model(self, model_name, hub, model_type=None, **kwargs) -> "ModelAPI":
+    def model(self, *args, **kwargs) -> "ModelAPI":
         """Add a task to the task manager."""
-        return self.__task.load_model(model_name, hub, model_type, **kwargs)
+        return self.__task.load_model(*args, **kwargs)
 
     def __eq__(self, __value: str) -> bool:
         """Check if the task is equal to another task."""
