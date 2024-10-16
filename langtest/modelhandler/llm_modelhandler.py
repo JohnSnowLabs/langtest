@@ -1,6 +1,8 @@
 import inspect
+
 from typing import Any, List, Union
 import langchain.llms as lc
+import langchain.chat_models as chat_models
 from langchain.chains import LLMChain
 from langchain_core.prompts import PromptTemplate
 from langchain_core.exceptions import OutputParserException
@@ -71,7 +73,9 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
-        exclude_args = ["task", "device", "stream"]
+        exclude_args = ["task", "device", "stream", "model_type"]
+
+        model_type = kwargs.get("model_type", None)
 
         filtered_kwargs = kwargs.copy()
 
@@ -104,13 +108,23 @@ class PretrainedModelForQA(ModelAPI):
                     model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
 
                 return cls(hub, model, *args, **filtered_kwargs)
-            elif hub == "ollama":
-                from langchain.chat_models.ollama import ChatOllama
+            # elif hub == "ollama":
+            #     from langchain.chat_models.ollama import ChatOllama
 
-                model = ChatOllama(model=path, *args, **filtered_kwargs)
-                return cls(hub, model, *args, **filtered_kwargs)
+            #     model = ChatOllama(model=path, *args, **filtered_kwargs)
+            #     return cls(hub, model, *args, **filtered_kwargs)
             else:
-                model = getattr(lc, LANGCHAIN_HUBS[hub])
+                from .utils import CHAT_MODEL_CLASSES
+
+                if model_type and hub in CHAT_MODEL_CLASSES:
+                    hub_module = getattr(chat_models, hub)
+                    model = getattr(hub_module, CHAT_MODEL_CLASSES[hub])
+                elif model_type in [None, "instruct"]:
+                    model = getattr(lc, LANGCHAIN_HUBS[hub])
+                else:
+                    raise ValueError(
+                        f"{hub} hub is not supported for the given model type"
+                    )
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
                 cls.model = model(model=path, *args, **filtered_kwargs)
