@@ -273,9 +273,10 @@ class HuggingFacePipeline:
                 self.pipeline.tokenizer.chat_template = self.chat_template
 
             # return_full_text = False is available in transformers>=4.11.0
-            response = self.pipeline(prompt, return_full_text=False)
-
-            # response = self.pipeline(prompt)
+            if self.pipeline.task == "text-generation":
+                response = self.pipeline(prompt, return_full_text=False)
+            else:
+                response = self.pipeline(prompt)
 
             if isinstance(response, list):
                 response = response[0]
@@ -286,7 +287,6 @@ class HuggingFacePipeline:
                 else "generated_text"
             )
             text = response[output_key]
-            # if self.pipeline.task == "text-generation":
             #     try:
             #         from transformers.pipelines.text_generation import ReturnType
 
