@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 from pkg_resources import resource_filename
 
 
@@ -12,7 +12,7 @@ LLM_DEFAULTS_CONFIG = {
     "default": resource_filename("langtest", "data/config/QA_summarization_config.yml"),
 }
 
-DEFAULTS_CONFIG = {
+DEFAULTS_CONFIG: Dict[str, Any] = {
     "question-answering": LLM_DEFAULTS_CONFIG,
     "summarization": LLM_DEFAULTS_CONFIG,
     "ideology": resource_filename("langtest", "data/config/political_config.yml"),

@@ -1,7 +1,7 @@
 import ast
 import re
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Literal, Union
 from langtest.modelhandler import ModelAPI, LANGCHAIN_HUBS, INSTALLED_HUBS
 from langtest.errors import Errors, ColumnNameError
 
@@ -23,7 +23,14 @@ class BaseTask(ABC):
         pass
 
     @classmethod
-    def load_model(cls, model_path: str, model_hub: str, *args, **kwargs):
+    def load_model(
+        cls,
+        model_path: str,
+        model_hub: str,
+        model_type: Literal["chat", "completion"] = None,
+        *args,
+        **kwargs,
+    ):
         """Load the model."""
 
         models = ModelAPI.model_registry
@@ -54,6 +61,10 @@ class BaseTask(ABC):
         if "server_prompt" in kwargs:
             cls.server_prompt = kwargs.get("server_prompt")
             kwargs.pop("server_prompt")
+
+        if model_type:
+            kwargs["model_type"] = model_type
+
         try:
             if model_hub in LANGCHAIN_HUBS:
                 # LLM models
