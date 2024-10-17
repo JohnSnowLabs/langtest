@@ -271,33 +271,38 @@ class HuggingFacePipeline:
                 and self.model_type == "chat"
             ):
                 self.pipeline.tokenizer.chat_template = self.chat_template
-            # response = self.pipeline(prompt, return_full_text=False)
-            response = self.pipeline(prompt)
+            
+            # return_full_text = False is available in transformers>=4.11.0
+            response = self.pipeline(prompt, return_full_text=False)
+
+            # response = self.pipeline(prompt)
 
             if isinstance(response, list):
                 response = response[0]
+            
+            output_key = f"{self.pipeline.return_name}_text" if hasattr(self.pipeline, 'return_name') else "generated_text"
+            text = response[output_key]
+            # if self.pipeline.task == "text-generation":
+            #     try:
+            #         from transformers.pipelines.text_generation import ReturnType
 
-            if self.pipeline.task == "text-generation":
-                try:
-                    from transformers.pipelines.text_generation import ReturnType
-
-                    remove_prompt = (
-                        self.pipeline._postprocess_params.get("return_type")
-                        != ReturnType.NEW_TEXT
-                    )
-                except Exception as e:
-                    logging.warning(Warnings.W017(e=e))
-                    remove_prompt = True
-                if remove_prompt:
-                    text = response["generated_text"][len(prompt) :]
-                else:
-                    text = response["generated_text"]
-            elif self.pipeline.task == "text2text-generation":
-                text = response["generated_text"]
-            elif self.pipeline.task == "summarization":
-                text = response["summary_text"]
-            else:
-                raise ValueError(Errors.E086(task=self.pipeline.task))
+            #         remove_prompt = (
+            #             self.pipeline._postprocess_params.get("return_type")
+            #             != ReturnType.NEW_TEXT
+            #         )
+            #     except Exception as e:
+            #         logging.warning(Warnings.W017(e=e))
+            #         remove_prompt = True
+            #     if remove_prompt:
+            #         text = response["generated_text"][len(prompt) :]
+            #     else:
+            #         text = response["generated_text"]
+            # elif self.pipeline.task == "text2text-generation":
+            #     text = response["generated_text"]
+            # elif self.pipeline.task == "summarization":
+            #     text = response["summary_text"]
+            # else:
+            #     raise ValueError(Errors.E086(task=self.pipeline.task))
 
             text_generations.append(text)
 

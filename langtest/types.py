@@ -7,12 +7,12 @@ class ModelConfig(TypedDict):
 
     Attributes:
         model (str): The name of the model.
-        type (Literal['chat', 'instruct']): The type of the model, either 'chat' or 'instruct'.
+        type (Literal['chat', 'completion']): The type of the model, either 'chat' or 'completion'.
         hub (str): The hub where the model is located.
     """
 
     model: str
-    type: Literal["chat", "instruct"]
+    type: Literal["chat", "completion"]
     hub: str
 
 
