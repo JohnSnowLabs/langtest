@@ -732,7 +732,6 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # set the model_type from kwargs
             model_type = kwargs.get("model_type", None)
-            kwargs.pop("model_type", None)
 
             # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
@@ -813,7 +812,7 @@ class PretrainedModelForQA(ModelAPI):
                 else:
                     messages = [{"role": "user", "content": text}]
                 output = self.model._generate([messages])
-                return output[0].get("content", "")
+                return output[0][0].get("content", "")
 
             else:
                 prompt_template = SimplePromptTemplate(**prompt)

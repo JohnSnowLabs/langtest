@@ -174,6 +174,8 @@ class HuggingFacePipeline:
 
         self.model_id = model_id
         self.pipeline: Pipeline = None
+        self.model_type = kwargs.get("model_type", None)
+        self.chat_template = kwargs.get("chat_template", None)
         if pipeline:
             self.pipeline = pipeline
         else:
@@ -206,6 +208,9 @@ class HuggingFacePipeline:
 
         tokenizer = AutoTokenizer.from_pretrained(model_id)
 
+        # remove the unnecessary kwargs
+        kwargs.pop("model_type", None)
+
         # Set the pad_token_id for the tokenizer
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
@@ -237,6 +242,9 @@ class HuggingFacePipeline:
             if device < 0 and cuda_device_count > 0:
                 logging.warning(Warnings.W016(cuda_device_count=cuda_device_count))
 
+        # renove the unnecessary kwargs
+        kwargs.pop("chat_template", None)
+
         return hf_pipeline(
             task=task,
             model=model,
@@ -258,6 +266,12 @@ class HuggingFacePipeline:
         text_generations: List[str] = []
 
         for prompt in prompts:
+            if (
+                self.pipeline.tokenizer.chat_template is None
+                and self.model_type == "chat"
+            ):
+                self.pipeline.tokenizer.chat_template = self.chat_template
+            # response = self.pipeline(prompt, return_full_text=False)
             response = self.pipeline(prompt)
 
             if isinstance(response, list):
