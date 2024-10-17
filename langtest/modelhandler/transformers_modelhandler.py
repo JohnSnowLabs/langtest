@@ -804,7 +804,7 @@ class PretrainedModelForQA(ModelAPI):
 
                 if examples:
                     prompt["template"] = "".join(
-                        f"{k.title()}: {{{k}}}" for k in text.keys()
+                        f"{k.title()}:\n{{{k}}}\n" for k in text.keys()
                     )
                     prompt_template = SimplePromptTemplate(**prompt)
                     text = prompt_template.format(**text)
@@ -812,7 +812,7 @@ class PretrainedModelForQA(ModelAPI):
                 else:
                     messages = [{"role": "user", "content": text}]
                 output = self.model._generate([messages])
-                return output[0][0].get("content", "")
+                return output[0].strip()
 
             else:
                 prompt_template = SimplePromptTemplate(**prompt)
