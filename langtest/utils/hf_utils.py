@@ -287,26 +287,6 @@ class HuggingFacePipeline:
                 else "generated_text"
             )
             text = response[output_key]
-            #     try:
-            #         from transformers.pipelines.text_generation import ReturnType
-
-            #         remove_prompt = (
-            #             self.pipeline._postprocess_params.get("return_type")
-            #             != ReturnType.NEW_TEXT
-            #         )
-            #     except Exception as e:
-            #         logging.warning(Warnings.W017(e=e))
-            #         remove_prompt = True
-            #     if remove_prompt:
-            #         text = response["generated_text"][len(prompt) :]
-            #     else:
-            #         text = response["generated_text"]
-            # elif self.pipeline.task == "text2text-generation":
-            #     text = response["generated_text"]
-            # elif self.pipeline.task == "summarization":
-            #     text = response["summary_text"]
-            # else:
-            #     raise ValueError(Errors.E086(task=self.pipeline.task))
 
             text_generations.append(text)
 
