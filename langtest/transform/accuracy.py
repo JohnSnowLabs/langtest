@@ -15,6 +15,7 @@ from langtest.utils.custom_types import (
 )
 from langtest.utils.custom_types.helpers import default_user_prompt
 from langtest.errors import Errors
+from langtest.utils.custom_types.sample import DegradationSample
 from langtest.utils.util_metrics import (
     calculate_f1_score,
     calculate_f1_score_multi_label,
@@ -1154,7 +1155,7 @@ class DegradationAnalysis(BaseAccuracy):
         DegradationAnalysis.result_data.clear()
 
         return [
-            MinScoreSample(
+            DegradationSample(
                 category="accuracy",
                 test_type="degradation_analysis",
             )
@@ -1162,7 +1163,10 @@ class DegradationAnalysis(BaseAccuracy):
 
     @staticmethod
     async def run(
-        sample_list: List[MinScoreSample], y_true: List[Any], y_pred: List[Any], **kwargs
+        sample_list: List[DegradationSample],
+        y_true: List[Any],
+        y_pred: List[Any],
+        **kwargs,
     ):
         test_cases: Dict[str, Dict[str, List[Sample]]] = kwargs.get("test_cases", [])
         X_test = kwargs.get("X_test", [])
@@ -1213,10 +1217,24 @@ class DegradationAnalysis(BaseAccuracy):
                     "after": accuracy_score2,
                     "difference": degradation,
                 }
-            if progress:
-                progress.update(1)
 
-        return []
+        if len(sample_list) == 1:
+            for sample in sample_list:
+                sample.f1_scores = DegradationAnalysis.result_data
+                sample.state = "done"
+                if progress:
+                    progress.update(1)
+        else:
+            sample_list = [
+                DegradationSample(
+                    category="accuracy",
+                    test_type="degradation_analysis",
+                    f1_scores=DegradationAnalysis.result_data,
+                    state="done",
+                )
+            ]
+
+        return sample_list
 
     @staticmethod
     def preprocess(y_true: Union[list, pd.Series], y_pred: Union[list, pd.Series]):

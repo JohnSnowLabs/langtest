@@ -123,6 +123,8 @@ def model_report(
 
     report = {}
     for sample in generated_results:
+        if sample.test_type in ["degradation_analysis"]:
+            continue
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
         for test_type, value in summary.items():
@@ -377,6 +379,8 @@ def multi_dataset_report(
     for dataset_name, generated_results in datasets.items():
         summary = defaultdict(lambda: defaultdict(int))
         for sample in generated_results:
+            if sample.test_type in ["degradation_analysis"]:
+                continue
             summary[sample.test_type]["category"] = sample.category
             summary[sample.test_type][str(sample.is_pass()).lower()] += 1
         multi_summary[dataset_name] = summary
@@ -444,6 +448,8 @@ def multi_dataset_multi_model_report(
         for model_name, generated_results in model_results.items():
             summary = defaultdict(lambda: defaultdict(int))
             for sample in generated_results:
+                if sample.test_type in ["degradation_analysis"]:
+                    continue
                 summary[sample.test_type]["category"] = sample.category
                 summary[sample.test_type][str(sample.is_pass()).lower()] += 1
             multi_summary[dataset_name][model_name] = summary

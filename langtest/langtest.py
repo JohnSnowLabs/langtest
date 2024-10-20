@@ -739,6 +739,12 @@ class Harness:
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
 
+        if "degradation_analysis" in generated_results_df["test_type"].unique():
+            # drop the rows with test_type as 'degradation_analysis'
+            generated_results_df = generated_results_df[
+                generated_results_df["test_type"] != "degradation_analysis"
+            ]
+
         return generated_results_df.fillna("-")
 
     def augment(
