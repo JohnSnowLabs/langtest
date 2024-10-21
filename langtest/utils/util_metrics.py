@@ -1,5 +1,7 @@
 from collections import Counter
 from typing import List, Set, Union, Dict
+
+from langtest.logger import logger
 from ..errors import Errors
 import pandas as pd
 
@@ -401,3 +403,42 @@ def calculate_f1_score_multi_label(
         )
 
     return min(f1_score, 1.0)  # Ensure the F1 score is capped at 1.0
+
+
+def combine_labels(labels: List[str]) -> List[str]:
+    """
+    Combine labels by removing the BIO tags and keeping only the entity type.
+
+    Args:
+        labels (List[str]): List of strings or a string. Labels can be in the format of BIO tags.
+                            Example: ["B-ORG", "I-ORG", "B-PER", "I-PER"]
+
+    Raises:
+        ValueError: If the input is not a list or a string.
+
+
+    Returns:
+        labels (List[str]): List of entity types without the BIO tags.
+
+    """
+    try:
+        output_list = []
+        if isinstance(labels, str):
+            if labels.startswith("B-") or labels.startswith("I-"):
+                output_list.append(labels[2:])
+                return output_list
+            else:
+                return [labels]
+        elif isinstance(labels, list):
+            for label in labels:
+                if label.startswith("I-") and label[2:] == output_list[-1]:
+                    continue
+                if label.startswith("I-") and label[2:] != output_list[-1]:
+                    continue
+                output_list.append(label.split("-")[-1])
+
+            return output_list
+        else:
+            raise ValueError("Input should be a list or a string.")
+    except ValueError as e:
+        logger.error(f"{e}")

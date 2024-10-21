@@ -1,7 +1,7 @@
 import re
 import string
 import importlib
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
+from typing import Any, Dict, List, Mapping, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
 
 from langtest.modelhandler.modelhandler import ModelAPI
@@ -3094,6 +3094,38 @@ Answer: UnRecognizable.
 
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
+
+
+class DegradationSample(BaseModel):
+    """
+    A class representing a sample for the Degradation task.
+
+    Attributes:
+        category (str): The category or module name associated with the sample.
+        state (str): The state of the sample.
+        test_type (str): The type of test being performed.
+    """
+
+    category: str = Field(default=None, alias="category")
+    state: str = Field(default=None, alias="state")
+    test_type: str = Field(default=None, alias="test_type")
+    f1_scores: Mapping[str, Mapping[str, float]] = Field(default=dict, alias="f1_scores")
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the DegradationSample instance to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the sample.
+        """
+
+        return {
+            "category": self.category,
+            "test_type": self.test_type,
+        }
+
+    def is_pass(self) -> str:
+        return "not_validated"
 
 
 Sample = TypeVar(

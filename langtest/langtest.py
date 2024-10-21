@@ -487,6 +487,15 @@ class Harness:
         if self._generated_results is None:
             raise RuntimeError(Errors.E011())
 
+        # plot the degradation analysis results
+        if (
+            "accuracy" in self._config["tests"]
+            and "degradation_analysis" in self._config["tests"]["accuracy"]
+        ):
+            from langtest.transform.accuracy import DegradationAnalysis
+
+            DegradationAnalysis.show_results()
+
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config["tests"]["defaults"].get(
                 "min_pass_rate", 0.65
@@ -729,6 +738,12 @@ class Harness:
 
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
+
+        if "degradation_analysis" in generated_results_df["test_type"].unique():
+            # drop the rows with test_type as 'degradation_analysis'
+            generated_results_df = generated_results_df[
+                generated_results_df["test_type"] != "degradation_analysis"
+            ]
 
         return generated_results_df.fillna("-")
 
@@ -979,6 +994,12 @@ class Harness:
 
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df = testcases_df[columns]
+
+        if "degradation_analysis" in testcases_df["test_type"].unique():
+            # drop the rows with test_type as 'degradation_analysis'
+            testcases_df = testcases_df[
+                testcases_df["test_type"] != "degradation_analysis"
+            ]
 
         return testcases_df.fillna("-")
 
