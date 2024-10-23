@@ -150,7 +150,6 @@ def model_report(
         temp = {
             "category": test_values["category"],
             "test_type": test_type,
-            "minimum_pass_rate": min_pass_rate,
         }
         # handling multiple keys in the dictionary like (true or false), (score_1, score_2, score_3)
 
@@ -182,6 +181,7 @@ def model_report(
                     temp.update(
                         {
                             "pass_rate": pass_rate,
+                            "minimum_pass_rate": min_pass_rate,
                             "pass": ispass,
                         }
                     )
@@ -206,13 +206,13 @@ def model_report(
     df_report = pd.DataFrame.from_dict(report, orient="index")
     df_report = df_report.reset_index().rename(columns={"index": "test_type"})
 
-    if "pass_rate" in df_report.columns:
+    if "pass_rate" in df_report.columns and "minimum_pass_rate" in df_report.columns:
         df_report["pass_rate"] = df_report["pass_rate"].apply(
             lambda x: "{:.0f}%".format(x * 100)
         )
-    df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-        lambda x: "{:.0f}%".format(x * 100)
-    )
+        df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
+            lambda x: "{:.0f}%".format(x * 100)
+        )
 
     # rearrange the columns
     columns = df_report.columns.tolist()
