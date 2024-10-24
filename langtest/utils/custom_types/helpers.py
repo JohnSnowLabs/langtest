@@ -350,6 +350,7 @@ def is_pass_llm_eval(
     answer: str,
     perturbed_question: str,
     prediction: str,
+    eval_template: str = None,
 ):
     """
     Determines whether the model's prediction passes the Language Model Metric (LLM) evaluation.
@@ -374,7 +375,15 @@ def is_pass_llm_eval(
         original_question, answer, perturbed_question, prediction
     )
     if "llm" in str(type(eval_model)):
-        result = llm_prompt_eval(eval_model, dataset_name, inputs, predictions)
+        if eval_template is None:
+            # from ...transform.constants import qa_prompt_template as template
+            from ...metrics.llm_eval import template
+
+            eval_template = template
+
+        result = llm_prompt_eval(
+            eval_model, dataset_name, inputs, predictions, eval_template
+        )
     else:
         result = transformer_prompt_eval(eval_model, inputs, predictions)
 
@@ -382,7 +391,11 @@ def is_pass_llm_eval(
 
 
 def llm_prompt_eval(
-    eval_model, dataset_name: str, inputs: List[dict], predictions: List[dict]
+    eval_model,
+    dataset_name: str,
+    inputs: List[dict],
+    predictions: List[dict],
+    template: str = None,
 ) -> bool:
     """
     Evaluates model predictions using the Language Model Metric (LLM) with prompt-based evaluation.
@@ -399,9 +412,6 @@ def llm_prompt_eval(
     """
     from langchain.evaluation.qa import QAEvalChain
     from langchain.prompts import PromptTemplate
-
-    # from ...transform.constants import qa_prompt_template as template
-    from ...metrics.llm_eval import template
 
     PROMPT = PromptTemplate(
         input_variables=["query", "answer", "result"],

@@ -128,7 +128,6 @@ def model_report(
         summary[sample.test_type]["category"] = sample.category
         summary[sample.test_type][str(sample.is_pass()).lower()] += 1
 
-    print(summary)
     for test_type, test_values in summary.items():
         # get minimum pass rate for the test type from the min_pass_dict or default_min_pass_dict
         min_pass_rate = min_pass_dict.get(test_type, default_min_pass_dict)
@@ -151,8 +150,8 @@ def model_report(
             "category": test_values["category"],
             "test_type": test_type,
         }
-        # handling multiple keys in the dictionary like (true or false), (score_1, score_2, score_3)
 
+        # handling multiple keys in the dictionary like (true or false), (score_1, score_2, score_3)
         record_count = sum(
             num for num in test_values.values() if isinstance(num, (int, float))
         )
@@ -187,21 +186,6 @@ def model_report(
                     )
 
         report[test_type] = temp
-
-        # pass_rate = summary[test_type]["true"] / (
-        #     summary[test_type]["true"] + summary[test_type]["false"]
-        # )
-        # if summary[test_type]["category"] in ["Accuracy", "performance"]:
-        #     min_pass_rate = 1
-
-        # report[test_type] = {
-        #     "category": summary[test_type]["category"],
-        #     # "fail_count": summary[test_type]["false"],
-        #     # "pass_count": summary[test_type]["true"],
-        #     # "pass_rate": pass_rate,
-        #     "minimum_pass_rate": min_pass_rate,
-        #     "pass": pass_rate >= min_pass_rate,
-        # }
 
     df_report = pd.DataFrame.from_dict(report, orient="index")
     df_report = df_report.reset_index().rename(columns={"index": "test_type"})
