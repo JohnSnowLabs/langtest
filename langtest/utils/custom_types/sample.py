@@ -399,7 +399,7 @@ class BaseQASample(BaseModel):
     state: str = None
     task: str = Field(default="question-answering", const=True)
     test_case: str = None
-    config: str = None
+    config: Mapping[str, Mapping] = None
     distance_result: float = None
     eval_model: Union[str, tuple] = None
     ran_pass: bool = None
@@ -656,6 +656,12 @@ class QASample(BaseQASample):
             elif self.metric_name == "llm_eval":
                 if isinstance(self.eval_model, dict):
                     self.eval_model = list(self.eval_model.values())[-1]
+
+                # get the template for evaluation
+
+                template = self.config["evaluation"].get("eval_prompt", None)
+
+                # get the metric function
                 result = metric_function(
                     eval_model=self.eval_model,
                     dataset_name=self.dataset_name,
@@ -663,6 +669,7 @@ class QASample(BaseQASample):
                     answer=self.expected_results,
                     perturbed_question=self.perturbed_question,
                     prediction=self.actual_results,
+                    eval_template=template,
                 )
 
                 self.ran_pass = result
