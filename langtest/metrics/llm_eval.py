@@ -1,6 +1,7 @@
 import re
 import string
-from typing import List, Optional, Tuple
+from textwrap import dedent
+from typing import List, Mapping, Optional, Tuple
 from ..utils.custom_types.helpers import HashableDict
 
 template = """You are a teacher grading a quiz.
@@ -20,6 +21,70 @@ TRUE ANSWER: {answer}
 GRADE:"""
 server_prompt = "Perform the task to the best of your ability."
 input_variables = ["query", "result", "answer"]
+
+
+class EvalTemplate:
+    """
+    The EvalTemplate class provides a method to build a prompt for evaluating student answers
+    based on a given rubric. The prompt is designed for a teacher to grade a quiz by comparing
+    the student's answer with the true answer and scoring it according to specified criteria.
+
+    Methods
+    -------
+    build_prompt(rubic_score: Mapping[str, str] = {"CORRECT": None, "INCORRECT": None}) -> str
+        Constructs and returns a grading prompt based on the provided rubric scores.
+
+    """
+
+    @staticmethod
+    def build_prompt(
+        rubic_score: Mapping[str, str] = {
+            "CORRECT": None,
+            "INCORRECT": None,
+        }
+    ):
+        """ """
+        grade_list = list(rubic_score.keys())
+        grade_list = ", ".join(grade_list[:-1]) + f" or {grade_list[-1]}"
+
+        eval_criteria = [
+            f"{grade_name}: {criteria}\n"
+            for grade_name, criteria in rubic_score.items()
+            if criteria
+        ]
+        prompt = (
+            "You are a teacher grading a quiz. You are given a question, the student's "
+            "answer, and the true answer, and are asked to score the student answer as either "
+            f"{grade_list}."
+        )
+
+        if eval_criteria:
+            eval_criteria = "".join(eval_criteria)
+            prompt += dedent(
+                f"""\n\nScore the student answer based on the following criteria:\n{eval_criteria}"""
+            )
+
+        prompt += dedent(
+            f"""
+        Example Format:
+        QUESTION: question here
+        STUDENT ANSWER: student's answer here
+        TRUE ANSWER: true answer here
+        GRADE: {grade_list} here
+
+        {
+            ("Grade the student answers based ONLY on their factual accuracy. Ignore differences"
+             " in punctuation and phrasing between the student answer and true answer. It is OK "
+             "if the student answer contains more or relevant information than the true answer, as"
+             " long as it does not contain any conflicting statements. Begin!")
+        }
+
+        QUESTION: {{query}}
+        STUDENT ANSWER: {{result}}
+        TRUE ANSWER: {{answer}}
+        GRADE:"""
+        )
+        return prompt
 
 
 class LlmEval:
