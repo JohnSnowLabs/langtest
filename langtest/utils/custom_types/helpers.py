@@ -2,7 +2,8 @@ import re
 from pydantic import BaseModel
 from collections.abc import Hashable
 import importlib
-from typing import List, Tuple
+from typing import List, Tuple, Union
+
 from ...errors import Errors
 
 default_user_prompt = {
@@ -350,7 +351,7 @@ def is_pass_llm_eval(
     answer: str,
     perturbed_question: str,
     prediction: str,
-    eval_template: str = None,
+    eval_template: Union[str, dict] = None,
 ):
     """
     Determines whether the model's prediction passes the Language Model Metric (LLM) evaluation.
@@ -375,14 +376,22 @@ def is_pass_llm_eval(
         original_question, answer, perturbed_question, prediction
     )
     if "llm" in str(type(eval_model)):
+        eval_template = eval_template.get("rubic_score", None)
+
         if eval_template is None:
             # from ...transform.constants import qa_prompt_template as template
             from ...metrics.llm_eval import template
 
             eval_template = template
+        elif isinstance(eval_template, dict):
+            from ...metrics.llm_eval import EvalTemplate
+
+            grades = list(eval_template.keys())
+
+            eval_template = EvalTemplate.build_prompt(eval_template)
 
         result = llm_prompt_eval(
-            eval_model, dataset_name, inputs, predictions, eval_template
+            eval_model, dataset_name, inputs, predictions, eval_template, grades
         )
     else:
         result = transformer_prompt_eval(eval_model, inputs, predictions)
@@ -396,6 +405,7 @@ def llm_prompt_eval(
     inputs: List[dict],
     predictions: List[dict],
     template: str = None,
+    grades: List[str] = None,
 ) -> bool:
     """
     Evaluates model predictions using the Language Model Metric (LLM) with prompt-based evaluation.
@@ -446,12 +456,21 @@ def llm_prompt_eval(
             answer_key="answer",
             prediction_key="text",
         )
-        result = bool(
-            re.match(
-                r"CORRECT|TRUE",
-                list(graded_outputs[0].values())[0].replace("\n", "").strip(),
+        if grades:
+            # build the regular expression pattern for the grades list
+            grades_pattern = f"GRADE: ?({'|'.join(grades)})"
+
+            # extract the grade from the result by matching the pattern
+            result = list(graded_outputs[0].values())[0].replace("\n", "").strip()
+
+            return result
+        else:
+            result = bool(
+                re.match(
+                    r"CORRECT|TRUE",
+                    list(graded_outputs[0].values())[0].replace("\n", "").strip(),
+                )
             )
-        )
         return result
 
 
