@@ -369,8 +369,9 @@ def is_pass_llm_eval(
 
     """
 
-    if prediction.lower().strip() == answer.lower().strip():
-        return True
+    if eval_template is None:
+        if prediction.lower().strip() == answer.lower().strip():
+            return True
 
     inputs, predictions = prepare_llm_evaluation_data(
         original_question, answer, perturbed_question, prediction
@@ -457,13 +458,14 @@ def llm_prompt_eval(
             prediction_key="text",
         )
         if grades:
-            # build the regular expression pattern for the grades list
-            grades_pattern = f"GRADE: ?({'|'.join(grades)})"
-
-            # extract the grade from the result by matching the pattern
-            result = list(graded_outputs[0].values())[0].replace("\n", "").strip()
-
-            return result
+            # Extract the grade from the result by matching the pattern
+            result = re.sub(
+                r"GRADE: ",
+                "",
+                list(graded_outputs[0].values())[0].replace("\n", "").strip(),
+            )
+            match = re.search(f"({'|'.join(grades)})", result, re.IGNORECASE).group(0)
+            return match
         else:
             result = bool(
                 re.match(
