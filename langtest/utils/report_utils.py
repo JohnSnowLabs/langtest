@@ -215,19 +215,26 @@ def model_report(
         "pass_rate",
         "minimum_pass_rate",
         "pass",
-    ]
+    ] + [f"{col}_count" for col in unique_labels if col not in ["true", "false"]]
 
     df_report = df_report.reset_index(drop=True)
 
     columns = list(set(columns))
-    columns = sorted(columns, key=lambda x: ordered_columns.index(x))
+    columns = sorted(
+        columns,
+        key=lambda x: ordered_columns.index(x)
+        if x in ordered_columns
+        else len(ordered_columns),
+    )
 
     # df_report = df_report.T.drop_duplicates().T
     # col_to_move = "category"
     # first_column = df_report.pop("category")
     # df_report.insert(0, col_to_move, first_column)
     df_report = df_report[columns]
-    df_report[unique_labels].fillna(0, inplace=True)
+    df_report.loc[:, [col for col in columns if col.endswith("_count")]] = df_report[
+        [col for col in columns if col.endswith("_count")]
+    ].fillna(0)
     df_report = df_report.fillna("-")
 
     return df_report

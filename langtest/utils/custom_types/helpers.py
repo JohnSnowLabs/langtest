@@ -376,26 +376,29 @@ def is_pass_llm_eval(
     inputs, predictions = prepare_llm_evaluation_data(
         original_question, answer, perturbed_question, prediction
     )
+
+    grades = None
+    if eval_template is None:
+        # from ...transform.constants import qa_prompt_template as template
+        from ...metrics.llm_eval import template
+
+        eval_template = template
+    elif isinstance(eval_template, dict):
+        from ...metrics.llm_eval import EvalTemplate
+
+        rubic_score_dict = eval_template.get("rubic_score", None)
+        grades = list(rubic_score_dict.keys())
+
+        eval_template = EvalTemplate.build_prompt(rubic_score_dict)
+
     if "llm" in str(type(eval_model)):
-        eval_template = eval_template.get("rubic_score", None)
-
-        if eval_template is None:
-            # from ...transform.constants import qa_prompt_template as template
-            from ...metrics.llm_eval import template
-
-            eval_template = template
-        elif isinstance(eval_template, dict):
-            from ...metrics.llm_eval import EvalTemplate
-
-            grades = list(eval_template.keys())
-
-            eval_template = EvalTemplate.build_prompt(eval_template)
-
         result = llm_prompt_eval(
             eval_model, dataset_name, inputs, predictions, eval_template, grades
         )
     else:
-        result = transformer_prompt_eval(eval_model, inputs, predictions)
+        result = transformer_prompt_eval(
+            eval_model, inputs, predictions, eval_template, grades
+        )
 
     return result
 
@@ -477,7 +480,11 @@ def llm_prompt_eval(
 
 
 def transformer_prompt_eval(
-    eval_model, inputs: List[dict], predictions: List[dict]
+    eval_model,
+    inputs: List[dict],
+    predictions: List[dict],
+    template: str = None,
+    grades: List[str] = None,
 ) -> bool:
     """
     Evaluates model predictions using a transformer-based language model.
@@ -492,7 +499,7 @@ def transformer_prompt_eval(
     """
     from ...metrics.llm_eval import LlmEval
 
-    eval_chain = LlmEval(llm=eval_model)
+    eval_chain = LlmEval(llm=eval_model, template=template, grade_list=grades)
     graded_outputs = eval_chain.evaluate(
         inputs,
         predictions,

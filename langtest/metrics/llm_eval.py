@@ -90,7 +90,13 @@ class EvalTemplate:
 class LlmEval:
     """llm_eval for evaluating question answering."""
 
-    def __init__(self, llm, template=template, input_variables=input_variables):
+    def __init__(
+        self,
+        llm,
+        template=template,
+        input_variables=input_variables,
+        grade_list=["CORRECT", "INCORRECT"],
+    ):
         """
         Initializes the LlmEval object.
 
@@ -107,6 +113,7 @@ class LlmEval:
         self.template = template
         self.input_variables = input_variables
         self.server_prompt = server_prompt
+        self.grade_list = grade_list
 
         expected_input_vars = {"query", "answer", "result"}
         if expected_input_vars != set(self.input_variables):

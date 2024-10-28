@@ -553,6 +553,8 @@ class QASample(BaseQASample):
                         self.eval_model = load_eval_model.model(
                             model, hub, **harness_config.get("model_parameters", {})
                         )
+                    else:
+                        self.eval_model = EVAL_MODEL
 
             else:
                 self.eval_model = EVAL_MODEL
