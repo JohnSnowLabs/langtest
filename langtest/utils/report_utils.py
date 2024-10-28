@@ -122,11 +122,16 @@ def model_report(
     """
 
     report = {}
+    unique_labels = []
+
     for sample in generated_results:
         if sample.test_type in ["degradation_analysis"]:
             continue
+        pass_value = str(sample.is_pass()).lower()
         summary[sample.test_type]["category"] = sample.category
-        summary[sample.test_type][str(sample.is_pass()).lower()] += 1
+        summary[sample.test_type][pass_value] += 1
+        if pass_value not in unique_labels:
+            unique_labels.append(pass_value)
 
     for test_type, test_values in summary.items():
         # get minimum pass rate for the test type from the min_pass_dict or default_min_pass_dict
@@ -142,19 +147,19 @@ def model_report(
             )
 
         # Accuracy and performance tests should have a minimum pass rate of 1
-        if test_values["category"] in ["Accuracy", "performance"]:
+        if test_values["category"] in ["accuracy", "performance"]:
             min_pass_rate = 1
 
         # create a temporary dictionary to store the category, test_type, and pass/fail or score_1, score_2, score_3 etc.
         temp = {
             "category": test_values["category"],
-            "test_type": test_type,
         }
 
         # handling multiple keys in the dictionary like (true or false), (score_1, score_2, score_3)
         record_count = sum(
             num for num in test_values.values() if isinstance(num, (int, float))
         )
+        # record_count = test_values["total"]
 
         if record_count == 0:
             temp.update(
@@ -162,6 +167,7 @@ def model_report(
                     "fail_count": 0,
                     "pass_count": 0,
                     "pass_rate": 0,
+                    "minimum_pass_rate": min_pass_rate,
                     "pass": False,
                 }
             )
@@ -211,16 +217,17 @@ def model_report(
         "pass",
     ]
 
-    columns = [col for col in ordered_columns if col in columns] + [
-        col for col in columns if col not in ordered_columns
-    ]
+    df_report = df_report.reset_index(drop=True)
 
-    df_report = df_report[columns]
+    columns = list(set(columns))
+    columns = sorted(columns, key=lambda x: ordered_columns.index(x))
+
+    # df_report = df_report.T.drop_duplicates().T
     # col_to_move = "category"
     # first_column = df_report.pop("category")
     # df_report.insert(0, col_to_move, first_column)
-    df_report = df_report.reset_index(drop=True)
-
+    df_report = df_report[columns]
+    df_report[unique_labels].fillna(0, inplace=True)
     df_report = df_report.fillna("-")
 
     return df_report

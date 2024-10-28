@@ -659,7 +659,7 @@ class QASample(BaseQASample):
 
                 # get the template for evaluation
 
-                template = self.config["evaluation"].get("eval_prompt", None)
+                template = self.config.get("evaluation", {}).get("eval_prompt", None)
 
                 # get the metric function
                 result = metric_function(
