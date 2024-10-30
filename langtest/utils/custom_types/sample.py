@@ -546,12 +546,17 @@ class QASample(BaseQASample):
                 if harness_config["evaluation"]["metric"].lower() == "llm_eval":
                     model = harness_config["evaluation"].get("model", None)
                     hub = harness_config["evaluation"].get("hub", None)
+                    model_parameters = harness_config["evaluation"].get(
+                        "model_parameters", None
+                    )
+                    if model_parameters is None:
+                        model_parameters = harness_config.get("model_parameters", {})
                     if model and hub:
                         from ...tasks import TaskManager
 
                         load_eval_model = TaskManager(self.task)
                         self.eval_model = load_eval_model.model(
-                            model, hub, **harness_config.get("model_parameters", {})
+                            model, hub, **model_parameters
                         )
 
             else:

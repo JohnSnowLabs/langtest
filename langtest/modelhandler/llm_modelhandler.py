@@ -110,11 +110,7 @@ class PretrainedModelForQA(ModelAPI):
                     model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
 
                 return cls(hub, model, *args, **filtered_kwargs)
-            # elif hub == "ollama":
-            #     from langchain.chat_models.ollama import ChatOllama
 
-            #     model = ChatOllama(model=path, *args, **filtered_kwargs)
-            #     return cls(hub, model, *args, **filtered_kwargs)
             else:
                 from .utils import CHAT_MODEL_CLASSES
 
@@ -136,6 +132,9 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(model_id=path, *args, **filtered_kwargs)
             elif "repo_id" in default_args:
                 cls.model = model(repo_id=path, model_kwargs=filtered_kwargs)
+            # mapping path dict to model object
+            else:
+                cls.model = model(**path)
             return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ImportError:
