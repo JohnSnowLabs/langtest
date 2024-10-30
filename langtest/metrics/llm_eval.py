@@ -90,12 +90,14 @@ class EvalTemplate:
 class LlmEval:
     """llm_eval for evaluating question answering."""
 
+    grade_list = None
+
     def __init__(
         self,
         llm,
         template=template,
         input_variables=input_variables,
-        grade_list=["CORRECT", "INCORRECT"],
+        grade_list=None,
     ):
         """
         Initializes the LlmEval object.
@@ -113,7 +115,7 @@ class LlmEval:
         self.template = template
         self.input_variables = input_variables
         self.server_prompt = server_prompt
-        self.grade_list = grade_list
+        LlmEval.grade_list = grade_list
 
         expected_input_vars = {"query", "answer", "result"}
         if expected_input_vars != set(self.input_variables):
@@ -124,33 +126,55 @@ class LlmEval:
 
     @staticmethod
     def _get_score(text: str) -> Optional[Tuple[str, int]]:
-        match = re.search(r"grade:\s*(correct|incorrect)", text.strip(), re.IGNORECASE)
+        if LlmEval.grade_list is None:
+            default_grades = ["CORRECT", "INCORRECT"]
+            grade_list_pattern = f"grade:\s*({'|'.join(default_grades).lower()})"
+        else:
+            grade_list_pattern = f"grade:\s*({'|'.join(LlmEval.grade_list).lower()})"
+
+        match = re.search(grade_list_pattern, text.strip(), re.IGNORECASE)
         if match:
-            if match.group(1).upper() == "CORRECT":
-                return "CORRECT", 1
-            elif match.group(1).upper() == "INCORRECT":
-                return "INCORRECT", 0
-        try:
-            first_word = (
-                text.strip()
-                .split()[0]
-                .translate(str.maketrans("", "", string.punctuation))
-            )
-            if first_word.upper() == "CORRECT":
-                return "CORRECT", 1
-            elif first_word.upper() == "INCORRECT":
-                return "INCORRECT", 0
-            last_word = (
-                text.strip()
-                .split()[-1]
-                .translate(str.maketrans("", "", string.punctuation))
-            )
-            if last_word.upper() == "CORRECT":
-                return "CORRECT", 1
-            elif last_word.upper() == "INCORRECT":
-                return "INCORRECT", 0
-        except IndexError:
-            pass
+            grade = match.group(1).upper()
+            if LlmEval.grade_list is None:
+                if grade == "CORRECT":
+                    return "CORRECT", 1
+                elif grade == "INCORRECT":
+                    return "INCORRECT", 0
+            elif grade in LlmEval.grade_list:
+                return grade, LlmEval.grade_list.index(grade)
+        else:
+            try:
+                # Check for first word
+                first_word = (
+                    text.strip()
+                    .split()[0]
+                    .translate(str.maketrans("", "", string.punctuation))
+                )
+                if LlmEval.grade_list is None:
+                    if first_word.upper() == "CORRECT":
+                        return "CORRECT", 1
+                    elif first_word.upper() == "INCORRECT":
+                        return "INCORRECT", 0
+                elif first_word.upper() in LlmEval.grade_list:
+                    return first_word.upper(), LlmEval.grade_list.index(
+                        first_word.upper()
+                    )
+
+                # Check for last word
+                last_word = (
+                    text.strip()
+                    .split()[-1]
+                    .translate(str.maketrans("", "", string.punctuation))
+                )
+                if LlmEval.grade_list is None:
+                    if last_word.upper() == "CORRECT":
+                        return "CORRECT", 1
+                    elif last_word.upper() == "INCORRECT":
+                        return "INCORRECT", 0
+                elif last_word.upper() in LlmEval.grade_list:
+                    return last_word.upper(), LlmEval.grade_list.index(last_word.upper())
+            except IndexError:
+                pass
         return None
 
     @staticmethod

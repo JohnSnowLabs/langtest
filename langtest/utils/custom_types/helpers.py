@@ -507,7 +507,16 @@ def transformer_prompt_eval(
         answer_key="answer",
         prediction_key="result",
     )
-    result = list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
+    if grades is None:
+        result = (
+            list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
+        )
+    else:
+        result = re.sub(
+            r"GRADE: ",
+            "",
+            list(graded_outputs[0].values())[0].replace("\n", "").strip(),
+        )
     return result
 
 
