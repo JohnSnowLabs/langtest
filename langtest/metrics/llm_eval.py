@@ -128,9 +128,9 @@ class LlmEval:
     def _get_score(text: str) -> Optional[Tuple[str, int]]:
         if LlmEval.grade_list is None:
             default_grades = ["CORRECT", "INCORRECT"]
-            grade_list_pattern = f"grade:\s*({'|'.join(default_grades).lower()})"
+            grade_list_pattern = f"grade:\\s*({'|'.join(default_grades).lower()})"
         else:
-            grade_list_pattern = f"grade:\s*({'|'.join(LlmEval.grade_list).lower()})"
+            grade_list_pattern = f"(?:grade\\s*)?({'|'.join(LlmEval.grade_list).lower()})"
 
         match = re.search(grade_list_pattern, text.strip(), re.IGNORECASE)
         if match:
