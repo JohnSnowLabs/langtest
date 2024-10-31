@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List, Union
 
-from pydantic import BaseModel, Extra, validator
+from pydantic import BaseModel, field_validator
 
 
 class MessageType(BaseModel):
@@ -16,11 +16,9 @@ class MessageType(BaseModel):
     ]
 
     class Config:
-        extra = (
-            Extra.allow
-        )  # Allow any additional fields that are not explicitly declared
+        extra = "allow"  # Allow any additional fields that are not explicitly declared
 
-    @validator("*", pre=True, allow_reuse=True)
+    @field_validator("*", pre=True, allow_reuse=True)
     def add_field(cls, v, values, field, **kwargs):
         if "fields" not in values:
             values["fields"] = []
@@ -74,11 +72,9 @@ class Conversion(BaseModel):
     ai: MessageType
 
     class Config:
-        extra = (
-            Extra.allow
-        )  # Allow any additional fields that are not explicitly declared
+        extra = "allow"  # Allow any additional fields that are not explicitly declared
 
-    @validator("*", pre=True, allow_reuse=True)
+    @field_validator("*", pre=True, allow_reuse=True)
     def add_field(cls, v, values, field, **kwargs):
         if "fields" not in values:
             values["fields"] = []
