@@ -18,7 +18,7 @@ class MessageType(BaseModel):
     class Config:
         extra = "allow"  # Allow any additional fields that are not explicitly declared
 
-    @field_validator("*", mode='before', allow_reuse=True)
+    @field_validator("*", mode="before", allow_reuse=True)
     def add_field(cls, v, values, field, **kwargs):
         if "fields" not in values:
             values["fields"] = []

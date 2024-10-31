@@ -1,5 +1,5 @@
 import re
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 from collections.abc import Hashable
 import importlib
 from typing import List, Tuple

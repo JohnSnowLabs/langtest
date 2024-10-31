@@ -1,5 +1,5 @@
 from typing import List, Optional, TypeVar, Union
-from pydantic import BaseModel, validator
+from pydantic.v1 import BaseModel, validator
 from .helpers import Span
 from .predictions import NERPrediction, SequenceLabel
 
