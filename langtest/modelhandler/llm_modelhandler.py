@@ -3,7 +3,7 @@ import inspect
 from typing import Any, List, Union
 import langchain.llms as lc
 import langchain.chat_models as chat_models
-from langchain.chains import LLMChain
+from langchain.chains.llm import LLMChain
 from langchain_core.prompts import PromptTemplate
 from langchain_core.exceptions import OutputParserException
 from pydantic.v1 import Field, ValidationError
