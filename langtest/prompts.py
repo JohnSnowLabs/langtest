@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List, Union
 
-from pydantic import BaseModel, Extra, validator
+from pydantic.v1 import BaseModel, validator, Extra
 
 
 class MessageType(BaseModel):

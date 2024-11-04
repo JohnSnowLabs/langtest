@@ -6,7 +6,7 @@ from copy import deepcopy
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from ...errors import Errors
-from pydantic import BaseModel, PrivateAttr, validator, Field
+from pydantic.v1 import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
 from ...metrics import EmbeddingDistance

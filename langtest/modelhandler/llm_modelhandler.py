@@ -3,10 +3,10 @@ import inspect
 from typing import Any, List, Union
 import langchain.llms as lc
 import langchain.chat_models as chat_models
-from langchain.chains import LLMChain
+from langchain.chains.llm import LLMChain
 from langchain_core.prompts import PromptTemplate
 from langchain_core.exceptions import OutputParserException
-from pydantic import Field, ValidationError
+from pydantic.v1 import Field, ValidationError
 
 from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction
@@ -311,7 +311,7 @@ class PretrainedModelForNER(PretrainedModelForQA, ModelAPI):
 
     def __output_parser(self):
         from langchain_core.output_parsers import JsonOutputParser
-        from pydantic import BaseModel
+        from pydantic.v1 import BaseModel
 
         class Word(BaseModel):
             """Single word in a named entity recognition prediction"""
