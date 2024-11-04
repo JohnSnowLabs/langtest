@@ -84,6 +84,7 @@ openpyxl = "^3.1.5"
 tables = "3.8.0"
 pillow = "10.0.0"
 langchain-databricks = {version = "0.1.1", optional = true}
+langchain-community = {version = "0.3.5", optional = true}
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]
@@ -91,8 +92,8 @@ evaluate = ["evaluate", "rouge-score", "seqeval"]
 spacy = ["spacy"]
 johnsnowlabs = ["johnsnowlabs"]
 openai = ["openai", "langchain", "langchain-openai"]
-cohere = ["cohere", "langchain"]
-ai21 = ["ai21", "langchain"]
+cohere = ["cohere", "langchain", "langchain-community"]
+ai21 = ["ai21", "langchain", "langchain-community"]
 huggingface_hub = ["huggingface_hub", "langchain"]
 metaflow = ["metaflow"]
 mlflow = ["mlflow"]
