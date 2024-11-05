@@ -284,3 +284,71 @@ class ImageCrop(BaseRobustness):
                 )
 
         return sample_list
+
+
+class ImageTranslate(BaseRobustness):
+    alias_name = "image_translate"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        translate: Tuple[int, int] = (10, 10),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_translate"
+            sample.perturbed_image = sample.original_image.transform(
+                sample.original_image.size,
+                Image.AFFINE,
+                (1, 0, translate[0], 0, 1, translate[1]),
+            )
+
+        return sample_list
+
+
+class ImageShear(BaseRobustness):
+    alias_name = "image_shear"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        shear: float = 0.5,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_shear"
+            sample.perturbed_image = sample.original_image.transform(
+                sample.original_image.size,
+                Image.AFFINE,
+                (1, shear, 0, 0, 1, 0),
+            )
+
+        return sample_list
+
+
+class MaskedImage(BaseRobustness):
+    alias_name = "masked_image"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        mask: Union[Image.Image, str],
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "masked_image"
+            sample.perturbed_image = sample.original_image.copy()
+            if isinstance(mask, str):
+                mask = Image.open(mask)
+            sample.perturbed_image.paste(mask, (0, 0), mask)
+
+        return sample_list
