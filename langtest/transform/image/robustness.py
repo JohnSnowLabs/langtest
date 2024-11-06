@@ -3,7 +3,7 @@ from typing import List, Tuple, Union
 from langtest.logger import logger
 from langtest.transform.robustness import BaseRobustness
 from langtest.utils.custom_types.sample import Sample
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageDraw
 
 
 class ImageResizing(BaseRobustness):
@@ -350,5 +350,69 @@ class MaskedImage(BaseRobustness):
             if isinstance(mask, str):
                 mask = Image.open(mask)
             sample.perturbed_image.paste(mask, (0, 0), mask)
+
+        return sample_list
+
+
+class ImageCorruptor(BaseRobustness):
+    """
+    This class is used to corrupt the image by adding a black box to it.
+    """
+
+    alias_name = "image_corruption"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        max_count: int = 10,
+        shape: str = "random",
+        size_range: Tuple[int, int] = (10, 50),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_corruption"
+            sample.perturbed_image = sample.original_image.copy()
+            for _ in range(max_count):
+                random_size = random.randint(*size_range)
+                # get random values for the black box
+                x1 = random.randint(0, sample.original_image.width - random_size)
+                y1 = random.randint(0, sample.original_image.height - random_size)
+                x2 = x1 + random_size
+                y2 = y1 + random_size
+
+                opacity = random.uniform(0.5, 1)
+
+                if shape == "random":
+                    shapes = ["rectangle", "circle"]
+                    random.shuffle(shapes)
+                    selected_shape = random.choice(shapes)
+                else:
+                    selected_shape = shape
+
+                if selected_shape == "rectangle":
+                    mask = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                    mask_draw = ImageDraw.Draw(mask)
+                    mask_draw.rectangle(
+                        (x1, y1, x2, y2), fill=(0, 0, 0, int(255 * opacity))
+                    )
+                    sample.perturbed_image.paste(mask, (0, 0), mask)
+                elif selected_shape == "circle":
+                    mask = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                    mask_draw = ImageDraw.Draw(mask)
+                    mask_draw.ellipse(
+                        (x1, y1, x2, y2), fill=(0, 0, 0, int(255 * opacity))
+                    )
+                    sample.perturbed_image.paste(mask, (0, 0), mask)
+
+                else:
+                    raise ValueError("Shape must be either 'rectangle' or 'circle'.")
+
+                # mask = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                # mask_draw = ImageDraw.Draw(mask)
+                # mask_draw.rectangle((x1, y1, x2, y2), fill=(0, 0, 0, int(255 * opacity)))
+                # sample.perturbed_image.paste(mask, (0, 0), mask)
 
         return sample_list
