@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple, Union
+from typing import List, Literal, Tuple, Union
 from langtest.logger import logger
 from langtest.transform.robustness import BaseRobustness
 from langtest.utils.custom_types.sample import Sample
@@ -410,9 +410,39 @@ class ImageCorruptor(BaseRobustness):
                 else:
                     raise ValueError("Shape must be either 'rectangle' or 'circle'.")
 
-                # mask = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
-                # mask_draw = ImageDraw.Draw(mask)
-                # mask_draw.rectangle((x1, y1, x2, y2), fill=(0, 0, 0, int(255 * opacity)))
-                # sample.perturbed_image.paste(mask, (0, 0), mask)
+        return sample_list
+
+
+class ImageLayeredMask(BaseRobustness):
+    alias_name = "image_layered_mask"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        mask: Union[Image.Image, str, None] = None,
+        opacity: float = 0.5,
+        flip: Literal["horizontal", "vertical"] = "horizontal",
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_layered_mask"
+            sample.perturbed_image = sample.original_image.copy()
+            if mask is None:
+                mask = sample.original_image
+
+            elif isinstance(mask, str):
+                mask = Image.open(mask)
+
+            if flip == "horizontal":
+                mask = mask.transpose(Image.FLIP_LEFT_RIGHT)
+            elif flip == "vertical":
+                mask = mask.transpose(Image.FLIP_TOP_BOTTOM)
+
+            mask = mask.convert("RGBA")
+            mask.putalpha(int(255 * opacity))
+            sample.perturbed_image.paste(mask, (0, 0), mask)
 
         return sample_list
