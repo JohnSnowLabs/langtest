@@ -332,28 +332,6 @@ class ImageShear(BaseRobustness):
         return sample_list
 
 
-class MaskedImage(BaseRobustness):
-    alias_name = "masked_image"
-    supported_tasks = ["visualqa"]
-
-    @staticmethod
-    def transform(
-        sample_list: List[Sample],
-        mask: Union[Image.Image, str],
-        *args,
-        **kwargs,
-    ) -> List[Sample]:
-        for sample in sample_list:
-            sample.category = "robustness"
-            sample.test_type = "masked_image"
-            sample.perturbed_image = sample.original_image.copy()
-            if isinstance(mask, str):
-                mask = Image.open(mask)
-            sample.perturbed_image.paste(mask, (0, 0), mask)
-
-        return sample_list
-
-
 class ImageCorruptor(BaseRobustness):
     """
     This class is used to corrupt the image by adding a black box to it.
