@@ -424,3 +424,32 @@ class ImageLayeredMask(BaseRobustness):
             sample.perturbed_image.paste(mask, (0, 0), mask)
 
         return sample_list
+
+
+class ImageTextOverlay(BaseRobustness):
+    alias_name = "image_text_overlay"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        text: str = "Hello, World!",
+        font_size: int = 20,
+        font_color: Tuple[int, int, int] = (255, 255, 255),
+        position: Tuple[int, int] = (10, 10),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        from PIL import ImageFont
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_text_overlay"
+            sample.perturbed_image = sample.original_image.copy()
+            draw = ImageDraw.Draw(sample.perturbed_image)
+            font = ImageFont.load_default()
+            draw.text(
+                position, text, font=font, fill=font_color,
+            )
+
+        return sample_list
