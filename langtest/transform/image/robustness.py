@@ -449,7 +449,10 @@ class ImageTextOverlay(BaseRobustness):
             draw = ImageDraw.Draw(sample.perturbed_image)
             font = ImageFont.load_default()
             draw.text(
-                position, text, font=font, fill=font_color,
+                position,
+                text,
+                font=font,
+                fill=font_color,
             )
 
         return sample_list
