@@ -332,12 +332,12 @@ class ImageShear(BaseRobustness):
         return sample_list
 
 
-class ImageCorruptor(BaseRobustness):
+class ImageBlackSpot(BaseRobustness):
     """
     This class is used to corrupt the image by adding a black box to it.
     """
 
-    alias_name = "image_corruption"
+    alias_name = "image_black_spots"
     supported_tasks = ["visualqa"]
 
     @staticmethod
@@ -351,7 +351,7 @@ class ImageCorruptor(BaseRobustness):
     ) -> List[Sample]:
         for sample in sample_list:
             sample.category = "robustness"
-            sample.test_type = "image_corruption"
+            sample.test_type = "image_black_spots"
             sample.perturbed_image = sample.original_image.copy()
             for _ in range(max_count):
                 random_size = random.randint(*size_range)
