@@ -456,3 +456,44 @@ class ImageTextOverlay(BaseRobustness):
             )
 
         return sample_list
+
+
+class ImageWatermark(BaseRobustness):
+    alias_name = "image_watermark"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        watermark: Union[Image.Image, str],
+        position: Tuple[int, int] = (10, 10),
+        opacity: float = 0.5,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_watermark"
+            sample.perturbed_image = sample.original_image.copy()
+
+            if watermark is None:
+                # If no watermark is provided, add a random text as watermark
+                watermark = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                draw = ImageDraw.Draw(watermark)
+                draw.text(
+                    position,
+                    "Watermark",
+                    font=None,
+                    fill=(255, 255, 255, int(255 * opacity)),
+                )
+            elif isinstance(watermark, str):
+                watermark = Image.open(watermark)
+                watermark = watermark.convert("RGBA")
+                watermark.putalpha(int(255 * opacity))
+            else:
+                watermark = watermark.convert("RGBA")
+                watermark.putalpha(int(255 * opacity))
+
+            sample.perturbed_image.paste(watermark, (0, 0), watermark)
+
+        return sample_list
