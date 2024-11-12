@@ -2,9 +2,7 @@ import pytest
 from PIL import Image
 import requests
 
-from langtest.transform.image import robustness as image_robustness
 from langtest.transform.robustness import BaseRobustness
-
 from langtest.utils.custom_types.sample import VisualQASample
 
 
