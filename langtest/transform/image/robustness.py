@@ -207,7 +207,6 @@ class ImageSharpness(BaseRobustness):
 
 
 class ImageColor(BaseRobustness):
-    
     alias_name = "image_color"
     supported_tasks = ["visualqa"]
 
