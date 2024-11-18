@@ -442,8 +442,6 @@ class ImageTextOverlay(BaseRobustness):
         *args,
         **kwargs,
     ) -> List[Sample]:
-        from PIL import ImageFont
-
         # transperant text overlay on the image
         font_color = font_color + (255,)
 
@@ -519,8 +517,6 @@ class ImageRandomTextOverlay(BaseRobustness):
         *args,
         **kwargs,
     ) -> List[Sample]:
-        from PIL import ImageFont
-
         for sample in sample_list:
             sample.category = "robustness"
             sample.test_type = "image_random_text_overlay"
