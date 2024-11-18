@@ -2,6 +2,7 @@ import random
 from typing import List, Literal, Tuple, Union
 from langtest.logger import logger
 from langtest.transform.robustness import BaseRobustness
+from langtest.transform.utils import get_default_font
 from langtest.utils.custom_types.sample import Sample
 from PIL import Image, ImageFilter, ImageDraw
 
@@ -451,7 +452,7 @@ class ImageTextOverlay(BaseRobustness):
             sample.test_type = "image_text_overlay"
             sample.perturbed_image = sample.original_image.copy()
             draw = ImageDraw.Draw(sample.perturbed_image)
-            font = ImageFont.truetype("arial.ttf", font_size)
+            font = get_default_font(font_size)
 
             draw.text(
                 (sample.original_image.width // 2, sample.original_image.height // 2),
@@ -528,7 +529,7 @@ class ImageRandomTextOverlay(BaseRobustness):
             draw = ImageDraw.Draw(overlay)
 
             for _ in range(random_texts):
-                font = ImageFont.truetype("arial.ttf", font_size)
+                font = get_default_font(font_size)
                 x1 = random.randint(0, sample.original_image.width)
                 y1 = random.randint(0, sample.original_image.height)
 
@@ -561,9 +562,10 @@ class ImageRandomLineOverlay(BaseRobustness):
             sample.test_type = "image_random_line_overlay"
             sample.perturbed_image = sample.original_image.copy()
             overlay = Image.new("RGBA", sample.original_image.size)
+            overlay.putalpha(int(255 * opacity))
+            draw = ImageDraw.Draw(overlay)
+
             for _ in range(random_lines):
-                overlay.putalpha(int(255 * opacity))
-                draw = ImageDraw.Draw(overlay)
                 # Get random points for the line
                 x1 = random.randint(0, sample.original_image.width)
                 y1 = random.randint(0, sample.original_image.height)

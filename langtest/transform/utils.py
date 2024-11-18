@@ -22,6 +22,9 @@ from .constants import (
     bad_word_list,
 )
 from .custom_data import add_custom_data
+from PIL import ImageFont
+import os
+import sys
 
 
 class RepresentationOperation:
@@ -469,3 +472,23 @@ Answer(only A, B, C, or D):
 Answer (only A, B, C, or D):'
 {assistant}
 """
+
+
+def get_default_font(font_size=20):
+    """
+    Returns a common font path available on all major operating systems.
+    Uses a fallback strategy for compatibility.
+    """
+    if os.name == "nt":  # Windows
+        return ImageFont.truetype("arial.ttf", font_size)
+    elif sys.platform == "darwin":  # macOS
+        return ImageFont.truetype(
+            "/System/Library/Fonts/Supplemental/Helvetica.ttf", font_size
+        )
+    else:  # Linux
+        try:
+            return ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size
+            )
+        except OSError:
+            return ImageFont.load_default()
