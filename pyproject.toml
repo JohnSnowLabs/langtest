@@ -111,6 +111,7 @@ pyproject-flake8 = "<6.0.0"
 pre-commit = "^3.3.3"
 pydocstyle = "^6.3.0"
 ipykernel = "^6.29.5"
+pytest-cov = "^6.0.0"
 
 [tool.taskipy.tasks]
 test = "pytest tests/* -v --disable-warnings"

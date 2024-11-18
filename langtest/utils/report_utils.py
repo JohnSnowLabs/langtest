@@ -122,50 +122,119 @@ def model_report(
     """
 
     report = {}
+    unique_labels = []
+
     for sample in generated_results:
         if sample.test_type in ["degradation_analysis"]:
             continue
+        pass_value = str(sample.is_pass()).lower()
         summary[sample.test_type]["category"] = sample.category
-        summary[sample.test_type][str(sample.is_pass()).lower()] += 1
-        for test_type, value in summary.items():
-            pass_rate = summary[test_type]["true"] / (
-                summary[test_type]["true"] + summary[test_type]["false"]
+        summary[sample.test_type][pass_value] += 1
+        if pass_value not in unique_labels:
+            unique_labels.append(pass_value)
+
+    for test_type, test_values in summary.items():
+        # get minimum pass rate for the test type from the min_pass_dict or default_min_pass_dict
+        min_pass_rate = min_pass_dict.get(test_type, default_min_pass_dict)
+
+        # get minimum pass rate for multiple perturbations same as if the test type contains "-"
+        if "-" in test_type and test_values["category"] == "robustness":
+            multiple_perturbations_min_pass_rate = min_pass_dict.get(
+                "multiple_perturbations", default_min_pass_dict
             )
-            min_pass_rate = min_pass_dict.get(test_type, default_min_pass_dict)
+            min_pass_rate = min_pass_dict.get(
+                test_type, multiple_perturbations_min_pass_rate
+            )
 
-            if "-" in test_type and summary[test_type]["category"] == "robustness":
-                multiple_perturbations_min_pass_rate = min_pass_dict.get(
-                    "multiple_perturbations", default_min_pass_dict
-                )
-                min_pass_rate = min_pass_dict.get(
-                    test_type, multiple_perturbations_min_pass_rate
-                )
-            if summary[test_type]["category"] in ["Accuracy", "performance"]:
-                min_pass_rate = 1
+        # Accuracy and performance tests should have a minimum pass rate of 1
+        if test_values["category"] in ["accuracy", "performance"]:
+            min_pass_rate = 1
 
-            report[test_type] = {
-                "category": summary[test_type]["category"],
-                "fail_count": summary[test_type]["false"],
-                "pass_count": summary[test_type]["true"],
-                "pass_rate": pass_rate,
-                "minimum_pass_rate": min_pass_rate,
-                "pass": pass_rate >= min_pass_rate,
-            }
+        # create a temporary dictionary to store the category, test_type, and pass/fail or score_1, score_2, score_3 etc.
+        temp = {
+            "category": test_values["category"],
+        }
+
+        # handling multiple keys in the dictionary like (true or false), (score_1, score_2, score_3)
+        record_count = sum(
+            num for num in test_values.values() if isinstance(num, (int, float))
+        )
+        # record_count = test_values["total"]
+
+        if record_count == 0:
+            temp.update(
+                {
+                    "fail_count": 0,
+                    "pass_count": 0,
+                    "pass_rate": 0,
+                    "minimum_pass_rate": min_pass_rate,
+                    "pass": False,
+                }
+            )
+        else:
+            ispass = False
+            for key, value in test_values.items():
+                if key in ("category",):
+                    continue
+
+                name = "pass" if key == "true" else "fail" if key == "false" else key
+                temp[name + "_count"] = value if value else 0
+
+                if key in ["true", "false"]:
+                    pass_rate = summary[test_type].get("true", 0) / record_count
+                    ispass = pass_rate >= min_pass_rate
+                    temp.update(
+                        {
+                            "pass_rate": pass_rate,
+                            "minimum_pass_rate": min_pass_rate,
+                            "pass": ispass,
+                        }
+                    )
+
+        report[test_type] = temp
 
     df_report = pd.DataFrame.from_dict(report, orient="index")
     df_report = df_report.reset_index().rename(columns={"index": "test_type"})
 
-    df_report["pass_rate"] = df_report["pass_rate"].apply(
-        lambda x: "{:.0f}%".format(x * 100)
-    )
-    df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
-        lambda x: "{:.0f}%".format(x * 100)
-    )
-    col_to_move = "category"
-    first_column = df_report.pop("category")
-    df_report.insert(0, col_to_move, first_column)
+    if "pass_rate" in df_report.columns and "minimum_pass_rate" in df_report.columns:
+        df_report["pass_rate"] = df_report["pass_rate"].apply(
+            lambda x: "{:.0f}%".format(x * 100)
+        )
+        df_report["minimum_pass_rate"] = df_report["minimum_pass_rate"].apply(
+            lambda x: "{:.0f}%".format(x * 100)
+        )
+
+    # rearrange the columns
+    columns = df_report.columns.tolist()
+
+    ordered_columns = [
+        "category",
+        "test_type",
+        "fail_count",
+        "pass_count",
+        "pass_rate",
+        "minimum_pass_rate",
+        "pass",
+    ] + [f"{col}_count" for col in unique_labels if col not in ["true", "false"]]
+
     df_report = df_report.reset_index(drop=True)
 
+    columns = list(set(columns))
+    columns = sorted(
+        columns,
+        key=lambda x: ordered_columns.index(x)
+        if x in ordered_columns
+        else len(ordered_columns),
+    )
+
+    # df_report = df_report.T.drop_duplicates().T
+    # col_to_move = "category"
+    # first_column = df_report.pop("category")
+    # df_report.insert(0, col_to_move, first_column)
+    df_report = df_report[columns]
+    df_report.loc[:, [col for col in columns if col.endswith("_count")]] = df_report[
+        [col for col in columns if col.endswith("_count")]
+    ].fillna(0)
     df_report = df_report.fillna("-")
 
     return df_report
