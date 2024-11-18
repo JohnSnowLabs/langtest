@@ -1,9 +1,9 @@
 import random
-from typing import List, Tuple, Union
+from typing import List, Literal, Tuple, Union
 from langtest.logger import logger
 from langtest.transform.robustness import BaseRobustness
 from langtest.utils.custom_types.sample import Sample
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageDraw
 
 
 class ImageResizing(BaseRobustness):
@@ -282,5 +282,218 @@ class ImageCrop(BaseRobustness):
                 sample.perturbed_image = sample.original_image.crop(
                     (0, 0, crop_size[0], crop_size[1])
                 )
+
+        return sample_list
+
+
+class ImageTranslate(BaseRobustness):
+    alias_name = "image_translate"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        translate: Tuple[int, int] = (10, 10),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_translate"
+            sample.perturbed_image = sample.original_image.transform(
+                sample.original_image.size,
+                Image.AFFINE,
+                (1, 0, translate[0], 0, 1, translate[1]),
+            )
+
+        return sample_list
+
+
+class ImageShear(BaseRobustness):
+    alias_name = "image_shear"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        shear: float = 0.5,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_shear"
+            sample.perturbed_image = sample.original_image.transform(
+                sample.original_image.size,
+                Image.AFFINE,
+                (1, shear, 0, 0, 1, 0),
+            )
+
+        return sample_list
+
+
+class ImageBlackSpot(BaseRobustness):
+    """
+    This class is used to corrupt the image by adding a black box to it.
+    """
+
+    alias_name = "image_black_spots"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        max_count: int = 10,
+        shape: str = "random",
+        size_range: Tuple[int, int] = (10, 50),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_black_spots"
+            sample.perturbed_image = sample.original_image.copy()
+            for _ in range(max_count):
+                random_size = random.randint(*size_range)
+                # get random values for the black box
+                x1 = random.randint(0, sample.original_image.width - random_size)
+                y1 = random.randint(0, sample.original_image.height - random_size)
+                x2 = x1 + random_size
+                y2 = y1 + random_size
+
+                opacity = random.uniform(0.5, 1)
+
+                if shape == "random":
+                    shapes = ["rectangle", "circle"]
+                    random.shuffle(shapes)
+                    selected_shape = random.choice(shapes)
+                else:
+                    selected_shape = shape
+
+                if selected_shape == "rectangle":
+                    mask = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                    mask_draw = ImageDraw.Draw(mask)
+                    mask_draw.rectangle(
+                        (x1, y1, x2, y2), fill=(0, 0, 0, int(255 * opacity))
+                    )
+                    sample.perturbed_image.paste(mask, (0, 0), mask)
+                elif selected_shape == "circle":
+                    mask = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                    mask_draw = ImageDraw.Draw(mask)
+                    mask_draw.ellipse(
+                        (x1, y1, x2, y2), fill=(0, 0, 0, int(255 * opacity))
+                    )
+                    sample.perturbed_image.paste(mask, (0, 0), mask)
+
+                else:
+                    raise ValueError("Shape must be either 'rectangle' or 'circle'.")
+
+        return sample_list
+
+
+class ImageLayeredMask(BaseRobustness):
+    alias_name = "image_layered_mask"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        mask: Union[Image.Image, str, None] = None,
+        opacity: float = 0.5,
+        flip: Literal["horizontal", "vertical"] = "horizontal",
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_layered_mask"
+            sample.perturbed_image = sample.original_image.copy()
+            if mask is None:
+                mask = sample.original_image
+
+            elif isinstance(mask, str):
+                mask = Image.open(mask)
+
+            if flip == "horizontal":
+                mask = mask.transpose(Image.FLIP_LEFT_RIGHT)
+            elif flip == "vertical":
+                mask = mask.transpose(Image.FLIP_TOP_BOTTOM)
+
+            mask = mask.convert("RGBA")
+            mask.putalpha(int(255 * opacity))
+            sample.perturbed_image.paste(mask, (0, 0), mask)
+
+        return sample_list
+
+
+class ImageTextOverlay(BaseRobustness):
+    alias_name = "image_text_overlay"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        text: str = "Hello, World!",
+        font_size: int = 20,
+        font_color: Tuple[int, int, int] = (255, 255, 255),
+        position: Tuple[int, int] = (10, 10),
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        from PIL import ImageFont
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_text_overlay"
+            sample.perturbed_image = sample.original_image.copy()
+            draw = ImageDraw.Draw(sample.perturbed_image)
+            font = ImageFont.load_default()
+            draw.text(
+                position,
+                text,
+                font=font,
+                fill=font_color,
+            )
+
+        return sample_list
+
+
+class ImageWatermark(BaseRobustness):
+    alias_name = "image_watermark"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        watermark: Union[Image.Image, str],
+        position: Tuple[int, int] = (10, 10),
+        opacity: float = 0.5,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_watermark"
+            sample.perturbed_image = sample.original_image.copy()
+
+            if watermark is None:
+                # If no watermark is provided, add a random text as watermark
+                watermark = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+                draw = ImageDraw.Draw(watermark)
+                draw.text(
+                    position,
+                    "Watermark",
+                    font=None,
+                    fill=(255, 255, 255, int(255 * opacity)),
+                )
+            elif isinstance(watermark, str):
+                watermark = Image.open(watermark)
+                watermark = watermark.convert("RGBA")
+                watermark.putalpha(int(255 * opacity))
+            else:
+                watermark = watermark.convert("RGBA")
+                watermark.putalpha(int(255 * opacity))
+
+            sample.perturbed_image.paste(watermark, (0, 0), watermark)
 
         return sample_list
