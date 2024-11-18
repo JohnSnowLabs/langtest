@@ -404,6 +404,7 @@ class ImageLayeredMask(BaseRobustness):
         *args,
         **kwargs,
     ) -> List[Sample]:
+        reset_mask = mask
         for sample in sample_list:
             sample.category = "robustness"
             sample.test_type = "image_layered_mask"
@@ -423,6 +424,8 @@ class ImageLayeredMask(BaseRobustness):
             mask.putalpha(int(255 * opacity))
             sample.perturbed_image.paste(mask, (0, 0), mask)
 
+            mask = reset_mask
+
         return sample_list
 
 
@@ -433,23 +436,26 @@ class ImageTextOverlay(BaseRobustness):
     @staticmethod
     def transform(
         sample_list: List[Sample],
-        text: str = "Hello, World!",
-        font_size: int = 20,
+        text: str = "LangTest",
+        font_size: int = 100,
         font_color: Tuple[int, int, int] = (255, 255, 255),
-        position: Tuple[int, int] = (10, 10),
         *args,
         **kwargs,
     ) -> List[Sample]:
         from PIL import ImageFont
+
+        # transperant text overlay on the image
+        font_color = font_color + (255,)
 
         for sample in sample_list:
             sample.category = "robustness"
             sample.test_type = "image_text_overlay"
             sample.perturbed_image = sample.original_image.copy()
             draw = ImageDraw.Draw(sample.perturbed_image)
-            font = ImageFont.load_default()
+            font = ImageFont.truetype("arial.ttf", font_size)
+
             draw.text(
-                position,
+                (sample.original_image.width // 2, sample.original_image.height // 2),
                 text,
                 font=font,
                 fill=font_color,
@@ -465,7 +471,7 @@ class ImageWatermark(BaseRobustness):
     @staticmethod
     def transform(
         sample_list: List[Sample],
-        watermark: Union[Image.Image, str],
+        watermark: Union[Image.Image, str] = None,
         position: Tuple[int, int] = (10, 10),
         opacity: float = 0.5,
         *args,
@@ -482,7 +488,7 @@ class ImageWatermark(BaseRobustness):
                 draw = ImageDraw.Draw(watermark)
                 draw.text(
                     position,
-                    "Watermark",
+                    "LangTest",
                     font=None,
                     fill=(255, 255, 255, int(255 * opacity)),
                 )
@@ -495,5 +501,114 @@ class ImageWatermark(BaseRobustness):
                 watermark.putalpha(int(255 * opacity))
 
             sample.perturbed_image.paste(watermark, (0, 0), watermark)
+
+        return sample_list
+
+
+class ImageRandomTextOverlay(BaseRobustness):
+    alias_name = "image_random_text_overlay"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        opacity: float = 0.5,
+        font_size: int = 20,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        from PIL import ImageFont
+
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_random_text_overlay"
+            sample.perturbed_image = sample.original_image.copy()
+            overlay = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
+            draw = ImageDraw.Draw(overlay)
+            font = ImageFont.load_default()
+            draw.text(
+                (10, 10),
+                "LangTest",
+                font=font,
+                fill=(255, 255, 255, int(255 * opacity)),
+            )
+            sample.perturbed_image.paste(overlay, (0, 0), overlay)
+
+        return sample_list
+
+
+class ImageRandomLineOverlay(BaseRobustness):
+    alias_name = "image_random_line_overlay"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        color: Tuple[int, int, int] = (255, 0, 0),
+        opacity: float = 0.5,
+        random_lines: int = 10,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_random_line_overlay"
+            sample.perturbed_image = sample.original_image.copy()
+            overlay = Image.new("RGBA", sample.original_image.size)
+            for _ in range(random_lines):
+                overlay.putalpha(int(255 * opacity))
+                draw = ImageDraw.Draw(overlay)
+                # Get random points for the line
+                x1 = random.randint(0, sample.original_image.width)
+                y1 = random.randint(0, sample.original_image.height)
+                x2 = random.randint(0, sample.original_image.width)
+                y2 = random.randint(0, sample.original_image.height)
+
+                draw.line(
+                    [(x1, y1), (x2, y2)],
+                    fill=color + (int(255 * opacity),),
+                    width=5,
+                )
+            sample.perturbed_image.paste(overlay, (0, 0), overlay)
+
+        return sample_list
+
+
+class ImageRandomPolygonOverlay(BaseRobustness):
+    alias_name = "image_random_polygon_overlay"
+    supported_tasks = ["visualqa"]
+
+    @staticmethod
+    def transform(
+        sample_list: List[Sample],
+        color: Tuple[int, int, int] = (255, 0, 0),
+        opacity: float = 0.2,
+        random_polygons: int = 10,
+        *args,
+        **kwargs,
+    ) -> List[Sample]:
+        for sample in sample_list:
+            sample.category = "robustness"
+            sample.test_type = "image_random_polygon_overlay"
+            sample.perturbed_image = sample.original_image.copy()
+            overlay = Image.new("RGBA", sample.original_image.size)
+            overlay.putalpha(int(255 * opacity))
+            draw = ImageDraw.Draw(overlay)
+
+            for _ in range(random_polygons):
+                # Get random points for the polygon vertices with random vertices
+                vertices = [
+                    (
+                        random.randint(0, sample.original_image.width),
+                        random.randint(0, sample.original_image.height),
+                    )
+                    for _ in range(random.randint(3, 6))
+                ]
+
+                draw.polygon(
+                    vertices,
+                    fill=color + (int(255 * opacity),),
+                )
+            sample.perturbed_image.paste(overlay, (0, 0), overlay)
 
         return sample_list
