@@ -513,7 +513,9 @@ class ImageRandomTextOverlay(BaseRobustness):
     def transform(
         sample_list: List[Sample],
         opacity: float = 0.5,
-        font_size: int = 20,
+        font_size: int = 30,
+        random_texts: int = 10,
+        color: Tuple[int, int, int] = (0, 0, 0),
         *args,
         **kwargs,
     ) -> List[Sample]:
@@ -525,13 +527,18 @@ class ImageRandomTextOverlay(BaseRobustness):
             sample.perturbed_image = sample.original_image.copy()
             overlay = Image.new("RGBA", sample.original_image.size, (0, 0, 0, 0))
             draw = ImageDraw.Draw(overlay)
-            font = ImageFont.load_default()
-            draw.text(
-                (10, 10),
-                "LangTest",
-                font=font,
-                fill=(255, 255, 255, int(255 * opacity)),
-            )
+
+            for _ in range(random_texts):
+                font = ImageFont.truetype("arial.ttf", font_size)
+                x1 = random.randint(0, sample.original_image.width)
+                y1 = random.randint(0, sample.original_image.height)
+
+                draw.text(
+                    (x1, y1),
+                    "LangTest",
+                    font=font,
+                    fill=(*color, int(255 * opacity)),
+                )
             sample.perturbed_image.paste(overlay, (0, 0), overlay)
 
         return sample_list
