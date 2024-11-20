@@ -5,7 +5,7 @@ import re
 import string
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, TypedDict, Union
 
 import pandas as pd
 
@@ -294,6 +294,8 @@ class BaseRobustness(ABC):
         "translation",
     ]
 
+    TestConfig = TypedDict("TestConfig", min_pass_rate=float, prob=float)
+
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample]) -> List[Sample]:
@@ -357,6 +359,13 @@ class BaseRobustness(ABC):
         alias = cls.alias_name if isinstance(cls.alias_name, list) else [cls.alias_name]
         for name in alias:
             BaseRobustness.test_types[name] = cls
+
+    # class Config(TypedDict):
+    #     min_pass_rate: float
+    #     prob: float
+
+    # class Parameters(TypedDict):
+    #     ...
 
 
 class UpperCase(BaseRobustness):
@@ -495,6 +504,10 @@ class AddPunctuation(BaseRobustness):
     """A class for adding punctuation to text samples."""
 
     alias_name = "add_punctuation"
+    parameters = TypedDict("parameters", whitelist=List[str])
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters, count=int
+    )
 
     @staticmethod
     def transform(
@@ -565,6 +578,13 @@ class StripPunctuation(BaseRobustness):
     """A class for stripping punctuation to text samples."""
 
     alias_name = "strip_punctuation"
+    parameters = TypedDict("parameters", whitelist=List[str])
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+        prob=float,
+        parameters=parameters,
+    )
 
     @staticmethod
     def transform(
@@ -626,6 +646,9 @@ class AddTypo(BaseRobustness):
     """A class for adding typos to text samples."""
 
     alias_name = "add_typo"
+
+    # TestConfig
+    TestConfig = TypedDict("TestConfig", min_pass_rate=float, prob=float, count=int)
 
     @staticmethod
     def transform(
@@ -699,6 +722,14 @@ class SwapEntities(BaseRobustness):
 
     alias_name = "swap_entities"
     supported_tasks = ["ner"]
+
+    # parameters
+    parameters = TypedDict("parameters", labels=List[List[str]], count=int)
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
 
     @staticmethod
     def transform(
@@ -877,6 +908,20 @@ class AddContext(BaseRobustness):
     """A class for adding context to text samples."""
 
     alias_name = "add_context"
+
+    # additional parameters
+    parameters = TypedDict(
+        "parameters",
+        starting_context=List[str],
+        ending_context=List[str],
+        strategy=str,
+        count=int,
+    )
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
 
     @staticmethod
     def transform(
@@ -1321,6 +1366,14 @@ class AddSpeechToTextTypo(BaseRobustness):
 
     alias_name = "add_speech_to_text_typo"
 
+    # additional parameters
+    parameters = TypedDict("parameters", count=int)
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
+
     @staticmethod
     def transform(
         sample_list: List[Sample], prob: Optional[float] = 1.0, count: int = 1
@@ -1737,6 +1790,14 @@ class StripAllPunctuation(BaseRobustness):
 
     alias_name = "strip_all_punctuation"
 
+    # additional parameters
+    parameters = TypedDict("parameters", whitelist=List[str])
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
+
     @staticmethod
     def transform(
         sample_list: List[Union[Sample, str]],
@@ -1862,6 +1923,14 @@ class RandomAge(BaseRobustness):
 
     alias_name = "randomize_age"
 
+    # additional parameters
+    parameters = TypedDict("parameters", random_amount=int, count=int)
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
+
     @staticmethod
     def transform(
         sample_list: List[Sample],
@@ -1945,6 +2014,14 @@ class AddNewLines(BaseRobustness):
 
     alias_name = "add_new_lines"
     supported_tasks = ["text-classification", "question-answering", "summarization"]
+
+    # additional parameters
+    parameters = TypedDict("parameters", max_lines=int, count=int)
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
 
     @staticmethod
     def transform(
@@ -2049,6 +2126,14 @@ class AddTabs(BaseRobustness):
 
     alias_name = "add_tabs"
     supported_tasks = ["text-classification", "question-answering", "summarization"]
+
+    # additional parameters
+    parameters = TypedDict("parameters", count=int, max_tabs=int)
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig", min_pass_rate=float, prob=float, parameters=parameters
+    )
 
     @staticmethod
     def transform(
