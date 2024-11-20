@@ -35,3 +35,36 @@ class DatasetConfig(TypedDict):
     feature_column: Union[str, List[str]]
     target_column: Union[str, List[str]]
     source: str
+
+
+class RobustnessTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Robustness Tests.
+    """
+
+    from langtest.transform import robustness
+
+    uppercase: robustness.UpperCase.TestConfig
+    lowercase: robustness.LowerCase.TestConfig
+    titlecase: robustness.TitleCase.TestConfig
+    add_punctuation: robustness.AddPunctuation.TestConfig
+    strip_punctuation: robustness.StripPunctuation.TestConfig
+    add_typo: robustness.AddTypo.TestConfig
+    swap_entities: robustness.SwapEntities.TestConfig
+    american_to_british: robustness.ConvertAccent.TestConfig
+    british_to_american: robustness.ConvertAccent.TestConfig
+    add_context: robustness.AddContext.TestConfig
+    add_contractions: robustness.AddContraction.TestConfig
+    dyslexia_word_swap: robustness.DyslexiaWordSwap.TestConfig
+    number_to_word: robustness.NumberToWord.TestConfig
+    add_ocr_typo: robustness.AddOcrTypo.TestConfig
+    add_abbreviation: robustness.AbbreviationInsertion.TestConfig
+    add_speech_to_text_typo: robustness.AddSpeechToTextTypo.TestConfig
+    add_slangs: robustness.AddSlangifyTypo.TestConfig
+    multiple_perturbations: robustness.MultiplePerturbations.TestConfig
+    adjective_synonym_swap: robustness.AdjectiveSynonymSwap.TestConfig
+    adjective_antonym_swap: robustness.AdjectiveAntonymSwap.TestConfig
+    strip_all_punctuation: robustness.StripAllPunctuation.TestConfig
+    randomize_age: robustness.RandomAge.TestConfig
+    add_new_lines: robustness.AddNewLines.TestConfig
+    add_tabs: robustness.AddTabs.TestConfig
