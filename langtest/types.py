@@ -1,4 +1,4 @@
-from typing import Literal, TypedDict, Union, List
+from typing import Any, Dict, Literal, TypedDict, Union, List
 
 
 class ModelConfig(TypedDict):
@@ -128,8 +128,16 @@ class TestCategories(TypedDict):
 
     """
 
-    default = TypedDict("default", min_pass_rate=float, user_prompt=Union[str, dict])
-
     robustness: RobustnessTestsConfig
     bias: BiasTestsConfig
     representation: RepresentationTestsConfig
+
+
+class HarnessConfig(TypedDict):
+    """
+    HarnessConfig is a TypedDict that defines the configuration for a harness.
+    """
+
+    evaluation: Dict[str, Any]
+    model_parameters: Dict[str, Any]
+    tests: TestCategories
