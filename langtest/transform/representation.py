@@ -186,8 +186,8 @@ class GenderRepresentation(BaseRepresentation):
     # Config Hint for the representation tests
     TestConfig = TypedDict(
         "TestConfig",
-        min_count=Union[int, min_count],
-        min_proportion=Union[float, min_proportion],
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
     )
 
     @classmethod
@@ -376,8 +376,8 @@ class EthnicityRepresentation(BaseRepresentation):
 
     TestConfig = TypedDict(
         "TestConfig",
-        min_count=Union[int, min_count],
-        min_proportion=Union[float, min_proportion],
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
     )
 
     @classmethod
@@ -739,8 +739,8 @@ class ReligionRepresentation(BaseRepresentation):
 
     TestConfig = TypedDict(
         "TestConfig",
-        min_count=Union[int, min_count],
-        min_proportion=Union[float, min_proportion],
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
     )
 
     @classmethod
@@ -969,8 +969,8 @@ class CountryEconomicRepresentation(BaseRepresentation):
 
     TestConfig = TypedDict(
         "TestConfig",
-        min_count=Union[int, min_count],
-        min_proportion=Union[float, min_proportion],
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
     )
 
     @classmethod
