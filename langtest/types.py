@@ -143,6 +143,29 @@ class FairnessTestsConfig(TypedDict):
     max_gender_llm_eval: fairness.MaxGenderLLMEval.TestConfig
 
 
+class AccuracyTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Accuracy Tests.
+    """
+
+    from langtest.transform import accuracy
+
+    min_precision_score: accuracy.MinPrecisionScore.TestConfig
+    min_recall_score: accuracy.MinRecallScore.TestConfig
+    min_f1_score: accuracy.MinF1Score.TestConfig
+    min_micro_f1_score: accuracy.MinMicroF1Score.TestConfig
+    min_macro_f1_score: accuracy.MinMacroF1Score.TestConfig
+    min_weighted_f1_score: accuracy.MinWeightedF1Score.TestConfig
+    min_exact_match_score: accuracy.MinEMcore.TestConfig
+    min_bleu_score: accuracy.MinROUGEcore.TestConfig
+    min_rouge1_score: accuracy.MinROUGEcore.TestConfig
+    min_rouge2_score: accuracy.MinROUGEcore.TestConfig
+    min_rougeL_score: accuracy.MinROUGEcore.TestConfig
+    min_rougeLsum_score: accuracy.MinROUGEcore.TestConfig
+    llm_eval: accuracy.LLMEval.TestConfig
+    degradation_analysis: accuracy.DegradationAnalysis.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
@@ -152,6 +175,8 @@ class TestCategories(TypedDict):
     robustness: RobustnessTestsConfig
     bias: BiasTestsConfig
     representation: RepresentationTestsConfig
+    fairness: FairnessTestsConfig
+    accuracy: AccuracyTestsConfig
 
 
 class HarnessConfig(TypedDict):
