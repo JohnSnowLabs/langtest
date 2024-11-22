@@ -1,6 +1,6 @@
 import asyncio
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -84,6 +84,11 @@ class BaseIdeology(ABC):
 
     alias_name = None
     supported_tasks = ["ideology", "question-answering"]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+    )
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:

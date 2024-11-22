@@ -1,4 +1,4 @@
-from typing import Any, Dict, Literal, TypedDict, Union, List
+from typing import Any, Dict, Literal, Optional, TypedDict, Union, List
 
 
 class ModelConfig(TypedDict):
@@ -245,6 +245,80 @@ class ClinicalTestsConfig(TypedDict):
     drug_brand_to_generic: clinical.Brand2Generic.TestConfig
 
 
+class SensitivityTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Sensitivity Tests.
+    """
+
+    from langtest.transform import sensitivity
+
+    add_negation: sensitivity.AddNegation.TestConfig
+    add_toxic_words: sensitivity.AddToxicWords.TestConfig
+
+
+class SterotypeTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Sterotype Tests.
+    """
+
+    from langtest.transform import stereotype
+
+    crows_pairs: stereotype.StereoTypeTestFactory.TestConfig
+    wino_bias: stereotype.StereoTypeTestFactory.TestConfig
+
+
+class SterosetTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Steroset Tests.
+    """
+
+    from langtest.transform import stereoset
+
+    intrasentence: stereoset.StereoSetTestFactory.TestConfig
+    intersentence: stereoset.StereoSetTestFactory.TestConfig
+
+
+class SycophancyTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Sycophancy Tests.
+    """
+
+    from langtest.transform import sycophancy
+
+    sycophancy_math: sycophancy.SycophancyMath.TestConfig
+    sycophancy_nlp: sycophancy.SycophancyNlp.TestConfig
+
+
+class DisinformationTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Disinformation Tests.
+    """
+
+    from langtest.transform import disinformation
+
+    narrative_wedging: disinformation.DisinformationTestFactory.TestConfig
+
+
+class IdeologyTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Ideology Tests.
+    """
+
+    from langtest.transform import ideology
+
+    political_compass: Optional[ideology.PoliticalCompass.TestConfig]
+
+
+class FactualityTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Factuality Tests.
+    """
+
+    from langtest.transform import factuality
+
+    order_bias: factuality.FactualityTestFactory.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
@@ -263,6 +337,13 @@ class TestCategories(TypedDict):
     legal: LegalTestsConfig
     grammar: GrammarTestsConfig
     clinical: ClinicalTestsConfig
+    sensitivity: SensitivityTestsConfig
+    stereotype: SterotypeTestsConfig
+    stereoset: SterosetTestsConfig
+    sycophancy: SycophancyTestsConfig
+    disinformation: DisinformationTestsConfig
+    ideology: IdeologyTestsConfig
+    factuality: FactualityTestsConfig
 
 
 class HarnessConfig(TypedDict):
