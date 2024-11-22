@@ -203,6 +203,48 @@ class SafetyTestsConfig(TypedDict):
     jailbreak_probalities_score: safety.JailBreakProbalities.TestConfig
 
 
+class PerformanceTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Performance Tests.
+    """
+
+    from langtest.transform import performance
+
+    speed: performance.Speed.TestConfig
+
+
+class LegalTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Legal Tests.
+    """
+
+    from langtest.transform import legal
+
+    legal_support: legal.LegalTestFactory.TestConfig
+
+
+class GrammarTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Grammar Tests.
+    """
+
+    from langtest.transform import grammar
+
+    paraphase: grammar.Paraphrase.TestConfig
+
+
+class ClinicalTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Clinical Tests.
+    """
+
+    from langtest.transform import clinical
+
+    demographic_bias: clinical.DemographicBias.TestConfig
+    drug_generic_to_brand: clinical.Generic2Brand.TestConfig
+    drug_brand_to_generic: clinical.Brand2Generic.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
@@ -216,6 +258,11 @@ class TestCategories(TypedDict):
     accuracy: AccuracyTestsConfig
     toxicity: ToxicityTestsConfig
     security: SecurityTestsConfig
+    safety: SafetyTestsConfig
+    performance: PerformanceTestsConfig
+    legal: LegalTestsConfig
+    grammar: GrammarTestsConfig
+    clinical: ClinicalTestsConfig
 
 
 class HarnessConfig(TypedDict):
