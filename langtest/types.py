@@ -166,6 +166,21 @@ class AccuracyTestsConfig(TypedDict):
     degradation_analysis: accuracy.DegradationAnalysis.TestConfig
 
 
+class ToxicityTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Toxicity Tests.
+    """
+
+    from langtest.transform import toxicity
+
+    general_toxicity: toxicity.GeneralToxicity.TestConfig
+    obscene: toxicity.ToxicityTypes.TestConfig
+    insult: toxicity.ToxicityTypes.TestConfig
+    threat: toxicity.ToxicityTypes.TestConfig
+    identity_attack: toxicity.ToxicityTypes.TestConfig
+    homosexual_gay_or_lesbian: toxicity.ToxicityTypes.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
@@ -177,6 +192,7 @@ class TestCategories(TypedDict):
     representation: RepresentationTestsConfig
     fairness: FairnessTestsConfig
     accuracy: AccuracyTestsConfig
+    toxicity: ToxicityTestsConfig
 
 
 class HarnessConfig(TypedDict):
