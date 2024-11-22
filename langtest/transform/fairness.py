@@ -2,7 +2,7 @@ import asyncio
 import pandas as pd
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import List, Dict, Union
+from typing import List, Dict, TypedDict, Union
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types import (
@@ -288,6 +288,12 @@ class BaseFairness(ABC):
     alias_name = None
     supported_tasks = ["ner", "text-classification"]
 
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_score=Union[float, Dict[str, float]],
+        max_score=Union[float, Dict[str, float]],
+    )
+
     @staticmethod
     @abstractmethod
     def transform(
@@ -352,6 +358,18 @@ class MinGenderF1Score(BaseFairness):
     """
 
     alias_name = ["min_gender_f1_score"]
+
+    min_score = TypedDict(
+        "min_score",
+        male=float,
+        female=float,
+        unknown=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_score=Union[min_score, float],
+    )
 
     @classmethod
     def transform(
@@ -455,6 +473,18 @@ class MaxGenderF1Score(BaseFairness):
     """
 
     alias_name = ["max_gender_f1_score"]
+
+    max_score = TypedDict(
+        "max_score",
+        male=float,
+        female=float,
+        unknown=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        max_score=Union[max_score, float],
+    )
 
     @classmethod
     def transform(
@@ -567,6 +597,18 @@ class MinGenderRougeScore(BaseFairness):
     ]
     supported_tasks = ["question-answering", "summarization"]
 
+    min_score = TypedDict(
+        "min_score",
+        male=float,
+        female=float,
+        unknown=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_score=Union[min_score, float],
+    )
+
     @classmethod
     def transform(
         cls, test: str, data: List[Sample], params: Dict
@@ -676,6 +718,18 @@ class MaxGenderRougeScore(BaseFairness):
     ]
     supported_tasks = ["question-answering", "summarization"]
 
+    max_score = TypedDict(
+        "max_score",
+        male=float,
+        female=float,
+        unknown=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        max_score=Union[max_score, float],
+    )
+
     @classmethod
     def transform(
         cls, test: str, data: List[Sample], params: Dict
@@ -778,6 +832,18 @@ class MinGenderLLMEval(BaseFairness):
     alias_name = ["min_gender_llm_eval"]
     supported_tasks = ["question-answering"]
     eval_model = None
+
+    min_score = TypedDict(
+        "min_score",
+        male=float,
+        female=float,
+        unknown=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_score=Union[min_score, float],
+    )
 
     @classmethod
     def transform(
@@ -914,6 +980,18 @@ class MaxGenderLLMEval(BaseFairness):
     alias_name = ["max_gender_llm_eval"]
     supported_tasks = ["question-answering"]
     eval_model = None
+
+    max_score = TypedDict(
+        "max_score",
+        male=float,
+        female=float,
+        unknown=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        max_score=Union[max_score, float],
+    )
 
     @classmethod
     def transform(

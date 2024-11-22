@@ -122,6 +122,27 @@ class RepresentationTestsConfig(TypedDict):
     min_country_economic_representation_proportion: representation.CountryEconomicRepresentation.TestConfig
 
 
+class FairnessTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Fairness Tests.
+    """
+
+    from langtest.transform import fairness
+
+    min_gender_f1_score: fairness.MinGenderF1Score.TestConfig
+    max_gender_f1_score: fairness.MaxGenderF1Score.TestConfig
+    min_gender_rouge1_score: fairness.MinGenderRougeScore.TestConfig
+    min_gender_rouge2_score: fairness.MinGenderRougeScore.TestConfig
+    min_gender_rougeL_score: fairness.MinGenderRougeScore.TestConfig
+    min_gender_rougeLsum_score: fairness.MinGenderRougeScore.TestConfig
+    max_gender_rouge1_score: fairness.MaxGenderRougeScore.TestConfig
+    max_gender_rouge2_score: fairness.MaxGenderRougeScore.TestConfig
+    max_gender_rougeL_score: fairness.MaxGenderRougeScore.TestConfig
+    max_gender_rougeLsum_score: fairness.MaxGenderRougeScore.TestConfig
+    min_gender_llm_eval: fairness.MinGenderLLMEval.TestConfig
+    max_gender_llm_eval: fairness.MaxGenderLLMEval.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
