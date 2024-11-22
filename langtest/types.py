@@ -103,6 +103,25 @@ class BiasTestsConfig(TypedDict):
     replace_to_buddhist_names: bias.ReligionBias.TestConfig
 
 
+class RepresentationTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Representation Tests.
+    """
+
+    from langtest.transform import representation
+
+    min_gender_representation_count: representation.GenderRepresentation.TestConfig
+    min_gender_representation_proportion: representation.GenderRepresentation.TestConfig
+    min_ethnicity_name_representation_count: representation.EthnicityRepresentation.TestConfig
+    min_ethnicity_name_representation_proportion: representation.EthnicityRepresentation.TestConfig
+    min_label_representation_count: representation.LabelRepresentation.TestConfig
+    min_label_representation_proportion: representation.LabelRepresentation.TestConfig
+    min_religion_name_representation_count: representation.ReligionRepresentation.TestConfig
+    min_religion_name_representation_proportion: representation.ReligionRepresentation.TestConfig
+    min_country_economic_representation_count: representation.CountryEconomicRepresentation.TestConfig
+    min_country_economic_representation_proportion: representation.CountryEconomicRepresentation.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
@@ -113,3 +132,4 @@ class TestCategories(TypedDict):
 
     robustness: RobustnessTestsConfig
     bias: BiasTestsConfig
+    representation: RepresentationTestsConfig
