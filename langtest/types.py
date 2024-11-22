@@ -68,3 +68,48 @@ class RobustnessTestsConfig(TypedDict):
     randomize_age: robustness.RandomAge.TestConfig
     add_new_lines: robustness.AddNewLines.TestConfig
     add_tabs: robustness.AddTabs.TestConfig
+
+
+class BiasTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Bias Tests.
+    """
+
+    from langtest.transform import bias
+
+    replace_to_male_pronouns: bias.GenderPronounBias.TestConfig
+    replace_to_female_pronouns: bias.GenderPronounBias.TestConfig
+    replace_to_neutral_pronouns: bias.GenderPronounBias.TestConfig
+    replace_to_high_income_country: bias.CountryEconomicBias.TestConfig
+    replace_to_low_income_country: bias.CountryEconomicBias.TestConfig
+    replace_to_upper_middle_income_country: bias.CountryEconomicBias.TestConfig
+    replace_to_lower_middle_income_country: bias.CountryEconomicBias.TestConfig
+    replace_to_white_firstnames: bias.EthnicityNameBias.TestConfig
+    replace_to_black_firstnames: bias.EthnicityNameBias.TestConfig
+    replace_to_hispanic_firstnames: bias.EthnicityNameBias.TestConfig
+    replace_to_asian_firstnames: bias.EthnicityNameBias.TestConfig
+    replace_to_white_lastnames: bias.EthnicityNameBias.TestConfig
+    replace_to_black_lastnames: bias.EthnicityNameBias.TestConfig
+    replace_to_hispanic_lastnames: bias.EthnicityNameBias.TestConfig
+    replace_to_asian_lastnames: bias.EthnicityNameBias.TestConfig
+    replace_to_native_american_lastnames: bias.EthnicityNameBias.TestConfig
+    replace_to_inter_racial_lastnames: bias.EthnicityNameBias.TestConfig
+    replace_to_muslim_names: bias.ReligionBias.TestConfig
+    replace_to_hindu_names: bias.ReligionBias.TestConfig
+    replace_to_christian_names: bias.ReligionBias.TestConfig
+    replace_to_sikh_names: bias.ReligionBias.TestConfig
+    replace_to_jain_names: bias.ReligionBias.TestConfig
+    replace_to_parsi_names: bias.ReligionBias.TestConfig
+    replace_to_buddhist_names: bias.ReligionBias.TestConfig
+
+
+class TestCategories(TypedDict):
+    """
+    TestCategories is a TypedDict that defines the categories of tests.
+
+    """
+
+    default = TypedDict("default", min_pass_rate=float, user_prompt=Union[str, dict])
+
+    robustness: RobustnessTestsConfig
+    bias: BiasTestsConfig

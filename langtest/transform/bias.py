@@ -4,7 +4,7 @@ import random
 from langtest.logger import logger as logging
 import re
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, TypedDict
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
@@ -246,6 +246,9 @@ class BaseBias(ABC):
         "question-answering",
         "summarization",
     ]
+
+    # Config Hint for the bias tests
+    TestConfig = TypedDict("TestConfig", min_pass_rate=float)
 
     @abstractmethod
     def transform(self, sample_list: List[Sample], *args, **kwargs) -> List[Sample]:
