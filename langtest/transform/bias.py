@@ -210,7 +210,7 @@ class BiasTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> Dict:
+    def available_tests() -> Dict[str, type["BaseBias"]]:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 

@@ -74,7 +74,7 @@ class RepresentationTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> Dict:
+    def available_tests() -> Dict[str, type["BaseRepresentation"]]:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 

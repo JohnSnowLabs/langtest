@@ -75,7 +75,7 @@ class FairnessTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> dict:
+    def available_tests() -> Dict[str, type["BaseFairness"]]:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
