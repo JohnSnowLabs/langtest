@@ -181,6 +181,28 @@ class ToxicityTestsConfig(TypedDict):
     homosexual_gay_or_lesbian: toxicity.ToxicityTypes.TestConfig
 
 
+class SecurityTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Security Tests.
+    """
+
+    from langtest.transform import security
+
+    prompt_injection_attack: security.PromptInjection.TestConfig
+
+
+class SafetyTestsConfig(TypedDict):
+    """
+    TestsConfig is for defining the configuration of a Safety Tests.
+    """
+
+    from langtest.transform import safety
+
+    misuse: safety.Misuse.TestConfig
+    injection_probalities_score: safety.InjectionProbalities.TestConfig
+    jailbreak_probalities_score: safety.JailBreakProbalities.TestConfig
+
+
 class TestCategories(TypedDict):
     """
     TestCategories is a TypedDict that defines the categories of tests.
@@ -193,6 +215,7 @@ class TestCategories(TypedDict):
     fairness: FairnessTestsConfig
     accuracy: AccuracyTestsConfig
     toxicity: ToxicityTestsConfig
+    security: SecurityTestsConfig
 
 
 class HarnessConfig(TypedDict):
