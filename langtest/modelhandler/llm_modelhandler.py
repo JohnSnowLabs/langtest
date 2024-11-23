@@ -115,9 +115,15 @@ class PretrainedModelForQA(ModelAPI):
                 from .utils import CHAT_MODEL_CLASSES
 
                 if model_type and hub in CHAT_MODEL_CLASSES:
-                    hub_module = getattr(chat_models, hub)
-                    model = getattr(hub_module, CHAT_MODEL_CLASSES[hub])
-                elif model_type in [None, "instruct"]:
+                    if hasattr(chat_models, hub):
+                        hub_module = getattr(chat_models, hub)
+                        model = getattr(hub_module, CHAT_MODEL_CLASSES[hub])
+                    elif hasattr(chat_models, CHAT_MODEL_CLASSES[hub]):
+                        model = getattr(chat_models, CHAT_MODEL_CLASSES[hub])
+                    else:
+                        raise ValueError(Errors.E044(path=path))
+
+                elif model_type in [None, "completion"]:
                     model = getattr(lc, LANGCHAIN_HUBS[hub])
                 else:
                     raise ValueError(
