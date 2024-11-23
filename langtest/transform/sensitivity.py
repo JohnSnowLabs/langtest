@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from langtest.transform.utils import filter_unique_samples
 from langtest.errors import Errors, Warnings
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, TypedDict
 from langtest.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
 
@@ -135,6 +135,12 @@ class BaseSensitivity(ABC):
         "sensitivity",
         "question-answering",
     ]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     @staticmethod
     @abstractmethod

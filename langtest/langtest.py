@@ -13,7 +13,7 @@ import random
 
 from pkg_resources import resource_filename
 
-from langtest.types import DatasetConfig, ModelConfig
+from langtest.types import DatasetConfig, HarnessConfig, ModelConfig
 
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
@@ -94,18 +94,18 @@ class Harness:
         task: Union[str, dict],
         model: Optional[Union[List[ModelConfig], ModelConfig]] = None,
         data: Optional[Union[List[DatasetConfig], DatasetConfig]] = None,
-        config: Optional[Union[str, dict]] = None,
+        config: Optional[Union[HarnessConfig, str]] = None,
         benchmarking: dict = None,
     ):
         """Initialize the Harness object.
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (list | dict, optional): Specifies the model to be evaluated.
+            model (ModelConfig, list | dict, optional): Specifies the model to be evaluated.
                 If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
                 If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
-            data (dict, optional): The data to be used for evaluation.
-            config (str | dict, optional): Configuration for the tests to be performed.
+            data (DatasetConfig, dict, optional): The data to be used for evaluation.
+            config (str | HarnessConfig , optional): Configuration for the tests to be performed.
 
         Raises:
             ValueError: Invalid arguments.
@@ -251,7 +251,7 @@ class Harness:
     def __str__(self) -> str:
         return object.__repr__(self)
 
-    def configure(self, config: Union[str, dict]) -> dict:
+    def configure(self, config: Union[HarnessConfig, dict, str]) -> HarnessConfig:
         """Configure the Harness with a given configuration.
 
         Args:

@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, TypedDict, Union
 import asyncio
 from langtest.transform.base import ITests
 from langtest.utils.custom_types.sample import Sample
@@ -15,6 +15,14 @@ class StereoTypeTestFactory(ITests):
         "fill-mask",
         "question-answering",
     ]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+        diff_threshold=float,
+        filter_threshold=float,
+    )
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the crows-pairs or wino-bias tests"""

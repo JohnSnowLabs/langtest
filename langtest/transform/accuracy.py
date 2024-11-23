@@ -2,7 +2,7 @@ import asyncio
 from collections import defaultdict
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Any, DefaultDict, Dict, List, Type, Union
+from typing import Any, DefaultDict, Dict, List, Type, TypedDict, Union
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -271,6 +271,11 @@ class BaseAccuracy(ABC):
 
     alias_name = None
     supported_tasks = ["ner", "text-classification"]
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_score=Union[Dict[str, float], float],
+    )
 
     @classmethod
     @abstractmethod
@@ -1019,6 +1024,13 @@ class LLMEval(BaseAccuracy):
     supported_tasks = ["question-answering"]
 
     eval_model = None
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        model=str,
+        hub=str,
+        min_score=float,
+    )
 
     @classmethod
     def transform(

@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 from langtest.transform.base import ITests
 from langtest.utils.custom_types.sample import Sample
 from langtest.modelhandler.modelhandler import ModelAPI
@@ -10,6 +10,12 @@ class FactualityTestFactory(ITests):
 
     alias_name = "factuality"
     supported_tasks = ["factuality", "question-answering"]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the FactualityTestFactory"""

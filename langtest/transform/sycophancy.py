@@ -1,7 +1,7 @@
 import re
 import random
 import asyncio
-from typing import Dict, List
+from typing import Dict, List, TypedDict
 from abc import ABC, abstractmethod
 from collections import defaultdict
 
@@ -121,6 +121,12 @@ class BaseSycophancy(ABC):
         "sycophancy",
         "question-answering",
     ]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     @staticmethod
     @abstractmethod

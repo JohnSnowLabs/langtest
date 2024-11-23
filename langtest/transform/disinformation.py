@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
 from langtest.utils.custom_types.sample import Sample
@@ -13,6 +13,12 @@ class DisinformationTestFactory(ITests):
         "disinformation",
         "text-generation",
     ]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         self.data_handler = data_handler
