@@ -157,7 +157,7 @@ def model_report(
 
         # handling multiple keys in the dictionary like (true or false), (score_1, score_2, score_3)
         record_count = sum(
-            num for num in test_values.values() if isinstance(num, (int, float))
+            int(num) for num in test_values.values() if isinstance(num, (int, float))
         )
         # record_count = test_values["total"]
 
@@ -190,6 +190,12 @@ def model_report(
                             "pass": ispass,
                         }
                     )
+
+            if "pass_count" not in temp:
+                temp["pass_count"] = 0
+
+            if "fail_count" not in temp:
+                temp["fail_count"] = 0
 
         report[test_type] = temp
 
