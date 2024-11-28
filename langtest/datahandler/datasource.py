@@ -1890,3 +1890,89 @@ class PandasDataset(BaseDataset):
             "hdf5": "hdf",
         }
         return ext_map
+
+
+class SparkDataset(BaseDataset):
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+        "toxicity",
+        "translation",
+        "security",
+        "clinical",
+        "disinformation",
+        "sensitivity",
+        "wino-bias",
+        "legal",
+    ]
+
+    def __init__(self, file_path: str, task: TaskManager, **kwargs) -> None:
+        """
+        Initializes a SparkDataset object.
+
+        Args:
+            file_path (str):
+                The path to the data file.
+            task (str):
+                Task to be evaluated on.
+            **kwargs:
+        """
+        super().__init__()
+        self._file_path = file_path
+        self.task = task
+        self.kwargs = kwargs
+
+    def load_raw_data(self) -> List[Dict]:
+        """
+        Load data from a file into raw lists of strings
+
+        Returns:
+            List[Dict]:
+                parsed file into list of dicts
+        """
+        from pyspark.sql import SparkSession
+
+        spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
+        df = spark.read.csv(self._file_path, header=True, inferSchema=True)
+        data = df.collect()
+        return data
+
+    def load_data(self) -> List[Sample]:
+        """
+        Load data from a CSV file and preprocess it based on the specified task.
+
+        Returns:
+            List[Sample]: A list of preprocessed data samples.
+        """
+        from pyspark.sql import SparkSession
+
+        spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
+        df = spark.read.csv(self._file_path, header=True, inferSchema=True)
+        data = []
+        column_names = self._file_path
+
+        # remove the data_source key from the column_names dict
+        if isinstance(column_names, dict):
+            column_names.pop("data_source")
+        else:
+            column_names = dict()
+
+        for idx, row_data in df.to_dict(orient="records"):
+            try:
+                sample = self.task.create_sample(
+                    row_data,
+                    **column_names,
+                )
+                data.append(sample)
+
+            except Exception as e:
+                logging.warning(Warnings.W005(idx=idx, row_data=row_data, e=e))
+                continue
+
+        return data
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """Exports the data to the corresponding format and saves it to 'output_path'."""
+        raise NotImplementedError()
