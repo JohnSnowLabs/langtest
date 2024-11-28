@@ -1893,6 +1893,10 @@ class PandasDataset(BaseDataset):
 
 
 class SparkDataset(BaseDataset):
+    """Class to handle Spark datasets. Subclass of BaseDataset."""
+
+    from pyspark.sql import SparkSession
+
     supported_tasks = [
         "ner",
         "text-classification",
@@ -1908,7 +1912,9 @@ class SparkDataset(BaseDataset):
         "legal",
     ]
 
-    def __init__(self, file_path: str, task: TaskManager, **kwargs) -> None:
+    def __init__(
+        self, file_path: str, spark_session: SparkSession, task: TaskManager, **kwargs
+    ) -> None:
         """
         Initializes a SparkDataset object.
 
@@ -1922,6 +1928,8 @@ class SparkDataset(BaseDataset):
         super().__init__()
         self._file_path = file_path
         self.task = task
+        self.spark_session = spark_session
+        self.format = kwargs.get("format", "csv")
         self.kwargs = kwargs
 
     def load_raw_data(self) -> List[Dict]:
@@ -1932,10 +1940,7 @@ class SparkDataset(BaseDataset):
             List[Dict]:
                 parsed file into list of dicts
         """
-        from pyspark.sql import SparkSession
-
-        spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
-        df = spark.read.csv(self._file_path, header=True, inferSchema=True)
+        df = self.spark_session.read.csv(self._file_path, header=True, inferSchema=True)
         data = df.collect()
         return data
 
@@ -1946,10 +1951,20 @@ class SparkDataset(BaseDataset):
         Returns:
             List[Sample]: A list of preprocessed data samples.
         """
-        from pyspark.sql import SparkSession
 
-        spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
-        df = spark.read.csv(self._file_path, header=True, inferSchema=True)
+        # df = self.spark_session.read.csv(self._file_path, header=True, inferSchema=True)
+        if hasattr(self.spark_session.read, self.format):
+            from pyspark.sql import DataFrame
+
+            df: DataFrame = getattr(self.spark_session.read, self.format)(
+                self._file_path, header=True, inferSchema=True
+            )
+        else:
+            raise ValueError(
+                Errors.E027(format=self.format)
+                + f" for {self._file_path} is not supported."
+            )
+
         data = []
         column_names = self._file_path
 
@@ -1959,7 +1974,7 @@ class SparkDataset(BaseDataset):
         else:
             column_names = dict()
 
-        for idx, row_data in df.to_dict(orient="records"):
+        for idx, row_data in df.toPandas().to_dict(orient="records"):
             try:
                 sample = self.task.create_sample(
                     row_data,
