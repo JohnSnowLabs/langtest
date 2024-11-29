@@ -192,6 +192,7 @@ class DataFactory:
             raise ValueError(Errors.E025())
         self._custom_label = file_path.copy()
         self._file_path = file_path.get("data_source")
+        self.file_ext = file_path.get("source", None)
         self._size = None
 
         self.datasets_with_jsonl_extension = []
@@ -255,7 +256,7 @@ class DataFactory:
             list[Sample]: Loaded text data.
         """
 
-        if self.file_ext in ("csv", "huggingface"):
+        if self.file_ext in ("csv", "huggingface", "spark"):
             self.init_cls = self.data_sources[self.file_ext.replace(".", "")](
                 self._custom_label, task=self.task, **self.kwargs
             )
@@ -1895,7 +1896,6 @@ class PandasDataset(BaseDataset):
 class SparkDataset(BaseDataset):
     """Class to handle Spark datasets. Subclass of BaseDataset."""
 
-
     supported_tasks = [
         "ner",
         "text-classification",
@@ -1911,9 +1911,7 @@ class SparkDataset(BaseDataset):
         "legal",
     ]
 
-    def __init__(
-        self, file_path: str, task: TaskManager, **kwargs
-    ) -> None:
+    def __init__(self, file_path: Union[str, dict], task: TaskManager, **kwargs) -> None:
         """
         Initializes a SparkDataset object.
 
@@ -1925,18 +1923,22 @@ class SparkDataset(BaseDataset):
             **kwargs:
         """
         from pyspark.sql import SparkSession
-        import string 
+        import string
         import random
 
         super().__init__()
         self._file_path = file_path
         self.task = task
-        self.spark_session: SparkSession = file_path.get("spark_session", None)
-        self.format = kwargs.get("format", "csv")
+
+        if isinstance(file_path, dict):
+            self.spark_session: SparkSession = file_path.get("spark_session", None)
+            self.format = kwargs.get("format", "csv")
         self.kwargs = kwargs
 
         if self.spark_session is None:
-            random_str = "langtest_" + "".join(random.choices(string.ascii_lowercase, k=5))
+            random_str = "langtest_" + "".join(
+                random.choices(string.ascii_lowercase, k=5)
+            )
             self.spark_session = SparkSession.builder.appName(random_str).getOrCreate()
 
     def load_raw_data(self) -> List[Dict]:
@@ -1958,35 +1960,40 @@ class SparkDataset(BaseDataset):
         Returns:
             List[Sample]: A list of preprocessed data samples.
         """
+        from pyspark.sql import DataFrame
 
-        if isinstance(self._file_path, dict):
+        if isinstance(self._file_path.get("data_source", None), DataFrame):
+            df = self._file_path.get("data_source", [])
+            column_names = self._file_path.get("column_names", {})
+
+        elif isinstance(self._file_path, dict):
             self.default_params = self._file_path
             self.format = self._file_path.get("format", "csv")
             self._file_path = self._file_path.get("data_source", self._file_path)
 
-        # df = self.spark_session.read.csv(self._file_path, header=True, inferSchema=True)
-        if hasattr(self.spark_session.read, self.format):
-            from pyspark.sql import DataFrame
+            # df = self.spark_session.read.csv(self._file_path, header=True, inferSchema=True)
+            if hasattr(self.spark_session.read, self.format):
+                df: DataFrame = getattr(self.spark_session.read, self.format)(
+                    self._file_path, header=True, inferSchema=True
+                )
+            else:
+                raise ValueError(
+                    Errors.E027(format=self.format)
+                    + f" for {self._file_path} is not supported."
+                )
 
-            df: DataFrame = getattr(self.spark_session.read, self.format)(
-                self._file_path, header=True, inferSchema=True
-            )
-        else:
-            raise ValueError(
-                Errors.E027(format=self.format)
-                + f" for {self._file_path} is not supported."
-            )
+            column_names = self.default_params
 
+            # remove the data_source key from the column_names dict
+            if isinstance(column_names, dict):
+                column_names.pop("data_source")
+                column_names.pop("source")
+                column_names.pop("spark_session")
+            else:
+                column_names = dict()
+
+        # generate the sample data
         data = []
-        column_names = self.default_params
-
-        # remove the data_source key from the column_names dict
-        if isinstance(column_names, dict):
-            column_names.pop("data_source")
-            column_names.pop("source")
-            column_names.pop("spark_session")
-        else:
-            column_names = dict()
 
         for idx, row_data in enumerate(df.toPandas().to_dict(orient="records")):
             try:
