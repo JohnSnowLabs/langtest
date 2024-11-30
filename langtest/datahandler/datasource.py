@@ -1955,7 +1955,7 @@ class SparkDataset(BaseDataset):
 
     def load_data(self) -> List[Sample]:
         """
-        Load data from a CSV file and preprocess it based on the specified task.
+        Load data from a any file and preprocess it based on the specified task.
 
         Returns:
             List[Sample]: A list of preprocessed data samples.
@@ -2011,4 +2011,53 @@ class SparkDataset(BaseDataset):
 
     def export_data(self, data: List[Sample], output_path: str):
         """Exports the data to the corresponding format and saves it to 'output_path'."""
+        raise NotImplementedError()
+
+
+class DltDataset(BaseDataset):
+    """A class to handle datasets from the Delta Live Tables(DLT)."""
+
+    supported_tasks = [
+        "ner",
+        "text-classification",
+        "question-answering",
+        "summarization",
+        "toxicity",
+        "translation",
+        "security",
+    ]
+
+    def __init__(self, file_path: str, task: TaskManager, **kwargs) -> None:
+        """
+        Initializes a DltDataset object.
+
+        Args:
+            file_path (str):
+                The path to the data file.
+            task (str):
+                Task to be evaluated on.
+            **kwargs:
+        """
+        super().__init__()
+        self._file_path = file_path
+        self.task = task
+        self.kwargs = kwargs
+
+    def load_raw_data(self) -> List[Dict]:
+        """
+        Load data from a file into raw lists of strings
+
+        Returns:
+            List[Dict]:
+                parsed file into list of dicts
+        """
+        raise NotImplementedError()
+
+    def load_data(self) -> List[Sample]:
+        """
+        Load data from a any file or dlt wrapper and preprocess it based on the specified task.
+
+        Returns:
+            List[Sample]: A list of preprocessed data samples.
+        """
         raise NotImplementedError()
