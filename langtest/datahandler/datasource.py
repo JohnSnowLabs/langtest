@@ -2060,4 +2060,27 @@ class DltDataset(BaseDataset):
         Returns:
             List[Sample]: A list of preprocessed data samples.
         """
+        from pyspark.sql import DataFrame
+
+        if not isinstance(self._file_path, DataFrame):
+            raise ValueError(
+                "file_path should be a Spark DataFrame representing the DLT table"
+            )
+
+        df: DataFrame = self._file_path
+        data = []
+
+        for idx, row_data in enumerate(df.toPandas().to_dict(orient="records")):
+            try:
+                sample = self.task.create_sample(row_data)
+                data.append(sample)
+            except Exception as e:
+                logging.warning(Warnings.W005(idx=idx, row_data=row_data, e=e))
+                continue
+
+        self.dataset_size = len(data)
+        return data
+
+    def export_data(self, data: List[Sample], output_path: str):
+        """Exports the data to the corresponding format and saves it to 'output_path'."""
         raise NotImplementedError()
