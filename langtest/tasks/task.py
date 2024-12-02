@@ -300,7 +300,7 @@ class TextClassification(BaseTask):
         elif isinstance(labels, list) or isinstance(labels, str):
             labels = ast.literal_eval(labels)
             if not isinstance(labels, list):
-                labels = [labels]
+                labels = [str(labels)]
             labels = [
                 samples.SequenceLabel(label=label, score=1.0)
                 if isinstance(label, str)
