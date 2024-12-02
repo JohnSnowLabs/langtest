@@ -141,6 +141,10 @@ class BaseDataset(ABC):
         import pandas as pd
 
         dataset_cls = cls.__name__.replace("Dataset", "").lower()
+
+        if dataset_cls in ["deltalivetables"]:
+            dataset_cls = "delta_live_tables"
+
         if dataset_cls == "pandas":
             extensions = [
                 i.replace("read_", "")
@@ -2014,7 +2018,7 @@ class SparkDataset(BaseDataset):
         raise NotImplementedError()
 
 
-class DltDataset(BaseDataset):
+class DeltaLiveTablesDataset(BaseDataset):
     """A class to handle datasets from the Delta Live Tables(DLT)."""
 
     supported_tasks = [
