@@ -11,7 +11,7 @@ modify_date: 2024-12-02
 <div class="h3-box" markdown="1">
 
 ## 2.4.0
-------------------
+
 ## 📢 **Highlights**
 
 John Snow Labs is excited to announce the release of LangTest 2.4.0! This update introduces cutting-edge features and resolves key issues further to enhance model testing and evaluation across multiple modalities.
