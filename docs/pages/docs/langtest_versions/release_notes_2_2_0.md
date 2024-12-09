@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: LangTest - Deliver Safe and Effective Language Models | John Snow Labs
 title: LangTest Release Notes
-permalink: /docs/pages/docs/langtest_versions/latest_release
+permalink: /docs/pages/docs/langtest_versions/release_notes_2_2_0
 key: docs-release-notes
 modify_date: 2024-04-02
 ---
